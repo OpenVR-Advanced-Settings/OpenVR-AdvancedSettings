@@ -14,11 +14,23 @@ TEMPLATE = app
 
 SOURCES += src/main.cpp\
         src/overlaywidget.cpp \
-		src/overlaycontroller.cpp 
+		src/overlaycontroller.cpp \
+		src/tabcontrollers/ChaperoneTabController.cpp \
+		src/tabcontrollers/FixFloorTabController.cpp \
+		src/tabcontrollers/MoveCenterTabController.cpp \
+		src/tabcontrollers/SettingsTabController.cpp \
+		src/tabcontrollers/StatisticsTabController.cpp \
+		src/tabcontrollers/SteamVRTabController.cpp
 
 HEADERS  += src/overlaywidget.h \
-		src/overlaycontroller.h
-		src/logging.h
+		src/overlaycontroller.h \
+		src/logging.h \
+		src/tabcontrollers/ChaperoneTabController.h \
+		src/tabcontrollers/FixFloorTabController.h \
+		src/tabcontrollers/MoveCenterTabController.h \
+		src/tabcontrollers/SettingsTabController.h \
+		src/tabcontrollers/StatisticsTabController.h \
+		src/tabcontrollers/SteamVRTabController.h
 
 FORMS    += ui/overlaywidget.ui
 

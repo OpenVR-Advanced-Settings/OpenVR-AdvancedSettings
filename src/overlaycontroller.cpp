@@ -12,8 +12,11 @@
 #include <QtWidgets/QGraphicsEllipseItem>
 #include <QOpenGLExtraFunctions>
 #include <QCursor>
+#include <QProcess>
+#include <QMessageBox>
 #include <exception>
 #include <iostream>
+#include <cmath>
 #include <openvr.h>
 #include "logging.h"
 
@@ -65,15 +68,20 @@ void OverlayController::SetWidget(OverlayWidget *pWidget, const std::string& nam
 	pWidget->move(0, 0);
 	m_pScene->addWidget(pWidget);
 	m_pWidget = pWidget;
+	pWidget->ui->VersionLabel->setText(OverlayController::applicationVersionString);
 
 	if (!vr::VROverlay()) {
+		QMessageBox::critical(nullptr, "OpenVR Advanced Settings Overlay", "Is OpenVR running?");
 		throw std::runtime_error(std::string("No Overlay interface"));
 	}
 	vr::VROverlayError overlayError = vr::VROverlay()->CreateDashboardOverlay(key.c_str(), name.c_str(), &m_ulOverlayHandle, &m_ulOverlayThumbnailHandle);
 	if (overlayError != vr::VROverlayError_None) {
+		if (overlayError == vr::VROverlayError_KeyInUse) {
+			QMessageBox::critical(nullptr, "OpenVR Advanced Settings Overlay", "Another instance is already running.");
+		}
 		throw std::runtime_error(std::string("Failed to create Overlay: " + std::string(vr::VROverlay()->GetOverlayErrorNameFromEnum(overlayError))));
 	}
-	vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 2.0f);
+	vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 2.5f);
 	vr::VROverlay()->SetOverlayInputMethod(m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse);
 	std::string thumbIconPath = QApplication::applicationDirPath().toStdString() + "\\res\\thumbicon.png";
 	if (QFile::exists(QString::fromStdString(thumbIconPath))) {
@@ -95,9 +103,11 @@ void OverlayController::SetWidget(OverlayWidget *pWidget, const std::string& nam
 	};
 	vr::VROverlay()->SetOverlayMouseScale(m_ulOverlayHandle, &vecWindowSize);
 
+	steamVRTabController.init(this, pWidget);
 	chaperoneTabController.init(this, pWidget);
 	moveCenterTabController.init(this, pWidget);
 	fixFloorTabController.init(this, pWidget);
+	statisticsTabController.init(this, pWidget);
 	settingsTabController.init(this, pWidget);
 }
 
@@ -144,7 +154,11 @@ void OverlayController::OnTimeoutPumpEvents() {
 	}
 	*/
 
-	fixFloorTabController.eventLoopTick();
+	vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
+	vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, devicePoses, vr::k_unMaxTrackedDeviceCount);
+	fixFloorTabController.eventLoopTick(devicePoses);
+	statisticsTabController.eventLoopTick(devicePoses);
+	moveCenterTabController.eventLoopTick(vr::VRCompositor()->GetTrackingSpace());
 
 	vr::VREvent_t vrEvent;
     while( vr::VROverlay()->PollNextOverlayEvent( m_ulOverlayHandle, &vrEvent, sizeof( vrEvent )  ) ) {
@@ -198,7 +212,7 @@ void OverlayController::OnTimeoutPumpEvents() {
 			}
 			break;
 
-		case vr::VREvent_MouseButtonUp: {
+			case vr::VREvent_MouseButtonUp: {
 				Qt::MouseButton button = vrEvent.data.mouse.button == vr::VRMouseButton_Right ? Qt::RightButton : Qt::LeftButton;
 				m_lastMouseButtons &= ~button;
 
@@ -220,18 +234,31 @@ void OverlayController::OnTimeoutPumpEvents() {
 			}
 			break;
 
-		case vr::VREvent_OverlayShown: {
+			case vr::VREvent_OverlayShown: {
 				m_pWidget->repaint();
 				UpdateWidget();
 			}
 			break;
 
-        case vr::VREvent_Quit:
-			LOG(INFO) << "Received quit request.";
-			vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some time just in case
-			moveCenterTabController.MoveCenterResetClicked();
-            QApplication::exit();
-            break;
+			case vr::VREvent_Quit: {
+				LOG(INFO) << "Received quit request.";
+				vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some time just in case
+				moveCenterTabController.MoveCenterResetClicked();
+				QApplication::exit();
+			}
+			break;
+
+			case vr::VREvent_DashboardActivated: {
+				LOG(INFO) << "Dashboard activated";
+				dashboardVisible = true;
+			}
+			break;
+
+			case vr::VREvent_DashboardDeactivated: {
+				LOG(INFO) << "Dashboard deactivated";
+				dashboardVisible = false;
+			}
+			break;
 		}
 	}
 
@@ -249,337 +276,143 @@ void OverlayController::OnTimeoutPumpEvents() {
 }
 
 void OverlayController::UpdateWidget() {
+	steamVRTabController.UpdateTab();
 	chaperoneTabController.UpdateTab();
 	moveCenterTabController.UpdateTab();
 	fixFloorTabController.UpdateTab();
+	statisticsTabController.UpdateTab();
 	settingsTabController.UpdateTab();
 }
 
-void OverlayController::AddOffsetToStandingPosition(unsigned axisId, float offset) {
-	vr::VRChaperoneSetup()->RevertWorkingCopy();
-	vr::HmdMatrix34_t curPos;
-	vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(&curPos);
-	curPos.m[0][3] += curPos.m[0][axisId] * offset;
-	curPos.m[1][3] += curPos.m[1][axisId] * offset;
-	curPos.m[2][3] += curPos.m[2][axisId] * offset;
-	vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(&curPos);
-	vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
-}
-
-void ChaperoneTabController::init(OverlayController * parent, OverlayWidget * widget) {
-	this->parent = parent;
-	this->widget = widget;
-
-	connect(widget->ui->CenterMarkerToggle, SIGNAL(toggled(bool)), this, SLOT(CenterMarkerToggled(bool)));
-	connect(widget->ui->PlaySpaceToggle, SIGNAL(toggled(bool)), this, SLOT(PlaySpaceToggled(bool)));
-	connect(widget->ui->ForceBoundsToggle, SIGNAL(toggled(bool)), this, SLOT(ForceBoundsToggled(bool)));
-	connect(widget->ui->FadeDistanceSlider, SIGNAL(valueChanged(int)), this, SLOT(FadeDistanceChanged(int)));
-	connect(widget->ui->ColorAlphaSlider, SIGNAL(valueChanged(int)), this, SLOT(ColorAlphaChanged(int)));
-	connect(widget->ui->ResetDefaultsToggle, SIGNAL(clicked()), this, SLOT(ResetDefaultsClicked()));
-}
-
-void ChaperoneTabController::UpdateTab() {
-	if (widget && vr::VRSettings()) {
-		widget->ui->CenterMarkerToggle->blockSignals(true);
-		widget->ui->PlaySpaceToggle->blockSignals(true);
-		widget->ui->ForceBoundsToggle->blockSignals(true);
-		widget->ui->FadeDistanceSlider->blockSignals(true);
-		widget->ui->ColorAlphaSlider->blockSignals(true);
-
-		auto centerMarkerOn = vr::VRSettings()->GetBool(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_CenterMarkerOn_Bool, false);
-		widget->ui->CenterMarkerToggle->setChecked(centerMarkerOn);
-		auto playSpaceOn = vr::VRSettings()->GetBool(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_PlaySpaceOn_Bool, false);
-		widget->ui->PlaySpaceToggle->setChecked(playSpaceOn);
-		widget->ui->ForceBoundsToggle->setChecked(forceBoundsFlag);
-		auto fadeDistance = vr::VRSettings()->GetFloat(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_FadeDistance_Float, 0.7f);
-		widget->ui->FadeDistanceSlider->setValue(fadeDistance*100);
-		widget->ui->FadeDistanceLabel->setText(QString::asprintf("%.2f", fadeDistance));
-		auto colorAlpha = vr::VRSettings()->GetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_ColorGammaA_Int32, 255);
-		widget->ui->ColorAlphaSlider->setValue(colorAlpha*100/255);
-		widget->ui->ColorAlphaLabel->setText(QString::asprintf("%i%%", colorAlpha*100/255));
-
-		widget->ui->CenterMarkerToggle->blockSignals(false);
-		widget->ui->PlaySpaceToggle->blockSignals(false);
-		widget->ui->ForceBoundsToggle->blockSignals(false);
-		widget->ui->FadeDistanceSlider->blockSignals(false);
-		widget->ui->ColorAlphaSlider->blockSignals(false);
-	}
-}
-
-void ChaperoneTabController::CenterMarkerToggled(bool value) {
-	if (vr::VRSettings()) {
-		vr::VRSettings()->SetBool(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_CenterMarkerOn_Bool, value);
-		vr::VRSettings()->Sync();
-	}
-}
-
-void ChaperoneTabController::PlaySpaceToggled(bool value) {
-	if (vr::VRSettings()) {
-		vr::VRSettings()->SetBool(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_PlaySpaceOn_Bool, value);
-		vr::VRSettings()->Sync();
-	}
-}
-
-void ChaperoneTabController::ForceBoundsToggled(bool value) {
-	if (vr::VRChaperone()) {
-		forceBoundsFlag = value;
-		vr::VRChaperone()->ForceBoundsVisible(value);
-	}
-}
-
-void ChaperoneTabController::FadeDistanceChanged(int value) {
-	if (vr::VRSettings()) {
-		float fval= (float)value / 100;
-		vr::VRSettings()->SetFloat(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_FadeDistance_Float, fval);
-		vr::VRSettings()->Sync();
-		widget->ui->FadeDistanceLabel->setText(QString::asprintf("%.2f", fval));
-	}
-}
-
-void ChaperoneTabController::ColorAlphaChanged(int value) {
-	if (vr::VRSettings()) {
-		float fval = (float)value / 100;
-		vr::VRSettings()->SetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_ColorGammaA_Int32, 255*fval);
-		vr::VRSettings()->Sync();
-		widget->ui->ColorAlphaLabel->setText(QString::asprintf("%i%%", value));
-	}
-}
-
-void ChaperoneTabController::ResetDefaultsClicked() {
-	widget->ui->CenterMarkerToggle->setChecked(false);
-	widget->ui->PlaySpaceToggle->setChecked(false);
-	widget->ui->ForceBoundsToggle->setChecked(false);
-	widget->ui->FadeDistanceSlider->setValue(70);
-	widget->ui->ColorAlphaSlider->setValue(100);
-}
-
-void MoveCenterTabController::init(OverlayController * parent, OverlayWidget * widget) {
-	this->parent = parent;
-	this->widget = widget;
-	xOffset = 0.0f;
-	yOffset = 0.0f;
-	zOffset = 0.0f;
-	connect(widget->ui->XMinusButton, SIGNAL(clicked()), this, SLOT(XMinusClicked()));
-	connect(widget->ui->XPlusButton, SIGNAL(clicked()), this, SLOT(XPlusClicked()));
-	connect(widget->ui->YMinusButton, SIGNAL(clicked()), this, SLOT(YMinusClicked()));
-	connect(widget->ui->YPlusButton, SIGNAL(clicked()), this, SLOT(YPlusClicked()));
-	connect(widget->ui->ZMinusButton, SIGNAL(clicked()), this, SLOT(ZMinusClicked()));
-	connect(widget->ui->ZPlusButton, SIGNAL(clicked()), this, SLOT(ZPlusClicked()));
-	connect(widget->ui->MoveCenterResetButton, SIGNAL(clicked()), this, SLOT(MoveCenterResetClicked()));
-}
-
-void MoveCenterTabController::UpdateTab() {
-	if (widget) {
-		widget->ui->XOffsetLabel->setText(QString::asprintf("%.1f", xOffset));
-		widget->ui->YOffsetLabel->setText(QString::asprintf("%.1f", yOffset));
-		widget->ui->ZOffsetLabel->setText(QString::asprintf("%.1f", zOffset));
-	}
-}
-
-void MoveCenterTabController::XMinusClicked() {
-	if (widget) {
-		parent->AddOffsetToStandingPosition(0, -0.5f);
-		xOffset -= 0.5f;
-		widget->ui->XOffsetLabel->setText(QString::asprintf("%.1f", xOffset));
-	}
-}
-
-void MoveCenterTabController::XPlusClicked() {
-	if (widget) {
-		parent->AddOffsetToStandingPosition(0, 0.5f);
-		xOffset += 0.5f;
-		widget->ui->XOffsetLabel->setText(QString::asprintf("%.1f", xOffset));
-	}
-}
-
-void MoveCenterTabController::YMinusClicked() {
-	if (widget) {
-		parent->AddOffsetToStandingPosition(1, -0.5f);
-		yOffset -= 0.5f;
-		widget->ui->YOffsetLabel->setText(QString::asprintf("%.1f", yOffset));
-	}
-}
-
-void MoveCenterTabController::YPlusClicked() {
-	if (widget) {
-		parent->AddOffsetToStandingPosition(1, 0.5f);
-		yOffset += 0.5f;
-		widget->ui->YOffsetLabel->setText(QString::asprintf("%.1f", yOffset));
-	}
-}
-
-void MoveCenterTabController::ZMinusClicked() {
-	if (widget) {
-		parent->AddOffsetToStandingPosition(2, -0.5f);
-		zOffset -= 0.5f;
-		widget->ui->ZOffsetLabel->setText(QString::asprintf("%.1f", zOffset));
-	}
-}
-
-void MoveCenterTabController::ZPlusClicked() {
-	if (widget) {
-		parent->AddOffsetToStandingPosition(2, 0.5f);
-		zOffset += 0.5f;
-		widget->ui->ZOffsetLabel->setText(QString::asprintf("%.1f", zOffset));
-	}
-}
-
-void MoveCenterTabController::MoveCenterResetClicked() {
-	if (widget) {
-		parent->AddOffsetToStandingPosition(0, -xOffset);
-		parent->AddOffsetToStandingPosition(1, -yOffset);
-		parent->AddOffsetToStandingPosition(2, -zOffset);
-		xOffset = 0.0f;
-		yOffset = 0.0f;
-		zOffset = 0.0f;
-		widget->ui->XOffsetLabel->setText(QString::asprintf("%.1f", xOffset));
-		widget->ui->YOffsetLabel->setText(QString::asprintf("%.1f", yOffset));
-		widget->ui->ZOffsetLabel->setText(QString::asprintf("%.1f", zOffset));
-	}
-}
-
-void FixFloorTabController::init(OverlayController * parent, OverlayWidget * widget) {
-	this->parent = parent;
-	this->widget = widget;
-	connect(widget->ui->FixFloorButton, SIGNAL(clicked()), this, SLOT(FixFloorClicked()));
-	connect(widget->ui->UndoFixFloorButton, SIGNAL(clicked()), this, SLOT(UndoFixFloorClicked()));
-}
-
-void FixFloorTabController::UpdateTab() {
-	if (widget) {
-		if (state == 1) {
-			widget->ui->FixFloorButton->setEnabled(false);
-		} else {
-			widget->ui->FixFloorButton->setEnabled(true);
+void OverlayController::AddOffsetToUniverseCenter(vr::ETrackingUniverseOrigin universe, unsigned axisId, float offset, bool adjustBounds, bool commit) {
+	if (offset != 0.0f) {
+		if (commit) {
+			vr::VRChaperoneSetup()->RevertWorkingCopy();
 		}
-		if (floorOffset != 0.0f) {
-			widget->ui->UndoFixFloorButton->setEnabled(true);
+		vr::HmdMatrix34_t curPos;
+		if (universe == vr::TrackingUniverseStanding) {
+			vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(&curPos);
 		} else {
-			widget->ui->UndoFixFloorButton->setEnabled(false);
+			vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(&curPos);
+		}
+		curPos.m[0][3] += curPos.m[0][axisId] * offset;
+		curPos.m[1][3] += curPos.m[1][axisId] * offset;
+		curPos.m[2][3] += curPos.m[2][axisId] * offset;
+		if (universe == vr::TrackingUniverseStanding) {
+			vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(&curPos);
+		} else {
+			vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(&curPos);
+		}
+		if (adjustBounds && universe == vr::TrackingUniverseStanding) {
+			AddOffsetToCollisionBounds(axisId, -offset, false);
+		}
+		if (commit) {
+			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
 		}
 	}
 }
 
-void FixFloorTabController::eventLoopTick() {
-	if (state == 1) {
-		if (measurementCount == 0) {
-			// Get Controller ids for left/right hand
-			auto leftId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand);
-			if (leftId == vr::k_unTrackedDeviceIndexInvalid) {
-				widget->ui->FixFloorStatusLabel->setText("No left controller found.");
-				statusMessageTimeout = 100;
-				state = 2;
-				UpdateTab();
-				return;
-			}
-			auto rightId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_RightHand);
-			if (rightId == vr::k_unTrackedDeviceIndexInvalid) {
-				widget->ui->FixFloorStatusLabel->setText("No right controller found.");
-				statusMessageTimeout = 100;
-				state = 2;
-				UpdateTab();
-				return;
-			}
-			// Get poses
-			vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
-			vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, devicePoses, vr::k_unMaxTrackedDeviceCount);
-			vr::TrackedDevicePose_t* leftPose = devicePoses + leftId;
-			vr::TrackedDevicePose_t* rightPose = devicePoses + rightId;
-			if (!leftPose->bPoseIsValid || !leftPose->bDeviceIsConnected || leftPose->eTrackingResult != vr::TrackingResult_Running_OK) {
-				widget->ui->FixFloorStatusLabel->setText("Left controller tracking problems.");
-				statusMessageTimeout = 100;
-				state = 2;
-				UpdateTab();
-				return;
-			} else if (!rightPose->bPoseIsValid || !rightPose->bDeviceIsConnected || rightPose->eTrackingResult != vr::TrackingResult_Running_OK) {
-				widget->ui->FixFloorStatusLabel->setText("Right controller tracking problems.");
-				statusMessageTimeout = 100;
-				state = 2;
-				UpdateTab();
-				return;
-			} else {
-				// The controller with the lowest y-pos is the floor fix reference
-				if (leftPose->mDeviceToAbsoluteTracking.m[1][3] < rightPose->mDeviceToAbsoluteTracking.m[1][3]) {
-					referenceController = leftId;
-				} else {
-					referenceController = rightId;
+void OverlayController::RotateUniverseCenter(vr::ETrackingUniverseOrigin universe, float yAngle, bool adjustBounds, bool commit) {
+	if (yAngle != 0.0f) {
+		if (commit) {
+			vr::VRChaperoneSetup()->RevertWorkingCopy();
+		}
+		vr::HmdMatrix34_t curPos;
+		if (universe == vr::TrackingUniverseStanding) {
+			vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(&curPos);
+		} else {
+			vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(&curPos);
+		}
+		vr::HmdMatrix34_t newPos;
+		float yRot[3][3] = {
+			{ std::cos(yAngle), 0, std::sin(yAngle) },
+			{ 0, 1, 0 },
+			{ -std::sin(yAngle), 0, std::cos(yAngle) }
+		};
+		for (unsigned i = 0; i < 3; i++) {
+			for (unsigned j = 0; j < 3; j++) {
+				newPos.m[i][j] = 0.0f;
+				for (unsigned k = 0; k < 3; k++) {
+					newPos.m[i][j] +=  yRot[i][k] * curPos.m[k][j];
 				}
-				tempOffset = (double)devicePoses[referenceController].mDeviceToAbsoluteTracking.m[1][3];
-				measurementCount = 1;
 			}
-			
-		} else if (measurementCount >= 50) {
-			floorOffset = -controllerUpOffsetCorrection + (float)(tempOffset / (double)measurementCount);
-			LOG(INFO) << "Fix Floor: Floor Offset = " << floorOffset;
-			parent->AddOffsetToStandingPosition(1, floorOffset);
-			widget->ui->FixFloorStatusLabel->setText("Fixing ... OK");
-			statusMessageTimeout = 50;
-			state = 2;
-			UpdateTab();
-		} else {
-			vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
-			vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, devicePoses, vr::k_unMaxTrackedDeviceCount);
-			tempOffset += (double)devicePoses[referenceController].mDeviceToAbsoluteTracking.m[1][3];
-			measurementCount++;
 		}
-	} else if (state == 2) {
-		if (statusMessageTimeout == 0) {
-			if (widget) {
-				widget->ui->FixFloorStatusLabel->setText("");
+		newPos.m[0][3] = curPos.m[0][3];
+		newPos.m[1][3] = curPos.m[1][3];
+		newPos.m[2][3] = curPos.m[2][3];
+		vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(&newPos);
+		if (universe == vr::TrackingUniverseStanding) {
+			vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(&newPos);
+		} else {
+			vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(&newPos);
+		}
+		if (adjustBounds && universe == vr::TrackingUniverseStanding) {
+			RotateCollisionBounds(-yAngle, false);
+		}
+		if (commit) {
+			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
+		}
+	}
+}
+
+void OverlayController::AddOffsetToCollisionBounds(unsigned axisId, float offset, bool commit) {
+	// Apparently Valve sanity-checks the y-coordinates of the collision bounds (and only the y-coordinates)
+	// I can move the bounds on the xz-plane, I can make the "ceiling" of the chaperone cage lower/higher, but when I
+	// dare to set one single lower corner to something non-zero, every corner gets its y-coordinates reset to the defaults.
+	// I do it anyway, maybe it gets fixed in the future.
+	if (commit) {
+		vr::VRChaperoneSetup()->RevertWorkingCopy();
+	}
+	unsigned collisionBoundsCount = 0;
+	vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(nullptr, &collisionBoundsCount);
+	if (collisionBoundsCount > 0) {
+		vr::HmdQuad_t* collisionBounds = new vr::HmdQuad_t[collisionBoundsCount];
+		vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(collisionBounds, &collisionBoundsCount);
+		for (unsigned b = 0; b < collisionBoundsCount; b++) {
+			for (unsigned c = 0; c < 4; c++) {
+				collisionBounds[b].vCorners[c].v[axisId] += offset;
 			}
-			state = 0;
-			UpdateTab();
-		} else {
-			statusMessageTimeout--;
-		} 
-	}
-}
-
-void FixFloorTabController::FixFloorClicked() {
-	if (widget) {
-		widget->ui->FixFloorStatusLabel->setText("Fixing ...");
-		widget->ui->FixFloorButton->setEnabled(false);
-		widget->ui->UndoFixFloorButton->setEnabled(false);
-		measurementCount = 0;
-		state = 1;
-	}
-}
-
-void FixFloorTabController::UndoFixFloorClicked() {
-	parent->AddOffsetToStandingPosition(1, -floorOffset);
-	LOG(INFO) << "Fix Floor: Undo Floor Offset = " << -floorOffset;
-	floorOffset = 0.0f;
-	widget->ui->FixFloorStatusLabel->setText("Undo ... OK");
-	statusMessageTimeout = 100;
-	state = 2;
-	UpdateTab();
-}
-
-
-
-void SettingsTabController::init(OverlayController * parent, OverlayWidget * widget) {
-	this->parent = parent;
-	this->widget = widget;
-	connect(widget->ui->AutoStartToggle, SIGNAL(toggled(bool)), this, SLOT(AutoStartToggled(bool)));
-}
-
-void SettingsTabController::UpdateTab() {
-	if (widget) {
-		widget->ui->AutoStartToggle->blockSignals(true);
-		if (vr::VRApplications()->GetApplicationAutoLaunch(OverlayController::applicationKey)) {
-			widget->ui->AutoStartToggle->setChecked(true);
-		} else {
-			widget->ui->AutoStartToggle->setChecked(false);
 		}
-		widget->ui->AutoStartToggle->blockSignals(false);
+		vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(collisionBounds, collisionBoundsCount);
+		delete collisionBounds;
+	}
+	if (commit && collisionBoundsCount > 0) {
+		vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
 	}
 }
 
-void SettingsTabController::AutoStartToggled(bool value) {
-	LOG(INFO) << "Setting auto start: " << value;
-	auto apperror = vr::VRApplications()->SetApplicationAutoLaunch(OverlayController::applicationKey, value);
-	if (apperror != vr::VRApplicationError_None) {
-		LOG(ERROR) << "Could not set auto start: " << vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror);
+void OverlayController::RotateCollisionBounds(float angle, bool commit) {
+	if (commit) {
+		vr::VRChaperoneSetup()->RevertWorkingCopy();
+	}
+	unsigned collisionBoundsCount = 0;
+	vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(nullptr, &collisionBoundsCount);
+	if (collisionBoundsCount > 0) {
+		vr::HmdQuad_t* collisionBounds = new vr::HmdQuad_t[collisionBoundsCount];
+		vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(collisionBounds, &collisionBoundsCount);
+		float yRot[3][3] = {
+			{ std::cos(angle), 0, std::sin(angle) },
+			{ 0, 1, 0 },
+			{ -std::sin(angle), 0, std::cos(angle) }
+		};
+		for (unsigned b = 0; b < collisionBoundsCount; b++) {
+			for (unsigned c = 0; c < 4; c++) {
+				auto& corner = collisionBounds[b].vCorners[c];
+				vr::HmdVector3_t newVal;
+				for (unsigned i = 0; i < 3; i++) {
+					newVal.v[i] = 0.0f;
+					for (unsigned k = 0; k < 3; k++) {
+						newVal.v[i] += corner.v[k] * yRot[i][k];
+					};
+				}
+				corner = newVal;
+			}
+		}
+		vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(collisionBounds, collisionBoundsCount);
+		delete collisionBounds;
+	}
+	if (commit && collisionBoundsCount > 0) {
+		vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
 	}
 }
 

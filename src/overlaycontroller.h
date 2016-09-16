@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "openvr.h"
+#include <openvr.h>
 #include <QtCore/QtCore>
 // because of incompatibilities with QtOpenGL and GLEW we need to cherry pick includes
 #include <QVector2D>
@@ -14,111 +14,21 @@
 #include <QOffscreenSurface>
 #include <QOpenGLFramebufferObject>
 #include <memory>
+#include "logging.h"
+
+#include "tabcontrollers/SteamVRTabController.h"
+#include "tabcontrollers/ChaperoneTabController.h"
+#include "tabcontrollers/MoveCenterTabController.h"
+#include "tabcontrollers/FixFloorTabController.h"
+#include "tabcontrollers/StatisticsTabController.h"
+#include "tabcontrollers/SettingsTabController.h"
+
 
 // application namespace
 namespace advsettings {
 
 // forward declaration
 class OverlayWidget;
-class OverlayController;
-
-
-class ChaperoneTabController : public QObject {
-	Q_OBJECT
-
-private:
-	OverlayController* parent;
-	OverlayWidget* widget;
-
-	bool forceBoundsFlag = false;
-
-public:
-	void init(OverlayController* parent, OverlayWidget* widget);
-
-public slots:
-	void UpdateTab();
-
-	void CenterMarkerToggled(bool value);
-	void PlaySpaceToggled(bool value);
-	void ForceBoundsToggled(bool value);
-	void FadeDistanceChanged(int value);
-	void ColorAlphaChanged(int value);
-	void ResetDefaultsClicked();
-};
-
-
-class MoveCenterTabController : public QObject {
-	Q_OBJECT
-
-private:
-	OverlayController* parent;
-	OverlayWidget* widget;
-
-	float xOffset = 0.0f;
-	float yOffset = 0.0f;
-	float zOffset = 0.0f;
-
-public:
-	void init(OverlayController* parent, OverlayWidget* widget);
-
-public slots:
-	void UpdateTab();
-
-	void XMinusClicked();
-	void XPlusClicked();
-	void YMinusClicked();
-	void YPlusClicked();
-	void ZMinusClicked();
-	void ZPlusClicked();
-	void MoveCenterResetClicked();
-};
-
-
-class FixFloorTabController : public QObject {
-	Q_OBJECT
-
-private:
-	OverlayController* parent;
-	OverlayWidget* widget;
-
-	float controllerUpOffsetCorrection = 0.06f; // Controller touchpad facing upwards
-	float controllerDownOffsetCorrection = 0.0f; // Controller touchpad facing downwards (not implemented yet)
-
-	int state = 0; // 0 .. idle, 1 .. measurement in progress, 2 .. waiting for status message timeout
-	vr::TrackedDeviceIndex_t referenceController = vr::k_unTrackedDeviceIndexInvalid;
-	unsigned measurementCount = 0;
-	double tempOffset = 0.0;
-	unsigned statusMessageTimeout = 0;
-	float floorOffset = 0.0f;
-
-public:
-	void init(OverlayController* parent, OverlayWidget* widget);
-
-public slots:
-	void UpdateTab();
-	void eventLoopTick();
-
-	void FixFloorClicked();
-	void UndoFixFloorClicked();
-};
-
-
-class SettingsTabController : public QObject {
-	Q_OBJECT
-
-private:
-	OverlayController* parent;
-	OverlayWidget* widget;
-
-public:
-	void init(OverlayController* parent, OverlayWidget* widget);
-
-public slots:
-	void UpdateTab();
-
-	void AutoStartToggled(bool value);
-};
-
 
 class OverlayController : public QObject {
 	Q_OBJECT
@@ -126,6 +36,7 @@ class OverlayController : public QObject {
 public:
 	static constexpr const char* applicationKey = "matzman666.AdvancedSettings";
 	static constexpr const char* applicationName = "Advanced Settings";
+	static constexpr const char* applicationVersionString = "v1.1";
 
 private:
 	OverlayWidget *m_pWidget;
@@ -139,13 +50,16 @@ private:
 	std::unique_ptr<QOffscreenSurface> m_pOffscreenSurface;
 
 	std::unique_ptr<QTimer> m_pPumpEventsTimer;
+	bool dashboardVisible = false;
 
 	QPointF m_ptLastMouse;
 	Qt::MouseButtons m_lastMouseButtons = 0;
 
+	SteamVRTabController steamVRTabController;
 	ChaperoneTabController chaperoneTabController;
 	MoveCenterTabController moveCenterTabController;
 	FixFloorTabController fixFloorTabController;
+	StatisticsTabController statisticsTabController;
 	SettingsTabController settingsTabController;
 
 public:
@@ -154,16 +68,22 @@ public:
 
 	void Init();
 
+	bool isDashboardVisible() {
+		return dashboardVisible;
+	}
+
 	void SetWidget(OverlayWidget *pWidget, const std::string& name, const std::string& key = "");
 
-	void AddOffsetToStandingPosition(unsigned axisId, float offset);
+	void AddOffsetToUniverseCenter(vr::ETrackingUniverseOrigin universe, unsigned axisId, float offset, bool adjustBounds = true, bool commit = true);
+	void RotateUniverseCenter(vr::ETrackingUniverseOrigin universe, float yAngle, bool adjustBounds = true, bool commit = true); // around y axis
+	void AddOffsetToCollisionBounds(unsigned axisId, float offset, bool commit = true);
+	void RotateCollisionBounds(float angle, bool commit = true); // around y axis
 
 public slots:
 	void OnSceneChanged( const QList<QRectF>& );
 	void OnTimeoutPumpEvents();
 
 	void UpdateWidget();
-
 };
 
 } // namespace advsettings
