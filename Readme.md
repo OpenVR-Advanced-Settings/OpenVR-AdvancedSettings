@@ -51,6 +51,8 @@ Allows you to fix the height of your floor. Just place one controller on your fl
 
 - The center marker and the play space marker are provided by the chaperone subsystem, and therefore they will have the same color and visibility settings as the chaperone bounds.
 
+- When you have installed SteamVR to a different path than the default one, "Restart SteamVR" will not work. To resolve the issue go to the application directory, open the file restartvrserver.bat and change the path to wherever you have SteamVR installed.
+
 # Usage
 
 Just start the executable once. It will register with OpenVR and automatically start whenever OpenVR starts (Can be disabled in the settings).
