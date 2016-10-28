@@ -3,28 +3,39 @@
 
 #include <QObject>
 
+class QQuickWindow;
 // application namespace
 namespace advsettings {
 
 // forward declaration
-class OverlayWidget;
 class OverlayController;
 
 
 class SettingsTabController : public QObject {
 	Q_OBJECT
+	Q_PROPERTY(bool autoStartEnabled READ autoStartEnabled WRITE setAutoStartEnabled NOTIFY autoStartEnabledChanged)
 
 private:
 	OverlayController* parent;
-	OverlayWidget* widget;
+	QQuickWindow* widget;
+
+	unsigned settingsUpdateCounter = 0;
+
+	bool m_autoStartEnabled = false;
 
 public:
-	void init(OverlayController* parent, OverlayWidget* widget);
+	void initStage1();
+	void initStage2(OverlayController* parent, QQuickWindow* widget);
 
-	public slots:
-	void UpdateTab();
+	void eventLoopTick();
 
-	void AutoStartToggled(bool value);
+	bool autoStartEnabled() const;
+
+public slots:
+	void setAutoStartEnabled(bool value, bool notify = true);
+
+signals:
+	void autoStartEnabledChanged(bool value);
 };
 
 } // namespace advsettings

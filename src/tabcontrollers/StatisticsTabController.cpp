@@ -1,45 +1,28 @@
 #include "StatisticsTabController.h"
+#include <QQuickWindow>
 #include "../overlaycontroller.h"
-#include "../overlaywidget.h"
-#include "ui_overlaywidget.h"
 
 // application namespace
 namespace advsettings {
 
-
-void StatisticsTabController::init(OverlayController * parent, OverlayWidget * widget) {
-	this->parent = parent;
-	this->widget = widget;
-	connect(widget->ui->StatsDistanceResetButton, SIGNAL(clicked()), this, SLOT(StatsDistanceResetClicked()));
-	connect(widget->ui->StatsRotationResetButton, SIGNAL(clicked()), this, SLOT(StatsRotationResetClicked()));
-	connect(widget->ui->StatsLeftMaxSpeedResetButton, SIGNAL(clicked()), this, SLOT(StatsLeftControllerSpeedResetClicked()));
-	connect(widget->ui->StatsRightMaxSpeedResetButton, SIGNAL(clicked()), this, SLOT(StatsRightControllerSpeedResetClicked()));
-	connect(widget->ui->DroppedFramesResetButton, SIGNAL(clicked()), this, SLOT(DroppedFramesResetClicked()));
-	connect(widget->ui->ReprojectedFramesResetButton, SIGNAL(clicked()), this, SLOT(ReprojectedFramesResetClicked()));
-	connect(widget->ui->TimedOutResetButton, SIGNAL(clicked()), this, SLOT(TimedOutResetClicked()));
-
+void StatisticsTabController::initStage1() {
 }
 
-void StatisticsTabController::UpdateTab() {
-	if (widget) {
-		widget->ui->StatsDistanceLabel->setText(QString::asprintf("%.1f m", hmdDistance));
-		widget->ui->StatsLeftMaxSpeedLabel->setText(QString::asprintf("%.1f m/s", leftControllerMaxSpeed));
-		widget->ui->StatsRightMaxSpeedLabel->setText(QString::asprintf("%.1f m/s", rightControllerMaxSpeed));
-		vr::Compositor_CumulativeStats pStats;
-		vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
-		if (pStats.m_nPid != compositorStatsPid) {
-			droppedFramesOffset = 0;
-			reprojectedFramesOffset = 0;
-			timedOutOffset = 0;
-			compositorStatsPid = pStats.m_nPid;
-		}
-		widget->ui->DroppedFramesLabel->setText(QString::asprintf("%i", pStats.m_nNumDroppedFrames - droppedFramesOffset));
-		widget->ui->ReprojectedFramesLabel->setText(QString::asprintf("%i", pStats.m_nNumReprojectedFrames - reprojectedFramesOffset));
-		widget->ui->TimedOutLabel->setText(QString::asprintf("%i", pStats.m_nNumTimedOut - timedOutOffset));
-	}
+void StatisticsTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
+	this->parent = parent;
+	this->widget = widget;
 }
 
 void StatisticsTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) {
+	vr::Compositor_CumulativeStats pStats;
+	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
+	if (pStats.m_nPid != compositorStatsPid) {
+		m_droppedFramesOffset = 0;
+		m_reprojectedFramesOffset = 0;
+		m_timedOutOffset = 0;
+		compositorStatsPid = pStats.m_nPid;
+	}
+
 	auto& m = devicePoses->mDeviceToAbsoluteTracking.m;
 
 	// Hmd Distance //
@@ -50,7 +33,7 @@ void StatisticsTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses
 			} else {
 				auto delta = std::sqrt(std::pow(m[0][3] - lastHmdPos[0], 2) /*+ std::pow(m[1][3] - lastHmdPos[1], 2)*/ + std::pow(m[2][3] - lastHmdPos[2], 2));
 				if (delta >= 0.01f) {
-					hmdDistance += delta;
+					m_hmdDistanceMoved += delta;
 				}
 			}
 			lastHmdPos[0] = m[0][3];
@@ -61,14 +44,13 @@ void StatisticsTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses
 		}
 	}
 
-
 	// Controller speeds //
 	auto leftId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand);
 	if (leftId != vr::k_unTrackedDeviceIndexInvalid && devicePoses[leftId].bPoseIsValid && devicePoses[leftId].eTrackingResult == vr::TrackingResult_Running_OK) {
 		auto& vel = devicePoses[leftId].vVelocity.v;
 		auto lspeed = std::sqrt(std::pow(vel[0], 2) + std::pow(vel[1], 2) + std::pow(vel[2], 2));
-		if (lspeed > leftControllerMaxSpeed) {
-			leftControllerMaxSpeed = lspeed;
+		if (lspeed > m_leftControllerMaxSpeed) {
+			m_leftControllerMaxSpeed = lspeed;
 		}
 	}
 
@@ -76,8 +58,8 @@ void StatisticsTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses
 	if (rightId != vr::k_unTrackedDeviceIndexInvalid && devicePoses[rightId].bPoseIsValid && devicePoses[rightId].eTrackingResult == vr::TrackingResult_Running_OK) {
 		auto& vel = devicePoses[rightId].vVelocity.v;
 		auto rspeed = std::sqrt(std::pow(vel[0], 2) + std::pow(vel[1], 2) + std::pow(vel[2], 2));
-		if (rspeed > rightControllerMaxSpeed) {
-			rightControllerMaxSpeed = rspeed;
+		if (rspeed > m_rightControllerMaxSpeed) {
+			m_rightControllerMaxSpeed = rspeed;
 		}
 	}
 
@@ -94,33 +76,46 @@ void StatisticsTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses
 	roll = atan2(cp*sr, cp*cr) [pi, -pi], CW
 	*/
 
-	auto yaw = 0.0;
+	double yawRaw = 0.0;
+	double yaw = 0.0;
+	bool rotationChanged = false;
 	if (devicePoses[0].bPoseIsValid && devicePoses[0].eTrackingResult == vr::TrackingResult_Running_OK) {
-		yaw = std::atan2(m[0][2], m[2][2]);
-		if (yaw < 0.0f) {
-			yaw += 2 * M_PI; // map to [0, 2*pi], CCW
+		yawRaw = std::atan2(m[0][2], m[2][2]);
+		if (yawRaw < 0.0f) {
+			yawRaw += 2 * M_PI; // map to [0, 2*pi], CCW
+		}
+		yaw = yawRaw - rotationOffset;
+		if (yaw < 0.0) {
+			yaw = 2 * M_PI + yaw;
 		}
 		if (rotationResetFlag) {
 			rotationDir = 0;
 			rotationCounter = 0;
-			rotationMarker = yaw;
+			rotationOffset = yawRaw;
 			rotationResetFlag = false;
 			lastYaw = -1.0f;
-		} else if (lastYaw < 0.0f && yaw != rotationMarker) {
+			rotationChanged = true;
+		} else if (lastYaw < 0.0f && yaw > 0.0) {
 			lastYaw = yaw;
-		} else if (lastYaw != yaw && yaw != rotationMarker) {
+			rotationChanged = true;
+			if (yaw <= M_PI) {
+				rotationDir = 1;
+			} else {
+				rotationDir = -1;
+			}
+		} else if (std::abs(lastYaw - yaw) >= 0.01 && yaw > 0.0) {
 			auto diff = yaw - lastYaw;
 			int mode = 0;
 			if (std::abs(diff) > M_PI) {
-				if (diff < -M_PI && (rotationMarker < yaw || rotationMarker > lastYaw)) { // CCW overflow
+				if (diff < -M_PI) { // CCW overflow
 					mode = 1;
-				} else if (diff > M_PI && (rotationMarker > yaw || rotationMarker < lastYaw)) { // CW overflow
+				} else if (diff > M_PI) { // CW overflow
 					mode = -1;
 				}
 			} else {
-				if (lastYaw < rotationMarker && yaw > rotationMarker) {
+				if (lastYaw < 0.0 && yaw > 0.0) {
 					mode = 1;
-				} else if (lastYaw > rotationMarker && yaw < rotationMarker) {
+				} else if (lastYaw > 0.0 && yaw < 0.0) {
 					mode = -1;
 				}
 			}
@@ -138,48 +133,19 @@ void StatisticsTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses
 				}
 			}
 			lastYaw = yaw;
+			rotationChanged = true;
 		}
 	} else {
 		lastYaw = -1;
 	}
 
-	if (parent->isDashboardVisible()) {
-		if (lastPosTimer == 0) {
-			widget->ui->StatsDistanceLabel->setText(QString::asprintf("%.1f m", hmdDistance));
+	if (rotationChanged) {
+		m_hmdRotation = (float)rotationCounter;
+		if (rotationDir > 0) {
+			m_hmdRotation += yaw / (2 * M_PI);
+		} else if (rotationDir < 0) {
+			m_hmdRotation += -1.0f + yaw / (2 * M_PI);
 		}
-		widget->ui->StatsLeftMaxSpeedLabel->setText(QString::asprintf("%.1f m/s", leftControllerMaxSpeed));
-		widget->ui->StatsRightMaxSpeedLabel->setText(QString::asprintf("%.1f m/s", rightControllerMaxSpeed));
-		float displayCounter = rotationCounter;
-		std::string dirStr;
-		if (rotationDir == 0) {
-			dirStr = "CCW";
-		} else if (rotationDir > 0) {
-			if (yaw > rotationMarker) {
-				displayCounter += (yaw - rotationMarker) / (2 * M_PI);
-			} else {
-				displayCounter += 1.0f + (yaw - rotationMarker) / (2 * M_PI);
-			}
-			dirStr = "CCW";
-		} else {
-			if (yaw > rotationMarker) {
-				displayCounter = -displayCounter + 1.0f - (yaw - rotationMarker) / (2 * M_PI);
-			} else {
-				displayCounter = -displayCounter - (yaw - rotationMarker) / (2 * M_PI);
-			}
-			dirStr = "CW";
-		}
-		widget->ui->StatsRotationLabel->setText(QString::asprintf("%.1f %s", displayCounter, dirStr.c_str()));
-		vr::Compositor_CumulativeStats pStats;
-		vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
-		if (pStats.m_nPid != compositorStatsPid) {
-			droppedFramesOffset = 0;
-			reprojectedFramesOffset = 0;
-			timedOutOffset = 0;
-			compositorStatsPid = pStats.m_nPid;
-		}
-		widget->ui->DroppedFramesLabel->setText(QString::asprintf("%i", pStats.m_nNumDroppedFrames - droppedFramesOffset));
-		widget->ui->ReprojectedFramesLabel->setText(QString::asprintf("%i", pStats.m_nNumReprojectedFrames - reprojectedFramesOffset));
-		widget->ui->TimedOutLabel->setText(QString::asprintf("%i", pStats.m_nNumTimedOut - timedOutOffset));
 	}
 	if (lastPosTimer == 0) {
 		lastPosTimer = 10;
@@ -188,42 +154,79 @@ void StatisticsTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses
 	}
 }
 
-void StatisticsTabController::StatsDistanceResetClicked() {
-	lastHmdPosValid = false;
-	hmdDistance = 0.0f;
-	widget->ui->StatsDistanceLabel->setText(QString::asprintf("%.1f m", hmdDistance));
+float StatisticsTabController::hmdDistanceMoved() const {
+	return m_hmdDistanceMoved;
 }
 
-void StatisticsTabController::StatsRotationResetClicked() {
+float StatisticsTabController::hmdRotations() const {
+	return m_hmdRotation;
+}
+
+float StatisticsTabController::rightControllerMaxSpeed() const {
+	return m_rightControllerMaxSpeed;
+}
+
+float StatisticsTabController::leftControllerMaxSpeed() const {
+	return m_leftControllerMaxSpeed;
+}
+
+unsigned StatisticsTabController::droppedFrames() const {
+	vr::Compositor_CumulativeStats pStats;
+	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
+	return pStats.m_nNumDroppedFrames - m_droppedFramesOffset;
+}
+
+unsigned StatisticsTabController::reprojectedFrames() const {
+	vr::Compositor_CumulativeStats pStats;
+	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
+	return pStats.m_nNumReprojectedFrames - m_reprojectedFramesOffset;
+}
+
+unsigned StatisticsTabController::timedOut() const {
+	vr::Compositor_CumulativeStats pStats;
+	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
+	return pStats.m_nNumTimedOut - m_timedOutOffset;
+}
+
+void StatisticsTabController::statsDistanceResetClicked() {
+	lastHmdPosValid = false;
+	if (m_hmdDistanceMoved != 0.0) {
+		m_hmdDistanceMoved = 0.0;
+	}
+}
+
+void StatisticsTabController::statsRotationResetClicked() {
 	rotationResetFlag = true;
 }
 
-void StatisticsTabController::StatsLeftControllerSpeedResetClicked() {
-	leftControllerMaxSpeed = 0;
-	widget->ui->StatsLeftMaxSpeedLabel->setText(QString::asprintf("%.1f m/s", leftControllerMaxSpeed));
+void StatisticsTabController::statsLeftControllerSpeedResetClicked() {
+	if (m_leftControllerMaxSpeed != 0.0) {
+		m_leftControllerMaxSpeed = 0.0;
+	}
 }
 
-void StatisticsTabController::StatsRightControllerSpeedResetClicked() {
-	rightControllerMaxSpeed = 0;
-	widget->ui->StatsRightMaxSpeedLabel->setText(QString::asprintf("%.1f m/s", rightControllerMaxSpeed));
+void StatisticsTabController::statsRightControllerSpeedResetClicked() {
+	if (m_rightControllerMaxSpeed != 0.0) {
+		m_rightControllerMaxSpeed = 0.0;
+	}
 }
 
-void StatisticsTabController::DroppedFramesResetClicked() {
+void StatisticsTabController::droppedFramesResetClicked() {
 	vr::Compositor_CumulativeStats pStats;
 	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
-	droppedFramesOffset = pStats.m_nNumDroppedFrames;
+	m_droppedFramesOffset = pStats.m_nNumDroppedFrames;
 }
 
-void StatisticsTabController::ReprojectedFramesResetClicked() {
+void StatisticsTabController::reprojectedFramesResetClicked() {
 	vr::Compositor_CumulativeStats pStats;
 	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
-	reprojectedFramesOffset = pStats.m_nNumReprojectedFrames;
+	m_reprojectedFramesOffset = pStats.m_nNumReprojectedFrames;
 }
 
-void StatisticsTabController::TimedOutResetClicked() {
+void StatisticsTabController::timedOutResetClicked() {
 	vr::Compositor_CumulativeStats pStats;
 	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
-	timedOutOffset = pStats.m_nNumTimedOut;
+	m_timedOutOffset = pStats.m_nNumTimedOut;
 }
 
 } // namespace advconfig

@@ -1,201 +1,145 @@
 #include "MoveCenterTabController.h"
+#include <QQuickWindow>
 #include "../overlaycontroller.h"
-#include "../overlaywidget.h"
-#include "ui_overlaywidget.h"
 
 // application namespace
 namespace advsettings {
 
-void MoveCenterTabController::init(OverlayController * parent, OverlayWidget * widget) {
+void MoveCenterTabController::initStage1() {
+	setTrackingUniverse(vr::VRCompositor()->GetTrackingSpace());
+}
+
+void MoveCenterTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
 	this->parent = parent;
 	this->widget = widget;
-	trackingUniverse = vr::VRCompositor()->GetTrackingSpace();
-	xOffset = 0.0f;
-	yOffset = 0.0f;
-	zOffset = 0.0f;
-	widget->ui->MoveCenterStandingSwitch->setChecked(true);
-	widget->ui->MoveCenterStandingSwitch->setEnabled(false);
-	widget->ui->MoveCenterSeatedSwitch->setChecked(false);
-	widget->ui->MoveCenterSeatedSwitch->setEnabled(true);
-	connect(widget->ui->XMinusButton, SIGNAL(clicked()), this, SLOT(XMinusClicked()));
-	connect(widget->ui->XPlusButton, SIGNAL(clicked()), this, SLOT(XPlusClicked()));
-	connect(widget->ui->YMinusButton, SIGNAL(clicked()), this, SLOT(YMinusClicked()));
-	connect(widget->ui->YPlusButton, SIGNAL(clicked()), this, SLOT(YPlusClicked()));
-	connect(widget->ui->ZMinusButton, SIGNAL(clicked()), this, SLOT(ZMinusClicked()));
-	connect(widget->ui->ZPlusButton, SIGNAL(clicked()), this, SLOT(ZPlusClicked()));
-	connect(widget->ui->RotateCenterSlider, SIGNAL(valueChanged(int)), this, SLOT(RotateSliderChanged(int)));
-	connect(widget->ui->RotateCenterButton, SIGNAL(clicked()), this, SLOT(RotateApplyClicked()));
-	connect(widget->ui->MoveCenterResetButton, SIGNAL(clicked()), this, SLOT(MoveCenterResetClicked()));
-	/*connect(widget->ui->MoveCenterStandingSwitch, SIGNAL(toggled(bool)), this, SLOT(StandingToggled(bool)));
-	connect(widget->ui->MoveCenterSeatedSwitch, SIGNAL(toggled(bool)), this, SLOT(SeatedToggled(bool)));*/
 }
 
-void MoveCenterTabController::UpdateTab() {
-	if (widget) {
-		widget->ui->XOffsetLabel->setText(QString::asprintf("%.1f", xOffset));
-		widget->ui->YOffsetLabel->setText(QString::asprintf("%.1f", yOffset));
-		widget->ui->ZOffsetLabel->setText(QString::asprintf("%.1f", zOffset));
-		widget->ui->MoveCenterStandingSwitch->blockSignals(true);
-		widget->ui->MoveCenterSeatedSwitch->blockSignals(true);
-		widget->ui->RotateCenterSlider->blockSignals(true);
-		if (trackingUniverse == vr::TrackingUniverseStanding) {
-			widget->ui->MoveCenterStandingSwitch->setChecked(true);
-			widget->ui->MoveCenterSeatedSwitch->setChecked(false);
-			widget->ui->MoveCenterStandingSwitch->setEnabled(false);
-			widget->ui->MoveCenterSeatedSwitch->setEnabled(false);
-			widget->ui->RotateCenterButton->setEnabled(true);
-			widget->ui->RotateCenterSlider->setEnabled(true);
-			widget->ui->RotateCenterLabel->setText(QString::asprintf("%i", rotation));
-		} else {
-			widget->ui->MoveCenterStandingSwitch->setChecked(false);
-			widget->ui->MoveCenterSeatedSwitch->setChecked(true);
-			widget->ui->MoveCenterStandingSwitch->setEnabled(false);
-			widget->ui->MoveCenterSeatedSwitch->setEnabled(false);
-			widget->ui->RotateCenterButton->setEnabled(false);
-			widget->ui->RotateCenterSlider->setEnabled(false);
-			widget->ui->RotateCenterLabel->setText("-");
+
+int MoveCenterTabController::trackingUniverse() const {
+	return (int)m_trackingUniverse;
+}
+
+void MoveCenterTabController::setTrackingUniverse(int value, bool notify) {
+	if (m_trackingUniverse != value) {
+		reset();
+		m_trackingUniverse = value;
+		if (notify) {
+			emit trackingUniverseChanged(m_trackingUniverse);
 		}
-		widget->ui->RotateCenterSlider->setValue(rotation);
-		widget->ui->MoveCenterStandingSwitch->blockSignals(false);
-		widget->ui->MoveCenterSeatedSwitch->blockSignals(false);
-		widget->ui->RotateCenterSlider->blockSignals(false);
 	}
 }
 
-void MoveCenterTabController::XMinusClicked() {
-	if (widget) {
-		if (rotation == 0) {
-			parent->AddOffsetToUniverseCenter(trackingUniverse, 0, -0.5f);
-		} else {
-			auto angle = rotation * 2 * M_PI / 360.0;
-			vr::VRChaperoneSetup()->RevertWorkingCopy();
-			parent->AddOffsetToUniverseCenter(trackingUniverse, 0, -0.5f * std::cos(angle), true, false);
-			parent->AddOffsetToUniverseCenter(trackingUniverse, 2, -0.5f * std::sin(angle), true, false);
-			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
+float MoveCenterTabController::offsetX() const {
+	return m_offsetX;
+}
+
+void MoveCenterTabController::setOffsetX(float value, bool notify) {
+	if (m_offsetX != value) {
+		m_offsetX = value;
+		if (notify) {
+			emit offsetXChanged(m_offsetX);
 		}
-		xOffset -= 0.5f;
-		widget->ui->XOffsetLabel->setText(QString::asprintf("%.1f", xOffset));
 	}
 }
 
-void MoveCenterTabController::XPlusClicked() {
-	if (widget) {
-		if (rotation == 0) {
-			parent->AddOffsetToUniverseCenter(trackingUniverse, 0, 0.5f);
-		} else {
-			auto angle = rotation * 2 * M_PI / 360.0;
-			vr::VRChaperoneSetup()->RevertWorkingCopy();
-			parent->AddOffsetToUniverseCenter(trackingUniverse, 0, 0.5f * std::cos(angle), true, false);
-			parent->AddOffsetToUniverseCenter(trackingUniverse, 2, 0.5f * std::sin(angle), true, false);
-			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
+float MoveCenterTabController::offsetY() const {
+	return m_offsetY;
+}
+
+void MoveCenterTabController::setOffsetY(float value, bool notify) {
+	if (m_offsetY != value) {
+		m_offsetY = value;
+		if (notify) {
+			emit offsetYChanged(m_offsetY);
 		}
-		xOffset += 0.5f;
-		widget->ui->XOffsetLabel->setText(QString::asprintf("%.1f", xOffset));
 	}
 }
 
-void MoveCenterTabController::YMinusClicked() {
-	if (widget) {
-		parent->AddOffsetToUniverseCenter(trackingUniverse, 1, -0.5f);
-		yOffset -= 0.5f;
-		widget->ui->YOffsetLabel->setText(QString::asprintf("%.1f", yOffset));
-	}
+float MoveCenterTabController::offsetZ() const {
+	return m_offsetZ;
 }
 
-void MoveCenterTabController::YPlusClicked() {
-	if (widget) {
-		parent->AddOffsetToUniverseCenter(trackingUniverse, 1, 0.5f);
-		yOffset += 0.5f;
-		widget->ui->YOffsetLabel->setText(QString::asprintf("%.1f", yOffset));
-	}
-}
-
-void MoveCenterTabController::ZMinusClicked() {
-	if (widget) {
-		if (rotation == 0) {
-			parent->AddOffsetToUniverseCenter(trackingUniverse, 2, -0.5f);
-		} else {
-			auto angle = rotation * 2 * M_PI / 360.0;
-			vr::VRChaperoneSetup()->RevertWorkingCopy();
-			parent->AddOffsetToUniverseCenter(trackingUniverse, 2, -0.5f * std::cos(angle), true, false);
-			parent->AddOffsetToUniverseCenter(trackingUniverse, 0, 0.5f * std::sin(angle), true, false);
-			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
+void MoveCenterTabController::setOffsetZ(float value, bool notify) {
+	if (m_offsetZ != value) {
+		m_offsetZ = value;
+		if (notify) {
+			emit offsetZChanged(m_offsetZ);
 		}
-		zOffset -= 0.5f;
-		widget->ui->ZOffsetLabel->setText(QString::asprintf("%.1f", zOffset));
 	}
 }
 
-void MoveCenterTabController::ZPlusClicked() {
-	if (widget) {
-		if (rotation == 0) {
-			parent->AddOffsetToUniverseCenter(trackingUniverse, 2, 0.5f);
-		} else {
-			auto angle = rotation * 2 * M_PI / 360.0;
-			vr::VRChaperoneSetup()->RevertWorkingCopy();
-			parent->AddOffsetToUniverseCenter(trackingUniverse, 2, 0.5f * std::cos(angle), true, false);
-			parent->AddOffsetToUniverseCenter(trackingUniverse, 0, -0.5f * std::sin(angle), true, false);
-			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
+int MoveCenterTabController::rotation() const {
+	return m_rotation;
+}
+
+void MoveCenterTabController::setRotation(int value, bool notify) {
+	if (m_rotation != value) {
+		float angle = (value - m_rotation) * 2 * M_PI / 360.0;
+		parent->RotateUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, angle);
+		m_rotation = value;
+		if (notify) {
+			emit rotationChanged(m_rotation);
 		}
-		zOffset += 0.5f;
-		widget->ui->ZOffsetLabel->setText(QString::asprintf("%.1f", zOffset));
 	}
 }
 
-void MoveCenterTabController::RotateApplyClicked() {
-	int value = widget->ui->RotateCenterSlider->value();
-	float angle = (value - rotation) * 2 * M_PI / 360.0;
-	parent->RotateUniverseCenter(trackingUniverse, angle);
-	rotation = value;
-}
-
-void MoveCenterTabController::RotateSliderChanged(int value) {
-	widget->ui->RotateCenterLabel->setText(QString::asprintf("%i", value));
-}
-
-void MoveCenterTabController::MoveCenterResetClicked() {
-	if (widget) {
+void MoveCenterTabController::modOffsetX(float value) {
+	if (m_rotation == 0) {
+		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, value);
+	} else {
+		auto angle = m_rotation * 2 * M_PI / 360.0;
 		vr::VRChaperoneSetup()->RevertWorkingCopy();
-		parent->RotateUniverseCenter(trackingUniverse, -rotation * 2 * M_PI / 360.0);
-		parent->AddOffsetToUniverseCenter(trackingUniverse, 0, -xOffset, true, false);
-		parent->AddOffsetToUniverseCenter(trackingUniverse, 1, -yOffset, true, false);
-		parent->AddOffsetToUniverseCenter(trackingUniverse, 2, -zOffset, true, false);
+		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, value * std::cos(angle), true, false);
+		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 2, value * std::sin(angle), true, false);
 		vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
-		xOffset = 0.0f;
-		yOffset = 0.0f;
-		zOffset = 0.0f;
-		rotation = 0;
-		widget->ui->XOffsetLabel->setText(QString::asprintf("%.1f", xOffset));
-		widget->ui->YOffsetLabel->setText(QString::asprintf("%.1f", yOffset));
-		widget->ui->ZOffsetLabel->setText(QString::asprintf("%.1f", zOffset));
-		widget->ui->RotateCenterSlider->setValue(rotation);
-		if (trackingUniverse == vr::TrackingUniverseStanding) {
-			widget->ui->RotateCenterLabel->setText(QString::asprintf("%i", rotation));
-		} else {
-			widget->ui->RotateCenterLabel->setText("-");
-		}
 	}
+	m_offsetX += value;
+	emit offsetXChanged(m_offsetX);
 }
 
-void MoveCenterTabController::StandingToggled(bool) {
-	MoveCenterResetClicked();
-	trackingUniverse = vr::TrackingUniverseStanding;
-	UpdateTab();
+void MoveCenterTabController::modOffsetY(float value) {
+	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 1, value);
+	m_offsetY += value;
+	emit offsetYChanged(m_offsetY);
 }
 
-void MoveCenterTabController::SeatedToggled(bool) {
-	MoveCenterResetClicked();
-	trackingUniverse = vr::TrackingUniverseSeated;
-	UpdateTab();
+void MoveCenterTabController::modOffsetZ(float value) {
+	if (m_rotation == 0) {
+		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 2, value);
+	} else {
+		auto angle = m_rotation * 2 * M_PI / 360.0;
+		vr::VRChaperoneSetup()->RevertWorkingCopy();
+		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 2, value * std::cos(angle), true, false);
+		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, -value * std::sin(angle), true, false);
+		vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
+	}
+	m_offsetZ += value;
+	emit offsetZChanged(m_offsetZ);
+}
+
+void MoveCenterTabController::reset() {
+	vr::VRChaperoneSetup()->RevertWorkingCopy();
+	parent->RotateUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, -m_rotation * 2 * M_PI / 360.0);
+	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, -m_offsetX, true, false);
+	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 1, -m_offsetY, true, false);
+	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 2, -m_offsetZ, true, false);
+	vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
+	m_offsetX = 0.0f;
+	m_offsetY = 0.0f;
+	m_offsetZ = 0.0f;
+	m_rotation = 0;
+	emit offsetXChanged(m_offsetX);
+	emit offsetYChanged(m_offsetY);
+	emit offsetZChanged(m_offsetZ);
+	emit rotationChanged(m_rotation);
 }
 
 void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe) {
-	if (trackingUniverse != universe) {
-		if (universe == vr::TrackingUniverseStanding) {
-			StandingToggled(true);
-		} else if (universe == vr::TrackingUniverseSeated) {
-			SeatedToggled(true);
-		}
+	if (settingsUpdateCounter >= 50) {
+		setTrackingUniverse((int)universe);
+		settingsUpdateCounter = 0;
+	} else {
+		settingsUpdateCounter++;
 	}
 }
 

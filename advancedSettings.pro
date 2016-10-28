@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui qml quick
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,26 +13,27 @@ TEMPLATE = app
 
 
 SOURCES += src/main.cpp\
-        src/overlaywidget.cpp \
 		src/overlaycontroller.cpp \
+		src/tabcontrollers/AudioTabController.cpp \
 		src/tabcontrollers/ChaperoneTabController.cpp \
 		src/tabcontrollers/FixFloorTabController.cpp \
 		src/tabcontrollers/MoveCenterTabController.cpp \
 		src/tabcontrollers/SettingsTabController.cpp \
 		src/tabcontrollers/StatisticsTabController.cpp \
-		src/tabcontrollers/SteamVRTabController.cpp
+		src/tabcontrollers/SteamVRTabController.cpp \
+		src/tabcontrollers/audiomanager/AudioManagerWindows.cpp
 
-HEADERS  += src/overlaywidget.h \
-		src/overlaycontroller.h \
+HEADERS  += src/overlaycontroller.h \
 		src/logging.h \
+		src/tabcontrollers/AudioTabController.h \
 		src/tabcontrollers/ChaperoneTabController.h \
 		src/tabcontrollers/FixFloorTabController.h \
 		src/tabcontrollers/MoveCenterTabController.h \
 		src/tabcontrollers/SettingsTabController.h \
 		src/tabcontrollers/StatisticsTabController.h \
-		src/tabcontrollers/SteamVRTabController.h
-
-FORMS    += ui/overlaywidget.ui
+		src/tabcontrollers/SteamVRTabController.h \
+		src/tabcontrollers/AudioManager.h \
+		src/tabcontrollers/audiomanager/AudioManagerWindows.h
 
 INCLUDEPATH += third-party/openvr/include \
 			third-party/easylogging++

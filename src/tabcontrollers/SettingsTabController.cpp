@@ -1,37 +1,44 @@
 #include "SettingsTabController.h"
+#include <QQuickWindow>
 #include "../overlaycontroller.h"
-#include "../overlaywidget.h"
-#include "ui_overlaywidget.h"
 
 // application namespace
 namespace advsettings {
 
 
-void SettingsTabController::init(OverlayController * parent, OverlayWidget * widget) {
+void SettingsTabController::initStage1() {
+	m_autoStartEnabled = vr::VRApplications()->GetApplicationAutoLaunch(OverlayController::applicationKey);
+}
+
+void SettingsTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
 	this->parent = parent;
 	this->widget = widget;
-	connect(widget->ui->AutoStartToggle, SIGNAL(toggled(bool)), this, SLOT(AutoStartToggled(bool)));
 }
 
-void SettingsTabController::UpdateTab() {
-	if (widget) {
-		widget->ui->AutoStartToggle->blockSignals(true);
-		if (vr::VRApplications()->GetApplicationAutoLaunch(OverlayController::applicationKey)) {
-			widget->ui->AutoStartToggle->setChecked(true);
-		} else {
-			widget->ui->AutoStartToggle->setChecked(false);
+void SettingsTabController::eventLoopTick() {
+	if (settingsUpdateCounter >= 50) {
+		setAutoStartEnabled(vr::VRApplications()->GetApplicationAutoLaunch(OverlayController::applicationKey));
+		settingsUpdateCounter = 0;
+	} else {
+		settingsUpdateCounter++;
+	}
+}
+
+bool SettingsTabController::autoStartEnabled() const {
+	return m_autoStartEnabled;
+}
+
+void SettingsTabController::setAutoStartEnabled(bool value, bool notify) {
+	if (m_autoStartEnabled != value) {
+		m_autoStartEnabled = value;
+		auto apperror = vr::VRApplications()->SetApplicationAutoLaunch(OverlayController::applicationKey, m_autoStartEnabled);
+		if (apperror != vr::VRApplicationError_None) {
+			LOG(ERROR) << "Could not set auto start: " << vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror);
 		}
-		widget->ui->AutoStartToggle->blockSignals(false);
+		if (notify) {
+			emit autoStartEnabledChanged(m_autoStartEnabled);
+		}
 	}
 }
-
-void SettingsTabController::AutoStartToggled(bool value) {
-	LOG(INFO) << "Setting auto start: " << value;
-	auto apperror = vr::VRApplications()->SetApplicationAutoLaunch(OverlayController::applicationKey, value);
-	if (apperror != vr::VRApplicationError_None) {
-		LOG(ERROR) << "Could not set auto start: " << vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror);
-	}
-}
-
 
 } // namespace advconfig

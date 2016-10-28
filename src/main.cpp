@@ -1,6 +1,10 @@
-#include "overlaywidget.h"
 #include "overlaycontroller.h"
 #include <QApplication>
+#include <QQmlApplicationEngine>
+#include <QQuickView>
+#include <QQmlEngine>
+#include <QQmlComponent>
+#include <QSettings>
 #include <iostream>
 #include "logging.h"
 
@@ -19,6 +23,25 @@ const char* logConfigDefault =
 
 INITIALIZE_EASYLOGGINGPP
 
+void myQtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
+	QByteArray localMsg = msg.toLocal8Bit();
+	switch (type) {
+		case QtDebugMsg:
+		case QtInfoMsg:
+			LOG(INFO) << localMsg.constData() << "(" << context.file << ":" << context.line << ")";
+			break;
+		case QtWarningMsg:
+			LOG(WARNING) << localMsg.constData() << "(" << context.file << ":" << context.line << ")";
+			break;
+		case QtCriticalMsg:
+			LOG(ERROR) << localMsg.constData() << "(" << context.file << ":" << context.line << ")";
+			break;
+		case QtFatalMsg:
+			LOG(FATAL) << localMsg.constData() << "(" << context.file << ":" << context.line << ")";
+			break;
+	}
+}
+
 
 int main(int argc, char *argv[]) {
 	// Configure logger
@@ -36,11 +59,24 @@ int main(int argc, char *argv[]) {
 	LOG(INFO) << "Starting Application.";
 	try {
 		QApplication a(argc, argv);
-		advsettings::OverlayWidget *pOverlayWidget = new advsettings::OverlayWidget;
-		advsettings::OverlayController* controller = new advsettings::OverlayController();
+		qInstallMessageHandler(myQtMessageHandler);
 
-		controller->Init();
-		controller->SetWidget(pOverlayWidget, advsettings::OverlayController::applicationName, advsettings::OverlayController::applicationKey);
+		QSettings appSettings(QSettings::IniFormat, QSettings::UserScope, "matzman666", "OpenVRAdvancedSettings");
+		advsettings::OverlayController::setAppSettings(&appSettings);
+		LOG(INFO) << "Settings File: " << appSettings.fileName().toStdString();
+
+		QQmlEngine qmlEngine;
+
+		advsettings::OverlayController* controller = advsettings::OverlayController::getInstance();
+		controller->Init(&qmlEngine);
+
+		QQmlComponent component(&qmlEngine, QUrl::fromLocalFile("res/qml/mainwidget.qml"));
+		auto errors = component.errors();
+		for (auto& e : errors) {
+			LOG(ERROR) << "QML Error: " << e.toString().toStdString() << std::endl;
+		}
+		auto quickObj = component.create();
+		controller->SetWidget(qobject_cast<QQuickItem*>(quickObj), advsettings::OverlayController::applicationName, advsettings::OverlayController::applicationKey);
 
 		std::string manifestPath = QApplication::applicationDirPath().toStdString() + "\\advancedsettings.vrmanifest";
 		if (QFile::exists(QString::fromStdString(manifestPath))) {
@@ -60,6 +96,13 @@ int main(int argc, char *argv[]) {
 		} else {
 			LOG(ERROR) << "Could not find application manifest: " << manifestPath;
 		}
+
+#ifdef DEBUG_DESKTOP_WINDOW
+		auto m_pWindow = new QQuickWindow();
+		qobject_cast<QQuickItem*>(quickObj)->setParentItem(m_pWindow->contentItem());
+		m_pWindow->setGeometry(0, 0, qobject_cast<QQuickItem*>(quickObj)->width(), qobject_cast<QQuickItem*>(quickObj)->height());
+		m_pWindow->show();
+#endif
 
 		return a.exec();
 

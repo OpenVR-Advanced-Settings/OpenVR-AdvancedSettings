@@ -1,68 +1,151 @@
 #include "SteamVRTabController.h"
+#include <QQuickWindow>
 #include "../overlaycontroller.h"
-#include "../overlaywidget.h"
-#include "ui_overlaywidget.h"
 
 // application namespace
 namespace advsettings {
 
-void SteamVRTabController::init(OverlayController * parent, OverlayWidget * widget) {
-	this->parent = parent;
-	this->widget = widget;
-	connect(widget->ui->SupersamplingSlider, SIGNAL(valueChanged(int)), this, SLOT(SupersamplingChanged(int)));
-	connect(widget->ui->ReprojectionToggle, SIGNAL(toggled(bool)), this, SLOT(ReprojectionToggled(bool)));
-	connect(widget->ui->ForceReprojectionToggle, SIGNAL(toggled(bool)), this, SLOT(ForceReprojectionToggled(bool)));
-	connect(widget->ui->SteamVRResetButton, SIGNAL(clicked()), this, SLOT(ResetClicked()));
-	connect(widget->ui->SteamVRRestartButton, SIGNAL(clicked()), this, SLOT(RestartClicked()));
+
+void SteamVRTabController::initStage1() {
+	eventLoopTick();
 }
 
-void SteamVRTabController::UpdateTab() {
-	if (widget) {
-		widget->ui->SupersamplingSlider->blockSignals(true);
-		widget->ui->ReprojectionToggle->blockSignals(true);
-		widget->ui->ForceReprojectionToggle->blockSignals(true);
-		widget->ui->SteamVRResetButton->blockSignals(true);
-		widget->ui->SteamVRRestartButton->blockSignals(true);
 
-		auto ss = vr::VRSettings()->GetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, 1.0);
-		widget->ui->SupersamplingSlider->setValue(ss * 10);
-		widget->ui->SupersamplingLabel->setText(QString::asprintf("%.1f", ss));
-		widget->ui->ReprojectionToggle->setChecked(vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_AllowReprojection_Bool, true));
-		widget->ui->ForceReprojectionToggle->setChecked(vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_ForceReprojection_Bool, false));
+void SteamVRTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
+	this->parent = parent;
+	this->widget = widget;
+}
 
-		widget->ui->SupersamplingSlider->blockSignals(false);
-		widget->ui->ReprojectionToggle->blockSignals(false);
-		widget->ui->ForceReprojectionToggle->blockSignals(false);
-		widget->ui->SteamVRResetButton->blockSignals(false);
-		widget->ui->SteamVRRestartButton->blockSignals(false);
+
+void SteamVRTabController::eventLoopTick() {
+	if (settingsUpdateCounter >= 50) {
+		vr::EVRSettingsError vrSettingsError;
+		auto ss = vr::VRSettings()->GetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not read \"" << vr::k_pch_SteamVR_RenderTargetMultiplier_Float << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+			setSuperSampling(1.0);
+		} else {
+			setSuperSampling(ss);
+		}
+		auto css = vr::VRSettings()->GetFloat(vrsettings_compositor_category, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			if (vrSettingsError != vr::VRSettingsError_UnsetSettingHasNoDefault) { // does not appear in the default settings file as of beta 1477423729
+				LOG(WARNING) << "Could not read \"compositor::" << vr::k_pch_SteamVR_RenderTargetMultiplier_Float << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+			}
+			setCompositorSuperSampling(1.0);
+		} else {
+			setCompositorSuperSampling(css);
+		}
+		auto air = vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowInterleavedReprojection, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not read \"" << vrsettings_steamvr_allowInterleavedReprojection << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+		setAllowInterleavedReprojection(air);
+		auto aar = vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowAsyncReprojection, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not read \"" << vrsettings_steamvr_allowAsyncReprojection << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+		setAllowAsyncReprojection(aar);
+		auto fr = vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_ForceReprojection_Bool, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not read \"" << vr::k_pch_SteamVR_ForceReprojection_Bool << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+		setForceReprojection(fr);
+		settingsUpdateCounter = 0;
+	} else {
+		settingsUpdateCounter++;
 	}
 }
 
-void SteamVRTabController::SupersamplingChanged(int value) {
-	float fval = (float)value / 10.0f;
-	widget->ui->SupersamplingLabel->setText(QString::asprintf("%.1f", fval));
-	vr::VRSettings()->SetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, fval);
-	vr::VRSettings()->Sync();
+
+void SteamVRTabController::setSuperSampling(float value, bool notify) {
+	if (m_superSampling != value) {
+		m_superSampling = value;
+		vr::VRSettings()->SetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, m_superSampling);
+		vr::VRSettings()->Sync();
+		if (notify) {
+			emit superSamplingChanged(m_superSampling);
+		}
+	}
 }
 
-void SteamVRTabController::ReprojectionToggled(bool value) {
-	vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_AllowReprojection_Bool, value);
-	vr::VRSettings()->Sync();
+
+void SteamVRTabController::setCompositorSuperSampling(float value, bool notify) {
+	if (m_compositorSuperSampling != value) {
+		m_compositorSuperSampling = value;
+		vr::VRSettings()->SetFloat(vrsettings_compositor_category, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, m_compositorSuperSampling);
+		vr::VRSettings()->Sync();
+		if (notify) {
+			emit compositorSuperSamplingChanged(m_compositorSuperSampling);
+		}
+	}
 }
 
-void SteamVRTabController::ForceReprojectionToggled(bool value) {
-	vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_ForceReprojection_Bool, value);
-	vr::VRSettings()->Sync();
+
+float SteamVRTabController::superSampling() const {
+	return m_superSampling;
 }
 
-void SteamVRTabController::ResetClicked() {
-	widget->ui->SupersamplingSlider->setValue(10);
-	widget->ui->ReprojectionToggle->setChecked(true);
-	widget->ui->ForceReprojectionToggle->setChecked(false);
+
+float SteamVRTabController::compositorSuperSampling() const {
+	return m_compositorSuperSampling;
 }
 
-void SteamVRTabController::RestartClicked() {
+
+bool SteamVRTabController::allowInterleavedReprojection() const {
+	return m_allowInterleavedReprojection;
+}
+
+
+bool SteamVRTabController::allowAsyncReprojection() const {
+	return m_allowAsyncReprojection;
+}
+
+
+void SteamVRTabController::setAllowInterleavedReprojection(bool value, bool notify) {
+	if (m_allowInterleavedReprojection != value) {
+		m_allowInterleavedReprojection = value;
+		vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowInterleavedReprojection, m_allowInterleavedReprojection);
+		vr::VRSettings()->Sync();
+		if (notify) {
+			emit allowInterleavedReprojectionChanged(m_allowInterleavedReprojection);
+		}
+	}
+}
+
+
+void SteamVRTabController::setAllowAsyncReprojection(bool value, bool notify) {
+	if (m_allowAsyncReprojection != value) {
+		m_allowAsyncReprojection = value;
+		vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowAsyncReprojection, m_allowAsyncReprojection);
+		vr::VRSettings()->Sync();
+		if (notify) {
+			emit allowAsyncReprojectionChanged(m_allowAsyncReprojection);
+		}
+	}
+}
+
+bool SteamVRTabController::forceReprojection() const {
+	return m_forceReprojection;
+}
+
+
+void SteamVRTabController::setForceReprojection(bool value, bool notify) {
+	if (m_forceReprojection != value) {
+		m_forceReprojection = value;
+		vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_ForceReprojection_Bool, m_forceReprojection);
+		vr::VRSettings()->Sync();
+		if (notify) {
+			emit forceReprojectionChanged(m_forceReprojection);
+		}
+	}
+}
+
+
+void SteamVRTabController::restartSteamVR() {
 	QProcess::startDetached("cmd.exe /C restartvrserver.bat");
 }
 
+
 } // namespace advconfig
+

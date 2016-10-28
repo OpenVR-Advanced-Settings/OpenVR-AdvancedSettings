@@ -1,32 +1,17 @@
 #include "FixFloorTabController.h"
+#include <QQuickWindow>
 #include "../overlaycontroller.h"
-#include "../overlaywidget.h"
-#include "ui_overlaywidget.h"
 
 // application namespace
 namespace advsettings {
 
 
-void FixFloorTabController::init(OverlayController * parent, OverlayWidget * widget) {
-	this->parent = parent;
-	this->widget = widget;
-	connect(widget->ui->FixFloorButton, SIGNAL(clicked()), this, SLOT(FixFloorClicked()));
-	connect(widget->ui->UndoFixFloorButton, SIGNAL(clicked()), this, SLOT(UndoFixFloorClicked()));
+void FixFloorTabController::initStage1() {
 }
 
-void FixFloorTabController::UpdateTab() {
-	if (widget) {
-		if (state == 1) {
-			widget->ui->FixFloorButton->setEnabled(false);
-		} else {
-			widget->ui->FixFloorButton->setEnabled(true);
-		}
-		if (floorOffset != 0.0f) {
-			widget->ui->UndoFixFloorButton->setEnabled(true);
-		} else {
-			widget->ui->UndoFixFloorButton->setEnabled(false);
-		}
-	}
+void FixFloorTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
+	this->parent = parent;
+	this->widget = widget;
 }
 
 void FixFloorTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) {
@@ -35,34 +20,38 @@ void FixFloorTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) 
 			// Get Controller ids for left/right hand
 			auto leftId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand);
 			if (leftId == vr::k_unTrackedDeviceIndexInvalid) {
-				widget->ui->FixFloorStatusLabel->setText("No left controller found.");
-				statusMessageTimeout = 100;
-				state = 2;
-				UpdateTab();
+				statusMessage = "No left controller found.";
+				statusMessageTimeout = 2.0;
+				emit statusMessageSignal();
+				emit measureEndSignal();
+				state = 0;
 				return;
 			}
 			auto rightId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_RightHand);
 			if (rightId == vr::k_unTrackedDeviceIndexInvalid) {
-				widget->ui->FixFloorStatusLabel->setText("No right controller found.");
-				statusMessageTimeout = 100;
-				state = 2;
-				UpdateTab();
+				statusMessage = "No right controller found.";
+				statusMessageTimeout = 2.0;
+				emit statusMessageSignal();
+				emit measureEndSignal();
+				state = 0;
 				return;
 			}
 			// Get poses
 			vr::TrackedDevicePose_t* leftPose = devicePoses + leftId;
 			vr::TrackedDevicePose_t* rightPose = devicePoses + rightId;
 			if (!leftPose->bPoseIsValid || !leftPose->bDeviceIsConnected || leftPose->eTrackingResult != vr::TrackingResult_Running_OK) {
-				widget->ui->FixFloorStatusLabel->setText("Left controller tracking problems.");
-				statusMessageTimeout = 100;
-				state = 2;
-				UpdateTab();
+				statusMessage = "Left controller tracking problems.";
+				statusMessageTimeout = 2.0;
+				emit statusMessageSignal();
+				emit measureEndSignal();
+				state = 0;
 				return;
 			} else if (!rightPose->bPoseIsValid || !rightPose->bDeviceIsConnected || rightPose->eTrackingResult != vr::TrackingResult_Running_OK) {
-				widget->ui->FixFloorStatusLabel->setText("Right controller tracking problems.");
-				statusMessageTimeout = 100;
-				state = 2;
-				UpdateTab();
+				statusMessage = "Right controller tracking problems.";
+				statusMessageTimeout = 2.0;
+				emit statusMessageSignal();
+				emit measureEndSignal();
+				state = 0;
 				return;
 			} else {
 				// The controller with the lowest y-pos is the floor fix reference
@@ -79,45 +68,57 @@ void FixFloorTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) 
 			floorOffset = -controllerUpOffsetCorrection + (float)(tempOffset / (double)measurementCount);
 			LOG(INFO) << "Fix Floor: Floor Offset = " << floorOffset;
 			parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, floorOffset);
-			widget->ui->FixFloorStatusLabel->setText("Fixing ... OK");
-			statusMessageTimeout = 50;
-			state = 2;
-			UpdateTab();
+			statusMessage = "Fixing ... OK";
+			statusMessageTimeout = 1.0;
+			emit statusMessageSignal();
+			emit measureEndSignal();
+			setCanUndo(true);
+			state = 0;
 		} else {
 			tempOffset += (double)devicePoses[referenceController].mDeviceToAbsoluteTracking.m[1][3];
 			measurementCount++;
 		}
-	} else if (state == 2) {
-		if (statusMessageTimeout == 0) {
-			if (widget) {
-				widget->ui->FixFloorStatusLabel->setText("");
-			}
-			state = 0;
-			UpdateTab();
-		} else {
-			statusMessageTimeout--;
+	}
+}
+
+QString FixFloorTabController::currentStatusMessage() {
+	return statusMessage;
+}
+
+float FixFloorTabController::currentStatusMessageTimeout() {
+	return statusMessageTimeout;
+}
+
+bool FixFloorTabController::canUndo() const {
+	return m_canUndo;
+}
+
+void FixFloorTabController::setCanUndo(bool value, bool notify) {
+	if (m_canUndo != value) {
+		m_canUndo = value;
+		if (notify) {
+			emit canUndoChanged(m_canUndo);
 		}
 	}
 }
 
-void FixFloorTabController::FixFloorClicked() {
-	if (widget) {
-		widget->ui->FixFloorStatusLabel->setText("Fixing ...");
-		widget->ui->FixFloorButton->setEnabled(false);
-		widget->ui->UndoFixFloorButton->setEnabled(false);
-		measurementCount = 0;
-		state = 1;
-	}
+void FixFloorTabController::fixFloorClicked() {
+	statusMessage = "Fixing ...";
+	statusMessageTimeout = 1.0;
+	emit statusMessageSignal();
+	emit measureStartSignal();
+	measurementCount = 0;
+	state = 1;
 }
 
-void FixFloorTabController::UndoFixFloorClicked() {
+void FixFloorTabController::undoFixFloorClicked() {
 	parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, -floorOffset);
 	LOG(INFO) << "Fix Floor: Undo Floor Offset = " << -floorOffset;
 	floorOffset = 0.0f;
-	widget->ui->FixFloorStatusLabel->setText("Undo ... OK");
-	statusMessageTimeout = 100;
-	state = 2;
-	UpdateTab();
+	statusMessage = "Undo ... OK";
+	statusMessageTimeout = 1.0;
+	emit statusMessageSignal();
+	setCanUndo(false);
 }
 
 } // namespace advconfig
