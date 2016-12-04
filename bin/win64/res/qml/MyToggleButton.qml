@@ -8,18 +8,20 @@ CheckBox {
 	spacing: 12
 
 	indicator: Rectangle {
-		implicitWidth: 26
-		implicitHeight: 26
+		implicitWidth: 28
+		implicitHeight: 28
 		x: parent.leftPadding
 		y: parent.height / 2 - height / 2
-		radius: 3
-		Rectangle {
-			width: 18
-			height: 18
-			x: 4
-			y: 4
-			radius: 2
-			color: "#1b2939"
+		color: parent.enabled ? (parent.down ? "#e0e0e0" : "#ffffff") : "#a0a0a0"
+		border.width: 0
+		Image {
+			width: 38
+			height: 38
+			x: (parent.width - width) / 2
+			y: (parent.height - height) / 2
+			source: "image://default/check/#2c435d"
+			sourceSize.width: width
+			sourceSize.height: height
 			visible: parent.parent.checked
 		}
 	}
