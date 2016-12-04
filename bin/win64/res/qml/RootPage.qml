@@ -27,7 +27,7 @@ MyStackViewPage {
                        text: "SteamVR"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.focusChangedSound.play()
+                           MyResources.playFocusChangedSound()
                            mainView.push(steamVRPage)
                        }
                    }
@@ -38,7 +38,7 @@ MyStackViewPage {
                        text: "Chaperone"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.focusChangedSound.play()
+                           MyResources.playFocusChangedSound()
                            mainView.push(chaperonePage)
                        }
                    }
@@ -49,7 +49,7 @@ MyStackViewPage {
                        text: "Play Space"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.focusChangedSound.play()
+                           MyResources.playFocusChangedSound()
                            mainView.push(playspacePage)
                        }
                    }
@@ -60,7 +60,7 @@ MyStackViewPage {
                        text: "Floor Fix"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.focusChangedSound.play()
+                           MyResources.playFocusChangedSound()
                            mainView.push(fixFloorPage)
                        }
                    }
@@ -71,7 +71,7 @@ MyStackViewPage {
                        text: "Audio"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.focusChangedSound.play()
+                           MyResources.playFocusChangedSound()
                            mainView.push(audioPage)
                        }
                    }
@@ -82,7 +82,7 @@ MyStackViewPage {
                        text: "Statistics"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.focusChangedSound.play()
+                           MyResources.playFocusChangedSound()
                            mainView.push(statisticsPage)
                        }
                    }
@@ -98,7 +98,7 @@ MyStackViewPage {
                        text: "Settings"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.focusChangedSound.play()
+                           MyResources.playFocusChangedSound()
                            mainView.push(settingsPage)
                        }
                    }

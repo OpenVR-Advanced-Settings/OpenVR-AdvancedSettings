@@ -130,57 +130,57 @@ void OverlayController::Init(QQmlEngine* qmlEngine) {
 
 
 void OverlayController::SetWidget(QQuickItem* quickItem, const std::string& name, const std::string& key) {
-	vr::VROverlayError overlayError = vr::VROverlay()->CreateDashboardOverlay(key.c_str(), name.c_str(), &m_ulOverlayHandle, &m_ulOverlayThumbnailHandle);
-	if (overlayError != vr::VROverlayError_None) {
-		if (overlayError == vr::VROverlayError_KeyInUse) {
-			QMessageBox::critical(nullptr, "OpenVR Advanced Settings Overlay", "Another instance is already running.");
+	if (!desktopMode) {
+		vr::VROverlayError overlayError = vr::VROverlay()->CreateDashboardOverlay(key.c_str(), name.c_str(), &m_ulOverlayHandle, &m_ulOverlayThumbnailHandle);
+		if (overlayError != vr::VROverlayError_None) {
+			if (overlayError == vr::VROverlayError_KeyInUse) {
+				QMessageBox::critical(nullptr, "OpenVR Advanced Settings Overlay", "Another instance is already running.");
+			}
+			throw std::runtime_error(std::string("Failed to create Overlay: " + std::string(vr::VROverlay()->GetOverlayErrorNameFromEnum(overlayError))));
 		}
-		throw std::runtime_error(std::string("Failed to create Overlay: " + std::string(vr::VROverlay()->GetOverlayErrorNameFromEnum(overlayError))));
-	}
-	vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 2.5f);
-	vr::VROverlay()->SetOverlayInputMethod(m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse);
-	vr::VROverlay()->SetOverlayFlag(m_ulOverlayHandle, vr::VROverlayFlags_SendVRScrollEvents, true);
-	std::string thumbIconPath = QApplication::applicationDirPath().toStdString() + "\\res\\thumbicon.png";
-	if (QFile::exists(QString::fromStdString(thumbIconPath))) {
-		vr::VROverlay()->SetOverlayFromFile(m_ulOverlayThumbnailHandle, thumbIconPath.c_str());
-	} else {
-		LOG(ERROR) << "Could not find thumbnail icon \"" << thumbIconPath << "\"";
+		vr::VROverlay()->SetOverlayWidthInMeters(m_ulOverlayHandle, 2.5f);
+		vr::VROverlay()->SetOverlayInputMethod(m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse);
+		vr::VROverlay()->SetOverlayFlag(m_ulOverlayHandle, vr::VROverlayFlags_SendVRScrollEvents, true);
+		std::string thumbIconPath = QApplication::applicationDirPath().toStdString() + "\\res\\thumbicon.png";
+		if (QFile::exists(QString::fromStdString(thumbIconPath))) {
+			vr::VROverlay()->SetOverlayFromFile(m_ulOverlayThumbnailHandle, thumbIconPath.c_str());
+		} else {
+			LOG(ERROR) << "Could not find thumbnail icon \"" << thumbIconPath << "\"";
+		}
+
+		// Too many render calls in too short time overwhelm Qt and an assertion gets thrown.
+		// Therefore we use an timer to delay render calls
+		m_pRenderTimer.reset(new QTimer());
+		m_pRenderTimer->setSingleShot(true);
+		m_pRenderTimer->setInterval(5);
+		connect(m_pRenderTimer.get(), SIGNAL(timeout()), this, SLOT(renderOverlay()));
+
+		QOpenGLFramebufferObjectFormat fboFormat;
+		fboFormat.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+		fboFormat.setTextureTarget(GL_TEXTURE_2D);
+		m_pFbo.reset(new QOpenGLFramebufferObject(quickItem->width(), quickItem->height(), fboFormat));
+
+		m_pRenderControl.reset(new QQuickRenderControl());
+		m_pWindow.reset(new QQuickWindow(m_pRenderControl.get()));
+		m_pWindow->setRenderTarget(m_pFbo.get());
+		quickItem->setParentItem(m_pWindow->contentItem());
+		m_pWindow->setGeometry(0, 0, quickItem->width(), quickItem->height());
+		m_pRenderControl->initialize(m_pOpenGLContext.get());
+
+		vr::HmdVector2_t vecWindowSize = {
+			(float)quickItem->width(),
+			(float)quickItem->height()
+		};
+		vr::VROverlay()->SetOverlayMouseScale(m_ulOverlayHandle, &vecWindowSize);
+
+		connect(m_pRenderControl.get(), SIGNAL(renderRequested()), this, SLOT(OnRenderRequest()));
+		connect(m_pRenderControl.get(), SIGNAL(sceneChanged()), this, SLOT(OnRenderRequest()));
 	}
 
 	m_pPumpEventsTimer.reset(new QTimer());
 	connect(m_pPumpEventsTimer.get(), SIGNAL(timeout()), this, SLOT(OnTimeoutPumpEvents()));
 	m_pPumpEventsTimer->setInterval(20);
 	m_pPumpEventsTimer->start();
-
-	// Too many render calls in too short time overwhelm Qt and an assertion gets thrown.
-	// Therefore we use an timer to delay render calls
-	m_pRenderTimer.reset(new QTimer());
-	m_pRenderTimer->setSingleShot(true);
-	m_pRenderTimer->setInterval(5);
-	connect(m_pRenderTimer.get(), SIGNAL(timeout()), this, SLOT(renderOverlay()));
-
-	QOpenGLFramebufferObjectFormat fboFormat;
-	fboFormat.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
-	fboFormat.setTextureTarget(GL_TEXTURE_2D);
-	m_pFbo.reset(new QOpenGLFramebufferObject(quickItem->width(), quickItem->height(), fboFormat));
-
-#ifndef DEBUG_DESKTOP_WINDOW
-	m_pRenderControl.reset(new QQuickRenderControl());
-	m_pWindow.reset(new QQuickWindow(m_pRenderControl.get()));
-	m_pWindow->setRenderTarget(m_pFbo.get());
-	quickItem->setParentItem(m_pWindow->contentItem());
-	m_pWindow->setGeometry(0, 0, quickItem->width(), quickItem->height());
-	m_pRenderControl->initialize(m_pOpenGLContext.get());
-
-	vr::HmdVector2_t vecWindowSize = {
-		(float)quickItem->width(),
-		(float)quickItem->height()
-	};
-	vr::VROverlay()->SetOverlayMouseScale(m_ulOverlayHandle, &vecWindowSize);
-
-	connect(m_pRenderControl.get(), SIGNAL(renderRequested()), this, SLOT(OnRenderRequest()));
-	connect(m_pRenderControl.get(), SIGNAL(sceneChanged()), this, SLOT(OnRenderRequest()));
-#endif
 
 	steamVRTabController.initStage2(this, m_pWindow.get());
 	chaperoneTabController.initStage2(this, m_pWindow.get());
@@ -199,27 +199,26 @@ void OverlayController::OnRenderRequest() {
 }
 
 void OverlayController::renderOverlay() {
-	// skip rendering if the overlay isn't visible
-	if (!vr::VROverlay() || !vr::VROverlay()->IsOverlayVisible(m_ulOverlayHandle) && !vr::VROverlay()->IsOverlayVisible(m_ulOverlayThumbnailHandle))
-		return;
+	if (!desktopMode) {
+		// skip rendering if the overlay isn't visible
+		if (!vr::VROverlay() || !vr::VROverlay()->IsOverlayVisible(m_ulOverlayHandle) && !vr::VROverlay()->IsOverlayVisible(m_ulOverlayThumbnailHandle))
+			return;
+		m_pRenderControl->polishItems();
+		m_pRenderControl->sync();
+		m_pRenderControl->render();
 
-#ifndef DEBUG_DESKTOP_WINDOW
-	m_pRenderControl->polishItems();
-	m_pRenderControl->sync();
-	m_pRenderControl->render();
-
-	GLuint unTexture = m_pFbo->texture();
-	if (unTexture != 0) {
+		GLuint unTexture = m_pFbo->texture();
+		if (unTexture != 0) {
 #if defined _WIN64 || defined _LP64
-		// To avoid any compiler warning because of cast to a larger pointer type (warning C4312 on VC)
-		vr::Texture_t texture = { (void*)((uint64_t)unTexture), vr::API_OpenGL, vr::ColorSpace_Auto };
+			// To avoid any compiler warning because of cast to a larger pointer type (warning C4312 on VC)
+			vr::Texture_t texture = { (void*)((uint64_t)unTexture), vr::API_OpenGL, vr::ColorSpace_Auto };
 #else
-		vr::Texture_t texture = { (void*)unTexture, vr::API_OpenGL, vr::ColorSpace_Auto };
+			vr::Texture_t texture = { (void*)unTexture, vr::API_OpenGL, vr::ColorSpace_Auto };
 #endif
-		vr::VROverlay()->SetOverlayTexture(m_ulOverlayHandle, &texture);
+			vr::VROverlay()->SetOverlayTexture(m_ulOverlayHandle, &texture);
+		}
+		m_pOpenGLContext->functions()->glFlush(); // We need to flush otherwise the texture may be empty.*/
 	}
-	m_pOpenGLContext->functions()->glFlush(); // We need to flush otherwise the texture may be empty.*/
-#endif
 }
 
 
@@ -469,6 +468,11 @@ QString OverlayController::getVersionString() {
 
 QUrl OverlayController::getVRRuntimePathUrl() {
 	return m_runtimePathUrl;
+}
+
+
+bool OverlayController::soundDisabled() {
+	return noSound;
 }
 
 

@@ -31,9 +31,6 @@
 #include "tabcontrollers/SettingsTabController.h"
 
 
-// Show a window on the desktop instead of an overlay in vr
-//#define DEBUG_DESKTOP_WINDOW
-
 
 // application namespace
 namespace advsettings {
@@ -63,6 +60,9 @@ private:
 	QPoint m_ptLastMouse;
 	Qt::MouseButtons m_lastMouseButtons = 0;
 
+	bool desktopMode;
+	bool noSound;
+
 	QUrl m_runtimePathUrl;
 
 	SteamVRTabController steamVRTabController;
@@ -74,7 +74,7 @@ private:
 	SettingsTabController settingsTabController;
 
 private:
-    OverlayController() : QObject() {}
+    OverlayController(bool desktopMode, bool noSound) : QObject(), desktopMode(desktopMode), noSound(noSound) {}
 
 public:
 	virtual ~OverlayController();
@@ -95,6 +95,8 @@ public:
 	Q_INVOKABLE QString getVersionString();
 	Q_INVOKABLE QUrl getVRRuntimePathUrl();
 
+	Q_INVOKABLE bool soundDisabled();
+
 public slots:
 	void renderOverlay();
 	void OnRenderRequest();
@@ -111,9 +113,11 @@ private:
 
 public:
 	static OverlayController* getInstance() {
-		if (!singleton) {
-			singleton.reset(new advsettings::OverlayController());
-		}
+		return singleton.get();
+	}
+
+	static OverlayController* createInstance(bool desktopMode, bool noSound) {
+		singleton.reset(new advsettings::OverlayController(desktopMode, noSound));
 		return singleton.get();
 	}
 

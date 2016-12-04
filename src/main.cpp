@@ -44,6 +44,7 @@ void myQtMessageHandler(QtMsgType type, const QMessageLogContext &context, const
 
 
 int main(int argc, char *argv[]) {
+
 	// Configure logger
 	START_EASYLOGGINGPP(argc, argv);
 	el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
@@ -54,6 +55,19 @@ int main(int argc, char *argv[]) {
 		el::Configurations conf;
 		conf.parseFromText(logConfigDefault);
 		el::Loggers::reconfigureAllLoggers(conf);
+	}
+	
+	bool desktopMode = false;
+	bool noSound = false;
+
+	// Parse command line arguments
+	for (int i = 1; i < argc; i++) {
+		if (std::string(argv[i]).compare("-desktop") == 0) {
+			LOG(INFO) << "Desktop mode enabled.";
+			desktopMode = true;
+		} else if (std::string(argv[i]).compare("-nosound") == 0) {
+			noSound = true;
+		}
 	}
 
 	LOG(INFO) << "Starting Application.";
@@ -67,7 +81,7 @@ int main(int argc, char *argv[]) {
 
 		QQmlEngine qmlEngine;
 
-		advsettings::OverlayController* controller = advsettings::OverlayController::getInstance();
+		advsettings::OverlayController* controller = advsettings::OverlayController::createInstance(desktopMode, noSound);
 		controller->Init(&qmlEngine);
 
 		QQmlComponent component(&qmlEngine, QUrl::fromLocalFile("res/qml/mainwidget.qml"));
@@ -78,31 +92,33 @@ int main(int argc, char *argv[]) {
 		auto quickObj = component.create();
 		controller->SetWidget(qobject_cast<QQuickItem*>(quickObj), advsettings::OverlayController::applicationName, advsettings::OverlayController::applicationKey);
 
-		std::string manifestPath = QApplication::applicationDirPath().toStdString() + "\\advancedsettings.vrmanifest";
-		if (QFile::exists(QString::fromStdString(manifestPath))) {
-			bool firstTime = false;
-			if (!vr::VRApplications()->IsApplicationInstalled(advsettings::OverlayController::applicationKey)) {
-				firstTime;
-			}
-			auto apperror = vr::VRApplications()->AddApplicationManifest(manifestPath.c_str());
-			if (apperror != vr::VRApplicationError_None) {
-				LOG(ERROR) << "Could not add application manifest: " << vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror);
-			} else if (firstTime) {
-				auto apperror = vr::VRApplications()->SetApplicationAutoLaunch(advsettings::OverlayController::applicationKey, true);
-				if (apperror != vr::VRApplicationError_None) {
-					LOG(ERROR) << "Could not set auto start: " << vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror);
+		if (!desktopMode) {
+			std::string manifestPath = QApplication::applicationDirPath().toStdString() + "\\advancedsettings.vrmanifest";
+			if (QFile::exists(QString::fromStdString(manifestPath))) {
+				bool firstTime = false;
+				if (!vr::VRApplications()->IsApplicationInstalled(advsettings::OverlayController::applicationKey)) {
+					firstTime;
 				}
+				auto apperror = vr::VRApplications()->AddApplicationManifest(manifestPath.c_str());
+				if (apperror != vr::VRApplicationError_None) {
+					LOG(ERROR) << "Could not add application manifest: " << vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror);
+				} else if (firstTime) {
+					auto apperror = vr::VRApplications()->SetApplicationAutoLaunch(advsettings::OverlayController::applicationKey, true);
+					if (apperror != vr::VRApplicationError_None) {
+						LOG(ERROR) << "Could not set auto start: " << vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror);
+					}
+				}
+			} else {
+				LOG(ERROR) << "Could not find application manifest: " << manifestPath;
 			}
-		} else {
-			LOG(ERROR) << "Could not find application manifest: " << manifestPath;
 		}
 
-#ifdef DEBUG_DESKTOP_WINDOW
-		auto m_pWindow = new QQuickWindow();
-		qobject_cast<QQuickItem*>(quickObj)->setParentItem(m_pWindow->contentItem());
-		m_pWindow->setGeometry(0, 0, qobject_cast<QQuickItem*>(quickObj)->width(), qobject_cast<QQuickItem*>(quickObj)->height());
-		m_pWindow->show();
-#endif
+		if (desktopMode) {
+			auto m_pWindow = new QQuickWindow();
+			qobject_cast<QQuickItem*>(quickObj)->setParentItem(m_pWindow->contentItem());
+			m_pWindow->setGeometry(0, 0, qobject_cast<QQuickItem*>(quickObj)->width(), qobject_cast<QQuickItem*>(quickObj)->height());
+			m_pWindow->show();
+		}
 
 		return a.exec();
 

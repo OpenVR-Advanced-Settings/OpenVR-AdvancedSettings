@@ -43,7 +43,7 @@ Rectangle {
                     }
                 }
                 onClicked: {
-                    MyResources.focusChangedSound.play()
+					MyResources.playFocusChangedSound()
                     stackView.pop()
                 }
             }
