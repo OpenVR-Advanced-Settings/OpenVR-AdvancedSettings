@@ -59,6 +59,9 @@ void SteamVRTabController::eventLoopTick() {
 
 
 void SteamVRTabController::setSuperSampling(float value, bool notify) {
+	if (value <= 0.01f) {
+		value = 1.0f;
+	}
 	if (m_superSampling != value) {
 		m_superSampling = value;
 		vr::VRSettings()->SetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, m_superSampling);
@@ -71,6 +74,9 @@ void SteamVRTabController::setSuperSampling(float value, bool notify) {
 
 
 void SteamVRTabController::setCompositorSuperSampling(float value, bool notify) {
+	if (value <= 0.01f) {
+		value = 1.0f;
+	}
 	if (m_compositorSuperSampling != value) {
 		m_compositorSuperSampling = value;
 		vr::VRSettings()->SetFloat(vrsettings_compositor_category, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, m_compositorSuperSampling);
@@ -143,9 +149,10 @@ void SteamVRTabController::setForceReprojection(bool value, bool notify) {
 
 
 void SteamVRTabController::restartSteamVR() {
-	QString cmd = QString("cmd.exe /C restartvrserver.bat \"") + parent->getVRRuntimePathUrl().toLocalFile() + QString("\"");
+	setCompositorSuperSampling(0.0);
+	/*QString cmd = QString("cmd.exe /C restartvrserver.bat \"") + parent->getVRRuntimePathUrl().toLocalFile() + QString("\"");
 	LOG(INFO) << "SteamVR Restart Command: " << cmd;
-	QProcess::startDetached(cmd);
+	QProcess::startDetached(cmd);*/
 }
 
 
