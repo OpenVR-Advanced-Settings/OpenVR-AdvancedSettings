@@ -149,10 +149,9 @@ void SteamVRTabController::setForceReprojection(bool value, bool notify) {
 
 
 void SteamVRTabController::restartSteamVR() {
-	setCompositorSuperSampling(0.0);
-	/*QString cmd = QString("cmd.exe /C restartvrserver.bat \"") + parent->getVRRuntimePathUrl().toLocalFile() + QString("\"");
+	QString cmd = QString("cmd.exe /C restartvrserver.bat \"") + parent->getVRRuntimePathUrl().toLocalFile() + QString("\"");
 	LOG(INFO) << "SteamVR Restart Command: " << cmd;
-	QProcess::startDetached(cmd);*/
+	QProcess::startDetached(cmd);
 }
 
 
