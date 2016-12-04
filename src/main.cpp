@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
 	
 	bool desktopMode = false;
 	bool noSound = false;
+	bool noManifest = false;
 
 	// Parse command line arguments
 	for (int i = 1; i < argc; i++) {
@@ -66,7 +67,11 @@ int main(int argc, char *argv[]) {
 			LOG(INFO) << "Desktop mode enabled.";
 			desktopMode = true;
 		} else if (std::string(argv[i]).compare("-nosound") == 0) {
+			LOG(INFO) << "Sound effects disabled.";
 			noSound = true;
+		} else if (std::string(argv[i]).compare("-nomanifest") == 0) {
+			LOG(INFO) << "vrmanifest disabled.";
+			noManifest = true;
 		}
 	}
 
@@ -92,7 +97,7 @@ int main(int argc, char *argv[]) {
 		auto quickObj = component.create();
 		controller->SetWidget(qobject_cast<QQuickItem*>(quickObj), advsettings::OverlayController::applicationName, advsettings::OverlayController::applicationKey);
 
-		if (!desktopMode) {
+		if (!desktopMode && !noManifest) {
 			std::string manifestPath = QApplication::applicationDirPath().toStdString() + "\\advancedsettings.vrmanifest";
 			if (QFile::exists(QString::fromStdString(manifestPath))) {
 				bool firstTime = false;
