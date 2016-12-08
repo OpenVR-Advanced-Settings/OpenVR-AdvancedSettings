@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
 		controller->SetWidget(qobject_cast<QQuickItem*>(quickObj), advsettings::OverlayController::applicationName, advsettings::OverlayController::applicationKey);
 
 		if (!desktopMode && !noManifest) {
-			std::string manifestPath = QApplication::applicationDirPath().toStdString() + "\\advancedsettings.vrmanifest";
+			std::string manifestPath = QApplication::applicationDirPath().toStdString() + "\\manifest.vrmanifest";
 			if (QFile::exists(QString::fromStdString(manifestPath))) {
 				bool firstTime = false;
 				if (!vr::VRApplications()->IsApplicationInstalled(advsettings::OverlayController::applicationKey)) {
