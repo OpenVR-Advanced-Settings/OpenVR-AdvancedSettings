@@ -1,3 +1,0 @@
-module QtQuick.Controls.Styles.Flat
-plugin qtquickextrasflatplugin
-classname QtQuickExtrasStylesPlugin
