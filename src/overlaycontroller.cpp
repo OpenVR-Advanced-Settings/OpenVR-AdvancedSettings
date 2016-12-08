@@ -31,6 +31,7 @@ std::unique_ptr<OverlayController> OverlayController::singleton;
 QSettings* OverlayController::_appSettings = nullptr;
 
 OverlayController::~OverlayController() {
+	Shutdown();
 }
 
 void OverlayController::Init(QQmlEngine* qmlEngine) {
@@ -38,6 +39,9 @@ void OverlayController::Init(QQmlEngine* qmlEngine) {
 	auto initError = vr::VRInitError_None;
 	vr::VR_Init(&initError, vr::VRApplication_Overlay);
 	if (initError != vr::VRInitError_None) {
+		if (initError == vr::VRInitError_Init_HmdNotFound || initError == vr::VRInitError_Init_HmdNotFoundPresenceFailed) {
+			QMessageBox::critical(nullptr, "OpenVR Advanced Settings Overlay", "Could not find HMD!");
+		}
 		throw std::runtime_error(std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))));
 	}
 
@@ -128,6 +132,24 @@ void OverlayController::Init(QQmlEngine* qmlEngine) {
 	});
 }
 
+void OverlayController::Shutdown() {
+	if (m_pPumpEventsTimer) {
+		disconnect(m_pPumpEventsTimer.get(), SIGNAL(timeout()), this, SLOT(OnTimeoutPumpEvents()));
+		m_pPumpEventsTimer->stop();
+	}
+	if (m_pRenderTimer) {
+		disconnect(m_pRenderControl.get(), SIGNAL(renderRequested()), this, SLOT(OnRenderRequest()));
+		disconnect(m_pRenderControl.get(), SIGNAL(sceneChanged()), this, SLOT(OnRenderRequest()));
+		disconnect(m_pRenderTimer.get(), SIGNAL(timeout()), this, SLOT(renderOverlay()));
+		m_pRenderTimer->stop();
+	}
+	m_pWindow.reset();
+	m_pRenderControl.reset();
+	m_pFbo.reset();
+	m_pOpenGLContext.reset();
+	m_pOffscreenSurface.reset();
+}
+
 
 void OverlayController::SetWidget(QQuickItem* quickItem, const std::string& name, const std::string& key) {
 	if (!desktopMode) {
@@ -193,7 +215,7 @@ void OverlayController::SetWidget(QQuickItem* quickItem, const std::string& name
 
 
 void OverlayController::OnRenderRequest() {
-	if (!m_pRenderTimer->isActive()) {
+	if (m_pRenderTimer && !m_pRenderTimer->isActive()) {
 		m_pRenderTimer->start();
 	}
 }
@@ -293,6 +315,7 @@ void OverlayController::OnTimeoutPumpEvents() {
 				LOG(INFO) << "Received quit request.";
 				vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some time just in case
 				moveCenterTabController.reset();
+				Shutdown();
 				QApplication::exit();
 			}
 			break;

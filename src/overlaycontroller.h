@@ -47,10 +47,10 @@ private:
 	vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
 	vr::VROverlayHandle_t m_ulOverlayThumbnailHandle = vr::k_ulOverlayHandleInvalid;
 
-	std::unique_ptr<QQuickWindow> m_pWindow;
-	std::unique_ptr<QOpenGLContext> m_pOpenGLContext;
-	std::unique_ptr<QOpenGLFramebufferObject> m_pFbo;
 	std::unique_ptr<QQuickRenderControl> m_pRenderControl;
+	std::unique_ptr<QQuickWindow> m_pWindow;
+	std::unique_ptr<QOpenGLFramebufferObject> m_pFbo;
+	std::unique_ptr<QOpenGLContext> m_pOpenGLContext;
 	std::unique_ptr<QOffscreenSurface> m_pOffscreenSurface;
 
 	std::unique_ptr<QTimer> m_pPumpEventsTimer;
@@ -80,6 +80,7 @@ public:
 	virtual ~OverlayController();
 
 	void Init(QQmlEngine* qmlEngine);
+	void Shutdown();
 
 	bool isDashboardVisible() {
 		return dashboardVisible;
