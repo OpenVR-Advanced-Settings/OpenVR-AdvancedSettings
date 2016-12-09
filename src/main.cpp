@@ -19,7 +19,9 @@ const char* logConfigDefault =
 "	TO_STANDARD_OUTPUT = true\n"
 "	MAX_LOG_FILE_SIZE = 2097152 ## 2MB\n"
 "* TRACE:\n"
-"	FORMAT = \"[%level] %datetime{%Y-%M-%d %H:%m:%s} %func: %msg\"\n";
+"	ENABLED = false\n"
+"* DEBUG:\n"
+"	ENABLED = false\n";
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -27,6 +29,8 @@ void myQtMessageHandler(QtMsgType type, const QMessageLogContext &context, const
 	QByteArray localMsg = msg.toLocal8Bit();
 	switch (type) {
 		case QtDebugMsg:
+			LOG(DEBUG) << localMsg.constData() << "(" << context.file << ":" << context.line << ")";
+			break;
 		case QtInfoMsg:
 			LOG(INFO) << localMsg.constData() << "(" << context.file << ":" << context.line << ")";
 			break;
@@ -98,13 +102,14 @@ int main(int argc, char *argv[]) {
 		controller->SetWidget(qobject_cast<QQuickItem*>(quickObj), advsettings::OverlayController::applicationName, advsettings::OverlayController::applicationKey);
 
 		if (!desktopMode && !noManifest) {
-			std::string manifestPath = QApplication::applicationDirPath().toStdString() + "\\manifest.vrmanifest";
-			if (QFile::exists(QString::fromStdString(manifestPath))) {
+			auto manifestQPath = QDir(QApplication::applicationDirPath()).absoluteFilePath("manifest.vrmanifest");
+			//std::string manifestPath = QDir::toNativeSeparators(QApplication::applicationDirPath()).toStdString() + "\\manifest.vrmanifest";
+			if (QFile::exists(manifestQPath)) {
 				bool firstTime = false;
 				if (!vr::VRApplications()->IsApplicationInstalled(advsettings::OverlayController::applicationKey)) {
 					firstTime;
 				}
-				auto apperror = vr::VRApplications()->AddApplicationManifest(manifestPath.c_str());
+				auto apperror = vr::VRApplications()->AddApplicationManifest(QDir::toNativeSeparators(manifestQPath).toStdString().c_str());
 				if (apperror != vr::VRApplicationError_None) {
 					LOG(ERROR) << "Could not add application manifest: " << vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror);
 				} else if (firstTime) {
@@ -114,7 +119,7 @@ int main(int argc, char *argv[]) {
 					}
 				}
 			} else {
-				LOG(ERROR) << "Could not find application manifest: " << manifestPath;
+				LOG(ERROR) << "Could not find application manifest: " << manifestQPath;
 			}
 		}
 

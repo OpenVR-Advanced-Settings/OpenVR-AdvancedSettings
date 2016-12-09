@@ -23,8 +23,12 @@ void SteamVRTabController::eventLoopTick() {
 		auto ss = vr::VRSettings()->GetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
 			LOG(WARNING) << "Could not read \"" << vr::k_pch_SteamVR_RenderTargetMultiplier_Float << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
-			setSuperSampling(1.0);
-		} else {
+			if (m_superSampling != 1.0) {
+				LOG(DEBUG) << "OpenVR returns an error and we have a custom supersampling value: " << m_superSampling;
+				setSuperSampling(1.0);
+			}
+		} else if (m_superSampling != ss) {
+			LOG(DEBUG) << "OpenVR reports a changed supersampling value: " << m_superSampling << " => " << ss;
 			setSuperSampling(ss);
 		}
 		auto css = vr::VRSettings()->GetFloat(vrsettings_compositor_category, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, &vrSettingsError);
@@ -32,8 +36,12 @@ void SteamVRTabController::eventLoopTick() {
 			if (vrSettingsError != vr::VRSettingsError_UnsetSettingHasNoDefault) { // does not appear in the default settings file as of beta 1477423729
 				LOG(WARNING) << "Could not read \"compositor::" << vr::k_pch_SteamVR_RenderTargetMultiplier_Float << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 			}
-			setCompositorSuperSampling(1.0);
-		} else {
+			if (m_compositorSuperSampling != 1.0) {
+				LOG(DEBUG) << "OpenVR returns an error and we have a custom compositor supersampling value: " << m_compositorSuperSampling;
+				setCompositorSuperSampling(1.0);
+			}
+		} else if (m_compositorSuperSampling != css) {
+			LOG(DEBUG) << "OpenVR reports a changed compositor supersampling value: " << m_compositorSuperSampling << " => " << css;
 			setCompositorSuperSampling(css);
 		}
 		auto air = vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowInterleavedReprojection, &vrSettingsError);
@@ -60,9 +68,11 @@ void SteamVRTabController::eventLoopTick() {
 
 void SteamVRTabController::setSuperSampling(float value, bool notify) {
 	if (value <= 0.01f) {
+		LOG(WARNING) << "Encountered a supersampling value <= 0.01, setting supersampling to 1.0";
 		value = 1.0f;
 	}
 	if (m_superSampling != value) {
+		LOG(DEBUG) << "Supersampling value changed: " << m_superSampling << " => " << value;
 		m_superSampling = value;
 		vr::VRSettings()->SetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, m_superSampling);
 		vr::VRSettings()->Sync();
@@ -75,9 +85,11 @@ void SteamVRTabController::setSuperSampling(float value, bool notify) {
 
 void SteamVRTabController::setCompositorSuperSampling(float value, bool notify) {
 	if (value <= 0.01f) {
+		LOG(WARNING) << "Encountered a compositor supersampling value <= 0.01, setting supersampling to 1.0";
 		value = 1.0f;
 	}
 	if (m_compositorSuperSampling != value) {
+		LOG(DEBUG) << "Compositor supersampling value changed: " << m_compositorSuperSampling << " => " << value;
 		m_compositorSuperSampling = value;
 		vr::VRSettings()->SetFloat(vrsettings_compositor_category, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, m_compositorSuperSampling);
 		vr::VRSettings()->Sync();

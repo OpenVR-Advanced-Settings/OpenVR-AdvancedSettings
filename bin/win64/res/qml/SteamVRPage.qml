@@ -40,6 +40,7 @@ MyStackViewPage {
                     steamvrSupersamplingText.text = val.toFixed(1)
                 }
                 onValueChanged: {
+                    console.debug("Supersampling Slider: valueChanged(", this.value, ")")
                     SteamVRTabController.setSuperSampling(this.value.toFixed(1), false)
                 }
             }
@@ -90,6 +91,7 @@ MyStackViewPage {
                     steamvrCompositorSupersamplingText.text = val.toFixed(1)
                 }
                 onValueChanged: {
+                    console.debug("Compositor Supersampling Slider: valueChanged(", this.value, ")")
                     SteamVRTabController.setCompositorSuperSampling(this.value.toFixed(1), false)
                 }
             }

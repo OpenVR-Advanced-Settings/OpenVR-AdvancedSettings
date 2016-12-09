@@ -136,12 +136,14 @@ void OverlayController::Shutdown() {
 	if (m_pPumpEventsTimer) {
 		disconnect(m_pPumpEventsTimer.get(), SIGNAL(timeout()), this, SLOT(OnTimeoutPumpEvents()));
 		m_pPumpEventsTimer->stop();
+		m_pPumpEventsTimer.reset();
 	}
 	if (m_pRenderTimer) {
 		disconnect(m_pRenderControl.get(), SIGNAL(renderRequested()), this, SLOT(OnRenderRequest()));
 		disconnect(m_pRenderControl.get(), SIGNAL(sceneChanged()), this, SLOT(OnRenderRequest()));
 		disconnect(m_pRenderTimer.get(), SIGNAL(timeout()), this, SLOT(renderOverlay()));
 		m_pRenderTimer->stop();
+		m_pRenderTimer.reset();
 	}
 	m_pWindow.reset();
 	m_pRenderControl.reset();
