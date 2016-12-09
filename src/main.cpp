@@ -52,9 +52,11 @@ int main(int argc, char *argv[]) {
 	// Configure logger
 	START_EASYLOGGINGPP(argc, argv);
 	el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
-	if (QFile::exists(logConfigFileName)) {
-		el::Configurations conf(logConfigFileName);
+	auto logconfigfile = QFileInfo(logConfigFileName).absoluteFilePath();
+	if (QFile::exists(logconfigfile)) {
+		el::Configurations conf(logconfigfile.toStdString());
 		el::Loggers::reconfigureAllLoggers(conf);
+		LOG(INFO) << "Log Config: " << QDir::toNativeSeparators(logconfigfile).toStdString();
 	} else {
 		el::Configurations conf;
 		conf.parseFromText(logConfigDefault);

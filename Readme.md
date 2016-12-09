@@ -1,5 +1,5 @@
 
-![language](https://img.shields.io/badge/Language-C%2B%2B11-green.svg) ![dependencies](https://img.shields.io/badge/Dependencies-OpenVR%2C%20Qt5-green.svg) ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg)
+![language](https://img.shields.io/badge/Language-C%2B%2B11%2C%20QML-green.svg) ![dependencies](https://img.shields.io/badge/Dependencies-OpenVR%2C%20Qt5-green.svg) ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg)
 
 # OpenVR Advanced Settings Overlay
 
@@ -19,6 +19,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 - Mute/unmute and set volume of audio mirror device.
 - Mute/unmute and set volume of microphone device.
 - Implements push-to-talk and allows to configure push-to-talk profiles.
+- Desktop mode shows a window on the desktop instead of a vr overlay.
 
 # Usage
 
@@ -28,7 +29,7 @@ To install for the first time simply start AdvancedSettings.exe once while Steam
 
 To upgrade an existing installation first stop SteamVR, then either override the old files or delete the old files (very important, otherwise SteamVR will always start the old version). At last start SteamVR and run AdvancedSettings.exe once (only when you don't have overridden the old files).
 
-When you have installed SteamVR to a different path than the default one, "Restart SteamVR" will not work. To resolve the issue go to the application directory, open the file restartvrserver.bat and change the path to wherever you have SteamVR installed.
+Executing startdesktopmode.bat shows a window on the desktop instead of a vr overlay. Desktop mode can be used alongside an already running vr overlay instance.
 
 # Documentation
 
@@ -113,6 +114,8 @@ Allows you to fix the height of your floor. Just place one controller on your fl
 - The center marker and the play space marker are provided by the chaperone subsystem, and therefore they will have the same color and visibility settings as the chaperone bounds.
 
 - Application autostart can also be configured in the SteamVR menu (SteamVR->Settings->Applications->"Advanced Settings").
+
+- You can modify the shutdown wait time when restarting SteamVR by opening restartvrserver.bat and changing the number behind "timeout /t" (unit is seconds).
 
 # Known Bugs
 
