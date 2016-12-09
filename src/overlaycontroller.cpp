@@ -317,6 +317,7 @@ void OverlayController::OnTimeoutPumpEvents() {
 				moveCenterTabController.reset();
 				Shutdown();
 				QApplication::exit();
+				return;
 			}
 			break;
 
