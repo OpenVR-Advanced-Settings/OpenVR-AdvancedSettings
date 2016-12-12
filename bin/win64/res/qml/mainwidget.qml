@@ -48,6 +48,11 @@ Rectangle {
         visible: false
     }
 
+    property RevivePage revivePage: RevivePage {
+        stackView: mainView
+        visible: false
+    }
+
     StackView {
         id: mainView
         anchors.fill: parent

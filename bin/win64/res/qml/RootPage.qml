@@ -77,6 +77,17 @@ MyStackViewPage {
                    }
 
                    MyPushButton {
+                       id: reviveButton
+                       activationSoundEnabled: false
+                       text: "Revive"
+                       Layout.fillWidth: true
+                       onClicked: {
+                           MyResources.playFocusChangedSound()
+                           mainView.push(revivePage)
+                       }
+                   }
+
+                   MyPushButton {
                        id: statisticsButton
                        activationSoundEnabled: false
                        text: "Statistics"
