@@ -61,15 +61,25 @@ MyStackViewPage {
                         onClicked: {
                             MoveCenterTabController.modOffsetX(-0.5)
                         }
-                        KeyNavigation.down: playSpaceMoveXPlusButton
-                        focus : true
                     }
 
-                    MyText {
+					MyTextField {
                         id: playSpaceMoveXText
+                        text: "0.00"
+						keyBoardUID: 101
+						Layout.preferredWidth: 100
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
                         horizontalAlignment: Text.AlignHCenter
-                        text: "0.0"
-                        Layout.preferredWidth: 120
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                MoveCenterTabController.offsetX = val.toFixed(2)
+                                text = MoveCenterTabController.offsetX.toFixed(2)
+                            } else {
+                                text = MoveCenterTabController.offsetX.toFixed(2)
+                            }
+                        }
                     }
 
                     MyPushButton2 {
@@ -79,7 +89,6 @@ MyStackViewPage {
                         onClicked: {
                             MoveCenterTabController.modOffsetX(0.5)
                         }
-                        KeyNavigation.up: playSpaceMoveXMinusButton
                     }
 
                     MyText {
@@ -95,11 +104,23 @@ MyStackViewPage {
                         }
                     }
 
-                    MyText {
+                    MyTextField {
                         id: playSpaceMoveYText
+                        text: "0.00"
+                        keyBoardUID: 102
+                        Layout.preferredWidth: 100
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
                         horizontalAlignment: Text.AlignHCenter
-                        text: "0.0"
-                        Layout.preferredWidth: 120
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                MoveCenterTabController.offsetY = val.toFixed(2)
+                                text = MoveCenterTabController.offsetY.toFixed(2)
+                            } else {
+                                text = MoveCenterTabController.offsetY.toFixed(2)
+                            }
+                        }
                     }
 
                     MyPushButton2 {
@@ -123,11 +144,23 @@ MyStackViewPage {
                         }
                     }
 
-                    MyText {
+                    MyTextField {
                         id: playSpaceMoveZText
+                        text: "0.00"
+                        keyBoardUID: 103
+                        Layout.preferredWidth: 100
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
                         horizontalAlignment: Text.AlignHCenter
-                        text: "0.0"
-                        Layout.preferredWidth: 120
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                MoveCenterTabController.offsetZ = val.toFixed(2)
+                                text = MoveCenterTabController.offsetZ.toFixed(2)
+                            } else {
+                                text = MoveCenterTabController.offsetZ.toFixed(2)
+                            }
+                        }
                     }
 
                     MyPushButton2 {
@@ -165,28 +198,34 @@ MyStackViewPage {
                 }
 
                 ColumnLayout {
-
                     RowLayout {
-
                         MyPushButton2 {
                             id: playSpaceRotationMinusButton
                             Layout.preferredWidth: 40
                             text: "-"
                             onClicked: {
-                                playspaceRotationSlider.value -= 45
+                                var val = (MoveCenterTabController.rotation - 45) % 360
+                                if (val < 0) {
+                                    val = 360 + val;
+                                }
+                                MoveCenterTabController.rotation = val
                             }
                         }
 
                         MySlider {
                             id: playspaceRotationSlider
-                            from: -360
-                            to: 360
+                            from: 0
+                            to: 359
                             stepSize: 1
                             value: 0
                             Layout.fillWidth: true
                             onPositionChanged: {
                                 var val = this.from + ( this.position  * (this.to - this.from))
                                 playspaceRotationText.text = Math.round(val) + "°"
+                            }
+                            onValueChanged: {
+                                MoveCenterTabController.rotation = playspaceRotationSlider.value
+                                playspaceRotationText.text = Math.round(playspaceRotationSlider.value) + "°"
                             }
                         }
 
@@ -195,31 +234,46 @@ MyStackViewPage {
                             Layout.preferredWidth: 40
                             text: "+"
                             onClicked: {
-                                playspaceRotationSlider.value += 45
+                                var val = (MoveCenterTabController.rotation + 45) % 360
+                                if (val < 0) {
+                                    val = 360 + val;
+                                }
+                                MoveCenterTabController.rotation = val
                             }
                         }
 
-                        MyText {
+                        MyTextField {
                             id: playspaceRotationText
-                            Layout.preferredWidth: 85
-                            horizontalAlignment: Text.AlignRight
-                            text: "-360°"
-                        }
-                    }
-                    RowLayout {
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        MyPushButton {
-                            id: playspaceApplyButton
-                            text: "Apply"
-                            Layout.preferredWidth: 250
-                            onClicked: {
-                                MoveCenterTabController.rotation = playspaceRotationSlider.value
+                            text: "0°"
+                            keyBoardUID: 104
+                            Layout.preferredWidth: 100
+                            Layout.leftMargin: 10
+                            Layout.rightMargin: 10
+                            horizontalAlignment: Text.AlignHCenter
+                            function onInputEvent(input) {
+                                var val = parseInt(input)
+                                if (!isNaN(val)) {
+                                    val = val % 360
+                                    if (val < 0) {
+                                        val = 360 + val;
+                                    }
+                                    MoveCenterTabController.rotation = val
+                                    text = MoveCenterTabController.rotation + "°"
+                                } else {
+                                    text = MoveCenterTabController.rotation + "°"
+                                }
                             }
                         }
                     }
                 }
+            }
+        }
+
+        MyToggleButton {
+            id: playspaceAdjustChaperoneToggle
+            text: "Adjust Chaperone"
+            onCheckedChanged: {
+                MoveCenterTabController.adjustChaperone = this.checked
             }
         }
 
@@ -235,20 +289,19 @@ MyStackViewPage {
         }
 
         Component.onCompleted: {
+            playspaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
             playSpaceMoveXText.text = MoveCenterTabController.offsetX.toFixed(1)
             playSpaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(1)
             playSpaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(1)
             playspaceRotationSlider.value = MoveCenterTabController.rotation
             if (MoveCenterTabController.trackingUniverse === 0) {
                 playspaceModeText.text = "Sitting"
-                playspaceApplyButton.enabled = false
                 playSpaceRotationPlusButton.enabled = false
                 playSpaceRotationMinusButton.enabled = false
                 playspaceRotationSlider.enabled = false
                 playspaceRotationText.text = "-"
             } else if (MoveCenterTabController.trackingUniverse === 1) {
                 playspaceModeText.text = "Standing"
-                playspaceApplyButton.enabled = true
                 playSpaceRotationPlusButton.enabled = true
                 playSpaceRotationMinusButton.enabled = true
                 playspaceRotationSlider.enabled = true
@@ -261,16 +314,19 @@ MyStackViewPage {
         Connections {
             target: MoveCenterTabController
             onOffsetXChanged: {
-                playSpaceMoveXText.text = MoveCenterTabController.offsetX.toFixed(1)
+                playSpaceMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
             }
             onOffsetYChanged: {
-                playSpaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(1)
+                playSpaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
             }
             onOffsetZChanged: {
-                playSpaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(1)
+                playSpaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
             }
             onRotationChanged: {
                 playspaceRotationSlider.value = MoveCenterTabController.rotation
+            }
+            onAdjustChaperoneChanged: {
+                playspaceAdjustChaperoneToggle = value
             }
             onTrackingUniverseChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {

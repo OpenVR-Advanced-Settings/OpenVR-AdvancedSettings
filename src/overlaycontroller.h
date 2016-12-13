@@ -37,6 +37,7 @@ namespace advsettings {
 
 class OverlayController : public QObject {
 	Q_OBJECT
+	Q_PROPERTY(bool desktopMode READ isDesktopMode)
 
 public:
 	static constexpr const char* applicationKey = "matzman666.AdvancedSettings";
@@ -92,6 +93,8 @@ public:
 	void RotateUniverseCenter(vr::ETrackingUniverseOrigin universe, float yAngle, bool adjustBounds = true, bool commit = true); // around y axis
 	void AddOffsetToCollisionBounds(unsigned axisId, float offset, bool commit = true);
 	void RotateCollisionBounds(float angle, bool commit = true); // around y axis
+
+	bool isDesktopMode() { return desktopMode; };
 
 	Q_INVOKABLE QString getVersionString();
 	Q_INVOKABLE QUrl getVRRuntimePathUrl();

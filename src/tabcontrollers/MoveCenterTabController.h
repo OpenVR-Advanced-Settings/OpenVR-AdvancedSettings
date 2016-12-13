@@ -19,6 +19,7 @@ class MoveCenterTabController : public QObject {
 	Q_PROPERTY(float offsetY READ offsetY WRITE setOffsetY NOTIFY offsetYChanged)
 	Q_PROPERTY(float offsetZ READ offsetZ WRITE setOffsetZ NOTIFY offsetZChanged)
 	Q_PROPERTY(int rotation READ rotation WRITE setRotation NOTIFY rotationChanged)
+	Q_PROPERTY(bool adjustChaperone READ adjustChaperone WRITE setAdjustChaperone NOTIFY adjustChaperoneChanged)
 
 private:
 	OverlayController* parent;
@@ -29,6 +30,7 @@ private:
 	float m_offsetY = 0.0f;
 	float m_offsetZ = 0.0f;
 	int m_rotation = 0;
+	bool m_adjustChaperone = true;
 
 	unsigned settingsUpdateCounter = 0;
 
@@ -42,6 +44,7 @@ public:
 	float offsetY() const;
 	float offsetZ() const;
 	int rotation() const;
+	bool adjustChaperone() const;
 
 public slots:
 	int trackingUniverse() const;
@@ -53,9 +56,11 @@ public slots:
 
 	void setRotation(int value, bool notify = true);
 
-	void modOffsetX(float value);
-	void modOffsetY(float value);
-	void modOffsetZ(float value);
+	void setAdjustChaperone(bool value, bool notify = true);
+
+	void modOffsetX(float value, bool notify = true);
+	void modOffsetY(float value, bool notify = true);
+	void modOffsetZ(float value, bool notify = true);
 	void reset();
 
 signals:
@@ -64,6 +69,7 @@ signals:
 	void offsetYChanged(float value);
 	void offsetZChanged(float value);
 	void rotationChanged(int value);
+	void adjustChaperoneChanged(bool value);
 };
 
 } // namespace advsettings
