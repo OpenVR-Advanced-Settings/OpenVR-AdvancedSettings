@@ -53,11 +53,27 @@ MyStackViewPage {
                 }
             }
 
-            MyText {
+            MyTextField {
                 id: steamvrSupersamplingText
-                text: "9.9"
-                horizontalAlignment: Text.AlignRight
-                Layout.minimumWidth: 64
+                text: "0.0"
+                keyBoardUID: 401
+                Layout.preferredWidth: 100
+                Layout.leftMargin: 10
+                Layout.rightMargin: 10
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < 0.1) {
+                            val = 0.1
+                        }
+                        console.debug("Supersampling TextField: valueChanged(", val, ")")
+                        var v = val.toFixed(1)
+                        steamvrSupersamplingSlider.value = v
+                        SteamVRTabController.setSuperSampling(v, false)
+                    }
+                    text = SteamVRTabController.superSampling.toFixed(1)
+                }
             }
         }
 
@@ -104,11 +120,28 @@ MyStackViewPage {
                 }
             }
 
-            MyText {
+
+            MyTextField {
                 id: steamvrCompositorSupersamplingText
-                text: "9.9"
-                horizontalAlignment: Text.AlignRight
-                Layout.minimumWidth: 64
+                text: "0.0"
+                keyBoardUID: 402
+                Layout.preferredWidth: 100
+                Layout.leftMargin: 10
+                Layout.rightMargin: 10
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < 0.1) {
+                            val = 0.1
+                        }
+                        console.debug("Compositor Supersampling TextField: valueChanged(", val, ")")
+                        var v = val.toFixed(1)
+                        steamvrCompositorSupersamplingSlider.value = v
+                        SteamVRTabController.setCompositorSuperSampling(v, false)
+                    }
+                    text = SteamVRTabController.compositorSuperSampling.toFixed(1)
+                }
             }
         }
 
