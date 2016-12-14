@@ -67,7 +67,7 @@ void FixFloorTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) 
 		} else if (measurementCount >= 25) {
 			floorOffset = -controllerUpOffsetCorrection + (float)(tempOffset / (double)measurementCount);
 			LOG(INFO) << "Fix Floor: Floor Offset = " << floorOffset;
-			parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, floorOffset);
+			parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, floorOffset, false);
 			statusMessage = "Fixing ... OK";
 			statusMessageTimeout = 1.0;
 			emit statusMessageSignal();
@@ -112,7 +112,7 @@ void FixFloorTabController::fixFloorClicked() {
 }
 
 void FixFloorTabController::undoFixFloorClicked() {
-	parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, -floorOffset);
+	parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, -floorOffset, false);
 	LOG(INFO) << "Fix Floor: Undo Floor Offset = " << -floorOffset;
 	floorOffset = 0.0f;
 	statusMessage = "Undo ... OK";
