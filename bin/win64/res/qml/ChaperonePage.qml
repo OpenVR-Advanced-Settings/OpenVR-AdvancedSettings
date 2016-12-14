@@ -256,7 +256,7 @@ MyStackViewPage {
                     chaperoneVisibilityText.text = Math.round(val) + "%"
                 }
                 onValueChanged: {
-                    ChaperoneTabController.setBoundsVisibility(this.value.toFixed(2), false)
+                    ChaperoneTabController.setBoundsVisibility(Math.round(value), false)
                 }
             }
 
@@ -268,11 +268,29 @@ MyStackViewPage {
                 }
             }
 
-            MyText {
+
+            MyTextField {
                 id: chaperoneVisibilityText
-                text: "100%"
-                horizontalAlignment: Text.AlignRight
-                Layout.minimumWidth: 85
+                text: "0.00"
+                keyBoardUID: 301
+                Layout.preferredWidth: 100
+                Layout.leftMargin: 10
+                Layout.rightMargin: 10
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < 0.0) {
+                            val = 0.0
+                        } else if (val > 100.0) {
+                            val = 100.0
+                        }
+                        var v = (val/100).toFixed(2)
+                        chaperoneVisibilitySlider.value = v
+                        ChaperoneTabController.setBoundsVisibility(v, false)
+                    }
+                    text = Math.round(ChaperoneTabController.boundsVisibility * 100) + "%"
+                }
             }
 
             MyText {
@@ -300,7 +318,7 @@ MyStackViewPage {
                     chaperoneFadeDistanceText.text = val.toFixed(1)
                 }
                 onValueChanged: {
-                    ChaperoneTabController.setFadeDistance(this.value.toFixed(1), false);
+                    ChaperoneTabController.setFadeDistance(this.value.toFixed(1), false)
                 }
             }
 
@@ -312,11 +330,86 @@ MyStackViewPage {
                 }
             }
 
-            MyText {
+            MyTextField {
                 id: chaperoneFadeDistanceText
-                text: "9.9"
-                horizontalAlignment: Text.AlignRight
-                Layout.minimumWidth: 85
+                text: "0.00"
+                keyBoardUID: 302
+                Layout.preferredWidth: 100
+                Layout.leftMargin: 10
+                Layout.rightMargin: 10
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < 0.0) {
+                            val = 0.0
+                        }
+                        var v = val.toFixed(1)
+                        chaperoneFadeDistanceSlider.value = v
+                        ChaperoneTabController.setFadeDistance(v, false)
+                    }
+                    text = ChaperoneTabController.fadeDistance.toFixed(1)
+                }
+            }
+
+            MyText {
+                text: "Height:"
+                Layout.rightMargin: 12
+            }
+
+            MyPushButton2 {
+                text: "-"
+                Layout.preferredWidth: 40
+                onClicked: {
+                    chaperoneHeightSlider.decrease()
+                }
+            }
+
+            MySlider {
+                id: chaperoneHeightSlider
+                from: 0.01
+                to: 5.0
+                stepSize: 0.01
+                value: 2.0
+                Layout.fillWidth: true
+                onPositionChanged: {
+                    var val = (this.from + ( this.position  * (this.to - this.from))).toFixed(2)
+                    ChaperoneTabController.setHeight(val, false);
+                    chaperoneHeightText.text = val
+                }
+                onValueChanged: {
+                    ChaperoneTabController.setHeight(value.toFixed(2), false)
+                }
+            }
+
+            MyPushButton2 {
+                text: "+"
+                Layout.preferredWidth: 40
+                onClicked: {
+                    chaperoneHeightSlider.increase()
+                }
+            }
+
+            MyTextField {
+                id: chaperoneHeightText
+                text: "0.00"
+                keyBoardUID: 303
+                Layout.preferredWidth: 100
+                Layout.leftMargin: 10
+                Layout.rightMargin: 10
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < 0.01) {
+                            val = 0.01
+                        }
+                        var v = val.toFixed(2)
+                        chaperoneHeightSlider.value = v
+                        ChaperoneTabController.setHeight(v, false)
+                    }
+                    text = ChaperoneTabController.height.toFixed(2)
+                }
             }
         }
 
@@ -392,6 +485,9 @@ MyStackViewPage {
         Component.onCompleted: {
             chaperoneVisibilitySlider.value = ChaperoneTabController.boundsVisibility
             chaperoneFadeDistanceSlider.value = ChaperoneTabController.fadeDistance
+            var h = ChaperoneTabController.height.toFixed(2)
+            chaperoneHeightSlider.value = h
+            chaperoneHeightText.text = h
             chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarker
             chaperonePlaySpaceToggle.checked = ChaperoneTabController.playSpaceMarker
             chaperoneForceBoundsToggle.checked = ChaperoneTabController.forceBounds
@@ -410,6 +506,12 @@ MyStackViewPage {
                     chaperoneFadeDistanceSlider.value = ChaperoneTabController.fadeDistance
                 }
             }
+            onHeightChanged: {
+                var h = ChaperoneTabController.height.toFixed(2)
+                chaperoneHeightSlider.value = h
+                chaperoneHeightText.text = h
+            }
+
             onCenterMarkerChanged: {
                 chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarker
             }

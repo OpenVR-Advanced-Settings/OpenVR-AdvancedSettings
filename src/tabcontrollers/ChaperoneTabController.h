@@ -53,9 +53,10 @@ class ChaperoneTabController : public QObject {
 	Q_OBJECT
 	Q_PROPERTY(float boundsVisibility READ boundsVisibility WRITE setBoundsVisibility NOTIFY boundsVisibilityChanged)
 	Q_PROPERTY(float fadeDistance READ fadeDistance WRITE setFadeDistance NOTIFY fadeDistanceChanged)
-	Q_PROPERTY(float centerMarker READ centerMarker WRITE setCenterMarker NOTIFY centerMarkerChanged)
-	Q_PROPERTY(float playSpaceMarker READ playSpaceMarker WRITE setPlaySpaceMarker NOTIFY playSpaceMarkerChanged)
-	Q_PROPERTY(float forceBounds READ forceBounds WRITE setForceBounds NOTIFY forceBoundsChanged)
+	Q_PROPERTY(float height READ height WRITE setHeight NOTIFY heightChanged)
+	Q_PROPERTY(bool centerMarker READ centerMarker WRITE setCenterMarker NOTIFY centerMarkerChanged)
+	Q_PROPERTY(bool playSpaceMarker READ playSpaceMarker WRITE setPlaySpaceMarker NOTIFY playSpaceMarkerChanged)
+	Q_PROPERTY(bool forceBounds READ forceBounds WRITE setForceBounds NOTIFY forceBoundsChanged)
 
 private:
 	OverlayController* parent;
@@ -63,6 +64,7 @@ private:
 
 	float m_visibility = 0.6f;
 	float m_fadeDistance = 0.7f;
+	float m_height = 2.0f;
 	bool m_centerMarker = false;
 	bool m_playSpaceMarker = false;
 	bool m_forceBounds = false;
@@ -79,6 +81,7 @@ public:
 
 	float boundsVisibility() const;
 	float fadeDistance() const;
+	float height() const;
 	bool centerMarker() const;
 	bool playSpaceMarker() const;
 	bool forceBounds() const;
@@ -89,9 +92,13 @@ public:
 	Q_INVOKABLE unsigned getChaperoneProfileCount();
 	Q_INVOKABLE QString getChaperoneProfileName(unsigned index);
 
+	float getBoundsMaxY();
+
 public slots:
 	void setBoundsVisibility(float value, bool notify = true);
 	void setFadeDistance(float value, bool notify = true);
+	void setHeight(float value, bool notify = true);
+	void updateHeight(float value, bool notify = true);
 	void setCenterMarker(bool value, bool notify = true);
 	void setPlaySpaceMarker(bool value, bool notify = true);
 	void setForceBounds(bool value, bool notify = true);
@@ -100,13 +107,14 @@ public slots:
 	void reloadFromDisk();
 
 	void addChaperoneProfile(QString name, bool includeGeometry, bool includeVisbility, bool includeFadeDistance, bool includeCenterMarker,
-			bool includePlaySpaceMarker, bool includeFloorBounds, bool includeBoundsColor, bool includeChaperoneStyle, bool includeForceBounds);
+	bool includePlaySpaceMarker, bool includeFloorBounds, bool includeBoundsColor, bool includeChaperoneStyle, bool includeForceBounds);
 	void applyChaperoneProfile(unsigned index);
 	void deleteChaperoneProfile(unsigned index);
 
 signals:
 	void boundsVisibilityChanged(float value);
 	void fadeDistanceChanged(float value);
+	void heightChanged(float value);
 	void centerMarkerChanged(bool value);
 	void playSpaceMarkerChanged(bool value);
 	void forceBoundsChanged(bool value);

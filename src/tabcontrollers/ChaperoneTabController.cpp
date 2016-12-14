@@ -7,6 +7,7 @@ namespace advsettings {
 
 
 void ChaperoneTabController::initStage1() {
+	m_height = getBoundsMaxY();
 	reloadChaperoneProfiles();
 	eventLoopTick();
 }
@@ -241,6 +242,48 @@ void ChaperoneTabController::setFadeDistance(float value, bool notify) {
 	}
 }
 
+
+float ChaperoneTabController::height() const {
+	return m_height;
+}
+
+
+void ChaperoneTabController::setHeight(float value, bool notify) {
+	if (m_height != value) {
+		m_height = value;
+		vr::VRChaperoneSetup()->RevertWorkingCopy();
+		unsigned collisionBoundsCount = 0;
+		vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(nullptr, &collisionBoundsCount);
+		if (collisionBoundsCount > 0) {
+			vr::HmdQuad_t* collisionBounds = new vr::HmdQuad_t[collisionBoundsCount];
+			vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(collisionBounds, &collisionBoundsCount);
+			for (unsigned b = 0; b < collisionBoundsCount; b++) {
+				collisionBounds[b].vCorners[0].v[1] = 0.0;
+				collisionBounds[b].vCorners[1].v[1] = value;
+				collisionBounds[b].vCorners[2].v[1] = value;
+				collisionBounds[b].vCorners[3].v[1] = 0.0;
+			}
+			vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(collisionBounds, collisionBoundsCount);
+			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
+			delete collisionBounds;
+		}
+		if (notify) {
+			emit heightChanged(m_fadeDistance);
+		}
+	}
+}
+
+
+void ChaperoneTabController::updateHeight(float value, bool notify) {
+	if (m_height != value) {
+		m_height = value;
+		if (notify) {
+			emit heightChanged(m_fadeDistance);
+		}
+	}
+}
+
+
 bool ChaperoneTabController::centerMarker() const {
 	return m_centerMarker;
 }
@@ -415,6 +458,7 @@ void ChaperoneTabController::applyChaperoneProfile(unsigned index) {
 			setForceBounds(profile.forceBounds);
 		}
 		vr::VRSettings()->Sync();
+		updateHeight(getBoundsMaxY());
 	}
 }
 
@@ -426,6 +470,29 @@ void ChaperoneTabController::deleteChaperoneProfile(unsigned index) {
 		OverlayController::appSettings()->sync();
 		emit chaperoneProfilesUpdated();
 	}
+}
+
+float ChaperoneTabController::getBoundsMaxY() {
+	unsigned collisionBoundsCount = 0;
+	float result = FP_NAN;
+	vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo(nullptr, &collisionBoundsCount);
+	if (collisionBoundsCount > 0) {
+		vr::HmdQuad_t* collisionBounds = new vr::HmdQuad_t[collisionBoundsCount];
+		vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo(collisionBounds, &collisionBoundsCount);
+		for (unsigned b = 0; b < collisionBoundsCount; b++) {
+			int ci;
+			if (collisionBounds[b].vCorners[1].v[1] >= collisionBounds[b].vCorners[2].v[1]) {
+				ci = 1;
+			} else {
+				ci = 2;
+			}
+			if (isnan(result) || result < collisionBounds[b].vCorners[ci].v[1]) {
+				result = collisionBounds[b].vCorners[ci].v[1];
+			}
+		}
+		delete collisionBounds;
+	}
+	return result;
 }
 
 } // namespace advconfig
