@@ -275,7 +275,6 @@ MyStackViewPage {
                 keyBoardUID: 301
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
@@ -336,7 +335,6 @@ MyStackViewPage {
                 keyBoardUID: 302
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
@@ -396,7 +394,6 @@ MyStackViewPage {
                 keyBoardUID: 303
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)

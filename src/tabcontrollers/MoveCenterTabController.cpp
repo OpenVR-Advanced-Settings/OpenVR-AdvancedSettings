@@ -95,10 +95,10 @@ void MoveCenterTabController::setAdjustChaperone(bool value, bool notify) {
 					parent->AddOffsetToCollisionBounds(0, -m_offsetX, false);
 				}
 				if (m_offsetY != 0.0f) {
-					parent->AddOffsetToCollisionBounds(0, -m_offsetY, false);
+					parent->AddOffsetToCollisionBounds(1, -m_offsetY, false);
 				}
 				if (m_offsetZ != 0.0f) {
-					parent->AddOffsetToCollisionBounds(0, -m_offsetZ, false);
+					parent->AddOffsetToCollisionBounds(2, -m_offsetZ, false);
 				}
 				if (m_rotation != 0) {
 					parent->RotateCollisionBounds(-m_rotation, false);
@@ -108,10 +108,10 @@ void MoveCenterTabController::setAdjustChaperone(bool value, bool notify) {
 					parent->AddOffsetToCollisionBounds(0, m_offsetX, false);
 				}
 				if (m_offsetY != 0.0f) {
-					parent->AddOffsetToCollisionBounds(0, m_offsetY, false);
+					parent->AddOffsetToCollisionBounds(1, m_offsetY, false);
 				}
 				if (m_offsetZ != 0.0f) {
-					parent->AddOffsetToCollisionBounds(0, m_offsetZ, false);
+					parent->AddOffsetToCollisionBounds(2, m_offsetZ, false);
 				}
 				if (m_rotation != 0) {
 					parent->RotateCollisionBounds(m_rotation, false);

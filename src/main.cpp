@@ -29,19 +29,19 @@ void myQtMessageHandler(QtMsgType type, const QMessageLogContext &context, const
 	QByteArray localMsg = msg.toLocal8Bit();
 	switch (type) {
 		case QtDebugMsg:
-			LOG(DEBUG) << localMsg.constData() << "(" << context.file << ":" << context.line << ")";
+			LOG(DEBUG) << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
 			break;
 		case QtInfoMsg:
-			LOG(INFO) << localMsg.constData() << "(" << context.file << ":" << context.line << ")";
+			LOG(INFO) << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
 			break;
 		case QtWarningMsg:
-			LOG(WARNING) << localMsg.constData() << "(" << context.file << ":" << context.line << ")";
+			LOG(WARNING) << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
 			break;
 		case QtCriticalMsg:
-			LOG(ERROR) << localMsg.constData() << "(" << context.file << ":" << context.line << ")";
+			LOG(ERROR) << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
 			break;
 		case QtFatalMsg:
-			LOG(FATAL) << localMsg.constData() << "(" << context.file << ":" << context.line << ")";
+			LOG(FATAL) << localMsg.constData() << " (" << context.file << ":" << context.line << ")";
 			break;
 	}
 }

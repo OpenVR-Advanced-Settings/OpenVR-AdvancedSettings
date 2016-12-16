@@ -67,7 +67,7 @@ MyStackViewPage {
                         id: playSpaceMoveXText
                         text: "0.00"
 						keyBoardUID: 101
-						Layout.preferredWidth: 100
+                        Layout.preferredWidth: 140
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10
                         horizontalAlignment: Text.AlignHCenter
@@ -108,7 +108,7 @@ MyStackViewPage {
                         id: playSpaceMoveYText
                         text: "0.00"
                         keyBoardUID: 102
-                        Layout.preferredWidth: 100
+                        Layout.preferredWidth: 140
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10
                         horizontalAlignment: Text.AlignHCenter
@@ -148,7 +148,7 @@ MyStackViewPage {
                         id: playSpaceMoveZText
                         text: "0.00"
                         keyBoardUID: 103
-                        Layout.preferredWidth: 100
+                        Layout.preferredWidth: 140
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10
                         horizontalAlignment: Text.AlignHCenter
@@ -248,7 +248,6 @@ MyStackViewPage {
                             keyBoardUID: 104
                             Layout.preferredWidth: 100
                             Layout.leftMargin: 10
-                            Layout.rightMargin: 10
                             horizontalAlignment: Text.AlignHCenter
                             function onInputEvent(input) {
                                 var val = parseInt(input)

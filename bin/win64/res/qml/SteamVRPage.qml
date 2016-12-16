@@ -59,7 +59,6 @@ MyStackViewPage {
                 keyBoardUID: 401
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
@@ -127,7 +126,6 @@ MyStackViewPage {
                 keyBoardUID: 402
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
