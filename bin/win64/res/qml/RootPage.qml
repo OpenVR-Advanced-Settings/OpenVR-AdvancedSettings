@@ -81,6 +81,7 @@ MyStackViewPage {
                        activationSoundEnabled: false
                        text: "Revive"
                        Layout.fillWidth: true
+                       visible: ReviveTabController.isOverlayInstalled
                        onClicked: {
                            MyResources.playFocusChangedSound()
                            mainView.push(revivePage)

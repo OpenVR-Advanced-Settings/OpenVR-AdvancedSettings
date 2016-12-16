@@ -84,6 +84,7 @@ void OverlayController::Init(QQmlEngine* qmlEngine) {
 	audioTabController.initStage1();
 	statisticsTabController.initStage1();
 	settingsTabController.initStage1();
+	reviveTabController.initStage1();
 
 	// Set qml context
 	qmlEngine->rootContext()->setContextProperty("applicationVersion", getVersionString());
@@ -127,6 +128,11 @@ void OverlayController::Init(QQmlEngine* qmlEngine) {
 	});
 	qmlRegisterSingletonType<SteamVRTabController>("matzman666.advsettings", 1, 0, "SettingsTabController", [](QQmlEngine*, QJSEngine*) {
 		QObject* obj = &getInstance()->settingsTabController;
+		QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+		return obj;
+	});
+	qmlRegisterSingletonType<SteamVRTabController>("matzman666.advsettings", 1, 0, "ReviveTabController", [](QQmlEngine*, QJSEngine*) {
+		QObject* obj = &getInstance()->reviveTabController;
 		QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
 		return obj;
 	});
@@ -213,6 +219,7 @@ void OverlayController::SetWidget(QQuickItem* quickItem, const std::string& name
 	audioTabController.initStage2(this, m_pWindow.get());
 	statisticsTabController.initStage2(this, m_pWindow.get());
 	settingsTabController.initStage2(this, m_pWindow.get());
+	reviveTabController.initStage2(this, m_pWindow.get());
 }
 
 
@@ -265,6 +272,7 @@ void OverlayController::OnTimeoutPumpEvents() {
 	steamVRTabController.eventLoopTick();
 	chaperoneTabController.eventLoopTick();
 	settingsTabController.eventLoopTick();
+	reviveTabController.eventLoopTick();
 	audioTabController.eventLoopTick();
 
 	vr::VREvent_t vrEvent;

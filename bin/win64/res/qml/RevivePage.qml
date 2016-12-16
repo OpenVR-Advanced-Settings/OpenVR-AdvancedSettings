@@ -12,8 +12,12 @@ MyStackViewPage {
 
         RowLayout {
             MyToggleButton {
+                id: pixelsPerDisplayPixelToggle
                 text: "Render Target Override:"
-                Layout.rightMargin: 12
+                Layout.preferredWidth: 350
+                onCheckedChanged: {
+                    ReviveTabController.setPixelsPerDisplayPixelOverrideEnabled(checked, false)
+                }
             }
 
             MyPushButton2 {
@@ -36,6 +40,7 @@ MyStackViewPage {
                     pixelsPerDisplayPixelText.text = val.toFixed(1)
                 }
                 onValueChanged: {
+                    ReviveTabController.setPixelsPerDisplayPixelOverride(value)
                 }
             }
 
@@ -47,11 +52,27 @@ MyStackViewPage {
                 }
             }
 
-            MyText {
+            MyTextField {
                 id: pixelsPerDisplayPixelText
-                text: "1.0"
-                horizontalAlignment: Text.AlignRight
-                Layout.minimumWidth: 85
+                text: "0.00"
+                keyBoardUID: 221
+                Layout.preferredWidth: 100
+                Layout.leftMargin: 10
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < 0.1) {
+                            val = 0.1
+                        }
+                        var v = val.toFixed(1)
+                        pixelsPerDisplayPixelSlider.value = v
+                        ReviveTabController.setPixelsPerDisplayPixelOverride(v, false)
+                        text = v
+                    } else {
+                        text = ReviveTabController.pixelsPerDisplayPixelOverride.toFixed(1)
+                    }
+                }
             }
         }
 
@@ -59,17 +80,15 @@ MyStackViewPage {
         RowLayout {
             MyText {
                 text: "Grip Button Mode:"
-                Layout.rightMargin: 12
+                Layout.preferredWidth: 350
             }
 
             MyComboBox {
                 id: gripButtonModeComboBox
-                Layout.maximumWidth: 300
-                Layout.minimumWidth: 300
-                Layout.preferredWidth: 300
                 Layout.fillWidth: true
                 model: ["Normal Mode", "Toggle Mode", "Hybrid Mode"]
                 onCurrentIndexChanged: {
+                    ReviveTabController.setGripButtonMode(currentIndex, false)
                 }
             }
         }
@@ -118,12 +137,15 @@ MyStackViewPage {
                             id: thumbDeadzoneSlider
                             from: 0.0
                             to: 1.0
-                            stepSize: 0.1
+                            stepSize: 0.01
                             value: 0.5
                             Layout.fillWidth: true
                             onPositionChanged: {
                                 var val = this.from + ( this.position  * (this.to - this.from))
-                                thumbDeadzoneText.text = val.toFixed(1)
+                                thumbDeadzoneText.text = val.toFixed(2)
+                            }
+                            onValueChanged: {
+                                ReviveTabController.setThumbDeadzone(value.toFixed(2))
                             }
                         }
 
@@ -136,11 +158,29 @@ MyStackViewPage {
                             }
                         }
 
-                        MyText {
+                        MyTextField {
                             id: thumbDeadzoneText
-                            Layout.preferredWidth: 85
-                            horizontalAlignment: Text.AlignRight
-                            text: "1.0"
+                            text: "0.00"
+                            keyBoardUID: 222
+                            Layout.preferredWidth: 100
+                            Layout.leftMargin: 10
+                            horizontalAlignment: Text.AlignHCenter
+                            function onInputEvent(input) {
+                                var val = parseFloat(input)
+                                if (!isNaN(val)) {
+                                    if (val < 0.0) {
+                                        val = 0.0
+                                    } else if (val > 1.0) {
+                                        val = 1.0
+                                    }
+                                    var v = val.toFixed(2)
+                                    thumbDeadzoneSlider.value = v
+                                    ReviveTabController.setThumbDeadzone(v, false)
+                                    text = v
+                                } else {
+                                    text = ReviveTabController.thumbDeadzone.toFixed(2)
+                                }
+                            }
                         }
                     }
 
@@ -161,14 +201,17 @@ MyStackViewPage {
 
                         MySlider {
                             id: thumbRangeSlider
-                            from: 0.0
-                            to: 1.0
-                            stepSize: 0.1
-                            value: 0.5
+                            from: 1.0
+                            to: 5.0
+                            stepSize: 0.01
+                            value: 2.0
                             Layout.fillWidth: true
                             onPositionChanged: {
                                 var val = this.from + ( this.position  * (this.to - this.from))
-                                thumbRangeText.text = val.toFixed(1)
+                                thumbRangeText.text = val.toFixed(2)
+                            }
+                            onValueChanged: {
+                                ReviveTabController.setThumbRange(value.toFixed(2))
                             }
                         }
 
@@ -181,11 +224,27 @@ MyStackViewPage {
                             }
                         }
 
-                        MyText {
+                        MyTextField {
                             id: thumbRangeText
-                            Layout.preferredWidth: 85
-                            horizontalAlignment: Text.AlignRight
-                            text: "1.0"
+                            text: "0.00"
+                            keyBoardUID: 223
+                            Layout.preferredWidth: 100
+                            Layout.leftMargin: 10
+                            horizontalAlignment: Text.AlignHCenter
+                            function onInputEvent(input) {
+                                var val = parseFloat(input)
+                                if (!isNaN(val)) {
+                                    if (val < 0.01) {
+                                        val = 0.01
+                                    }
+                                    var v = val.toFixed(2)
+                                    thumbRangeSlider.value = v
+                                    ReviveTabController.setThumbRange(v, false)
+                                    text = v
+                                } else {
+                                    text = ReviveTabController.thumbRange.toFixed(2)
+                                }
+                            }
                         }
                     }
                 }
@@ -230,27 +289,35 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
+                            var val = ReviveTabController.touchPitch - 0.1
+                            if (val < -180.0) {
+                                val = -180.0
+                            }
+                            ReviveTabController.setTouchPitch(val.toFixed(1))
                         }
                     }
 
-                    TextField {
+                    MyTextField {
                         id: touchPitchInputField
+                        text: "0.00"
+                        keyBoardUID: 201
+                        Layout.preferredWidth: 140
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
                         horizontalAlignment: Text.AlignHCenter
-                        color: "#cccccc"
-                        text: "0.0"
-                        Layout.preferredWidth: 120
-                        font.pointSize: 20
-                        onActiveFocusChanged: {
-                            if (activeFocus) {
-                                OverlayController.showKeyboard(text, 201)
-                            }
-                        }
-                        Connections {
-                            target: OverlayController
-                            onKeyBoardInputSignal: {
-                                if (userValue == 201) {
-                                    touchPitchInputField.text = input
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                if (val < -180.0) {
+                                    val = -180.0
+                                } else if (val > 180.0) {
+                                    val = 180.0
                                 }
+                                var v = val.toFixed(1)
+                                ReviveTabController.setTouchPitch(v, false)
+                                text = v + "°"
+                            } else {
+                                text = ReviveTabController.touchPitch.toFixed(1) + "°"
                             }
                         }
                     }
@@ -260,6 +327,11 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
+                            var val = ReviveTabController.touchPitch + 0.1
+                            if (val > 180.0) {
+                                val = 180.0
+                            }
+                            ReviveTabController.setTouchPitch(val.toFixed(1))
                         }
                     }
 
@@ -276,27 +348,35 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
+                            var val = ReviveTabController.touchYaw - 0.1
+                            if (val < -180.0) {
+                                val = -180.0
+                            }
+                            ReviveTabController.setTouchYaw(val.toFixed(1))
                         }
                     }
 
-                    TextField {
+                    MyTextField {
                         id: touchYawInputField
+                        text: "0.00"
+                        keyBoardUID: 202
+                        Layout.preferredWidth: 140
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
                         horizontalAlignment: Text.AlignHCenter
-                        color: "#cccccc"
-                        text: "0.0"
-                        Layout.preferredWidth: 120
-                        font.pointSize: 20
-                        onActiveFocusChanged: {
-                            if (activeFocus) {
-                                OverlayController.showKeyboard(text, 202)
-                            }
-                        }
-                        Connections {
-                            target: OverlayController
-                            onKeyBoardInputSignal: {
-                                if (userValue == 202) {
-                                    touchYawInputField.text = input
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                if (val < -180.0) {
+                                    val = -180.0
+                                } else if (val > 180.0) {
+                                    val = 180.0
                                 }
+                                var v = val.toFixed(1)
+                                ReviveTabController.setTouchYaw(v, false)
+                                text = v + "°"
+                            } else {
+                                text = ReviveTabController.touchYaw.toFixed(1) + "°"
                             }
                         }
                     }
@@ -306,6 +386,11 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
+                            var val = ReviveTabController.touchYaw + 0.1
+                            if (val > 180.0) {
+                                val = 180.0
+                            }
+                            ReviveTabController.setTouchYaw(val.toFixed(1))
                         }
                     }
 
@@ -322,27 +407,35 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
+                            var val = ReviveTabController.touchRoll - 0.1
+                            if (val < -180.0) {
+                                val = -180.0
+                            }
+                            ReviveTabController.setTouchRoll(val.toFixed(1))
                         }
                     }
 
-                    TextField {
+                    MyTextField {
                         id: touchRollInputField
+                        text: "0.00"
+                        keyBoardUID: 203
+                        Layout.preferredWidth: 140
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
                         horizontalAlignment: Text.AlignHCenter
-                        color: "#cccccc"
-                        text: "0.0"
-                        Layout.preferredWidth: 120
-                        font.pointSize: 20
-                        onActiveFocusChanged: {
-                            if (activeFocus) {
-                                OverlayController.showKeyboard(text, 203)
-                            }
-                        }
-                        Connections {
-                            target: OverlayController
-                            onKeyBoardInputSignal: {
-                                if (userValue == 203) {
-                                    touchRollInputField.text = input
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                if (val < -180.0) {
+                                    val = -180.0
+                                } else if (val > 180.0) {
+                                    val = 180.0
                                 }
+                                var v = val.toFixed(1)
+                                ReviveTabController.setTouchRoll(v, false)
+                                text = v + "°"
+                            } else {
+                                text = ReviveTabController.touchRoll.toFixed(1) + "°"
                             }
                         }
                     }
@@ -352,6 +445,11 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
+                            var val = ReviveTabController.touchRoll + 0.1
+                            if (val > 180.0) {
+                                val = 180.0
+                            }
+                            ReviveTabController.setTouchRoll(val.toFixed(1))
                         }
                     }
 
@@ -367,27 +465,26 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
+                            ReviveTabController.setTouchX((ReviveTabController.touchX - 0.001).toFixed(3))
                         }
                     }
 
-                    TextField {
+                    MyTextField {
                         id: touchXInputField
+                        text: "0.00"
+                        keyBoardUID: 204
+                        Layout.preferredWidth: 140
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
                         horizontalAlignment: Text.AlignHCenter
-                        color: "#cccccc"
-                        text: "0.0"
-                        Layout.preferredWidth: 120
-                        font.pointSize: 20
-                        onActiveFocusChanged: {
-                            if (activeFocus) {
-                                OverlayController.showKeyboard(text, 204)
-                            }
-                        }
-                        Connections {
-                            target: OverlayController
-                            onKeyBoardInputSignal: {
-                                if (userValue == 204) {
-                                    touchXInputField.text = input
-                                }
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                var v = val.toFixed(3)
+                                ReviveTabController.setTouchX(v, false)
+                                text = v
+                            } else {
+                                text = ReviveTabController.touchX.toFixed(3)
                             }
                         }
                     }
@@ -397,6 +494,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
+                            ReviveTabController.setTouchX((ReviveTabController.touchX + 0.001).toFixed(3))
                         }
                     }
 
@@ -413,27 +511,26 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
+                            ReviveTabController.setTouchY((ReviveTabController.touchY - 0.001).toFixed(3))
                         }
                     }
 
-                    TextField {
+                    MyTextField {
                         id: touchYInputField
+                        text: "0.00"
+                        keyBoardUID: 205
+                        Layout.preferredWidth: 140
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
                         horizontalAlignment: Text.AlignHCenter
-                        color: "#cccccc"
-                        text: "0.0"
-                        Layout.preferredWidth: 120
-                        font.pointSize: 20
-                        onActiveFocusChanged: {
-                            if (activeFocus) {
-                                OverlayController.showKeyboard(text, 205)
-                            }
-                        }
-                        Connections {
-                            target: OverlayController
-                            onKeyBoardInputSignal: {
-                                if (userValue == 205) {
-                                    touchYInputField.text = input
-                                }
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                var v = val.toFixed(3)
+                                ReviveTabController.setTouchY(v, false)
+                                text = v
+                            } else {
+                                text = ReviveTabController.touchY.toFixed(3)
                             }
                         }
                     }
@@ -443,6 +540,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
+                            ReviveTabController.setTouchY((ReviveTabController.touchY + 0.001).toFixed(3))
                         }
                     }
 
@@ -459,27 +557,26 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
+                            ReviveTabController.setTouchZ((ReviveTabController.touchZ - 0.001).toFixed(3))
                         }
                     }
 
-                    TextField {
+                    MyTextField {
                         id: touchZInputField
+                        text: "0.00"
+                        keyBoardUID: 206
+                        Layout.preferredWidth: 140
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
                         horizontalAlignment: Text.AlignHCenter
-                        color: "#cccccc"
-                        text: "0.0"
-                        Layout.preferredWidth: 120
-                        font.pointSize: 20
-                        onActiveFocusChanged: {
-                            if (activeFocus) {
-                                OverlayController.showKeyboard(text, 206)
-                            }
-                        }
-                        Connections {
-                            target: OverlayController
-                            onKeyBoardInputSignal: {
-                                if (userValue == 206) {
-                                    touchZInputField.text = input
-                                }
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                var v = val.toFixed(3)
+                                ReviveTabController.setTouchZ(v, false)
+                                text = v
+                            } else {
+                                text = ReviveTabController.touchZ.toFixed(3)
                             }
                         }
                     }
@@ -489,6 +586,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
+                            ReviveTabController.setTouchZ((ReviveTabController.touchZ + 0.001).toFixed(3))
                         }
                     }
                 }
@@ -498,164 +596,171 @@ MyStackViewPage {
 
         MyDialogOkCancelPopup {
             id: revivePersonalInfoDialog
+            property double playerHeight: 0.0
+            property double eyeHeight: 0.0
             dialogWidth: 600
-            dialogHeight: 400
+            dialogHeight: 440
             dialogTitle: "Personal Information"
             dialogContentItem: GridLayout {
+                rowSpacing: 6
+                columnSpacing: 18
                 columns: 2
                 MyText {
                     text: "Username:"
                 }
-                TextField {
+                MyTextField {
                     id: rpidUsername
-                    horizontalAlignment: Text.AlignHCenter
-                    color: "#cccccc"
-                    text: "Username"
-                    Layout.preferredWidth: 250
-                    font.pointSize: 20
-                    onActiveFocusChanged: {
-                        if (activeFocus) {
-                            OverlayController.showKeyboard(text, 211)
-                        }
-                    }
-                    Connections {
-                        target: OverlayController
-                        onKeyBoardInputSignal: {
-                            if (userValue == 211) {
-                                rpidUsername.text = input
-                            }
-                        }
+                    text: "0.00"
+                    keyBoardUID: 211
+                    Layout.fillWidth: true
+                    function onInputEvent(input) {
+                        rpidUsername.text = input
                     }
                 }
                 MyText {
                     text: "Name:"
                 }
-
-                TextField {
+                MyTextField {
                     id: rpidName
-                    horizontalAlignment: Text.AlignHCenter
-                    color: "#cccccc"
-                    text: "Name"
-                    Layout.preferredWidth: 250
-                    font.pointSize: 20
-                    onActiveFocusChanged: {
-                        if (activeFocus) {
-                            OverlayController.showKeyboard(text, 212)
-                        }
-                    }
-                    Connections {
-                        target: OverlayController
-                        onKeyBoardInputSignal: {
-                            if (userValue == 212) {
-                                rpidName.text = input
-                            }
-                        }
+                    text: "0.00"
+                    keyBoardUID: 212
+                    Layout.fillWidth: true
+                    function onInputEvent(input) {
+                        rpidName.text = input
                     }
                 }
                 MyText {
                     text: "Gender:"
                 }
-
                 MyComboBox {
                     id: rpidGender
-                    Layout.maximumWidth: 300
-                    Layout.minimumWidth: 300
-                    Layout.preferredWidth: 300
                     Layout.fillWidth: true
                     currentIndex: 2
-                    model: ["Male", "Female", "Unknown"]
-                    onCurrentIndexChanged: {
-                    }
+                    model: ["Unknown", "Male", "Female"]
                 }
                 MyText {
                     text: "Player Height:"
                 }
                 RowLayout {
+                    Item {
+                        Layout.fillWidth: true
+                    }
                     MyPushButton2 {
                         id: pridPlayerHeighMinusButton
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
+                            if (revivePersonalInfoDialog.playerHeight > 0.01) {
+                                revivePersonalInfoDialog.playerHeight = (revivePersonalInfoDialog.playerHeight - 0.01).toFixed(2)
+                            }
+                            pridPlayerHeighInputField.text = revivePersonalInfoDialog.playerHeight.toFixed(2)
                         }
                     }
-
-                    TextField {
+                    MyTextField {
                         id: pridPlayerHeighInputField
-                        horizontalAlignment: Text.AlignHCenter
-                        color: "#cccccc"
-                        text: "0.0"
+                        text: "0.00"
+                        keyBoardUID: 213
                         Layout.preferredWidth: 120
-                        font.pointSize: 20
-                        onActiveFocusChanged: {
-                            if (activeFocus) {
-                                OverlayController.showKeyboard(text, 213)
-                            }
-                        }
-                        Connections {
-                            target: OverlayController
-                            onKeyBoardInputSignal: {
-                                if (userValue == 213) {
-                                    pridPlayerHeighInputField.text = input
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
+                        horizontalAlignment: Text.AlignHCenter
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                if (val < 0.01) {
+                                    val = 0.01
                                 }
+                                revivePersonalInfoDialog.playerHeight = val.toFixed(2)
+                                text = val.toFixed(2)
+                            } else {
+                                text = val.toFixed(2)
                             }
                         }
                     }
-
                     MyPushButton2 {
                         id: pridPlayerHeighPlusButton
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
+                            revivePersonalInfoDialog.playerHeight = (revivePersonalInfoDialog.playerHeight + 0.01).toFixed(2)
+                            pridPlayerHeighInputField.text = revivePersonalInfoDialog.playerHeight.toFixed(2)
                         }
+                    }
+                    Item {
+                        Layout.fillWidth: true
                     }
                 }
                 MyText {
                     text: "Eye Height:"
                 }
                 RowLayout {
+                    Item {
+                        Layout.fillWidth: true
+                    }
                     MyPushButton2 {
                         id: pridEyeHeighMinusButton
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
+                            if (revivePersonalInfoDialog.eyeHeight > 0.01) {
+                                revivePersonalInfoDialog.eyeHeight = (revivePersonalInfoDialog.eyeHeight - 0.01).toFixed(2)
+                            }
+                            pridEyeHeighInputField.text = revivePersonalInfoDialog.eyeHeight.toFixed(2)
                         }
                     }
-
-                    TextField {
+                    MyTextField {
                         id: pridEyeHeighInputField
-                        horizontalAlignment: Text.AlignHCenter
-                        color: "#cccccc"
-                        text: "0.0"
+                        text: "0.00"
+                        keyBoardUID: 214
                         Layout.preferredWidth: 120
-                        font.pointSize: 20
-                        onActiveFocusChanged: {
-                            if (activeFocus) {
-                                OverlayController.showKeyboard(text, 214)
-                            }
-                        }
-                        Connections {
-                            target: OverlayController
-                            onKeyBoardInputSignal: {
-                                if (userValue == 214) {
-                                    pridEyeHeighInputField.text = input
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
+                        horizontalAlignment: Text.AlignHCenter
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                if (val < 0.01) {
+                                    val = 0.01
                                 }
+                                revivePersonalInfoDialog.eyeHeight = val.toFixed(2)
+                                text = val.toFixed(2)
+                            } else {
+                                text = val.toFixed(2)
                             }
                         }
                     }
-
                     MyPushButton2 {
                         id: pridEyeHeighPlusButton
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
+                            revivePersonalInfoDialog.eyeHeight = (revivePersonalInfoDialog.eyeHeight + 0.01).toFixed(2)
+                            pridEyeHeighInputField.text = revivePersonalInfoDialog.eyeHeight.toFixed(2)
                         }
+                    }
+                    Item {
+                        Layout.fillWidth: true
                     }
                 }
             }
             function openPopup() {
+                rpidUsername.text = ReviveTabController.piUsername
+                rpidName.text = ReviveTabController.piName
+                rpidGender.currentIndex = ReviveTabController.piGender
+                playerHeight = ReviveTabController.piPlayerHeight
+                pridPlayerHeighInputField.text = playerHeight.toFixed(2)
+                eyeHeight = ReviveTabController.piEyeHeight
+                pridEyeHeighInputField.text = eyeHeight.toFixed(2)
                 open()
             }
             onClosed: {
+                if (okClicked) {
+                    ReviveTabController.setPiUsername(rpidUsername.text, false)
+                    ReviveTabController.setPiName(rpidName.text, false)
+                    ReviveTabController.setPiGender(rpidGender.currentIndex, false)
+                    ReviveTabController.setPiPlayerHeight(playerHeight, false)
+                    ReviveTabController.setPiEyeHeight(eyeHeight, false)
+                }
             }
         }
 
@@ -672,10 +777,71 @@ MyStackViewPage {
             Layout.fillHeight: true
         }
 
-        /*Component.onCompleted: {
-        }*/
+        Component.onCompleted: {
+            pixelsPerDisplayPixelToggle.checked = ReviveTabController.pixelsPerDisplayPixelOverrideEnabled
+            var v = ReviveTabController.pixelsPerDisplayPixelOverride.toFixed(1)
+            pixelsPerDisplayPixelSlider.value = v
+            pixelsPerDisplayPixelText.text = v
 
-        /*Connections {
-        }*/
+            gripButtonModeComboBox.currentIndex = ReviveTabController.gripButtonMode
+
+            v = ReviveTabController.thumbDeadzone.toFixed(2)
+            thumbDeadzoneSlider.value = v
+            thumbDeadzoneText.text = v
+
+            v = ReviveTabController.thumbRange.toFixed(2)
+            thumbRangeSlider.value = v
+            thumbRangeText.text = v
+
+            touchPitchInputField.text = ReviveTabController.touchPitch.toFixed(1) + "°"
+            touchYawInputField.text = ReviveTabController.touchYaw.toFixed(1) + "°"
+            touchRollInputField.text = ReviveTabController.touchRoll.toFixed(1) + "°"
+            touchXInputField.text = ReviveTabController.touchX.toFixed(3)
+            touchYInputField.text = ReviveTabController.touchY.toFixed(3)
+            touchZInputField.text = ReviveTabController.touchZ.toFixed(3)
+        }
+
+        Connections {
+            target: ReviveTabController
+            onGripButtonModeChanged : {
+                gripButtonModeComboBox.currentIndex = ReviveTabController.gripButtonMode
+            }
+            onPixelsPerDisplayPixelOverrideEnabledChanged : {
+                pixelsPerDisplayPixelToggle.checked = ReviveTabController.pixelsPerDisplayPixelOverrideEnabled
+            }
+            onPixelsPerDisplayPixelOverrideChanged : {
+                var v = ReviveTabController.pixelsPerDisplayPixelOverride.toFixed(1)
+                pixelsPerDisplayPixelSlider.value = v
+                pixelsPerDisplayPixelText.text = v
+            }
+            onThumbDeadzoneChanged : {
+                var v = ReviveTabController.thumbDeadzone.toFixed(2)
+                thumbDeadzoneSlider.value = v
+                thumbDeadzoneText.text = v
+            }
+            onThumbRangeChanged : {
+                var v = ReviveTabController.thumbRange.toFixed(2)
+                thumbRangeSlider.value = v
+                thumbRangeText.text = v
+            }
+            onTouchPitchChanged : {
+                touchPitchInputField.text = ReviveTabController.touchPitch.toFixed(1) + "°"
+            }
+            onTouchYawChanged : {
+                touchYawInputField.text = ReviveTabController.touchYaw.toFixed(1) + "°"
+            }
+            onTouchRollChanged : {
+                touchRollInputField.text = ReviveTabController.touchRoll.toFixed(1) + "°"
+            }
+            onTouchXChanged : {
+                touchXInputField.text = ReviveTabController.touchX.toFixed(3)
+            }
+            onTouchYChanged : {
+                touchYInputField.text = ReviveTabController.touchY.toFixed(3)
+            }
+            onTouchZChanged : {
+                touchZInputField.text = ReviveTabController.touchZ.toFixed(3)
+            }
+        }
     }
 }
