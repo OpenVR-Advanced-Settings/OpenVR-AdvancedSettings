@@ -4,33 +4,46 @@ import matzman666.advsettings 1.0
 
 TextField {
 	property int keyBoardUID: 0
+    property string savedText: ""
     id: myTextField
     color: "#cccccc"
     text: ""
     font.pointSize: 20
-    background: Rectangle {
-        color: parent.activeFocus ? "#2c435d" : "#1b2939"
-        border.color: "#cccccc"
-        border.width: 2
-    }
-    onEditingFinished: {
-        if (OverlayController.desktopMode) {
-            myTextField.onInputEvent(text)
+    background: Button {
+        hoverEnabled: true
+        background: Rectangle {
+            color: parent.hovered ? "#2c435d" : "#1b2939"
+            border.color: "#cccccc"
+            border.width: 2
+        }
+        onClicked: {
+            myTextField.forceActiveFocus()
         }
     }
     onActiveFocusChanged: {
-        if (activeFocus && !OverlayController.desktopMode) {
-            OverlayController.showKeyboard(text, keyBoardUID)
+        if (activeFocus) {
+            if (!OverlayController.desktopMode) {
+                OverlayController.showKeyboard(text, keyBoardUID)
+            } else {
+                savedText = text
+            }
         }
     }
-	function onInputEvent(input) {
-		text = input
+    onEditingFinished: {
+        if (OverlayController.desktopMode && savedText !== text) {
+            myTextField.onInputEvent(text)
+        }
+    }
+    function onInputEvent(input) {
+        text = input
 	}
     Connections {
         target: OverlayController
         onKeyBoardInputSignal: {
             if (userValue == keyBoardUID) {
-                myTextField.onInputEvent(input)
+                if (myTextField.text !== input) {
+                    myTextField.onInputEvent(input)
+                }
             }
         }
     }
