@@ -39,7 +39,7 @@ namespace advsettings {
 		bool m_isOverlayInstalled = false;
 		int m_gripButtonMode = 0;
 		bool m_pixelsPerDisplayPixelOverrideEnabled = false;
-		float m_pixelsPerDisplayPixelOverride = 1.0;
+		float m_pixelsPerDisplayPixelOverride = 1.0f;
 		float m_thumbDeadzone = 0.3f;
 		float m_thumbRange = 2.0f;
 		float m_touchPitch = -28.0f;
@@ -85,6 +85,8 @@ namespace advsettings {
 		const QString& piName() const;
 		int piGender() const; // 0 .. Unknown, 1 .. Male, 2 .. Female
 
+		Q_INVOKABLE float getCurrentHMDHeight();
+
 	public slots:
 		void setGripButtonMode(int value, bool notify = true);
 
@@ -106,6 +108,8 @@ namespace advsettings {
 		void setPiUsername(const QString& value, bool notify = true);
 		void setPiName(const QString& value, bool notify = true);
 		void setPiGender(int value, bool notify = true); // 0 .. Unknown, 1 .. Male, 2 .. Female
+
+		void reset();
 
 	signals:
 		void isOverlayInstalledChanged(bool value);

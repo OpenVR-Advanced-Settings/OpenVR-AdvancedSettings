@@ -33,7 +33,7 @@ namespace advsettings {
 			if (vrSettingsError != vr::VRSettingsError_None) {
 				LOG(WARNING) << "Could not read \"revive::" << key_pixelsPerDisplayPixel << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 			} else {
-				if (m_pixelsPerDisplayPixelOverride == 0.0) {
+				if (valuef == 0.0) {
 					m_pixelsPerDisplayPixelOverrideEnabled = false;
 					m_pixelsPerDisplayPixelOverride = 1.0;
 				} else {
@@ -165,6 +165,7 @@ namespace advsettings {
 					if (valuef == 0.0) {
 						setPixelsPerDisplayPixelOverrideEnabled(false);
 					} else {
+						setPixelsPerDisplayPixelOverrideEnabled(true);
 						setPixelsPerDisplayPixelOverride(valuef);
 					}
 				}
@@ -580,6 +581,77 @@ namespace advsettings {
 				emit piGenderChanged(m_piGender);
 			}
 		}
+	}
+
+
+	void ReviveTabController::reset() {
+		vr::EVRSettingsError vrSettingsError;
+
+		vr::VRSettings()->RemoveKeyInSection(section_revive, key_pixelsPerDisplayPixel, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not remove \"revive::" << key_pixelsPerDisplayPixel << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+
+		vr::VRSettings()->RemoveKeyInSection(section_revive, key_toggleGrip, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not remove \"revive::" << key_toggleGrip << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+
+		vr::VRSettings()->RemoveKeyInSection(section_revive, key_thumbDeadzone, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not remove \"revive::" << key_thumbDeadzone << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+
+		vr::VRSettings()->RemoveKeyInSection(section_revive, key_thumbSensitivity, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not remove \"revive::" << key_thumbSensitivity << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+
+		vr::VRSettings()->RemoveKeyInSection(section_revive, key_touchPitch, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not remove \"revive::" << key_touchPitch << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+
+		vr::VRSettings()->RemoveKeyInSection(section_revive, key_touchYaw, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not remove \"revive::" << key_touchYaw << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+
+		vr::VRSettings()->RemoveKeyInSection(section_revive, key_touchRoll, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not remove \"revive::" << key_touchRoll << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+
+		vr::VRSettings()->RemoveKeyInSection(section_revive, key_touchX, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not remove \"revive::" << key_touchX << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+
+		vr::VRSettings()->RemoveKeyInSection(section_revive, key_touchY, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not remove \"revive::" << key_touchY << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+
+		vr::VRSettings()->RemoveKeyInSection(section_revive, key_touchZ, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not remove \"revive::" << key_touchZ << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+
+		vr::VRSettings()->Sync();
+		settingsUpdateCounter = 999; // Easiest way to get default values
+	}
+
+	float ReviveTabController::getCurrentHMDHeight() {
+		float hmdHeight = 0.0f;
+		vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
+		vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, devicePoses, vr::k_unMaxTrackedDeviceCount);
+		vr::TrackedDevicePose_t& hmdPose = devicePoses[vr::k_unTrackedDeviceIndex_Hmd];
+		if (hmdPose.eTrackingResult == vr::TrackingResult_Running_OK) {
+			hmdHeight = hmdPose.mDeviceToAbsoluteTracking.m[1][3];
+		} else {
+			LOG(WARNING) << "Error while getting HMD pose: Tracking result (" << hmdPose.eTrackingResult << ") is not TrackingResult_Running_OK";
+		}
+		return hmdHeight;
 	}
 
 } // namespace advconfig

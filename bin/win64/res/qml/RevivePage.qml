@@ -599,7 +599,7 @@ MyStackViewPage {
             property double playerHeight: 0.0
             property double eyeHeight: 0.0
             dialogWidth: 600
-            dialogHeight: 440
+            dialogHeight: 480
             dialogTitle: "Personal Information"
             dialogContentItem: GridLayout {
                 rowSpacing: 6
@@ -742,6 +742,32 @@ MyStackViewPage {
                         Layout.fillWidth: true
                     }
                 }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                RowLayout {
+                    Item {
+                        Layout.fillWidth: true
+                    }
+                    MyPushButton {
+                        id: reviveCalibrateHeightButton
+                        Layout.preferredWidth: 230
+                        text: "Calibrate Height"
+                        onClicked: {
+                            var hmdHeight = ReviveTabController.getCurrentHMDHeight()
+                            revivePersonalInfoDialog.eyeHeight = hmdHeight.toFixed(2)
+                            pridEyeHeighInputField.text = revivePersonalInfoDialog.eyeHeight
+                            revivePersonalInfoDialog.playerHeight = (hmdHeight + 0.103).toFixed(2)
+                            pridPlayerHeighInputField.text = revivePersonalInfoDialog.playerHeight
+                        }
+                    }
+                    Item {
+                        Layout.fillWidth: true
+                    }
+                }
+
             }
             function openPopup() {
                 rpidUsername.text = ReviveTabController.piUsername
@@ -764,12 +790,28 @@ MyStackViewPage {
             }
         }
 
-        MyPushButton {
-            id: revivePersonalInfoButton
-            Layout.preferredWidth: 300
-            text: "Personal Information"
-            onClicked: {
-                revivePersonalInfoDialog.openPopup()
+
+        RowLayout {
+            MyPushButton {
+                id: revivePersonalInfoButton
+                Layout.preferredWidth: 300
+                text: "Personal Information"
+                onClicked: {
+                    revivePersonalInfoDialog.openPopup()
+                }
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
+
+            MyPushButton {
+                id: reviveResetButton
+                Layout.preferredWidth: 200
+                text: "Reset"
+                onClicked: {
+                    ReviveTabController.reset()
+                }
             }
         }
 
