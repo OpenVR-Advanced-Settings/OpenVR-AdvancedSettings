@@ -67,11 +67,13 @@ void SteamVRTabController::eventLoopTick() {
 
 
 void SteamVRTabController::setSuperSampling(float value, bool notify) {
+	bool override = false;
 	if (value <= 0.01f) {
 		LOG(WARNING) << "Encountered a supersampling value <= 0.01, setting supersampling to 1.0";
 		value = 1.0f;
+		override = true;
 	}
-	if (m_superSampling != value) {
+	if (override || m_superSampling != value) {
 		LOG(DEBUG) << "Supersampling value changed: " << m_superSampling << " => " << value;
 		m_superSampling = value;
 		vr::VRSettings()->SetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, m_superSampling);
@@ -84,11 +86,13 @@ void SteamVRTabController::setSuperSampling(float value, bool notify) {
 
 
 void SteamVRTabController::setCompositorSuperSampling(float value, bool notify) {
+	bool override = false;
 	if (value <= 0.01f) {
 		LOG(WARNING) << "Encountered a compositor supersampling value <= 0.01, setting supersampling to 1.0";
 		value = 1.0f;
+		override = true;
 	}
-	if (m_compositorSuperSampling != value) {
+	if (override || m_compositorSuperSampling != value) {
 		LOG(DEBUG) << "Compositor supersampling value changed: " << m_compositorSuperSampling << " => " << value;
 		m_compositorSuperSampling = value;
 		vr::VRSettings()->SetFloat(vrsettings_compositor_category, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, m_compositorSuperSampling);
@@ -157,6 +161,40 @@ void SteamVRTabController::setForceReprojection(bool value, bool notify) {
 			emit forceReprojectionChanged(m_forceReprojection);
 		}
 	}
+}
+
+
+void SteamVRTabController::reset() {
+	vr::EVRSettingsError vrSettingsError;
+
+	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, &vrSettingsError);
+	if (vrSettingsError != vr::VRSettingsError_None) {
+		LOG(WARNING) << "Could not remove \"" << vr::k_pch_SteamVR_RenderTargetMultiplier_Float << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+	}
+
+	setCompositorSuperSampling(1.0f); // Is not in default.vrsettings yet
+	vr::VRSettings()->RemoveKeyInSection(vrsettings_compositor_category, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, &vrSettingsError);
+	if (vrSettingsError != vr::VRSettingsError_None) {
+		LOG(WARNING) << "Could not remove \"" << vrsettings_compositor_category << "::" << vr::k_pch_SteamVR_RenderTargetMultiplier_Float << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+	}
+
+	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowInterleavedReprojection, &vrSettingsError);
+	if (vrSettingsError != vr::VRSettingsError_None) {
+		LOG(WARNING) << "Could not remove \"" << vrsettings_steamvr_allowInterleavedReprojection << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+	}
+
+	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowAsyncReprojection, &vrSettingsError);
+	if (vrSettingsError != vr::VRSettingsError_None) {
+		LOG(WARNING) << "Could not remove \"" << vrsettings_steamvr_allowAsyncReprojection << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+	}
+
+	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_ForceReprojection_Bool, &vrSettingsError);
+	if (vrSettingsError != vr::VRSettingsError_None) {
+		LOG(WARNING) << "Could not remove \"" << vr::k_pch_SteamVR_ForceReprojection_Bool << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+	}
+
+	vr::VRSettings()->Sync();
+	settingsUpdateCounter = 999; // Easiest way to get default values
 }
 
 

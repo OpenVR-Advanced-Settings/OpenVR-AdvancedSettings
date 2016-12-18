@@ -184,11 +184,7 @@ MyStackViewPage {
                 text: "Reset"
                 Layout.preferredWidth: 250
                 onClicked: {
-                    steamvrSupersamplingSlider.value = 1.0
-                    steamvrCompositorSupersamplingSlider.value = 1.0
-                    steamvrAllowInterleavedReprojectionToggle.checked = true
-                    steamvrAllowAsyncReprojectionToggle.checked = true
-                    steamvrForceReprojectionToggle.checked = false
+                    SteamVRTabController.reset()
                 }
             }
 

@@ -495,4 +495,33 @@ float ChaperoneTabController::getBoundsMaxY() {
 	return result;
 }
 
+void ChaperoneTabController::reset() {
+	vr::EVRSettingsError vrSettingsError;
+
+	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_ColorGammaA_Int32, &vrSettingsError);
+	if (vrSettingsError != vr::VRSettingsError_None) {
+		LOG(WARNING) << "Could not remove \"" << vr::k_pch_CollisionBounds_ColorGammaA_Int32 << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+	}
+
+	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_FadeDistance_Float, &vrSettingsError);
+	if (vrSettingsError != vr::VRSettingsError_None) {
+		LOG(WARNING) << "Could not remove \"" << vr::k_pch_CollisionBounds_FadeDistance_Float << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+	}
+
+	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_CenterMarkerOn_Bool, &vrSettingsError);
+	if (vrSettingsError != vr::VRSettingsError_None) {
+		LOG(WARNING) << "Could not remove \"" << vr::k_pch_CollisionBounds_CenterMarkerOn_Bool << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+	}
+
+	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_PlaySpaceOn_Bool, &vrSettingsError);
+	if (vrSettingsError != vr::VRSettingsError_None) {
+		LOG(WARNING) << "Could not remove \"" << vr::k_pch_CollisionBounds_PlaySpaceOn_Bool << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+	}
+
+	setForceBounds(false);
+
+	vr::VRSettings()->Sync();
+	settingsUpdateCounter = 999; // Easiest way to get default values
+}
+
 } // namespace advconfig

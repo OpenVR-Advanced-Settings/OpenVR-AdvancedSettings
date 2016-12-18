@@ -56,6 +56,7 @@ public slots:
 	void setAllowAsyncReprojection(bool value, bool notify = true);
 	void setForceReprojection(bool value, bool notify = true);
 
+	void reset();
 	void restartSteamVR();
 
 signals:

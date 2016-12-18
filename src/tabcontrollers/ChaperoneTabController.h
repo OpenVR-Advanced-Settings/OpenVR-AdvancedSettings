@@ -111,6 +111,8 @@ public slots:
 	void applyChaperoneProfile(unsigned index);
 	void deleteChaperoneProfile(unsigned index);
 
+	void reset();
+
 signals:
 	void boundsVisibilityChanged(float value);
 	void fadeDistanceChanged(float value);

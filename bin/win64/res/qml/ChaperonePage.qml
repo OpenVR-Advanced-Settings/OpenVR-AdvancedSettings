@@ -256,7 +256,7 @@ MyStackViewPage {
                     chaperoneVisibilityText.text = Math.round(val) + "%"
                 }
                 onValueChanged: {
-                    ChaperoneTabController.setBoundsVisibility(Math.round(value), false)
+                    ChaperoneTabController.setBoundsVisibility(value.toFixed(2), false)
                 }
             }
 
@@ -372,7 +372,9 @@ MyStackViewPage {
                 Layout.fillWidth: true
                 onPositionChanged: {
                     var val = (this.from + ( this.position  * (this.to - this.from))).toFixed(2)
-                    ChaperoneTabController.setHeight(val, false);
+                    if (activeFocus) {
+                        ChaperoneTabController.setHeight(val, false);
+                    }
                     chaperoneHeightText.text = val
                 }
                 onValueChanged: {
@@ -459,11 +461,7 @@ MyStackViewPage {
                 text: "Reset"
                 Layout.preferredWidth: 250
                 onClicked: {
-                    chaperoneVisibilitySlider.value = 0.6
-                    chaperoneFadeDistanceSlider.value = 0.7
-                    chaperoneCenterMarkerToggle.checked = false
-                    chaperonePlaySpaceToggle.checked = false
-                    chaperoneForceBoundsToggle.checked = false
+                    ChaperoneTabController.reset()
                 }
             }
 

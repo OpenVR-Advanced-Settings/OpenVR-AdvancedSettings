@@ -101,7 +101,8 @@ void MoveCenterTabController::setAdjustChaperone(bool value, bool notify) {
 					parent->AddOffsetToCollisionBounds(2, -m_offsetZ, false);
 				}
 				if (m_rotation != 0) {
-					parent->RotateCollisionBounds(-m_rotation, false);
+					float angle = m_rotation * 2 * M_PI / 360.0;
+					parent->RotateCollisionBounds(-angle, false);
 				}
 			} else {
 				if (m_offsetX != 0.0f) {
@@ -114,7 +115,8 @@ void MoveCenterTabController::setAdjustChaperone(bool value, bool notify) {
 					parent->AddOffsetToCollisionBounds(2, m_offsetZ, false);
 				}
 				if (m_rotation != 0) {
-					parent->RotateCollisionBounds(m_rotation, false);
+					float angle = m_rotation * 2 * M_PI / 360.0;
+					parent->RotateCollisionBounds(angle, false);
 				}
 			}
 			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);

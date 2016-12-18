@@ -289,9 +289,9 @@ MyStackViewPage {
 
         Component.onCompleted: {
             playspaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
-            playSpaceMoveXText.text = MoveCenterTabController.offsetX.toFixed(1)
-            playSpaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(1)
-            playSpaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(1)
+            playSpaceMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
+            playSpaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
+            playSpaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
             playspaceRotationSlider.value = MoveCenterTabController.rotation
             if (MoveCenterTabController.trackingUniverse === 0) {
                 playspaceModeText.text = "Sitting"
