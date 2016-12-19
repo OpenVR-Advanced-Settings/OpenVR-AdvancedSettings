@@ -5,6 +5,8 @@
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include <QSettings>
+#include <QStandardPaths>
+#include <openvr.h>
 #include <iostream>
 #include "logging.h"
 
@@ -46,22 +48,54 @@ void myQtMessageHandler(QtMsgType type, const QMessageLogContext &context, const
 	}
 }
 
+void installManifest(bool cleaninstall = false) {
+	auto manifestQPath = QDir::cleanPath(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("manifest.vrmanifest"));
+	if (QFile::exists(manifestQPath)) {
+		bool alreadyInstalled = false;
+		if (vr::VRApplications()->IsApplicationInstalled(advsettings::OverlayController::applicationKey)) {
+			if (cleaninstall) {
+				char buffer[1024];
+				auto appError = vr::VRApplicationError_None;
+				vr::VRApplications()->GetApplicationPropertyString(advsettings::OverlayController::applicationKey, vr::VRApplicationProperty_WorkingDirectory_String, buffer, 1024, &appError);
+				if (appError == vr::VRApplicationError_None) {
+					auto oldManifestQPath = QDir::cleanPath(QDir(buffer).absoluteFilePath("manifest.vrmanifest"));
+					if (oldManifestQPath.compare(manifestQPath, Qt::CaseInsensitive) != 0) {
+						vr::VRApplications()->RemoveApplicationManifest(QDir::toNativeSeparators(oldManifestQPath).toStdString().c_str());
+					} else {
+						alreadyInstalled = true;
+					}
+				}
+			} else {
+				alreadyInstalled = true;
+			}
+		}
+		auto apperror = vr::VRApplications()->AddApplicationManifest(QDir::toNativeSeparators(manifestQPath).toStdString().c_str());
+		if (apperror != vr::VRApplicationError_None) {
+			throw std::runtime_error(std::string("Could not add application manifest: ") + std::string(vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror)));
+		} else if (!alreadyInstalled || cleaninstall) {
+			auto apperror = vr::VRApplications()->SetApplicationAutoLaunch(advsettings::OverlayController::applicationKey, true);
+			if (apperror != vr::VRApplicationError_None) {
+				throw std::runtime_error(std::string("Could not set auto start: ") + std::string(vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror)));
+			}
+		}
+	} else {
+		throw std::runtime_error(std::string("Could not find application manifest: ") + manifestQPath.toStdString());
+	}
+}
+
+void removeManifest() {
+	auto manifestQPath = QDir::cleanPath(QDir(QCoreApplication::applicationDirPath()).absoluteFilePath("manifest.vrmanifest"));
+	if (QFile::exists(manifestQPath)) {
+		if (vr::VRApplications()->IsApplicationInstalled(advsettings::OverlayController::applicationKey)) {
+			vr::VRApplications()->RemoveApplicationManifest(QDir::toNativeSeparators(manifestQPath).toStdString().c_str());
+		}
+	} else {
+		throw std::runtime_error(std::string("Could not find application manifest: ") + manifestQPath.toStdString());
+	}
+}
+
 
 int main(int argc, char *argv[]) {
-
-	// Configure logger
-	START_EASYLOGGINGPP(argc, argv);
-	el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
-	auto logconfigfile = QFileInfo(logConfigFileName).absoluteFilePath();
-	if (QFile::exists(logconfigfile)) {
-		el::Configurations conf(logconfigfile.toStdString());
-		el::Loggers::reconfigureAllLoggers(conf);
-		LOG(INFO) << "Log Config: " << QDir::toNativeSeparators(logconfigfile).toStdString();
-	} else {
-		el::Configurations conf;
-		conf.parseFromText(logConfigDefault);
-		el::Loggers::reconfigureAllLoggers(conf);
-	}
 	
 	bool desktopMode = false;
 	bool noSound = false;
@@ -70,23 +104,92 @@ int main(int argc, char *argv[]) {
 	// Parse command line arguments
 	for (int i = 1; i < argc; i++) {
 		if (std::string(argv[i]).compare("-desktop") == 0) {
-			LOG(INFO) << "Desktop mode enabled.";
 			desktopMode = true;
 		} else if (std::string(argv[i]).compare("-nosound") == 0) {
-			LOG(INFO) << "Sound effects disabled.";
 			noSound = true;
 		} else if (std::string(argv[i]).compare("-nomanifest") == 0) {
-			LOG(INFO) << "vrmanifest disabled.";
 			noManifest = true;
+		} else if (std::string(argv[i]).compare("-installmanifest") == 0) {
+			int exitcode = 0;
+			QCoreApplication coreApp(argc, argv);
+			auto initError = vr::VRInitError_None;
+			vr::VR_Init(&initError, vr::VRApplication_Utility);
+			if (initError == vr::VRInitError_None) {
+				try {
+					installManifest(true);
+				} catch (std::exception& e) {
+					exitcode = -1;
+					std::cerr << e.what() << std::endl;
+				}
+			} else {
+				exitcode = -2;
+				std::cerr << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))) << std::endl;
+			}
+			vr::VR_Shutdown();
+			exit(exitcode);
+		} else if (std::string(argv[i]).compare("-removemanifest") == 0) {
+			int exitcode = 0;
+			QCoreApplication coreApp(argc, argv);
+			auto initError = vr::VRInitError_None;
+			vr::VR_Init(&initError, vr::VRApplication_Utility);
+			if (initError == vr::VRInitError_None) {
+				try {
+					removeManifest();
+				} catch (std::exception& e) {
+					exitcode = -1;
+					std::cerr << e.what() << std::endl;
+				}
+			} else {
+				exitcode = -2;
+				std::cerr << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))) << std::endl;
+			}
+			vr::VR_Shutdown();
+			exit(exitcode);
 		}
 	}
 
-	LOG(INFO) << "Starting Application.";
 	try {
 		QApplication a(argc, argv);
+		a.setOrganizationName("matzman666");
+		a.setApplicationName("OpenVRAdvancedSettings");
+		a.setApplicationDisplayName(advsettings::OverlayController::applicationName);
+		a.setApplicationVersion(advsettings::OverlayController::applicationVersionString);
+
 		qInstallMessageHandler(myQtMessageHandler);
 
-		QSettings appSettings(QSettings::IniFormat, QSettings::UserScope, "matzman666", "OpenVRAdvancedSettings");
+		// Configure logger
+		QString logFilePath;
+		START_EASYLOGGINGPP(argc, argv);
+		el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog);
+		auto logconfigfile = QFileInfo(logConfigFileName).absoluteFilePath();
+		el::Configurations conf;
+		if (QFile::exists(logconfigfile)) {
+			conf.parseFromFile(logconfigfile.toStdString());
+		} else {
+			conf.parseFromText(logConfigDefault);
+		}
+		if (!conf.get(el::Level::Global, el::ConfigurationType::Filename)) {
+			logFilePath = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).absoluteFilePath("AdvancedSettings.log");
+			conf.set(el::Level::Global, el::ConfigurationType::Filename, QDir::toNativeSeparators(logFilePath).toStdString());
+		}
+		conf.setRemainingToDefault();
+		el::Loggers::reconfigureAllLoggers(conf);
+		LOG(INFO) << "Log Config: " << QDir::toNativeSeparators(logconfigfile).toStdString();
+		if (!logFilePath.isEmpty()) {
+			LOG(INFO) << "Log File: " << logFilePath;
+		}
+		
+		if (desktopMode) {
+			LOG(INFO) << "Desktop mode enabled.";
+		}
+		if (noSound) {
+			LOG(INFO) << "Sound effects disabled.";
+		}
+		if (noManifest) {
+			LOG(INFO) << "vrmanifest disabled.";
+		}
+
+		QSettings appSettings(QSettings::IniFormat, QSettings::UserScope, a.organizationName(), a.applicationName());
 		advsettings::OverlayController::setAppSettings(&appSettings);
 		LOG(INFO) << "Settings File: " << appSettings.fileName().toStdString();
 
@@ -104,24 +207,10 @@ int main(int argc, char *argv[]) {
 		controller->SetWidget(qobject_cast<QQuickItem*>(quickObj), advsettings::OverlayController::applicationName, advsettings::OverlayController::applicationKey);
 
 		if (!desktopMode && !noManifest) {
-			auto manifestQPath = QDir(QApplication::applicationDirPath()).absoluteFilePath("manifest.vrmanifest");
-			//std::string manifestPath = QDir::toNativeSeparators(QApplication::applicationDirPath()).toStdString() + "\\manifest.vrmanifest";
-			if (QFile::exists(manifestQPath)) {
-				bool firstTime = false;
-				if (!vr::VRApplications()->IsApplicationInstalled(advsettings::OverlayController::applicationKey)) {
-					firstTime;
-				}
-				auto apperror = vr::VRApplications()->AddApplicationManifest(QDir::toNativeSeparators(manifestQPath).toStdString().c_str());
-				if (apperror != vr::VRApplicationError_None) {
-					LOG(ERROR) << "Could not add application manifest: " << vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror);
-				} else if (firstTime) {
-					auto apperror = vr::VRApplications()->SetApplicationAutoLaunch(advsettings::OverlayController::applicationKey, true);
-					if (apperror != vr::VRApplicationError_None) {
-						LOG(ERROR) << "Could not set auto start: " << vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror);
-					}
-				}
-			} else {
-				LOG(ERROR) << "Could not find application manifest: " << manifestQPath;
+			try {
+				installManifest();
+			} catch (std::exception& e) {
+				LOG(ERROR) << e.what();
 			}
 		}
 
