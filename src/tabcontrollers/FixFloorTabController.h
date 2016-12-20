@@ -19,13 +19,14 @@ private:
 	OverlayController* parent;
 	QQuickWindow* widget;
 
-	float controllerUpOffsetCorrection = 0.06f; // Controller touchpad facing upwards
-	float controllerDownOffsetCorrection = 0.0f; // Controller touchpad facing downwards (not implemented yet)
+	float controllerUpOffsetCorrection = 0.062f; // Controller touchpad facing upwards
+	float controllerDownOffsetCorrection = 0.006f; // Controller touchpad facing downwards
 
 	int state = 0; // 0 .. idle, 1 .. measurement in progress
 	vr::TrackedDeviceIndex_t referenceController = vr::k_unTrackedDeviceIndexInvalid;
 	unsigned measurementCount = 0;
-	double tempOffset = 0.0;
+	double tempOffsetY = 0.0;
+	double tempRoll = 0.0;
 	float floorOffset = 0.0f;
 	QString statusMessage = "";
 	float statusMessageTimeout = 0.0f;

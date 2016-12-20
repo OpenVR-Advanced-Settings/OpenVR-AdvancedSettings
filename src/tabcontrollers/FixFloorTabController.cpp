@@ -60,23 +60,55 @@ void FixFloorTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) 
 				} else {
 					referenceController = rightId;
 				}
-				tempOffset = (double)devicePoses[referenceController].mDeviceToAbsoluteTracking.m[1][3];
+
+				auto& m = devicePoses[referenceController].mDeviceToAbsoluteTracking.m;
+				tempOffsetY = (double)m[1][3];
+				/*
+				| Intrinsic y-x'-z" rotation matrix:
+				| cr*cy+sp*sr*sy | cr*sp*sy-cy*sr | cp*sy |
+				| cp*sr          | cp*cr          |-sp    |
+				| cy*sp*sr-cr*sy | cr*cy*sp+sr*sy | cp*cy |
+
+				yaw = atan2(cp*sy, cp*cy) [pi, -pi], CCW
+				pitch = -asin(-sp) [pi/2, -pi/2]
+				roll = atan2(cp*sr, cp*cr) [pi, -pi], CW
+				*/
+				tempRoll = std::atan2((double)m[1][0], (double)m[1][1]);
 				measurementCount = 1;
 			}
 
-		} else if (measurementCount >= 25) {
-			floorOffset = -controllerUpOffsetCorrection + (float)(tempOffset / (double)measurementCount);
-			LOG(INFO) << "Fix Floor: Floor Offset = " << floorOffset;
-			parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, floorOffset, false);
-			statusMessage = "Fixing ... OK";
-			statusMessageTimeout = 1.0;
-			emit statusMessageSignal();
-			emit measureEndSignal();
-			setCanUndo(true);
-			state = 0;
 		} else {
-			tempOffset += (double)devicePoses[referenceController].mDeviceToAbsoluteTracking.m[1][3];
 			measurementCount++;
+			auto& m = devicePoses[referenceController].mDeviceToAbsoluteTracking.m;
+
+			double rollDiff = std::atan2((double)m[1][0], (double)m[1][1]) - tempRoll;
+			if (rollDiff > M_PI) {
+				rollDiff -= 2.0 * M_PI;
+			} else if (rollDiff < -M_PI) {
+				rollDiff += 2.0 * M_PI;
+			}
+			tempRoll += rollDiff / (double)measurementCount;
+			if (tempRoll > M_PI) {
+				tempRoll -= 2.0 * M_PI;
+			} else if (tempRoll < -M_PI) {
+				tempRoll += 2.0 * M_PI;
+			}
+
+			if (measurementCount >= 25) {
+				if (std::abs(tempRoll) <= M_PI_2) {
+					floorOffset = tempOffsetY - controllerUpOffsetCorrection;
+				} else {
+					floorOffset = tempOffsetY - controllerDownOffsetCorrection;
+				}
+				LOG(INFO) << "Fix Floor: Floor Offset = " << floorOffset;
+				parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, floorOffset, false);
+				statusMessage = "Fixing ... OK";
+				statusMessageTimeout = 1.0;
+				emit statusMessageSignal();
+				emit measureEndSignal();
+				setCanUndo(true);
+				state = 0;
+			}
 		}
 	}
 }
