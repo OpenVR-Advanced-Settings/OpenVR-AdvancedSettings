@@ -20,6 +20,7 @@
 #include <cmath>
 #include <openvr.h>
 #include "logging.h"
+#include "utils/Matrix.h"
 
 
 
@@ -403,20 +404,11 @@ void OverlayController::RotateUniverseCenter(vr::ETrackingUniverseOrigin univers
 		} else {
 			vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(&curPos);
 		}
+
+		vr::HmdMatrix34_t rotMat;
 		vr::HmdMatrix34_t newPos;
-		float yRot[3][3] = {
-			{ std::cos(yAngle), 0, std::sin(yAngle) },
-			{ 0, 1, 0 },
-			{ -std::sin(yAngle), 0, std::cos(yAngle) }
-		};
-		for (unsigned i = 0; i < 3; i++) {
-			for (unsigned j = 0; j < 3; j++) {
-				newPos.m[i][j] = 0.0f;
-				for (unsigned k = 0; k < 3; k++) {
-					newPos.m[i][j] += yRot[i][k] * curPos.m[k][j];
-				}
-			}
-		}
+		utils::initRotationMatrix(rotMat, 0, yAngle);
+		utils::matMul33(newPos, rotMat, curPos);
 		newPos.m[0][3] = curPos.m[0][3];
 		newPos.m[1][3] = curPos.m[1][3];
 		newPos.m[2][3] = curPos.m[2][3];
@@ -433,6 +425,7 @@ void OverlayController::RotateUniverseCenter(vr::ETrackingUniverseOrigin univers
 		}
 	}
 }
+
 
 void OverlayController::AddOffsetToCollisionBounds(unsigned axisId, float offset, bool commit) {
 	// Apparently Valve sanity-checks the y-coordinates of the collision bounds (and only the y-coordinates)
@@ -469,21 +462,14 @@ void OverlayController::RotateCollisionBounds(float angle, bool commit) {
 	if (collisionBoundsCount > 0) {
 		vr::HmdQuad_t* collisionBounds = new vr::HmdQuad_t[collisionBoundsCount];
 		vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(collisionBounds, &collisionBoundsCount);
-		float yRot[3][3] = {
-			{ std::cos(angle), 0, std::sin(angle) },
-			{ 0, 1, 0 },
-			{ -std::sin(angle), 0, std::cos(angle) }
-		};
+
+		vr::HmdMatrix34_t rotMat;
+		utils::initRotationMatrix(rotMat, 0, angle);
 		for (unsigned b = 0; b < collisionBoundsCount; b++) {
 			for (unsigned c = 0; c < 4; c++) {
 				auto& corner = collisionBounds[b].vCorners[c];
 				vr::HmdVector3_t newVal;
-				for (unsigned i = 0; i < 3; i++) {
-					newVal.v[i] = 0.0f;
-					for (unsigned k = 0; k < 3; k++) {
-						newVal.v[i] += corner.v[k] * yRot[i][k];
-					};
-				}
+				utils::matMul33(newVal, rotMat, corner);
 				corner = newVal;
 			}
 		}
