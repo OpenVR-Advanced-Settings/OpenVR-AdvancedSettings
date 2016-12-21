@@ -146,6 +146,8 @@ namespace advsettings {
 					m_piGender = 0;
 				}
 			}
+
+			reloadControllerProfiles();
 		}
 	}
 
@@ -652,6 +654,121 @@ namespace advsettings {
 			LOG(WARNING) << "Error while getting HMD pose: Tracking result (" << hmdPose.eTrackingResult << ") is not TrackingResult_Running_OK";
 		}
 		return hmdHeight;
+	}
+
+
+	void ReviveTabController::reloadControllerProfiles() {
+		controllerProfiles.clear();
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("reviveSettings");
+		auto profileCount = settings->beginReadArray("controllerProfiles");
+		for (int i = 0; i < profileCount; i++) {
+			settings->setArrayIndex(i);
+			controllerProfiles.emplace_back();
+			auto& entry = controllerProfiles[i];
+			entry.profileName = settings->value("profileName").toString().toStdString();
+			entry.gripButtonMode = settings->value("gripButtonMode", 0).toInt();
+			entry.thumbDeadzone = settings->value("thumbDeadzone", 0.3f).toFloat();
+			entry.thumbRange = settings->value("thumbRange", 2.0f).toFloat();
+			entry.touchPitch = settings->value("touchPitch", -28.0f).toFloat();
+			entry.touchYaw = settings->value("touchYaw", 0.0f).toFloat();
+			entry.touchRoll = settings->value("touchRoll", -14.0f).toFloat();
+			entry.touchX = settings->value("touchX", 0.016f).toFloat();
+			entry.touchY = settings->value("touchY", 0.0f).toFloat();
+			entry.touchZ = settings->value("touchZ", 0.016f).toFloat();
+		}
+		settings->endArray();
+		settings->endGroup();
+	}
+
+
+	void ReviveTabController::saveControllerProfiles() {
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("reviveSettings");
+		settings->beginWriteArray("controllerProfiles");
+		unsigned i = 0;
+		for (auto& p : controllerProfiles) {
+			settings->setArrayIndex(i);
+			settings->setValue("profileName", QString::fromStdString(p.profileName));
+			settings->setValue("gripButtonMode", p.gripButtonMode);
+			settings->setValue("thumbDeadzone", p.thumbDeadzone);
+			settings->setValue("thumbRange", p.thumbRange);
+			settings->setValue("touchPitch", p.touchPitch);
+			settings->setValue("touchYaw", p.touchYaw);
+			settings->setValue("touchRoll", p.touchRoll);
+			settings->setValue("touchX", p.touchX);
+			settings->setValue("touchY", p.touchY);
+			settings->setValue("touchZ", p.touchZ);
+			i++;
+		}
+		settings->endArray();
+		settings->endGroup();
+	}
+
+	Q_INVOKABLE unsigned ReviveTabController::getControllerProfileCount() {
+		return (unsigned)controllerProfiles.size();
+	}
+
+	Q_INVOKABLE QString ReviveTabController::getControllerProfileName(unsigned index) {
+		if (index >= controllerProfiles.size()) {
+			return QString();
+		} else {
+			return QString::fromStdString(controllerProfiles[index].profileName);
+		}
+	}
+
+	void ReviveTabController::addControllerProfile(QString name) {
+		vr::EVRSettingsError vrSettingsError;
+		ReviveControllerProfile* profile = nullptr;
+		for (auto& p : controllerProfiles) {
+			if (p.profileName.compare(name.toStdString()) == 0) {
+				profile = &p;
+				break;
+			}
+		}
+		if (!profile) {
+			auto i = controllerProfiles.size();
+			controllerProfiles.emplace_back();
+			profile = &controllerProfiles[i];
+		}
+		profile->profileName = name.toStdString();
+		profile->gripButtonMode = gripButtonMode();
+		profile->thumbDeadzone = thumbDeadzone();
+		profile->thumbRange = thumbRange();
+		profile->touchPitch = touchPitch();
+		profile->touchYaw = touchYaw();
+		profile->touchRoll = touchRoll();
+		profile->touchX = touchX();
+		profile->touchY = touchY();
+		profile->touchZ = touchZ();
+		saveControllerProfiles();
+		OverlayController::appSettings()->sync();
+		emit controllerProfilesUpdated();
+	}
+
+	void ReviveTabController::applyControllerProfile(unsigned index) {
+		if (index < controllerProfiles.size()) {
+			auto& profile = controllerProfiles[index];
+			setGripButtonMode(profile.gripButtonMode);
+			setThumbDeadzone(profile.thumbDeadzone);
+			setThumbRange(profile.thumbRange);
+			setTouchPitch(profile.touchPitch);
+			setTouchYaw(profile.touchYaw);
+			setTouchRoll(profile.touchRoll);
+			setTouchX(profile.touchX);
+			setTouchY(profile.touchY);
+			setTouchZ(profile.touchZ);
+		}
+	}
+
+	void ReviveTabController::deleteControllerProfile(unsigned index) {
+		if (index < controllerProfiles.size()) {
+			auto pos = controllerProfiles.begin() + index;
+			controllerProfiles.erase(pos);
+			saveControllerProfiles();
+			OverlayController::appSettings()->sync();
+			emit controllerProfilesUpdated();
+		}
 	}
 
 } // namespace advconfig

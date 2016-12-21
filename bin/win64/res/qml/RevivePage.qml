@@ -8,7 +8,70 @@ MyStackViewPage {
     headerText: "Revive Settings"
 
     content: ColumnLayout {
-        spacing: 32
+        spacing: 12
+
+
+        MyDialogOkPopup {
+            id: reviveMessageDialog
+            function showMessage(title, text) {
+                dialogTitle = title
+                dialogText = text
+                open()
+            }
+        }
+
+        MyDialogOkCancelPopup {
+            id: reviveDeleteProfileDialog
+            property int profileIndex: -1
+            dialogTitle: "Delete Profile"
+            dialogText: "Do you really want to delete this profile?"
+            onClosed: {
+                if (okClicked) {
+                    ReviveTabController.deleteControllerProfile(profileIndex)
+                }
+            }
+        }
+
+        MyDialogOkCancelPopup {
+            id: reviveNewProfileDialog
+            dialogTitle: "Create New Profile"
+            dialogContentItem: ColumnLayout {
+                RowLayout {
+                    Layout.topMargin: 16
+                    Layout.leftMargin: 16
+                    Layout.rightMargin: 16
+                    MyText {
+                        text: "Name: "
+                    }
+                    MyTextField {
+                        id: reviveNewProfileName
+                        keyBoardUID: 290
+                        color: "#cccccc"
+                        text: ""
+                        Layout.fillWidth: true
+                        font.pointSize: 20
+                        function onInputEvent(input) {
+                            reviveNewProfileName.text = input
+                        }
+                    }
+                }
+            }
+            onClosed: {
+                if (okClicked) {
+                    if (reviveNewProfileName.text == "") {
+                        reviveMessageDialog.showMessage("Create New Profile", "ERROR: Empty profile name.")
+                    } else {
+                        ReviveTabController.addControllerProfile(reviveNewProfileName.text)
+                    }
+
+                }
+            }
+            function openPopup() {
+                reviveNewProfileName.text = ""
+                open()
+            }
+        }
+
 
         RowLayout {
             MyToggleButton {
@@ -76,6 +139,75 @@ MyStackViewPage {
             }
         }
 
+        ColumnLayout {
+            spacing: 8
+            Layout.topMargin: 12
+            Layout.bottomMargin: 8
+            RowLayout {
+                spacing: 8
+
+                MyText {
+                    Layout.preferredWidth: 347
+                    text: "Controller Profile:"
+                }
+
+                MyComboBox {
+                    id: reviveControllerProfileComboBox
+                    Layout.maximumWidth: 557
+                    Layout.minimumWidth: 557
+                    Layout.preferredWidth: 557
+                    Layout.fillWidth: true
+                    model: [""]
+                    onCurrentIndexChanged: {
+                        if (currentIndex > 0) {
+                            reviveControllerApplyProfileButton.enabled = true
+                            reviveControllerDeleteProfileButton.enabled = true
+                        } else {
+                            reviveControllerApplyProfileButton.enabled = false
+                            reviveControllerDeleteProfileButton.enabled = false
+                        }
+                    }
+                }
+
+                MyPushButton {
+                    id: reviveControllerApplyProfileButton
+                    enabled: false
+                    Layout.preferredWidth: 200
+                    text: "Apply"
+                    onClicked: {
+                        if (reviveControllerProfileComboBox.currentIndex > 0) {
+                            ReviveTabController.applyControllerProfile(reviveControllerProfileComboBox.currentIndex - 1)
+                            reviveControllerProfileComboBox.currentIndex = 0
+                        }
+                    }
+                }
+            }
+            RowLayout {
+                spacing: 8
+                Item {
+                    Layout.fillWidth: true
+                }
+                MyPushButton {
+                    id: reviveControllerDeleteProfileButton
+                    enabled: false
+                    Layout.preferredWidth: 200
+                    text: "Delete Profile"
+                    onClicked: {
+                        if (reviveControllerProfileComboBox.currentIndex > 0) {
+                            reviveDeleteProfileDialog.profileIndex = reviveControllerProfileComboBox.currentIndex - 1
+                            reviveDeleteProfileDialog.open()
+                        }
+                    }
+                }
+                MyPushButton {
+                    Layout.preferredWidth: 200
+                    text: "New Profile"
+                    onClicked: {
+                        reviveNewProfileDialog.openPopup()
+                    }
+                }
+            }
+        }
 
         RowLayout {
             MyText {
@@ -791,6 +923,10 @@ MyStackViewPage {
         }
 
 
+        Item {
+            Layout.fillHeight: true
+        }
+
         RowLayout {
             MyPushButton {
                 id: revivePersonalInfoButton
@@ -815,10 +951,6 @@ MyStackViewPage {
             }
         }
 
-        Item {
-            Layout.fillHeight: true
-        }
-
         Component.onCompleted: {
             pixelsPerDisplayPixelToggle.checked = ReviveTabController.pixelsPerDisplayPixelOverrideEnabled
             var v = ReviveTabController.pixelsPerDisplayPixelOverride.toFixed(1)
@@ -841,6 +973,7 @@ MyStackViewPage {
             touchXInputField.text = ReviveTabController.touchX.toFixed(3)
             touchYInputField.text = ReviveTabController.touchY.toFixed(3)
             touchZInputField.text = ReviveTabController.touchZ.toFixed(3)
+            reloadControllerProfiles()
         }
 
         Connections {
@@ -884,6 +1017,19 @@ MyStackViewPage {
             onTouchZChanged : {
                 touchZInputField.text = ReviveTabController.touchZ.toFixed(3)
             }
+            onControllerProfilesUpdated: {
+                reloadControllerProfiles()
+            }
         }
+    }
+
+    function reloadControllerProfiles() {
+        var profiles = [""]
+        var profileCount = ReviveTabController.getControllerProfileCount()
+        for (var i = 0; i < profileCount; i++) {
+            profiles.push(ReviveTabController.getControllerProfileName(i))
+        }
+        reviveControllerProfileComboBox.currentIndex = 0
+        reviveControllerProfileComboBox.model = profiles
     }
 }

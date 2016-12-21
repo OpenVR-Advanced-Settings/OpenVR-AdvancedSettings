@@ -12,6 +12,20 @@ namespace advsettings {
 	class OverlayController;
 
 
+	struct ReviveControllerProfile {
+		std::string profileName;
+		int gripButtonMode;
+		float thumbDeadzone;
+		float thumbRange;
+		float touchPitch;
+		float touchYaw;
+		float touchRoll;
+		float touchX;
+		float touchY;
+		float touchZ;
+	};
+
+
 	class ReviveTabController : public QObject {
 		Q_OBJECT
 		Q_PROPERTY(int isOverlayInstalled READ isOverlayInstalled NOTIFY isOverlayInstalledChanged)
@@ -56,6 +70,8 @@ namespace advsettings {
 
 		unsigned settingsUpdateCounter = 0;
 
+		std::vector<ReviveControllerProfile> controllerProfiles;
+
 	public:
 		void initStage1();
 		void initStage2(OverlayController* parent, QQuickWindow* widget);
@@ -87,6 +103,12 @@ namespace advsettings {
 
 		Q_INVOKABLE float getCurrentHMDHeight();
 
+		void reloadControllerProfiles();
+		void saveControllerProfiles();
+
+		Q_INVOKABLE unsigned getControllerProfileCount();
+		Q_INVOKABLE QString getControllerProfileName(unsigned index);
+
 	public slots:
 		void setGripButtonMode(int value, bool notify = true);
 
@@ -108,6 +130,10 @@ namespace advsettings {
 		void setPiUsername(const QString& value, bool notify = true);
 		void setPiName(const QString& value, bool notify = true);
 		void setPiGender(int value, bool notify = true); // 0 .. Unknown, 1 .. Male, 2 .. Female
+
+		void addControllerProfile(QString name);
+		void applyControllerProfile(unsigned index);
+		void deleteControllerProfile(unsigned index);
 
 		void reset();
 
@@ -134,6 +160,8 @@ namespace advsettings {
 		void piUsernameChanged(const QString& value);
 		void piNameChanged(const QString& value);
 		void piGenderChanged(int value);
+
+		void controllerProfilesUpdated();
 	};
 
 } // namespace advsettings
