@@ -450,23 +450,32 @@ namespace advsettings {
 	}
 
 	void AudioTabController::addPttProfile(QString name) {
-		auto i = pttProfiles.size();
-		pttProfiles.emplace_back();
-		auto& profile = pttProfiles[i];
-		profile.profileName = name.toStdString();
-		profile.showNotification = m_pttShowNotification;
-		profile.leftControllerEnabled = m_pttLeftControllerEnabled;
-		profile.rightControllerEnabled = m_pttRightControllerEnabled;
-		profile.controllerConfigs[0].digitalButtons = m_pttControllerConfigs[0].digitalButtons;
-		profile.controllerConfigs[0].digitalButtonMask = m_pttControllerConfigs[0].digitalButtonMask;
-		profile.controllerConfigs[0].triggerMode = m_pttControllerConfigs[0].triggerMode;
-		profile.controllerConfigs[0].touchpadMode = m_pttControllerConfigs[0].touchpadMode;
-		profile.controllerConfigs[0].touchpadAreas = m_pttControllerConfigs[0].touchpadAreas;
-		profile.controllerConfigs[1].digitalButtons = m_pttControllerConfigs[1].digitalButtons;
-		profile.controllerConfigs[1].digitalButtonMask = m_pttControllerConfigs[1].digitalButtonMask;
-		profile.controllerConfigs[1].triggerMode = m_pttControllerConfigs[1].triggerMode;
-		profile.controllerConfigs[1].touchpadMode = m_pttControllerConfigs[1].touchpadMode;
-		profile.controllerConfigs[1].touchpadAreas = m_pttControllerConfigs[1].touchpadAreas;
+		PttProfile* profile = nullptr;
+		for (auto& p : pttProfiles) {
+			if (p.profileName.compare(name.toStdString()) == 0) {
+				profile = &p;
+				break;
+			}
+		}
+		if (!profile) {
+			auto i = pttProfiles.size();
+			pttProfiles.emplace_back();
+			profile = &pttProfiles[i];
+		}
+		profile->profileName = name.toStdString();
+		profile->showNotification = m_pttShowNotification;
+		profile->leftControllerEnabled = m_pttLeftControllerEnabled;
+		profile->rightControllerEnabled = m_pttRightControllerEnabled;
+		profile->controllerConfigs[0].digitalButtons = m_pttControllerConfigs[0].digitalButtons;
+		profile->controllerConfigs[0].digitalButtonMask = m_pttControllerConfigs[0].digitalButtonMask;
+		profile->controllerConfigs[0].triggerMode = m_pttControllerConfigs[0].triggerMode;
+		profile->controllerConfigs[0].touchpadMode = m_pttControllerConfigs[0].touchpadMode;
+		profile->controllerConfigs[0].touchpadAreas = m_pttControllerConfigs[0].touchpadAreas;
+		profile->controllerConfigs[1].digitalButtons = m_pttControllerConfigs[1].digitalButtons;
+		profile->controllerConfigs[1].digitalButtonMask = m_pttControllerConfigs[1].digitalButtonMask;
+		profile->controllerConfigs[1].triggerMode = m_pttControllerConfigs[1].triggerMode;
+		profile->controllerConfigs[1].touchpadMode = m_pttControllerConfigs[1].touchpadMode;
+		profile->controllerConfigs[1].touchpadAreas = m_pttControllerConfigs[1].touchpadAreas;
 		savePttProfiles();
 		OverlayController::appSettings()->sync();
 		emit pttProfilesUpdated();

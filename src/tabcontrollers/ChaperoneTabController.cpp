@@ -352,69 +352,78 @@ void ChaperoneTabController::reloadFromDisk() {
 void ChaperoneTabController::addChaperoneProfile(QString name, bool includeGeometry, bool includeVisbility, bool includeFadeDistance, bool includeCenterMarker,
 		bool includePlaySpaceMarker, bool includeFloorBounds, bool includeBoundsColor, bool includeChaperoneStyle, bool includeForceBounds) {
 	vr::EVRSettingsError vrSettingsError;
-	auto i = chaperoneProfiles.size();
-	chaperoneProfiles.emplace_back();
-	auto& profile = chaperoneProfiles[i];
-	profile.profileName = name.toStdString();
-	profile.includesChaperoneGeometry = includeGeometry;
+	ChaperoneProfile* profile = nullptr;
+	for (auto& p : chaperoneProfiles) {
+		if (p.profileName.compare(name.toStdString()) == 0) {
+			profile = &p;
+			break;
+		}
+	}
+	if (!profile) {
+		auto i = chaperoneProfiles.size();
+		chaperoneProfiles.emplace_back();
+		profile = &chaperoneProfiles[i];
+	}
+	profile->profileName = name.toStdString();
+	profile->includesChaperoneGeometry = includeGeometry;
 	if (includeGeometry) {
 		vr::VRChaperoneSetup()->RevertWorkingCopy();
 		uint32_t quadCount = 0;
 		vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo(nullptr, &quadCount);
-		profile.chaperoneGeometryQuadCount = quadCount;
-		profile.chaperoneGeometryQuads.reset(new vr::HmdQuad_t[quadCount]);
-		vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo(profile.chaperoneGeometryQuads.get(), &quadCount);
-		vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(&profile.standingCenter);
-		vr::VRChaperoneSetup()->GetWorkingPlayAreaSize(&profile.playSpaceAreaX, &profile.playSpaceAreaZ);
+		profile->chaperoneGeometryQuadCount = quadCount;
+		profile->chaperoneGeometryQuads.reset(new vr::HmdQuad_t[quadCount]);
+		vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo(profile->chaperoneGeometryQuads.get(), &quadCount);
+		vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(&profile->standingCenter);
+		vr::VRChaperoneSetup()->GetWorkingPlayAreaSize(&profile->playSpaceAreaX, &profile->playSpaceAreaZ);
 	}
-	profile.includesVisibility = includeVisbility;
+	profile->includesVisibility = includeVisbility;
 	if (includeVisbility) {
-		profile.visibility = m_visibility;
+		profile->visibility = m_visibility;
 	}
-	profile.includesFadeDistance = includeFadeDistance;
+	profile->includesFadeDistance = includeFadeDistance;
 	if (includeFadeDistance) {
-		profile.fadeDistance = m_fadeDistance;
+		profile->fadeDistance = m_fadeDistance;
 	}
-	profile.includesCenterMarker = includeCenterMarker;
+	profile->includesCenterMarker = includeCenterMarker;
 	if (includeCenterMarker) {
-		profile.centerMarker = m_centerMarker;
+		profile->centerMarker = m_centerMarker;
 	}
-	profile.includesPlaySpaceMarker = includePlaySpaceMarker;
+	profile->includesPlaySpaceMarker = includePlaySpaceMarker;
 	if (includePlaySpaceMarker) {
-		profile.playSpaceMarker = m_playSpaceMarker;
+		profile->playSpaceMarker = m_playSpaceMarker;
 	}
-	profile.includesFloorBoundsMarker = includeFloorBounds;
+	profile->includesFloorBoundsMarker = includeFloorBounds;
 	if (includeFloorBounds) {
-		profile.floorBoundsMarker = vr::VRSettings()->GetBool(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool, &vrSettingsError);
+		profile->floorBoundsMarker = vr::VRSettings()->GetBool(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
 			LOG(WARNING) << "Could not read \"" << vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 		}
 	}
-	profile.includesBoundsColor = includeBoundsColor;
+	profile->includesBoundsColor = includeBoundsColor;
 	if (includeBoundsColor) {
-		profile.boundsColor[0] = vr::VRSettings()->GetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_ColorGammaR_Int32, &vrSettingsError);
+		profile->boundsColor[0] = vr::VRSettings()->GetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_ColorGammaR_Int32, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
 			LOG(WARNING) << "Could not read \"" << vr::k_pch_CollisionBounds_ColorGammaR_Int32 << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 		}
-		profile.boundsColor[1] = vr::VRSettings()->GetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_ColorGammaG_Int32, &vrSettingsError);
+		profile->boundsColor[1] = vr::VRSettings()->GetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_ColorGammaG_Int32, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
 			LOG(WARNING) << "Could not read \"" << vr::k_pch_CollisionBounds_ColorGammaG_Int32 << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 		}
-		profile.boundsColor[2] = vr::VRSettings()->GetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_ColorGammaB_Int32, &vrSettingsError);
+		profile->boundsColor[2] = vr::VRSettings()->GetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_ColorGammaB_Int32, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
 			LOG(WARNING) << "Could not read \"" << vr::k_pch_CollisionBounds_ColorGammaB_Int32 << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 		}
 	}
-	profile.includesChaperoneStyle = includeChaperoneStyle;
+	profile->includesChaperoneStyle = includeChaperoneStyle;
 	if (includeChaperoneStyle) {
-		profile.chaperoneStyle = vr::VRSettings()->GetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_Style_Int32, &vrSettingsError);
+		profile->chaperoneStyle = vr::VRSettings()->GetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_Style_Int32, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
 			LOG(WARNING) << "Could not read \"" << vr::k_pch_CollisionBounds_Style_Int32 << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 		}
 	}
-	profile.includesForceBounds = includeForceBounds;
+	profile->includesForceBounds = includeForceBounds;
 	if (includeForceBounds) {
-		profile.forceBounds = m_forceBounds;
+		profile->forceBounds = m_forceBounds;
 	}
 	saveChaperoneProfiles();
 	OverlayController::appSettings()->sync();
