@@ -186,24 +186,15 @@ MyStackViewPage {
                 MyText {
                     text: "Name: "
                 }
-                TextField {
+                MyTextField {
                     id: pttNewProfileName
+                    keyBoardUID: 590
                     color: "#cccccc"
                     text: ""
                     Layout.fillWidth: true
                     font.pointSize: 20
-                    onActiveFocusChanged: {
-                        if (activeFocus) {
-                            OverlayController.showKeyboard(text, 101)
-                        }
-                    }
-                    Connections {
-                        target: OverlayController
-                        onKeyBoardInputSignal: {
-                            if (userValue == 101) {
-                                pttNewProfileName.text = input
-                            }
-                        }
+                    function onInputEvent(input) {
+                        pttNewProfileName.text = input
                     }
                 }
             }

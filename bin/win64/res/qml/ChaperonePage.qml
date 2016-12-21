@@ -41,24 +41,15 @@ MyStackViewPage {
                 MyText {
                     text: "Name: "
                 }
-                TextField {
+                MyTextField {
                     id: chaperoneNewProfileName
+                    keyBoardUID: 390
                     color: "#cccccc"
                     text: ""
                     Layout.fillWidth: true
                     font.pointSize: 20
-                    onActiveFocusChanged: {
-                        if (activeFocus) {
-                            OverlayController.showKeyboard(text, 101)
-                        }
-                    }
-                    Connections {
-                        target: OverlayController
-                        onKeyBoardInputSignal: {
-                            if (userValue == 101) {
-                                chaperoneNewProfileName.text = input
-                            }
-                        }
+                    function onInputEvent(input) {
+                        chaperoneNewProfileName.text = input
                     }
                 }
             }
@@ -285,8 +276,11 @@ MyStackViewPage {
                             val = 100.0
                         }
                         var v = (val/100).toFixed(2)
-                        chaperoneVisibilitySlider.value = v
-                        ChaperoneTabController.setBoundsVisibility(v, false)
+                        if (v <= chaperoneVisibilitySlider.to) {
+                            chaperoneVisibilitySlider.value = v
+                        } else {
+                            ChaperoneTabController.setBoundsVisibility(v, false)
+                        }
                     }
                     text = Math.round(ChaperoneTabController.boundsVisibility * 100) + "%"
                 }
@@ -343,8 +337,11 @@ MyStackViewPage {
                             val = 0.0
                         }
                         var v = val.toFixed(1)
-                        chaperoneFadeDistanceSlider.value = v
-                        ChaperoneTabController.setFadeDistance(v, false)
+                        if (v <= chaperoneFadeDistanceSlider.to) {
+                            chaperoneFadeDistanceSlider.value = v
+                        } else {
+                            ChaperoneTabController.setFadeDistance(v, false)
+                        }
                     }
                     text = ChaperoneTabController.fadeDistance.toFixed(1)
                 }
@@ -366,7 +363,7 @@ MyStackViewPage {
             MySlider {
                 id: chaperoneHeightSlider
                 from: 0.01
-                to: 5.0
+                to: 15.0
                 stepSize: 0.01
                 value: 2.0
                 Layout.fillWidth: true
@@ -404,8 +401,11 @@ MyStackViewPage {
                             val = 0.01
                         }
                         var v = val.toFixed(2)
-                        chaperoneHeightSlider.value = v
-                        ChaperoneTabController.setHeight(v, false)
+                        if (v <= chaperoneHeightSlider.to) {
+                            chaperoneHeightSlider.value = v
+                        } else {
+                            ChaperoneTabController.setHeight(v, false)
+                        }
                     }
                     text = ChaperoneTabController.height.toFixed(2)
                 }
@@ -479,9 +479,15 @@ MyStackViewPage {
 
         Component.onCompleted: {
             chaperoneVisibilitySlider.value = ChaperoneTabController.boundsVisibility
-            chaperoneFadeDistanceSlider.value = ChaperoneTabController.fadeDistance
+            var d = ChaperoneTabController.fadeDistance.toFixed(1)
+            if (d <= chaperoneFadeDistanceSlider.to) {
+                chaperoneFadeDistanceSlider.value = d
+            }
+            chaperoneFadeDistanceText.text = d
             var h = ChaperoneTabController.height.toFixed(2)
-            chaperoneHeightSlider.value = h
+            if (h <= chaperoneHeightSlider.to) {
+                chaperoneHeightSlider.value = h
+            }
             chaperoneHeightText.text = h
             chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarker
             chaperonePlaySpaceToggle.checked = ChaperoneTabController.playSpaceMarker
@@ -497,13 +503,17 @@ MyStackViewPage {
                 }
             }
             onFadeDistanceChanged: {
-                if (Math.abs(chaperoneFadeDistanceSlider.value - ChaperoneTabController.fadeDistance) > 0.08) {
-                    chaperoneFadeDistanceSlider.value = ChaperoneTabController.fadeDistance
+                var d = ChaperoneTabController.fadeDistance.toFixed(1)
+                if (d <= chaperoneFadeDistanceSlider.to && Math.abs(chaperoneFadeDistanceSlider.value - d) > 0.008) {
+                    chaperoneFadeDistanceSlider.value = d
                 }
+                chaperoneFadeDistanceText.text = d
             }
             onHeightChanged: {
                 var h = ChaperoneTabController.height.toFixed(2)
-                chaperoneHeightSlider.value = h
+                if (h <= chaperoneHeightSlider.to && Math.abs(chaperoneHeightSlider.value - h) > 0.008) {
+                    chaperoneHeightSlider.value = h
+                }
                 chaperoneHeightText.text = h
             }
 

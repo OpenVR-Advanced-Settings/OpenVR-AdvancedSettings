@@ -204,9 +204,9 @@ MyStackViewPage {
                             Layout.preferredWidth: 40
                             text: "-"
                             onClicked: {
-                                var val = (MoveCenterTabController.rotation - 45) % 360
-                                if (val < 0) {
-                                    val = 360 + val;
+                                var val = MoveCenterTabController.rotation - 45
+                                if (val < -180) {
+                                    val = val + 360;
                                 }
                                 MoveCenterTabController.rotation = val
                             }
@@ -214,8 +214,8 @@ MyStackViewPage {
 
                         MySlider {
                             id: playspaceRotationSlider
-                            from: 0
-                            to: 359
+                            from: -180
+                            to: 180
                             stepSize: 1
                             value: 0
                             Layout.fillWidth: true
@@ -234,9 +234,9 @@ MyStackViewPage {
                             Layout.preferredWidth: 40
                             text: "+"
                             onClicked: {
-                                var val = (MoveCenterTabController.rotation + 45) % 360
-                                if (val < 0) {
-                                    val = 360 + val;
+                                var val = MoveCenterTabController.rotation + 45
+                                if (val > 180) {
+                                    val = val -360;
                                 }
                                 MoveCenterTabController.rotation = val
                             }
@@ -252,10 +252,7 @@ MyStackViewPage {
                             function onInputEvent(input) {
                                 var val = parseInt(input)
                                 if (!isNaN(val)) {
-                                    val = val % 360
-                                    if (val < 0) {
-                                        val = 360 + val;
-                                    }
+                                    val = val % 180
                                     MoveCenterTabController.rotation = val
                                     text = MoveCenterTabController.rotation + "°"
                                 } else {

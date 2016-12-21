@@ -174,6 +174,7 @@ int main(int argc, char *argv[]) {
 		}
 		conf.setRemainingToDefault();
 		el::Loggers::reconfigureAllLoggers(conf);
+		LOG(INFO) << "Application started";
 		LOG(INFO) << "Log Config: " << QDir::toNativeSeparators(logconfigfile).toStdString();
 		if (!logFilePath.isEmpty()) {
 			LOG(INFO) << "Log File: " << logFilePath;

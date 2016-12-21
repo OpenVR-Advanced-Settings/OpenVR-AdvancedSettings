@@ -90,34 +90,37 @@ void MoveCenterTabController::setAdjustChaperone(bool value, bool notify) {
 		m_adjustChaperone = value;
 		if (m_trackingUniverse == vr::TrackingUniverseStanding) {
 			vr::VRChaperoneSetup()->RevertWorkingCopy();
+			float offsetdir;
 			if (m_adjustChaperone) {
-				if (m_offsetX != 0.0f) {
-					parent->AddOffsetToCollisionBounds(0, -m_offsetX, false);
-				}
-				if (m_offsetY != 0.0f) {
-					parent->AddOffsetToCollisionBounds(1, -m_offsetY, false);
-				}
-				if (m_offsetZ != 0.0f) {
-					parent->AddOffsetToCollisionBounds(2, -m_offsetZ, false);
-				}
-				if (m_rotation != 0) {
-					float angle = m_rotation * 2 * M_PI / 360.0;
-					parent->RotateCollisionBounds(-angle, false);
-				}
+				offsetdir = -1.0;
 			} else {
-				if (m_offsetX != 0.0f) {
-					parent->AddOffsetToCollisionBounds(0, m_offsetX, false);
+				offsetdir = 1.0;
+			}
+
+			if (m_offsetX != 0.0f) {
+				if (m_adjustChaperone || m_rotation == 0) {
+					parent->AddOffsetToCollisionBounds(0, offsetdir * m_offsetX, false);
+				} else {
+					auto angle = m_rotation * 2 * M_PI / 360.0;
+					parent->AddOffsetToCollisionBounds(0, offsetdir * m_offsetX * std::cos(angle), false);
+					parent->AddOffsetToCollisionBounds(2, offsetdir * m_offsetX * std::sin(angle), false);
 				}
-				if (m_offsetY != 0.0f) {
-					parent->AddOffsetToCollisionBounds(1, m_offsetY, false);
+			}
+			if (m_offsetY != 0.0f) {
+				parent->AddOffsetToCollisionBounds(1, offsetdir * m_offsetY, false);
+			}
+			if (m_offsetZ != 0.0f) {
+				if (m_adjustChaperone || m_rotation == 0) {
+					parent->AddOffsetToCollisionBounds(2, offsetdir * m_offsetZ, false);
+				} else {
+					auto angle = m_rotation * 2 * M_PI / 360.0;
+					parent->AddOffsetToCollisionBounds(2, offsetdir * m_offsetZ * std::cos(angle), false);
+					parent->AddOffsetToCollisionBounds(0, -offsetdir * m_offsetZ * std::sin(angle), false);
 				}
-				if (m_offsetZ != 0.0f) {
-					parent->AddOffsetToCollisionBounds(2, m_offsetZ, false);
-				}
-				if (m_rotation != 0) {
-					float angle = m_rotation * 2 * M_PI / 360.0;
-					parent->RotateCollisionBounds(angle, false);
-				}
+			}
+			if (m_rotation != 0) {
+				float angle = m_rotation * 2 * M_PI / 360.0;
+				parent->RotateCollisionBounds(offsetdir * angle, false);
 			}
 			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
 		}

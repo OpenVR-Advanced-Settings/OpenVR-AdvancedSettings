@@ -103,7 +103,7 @@ MyStackViewPage {
                     pixelsPerDisplayPixelText.text = val.toFixed(1)
                 }
                 onValueChanged: {
-                    ReviveTabController.setPixelsPerDisplayPixelOverride(value)
+                    ReviveTabController.setPixelsPerDisplayPixelOverride(value.toFixed(1), false)
                 }
             }
 
@@ -129,82 +129,13 @@ MyStackViewPage {
                             val = 0.1
                         }
                         var v = val.toFixed(1)
-                        pixelsPerDisplayPixelSlider.value = v
-                        ReviveTabController.setPixelsPerDisplayPixelOverride(v, false)
-                        text = v
-                    } else {
-                        text = ReviveTabController.pixelsPerDisplayPixelOverride.toFixed(1)
-                    }
-                }
-            }
-        }
-
-        ColumnLayout {
-            spacing: 8
-            Layout.topMargin: 12
-            Layout.bottomMargin: 8
-            RowLayout {
-                spacing: 8
-
-                MyText {
-                    Layout.preferredWidth: 347
-                    text: "Controller Profile:"
-                }
-
-                MyComboBox {
-                    id: reviveControllerProfileComboBox
-                    Layout.maximumWidth: 557
-                    Layout.minimumWidth: 557
-                    Layout.preferredWidth: 557
-                    Layout.fillWidth: true
-                    model: [""]
-                    onCurrentIndexChanged: {
-                        if (currentIndex > 0) {
-                            reviveControllerApplyProfileButton.enabled = true
-                            reviveControllerDeleteProfileButton.enabled = true
+                        if (v <= pixelsPerDisplayPixelSlider.to) {
+                            pixelsPerDisplayPixelSlider.value = v
                         } else {
-                            reviveControllerApplyProfileButton.enabled = false
-                            reviveControllerDeleteProfileButton.enabled = false
+                            ReviveTabController.setPixelsPerDisplayPixelOverride(v, false)
                         }
                     }
-                }
-
-                MyPushButton {
-                    id: reviveControllerApplyProfileButton
-                    enabled: false
-                    Layout.preferredWidth: 200
-                    text: "Apply"
-                    onClicked: {
-                        if (reviveControllerProfileComboBox.currentIndex > 0) {
-                            ReviveTabController.applyControllerProfile(reviveControllerProfileComboBox.currentIndex - 1)
-                            reviveControllerProfileComboBox.currentIndex = 0
-                        }
-                    }
-                }
-            }
-            RowLayout {
-                spacing: 8
-                Item {
-                    Layout.fillWidth: true
-                }
-                MyPushButton {
-                    id: reviveControllerDeleteProfileButton
-                    enabled: false
-                    Layout.preferredWidth: 200
-                    text: "Delete Profile"
-                    onClicked: {
-                        if (reviveControllerProfileComboBox.currentIndex > 0) {
-                            reviveDeleteProfileDialog.profileIndex = reviveControllerProfileComboBox.currentIndex - 1
-                            reviveDeleteProfileDialog.open()
-                        }
-                    }
-                }
-                MyPushButton {
-                    Layout.preferredWidth: 200
-                    text: "New Profile"
-                    onClicked: {
-                        reviveNewProfileDialog.openPopup()
-                    }
+                    text = ReviveTabController.pixelsPerDisplayPixelOverride.toFixed(1)
                 }
             }
         }
@@ -277,7 +208,7 @@ MyStackViewPage {
                                 thumbDeadzoneText.text = val.toFixed(2)
                             }
                             onValueChanged: {
-                                ReviveTabController.setThumbDeadzone(value.toFixed(2))
+                                ReviveTabController.setThumbDeadzone(value.toFixed(2), false)
                             }
                         }
 
@@ -306,12 +237,13 @@ MyStackViewPage {
                                         val = 1.0
                                     }
                                     var v = val.toFixed(2)
-                                    thumbDeadzoneSlider.value = v
-                                    ReviveTabController.setThumbDeadzone(v, false)
-                                    text = v
-                                } else {
-                                    text = ReviveTabController.thumbDeadzone.toFixed(2)
+                                    if (v <= thumbDeadzoneSlider.to) {
+                                        thumbDeadzoneSlider.value = v
+                                    } else {
+                                        ReviveTabController.setThumbDeadzone(v, false)
+                                    }
                                 }
+                                text = ReviveTabController.thumbDeadzone.toFixed(2)
                             }
                         }
                     }
@@ -343,7 +275,7 @@ MyStackViewPage {
                                 thumbRangeText.text = val.toFixed(2)
                             }
                             onValueChanged: {
-                                ReviveTabController.setThumbRange(value.toFixed(2))
+                                ReviveTabController.setThumbRange(value.toFixed(2), false)
                             }
                         }
 
@@ -370,12 +302,13 @@ MyStackViewPage {
                                         val = 0.01
                                     }
                                     var v = val.toFixed(2)
-                                    thumbRangeSlider.value = v
-                                    ReviveTabController.setThumbRange(v, false)
-                                    text = v
-                                } else {
-                                    text = ReviveTabController.thumbRange.toFixed(2)
+                                    if (v <= thumbRangeSlider.to) {
+                                        thumbRangeSlider.value = v
+                                    } else {
+                                        ReviveTabController.setThumbRange(v, false)
+                                    }
                                 }
+                                text = ReviveTabController.thumbRange.toFixed(2)
                             }
                         }
                     }
@@ -923,6 +856,78 @@ MyStackViewPage {
         }
 
 
+
+        ColumnLayout {
+            spacing: 8
+            Layout.topMargin: 12
+            Layout.bottomMargin: 8
+            RowLayout {
+                spacing: 8
+
+                MyText {
+                    Layout.preferredWidth: 347
+                    text: "Controller Profile:"
+                }
+
+                MyComboBox {
+                    id: reviveControllerProfileComboBox
+                    Layout.maximumWidth: 557
+                    Layout.minimumWidth: 557
+                    Layout.preferredWidth: 557
+                    Layout.fillWidth: true
+                    model: [""]
+                    onCurrentIndexChanged: {
+                        if (currentIndex > 0) {
+                            reviveControllerApplyProfileButton.enabled = true
+                            reviveControllerDeleteProfileButton.enabled = true
+                        } else {
+                            reviveControllerApplyProfileButton.enabled = false
+                            reviveControllerDeleteProfileButton.enabled = false
+                        }
+                    }
+                }
+
+                MyPushButton {
+                    id: reviveControllerApplyProfileButton
+                    enabled: false
+                    Layout.preferredWidth: 200
+                    text: "Apply"
+                    onClicked: {
+                        if (reviveControllerProfileComboBox.currentIndex > 0) {
+                            ReviveTabController.applyControllerProfile(reviveControllerProfileComboBox.currentIndex - 1)
+                            reviveControllerProfileComboBox.currentIndex = 0
+                        }
+                    }
+                }
+            }
+            RowLayout {
+                spacing: 8
+                Item {
+                    Layout.fillWidth: true
+                }
+                MyPushButton {
+                    id: reviveControllerDeleteProfileButton
+                    enabled: false
+                    Layout.preferredWidth: 200
+                    text: "Delete Profile"
+                    onClicked: {
+                        if (reviveControllerProfileComboBox.currentIndex > 0) {
+                            reviveDeleteProfileDialog.profileIndex = reviveControllerProfileComboBox.currentIndex - 1
+                            reviveDeleteProfileDialog.open()
+                        }
+                    }
+                }
+                MyPushButton {
+                    Layout.preferredWidth: 200
+                    text: "New Profile"
+                    onClicked: {
+                        reviveNewProfileDialog.openPopup()
+                    }
+                }
+            }
+        }
+
+
         Item {
             Layout.fillHeight: true
         }
@@ -954,17 +959,23 @@ MyStackViewPage {
         Component.onCompleted: {
             pixelsPerDisplayPixelToggle.checked = ReviveTabController.pixelsPerDisplayPixelOverrideEnabled
             var v = ReviveTabController.pixelsPerDisplayPixelOverride.toFixed(1)
-            pixelsPerDisplayPixelSlider.value = v
+            if (v <= pixelsPerDisplayPixelSlider.to) {
+                pixelsPerDisplayPixelSlider.value = v
+            }
             pixelsPerDisplayPixelText.text = v
 
             gripButtonModeComboBox.currentIndex = ReviveTabController.gripButtonMode
 
             v = ReviveTabController.thumbDeadzone.toFixed(2)
-            thumbDeadzoneSlider.value = v
+            if (v <= thumbDeadzoneSlider.to) {
+                thumbDeadzoneSlider.value = v
+            }
             thumbDeadzoneText.text = v
 
             v = ReviveTabController.thumbRange.toFixed(2)
-            thumbRangeSlider.value = v
+            if (v <= thumbRangeSlider.to) {
+                thumbRangeSlider.value = v
+            }
             thumbRangeText.text = v
 
             touchPitchInputField.text = ReviveTabController.touchPitch.toFixed(1) + "°"
@@ -986,17 +997,23 @@ MyStackViewPage {
             }
             onPixelsPerDisplayPixelOverrideChanged : {
                 var v = ReviveTabController.pixelsPerDisplayPixelOverride.toFixed(1)
-                pixelsPerDisplayPixelSlider.value = v
+                if (v <= pixelsPerDisplayPixelSlider.to) {
+                    pixelsPerDisplayPixelSlider.value = v
+                }
                 pixelsPerDisplayPixelText.text = v
             }
             onThumbDeadzoneChanged : {
                 var v = ReviveTabController.thumbDeadzone.toFixed(2)
-                thumbDeadzoneSlider.value = v
+                if (v <= thumbDeadzoneSlider.to) {
+                    thumbDeadzoneSlider.value = v
+                }
                 thumbDeadzoneText.text = v
             }
             onThumbRangeChanged : {
                 var v = ReviveTabController.thumbRange.toFixed(2)
-                thumbRangeSlider.value = v
+                if (v >= thumbRangeSlider.from && v <= thumbRangeSlider.to) {
+                    thumbRangeSlider.value = v
+                }
                 thumbRangeText.text = v
             }
             onTouchPitchChanged : {

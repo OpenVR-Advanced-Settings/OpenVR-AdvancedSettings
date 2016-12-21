@@ -68,8 +68,11 @@ MyStackViewPage {
                         }
                         console.debug("Supersampling TextField: valueChanged(", val, ")")
                         var v = val.toFixed(1)
-                        steamvrSupersamplingSlider.value = v
-                        SteamVRTabController.setSuperSampling(v, false)
+                        if (v <= steamvrSupersamplingSlider.to) {
+                            steamvrSupersamplingSlider.value = v
+                        } else {
+                            SteamVRTabController.setSuperSampling(v, false)
+                        }
                     }
                     text = SteamVRTabController.superSampling.toFixed(1)
                 }
@@ -135,8 +138,11 @@ MyStackViewPage {
                         }
                         console.debug("Compositor Supersampling TextField: valueChanged(", val, ")")
                         var v = val.toFixed(1)
-                        steamvrCompositorSupersamplingSlider.value = v
-                        SteamVRTabController.setCompositorSuperSampling(v, false)
+                        if (v <= steamvrCompositorSupersamplingSlider.to) {
+                            steamvrCompositorSupersamplingSlider.value = v
+                        } else {
+                            SteamVRTabController.setCompositorSuperSampling(v, false)
+                        }
                     }
                     text = SteamVRTabController.compositorSuperSampling.toFixed(1)
                 }
@@ -201,8 +207,16 @@ MyStackViewPage {
         }
 
         Component.onCompleted: {
-            steamvrSupersamplingSlider.value = SteamVRTabController.superSampling
-            steamvrCompositorSupersamplingSlider.value = SteamVRTabController.compositorSuperSampling
+            var s1 = SteamVRTabController.superSampling.toFixed(1)
+            if (s1 <= steamvrSupersamplingSlider.to) {
+                steamvrSupersamplingSlider.value = s1
+            }
+            steamvrSupersamplingText.text = s1
+            var s2 = SteamVRTabController.compositorSuperSampling.toFixed(1)
+            if (s2 <= steamvrCompositorSupersamplingSlider.to) {
+                steamvrCompositorSupersamplingSlider.value = s2
+            }
+            steamvrCompositorSupersamplingText.text = s2
             steamvrAllowInterleavedReprojectionToggle.checked = SteamVRTabController.allowInterleavedReprojection
             steamvrAllowAsyncReprojectionToggle.checked = SteamVRTabController.allowAsyncReprojection
             steamvrForceReprojectionToggle.checked = SteamVRTabController.forceReprojection
@@ -211,14 +225,18 @@ MyStackViewPage {
         Connections {
             target: SteamVRTabController
             onSuperSamplingChanged: {
-                if (Math.abs(steamvrSupersamplingSlider.value-SteamVRTabController.superSampling) > 0.08) {
-                    steamvrSupersamplingSlider.value = SteamVRTabController.superSampling
+                var s1 = SteamVRTabController.superSampling.toFixed(1)
+                if (s1 <= steamvrSupersamplingSlider.to && Math.abs(steamvrSupersamplingSlider.value-s1) > 0.08) {
+                    steamvrSupersamplingSlider.value = s1
                 }
+                steamvrSupersamplingText.text = s1
             }
             onCompositorSuperSamplingChanged: {
-                if (Math.abs(steamvrCompositorSupersamplingSlider.value-SteamVRTabController.compositorSuperSampling) > 0.08) {
-                    steamvrCompositorSupersamplingSlider.value = SteamVRTabController.compositorSuperSampling
+                var s2 = SteamVRTabController.compositorSuperSampling.toFixed(1)
+                if (s2 <= steamvrCompositorSupersamplingSlider.to && Math.abs(steamvrCompositorSupersamplingSlider.value-s2) > 0.08) {
+                    steamvrCompositorSupersamplingSlider.value = s2
                 }
+                steamvrCompositorSupersamplingText.text = s2
             }
             onAllowInterleavedReprojectionChanged: {
                 steamvrAllowInterleavedReprojectionToggle.checked = SteamVRTabController.allowInterleavedReprojection

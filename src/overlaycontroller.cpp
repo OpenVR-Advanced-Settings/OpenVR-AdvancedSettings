@@ -407,7 +407,7 @@ void OverlayController::RotateUniverseCenter(vr::ETrackingUniverseOrigin univers
 
 		vr::HmdMatrix34_t rotMat;
 		vr::HmdMatrix34_t newPos;
-		utils::initRotationMatrix(rotMat, 0, yAngle);
+		utils::initRotationMatrix(rotMat, 1, yAngle);
 		utils::matMul33(newPos, rotMat, curPos);
 		newPos.m[0][3] = curPos.m[0][3];
 		newPos.m[1][3] = curPos.m[1][3];
@@ -464,7 +464,7 @@ void OverlayController::RotateCollisionBounds(float angle, bool commit) {
 		vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(collisionBounds, &collisionBoundsCount);
 
 		vr::HmdMatrix34_t rotMat;
-		utils::initRotationMatrix(rotMat, 0, angle);
+		utils::initRotationMatrix(rotMat, 1, angle);
 		for (unsigned b = 0; b < collisionBoundsCount; b++) {
 			for (unsigned c = 0; c < 4; c++) {
 				auto& corner = collisionBounds[b].vCorners[c];
