@@ -5,12 +5,13 @@ import matzman666.advsettings 1.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 
 MyStackViewPage {
+    id: rootPage
     width: 1200
     height: 800
     headerText: "OpenVR Advanced Settings"
-   headerShowBackButton: false
-   stackView: mainView
-   content: Item {
+    headerShowBackButton: false
+    stackView: mainView
+    content: Item {
            ColumnLayout {
            anchors.fill: parent
            RowLayout {
@@ -81,7 +82,7 @@ MyStackViewPage {
                        activationSoundEnabled: false
                        text: "Revive"
                        Layout.fillWidth: true
-                       visible: ReviveTabController.isOverlayInstalled
+                       visible: SettingsTabController.forceRevivePage ? true : ReviveTabController.isOverlayInstalled
                        onClicked: {
                            MyResources.playFocusChangedSound()
                            mainView.push(revivePage)
@@ -391,6 +392,13 @@ MyStackViewPage {
            } else {
                summaryPlaySpaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
            }
+       }
+   }
+
+   Connections {
+       target: SettingsTabController
+       onForceRevivePageChanged: {
+           reviveButton.enabled = SettingsTabController.forceRevivePage
        }
    }
 

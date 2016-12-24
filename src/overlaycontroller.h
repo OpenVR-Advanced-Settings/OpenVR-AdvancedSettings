@@ -67,6 +67,7 @@ private:
 
 	QUrl m_runtimePathUrl;
 
+public: // I know it's an ugly hack to make them public to enable external access, but I am too lazy to implement getters.
 	SteamVRTabController steamVRTabController;
 	ChaperoneTabController chaperoneTabController;
 	MoveCenterTabController moveCenterTabController;

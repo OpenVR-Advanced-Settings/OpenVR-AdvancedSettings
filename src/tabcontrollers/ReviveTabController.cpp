@@ -26,7 +26,7 @@ namespace advsettings {
 
 	void ReviveTabController::initStage1() {
 		m_isOverlayInstalled = vr::VRApplications()->IsApplicationInstalled(appkey_overlay);
-		if (m_isOverlayInstalled) {
+		if (m_isOverlayInstalled || parent->settingsTabController.forceRevivePage()) {
 			vr::EVRSettingsError vrSettingsError;
 
 			float valuef = vr::VRSettings()->GetFloat(section_revive, key_pixelsPerDisplayPixel, &vrSettingsError);
@@ -157,7 +157,7 @@ namespace advsettings {
 	}
 
 	void ReviveTabController::eventLoopTick() {
-		if (m_isOverlayInstalled) {
+		if (m_isOverlayInstalled || parent->settingsTabController.forceRevivePage()) {
 			if (settingsUpdateCounter >= 50) {
 				settingsUpdateCounter = 0;
 				vr::EVRSettingsError vrSettingsError;
@@ -718,7 +718,6 @@ namespace advsettings {
 	}
 
 	void ReviveTabController::addControllerProfile(QString name) {
-		vr::EVRSettingsError vrSettingsError;
 		ReviveControllerProfile* profile = nullptr;
 		for (auto& p : controllerProfiles) {
 			if (p.profileName.compare(name.toStdString()) == 0) {
