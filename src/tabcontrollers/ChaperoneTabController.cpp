@@ -202,6 +202,7 @@ void ChaperoneTabController::eventLoopTick() {
 			LOG(WARNING) << "Could not read \"" << vr::k_pch_CollisionBounds_PlaySpaceOn_Bool << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 		}
 		setPlaySpaceMarker(ps);
+		updateHeight(getBoundsMaxY());
 		settingsUpdateCounter = 0;
 	} else {
 		settingsUpdateCounter++;

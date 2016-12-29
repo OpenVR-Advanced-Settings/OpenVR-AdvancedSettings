@@ -327,14 +327,12 @@ MyStackViewPage {
             onTrackingUniverseChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {
                     playspaceModeText.text = "Sitting"
-                    playspaceApplyButton.enabled = false
                     playSpaceRotationPlusButton.enabled = false
                     playSpaceRotationMinusButton.enabled = false
                     playspaceRotationSlider.enabled = false
                     playspaceRotationText.text = "-"
                 } else if (MoveCenterTabController.trackingUniverse === 1) {
                     playspaceModeText.text = "Standing"
-                    playspaceApplyButton.enabled = true
                     playSpaceRotationPlusButton.enabled = true
                     playSpaceRotationMinusButton.enabled = true
                     playspaceRotationSlider.enabled = true

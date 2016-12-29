@@ -107,7 +107,7 @@ public slots:
 	void reloadFromDisk();
 
 	void addChaperoneProfile(QString name, bool includeGeometry, bool includeVisbility, bool includeFadeDistance, bool includeCenterMarker,
-	bool includePlaySpaceMarker, bool includeFloorBounds, bool includeBoundsColor, bool includeChaperoneStyle, bool includeForceBounds);
+				bool includePlaySpaceMarker, bool includeFloorBounds, bool includeBoundsColor, bool includeChaperoneStyle, bool includeForceBounds);
 	void applyChaperoneProfile(unsigned index);
 	void deleteChaperoneProfile(unsigned index);
 
