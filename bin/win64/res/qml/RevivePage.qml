@@ -259,7 +259,7 @@ MyStackViewPage {
                             Layout.preferredWidth: 40
                             text: "-"
                             onClicked: {
-                                thumbRangeSlider.decrease()
+                                thumbRangeSlider.value -= 0.1
                             }
                         }
 
@@ -284,7 +284,7 @@ MyStackViewPage {
                             Layout.preferredWidth: 40
                             text: "+"
                             onClicked: {
-                                thumbRangeSlider.increase()
+                                thumbRangeSlider.value += 0.1
                             }
                         }
 
@@ -343,68 +343,9 @@ MyStackViewPage {
                     columns: 12
 
                     MyText {
-                        text: "Pitch:"
-                        horizontalAlignment: Text.AlignRight
-                        Layout.preferredWidth: 80
-                        Layout.rightMargin: 12
-                    }
-
-                    MyPushButton2 {
-                        id: touchPitchMinusButton
-                        Layout.preferredWidth: 40
-                        text: "-"
-                        onClicked: {
-                            var val = ReviveTabController.touchPitch - 0.1
-                            if (val < -180.0) {
-                                val = -180.0
-                            }
-                            ReviveTabController.setTouchPitch(val.toFixed(1))
-                        }
-                    }
-
-                    MyTextField {
-                        id: touchPitchInputField
-                        text: "0.00"
-                        keyBoardUID: 201
-                        Layout.preferredWidth: 140
-                        Layout.leftMargin: 10
-                        Layout.rightMargin: 10
-                        horizontalAlignment: Text.AlignHCenter
-                        function onInputEvent(input) {
-                            var val = parseFloat(input)
-                            if (!isNaN(val)) {
-                                if (val < -180.0) {
-                                    val = -180.0
-                                } else if (val > 180.0) {
-                                    val = 180.0
-                                }
-                                var v = val.toFixed(1)
-                                ReviveTabController.setTouchPitch(v, false)
-                                text = v + "°"
-                            } else {
-                                text = ReviveTabController.touchPitch.toFixed(1) + "°"
-                            }
-                        }
-                    }
-
-                    MyPushButton2 {
-                        id: touchPitchPlusButton
-                        Layout.preferredWidth: 40
-                        text: "+"
-                        onClicked: {
-                            var val = ReviveTabController.touchPitch + 0.1
-                            if (val > 180.0) {
-                                val = 180.0
-                            }
-                            ReviveTabController.setTouchPitch(val.toFixed(1))
-                        }
-                    }
-
-                    MyText {
                         text: "Yaw:"
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignRight
-                        Layout.leftMargin: 12
                         Layout.rightMargin: 12
                     }
 
@@ -413,7 +354,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
-                            var val = ReviveTabController.touchYaw - 0.1
+                            var val = ReviveTabController.touchYaw - 1.0
                             if (val < -180.0) {
                                 val = -180.0
                             }
@@ -451,11 +392,70 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
-                            var val = ReviveTabController.touchYaw + 0.1
+                            var val = ReviveTabController.touchYaw + 1.0
                             if (val > 180.0) {
                                 val = 180.0
                             }
                             ReviveTabController.setTouchYaw(val.toFixed(1))
+                        }
+                    }
+
+                    MyText {
+                        text: "Pitch:"
+                        horizontalAlignment: Text.AlignRight
+                        Layout.preferredWidth: 80
+                        Layout.leftMargin: 12
+                        Layout.rightMargin: 12
+                    }
+
+                    MyPushButton2 {
+                        id: touchPitchMinusButton
+                        Layout.preferredWidth: 40
+                        text: "-"
+                        onClicked: {
+                            var val = ReviveTabController.touchPitch - 1.0
+                            if (val < -180.0) {
+                                val = -180.0
+                            }
+                            ReviveTabController.setTouchPitch(val.toFixed(1))
+                        }
+                    }
+
+                    MyTextField {
+                        id: touchPitchInputField
+                        text: "0.00"
+                        keyBoardUID: 201
+                        Layout.preferredWidth: 140
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
+                        horizontalAlignment: Text.AlignHCenter
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                if (val < -180.0) {
+                                    val = -180.0
+                                } else if (val > 180.0) {
+                                    val = 180.0
+                                }
+                                var v = val.toFixed(1)
+                                ReviveTabController.setTouchPitch(v, false)
+                                text = v + "°"
+                            } else {
+                                text = ReviveTabController.touchPitch.toFixed(1) + "°"
+                            }
+                        }
+                    }
+
+                    MyPushButton2 {
+                        id: touchPitchPlusButton
+                        Layout.preferredWidth: 40
+                        text: "+"
+                        onClicked: {
+                            var val = ReviveTabController.touchPitch + 1.0
+                            if (val > 180.0) {
+                                val = 180.0
+                            }
+                            ReviveTabController.setTouchPitch(val.toFixed(1))
                         }
                     }
 
@@ -472,7 +472,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
-                            var val = ReviveTabController.touchRoll - 0.1
+                            var val = ReviveTabController.touchRoll - 1.0
                             if (val < -180.0) {
                                 val = -180.0
                             }
@@ -510,7 +510,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
-                            var val = ReviveTabController.touchRoll + 0.1
+                            var val = ReviveTabController.touchRoll + 1.0
                             if (val > 180.0) {
                                 val = 180.0
                             }
