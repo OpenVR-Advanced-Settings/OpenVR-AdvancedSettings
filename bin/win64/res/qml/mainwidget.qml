@@ -53,6 +53,11 @@ Rectangle {
         visible: false
     }
 
+    property UtilitiesPage utilitiesPage: UtilitiesPage {
+        stackView: mainView
+        visible: false
+    }
+
     StackView {
         id: mainView
         anchors.fill: parent

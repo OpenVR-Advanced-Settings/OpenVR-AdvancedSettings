@@ -22,6 +22,7 @@ SOURCES += src/main.cpp\
 		src/tabcontrollers/StatisticsTabController.cpp \
 		src/tabcontrollers/SteamVRTabController.cpp \
 		src/tabcontrollers/ReviveTabController.cpp \
+		src/tabcontrollers/UtilitiesTabController.cpp \
 		src/tabcontrollers/audiomanager/AudioManagerWindows.cpp
 
 HEADERS  += src/overlaycontroller.h \
@@ -34,6 +35,7 @@ HEADERS  += src/overlaycontroller.h \
 		src/tabcontrollers/StatisticsTabController.h \
 		src/tabcontrollers/SteamVRTabController.h \
 		src/tabcontrollers/ReviveTabController.h \
+		src/tabcontrollers/UtilitiesTabController.h \
 		src/tabcontrollers/AudioManager.h \
 		src/tabcontrollers/audiomanager/AudioManagerWindows.h
 

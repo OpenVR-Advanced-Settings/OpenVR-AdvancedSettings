@@ -90,6 +90,17 @@ MyStackViewPage {
                    }
 
                    MyPushButton {
+                       id: utilitiesButton
+                       activationSoundEnabled: false
+                       text: "Utilities"
+                       Layout.fillWidth: true
+                       onClicked: {
+                           MyResources.playFocusChangedSound()
+                           mainView.push(utilitiesPage)
+                       }
+                   }
+
+                   MyPushButton {
                        id: statisticsButton
                        activationSoundEnabled: false
                        text: "Statistics"
