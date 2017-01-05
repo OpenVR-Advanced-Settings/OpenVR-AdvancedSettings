@@ -2,12 +2,21 @@
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
 #include <Windows.h>
+#include <thread>
 
 // application namespace
 namespace advsettings {
 
 
 	void UtilitiesTabController::initStage1() {
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("utilitiesSettings");
+		auto qAlarmEnabled = settings->value("alarmEnabled", m_alarmEnabled);
+		auto qAlarmHour = settings->value("alarmHour", 0);
+		auto qAlarmMinute = settings->value("alarmMinute", 0);
+		settings->endGroup();
+		m_alarmEnabled = qAlarmEnabled.toBool();
+		m_alarmTime = QTime(qAlarmHour.toInt(), qAlarmMinute.toInt());
 	}
 
 	void UtilitiesTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
@@ -145,5 +154,172 @@ namespace advsettings {
 			delete ips;
 		}
 	}
+
+
+	bool UtilitiesTabController::alarmEnabled() const {
+		return m_alarmEnabled;
+	}
+
+	int UtilitiesTabController::alarmTimeHour() const {
+		return m_alarmTime.hour();
+	}
+
+	int UtilitiesTabController::alarmTimeMinute() const {
+		return m_alarmTime.minute();
+	}
+
+	void UtilitiesTabController::setAlarmEnabled(bool enabled, bool notify) {
+		if (m_alarmEnabled != enabled) {
+			m_alarmEnabled = enabled;
+			auto settings = OverlayController::appSettings();
+			settings->beginGroup("utilitiesSettings");
+			settings->setValue("alarmEnabled", m_alarmEnabled);
+			settings->endGroup();
+			settings->sync();
+			m_alarmLastCheckTime = QTime();
+			if (notify) {
+				emit alarmEnabledChanged(m_alarmEnabled);
+			}
+		}
+	}
+
+	void UtilitiesTabController::setAlarmTimeHour(int hour, bool notify) {
+		if (m_alarmTime.hour() != hour) {
+			if (m_alarmTime.isValid()) {
+				m_alarmTime = QTime(hour, m_alarmTime.minute());
+			} else {
+				m_alarmTime = QTime(hour, 0);
+			}
+			auto settings = OverlayController::appSettings();
+			settings->beginGroup("utilitiesSettings");
+			settings->setValue("alarmHour", m_alarmTime.hour());
+			settings->setValue("alarmMinute", m_alarmTime.minute());
+			settings->endGroup();
+			settings->sync();
+			m_alarmLastCheckTime = QTime();
+			if (notify) {
+				emit alarmTimeHourChanged(hour);
+			}
+		}
+	}
+
+	void UtilitiesTabController::setAlarmTimeMinute(int min, bool notify) {
+		if (m_alarmTime.minute() != min) {
+			if (m_alarmTime.isValid()) {
+				m_alarmTime = QTime(m_alarmTime.hour(), min);
+			} else {
+				m_alarmTime = QTime(0, min);
+			}
+			auto settings = OverlayController::appSettings();
+			settings->beginGroup("utilitiesSettings");
+			settings->setValue("alarmHour", m_alarmTime.hour());
+			settings->setValue("alarmMinute", m_alarmTime.minute());
+			settings->endGroup();
+			settings->sync();
+			m_alarmLastCheckTime = QTime();
+			if (notify) {
+				emit alarmTimeMinuteChanged(min);
+			}
+		}
+	}
+
+	void UtilitiesTabController::setAlarmTimeToCurrentTime() {
+		auto now = QTime::currentTime();
+		setAlarmTimeHour(now.hour());
+		setAlarmTimeMinute(now.minute());
+	}
+
+	void UtilitiesTabController::modAlarmTimeHour(int value, bool notify) {
+		auto h = m_alarmTime.hour();
+		m_alarmTime = m_alarmTime.addSecs(value * 60 * 60);
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("utilitiesSettings");
+		settings->setValue("alarmHour", m_alarmTime.hour());
+		settings->setValue("alarmMinute", m_alarmTime.minute());
+		settings->endGroup();
+		settings->sync();
+		if (h != m_alarmTime.hour()) {
+			m_alarmLastCheckTime = QTime();
+			if (notify) {
+				emit alarmTimeHourChanged(m_alarmTime.hour());
+			}
+		}
+	}
+
+	void UtilitiesTabController::modAlarmTimeMinute(int value, bool notify) {
+		auto h = m_alarmTime.hour();
+		auto m = m_alarmTime.minute();
+		m_alarmTime = m_alarmTime.addSecs(value * 60);
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("utilitiesSettings");
+		settings->setValue("alarmHour", m_alarmTime.hour());
+		settings->setValue("alarmMinute", m_alarmTime.minute());
+		settings->endGroup();
+		settings->sync();
+		if (m != m_alarmTime.minute() || h != m_alarmTime.hour()) {
+			m_alarmLastCheckTime = QTime();
+			if (notify) {
+				if (h != m_alarmTime.hour()) {
+					emit alarmTimeHourChanged(m_alarmTime.hour());
+				}
+				if (m != m_alarmTime.minute()) {
+					emit alarmTimeMinuteChanged(m_alarmTime.minute());
+				}
+			}
+		}
+	}
+
+
+	void UtilitiesTabController::eventLoopTick() {
+		if (settingsUpdateCounter >= 10) {
+			if (m_alarmEnabled && m_alarmTime.isValid()) {
+				auto now = QTime::currentTime();
+				if (m_alarmLastCheckTime.isValid() && m_alarmLastCheckTime <= m_alarmTime && m_alarmTime <= now) {
+					setAlarmEnabled(false);
+					char alarmMessageBuffer[1024];
+					std::snprintf(alarmMessageBuffer, 1024, "The alarm at %02i:%02i went off.", alarmTimeHour(), alarmTimeMinute());
+					vr::VRNotificationId notificationId;
+					vr::EVRInitError eError;
+					vr::IVRNotifications* vrnotification = (vr::IVRNotifications*)vr::VR_GetGenericInterface(vr::IVRNotifications_Version, &eError);
+					if (eError != vr::VRInitError_None) {
+						LOG(ERROR) << "Error while getting IVRNotifications interface" << vr::VR_GetVRInitErrorAsEnglishDescription(eError);
+						vrnotification = nullptr;
+					} else {
+						auto nError = vrnotification->CreateNotification( 
+							parent->overlayThumbnailHandle(), 666, vr::EVRNotificationType_Transient_SystemWithUserValue, alarmMessageBuffer, vr::EVRNotificationStyle_Application, nullptr, &notificationId
+						);
+						if (nError != vr::VRNotificationError_OK) {
+							LOG(ERROR) << "Error while creating notification: " << nError;
+							vrnotification = nullptr;
+						}
+					}
+					if (!vr::VROverlay()->IsDashboardVisible()) { // message overlay is not shown when the dashboard is visible (see https://github.com/ValveSoftware/openvr/issues/348)
+						std::thread messageThread([](UtilitiesTabController* parent, std::string message) {
+							auto res = vr::VROverlay()->ShowMessageOverlay(message.c_str(), "Alarm Clock", "Ok", "+15 min");
+							if (res == vr::VRMessageOverlayResponse_ButtonPress_1) {
+								parent->setAlarmTimeToCurrentTime();
+								parent->modAlarmTimeMinute(15);
+								parent->setAlarmEnabled(true);
+							} else if (res >= vr::VRMessageOverlayResponse_CouldntFindSystemOverlay) {
+								static const char* errorMessages[] = { "CouldntFindSystemOverlay", "CouldntFindOrCreateClientOverlay", "ApplicationQuit" };
+								int errorCode = res - vr::VRMessageOverlayResponse_CouldntFindSystemOverlay;
+								if (res < 3) {
+									LOG(ERROR) << "Could not create Alarm Overlay: " << errorMessages[errorCode];
+								} else {
+									LOG(ERROR) << "Could not create Alarm Overlay: Unknown Error";
+								}
+							}
+						}, this, std::string(alarmMessageBuffer));
+						messageThread.detach();
+					}
+				}
+				m_alarmLastCheckTime = now;
+			}
+			settingsUpdateCounter = 0;
+		} else {
+			settingsUpdateCounter++;
+		}
+	}
+
 
 } // namespace advconfig

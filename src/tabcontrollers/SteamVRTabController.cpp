@@ -44,14 +44,14 @@ void SteamVRTabController::eventLoopTick() {
 			LOG(DEBUG) << "OpenVR reports a changed compositor supersampling value: " << m_compositorSuperSampling << " => " << css;
 			setCompositorSuperSampling(css);
 		}
-		auto air = vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowInterleavedReprojection, &vrSettingsError);
+		auto air = vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_AllowReprojection_Bool, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
-			LOG(WARNING) << "Could not read \"" << vrsettings_steamvr_allowInterleavedReprojection << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+			LOG(WARNING) << "Could not read \"" << vr::k_pch_SteamVR_AllowReprojection_Bool << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 		}
 		setAllowInterleavedReprojection(air);
-		auto aar = vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowAsyncReprojection, &vrSettingsError);
+		auto aar = vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_AllowAsyncReprojection_Bool, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
-			LOG(WARNING) << "Could not read \"" << vrsettings_steamvr_allowAsyncReprojection << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+			LOG(WARNING) << "Could not read \"" << vr::k_pch_SteamVR_AllowAsyncReprojection_Bool << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 		}
 		setAllowAsyncReprojection(aar);
 		auto fr = vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_ForceReprojection_Bool, &vrSettingsError);
@@ -127,7 +127,7 @@ bool SteamVRTabController::allowAsyncReprojection() const {
 void SteamVRTabController::setAllowInterleavedReprojection(bool value, bool notify) {
 	if (m_allowInterleavedReprojection != value) {
 		m_allowInterleavedReprojection = value;
-		vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowInterleavedReprojection, m_allowInterleavedReprojection);
+		vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_AllowReprojection_Bool, m_allowInterleavedReprojection);
 		vr::VRSettings()->Sync();
 		if (notify) {
 			emit allowInterleavedReprojectionChanged(m_allowInterleavedReprojection);
@@ -139,7 +139,7 @@ void SteamVRTabController::setAllowInterleavedReprojection(bool value, bool noti
 void SteamVRTabController::setAllowAsyncReprojection(bool value, bool notify) {
 	if (m_allowAsyncReprojection != value) {
 		m_allowAsyncReprojection = value;
-		vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowAsyncReprojection, m_allowAsyncReprojection);
+		vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_AllowAsyncReprojection_Bool, m_allowAsyncReprojection);
 		vr::VRSettings()->Sync();
 		if (notify) {
 			emit allowAsyncReprojectionChanged(m_allowAsyncReprojection);
@@ -178,14 +178,14 @@ void SteamVRTabController::reset() {
 		LOG(WARNING) << "Could not remove \"" << vrsettings_compositor_category << "::" << vr::k_pch_SteamVR_RenderTargetMultiplier_Float << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 	}
 
-	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowInterleavedReprojection, &vrSettingsError);
+	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_AllowReprojection_Bool, &vrSettingsError);
 	if (vrSettingsError != vr::VRSettingsError_None) {
-		LOG(WARNING) << "Could not remove \"" << vrsettings_steamvr_allowInterleavedReprojection << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		LOG(WARNING) << "Could not remove \"" << vr::k_pch_SteamVR_AllowReprojection_Bool << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 	}
 
-	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowAsyncReprojection, &vrSettingsError);
+	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_AllowAsyncReprojection_Bool, &vrSettingsError);
 	if (vrSettingsError != vr::VRSettingsError_None) {
-		LOG(WARNING) << "Could not remove \"" << vrsettings_steamvr_allowAsyncReprojection << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		LOG(WARNING) << "Could not remove \"" << vr::k_pch_SteamVR_AllowAsyncReprojection_Bool << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 	}
 
 	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_ForceReprojection_Bool, &vrSettingsError);

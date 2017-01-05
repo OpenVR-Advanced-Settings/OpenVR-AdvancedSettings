@@ -250,9 +250,9 @@ void OverlayController::renderOverlay() {
 		if (unTexture != 0) {
 #if defined _WIN64 || defined _LP64
 			// To avoid any compiler warning because of cast to a larger pointer type (warning C4312 on VC)
-			vr::Texture_t texture = { (void*)((uint64_t)unTexture), vr::API_OpenGL, vr::ColorSpace_Auto };
+			vr::Texture_t texture = { (void*)((uint64_t)unTexture), vr::TextureType_OpenGL, vr::ColorSpace_Auto };
 #else
-			vr::Texture_t texture = { (void*)unTexture, vr::API_OpenGL, vr::ColorSpace_Auto };
+			vr::Texture_t texture = { (void*)unTexture, vr::TextureType_OpenGL, vr::ColorSpace_Auto };
 #endif
 			vr::VROverlay()->SetOverlayTexture(m_ulOverlayHandle, &texture);
 		}
@@ -282,6 +282,7 @@ void OverlayController::OnTimeoutPumpEvents() {
 	settingsTabController.eventLoopTick();
 	reviveTabController.eventLoopTick();
 	audioTabController.eventLoopTick();
+	utilitiesTabController.eventLoopTick();
 
 	vr::VREvent_t vrEvent;
 	while (vr::VROverlay()->PollNextOverlayEvent(m_ulOverlayHandle, &vrEvent, sizeof(vrEvent))) {
@@ -500,6 +501,16 @@ QUrl OverlayController::getVRRuntimePathUrl() {
 
 bool OverlayController::soundDisabled() {
 	return noSound;
+}
+
+
+const vr::VROverlayHandle_t& OverlayController::overlayHandle() {
+	return m_ulOverlayHandle;
+}
+
+
+const vr::VROverlayHandle_t& OverlayController::overlayThumbnailHandle() {
+	return m_ulOverlayThumbnailHandle;
 }
 
 

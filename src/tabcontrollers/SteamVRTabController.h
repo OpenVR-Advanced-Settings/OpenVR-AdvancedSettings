@@ -4,8 +4,8 @@
 #include <QObject>
 
 // openvr's github repo hasn't been updated yet to reflect changes in beta 1477423729.
-static const char* vrsettings_steamvr_allowAsyncReprojection = "allowAsyncReprojection";
-static const char* vrsettings_steamvr_allowInterleavedReprojection = "allowInterleavedReprojection";
+//static const char* vrsettings_steamvr_allowAsyncReprojection = "allowAsyncReprojection";
+//static const char* vrsettings_steamvr_allowInterleavedReprojection = "allowInterleavedReprojection";
 static const char* vrsettings_compositor_category = "compositor";
 
 

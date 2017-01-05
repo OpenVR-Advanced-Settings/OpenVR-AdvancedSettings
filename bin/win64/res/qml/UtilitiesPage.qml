@@ -12,6 +12,7 @@ MyStackViewPage {
 
 
         GroupBox {
+            id: keyboardGroupBox
             Layout.fillWidth: true
 
             label: MyText {
@@ -43,8 +44,8 @@ MyStackViewPage {
                     spacing: 18
 
                     MyPushButton {
-                        text: "VR Keyboard Input"
-                        Layout.preferredWidth: 260
+                        text: "Keyboard Input"
+                        Layout.preferredWidth: 250
                         onClicked: {
                             OverlayController.showKeyboard("", 601)
                         }
@@ -60,7 +61,7 @@ MyStackViewPage {
 
                     MyPushButton {
                         text: "Enter"
-                        Layout.preferredWidth: 260
+                        Layout.preferredWidth: 250
                         onClicked: {
                             UtilitiesTabController.sendKeyboardEnter()
                         }
@@ -68,7 +69,7 @@ MyStackViewPage {
 
                     MyPushButton {
                         text: "Backspace"
-                        Layout.preferredWidth: 260
+                        Layout.preferredWidth: 250
                         onClicked: {
                             UtilitiesTabController.sendKeyboardBackspace(1)
                         }
@@ -76,9 +77,140 @@ MyStackViewPage {
 
                     MyPushButton {
                         text: "10x Backspace"
-                        Layout.preferredWidth: 260
+                        Layout.preferredWidth: 250
                         onClicked: {
                             UtilitiesTabController.sendKeyboardBackspace(10)
+                        }
+                    }
+                }
+            }
+        }
+
+
+        GroupBox {
+            id: alarmGroupBox
+            Layout.fillWidth: true
+
+            label: MyText {
+                leftPadding: 10
+                text: "Alarm Clock"
+                bottomPadding: -10
+            }
+            background: Rectangle {
+                color: "transparent"
+                border.color: "#ffffff"
+                radius: 8
+            }
+            ColumnLayout {
+                anchors.fill: parent
+
+                Rectangle {
+                    color: "#ffffff"
+                    height: 1
+                    Layout.fillWidth: true
+                    Layout.bottomMargin: 5
+                }
+
+                RowLayout {
+                    MyToggleButton {
+                        id: alarmClockToggle
+                        text: ""
+                        onCheckedChanged: {
+                            UtilitiesTabController.setAlarmEnabled(checked, false)
+                        }
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    MyTextField {
+                        id: alarmClockHourText
+                        text: "00"
+                        keyBoardUID: 602
+                        Layout.preferredWidth: 50
+                        horizontalAlignment: Text.AlignHCenter
+                        function onInputEvent(input) {
+                            var val = parseInt(input)
+                            if (!isNaN(val)) {
+                                if (val < 0) {
+                                    val = 0
+                                } else if (val > 23) {
+                                    val = 23
+                                }
+                                UtilitiesTabController.setAlarmTimeHour(val, false)
+                            }
+                            setAlarmHourText(UtilitiesTabController.alarmTimeHour)
+                        }
+                    }
+
+                    MyText {
+                        text: ":"
+                    }
+
+                    MyTextField {
+                        id: alarmClockMinuteText
+                        text: "00"
+                        keyBoardUID: 603
+                        Layout.preferredWidth: 50
+                        horizontalAlignment: Text.AlignHCenter
+                        function onInputEvent(input) {
+                            var val = parseInt(input)
+                            if (!isNaN(val)) {
+                                if (val < 0) {
+                                    val = 0
+                                } else if (val > 59) {
+                                    val = 59
+                                }
+                                UtilitiesTabController.setAlarmTimeMinute(val, false)
+                            }
+                            setAlarmMinuteText(UtilitiesTabController.alarmTimeMinute)
+                        }
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    MyPushButton2 {
+                        Layout.preferredWidth: 200
+                        text: "Current Time"
+                        onClicked: {
+                            UtilitiesTabController.setAlarmTimeToCurrentTime()
+                        }
+                    }
+
+                    MyPushButton2 {
+                        Layout.leftMargin: 50
+                        Layout.preferredWidth: 120
+                        text: "+1 Hour"
+                        onClicked: {
+                            UtilitiesTabController.modAlarmTimeHour(1)
+                        }
+                    }
+
+                    MyPushButton2 {
+                        Layout.preferredWidth: 120
+                        text: "-1 Hour"
+                        onClicked: {
+                            UtilitiesTabController.modAlarmTimeHour(-1)
+                        }
+                    }
+
+                    MyPushButton2 {
+                        text: "+5 Min"
+                        Layout.leftMargin: 50
+                        Layout.preferredWidth: 120
+                        onClicked: {
+                            UtilitiesTabController.modAlarmTimeMinute(5)
+                        }
+                    }
+
+                    MyPushButton2 {
+                        Layout.preferredWidth: 120
+                        text: "-5 Min"
+                        onClicked: {
+                            UtilitiesTabController.modAlarmTimeMinute(-5)
                         }
                     }
                 }
@@ -89,10 +221,39 @@ MyStackViewPage {
             Layout.fillHeight: true
         }
 
-        /*Component.onCompleted: {
+        Component.onCompleted: {
+            alarmClockToggle.checked = UtilitiesTabController.alarmEnabled
+            setAlarmHourText(UtilitiesTabController.alarmTimeHour)
+            setAlarmMinuteText(UtilitiesTabController.alarmTimeMinute)
+            alarmGroupBox.visible = !OverlayController.desktopMode
+            keyboardGroupBox.visible = !OverlayController.desktopMode
         }
 
         Connections {
-        }*/
+            target: UtilitiesTabController
+            onAlarmEnabledChanged: {
+                alarmClockToggle.checked = UtilitiesTabController.alarmEnabled
+            }
+            onAlarmTimeHourChanged: {
+                setAlarmHourText(UtilitiesTabController.alarmTimeHour)
+            }
+            onAlarmTimeMinuteChanged: {
+                setAlarmMinuteText(UtilitiesTabController.alarmTimeMinute)
+            }
+        }
+    }
+    function setAlarmHourText(value) {
+        if (value < 9) {
+            alarmClockHourText.text = "0" + value
+        } else {
+            alarmClockHourText.text = value
+        }
+    }
+    function setAlarmMinuteText(value) {
+        if (value < 9) {
+            alarmClockMinuteText.text = "0" + value
+        } else {
+            alarmClockMinuteText.text = value
+        }
     }
 }

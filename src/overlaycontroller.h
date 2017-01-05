@@ -106,6 +106,9 @@ public:
 
 	Q_INVOKABLE bool soundDisabled();
 
+	const vr::VROverlayHandle_t& overlayHandle();
+	const vr::VROverlayHandle_t& overlayThumbnailHandle();
+
 public slots:
 	void renderOverlay();
 	void OnRenderRequest();

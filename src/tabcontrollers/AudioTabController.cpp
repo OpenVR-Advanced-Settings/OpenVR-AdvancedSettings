@@ -410,7 +410,7 @@ namespace advsettings {
 				auto leftId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand);
 				if (leftId != vr::k_unTrackedDeviceIndexInvalid) {
 					vr::VRControllerState_t state;
-					if (vr::VRSystem()->GetControllerState(leftId, &state)) {
+					if (vr::VRSystem()->GetControllerState(leftId, &state, sizeof(vr::VRControllerState_t))) {
 						//logControllerState(state, "Left ");
 						newState |= handleControllerState(state, m_pttControllerConfigs);
 					}
@@ -420,7 +420,7 @@ namespace advsettings {
 				auto rightId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_RightHand);
 				if (rightId != vr::k_unTrackedDeviceIndexInvalid) {
 					vr::VRControllerState_t state;
-					if (vr::VRSystem()->GetControllerState(rightId, &state)) {
+					if (vr::VRSystem()->GetControllerState(rightId, &state, sizeof(vr::VRControllerState_t))) {
 						//logControllerState(state, "Right ");
 						newState |= handleControllerState(state, m_pttControllerConfigs + 1);
 					}
