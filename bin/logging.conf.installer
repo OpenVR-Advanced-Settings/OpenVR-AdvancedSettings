@@ -5,6 +5,6 @@
 	TO_STANDARD_OUTPUT = true
 	MAX_LOG_FILE_SIZE = 2097152 ## 2MB
 * DEBUG:
-	ENABLED = true
+	ENABLED = false
 * TRACE:
 	ENABLED = false

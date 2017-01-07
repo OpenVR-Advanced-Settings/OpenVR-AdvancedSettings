@@ -20,16 +20,29 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 - Mute/unmute and set volume of microphone device.
 - Implements push-to-talk and allows to configure push-to-talk profiles.
 - Desktop mode shows a window on the desktop instead of a vr overlay.
+- Revive settings support.
+- VR Keyboard Input Utilities
+- Simple Alarm Clock
 
 # Usage
 
-Download the newest windows binary from the [release section](https://github.com/matzman666/OpenVR-AdvancedSettings/releases).
+## Installer
 
-To install for the first time simply start AdvancedSettings.exe once while SteamVRis running. It will register with SteamVRand automatically start whenever SteamVR starts (Can be disabled in the settings).
+Download the newest installer from the [release section](https://github.com/matzman666/OpenVR-AdvancedSettings/releases) and execute it.
 
-To upgrade an existing installation first stop SteamVR, then either override the old files or delete the old files (very important, otherwise SteamVR will always start the old version). At last start SteamVR and run AdvancedSettings.exe once (only when you don't have overridden the old files).
+If you have an older standalone version installed, delete the old application folder first.
 
-Executing startdesktopmode.bat shows a window on the desktop instead of a vr overlay. Desktop mode can be used alongside an already running vr overlay instance.
+## Standalone
+
+Download the newest standalone archive from the [release section](https://github.com/matzman666/OpenVR-AdvancedSettings/releases) and unpack the archive.
+
+To install for the first time simply start AdvancedSettings.exe once while SteamVRis running. It will register with SteamVR and automatically starts whenever SteamVR starts (Can be disabled in the settings).
+
+To upgrade an existing installation first stop SteamVR and delete the old application folder (or override it). Then start SteamVR and run AdvancedSettings.exe once.
+
+## Desktop mode
+
+Executing startdesktopmode.bat from the application folder shows a window on the desktop instead of a vr overlay. Desktop mode can be used alongside an already running vr overlay instance.
 
 # Documentation
 
@@ -59,6 +72,7 @@ Executing startdesktopmode.bat shows a window on the desktop instead of a vr ove
 - **Profile**: Allows to apply/define/delete chaperone profiles that save geometry info, style info or other chaperone settings (What exactly is saved in a chaperone profile can be selected when a profile is created).
 - **Visibility**: Allows to configure the visibility of the chaperone bounds. Unlike the slider in the chaperone settings, this one is not capped at 30%. When set to 0 chaperone bounds are completely invisible.
 - **Fade Distance**: Allows to configure the distance at which the chaperone bounds are shown. When set to 0 chaperone bounds are completely invisible.
+- **Height**: Allows to configure the height of the chaperone bounds.
 - **Center Marker**: Displays a marker that represents the center of the playspace.
 - **Play Space Maker**: Displays the outlines of the rectangle representing the playspace.
 - **Force Bounds**: Force chaperone bounds always on.
@@ -71,7 +85,7 @@ Executing startdesktopmode.bat shows a window on the desktop instead of a vr ove
 
 Allows to temporarily move and rotate the center of the playspace. This allows to reach interaction elements that are just inside our real-world walls or otherwise inaccessible (e.g. when your playspace is smaller than the recommended one). Can also be used to discover the terrors that lie outside of the intended playspace (ever wondered what's behind the door in The Lab?).
 
-The chaperone bounds stay in place when the playspace is moved or rotated (I don't want anyone to get hurt). Unfortunately this does not work when moving up/down.
+- **Adjust Chaperone**: When enabled then the chaperone bounds stay in place when the playspace is moved or rotated (so noone gets hurt). Unfortunately this does not work when moving up/down.
 
 ## - Floor Fix Page:
 
@@ -91,6 +105,30 @@ Allows you to fix the height of your floor. Just place one controller on your fl
 - **Show Notification**: Shows a notification icon in the headset when push-to-talk is enabled a configured button is pressed.
 - **Profile**: Allows to apply/define/delete push-to-talk profiles that save buttons, controller and notification settings.
 
+## - Revive Page:
+
+![Revive Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/RevivePage.png)
+
+- **Render Target Override**: Overrides the Oculus-side render target (aka supersampling). Enabling it prevents Oculus applications from dynamically modifying this value. Warning: Is applied on top of the SteamVR supersampling value. (pixelsPerDisplayPixel setting in the vrsettings file)
+- **Grip Button mode**: Allows to set the grip button mode. (ToggleGrip setting in the vrsettings file)
+- **Deadzone**: Allows to modify the simulated thumbsticks' deadzone. (ThumbDeadzone setting in the vrsettings file)
+- **Sensitivity**: Allows to modify the simulated thumbsticks' sensitivity. (ThumbSensitivity setting the vrsettings file)
+- **Yaw**: Allows to modify the simulated thumbsticks' yaw. (TouchYaw setting the vrsettings file)
+- **Pitch**: Allows to modify the simulated thumbsticks' pitch. (TouchPitch setting the vrsettings file)
+- **Roll**: Allows to modify the simulated thumbsticks' roll. (TouchRoll setting the vrsettings file)
+- **X**: Allows to modify the simulated thumbsticks' x-offset. (TouchX setting the vrsettings file)
+- **Y**: Allows to modify the simulated thumbsticks' y-offset. (TouchY setting the vrsettings file)
+- **Z**: Allows to modify the simulated thumbsticks' z-offset. (TouchZ setting the vrsettings file)
+- **Controller Profile**: Allows to apply/define/delete controller profiles that save the controller settings (grip button mode, deadzone, sensitivity, pitch/yaw/roll and x/y/z-offsets).
+
+## - Utilities Page:
+
+![Utilities Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/UtilitiesPage.png)
+
+- **Keyboard Utilities:** Some applications (mostly 2D-monitor applications with tackled-on/modded-in VR support) do not support the VR keyboard but require an actual physical keyboard for text input. This utilities allow to send emulated key strokes from VR keyboard input to such application to overcome this limitation. Does not work in desktop mode.
+
+- **Alarm Clock:** Just a simple alarm clock so you don't miss important appointments. VR can sure mess up perception of time. Does not work in desktop mode.
+
 ## - Statistics Page:
 
 ![Statistics Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/StatisticsPage.png)
@@ -108,6 +146,7 @@ Allows you to fix the height of your floor. Just place one controller on your fl
 ![Settings Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/SettingsPage.png)
 
 - **Autostart:** Allows you to enable/disable auto start.
+- **Force Revive Page:** Force the Revive page button on the root page to be visible.
 
 # Notes:
 
