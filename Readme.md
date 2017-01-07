@@ -20,7 +20,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 - Mute/unmute and set volume of microphone device.
 - Implements push-to-talk and allows to configure push-to-talk profiles.
 - Desktop mode shows a window on the desktop instead of a vr overlay.
-- Revive settings support.
+- Revive settings support (Requires [Revive 1.0.4+](https://github.com/LibreVR/Revive) for full functionality).
 - VR Keyboard Input Utilities
 - Simple Alarm Clock
 
@@ -109,7 +109,9 @@ Allows you to fix the height of your floor. Just place one controller on your fl
 
 ![Revive Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/RevivePage.png)
 
-The Revive page is only visible when the Revive overlay is installed. In case an installed Revive overlay is not correctly detected you can force the Revive page in the settings.
+The Revive page is only visible when the [Revive overlay](https://github.com/LibreVR/Revive) is installed. In case an installed Revive overlay is not correctly detected you can force the Revive page in the settings.
+
+Any changes to controller settings are immediately applied by Revive (Requires Revive 1.0.4+).
 
 - **Render Target Override**: Overrides the Oculus-side render target (aka supersampling). Enabling it prevents Oculus applications from dynamically modifying this value. Warning: Is applied on top of the SteamVR supersampling value. (pixelsPerDisplayPixel setting in the vrsettings file)
 - **Grip Button mode**: Allows to set the grip button mode. (ToggleGrip setting in the vrsettings file)
