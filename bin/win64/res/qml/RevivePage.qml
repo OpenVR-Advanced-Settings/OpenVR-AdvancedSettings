@@ -530,7 +530,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
-                            ReviveTabController.setTouchX((ReviveTabController.touchX - 0.001).toFixed(3))
+                            ReviveTabController.setTouchX((ReviveTabController.touchX - 0.005).toFixed(3))
                         }
                     }
 
@@ -559,7 +559,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
-                            ReviveTabController.setTouchX((ReviveTabController.touchX + 0.001).toFixed(3))
+                            ReviveTabController.setTouchX((ReviveTabController.touchX + 0.005).toFixed(3))
                         }
                     }
 
@@ -576,7 +576,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
-                            ReviveTabController.setTouchY((ReviveTabController.touchY - 0.001).toFixed(3))
+                            ReviveTabController.setTouchY((ReviveTabController.touchY - 0.005).toFixed(3))
                         }
                     }
 
@@ -605,7 +605,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
-                            ReviveTabController.setTouchY((ReviveTabController.touchY + 0.001).toFixed(3))
+                            ReviveTabController.setTouchY((ReviveTabController.touchY + 0.005).toFixed(3))
                         }
                     }
 
@@ -622,7 +622,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
-                            ReviveTabController.setTouchZ((ReviveTabController.touchZ - 0.001).toFixed(3))
+                            ReviveTabController.setTouchZ((ReviveTabController.touchZ - 0.005).toFixed(3))
                         }
                     }
 
@@ -651,7 +651,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
-                            ReviveTabController.setTouchZ((ReviveTabController.touchZ + 0.001).toFixed(3))
+                            ReviveTabController.setTouchZ((ReviveTabController.touchZ + 0.005).toFixed(3))
                         }
                     }
                 }
