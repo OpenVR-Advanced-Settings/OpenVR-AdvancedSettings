@@ -24,9 +24,9 @@ namespace advsettings {
 	const char* key_piGender = "Gender";
 
 
-	void ReviveTabController::initStage1() {
+	void ReviveTabController::initStage1(bool forceRevivePage) {
 		m_isOverlayInstalled = vr::VRApplications()->IsApplicationInstalled(appkey_overlay);
-		if (m_isOverlayInstalled || parent->settingsTabController.forceRevivePage()) {
+		if (m_isOverlayInstalled || forceRevivePage) {
 			vr::EVRSettingsError vrSettingsError;
 
 			float valuef = vr::VRSettings()->GetFloat(section_revive, key_pixelsPerDisplayPixel, &vrSettingsError);

@@ -112,7 +112,7 @@ void OverlayController::Init(QQmlEngine* qmlEngine) {
 	audioTabController.initStage1();
 	statisticsTabController.initStage1();
 	settingsTabController.initStage1();
-	reviveTabController.initStage1();
+	reviveTabController.initStage1(settingsTabController.forceRevivePage());
 	utilitiesTabController.initStage1();
 
 	// Set qml context

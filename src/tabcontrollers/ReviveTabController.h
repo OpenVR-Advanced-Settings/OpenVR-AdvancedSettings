@@ -73,7 +73,7 @@ namespace advsettings {
 		std::vector<ReviveControllerProfile> controllerProfiles;
 
 	public:
-		void initStage1();
+		void initStage1(bool forceRevivePage);
 		void initStage2(OverlayController* parent, QQuickWindow* widget);
 
 		void eventLoopTick();
