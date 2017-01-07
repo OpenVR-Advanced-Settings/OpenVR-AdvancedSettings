@@ -109,6 +109,8 @@ Allows you to fix the height of your floor. Just place one controller on your fl
 
 ![Revive Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/RevivePage.png)
 
+The Revive page is only visible when the Revive overlay is installed. In case an installed Revive overlay is not correctly detected you can force the Revive page in the settings.
+
 - **Render Target Override**: Overrides the Oculus-side render target (aka supersampling). Enabling it prevents Oculus applications from dynamically modifying this value. Warning: Is applied on top of the SteamVR supersampling value. (pixelsPerDisplayPixel setting in the vrsettings file)
 - **Grip Button mode**: Allows to set the grip button mode. (ToggleGrip setting in the vrsettings file)
 - **Deadzone**: Allows to modify the simulated thumbsticks' deadzone. (ThumbDeadzone setting in the vrsettings file)
