@@ -7,6 +7,8 @@ import matzman666.advsettings 1.0
 MyStackViewPage {
     headerText: "Revive Settings"
 
+    property bool componentCompleted: false
+
     content: ColumnLayout {
         spacing: 12
 
@@ -151,7 +153,9 @@ MyStackViewPage {
                 Layout.fillWidth: true
                 model: ["Normal Mode", "Toggle Mode", "Hybrid Mode"]
                 onCurrentIndexChanged: {
-                    ReviveTabController.setGripButtonMode(currentIndex, false)
+                    if (componentCompleted) {
+                        ReviveTabController.setGripButtonMode(currentIndex, false)
+                    }
                 }
             }
         }
@@ -985,6 +989,7 @@ MyStackViewPage {
             touchYInputField.text = ReviveTabController.touchY.toFixed(3)
             touchZInputField.text = ReviveTabController.touchZ.toFixed(3)
             reloadControllerProfiles()
+            componentCompleted = true
         }
 
         Connections {
