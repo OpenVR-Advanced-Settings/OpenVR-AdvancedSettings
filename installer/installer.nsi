@@ -6,7 +6,7 @@
 ;--------------------------------
 ;General
 
-	!define BASEDIR "bin\win64"
+	!define BASEDIR "..\bin\win64"
 
 	;Name and file
 	Name "OpenVR Advanced Settings"
@@ -20,6 +20,11 @@
 	
 	;Request application privileges for Windows Vista
 	RequestExecutionLevel admin
+	
+;--------------------------------
+;Variables
+
+VAR upgradeInstallation
 
 ;--------------------------------
 ;Interface Settings
@@ -29,7 +34,8 @@
 ;--------------------------------
 ;Pages
 
-	!insertmacro MUI_PAGE_LICENSE "LICENSE"
+	!insertmacro MUI_PAGE_LICENSE "..\LICENSE"
+	!define MUI_PAGE_CUSTOMFUNCTION_PRE dirPre
 	!insertmacro MUI_PAGE_DIRECTORY
 	!insertmacro MUI_PAGE_INSTFILES
   
@@ -46,27 +52,56 @@
 
 !macro TerminateOverlay
 	DetailPrint "Terminating OpenVR Advanced Settings overlay..."
-	nsExec::ExecToLog '"taskkill" /F /IM AdvancedSettings.exe'
+	ExecWait '"taskkill" /F /IM AdvancedSettings.exe'
 	Sleep 2000 ; give 2 seconds for the application to finish exiting
 !macroend
 
 ;--------------------------------
+;Functions
 
+Function dirPre
+	StrCmp $upgradeInstallation "true" 0 +2 
+		Abort
+FunctionEnd
+
+Function .onInit
+	StrCpy $upgradeInstallation "false"
+ 
+	ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRAdvancedSettings" "UninstallString"
+	StrCmp $R0 "" done
+ 
+	MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+		"OpenVR Advanced Settings is already installed. $\n$\nClick `OK` to upgrade the \
+		existing installation or `Cancel` to cancel this upgrade." \
+		IDOK upgrade
+	Abort
+ 
+	upgrade:
+		StrCpy $upgradeInstallation "true"
+	done:
+FunctionEnd
+
+;--------------------------------
 ;Installer Sections
 
 Section "Install" SecInstall
 
-	IfSilent install
-		!insertmacro TerminateOverlay
-  
-	install:
+	!insertmacro TerminateOverlay
+	
+	StrCmp $upgradeInstallation "true" 0 noupgrade 
+		DetailPrint "Uninstall previous version..."
+		ExecWait '"$INSTDIR\Uninstall.exe" /S _?=$INSTDIR'
+		Delete $INSTDIR\Uninstall.exe
+		Goto afterupgrade
+		
+	noupgrade:
+
+	afterupgrade:
 
 	SetOutPath "$INSTDIR"
-  
-	RMDir /r "$INSTDIR\"
 
 	;ADD YOUR OWN FILES HERE...
-	File "LICENSE"
+	File "${BASEDIR}\LICENSE"
 	File "${BASEDIR}\*.exe"
 	File "${BASEDIR}\*.dll"
 	File "${BASEDIR}\*.bat"
@@ -82,7 +117,7 @@ Section "Install" SecInstall
 	nsExec::ExecToLog '"$INSTDIR\AdvancedSettings.exe" -installmanifest'
   
 	;Store installation folder
-	WriteRegStr HKCU "Software\OpenVR-AdvancedSettings" "" $INSTDIR
+	WriteRegStr HKLM "Software\OpenVR-AdvancedSettings" "" $INSTDIR
   
 	;Create uninstaller
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -92,7 +127,7 @@ Section "Install" SecInstall
 	; If SteamVR is already running, execute the dashboard as the user
 	FindWindow $0 "Qt5QWindowIcon" "SteamVR Status"
 	StrCmp $0 0 +2
-	Exec '"$INSTDIR\AdvancedSettings.exe"'
+		Exec '"$INSTDIR\AdvancedSettings.exe"'
 
 SectionEnd
 
@@ -106,10 +141,13 @@ Section "Uninstall"
 	; Remove the vrmanifest
 	nsExec::ExecToLog '"$INSTDIR\AdvancedSettings.exe" -removemanifest'
 
-	RMDir /r "$INSTDIR"
+	; Delete installed files
+	!include uninstallFiles.list
 
-	DeleteRegKey /ifempty HKCU "Software\OpenVR-AdvancedSettings"
+	DeleteRegKey HKLM "Software\OpenVR-AdvancedSettings"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRAdvancedSettings"
+
+
 
 SectionEnd
 
