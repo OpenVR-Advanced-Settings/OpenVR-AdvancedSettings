@@ -214,6 +214,16 @@ MyStackViewPage {
                         }
                     }
                 }
+
+                RowLayout {
+                    MyToggleButton {
+                        id: alarmDontAnnoyToggle
+                        text: "Don't Annoy me"
+                        onCheckedChanged: {
+                            UtilitiesTabController.setAlarmIsModal(!checked, false)
+                        }
+                    }
+                }
             }
         }
 
@@ -223,6 +233,7 @@ MyStackViewPage {
 
         Component.onCompleted: {
             alarmClockToggle.checked = UtilitiesTabController.alarmEnabled
+            alarmDontAnnoyToggle.checked = !UtilitiesTabController.alarmIsModal
             setAlarmHourText(UtilitiesTabController.alarmTimeHour)
             setAlarmMinuteText(UtilitiesTabController.alarmTimeMinute)
             alarmGroupBox.visible = !OverlayController.desktopMode
@@ -233,6 +244,9 @@ MyStackViewPage {
             target: UtilitiesTabController
             onAlarmEnabledChanged: {
                 alarmClockToggle.checked = UtilitiesTabController.alarmEnabled
+            }
+            onAlarmIsModalChanged: {
+                alarmDontAnnoyToggle.checked = !UtilitiesTabController.alarmIsModal
             }
             onAlarmTimeHourChanged: {
                 setAlarmHourText(UtilitiesTabController.alarmTimeHour)

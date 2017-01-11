@@ -12,10 +12,12 @@ namespace advsettings {
 		auto settings = OverlayController::appSettings();
 		settings->beginGroup("utilitiesSettings");
 		auto qAlarmEnabled = settings->value("alarmEnabled", m_alarmEnabled);
+		auto qAlarmIsModal = settings->value("alarmIsModal", m_alarmIsModal);
 		auto qAlarmHour = settings->value("alarmHour", 0);
 		auto qAlarmMinute = settings->value("alarmMinute", 0);
 		settings->endGroup();
 		m_alarmEnabled = qAlarmEnabled.toBool();
+		m_alarmIsModal = qAlarmIsModal.toBool();
 		m_alarmTime = QTime(qAlarmHour.toInt(), qAlarmMinute.toInt());
 	}
 
@@ -160,6 +162,10 @@ namespace advsettings {
 		return m_alarmEnabled;
 	}
 
+	bool UtilitiesTabController::alarmIsModal() const {
+		return m_alarmIsModal;
+	}
+
 	int UtilitiesTabController::alarmTimeHour() const {
 		return m_alarmTime.hour();
 	}
@@ -179,6 +185,20 @@ namespace advsettings {
 			m_alarmLastCheckTime = QTime();
 			if (notify) {
 				emit alarmEnabledChanged(m_alarmEnabled);
+			}
+		}
+	}
+
+	void UtilitiesTabController::setAlarmIsModal(bool modal, bool notify) {
+		if (m_alarmIsModal != modal) {
+			m_alarmIsModal = modal;
+			auto settings = OverlayController::appSettings();
+			settings->beginGroup("utilitiesSettings");
+			settings->setValue("alarmIsModal", m_alarmIsModal);
+			settings->endGroup();
+			settings->sync();
+			if (notify) {
+				emit alarmIsModalChanged(m_alarmIsModal);
 			}
 		}
 	}
@@ -278,22 +298,7 @@ namespace advsettings {
 					setAlarmEnabled(false);
 					char alarmMessageBuffer[1024];
 					std::snprintf(alarmMessageBuffer, 1024, "The alarm at %02i:%02i went off.", alarmTimeHour(), alarmTimeMinute());
-					vr::VRNotificationId notificationId;
-					vr::EVRInitError eError;
-					vr::IVRNotifications* vrnotification = (vr::IVRNotifications*)vr::VR_GetGenericInterface(vr::IVRNotifications_Version, &eError);
-					if (eError != vr::VRInitError_None) {
-						LOG(ERROR) << "Error while getting IVRNotifications interface" << vr::VR_GetVRInitErrorAsEnglishDescription(eError);
-						vrnotification = nullptr;
-					} else {
-						auto nError = vrnotification->CreateNotification( 
-							parent->overlayThumbnailHandle(), 666, vr::EVRNotificationType_Transient_SystemWithUserValue, alarmMessageBuffer, vr::EVRNotificationStyle_Application, nullptr, &notificationId
-						);
-						if (nError != vr::VRNotificationError_OK) {
-							LOG(ERROR) << "Error while creating notification: " << nError;
-							vrnotification = nullptr;
-						}
-					}
-					if (!vr::VROverlay()->IsDashboardVisible()) { // message overlay is not shown when the dashboard is visible (see https://github.com/ValveSoftware/openvr/issues/348)
+					if (m_alarmIsModal) {
 						std::thread messageThread([](UtilitiesTabController* parent, std::string message) {
 							auto res = vr::VROverlay()->ShowMessageOverlay(message.c_str(), "Alarm Clock", "Ok", "+15 min");
 							if (res == vr::VRMessageOverlayResponse_ButtonPress_1) {
@@ -311,6 +316,46 @@ namespace advsettings {
 							}
 						}, this, std::string(alarmMessageBuffer));
 						messageThread.detach();
+					} else {
+						vr::VRNotificationId notificationId;
+						vr::EVRInitError eError;
+						vr::IVRNotifications* vrnotification = (vr::IVRNotifications*)vr::VR_GetGenericInterface(vr::IVRNotifications_Version, &eError);
+						if (eError != vr::VRInitError_None) {
+							LOG(ERROR) << "Error while getting IVRNotifications interface" << vr::VR_GetVRInitErrorAsEnglishDescription(eError);
+							vrnotification = nullptr;
+						} else {
+							vr::NotificationBitmap_t* messageIconPtr = nullptr;
+							/*
+							// Can i even create this object on the stack, who takes ownership?
+							vr::NotificationBitmap_t messageIcon;
+
+							// First get image width and height
+							vr::VROverlay()->GetOverlayImageData(parent->overlayThumbnailHandle(), nullptr, 0, (uint32_t*)&messageIcon.m_nWidth, (uint32_t*)&messageIcon.m_nHeight);
+
+							messageIcon.m_nBytesPerPixel = 4;
+							unsigned bufferSize = messageIcon.m_nWidth*messageIcon.m_nHeight*messageIcon.m_nBytesPerPixel;
+
+							// Can I delete this buffer after this section? Who takes ownership?
+							std::unique_ptr<char> imageBuffer; 
+							imageBuffer.reset(new char[bufferSize]);
+							messageIcon.m_pImageData = imageBuffer.get();
+
+							// Get image data
+							auto iconError = vr::VROverlay()->GetOverlayImageData(parent->overlayThumbnailHandle(), messageIcon.m_pImageData, bufferSize, (uint32_t*)&messageIcon.m_nWidth, (uint32_t*)&messageIcon.m_nHeight);
+							if (iconError != vr::VROverlayError_None) {
+								LOG(ERROR) << "Error while getting message overlay icon: " << vr::VROverlay()->GetOverlayErrorNameFromEnum(iconError);
+							} else {
+								messageIconPtr = &messageIcon;
+							}
+							*/
+							auto nError = vrnotification->CreateNotification( 
+								parent->overlayHandle(), 666, vr::EVRNotificationType_Transient, alarmMessageBuffer, vr::EVRNotificationStyle_Application, messageIconPtr, &notificationId
+							);
+							if (nError != vr::VRNotificationError_OK) {
+								LOG(ERROR) << "Error while creating notification: " << nError;
+								vrnotification = nullptr;
+							}
+						}
 					}
 				}
 				m_alarmLastCheckTime = now;
