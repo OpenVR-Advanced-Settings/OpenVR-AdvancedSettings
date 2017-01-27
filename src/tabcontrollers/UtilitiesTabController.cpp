@@ -7,6 +7,7 @@
 // application namespace
 namespace advsettings {
 
+	const char* steamDesktopOverlaykey = "valve.steam.desktop";
 
 	void UtilitiesTabController::initStage1() {
 		auto settings = OverlayController::appSettings();
@@ -19,6 +20,22 @@ namespace advsettings {
 		m_alarmEnabled = qAlarmEnabled.toBool();
 		m_alarmIsModal = qAlarmIsModal.toBool();
 		m_alarmTime = QTime(qAlarmHour.toInt(), qAlarmMinute.toInt());
+		vr::VROverlayHandle_t pOverlayHandle;
+		auto error = vr::VROverlay()->FindOverlay(steamDesktopOverlaykey, &pOverlayHandle);
+		if (error != vr::VROverlayError_None) {
+			m_steamDesktopOverlayAvailable = false;
+			LOG(INFO) << "Could not find overlay \"" << steamDesktopOverlaykey << "\": " << vr::VROverlay()->GetOverlayErrorNameFromEnum(error);
+		} else {
+			m_steamDesktopOverlayAvailable = true;
+			float width;
+			error = vr::VROverlay()->GetOverlayWidthInMeters(pOverlayHandle, &width);
+			if (error != vr::VROverlayError_None) {
+				LOG(ERROR) << "Could not read overlay width of \"" << steamDesktopOverlaykey << "\": " << vr::VROverlay()->GetOverlayErrorNameFromEnum(error);
+			} else {
+				m_steamDesktopOverlayWidth = width;
+			}
+		}
+
 	}
 
 	void UtilitiesTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
@@ -292,6 +309,28 @@ namespace advsettings {
 
 	void UtilitiesTabController::eventLoopTick() {
 		if (settingsUpdateCounter >= 10) {
+
+			vr::VROverlayHandle_t pOverlayHandle;
+			auto error = vr::VROverlay()->FindOverlay(steamDesktopOverlaykey, &pOverlayHandle);
+			if (error == vr::VROverlayError_None) {
+				if (!m_steamDesktopOverlayAvailable) {
+					m_steamDesktopOverlayAvailable = true;
+					emit steamDesktopOverlayAvailableChanged(m_steamDesktopOverlayAvailable);
+				}
+				float width;
+				error = vr::VROverlay()->GetOverlayWidthInMeters(pOverlayHandle, &width);
+				if (error != vr::VROverlayError_None) {
+					LOG(ERROR) << "Could not read overlay width of \"" << steamDesktopOverlaykey << "\": " << vr::VROverlay()->GetOverlayErrorNameFromEnum(error);
+				} else {
+					setSteamDesktopOverlayWidth(width, true, false);
+				}
+			} else {
+				if (m_steamDesktopOverlayAvailable) {
+					m_steamDesktopOverlayAvailable = false;
+					emit steamDesktopOverlayAvailableChanged(m_steamDesktopOverlayAvailable);
+				}
+			}
+
 			if (m_alarmEnabled && m_alarmTime.isValid()) {
 				auto now = QTime::currentTime();
 				if (m_alarmLastCheckTime.isValid() && m_alarmLastCheckTime <= m_alarmTime && m_alarmTime <= now) {
@@ -363,6 +402,36 @@ namespace advsettings {
 			settingsUpdateCounter = 0;
 		} else {
 			settingsUpdateCounter++;
+		}
+	}
+
+
+	bool UtilitiesTabController::steamDesktopOverlayAvailable() const {
+		return m_steamDesktopOverlayAvailable;
+	}
+
+	float UtilitiesTabController::steamDesktopOverlayWidth() const {
+		return m_steamDesktopOverlayWidth;
+	}
+
+	void UtilitiesTabController::setSteamDesktopOverlayWidth(float width, bool notify, bool notifyOpenVr) {
+		if (std::abs(m_steamDesktopOverlayWidth - width) > 0.01) {
+			m_steamDesktopOverlayWidth = width;
+			if (notifyOpenVr) {
+				vr::VROverlayHandle_t pOverlayHandle;
+				auto error = vr::VROverlay()->FindOverlay(steamDesktopOverlaykey, &pOverlayHandle);
+				if (error != vr::VROverlayError_None) {
+					LOG(ERROR) << "Could not find overlay \"" << steamDesktopOverlaykey << "\": " << vr::VROverlay()->GetOverlayErrorNameFromEnum(error);
+				} else {
+					error = vr::VROverlay()->SetOverlayWidthInMeters(pOverlayHandle, m_steamDesktopOverlayWidth);
+					if (error != vr::VROverlayError_None) {
+						LOG(ERROR) << "Could not modify overlay width of \"" << steamDesktopOverlaykey << "\": " << vr::VROverlay()->GetOverlayErrorNameFromEnum(error);
+					}
+				}
+			}
+			if (notify) {
+				emit steamDesktopOverlayWidthChanged(m_steamDesktopOverlayWidth);
+			}
 		}
 	}
 

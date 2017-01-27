@@ -18,6 +18,8 @@ namespace advsettings {
 		Q_PROPERTY(bool alarmIsModal READ alarmIsModal WRITE setAlarmIsModal NOTIFY alarmIsModalChanged)
 		Q_PROPERTY(int alarmTimeHour READ alarmTimeHour WRITE setAlarmTimeHour NOTIFY alarmTimeHourChanged)
 		Q_PROPERTY(int alarmTimeMinute READ alarmTimeMinute WRITE setAlarmTimeMinute NOTIFY alarmTimeMinuteChanged)
+		Q_PROPERTY(bool steamDesktopOverlayAvailable READ steamDesktopOverlayAvailable NOTIFY steamDesktopOverlayAvailableChanged)
+		Q_PROPERTY(float steamDesktopOverlayWidth READ steamDesktopOverlayWidth WRITE setSteamDesktopOverlayWidth NOTIFY steamDesktopOverlayWidthChanged)
 
 	private:
 		OverlayController* parent;
@@ -29,6 +31,8 @@ namespace advsettings {
 		bool m_alarmIsModal = true;
 		QTime m_alarmTime;
 		QTime m_alarmLastCheckTime;
+		bool m_steamDesktopOverlayAvailable = false;
+		float m_steamDesktopOverlayWidth = 4.0f;
 
 	public:
 		void initStage1();
@@ -40,6 +44,9 @@ namespace advsettings {
 		bool alarmIsModal() const;
 		int alarmTimeHour() const;
 		int alarmTimeMinute() const;
+
+		bool steamDesktopOverlayAvailable() const;
+		float steamDesktopOverlayWidth() const;
 
 	public slots:
 		void sendKeyboardInput(QString input);
@@ -54,11 +61,16 @@ namespace advsettings {
 		void modAlarmTimeHour(int value, bool notify = true);
 		void modAlarmTimeMinute(int value, bool notify = true);
 
+		void setSteamDesktopOverlayWidth(float width, bool notify = true, bool notifyOpenVr = true);
+
 	signals:
 		void alarmEnabledChanged(bool enabled);
 		void alarmIsModalChanged(bool modal);
 		void alarmTimeHourChanged(int hour);
 		void alarmTimeMinuteChanged(int min);
+
+		void steamDesktopOverlayAvailableChanged(bool available);
+		void steamDesktopOverlayWidthChanged(float width);
 	};
 
 } // namespace advsettings
