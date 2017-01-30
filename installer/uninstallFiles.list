@@ -405,6 +405,7 @@ Delete $INSTDIR\res\qml\MyText.qml
 Delete $INSTDIR\res\qml\MyTextField.qml
 Delete $INSTDIR\res\qml\MyToggleButton.qml
 Delete $INSTDIR\res\qml\PlayspacePage.qml
+Delete $INSTDIR\res\qml\PttControllerConfigDialog.qml
 Delete $INSTDIR\res\qml\ptt_notification.png
 Delete $INSTDIR\res\qml\ptt_notification.svg
 Delete $INSTDIR\res\qml\qmldir

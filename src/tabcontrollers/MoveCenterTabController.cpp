@@ -14,6 +14,8 @@ void MoveCenterTabController::initStage1() {
 	if (value.isValid() && !value.isNull()) {
 		m_adjustChaperone = value.toBool();
 	}
+
+	reloadPttConfig();
 }
 
 void MoveCenterTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
@@ -135,6 +137,22 @@ void MoveCenterTabController::setAdjustChaperone(bool value, bool notify) {
 	}
 }
 
+void MoveCenterTabController::onPttStart() {
+	m_toggleOffsetY = m_offsetY;
+	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 1, -m_toggleOffsetY, m_adjustChaperone);
+}
+
+void MoveCenterTabController::onPttStop() {
+	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 1, m_toggleOffsetY, m_adjustChaperone);
+}
+
+void MoveCenterTabController::onPttDisabled() {
+	if (pttActive()) {
+		stopPtt();
+	}
+	m_toggleOffsetY = 0;
+}
+
 void MoveCenterTabController::modOffsetX(float value, bool notify) {
 	if (m_rotation == 0) {
 		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, value, m_adjustChaperone);
@@ -176,6 +194,7 @@ void MoveCenterTabController::modOffsetZ(float value, bool notify) {
 }
 
 void MoveCenterTabController::reset() {
+	std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
 	vr::VRChaperoneSetup()->RevertWorkingCopy();
 	parent->RotateUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, -m_rotation * 2 * M_PI / 360.0, m_adjustChaperone, false);
 	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, -m_offsetX, m_adjustChaperone, false);
@@ -184,6 +203,7 @@ void MoveCenterTabController::reset() {
 	vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
 	m_offsetX = 0.0f;
 	m_offsetY = 0.0f;
+	m_toggleOffsetY = 0.0f;
 	m_offsetZ = 0.0f;
 	m_rotation = 0;
 	emit offsetXChanged(m_offsetX);
@@ -193,12 +213,17 @@ void MoveCenterTabController::reset() {
 }
 
 void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe) {
+	if (!eventLoopMutex.try_lock()) {
+		return;
+	}
 	if (settingsUpdateCounter >= 50) {
 		setTrackingUniverse((int)universe);
 		settingsUpdateCounter = 0;
 	} else {
 		settingsUpdateCounter++;
 	}
+	checkPttStatus();
+	eventLoopMutex.unlock();
 }
 
 } // namespace advconfig
