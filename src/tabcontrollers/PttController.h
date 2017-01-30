@@ -5,7 +5,6 @@
 #include <QString>
 #include <QVariant>
 #include <string>
-#include <memory>
 #include <mutex>
 #include <openvr.h>
 
@@ -61,7 +60,7 @@ namespace advsettings {
 
  protected:
     void checkPttStatus();
-	virtual QString getSettingsName() { return "pttSettings"; }
+	virtual QString getSettingsName() = 0;
 	virtual void onPttStart() {};
 	virtual void onPttStop() {};
     virtual void onPttEnabled() {};

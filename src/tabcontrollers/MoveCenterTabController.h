@@ -1,13 +1,7 @@
 
 #pragma once
 
-#include "AudioTabController.h"
 #include "PttController.h"
-#include <QObject>
-#include <QString>
-#include <QVariant>
-#include <openvr.h>
-#include <mutex>
 
 class QQuickWindow;
 // application namespace

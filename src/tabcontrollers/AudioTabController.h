@@ -3,13 +3,7 @@
 
 #include "AudioManager.h"
 #include "PttController.h"
-#include <QObject>
-#include <QString>
-#include <QVariant>
-#include <string>
 #include <memory>
-#include <mutex>
-#include <openvr.h>
 
 class QQuickWindow;
 // application namespace

@@ -339,31 +339,23 @@ MyStackViewPage {
             }
         }
 
+        MyToggleButton {
+            id: playspaceAdjustChaperoneToggle
+            text: "Adjust Chaperone"
+            Layout.preferredWidth: 270
+            onCheckedChanged: {
+                MoveCenterTabController.adjustChaperone = this.checked
+            }
+        }
+
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
 
-        ColumnLayout {
-            Layout.fillWidth: true
-
-            RowLayout {
-                MyToggleButton {
-                    id: playspaceAdjustChaperoneToggle
-                    text: "Adjust Chaperone"
-                    Layout.preferredWidth: 250
-                    onCheckedChanged: {
-                        MoveCenterTabController.adjustChaperone = this.checked
-                    }
-                }
-
-                Item { Layout.fillWidth: true}
-
-                MyPushButton {
-                    id: playspaceResetButton
-                    Layout.preferredWidth: 250
-                    text: "Reset"
-                    onClicked: {
-                        MoveCenterTabController.reset()
-                    }
-                }
+        MyPushButton {
+            id: playspaceResetButton
+            Layout.preferredWidth: 250
+            text: "Reset"
+            onClicked: {
+                MoveCenterTabController.reset()
             }
         }
 
