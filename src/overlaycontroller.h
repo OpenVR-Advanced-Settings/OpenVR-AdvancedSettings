@@ -31,6 +31,7 @@
 #include "tabcontrollers/SettingsTabController.h"
 #include "tabcontrollers/ReviveTabController.h"
 #include "tabcontrollers/UtilitiesTabController.h"
+#include "tabcontrollers/AccessibilityTabController.h"
 
 
 
@@ -78,6 +79,7 @@ public: // I know it's an ugly hack to make them public to enable external acces
 	SettingsTabController settingsTabController;
 	ReviveTabController reviveTabController;
 	UtilitiesTabController utilitiesTabController;
+	AccessibilityTabController accessibilityTabController;
 
 private:
     OverlayController(bool desktopMode, bool noSound) : QObject(), desktopMode(desktopMode), noSound(noSound) {}

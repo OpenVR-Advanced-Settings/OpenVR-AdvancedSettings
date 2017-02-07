@@ -101,6 +101,17 @@ MyStackViewPage {
                    }
 
                    MyPushButton {
+                       id: accessibilityButton
+                       activationSoundEnabled: false
+                       text: "Accessibility"
+                       Layout.fillWidth: true
+                       onClicked: {
+                           MyResources.playFocusChangedSound()
+                           mainView.push(accessibilityPage)
+                       }
+                   }
+
+                   MyPushButton {
                        id: statisticsButton
                        activationSoundEnabled: false
                        text: "Statistics"

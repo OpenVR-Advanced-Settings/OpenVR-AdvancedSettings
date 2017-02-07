@@ -1,7 +1,8 @@
 
 #pragma once
 
-#include "PttController.h"
+#include <QObject>
+#include <openvr.h>
 
 class QQuickWindow;
 // application namespace
@@ -11,7 +12,7 @@ namespace advsettings {
 class OverlayController;
 
 
-class MoveCenterTabController : public PttController {
+class MoveCenterTabController : public QObject {
 	Q_OBJECT
 	Q_PROPERTY(int trackingUniverse READ trackingUniverse WRITE setTrackingUniverse NOTIFY trackingUniverseChanged)
 	Q_PROPERTY(float offsetX READ offsetX WRITE setOffsetX NOTIFY offsetXChanged)
@@ -27,17 +28,11 @@ private:
 	int m_trackingUniverse = (int)vr::TrackingUniverseStanding;
 	float m_offsetX = 0.0f;
 	float m_offsetY = 0.0f;
-	float m_toggleOffsetY = 0.0f;
 	float m_offsetZ = 0.0f;
 	int m_rotation = 0;
 	bool m_adjustChaperone = true;
 
 	unsigned settingsUpdateCounter = 0;
-
-	QString getSettingsName() override { return "playspaceSettings"; }
-	void onPttStart() override;
-	void onPttStop() override;
-	void onPttDisabled() override;
 
 public:
 	void initStage1();
