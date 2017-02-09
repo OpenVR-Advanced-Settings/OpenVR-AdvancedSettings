@@ -36,7 +36,7 @@ float AccessibilityTabController::heightOffset() const {
 }
 
 void AccessibilityTabController::setHeightOffset(float value, bool notify) {
-  if (m_heightOffset != value) {
+  if (std::abs(m_heightOffset - value) > 0.001) {
     modHeightOffset(value - m_heightOffset, notify);
   }
 }

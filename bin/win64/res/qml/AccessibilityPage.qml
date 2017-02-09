@@ -45,7 +45,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
-                            accessibilityMoveYSlider.decrease()
+                            accessibilityMoveYSlider.value -= 0.05
                         }
                     }
 
@@ -53,7 +53,7 @@ MyStackViewPage {
                         id: accessibilityMoveYSlider
                         from: 0
                         to: 1.5
-                        stepSize: 0.05
+                        stepSize: 0.01
                         value: 0.0
                         Layout.fillWidth: true
                         onPositionChanged: {
@@ -69,7 +69,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
-                            accessibilityMoveYSlider.increase()
+                            accessibilityMoveYSlider.value += 0.05
                         }
                     }
 
@@ -83,8 +83,12 @@ MyStackViewPage {
                         horizontalAlignment: Text.AlignHCenter
                         function onInputEvent(input) {
                             var val = parseFloat(input)
-                            if (!isNaN(val) && val >= accessibilityMoveYSlider.from && val <= accessibilityMoveYSlider.to) {
-                                accessibilityMoveYSlider.value = val.toFixed(2);
+                            if (!isNaN(val)) {
+                                if (val >= accessibilityMoveYSlider.from && val <= accessibilityMoveYSlider.to) {
+                                    accessibilityMoveYSlider.value = val.toFixed(2);
+                                } else {
+                                    AccessibilityTabController.setHeightOffset(val.toFixed(2), false);
+                                }
                             }
                             text = AccessibilityTabController.heightOffset.toFixed(2)
                         }
@@ -146,8 +150,10 @@ MyStackViewPage {
 
         Component.onCompleted: {
             var heightOffsetFormatted = AccessibilityTabController.heightOffset.toFixed(2)
+            if (heightOffsetFormatted >= accessibilityMoveYSlider.from && heightOffsetFormatted <= accessibilityMoveYSlider.to) {
+                accessibilityMoveYSlider.value = heightOffsetFormatted
+            }
             accessibilityMoveYText.text = heightOffsetFormatted
-            accessibilityMoveYSlider.value = heightOffsetFormatted
             heightOffsetPttEnabledToggle.checked = AccessibilityTabController.pttEnabled
             heightOffsetPttLeftControllerToggle.checked = AccessibilityTabController.pttLeftControllerEnabled
             heightOffsetPttRightControllerToggle.checked = AccessibilityTabController.pttRightControllerEnabled
@@ -157,8 +163,10 @@ MyStackViewPage {
             target: AccessibilityTabController
             onHeightOffsetChanged: {
                 var heightOffsetFormatted = AccessibilityTabController.heightOffset.toFixed(2)
+                if (heightOffsetFormatted >= accessibilityMoveYSlider.from && heightOffsetFormatted <= accessibilityMoveYSlider.to) {
+                    accessibilityMoveYSlider.value = heightOffsetFormatted
+                }
                 accessibilityMoveYText.text = heightOffsetFormatted
-                accessibilityMoveYSlider.value = heightOffsetFormatted
             }
             onPttEnabledChanged: {
                 heightOffsetPttEnabledToggle.checked = AccessibilityTabController.pttEnabled
