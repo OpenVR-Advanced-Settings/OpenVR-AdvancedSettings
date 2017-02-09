@@ -114,6 +114,7 @@ void OverlayController::Init(QQmlEngine* qmlEngine) {
 	settingsTabController.initStage1();
 	reviveTabController.initStage1(settingsTabController.forceRevivePage());
 	utilitiesTabController.initStage1();
+	accessibilityTabController.initStage1();
 
 	// Set qml context
 	qmlEngine->rootContext()->setContextProperty("applicationVersion", getVersionString());
@@ -167,6 +168,11 @@ void OverlayController::Init(QQmlEngine* qmlEngine) {
 	});
 	qmlRegisterSingletonType<SteamVRTabController>("matzman666.advsettings", 1, 0, "UtilitiesTabController", [](QQmlEngine*, QJSEngine*) {
 		QObject* obj = &getInstance()->utilitiesTabController;
+		QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+		return obj;
+	});
+	qmlRegisterSingletonType<SteamVRTabController>("matzman666.advsettings", 1, 0, "AccessibilityTabController", [](QQmlEngine*, QJSEngine*) {
+		QObject* obj = &getInstance()->accessibilityTabController;
 		QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
 		return obj;
 	});
@@ -255,6 +261,7 @@ void OverlayController::SetWidget(QQuickItem* quickItem, const std::string& name
 	settingsTabController.initStage2(this, m_pWindow.get());
 	reviveTabController.initStage2(this, m_pWindow.get());
 	utilitiesTabController.initStage2(this, m_pWindow.get());
+	accessibilityTabController.initStage2(this, m_pWindow.get());
 }
 
 
@@ -298,7 +305,7 @@ void OverlayController::OnTimeoutPumpEvents() {
 			break;
 		}
 	}*/
-	
+
 	vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
 	vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, devicePoses, vr::k_unMaxTrackedDeviceCount);
 	fixFloorTabController.eventLoopTick(devicePoses);
@@ -310,6 +317,7 @@ void OverlayController::OnTimeoutPumpEvents() {
 	reviveTabController.eventLoopTick();
 	audioTabController.eventLoopTick();
 	utilitiesTabController.eventLoopTick();
+	accessibilityTabController.eventLoopTick(vr::VRCompositor()->GetTrackingSpace());
 
 	vr::VREvent_t vrEvent;
 	while (vr::VROverlay()->PollNextOverlayEvent(m_ulOverlayHandle, &vrEvent, sizeof(vrEvent))) {

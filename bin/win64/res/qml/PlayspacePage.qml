@@ -8,11 +8,6 @@ import matzman666.advsettings 1.0
 MyStackViewPage {
     headerText: "Play Space Settings"
 
-    PttControllerConfigDialog {
-        id: pttControllerConfigDialog
-        pttControllerConfigClass: MoveCenterTabController
-    }
-
     content: ColumnLayout {
         spacing: 18
 
@@ -68,10 +63,10 @@ MyStackViewPage {
                         }
                     }
 
-                    MyTextField {
+					MyTextField {
                         id: playSpaceMoveXText
                         text: "0.00"
-                        keyBoardUID: 101
+						keyBoardUID: 101
                         Layout.preferredWidth: 140
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10
@@ -270,79 +265,9 @@ MyStackViewPage {
             }
         }
 
-        GroupBox {
-            Layout.fillWidth: true
-
-            label: MyText {
-                leftPadding: 10
-                text: "Push-to-Toggle Y-Axis Offset"
-                bottomPadding: -10
-            }
-
-            background: Rectangle {
-                color: "transparent"
-                border.color: "#ffffff"
-                radius: 8
-            }
-
-            ColumnLayout {
-                anchors.fill: parent
-
-                Rectangle {
-                    color: "#ffffff"
-                    height: 1
-                    Layout.fillWidth: true
-                    Layout.bottomMargin: 5
-                }
-
-                ColumnLayout {
-                    RowLayout {
-                        MyToggleButton {
-                            id: offsetYPttEnabledToggle
-                            Layout.preferredWidth: 260
-                            text: "Enabled"
-                            onClicked: {
-                                MoveCenterTabController.pttEnabled = checked
-                            }
-                        }
-                        MyToggleButton {
-                            id: offsetYPttLeftControllerToggle
-                            text: "Left Controller"
-                            onClicked: {
-                                MoveCenterTabController.setPttLeftControllerEnabled(checked, false)
-                            }
-                        }
-                        MyPushButton {
-                            text: "Configure"
-                            onClicked: {
-                                pttControllerConfigDialog.openPopup(0)
-                            }
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                        MyToggleButton {
-                            id: offsetYPttRightControllerToggle
-                            text: "Right Controller"
-                            onClicked: {
-                                MoveCenterTabController.setPttRightControllerEnabled(checked, false)
-                            }
-                        }
-                        MyPushButton {
-                            text: "Configure"
-                            onClicked: {
-                                pttControllerConfigDialog.openPopup(1)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         MyToggleButton {
             id: playspaceAdjustChaperoneToggle
             text: "Adjust Chaperone"
-            Layout.preferredWidth: 270
             onCheckedChanged: {
                 MoveCenterTabController.adjustChaperone = this.checked
             }
@@ -380,9 +305,6 @@ MyStackViewPage {
             } else {
                 playspaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
             }
-            offsetYPttEnabledToggle.checked = MoveCenterTabController.pttEnabled
-            offsetYPttLeftControllerToggle.checked = MoveCenterTabController.pttLeftControllerEnabled
-            offsetYPttRightControllerToggle.checked = MoveCenterTabController.pttRightControllerEnabled
         }
 
         Connections {
@@ -418,18 +340,6 @@ MyStackViewPage {
                 } else {
                     playspaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
                 }
-            }
-            onPttEnabledChanged: {
-                offsetYPttEnabledToggle.checked = MoveCenterTabController.pttEnabled
-            }
-            onPttActiveChanged: {
-
-            }
-            onPttLeftControllerEnabledChanged: {
-                offsetYPttLeftControllerToggle.checked = MoveCenterTabController.pttLeftControllerEnabled
-            }
-            onPttRightControllerEnabledChanged: {
-                offsetYPttRightControllerToggle.checked = MoveCenterTabController.pttRightControllerEnabled
             }
         }
 

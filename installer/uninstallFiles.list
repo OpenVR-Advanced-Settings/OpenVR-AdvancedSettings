@@ -417,6 +417,7 @@ Delete $INSTDIR\res\qml\speaker_on.svg
 Delete $INSTDIR\res\qml\StatisticsPage.qml
 Delete $INSTDIR\res\qml\SteamVRPage.qml
 Delete $INSTDIR\res\qml\UtilitiesPage.qml
+Delete $INSTDIR\res\qml\AccessibilityPage.qml
 Delete $INSTDIR\res\thumbicon.png
 Delete $INSTDIR\restartvrserver.bat
 Delete $INSTDIR\startdesktopmode.bat

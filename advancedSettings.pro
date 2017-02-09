@@ -24,7 +24,8 @@ SOURCES += src/main.cpp\
 		src/tabcontrollers/ReviveTabController.cpp \
 		src/tabcontrollers/UtilitiesTabController.cpp \
 		src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
-		src/tabcontrollers/PttController.cpp
+		src/tabcontrollers/PttController.cpp \
+		src/tabcontrollers/AccessibilityTabController.cpp
 
 HEADERS  += src/overlaycontroller.h \
 		src/logging.h \
@@ -39,7 +40,8 @@ HEADERS  += src/overlaycontroller.h \
 		src/tabcontrollers/UtilitiesTabController.h \
 		src/tabcontrollers/AudioManager.h \
 		src/tabcontrollers/audiomanager/AudioManagerWindows.h \
-		src/tabcontrollers/PttController.h
+		src/tabcontrollers/PttController.h \
+		src/tabcontrollers/AccessibilityTabController.h
 
 INCLUDEPATH += third-party/openvr/include \
 			third-party/easylogging++
