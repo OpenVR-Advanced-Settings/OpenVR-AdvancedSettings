@@ -31,6 +31,7 @@ namespace advsettings {
 		Q_PROPERTY(int isOverlayInstalled READ isOverlayInstalled NOTIFY isOverlayInstalledChanged)
 		Q_PROPERTY(int gripButtonMode READ gripButtonMode WRITE setGripButtonMode NOTIFY gripButtonModeChanged)
 		Q_PROPERTY(bool pixelsPerDisplayPixelOverrideEnabled READ isPixelsPerDisplayPixelOverrideEnabled WRITE setPixelsPerDisplayPixelOverrideEnabled NOTIFY pixelsPerDisplayPixelOverrideEnabledChanged)
+		Q_PROPERTY(float toggleDelay READ toggleDelay WRITE setToggleDelay NOTIFY toggleDelayChanged)
 		Q_PROPERTY(float pixelsPerDisplayPixelOverride READ pixelsPerDisplayPixelOverride WRITE setPixelsPerDisplayPixelOverride NOTIFY pixelsPerDisplayPixelOverrideChanged)
 		Q_PROPERTY(float thumbDeadzone READ thumbDeadzone WRITE setThumbDeadzone NOTIFY thumbDeadzoneChanged)
 		Q_PROPERTY(float thumbRange READ thumbRange WRITE setThumbRange NOTIFY thumbRangeChanged)
@@ -52,6 +53,7 @@ namespace advsettings {
 
 		bool m_isOverlayInstalled = false;
 		int m_gripButtonMode = 0;
+		float m_toggleDelay = 0.5f;
 		bool m_pixelsPerDisplayPixelOverrideEnabled = false;
 		float m_pixelsPerDisplayPixelOverride = 1.0f;
 		float m_thumbDeadzone = 0.3f;
@@ -81,6 +83,7 @@ namespace advsettings {
 		bool isOverlayInstalled() const;
 
 		int gripButtonMode() const;
+		float toggleDelay() const;
 
 		bool isPixelsPerDisplayPixelOverrideEnabled() const;
 		float pixelsPerDisplayPixelOverride() const;
@@ -111,6 +114,7 @@ namespace advsettings {
 
 	public slots:
 		void setGripButtonMode(int value, bool notify = true);
+		void setToggleDelay(float value, bool notify = true);
 
 		void setPixelsPerDisplayPixelOverrideEnabled(bool value, bool notify = true);
 		void setPixelsPerDisplayPixelOverride(float value, bool notify = true);
@@ -141,6 +145,7 @@ namespace advsettings {
 		void isOverlayInstalledChanged(bool value);
 
 		void gripButtonModeChanged(int value);
+		void toggleDelayChanged(float value);
 
 		void pixelsPerDisplayPixelOverrideEnabledChanged(bool value);
 		void pixelsPerDisplayPixelOverrideChanged(float value);

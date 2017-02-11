@@ -9,6 +9,7 @@ namespace advsettings {
 	const char* section_revive = "revive";
 	const char* key_pixelsPerDisplayPixel = "pixelsPerDisplayPixel";
 	const char* key_toggleGrip = "ToggleGrip";
+	const char* key_toggleDelay = "ToggleDelay";
 	const char* key_thumbDeadzone = "ThumbDeadzone";
 	const char* key_thumbSensitivity = "ThumbSensitivity";
 	const char* key_touchPitch = "TouchPitch";
@@ -47,6 +48,13 @@ namespace advsettings {
 				LOG(WARNING) << "Could not read \"revive::" << key_toggleGrip << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 			} else {
 				m_gripButtonMode = valuei;
+			}
+
+			valuef = vr::VRSettings()->GetFloat(section_revive, key_toggleDelay, &vrSettingsError);
+			if (vrSettingsError != vr::VRSettingsError_None) {
+				LOG(WARNING) << "Could not read \"revive::" << key_toggleDelay << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+			} else {
+				m_toggleDelay = valuef;
 			}
 
 			valuef = vr::VRSettings()->GetFloat(section_revive, key_thumbDeadzone, &vrSettingsError);
@@ -177,6 +185,11 @@ namespace advsettings {
 					setGripButtonMode(valuei);
 				}
 
+				valuef = vr::VRSettings()->GetFloat(section_revive, key_toggleDelay, &vrSettingsError);
+				if (vrSettingsError == vr::VRSettingsError_None) {
+					setToggleDelay(valuef);
+				}
+
 				valuef = vr::VRSettings()->GetFloat(section_revive, key_thumbDeadzone, &vrSettingsError);
 				if (vrSettingsError == vr::VRSettingsError_None) {
 					setThumbDeadzone(valuef);
@@ -263,6 +276,10 @@ namespace advsettings {
 		return m_gripButtonMode;
 	}
 
+	float ReviveTabController::toggleDelay() const {
+		return m_toggleDelay;
+	}
+
 	bool ReviveTabController::isPixelsPerDisplayPixelOverrideEnabled() const {
 		return m_pixelsPerDisplayPixelOverrideEnabled;
 	}
@@ -334,6 +351,21 @@ namespace advsettings {
 			vr::VRSettings()->Sync();
 			if (notify) {
 				emit gripButtonModeChanged(m_gripButtonMode);
+			}
+		}
+	}
+
+	void ReviveTabController::setToggleDelay(float value, bool notify) {
+		if (m_toggleDelay != value) {
+			m_toggleDelay = value;
+			vr::EVRSettingsError vrSettingsError;
+			vr::VRSettings()->SetFloat(section_revive, key_toggleDelay, m_toggleDelay, &vrSettingsError);
+			if (vrSettingsError != vr::VRSettingsError_None) {
+				LOG(WARNING) << "Could not set \"revive::" << key_toggleDelay << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+			}
+			vr::VRSettings()->Sync();
+			if (notify) {
+				emit toggleDelayChanged(m_toggleDelay);
 			}
 		}
 	}
@@ -597,6 +629,11 @@ namespace advsettings {
 		vr::VRSettings()->RemoveKeyInSection(section_revive, key_toggleGrip, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
 			LOG(WARNING) << "Could not remove \"revive::" << key_toggleGrip << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+
+		vr::VRSettings()->RemoveKeyInSection(section_revive, key_toggleDelay, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not remove \"revive::" << key_toggleDelay << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 		}
 
 		vr::VRSettings()->RemoveKeyInSection(section_revive, key_thumbDeadzone, &vrSettingsError);

@@ -150,7 +150,7 @@ MyStackViewPage {
 
             MyComboBox {
                 id: gripButtonModeComboBox
-                Layout.fillWidth: true
+                Layout.preferredWidth: 300
                 model: ["Normal Mode", "Toggle Mode", "Hybrid Mode"]
                 onCurrentIndexChanged: {
                     if (componentCompleted) {
@@ -158,6 +158,32 @@ MyStackViewPage {
                     }
                 }
             }
+
+            MyText {
+                Layout.leftMargin: 50
+                text: "Toggle Delay: "
+                Layout.fillWidth: true
+            }
+
+            MyTextField {
+                id: toggleDelayText
+                text: "0.50"
+                keyBoardUID: 225
+                Layout.preferredWidth: 100
+                Layout.leftMargin: 10
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < 0.0) {
+                            val = 0.0
+                        }
+                        ReviveTabController.setToggleDelay(val.toFixed(2), false)
+                    }
+                    text = ReviveTabController.toggleDelay.toFixed(2)
+                }
+            }
+
         }
 
         GroupBox {
@@ -969,6 +995,7 @@ MyStackViewPage {
             pixelsPerDisplayPixelText.text = v
 
             gripButtonModeComboBox.currentIndex = ReviveTabController.gripButtonMode
+            toggleDelayText.text = ReviveTabController.toggleDelay.toFixed(2)
 
             v = ReviveTabController.thumbDeadzone.toFixed(2)
             if (v <= thumbDeadzoneSlider.to) {
@@ -996,6 +1023,9 @@ MyStackViewPage {
             target: ReviveTabController
             onGripButtonModeChanged : {
                 gripButtonModeComboBox.currentIndex = ReviveTabController.gripButtonMode
+            }
+            onToggleDelayChanged : {
+                toggleDelayText.text = ReviveTabController.toggleDelay.toFixed(2)
             }
             onPixelsPerDisplayPixelOverrideEnabledChanged : {
                 pixelsPerDisplayPixelToggle.checked = ReviveTabController.pixelsPerDisplayPixelOverrideEnabled
