@@ -16,12 +16,15 @@ void StatisticsTabController::initStage2(OverlayController * parent, QQuickWindo
 void StatisticsTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) {
 	vr::Compositor_CumulativeStats pStats;
 	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
-	if (pStats.m_nPid != compositorStatsPid) {
+	if (pStats.m_nPid != m_cumStats.m_nPid) {
+		m_cumStats = pStats;
 		m_droppedFramesOffset = 0;
 		m_reprojectedFramesOffset = 0;
 		m_timedOutOffset = 0;
-		compositorStatsPid = pStats.m_nPid;
+		m_totalRatioPresentedOffset = 0;
+		m_totalRatioReprojectedOffset = 0;
 	}
+	m_cumStats = pStats;
 
 	auto& m = devicePoses->mDeviceToAbsoluteTracking.m;
 
@@ -170,22 +173,30 @@ float StatisticsTabController::leftControllerMaxSpeed() const {
 	return m_leftControllerMaxSpeed;
 }
 
+unsigned StatisticsTabController::presentedFrames() const {
+	return m_cumStats.m_nNumFramePresents - m_presentedFramesOffset;
+}
+
 unsigned StatisticsTabController::droppedFrames() const {
-	vr::Compositor_CumulativeStats pStats;
-	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
-	return pStats.m_nNumDroppedFrames - m_droppedFramesOffset;
+	return m_cumStats.m_nNumDroppedFrames - m_droppedFramesOffset;
 }
 
 unsigned StatisticsTabController::reprojectedFrames() const {
-	vr::Compositor_CumulativeStats pStats;
-	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
-	return pStats.m_nNumReprojectedFrames - m_reprojectedFramesOffset;
+	return m_cumStats.m_nNumReprojectedFrames - m_reprojectedFramesOffset;
 }
 
 unsigned StatisticsTabController::timedOut() const {
-	vr::Compositor_CumulativeStats pStats;
-	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
-	return pStats.m_nNumTimedOut - m_timedOutOffset;
+	return m_cumStats.m_nNumTimedOut - m_timedOutOffset;
+}
+
+float StatisticsTabController::totalReprojectedRatio() const {
+	float totalFrames = (float)(m_cumStats.m_nNumFramePresents - m_totalRatioPresentedOffset);
+	float reprojectedFrames = (float)(m_cumStats.m_nNumReprojectedFrames - m_totalRatioReprojectedOffset);
+	if (totalFrames != 0.0f) {
+		return reprojectedFrames / totalFrames;
+	} else {
+		return 0.0;
+	}
 }
 
 void StatisticsTabController::statsDistanceResetClicked() {
@@ -211,22 +222,25 @@ void StatisticsTabController::statsRightControllerSpeedResetClicked() {
 	}
 }
 
+void StatisticsTabController::presentedFramesResetClicked() {
+	m_presentedFramesOffset = m_cumStats.m_nNumFramePresents;
+}
+
 void StatisticsTabController::droppedFramesResetClicked() {
-	vr::Compositor_CumulativeStats pStats;
-	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
-	m_droppedFramesOffset = pStats.m_nNumDroppedFrames;
+	m_droppedFramesOffset = m_cumStats.m_nNumDroppedFrames;
 }
 
 void StatisticsTabController::reprojectedFramesResetClicked() {
-	vr::Compositor_CumulativeStats pStats;
-	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
-	m_reprojectedFramesOffset = pStats.m_nNumReprojectedFrames;
+	m_reprojectedFramesOffset = m_cumStats.m_nNumReprojectedFrames;
 }
 
 void StatisticsTabController::timedOutResetClicked() {
-	vr::Compositor_CumulativeStats pStats;
-	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
-	m_timedOutOffset = pStats.m_nNumTimedOut;
+	m_timedOutOffset = m_cumStats.m_nNumTimedOut;
+}
+
+void StatisticsTabController::totalRatioResetClicked() {
+	m_totalRatioPresentedOffset = m_cumStats.m_nNumFramePresents;
+	m_totalRatioReprojectedOffset = m_cumStats.m_nNumReprojectedFrames;
 }
 
 } // namespace advconfig

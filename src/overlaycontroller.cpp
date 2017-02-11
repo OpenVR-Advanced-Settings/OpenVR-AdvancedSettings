@@ -299,26 +299,6 @@ void OverlayController::OnTimeoutPumpEvents() {
 	if (!vr::VRSystem())
 		return;
 
-	// tell OpenVR to make some events for us
-	/*for( vr::TrackedDeviceIndex_t unDeviceId = 1; unDeviceId < vr::k_unControllerStateAxisCount; unDeviceId++ ) {
-		if( vr::VROverlay()->HandleControllerOverlayInteractionAsMouse( m_ulOverlayHandle, unDeviceId ) ) {
-			break;
-		}
-	}*/
-
-	vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
-	vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, devicePoses, vr::k_unMaxTrackedDeviceCount);
-	fixFloorTabController.eventLoopTick(devicePoses);
-	statisticsTabController.eventLoopTick(devicePoses);
-	moveCenterTabController.eventLoopTick(vr::VRCompositor()->GetTrackingSpace());
-	steamVRTabController.eventLoopTick();
-	chaperoneTabController.eventLoopTick();
-	settingsTabController.eventLoopTick();
-	reviveTabController.eventLoopTick();
-	audioTabController.eventLoopTick();
-	utilitiesTabController.eventLoopTick();
-	accessibilityTabController.eventLoopTick(vr::VRCompositor()->GetTrackingSpace());
-
 	vr::VREvent_t vrEvent;
 	while (vr::VROverlay()->PollNextOverlayEvent(m_ulOverlayHandle, &vrEvent, sizeof(vrEvent))) {
 		switch (vrEvent.eventType) {
@@ -395,6 +375,19 @@ void OverlayController::OnTimeoutPumpEvents() {
 			break;
 		}
 	}
+
+	vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
+	vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, devicePoses, vr::k_unMaxTrackedDeviceCount);
+	fixFloorTabController.eventLoopTick(devicePoses);
+	statisticsTabController.eventLoopTick(devicePoses);
+	moveCenterTabController.eventLoopTick(vr::VRCompositor()->GetTrackingSpace());
+	steamVRTabController.eventLoopTick();
+	chaperoneTabController.eventLoopTick();
+	settingsTabController.eventLoopTick();
+	reviveTabController.eventLoopTick();
+	audioTabController.eventLoopTick();
+	utilitiesTabController.eventLoopTick();
+	accessibilityTabController.eventLoopTick(vr::VRCompositor()->GetTrackingSpace());
 
 	if (m_ulOverlayThumbnailHandle != vr::k_ulOverlayHandleInvalid) {
 		while (vr::VROverlay()->PollNextOverlayEvent(m_ulOverlayThumbnailHandle, &vrEvent, sizeof(vrEvent))) {

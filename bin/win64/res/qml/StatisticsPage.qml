@@ -96,6 +96,25 @@ MyStackViewPage {
             Layout.topMargin: 32
 
             MyText {
+                text: "Presented Frames:"
+            }
+
+            MyText {
+                id: statsPresentedFramesText
+                text: "000"
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 10
+            }
+
+            MyPushButton {
+                text: "Reset"
+                onClicked: {
+                    StatisticsTabController.presentedFramesResetClicked()
+                }
+            }
+
+            MyText {
                 text: "Dropped Frames:"
             }
 
@@ -151,6 +170,25 @@ MyStackViewPage {
                     StatisticsTabController.timedOutResetClicked()
                 }
             }
+
+            MyText {
+                text: "Reprojection Ratio:"
+            }
+
+            MyText {
+                id: statstotalRatioText
+                text: "0.0"
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 10
+            }
+
+            MyPushButton {
+                text: "Reset"
+                onClicked: {
+                    StatisticsTabController.totalRatioResetClicked()
+                }
+            }
         }
         Item {
             Layout.fillHeight: true
@@ -166,9 +204,11 @@ MyStackViewPage {
             }
             statsLeftControllerSpeedText.text = "    " + StatisticsTabController.leftControllerMaxSpeed.toFixed(1) + " m/s"
             statsRightControllerSpeedText.text = "    " + StatisticsTabController.rightControllerMaxSpeed.toFixed(1) + " m/s"
+            statsPresentedFramesText.text = StatisticsTabController.presentedFrames
             statsDroppedFramesText.text = StatisticsTabController.droppedFrames
             statsReprojectionFramesText.text = StatisticsTabController.reprojectedFrames
             statsTimedOutText.text = StatisticsTabController.timedOut
+            statstotalRatioText.text = (StatisticsTabController.totalReprojectedRatio*100.0).toFixed(1) + "%"
         }
 
         Timer {

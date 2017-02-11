@@ -253,6 +253,18 @@ MyStackViewPage {
                        }
                    }
 
+                   RowLayout {
+                       MyText {
+                           text: "Reprojection Ratio:"
+                       }
+                       MyText {
+                           id: summaryTotalRatioText
+                           Layout.fillWidth: true
+                           horizontalAlignment: Text.AlignRight
+                           text: "0"
+                       }
+                   }
+
                    Item {
                        Layout.fillHeight: true
                        Layout.fillWidth: true
@@ -434,6 +446,7 @@ MyStackViewPage {
        summaryDroppedFramesText.text = StatisticsTabController.droppedFrames
        summaryReprojectedFramesText.text = StatisticsTabController.reprojectedFrames
        summaryTimedOutText.text = StatisticsTabController.timedOut
+       summaryTotalRatioText.text = (StatisticsTabController.totalReprojectedRatio*100.0).toFixed(1) + "%"
    }
 
    Timer {
