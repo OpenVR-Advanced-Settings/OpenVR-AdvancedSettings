@@ -24,6 +24,9 @@ AudioManagerWindows::~AudioManagerWindows() {
 	if (micAudioDevice) {
 		micAudioDevice->Release();
 	}
+	if (playbackAudioDevice) {
+		playbackAudioDevice->Release();
+	}
 	audioDeviceEnumerator->Release();
 }
 
@@ -31,6 +34,10 @@ void AudioManagerWindows::init(AudioTabController* controller) {
 	audioDeviceEnumerator = getAudioDeviceEnumerator();
 	if (!audioDeviceEnumerator) {
 		throw std::exception("Could not create audio device enumerator");
+	}
+	playbackAudioDevice = getDefaultPlaybackDevice(audioDeviceEnumerator);
+	if (!playbackAudioDevice) {
+		LOG(WARNING) << "Could not find a default recording device.";
 	}
 	micAudioDevice = getDefaultRecordingDevice(audioDeviceEnumerator);
 	if (micAudioDevice) {
@@ -40,19 +47,61 @@ void AudioManagerWindows::init(AudioTabController* controller) {
 	}
 	this->controller = controller;
 	audioDeviceEnumerator->RegisterEndpointNotificationCallback((IMMNotificationClient*)this);
+	policyConfig = getPolicyConfig();
+	if (!policyConfig) {
+		LOG(ERROR) << "Could not find PolicyConfig interface";
+	}
+}
+
+void AudioManagerWindows::setPlaybackDevice(const std::string & id, bool notify) {
+	if (!id.empty()) {
+		auto dev = getDevice(audioDeviceEnumerator, id);
+		if (!dev) {
+			LOG(WARNING) << "Could not find playback device \"" << id << "\".";
+		} else {
+			playbackAudioDevice = dev;
+			if (policyConfig) {
+				LPWSTR devId;
+				if (dev->GetId(&devId) >= 0) {
+					policyConfig->SetDefaultEndpoint(devId, eConsole);
+				}
+			}
+		}
+	}
+	if (notify) {
+		controller->onNewPlaybackDevice();
+	}
+}
+
+std::string AudioManagerWindows::getPlaybackDevName() {
+	if (playbackAudioDevice) {
+		return getDeviceName(playbackAudioDevice);
+	}
+	return "";
+}
+
+std::string AudioManagerWindows::getPlaybackDevId() {
+	if (playbackAudioDevice) {
+		return getDeviceId(playbackAudioDevice);
+	}
+	return "";
 }
 
 
-void AudioManagerWindows::setMirrorDevice(const std::string& id) {
+void AudioManagerWindows::setMirrorDevice(const std::string& id, bool notify) {
 	if (id.empty()) {
 		deleteMirrorDevice();
 	} else {
-		mirrorAudioDevice = getDevice(audioDeviceEnumerator, id);
-		if (mirrorAudioDevice) {
+		auto dev = getDevice(audioDeviceEnumerator, id);
+		if (dev) {
+			mirrorAudioDevice = dev;
 			mirrorAudioEndpointVolume = getAudioEndpointVolume(mirrorAudioDevice);
 		} else {
 			LOG(WARNING) << "Could not find mirror device \"" << id << "\".";
 		}
+	}
+	if (notify) {
+		controller->onNewMirrorDevice();
 	}
 }
 
@@ -74,6 +123,13 @@ bool AudioManagerWindows::isMirrorValid() {
 std::string AudioManagerWindows::getMirrorDevName() {
 	if (mirrorAudioDevice) {
 		return getDeviceName(mirrorAudioDevice);
+	}
+	return "";
+}
+
+std::string AudioManagerWindows::getMirrorDevId() {
+	if (mirrorAudioDevice) {
+		return getDeviceId(mirrorAudioDevice);
 	}
 	return "";
 }
@@ -119,9 +175,36 @@ bool AudioManagerWindows::isMicValid() {
 	return micAudioEndpointVolume != nullptr;
 }
 
+void AudioManagerWindows::setMicDevice(const std::string & id, bool notify) {
+	if (!id.empty()) {
+		auto dev = getDevice(audioDeviceEnumerator, id);
+		if (!dev) {
+			LOG(WARNING) << "Could not find recording device \"" << id << "\".";
+		} else {
+			micAudioDevice = dev;
+			if (policyConfig) {
+				LPWSTR devId;
+				if (dev->GetId(&devId) >= 0) {
+					policyConfig->SetDefaultEndpoint(devId, eConsole);
+				}
+			}
+		}
+	}
+	if (notify) {
+		controller->onNewRecordingDevice();
+	}
+}
+
 std::string AudioManagerWindows::getMicDevName() {
 	if (micAudioDevice) {
 		return getDeviceName(micAudioDevice);
+	}
+	return "";
+}
+
+std::string AudioManagerWindows::getMicDevId() {
+	if (micAudioDevice) {
+		return getDeviceId(micAudioDevice);
 	}
 	return "";
 }
@@ -162,6 +245,14 @@ bool AudioManagerWindows::setMicMuted(bool value) {
 	return false;
 }
 
+std::vector<std::pair<std::string, std::string>> AudioManagerWindows::getRecordingDevices() {
+	return getDevices(audioDeviceEnumerator, eCapture);
+}
+
+std::vector<std::pair<std::string, std::string>> AudioManagerWindows::getPlaybackDevices() {
+	return getDevices(audioDeviceEnumerator, eRender);
+}
+
 
 IMMDeviceEnumerator* AudioManagerWindows::getAudioDeviceEnumerator() {
 	IMMDeviceEnumerator* pEnumerator;
@@ -171,9 +262,35 @@ IMMDeviceEnumerator* AudioManagerWindows::getAudioDeviceEnumerator() {
 	return pEnumerator;
 }
 
+IPolicyConfig * AudioManagerWindows::getPolicyConfig() {
+	IPolicyConfig* policyConfig = nullptr;
+	// for Win 10
+	auto hr = CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_INPROC, IID_IPolicyConfig2, (LPVOID *)&policyConfig);
+	if (hr != S_OK) {
+		hr = CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_INPROC, IID_IPolicyConfig1, (LPVOID *)&policyConfig);
+	}
+	// for Win Vista, 7, 8, 8.1
+	if (hr != S_OK) {
+		hr = CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_INPROC, IID_IPolicyConfig0, (LPVOID *)&policyConfig);
+	}
+	if (hr != S_OK) {
+		return nullptr;
+	} else {
+		return policyConfig;
+	}
+}
+
 IMMDevice* AudioManagerWindows::getDefaultRecordingDevice(IMMDeviceEnumerator* deviceEnumerator) {
 	IMMDevice* pDevice;
 	if (deviceEnumerator->GetDefaultAudioEndpoint(eCapture, eCommunications, &pDevice) < 0) {
+		return nullptr;
+	}
+	return pDevice;
+}
+
+IMMDevice * AudioManagerWindows::getDefaultPlaybackDevice(IMMDeviceEnumerator * deviceEnumerator) {
+	IMMDevice* pDevice;
+	if (deviceEnumerator->GetDefaultAudioEndpoint(eRender, eCommunications, &pDevice) < 0) {
 		return nullptr;
 	}
 	return pDevice;
@@ -212,6 +329,33 @@ std::string AudioManagerWindows::getDeviceName(IMMDevice* device) {
 	return "";
 }
 
+std::string AudioManagerWindows::getDeviceId(IMMDevice* device) {
+	LPWSTR ppstrId;
+	if (device->GetId(&ppstrId) >= 0) {
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		return converter.to_bytes(ppstrId);
+	}
+	return "";
+}
+
+std::vector<std::pair<std::string, std::string>> AudioManagerWindows::getDevices(IMMDeviceEnumerator * deviceEnumerator, EDataFlow dataFlow) {
+	std::vector<std::pair<std::string, std::string>> retval;
+	IMMDeviceCollection *ppDevices = nullptr;
+	if (deviceEnumerator->EnumAudioEndpoints(dataFlow, DEVICE_STATE_ACTIVE, &ppDevices) >= 0) {
+		UINT count;
+		ppDevices->GetCount(&count);
+		for (UINT i = 0; i < count; ++i) {
+			IMMDevice *device = nullptr;
+			ppDevices->Item(i, &device);
+			if (device) {
+				retval.emplace_back(getDeviceId(device), getDeviceName(device));
+			}
+		}
+		ppDevices->Release();
+	}
+	return retval;
+}
+
 
 HRESULT AudioManagerWindows::QueryInterface(REFIID riid, void ** ppvObject) {
 	if (IID_IUnknown == riid) {
@@ -240,10 +384,12 @@ HRESULT AudioManagerWindows::OnDeviceStateChanged(LPCWSTR, DWORD) {
 }
 
 HRESULT AudioManagerWindows::OnDeviceAdded(LPCWSTR) {
+	controller->onDeviceAdded();
 	return S_OK;
 }
 
 HRESULT AudioManagerWindows::OnDeviceRemoved(LPCWSTR) {
+	controller->onDeviceRemoved();
 	return S_OK;
 }
 
@@ -264,6 +410,22 @@ HRESULT AudioManagerWindows::OnDefaultDeviceChanged(EDataFlow flow, ERole role, 
 					LOG(WARNING) << "Could not find recording device \"" << name << "\".";
 				}
 				controller->onNewRecordingDevice();
+			}
+		}
+	} else if (flow == eRender && role == eMultimedia) {
+		if (audioDeviceEnumerator) {
+			auto device = getDevice(audioDeviceEnumerator, pwstrDefaultDeviceId);
+			if (device != playbackAudioDevice) {
+				if (playbackAudioDevice) {
+					playbackAudioDevice->Release();
+				}
+				playbackAudioDevice = device;
+				if (!playbackAudioDevice) {
+					std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+					std::string name = converter.to_bytes(pwstrDefaultDeviceId);
+					LOG(WARNING) << "Could not find playback device \"" << name << "\".";
+				}
+				controller->onNewPlaybackDevice();
 			}
 		}
 	}

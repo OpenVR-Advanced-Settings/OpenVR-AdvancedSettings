@@ -8,6 +8,8 @@ MyStackViewPage {
     width: 1200
     headerText: "Audio Settings"
 
+    property bool componentCompleted: false
+
 
     MyDialogOkPopup {
         id: audioMessageDialog
@@ -77,17 +79,43 @@ MyStackViewPage {
     }
 
     content: ColumnLayout {
-        spacing: 92
+        spacing: 68
+
+        RowLayout {
+            MyText {
+                text: "Playback Device: "
+                Layout.preferredWidth: 210
+            }
+            MyComboBox {
+                id: audioPlaybackNameCombo
+                Layout.maximumWidth: 900
+                Layout.minimumWidth: 900
+                Layout.preferredWidth: 900
+                onCurrentIndexChanged: {
+                    if (componentCompleted) {
+                        AudioTabController.setPlaybackDeviceIndex(currentIndex)
+                    }
+                }
+            }
+        }
 
         ColumnLayout {
             spacing: 18
             RowLayout {
                 MyText {
                     text: "Mirror Device: "
+                    Layout.preferredWidth: 210
                 }
-                MyText {
-                    id: audioMirrorNameText
-                    text: "<None>"
+                MyComboBox {
+                    id: audioMirrorNameCombo
+                    Layout.maximumWidth: 900
+                    Layout.minimumWidth: 900
+                    Layout.preferredWidth: 900
+                    onCurrentIndexChanged: {
+                        if (componentCompleted) {
+                            AudioTabController.setMirrorDeviceIndex(currentIndex - 1)
+                        }
+                    }
                 }
             }
             RowLayout {
@@ -159,10 +187,18 @@ MyStackViewPage {
             RowLayout {
                 MyText {
                     text: "Microphone: "
+                    Layout.preferredWidth: 210
                 }
-                MyText {
-                    id: audioMicNameText
-                    text: "<None>"
+                MyComboBox {
+                    id: audioMicNameCombo
+                    Layout.maximumWidth: 900
+                    Layout.minimumWidth: 900
+                    Layout.preferredWidth: 900
+                    onCurrentIndexChanged: {
+                        if (componentCompleted) {
+                            AudioTabController.setMicDeviceIndex(currentIndex)
+                        }
+                    }
                 }
             }
             RowLayout {
@@ -338,64 +374,80 @@ MyStackViewPage {
         }
 
         Component.onCompleted: {
-            reloadPttProfiles()
-            if (AudioTabController.mirrorPresent) {
-                audioMirrorVolumeMinusButton.enabled = true
-                audioMirrorVolumeSlider.enabled = true
-                audioMirrorVolumePlusButton.enabled = true
-                audioMirrorMuteToggle.enabled = true
-                audioMirrorNameText.text = AudioTabController.mirrorDevName
-                audioMirrorVolumeSlider.value = AudioTabController.mirrorVolume
-                audioMirrorMuteToggle.checked = AudioTabController.mirrorMuted
-            } else {
+            var devs1 = []
+            var devs2 = ["<None>"]
+            var playbackDeviceCount = AudioTabController.getPlaybackDeviceCount()
+            for (var i = 0; i < playbackDeviceCount; i++) {
+                var name = AudioTabController.getPlaybackDeviceName(i)
+                devs1.push(name)
+                devs2.push(name)
+            }
+            audioPlaybackNameCombo.model = devs1
+            audioPlaybackNameCombo.currentIndex = AudioTabController.playbackDeviceIndex
+            audioMirrorNameCombo.model = devs2
+            if (AudioTabController.mirrorDeviceIndex < 0) {
+                audioMirrorNameCombo.currentIndex = 0
                 audioMirrorVolumeMinusButton.enabled = false
                 audioMirrorVolumeSlider.enabled = false
                 audioMirrorVolumePlusButton.enabled = false
                 audioMirrorMuteToggle.enabled = false
-                audioMirrorNameText.text = "<None>"
-            }
-            if (AudioTabController.micPresent) {
-                audioMicVolumeMinusButton.enabled = true
-                audioMicVolumeSlider.enabled = true
-                audioMicVolumePlusButton.enabled = true
-                audioMicMuteToggle.enabled = true
-                audioMicNameText.text = AudioTabController.micDevName
-                audioMicVolumeSlider.value = AudioTabController.micVolume
-                audioMicMuteToggle.checked = AudioTabController.micMuted
             } else {
+                audioMirrorVolumeMinusButton.enabled = true
+                audioMirrorVolumeSlider.enabled = true
+                audioMirrorVolumePlusButton.enabled = true
+                audioMirrorMuteToggle.enabled = true
+                audioMirrorVolumeSlider.value = AudioTabController.mirrorVolume
+                audioMirrorMuteToggle.checked = AudioTabController.mirrorMuted
+                audioMirrorNameCombo.currentIndex = AudioTabController.mirrorDeviceIndex + 1
+            }
+            var devs3 = []
+            var micDeviceCount = AudioTabController.getRecordingDeviceCount()
+            for (var i = 0; i < micDeviceCount; i++) {
+                var name = AudioTabController.getRecordingDeviceName(i)
+                devs3.push(name)
+            }
+            audioMicNameCombo.model = devs3
+            if (AudioTabController.micDeviceIndex < 0) {
+                audioMicNameCombo.currentIndex = 0
                 audioMicVolumeMinusButton.enabled = false
                 audioMicVolumeSlider.enabled = false
                 audioMicVolumePlusButton.enabled = false
                 audioMicMuteToggle.enabled = false
-                audioMicNameText.text = "<None>"
+            } else {
+                audioMicVolumeMinusButton.enabled = true
+                audioMicVolumeSlider.enabled = true
+                audioMicVolumePlusButton.enabled = true
+                audioMicMuteToggle.enabled = true
+                audioMicVolumeSlider.value = AudioTabController.micVolume
+                audioMicMuteToggle.checked = AudioTabController.micMuted
+                audioMicNameCombo.currentIndex = AudioTabController.micDeviceIndex
             }
+            reloadPttProfiles()
             audioPttEnabledToggle.checked = AudioTabController.pttEnabled
             audioPttLeftControllerToggle.checked = AudioTabController.pttLeftControllerEnabled
             audioPttRightControllerToggle.checked = AudioTabController.pttRightControllerEnabled
             audioPttShowNotificationToggle.checked = AudioTabController.pttShowNotification
+            componentCompleted = true
         }
 
         Connections {
             target: AudioTabController
-            onMirrorPresentChanged: {
-                if (value) {
-                    audioMirrorVolumeMinusButton.enabled = true
-                    audioMirrorVolumeSlider.enabled = true
-                    audioMirrorVolumePlusButton.enabled = true
-                    audioMirrorMuteToggle.enabled = true
-                } else {
+            onPlaybackDeviceIndexChanged: {
+                audioPlaybackNameCombo.currentIndex = index
+            }
+            onMirrorDeviceIndexChanged: {
+                if (index < 0) {
+                    audioMirrorNameCombo.currentIndex = 0
                     audioMirrorVolumeMinusButton.enabled = false
                     audioMirrorVolumeSlider.enabled = false
                     audioMirrorVolumePlusButton.enabled = false
                     audioMirrorMuteToggle.enabled = false
-                    audioMirrorNameText.text = "<None>"
-                }
-            }
-            onMirrorDevNameChanged: {
-                if (AudioTabController.mirrorPresent) {
-                    audioMirrorNameText.text = AudioTabController.mirrorDevName
                 } else {
-                    audioMirrorNameText.text = "<None>"
+                    audioMirrorVolumeMinusButton.enabled = true
+                    audioMirrorVolumeSlider.enabled = true
+                    audioMirrorVolumePlusButton.enabled = true
+                    audioMirrorMuteToggle.enabled = true
+                    audioMirrorNameCombo.currentIndex = index + 1
                 }
             }
             onMirrorVolumeChanged: {
@@ -404,25 +456,19 @@ MyStackViewPage {
             onMirrorMutedChanged: {
                 audioMirrorMuteToggle.checked = AudioTabController.mirrorMuted
             }
-            onMicPresentChanged: {
-                if (value) {
-                    audioMicVolumeMinusButton.enabled = true
-                    audioMicVolumeSlider.enabled = true
-                    audioMicVolumePlusButton.enabled = true
-                    audioMicMuteToggle.enabled = true
-                } else {
+            onMicDeviceIndexChanged: {
+                if (index < 0) {
+                    audioMicNameCombo.currentIndex = 0
                     audioMicVolumeMinusButton.enabled = false
                     audioMicVolumeSlider.enabled = false
                     audioMicVolumePlusButton.enabled = false
                     audioMicMuteToggle.enabled = false
-                    audioMicNameText.text = "<None>"
-                }
-            }
-            onMicDevNameChanged: {
-                if (AudioTabController.micPresent) {
-                    audioMicNameText.text = AudioTabController.micDevName
                 } else {
-                    audioMicNameText.text = "<None>"
+                    audioMicVolumeMinusButton.enabled = true
+                    audioMicVolumeSlider.enabled = true
+                    audioMicVolumePlusButton.enabled = true
+                    audioMicMuteToggle.enabled = true
+                    audioMicNameCombo.currentIndex = index
                 }
             }
             onMicVolumeChanged: {
