@@ -30,7 +30,7 @@ MyStackViewPage {
             MySlider {
                 id: steamvrSupersamplingSlider
                 from: 0.1
-                to: 4
+                to: 2
                 stepSize: 0.1
                 value: 1.0
                 snapMode: Slider.SnapAlways
@@ -99,7 +99,7 @@ MyStackViewPage {
             MySlider {
                 id: steamvrCompositorSupersamplingSlider
                 from: 0.1
-                to: 4
+                to: 2
                 stepSize: 0.1
                 value: 1.0
                 snapMode: Slider.SnapAlways
