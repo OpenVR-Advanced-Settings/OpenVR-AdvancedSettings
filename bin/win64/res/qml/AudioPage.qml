@@ -495,6 +495,58 @@ MyStackViewPage {
             onPttProfilesUpdated: {
                 reloadPttProfiles()
             }
+            onPlaybackDeviceListChanged: {
+                var devs1 = []
+                var devs2 = ["<None>"]
+                var playbackDeviceCount = AudioTabController.getPlaybackDeviceCount()
+                for (var i = 0; i < playbackDeviceCount; i++) {
+                    var name = AudioTabController.getPlaybackDeviceName(i)
+                    devs1.push(name)
+                    devs2.push(name)
+                }
+                audioPlaybackNameCombo.model = devs1
+                audioPlaybackNameCombo.currentIndex = AudioTabController.playbackDeviceIndex
+                audioMirrorNameCombo.model = devs2
+                if (AudioTabController.mirrorDeviceIndex < 0) {
+                    audioMirrorNameCombo.currentIndex = 0
+                    audioMirrorVolumeMinusButton.enabled = false
+                    audioMirrorVolumeSlider.enabled = false
+                    audioMirrorVolumePlusButton.enabled = false
+                    audioMirrorMuteToggle.enabled = false
+                } else {
+                    audioMirrorVolumeMinusButton.enabled = true
+                    audioMirrorVolumeSlider.enabled = true
+                    audioMirrorVolumePlusButton.enabled = true
+                    audioMirrorMuteToggle.enabled = true
+                    audioMirrorVolumeSlider.value = AudioTabController.mirrorVolume
+                    audioMirrorMuteToggle.checked = AudioTabController.mirrorMuted
+                    audioMirrorNameCombo.currentIndex = AudioTabController.mirrorDeviceIndex + 1
+                }
+            }
+            onRecordingDeviceListChanged: {
+                var devs3 = []
+                var micDeviceCount = AudioTabController.getRecordingDeviceCount()
+                for (var i = 0; i < micDeviceCount; i++) {
+                    var name = AudioTabController.getRecordingDeviceName(i)
+                    devs3.push(name)
+                }
+                audioMicNameCombo.model = devs3
+                if (AudioTabController.micDeviceIndex < 0) {
+                    audioMicNameCombo.currentIndex = 0
+                    audioMicVolumeMinusButton.enabled = false
+                    audioMicVolumeSlider.enabled = false
+                    audioMicVolumePlusButton.enabled = false
+                    audioMicMuteToggle.enabled = false
+                } else {
+                    audioMicVolumeMinusButton.enabled = true
+                    audioMicVolumeSlider.enabled = true
+                    audioMicVolumePlusButton.enabled = true
+                    audioMicMuteToggle.enabled = true
+                    audioMicVolumeSlider.value = AudioTabController.micVolume
+                    audioMicMuteToggle.checked = AudioTabController.micMuted
+                    audioMicNameCombo.currentIndex = AudioTabController.micDeviceIndex
+                }
+            }
         }
     }
 

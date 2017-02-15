@@ -192,12 +192,24 @@ namespace advsettings {
 	}
 
 	void AudioTabController::onNewMirrorDevice() {
+		auto devid = audioManager->getMirrorDevId();
+		if (devid.empty()) {
+			m_mirrorDeviceIndex = -1;
+			emit mirrorDeviceIndexChanged(m_mirrorDeviceIndex);
+		} else {
+			findMirrorDeviceIndex(devid);
+		}
 	}
 
-	void AudioTabController::onDeviceAdded() {
-	}
-
-	void AudioTabController::onDeviceRemoved() {
+	void AudioTabController::onDeviceStateChanged() {
+		// I'm too lazy to find out which device has changed, so let's invalidate all device lists
+		m_playbackDevices = audioManager->getPlaybackDevices();
+		m_recordingDevices = audioManager->getRecordingDevices();
+		findPlaybackDeviceIndex(audioManager->getPlaybackDevId(), false);
+		findMirrorDeviceIndex(audioManager->getMirrorDevId(), false);
+		findMicDeviceIndex(audioManager->getMicDevId(), false);
+		emit playbackDeviceListChanged();
+		emit recordingDeviceListChanged();
 	}
 
 	int AudioTabController::getPlaybackDeviceCount() {
@@ -275,7 +287,7 @@ namespace advsettings {
 					audioManager->setMirrorDevice(m_playbackDevices[index].first, notify);
 				}
 			} else if (notify) {
-				emit mirrorDeviceIndexChanged(index);
+				emit mirrorDeviceIndexChanged(m_mirrorDeviceIndex);
 			}
 		}
 	}
@@ -292,7 +304,7 @@ namespace advsettings {
 					audioManager->setMicDevice(m_recordingDevices[index].first, notify);
 				}
 			} else if (notify) {
-				emit micDeviceIndexChanged(index);
+				emit micDeviceIndexChanged(m_recordingDeviceIndex);
 			}
 		}
 	}

@@ -6,6 +6,7 @@
 #include <Functiondiscoverykeys_devpkey.h>
 #include <Endpointvolume.h>
 #include "IPolicyConfig.h"
+#include <mutex>
 
 
 // application namespace
@@ -14,6 +15,7 @@ namespace advsettings {
 class AudioManagerWindows : public AudioManager, IMMNotificationClient {
 friend class AudioNotificationClient;
 private:
+	std::recursive_mutex _mutex;
 	AudioTabController* controller = nullptr;
 	IMMDeviceEnumerator* audioDeviceEnumerator = nullptr;
 	IMMDevice* playbackAudioDevice = nullptr;

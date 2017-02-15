@@ -11,6 +11,7 @@
 namespace advsettings {
 
 AudioManagerWindows::~AudioManagerWindows() {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	audioDeviceEnumerator->UnregisterEndpointNotificationCallback((IMMNotificationClient*)this);
 	if (mirrorAudioEndpointVolume) {
 		mirrorAudioEndpointVolume->Release();
@@ -31,6 +32,7 @@ AudioManagerWindows::~AudioManagerWindows() {
 }
 
 void AudioManagerWindows::init(AudioTabController* controller) {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	audioDeviceEnumerator = getAudioDeviceEnumerator();
 	if (!audioDeviceEnumerator) {
 		throw std::exception("Could not create audio device enumerator");
@@ -54,6 +56,7 @@ void AudioManagerWindows::init(AudioTabController* controller) {
 }
 
 void AudioManagerWindows::setPlaybackDevice(const std::string & id, bool notify) {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (!id.empty()) {
 		auto dev = getDevice(audioDeviceEnumerator, id);
 		if (!dev) {
@@ -74,6 +77,7 @@ void AudioManagerWindows::setPlaybackDevice(const std::string & id, bool notify)
 }
 
 std::string AudioManagerWindows::getPlaybackDevName() {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (playbackAudioDevice) {
 		return getDeviceName(playbackAudioDevice);
 	}
@@ -81,6 +85,7 @@ std::string AudioManagerWindows::getPlaybackDevName() {
 }
 
 std::string AudioManagerWindows::getPlaybackDevId() {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (playbackAudioDevice) {
 		return getDeviceId(playbackAudioDevice);
 	}
@@ -89,8 +94,12 @@ std::string AudioManagerWindows::getPlaybackDevId() {
 
 
 void AudioManagerWindows::setMirrorDevice(const std::string& id, bool notify) {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (id.empty()) {
 		deleteMirrorDevice();
+		if (notify) {
+			controller->onNewMirrorDevice();
+		}
 	} else {
 		auto dev = getDevice(audioDeviceEnumerator, id);
 		if (dev) {
@@ -121,6 +130,7 @@ bool AudioManagerWindows::isMirrorValid() {
 }
 
 std::string AudioManagerWindows::getMirrorDevName() {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (mirrorAudioDevice) {
 		return getDeviceName(mirrorAudioDevice);
 	}
@@ -128,6 +138,7 @@ std::string AudioManagerWindows::getMirrorDevName() {
 }
 
 std::string AudioManagerWindows::getMirrorDevId() {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (mirrorAudioDevice) {
 		return getDeviceId(mirrorAudioDevice);
 	}
@@ -176,6 +187,7 @@ bool AudioManagerWindows::isMicValid() {
 }
 
 void AudioManagerWindows::setMicDevice(const std::string & id, bool notify) {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (!id.empty()) {
 		auto dev = getDevice(audioDeviceEnumerator, id);
 		if (!dev) {
@@ -196,6 +208,7 @@ void AudioManagerWindows::setMicDevice(const std::string & id, bool notify) {
 }
 
 std::string AudioManagerWindows::getMicDevName() {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (micAudioDevice) {
 		return getDeviceName(micAudioDevice);
 	}
@@ -203,6 +216,7 @@ std::string AudioManagerWindows::getMicDevName() {
 }
 
 std::string AudioManagerWindows::getMicDevId() {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (micAudioDevice) {
 		return getDeviceId(micAudioDevice);
 	}
@@ -380,20 +394,25 @@ ULONG AudioManagerWindows::Release(void) {
 }
 
 HRESULT AudioManagerWindows::OnDeviceStateChanged(LPCWSTR, DWORD) {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
+	controller->onDeviceStateChanged();
 	return S_OK;
 }
 
 HRESULT AudioManagerWindows::OnDeviceAdded(LPCWSTR) {
-	controller->onDeviceAdded();
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
+	controller->onDeviceStateChanged();
 	return S_OK;
 }
 
 HRESULT AudioManagerWindows::OnDeviceRemoved(LPCWSTR) {
-	controller->onDeviceRemoved();
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
+	controller->onDeviceStateChanged();
 	return S_OK;
 }
 
 HRESULT AudioManagerWindows::OnDefaultDeviceChanged(EDataFlow flow, ERole role, LPCWSTR pwstrDefaultDeviceId) {
+	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	if (flow == eCapture && role == eMultimedia) {
 		if (audioDeviceEnumerator) {
 			auto device = getDevice(audioDeviceEnumerator, pwstrDefaultDeviceId);

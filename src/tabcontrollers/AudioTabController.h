@@ -36,14 +36,10 @@ namespace advsettings {
 		int m_playbackDeviceIndex = -1;
 
 		int m_mirrorDeviceIndex = -1;
-		//bool m_mirrorPresent = false;
-		//QString m_mirrorDevName = "<None>";
 		float m_mirrorVolume = 1.0;
 		bool m_mirrorMuted = false;
 
 		int m_recordingDeviceIndex = -1;
-		//bool m_micPresent = false;
-		//QString m_micDevName = "<None>";
 		float m_micVolume = 1.0;
 		bool m_micMuted = false;
 
@@ -91,8 +87,7 @@ namespace advsettings {
 		void onNewRecordingDevice();
 		void onNewPlaybackDevice();
 		void onNewMirrorDevice();
-		void onDeviceAdded();
-		void onDeviceRemoved();
+		void onDeviceStateChanged();
 
 	public slots:
 		void setMirrorVolume(float value, bool notify = true);
@@ -116,6 +111,8 @@ namespace advsettings {
 		void micVolumeChanged(float value);
 		void micMutedChanged(bool value);
 
+		void playbackDeviceListChanged();
+		void recordingDeviceListChanged();
 	};
 
 } // namespace advsettings
