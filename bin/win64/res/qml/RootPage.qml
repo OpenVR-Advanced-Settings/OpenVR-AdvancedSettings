@@ -432,7 +432,7 @@ MyStackViewPage {
    Connections {
        target: SettingsTabController
        onForceRevivePageChanged: {
-           reviveButton.enabled = SettingsTabController.forceRevivePage
+           reviveButton.visible = SettingsTabController.forceRevivePage ? true : ReviveTabController.isOverlayInstalled
        }
    }
 

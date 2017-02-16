@@ -631,10 +631,12 @@ namespace advsettings {
 			LOG(WARNING) << "Could not remove \"revive::" << key_toggleGrip << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 		}
 
-		vr::VRSettings()->RemoveKeyInSection(section_revive, key_toggleDelay, &vrSettingsError);
+		// This setting has no default value listed in Revive's default.vrsettings yet.
+		/*vr::VRSettings()->RemoveKeyInSection(section_revive, key_toggleDelay, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
 			LOG(WARNING) << "Could not remove \"revive::" << key_toggleDelay << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
-		}
+		}*/
+		setToggleDelay(0.5f);
 
 		vr::VRSettings()->RemoveKeyInSection(section_revive, key_thumbDeadzone, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {

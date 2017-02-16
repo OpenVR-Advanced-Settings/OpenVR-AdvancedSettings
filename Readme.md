@@ -16,6 +16,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 - Temporarily move and rotate the playspace.
 - Floor height fix.
 - Displays several performance statistics and other statistics (e.g. headset rotations).
+- Select the playback/mirror/recording audio device
 - Mute/unmute and set volume of audio mirror device.
 - Mute/unmute and set volume of microphone device.
 - Implements push-to-talk and allows to configure push-to-talk profiles.
@@ -23,6 +24,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 - Revive settings support (Requires [Revive 1.0.4+](https://github.com/LibreVR/Revive) for full functionality).
 - VR Keyboard Input Utilities
 - Simple Alarm Clock
+- Player height adjust toggle (Credits to mklim)
 
 # Usage
 
@@ -97,8 +99,9 @@ Allows you to fix the height of your floor. Just place one controller on your fl
 
 ![Audio Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/AudioPage.png)
 
-- **Mirror Device**: Allows to set the volume of the audio mirror device and to mute/unmute it.
-- **Microphone**: Allows to set the volume of the microphone device and to mute/unmute it.
+- **Playback Device**: Allows to select the playback device.
+- **Mirror Device**: Allows to select the mirror device, set its volume and to mute/unmute it.
+- **Microphone**: Allows to select the microphone device, set its volume and to mute/unmute it.
 - **Push-to-Talk**: Enable/disable push-to-talk. When push-to-talk is activated the microphone gets muted unless one of the configured buttons is pressed on one of the configured controllers.
 - **Left Controller**: Configure the left controller for push-to-talk.
 - **Right Controller**: Configure the right controller for push-to-talk.
@@ -133,6 +136,14 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 
 - **Alarm Clock:** Just a simple alarm clock so you don't miss important appointments. VR can sure mess up perception of time. Does not work in desktop mode.
 
+- **Steam Desktop Overlay Width:** Allows to increase the size of the Steam desktop overlay. Useful for multi-monitor setups.
+
+## - Accessibility Page:
+
+![Accessibility Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/AccessibilityPage.png)
+
+- **Adjust Player Height:** Offsets the player height to allows short or wheelchair-bound players to fully interact with height-limited applications by both boosting their height and being able to touch the in-game floor when necessary by pressing a configurable motion controller button.
+
 ## - Statistics Page:
 
 ![Statistics Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/StatisticsPage.png)
@@ -141,9 +152,11 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 - **HMD Rotations**: Shows the number of rotations around the y-axis (Useful for untangling the cord).
 - **Left Controller Max Speed**: Shows the max speed of the left controller.
 - **Right Controller Max Speed**: Shows the max speed of the right controller.
+- **Presented Frames**: Number of frames presented to the hmd in the currently running application.
 - **Dropped Frames**: Number of frames dropped in the currently running application.
 - **Reprojected Frames**: Number of frames reprojected in the currently running application.
-- **Reprojected Frames**: Number of times the currently running application timed out.
+- **Timed Out**: Number of times the currently running application timed out.
+- **Reprojection Ratio**: Ratio of presented frames to reprojected frames.
 
 ## - Settings Page:
 
@@ -151,6 +164,11 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 
 - **Autostart:** Allows you to enable/disable auto start.
 - **Force Revive Page:** Force the Revive page button on the root page to be visible.
+
+# How to Compile
+
+- Use the Qt addon for Visual Studio to create a Visual Studio project from the .pro file.
+- Execute bin/windeployqt.bat which copies all Qt files necessary for execution into the output directory.
 
 # Notes:
 
