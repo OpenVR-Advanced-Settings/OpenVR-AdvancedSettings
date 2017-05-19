@@ -296,7 +296,7 @@ IPolicyConfig * AudioManagerWindows::getPolicyConfig() {
 
 IMMDevice* AudioManagerWindows::getDefaultRecordingDevice(IMMDeviceEnumerator* deviceEnumerator) {
 	IMMDevice* pDevice;
-	if (deviceEnumerator->GetDefaultAudioEndpoint(eCapture, eCommunications, &pDevice) < 0) {
+	if (deviceEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &pDevice) < 0) {
 		return nullptr;
 	}
 	return pDevice;
@@ -304,7 +304,7 @@ IMMDevice* AudioManagerWindows::getDefaultRecordingDevice(IMMDeviceEnumerator* d
 
 IMMDevice * AudioManagerWindows::getDefaultPlaybackDevice(IMMDeviceEnumerator * deviceEnumerator) {
 	IMMDevice* pDevice;
-	if (deviceEnumerator->GetDefaultAudioEndpoint(eRender, eCommunications, &pDevice) < 0) {
+	if (deviceEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &pDevice) < 0) {
 		return nullptr;
 	}
 	return pDevice;
