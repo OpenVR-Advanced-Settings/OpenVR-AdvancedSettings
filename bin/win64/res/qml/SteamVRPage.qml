@@ -167,7 +167,7 @@ MyStackViewPage {
 
         MyToggleButton {
             id: steamvrForceReprojectionToggle
-            text: "Enable Always-on Reprojection*"
+            text: "Enable Always-on Reprojection"
             onCheckedChanged: {
                 SteamVRTabController.setForceReprojection(this.checked, false)
             }
