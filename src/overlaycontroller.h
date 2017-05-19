@@ -45,7 +45,7 @@ class OverlayController : public QObject {
 public:
 	static constexpr const char* applicationKey = "matzman666.AdvancedSettings";
 	static constexpr const char* applicationName = "Advanced Settings";
-	static constexpr const char* applicationVersionString = "v2.3";
+	static constexpr const char* applicationVersionString = "v2.4";
 
 private:
 	vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;

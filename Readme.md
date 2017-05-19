@@ -60,11 +60,11 @@ Executing startdesktopmode.bat from the application folder shows a window on the
 
 ![SteamVR Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/SteamVRPage.png)
 
-- **Application Supersampling**: Supersampling setting for OpenVR applications/games (Requires restart).
-- **Compositor Supersampling**: Supersampling setting for the OpenVR compositor (Requires restart).
+- **Application Supersampling**: Supersampling setting for OpenVR applications/games. Application supersampling [now behaves linearly](https://steamcommunity.com/games/250820/announcements/detail/1256913672017664045) where 2.0 means twice the number of pixel.
+- **Compositor Render Target Multiplier**: Supersampling setting for the OpenVR compositor (Requires restart). Compositor supersampling still behaves the old way where 2.0 means four-times the number of pixel.
 - **Allow Asynchronous Reprojection**: Enable/disable asynchronous reprojection.
 - **Allow Interleaved Reprojection**: Enable/disable interleaved reprojection.
-- **Force Reprojection**: Enable/disable forced reprojection (Requires restart).
+- **Force Reprojection**: Enable/disable forced reprojection.
 - **Restart SteamVR**: Restart SteamVR.
 
 ## - Chaperone Page:
@@ -102,6 +102,7 @@ Allows you to fix the height of your floor. Just place one controller on your fl
 - **Playback Device**: Allows to select the playback device.
 - **Mirror Device**: Allows to select the mirror device, set its volume and to mute/unmute it.
 - **Microphone**: Allows to select the microphone device, set its volume and to mute/unmute it.
+- **Proximity Sensor Mutes/Unmutes Microphone**: Allows the proximity sensor to mute the microphone when the user is not wearing the HMD, and to unmute it when the user is wearing the HMD.
 - **Push-to-Talk**: Enable/disable push-to-talk. When push-to-talk is activated the microphone gets muted unless one of the configured buttons is pressed on one of the configured controllers.
 - **Left Controller**: Configure the left controller for push-to-talk.
 - **Right Controller**: Configure the right controller for push-to-talk.
