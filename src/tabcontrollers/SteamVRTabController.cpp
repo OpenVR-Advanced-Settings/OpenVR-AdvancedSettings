@@ -20,9 +20,9 @@ void SteamVRTabController::initStage2(OverlayController * parent, QQuickWindow *
 void SteamVRTabController::eventLoopTick() {
 	if (settingsUpdateCounter >= 50) {
 		vr::EVRSettingsError vrSettingsError;
-		auto ss = vr::VRSettings()->GetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, &vrSettingsError);
+		auto ss = vr::VRSettings()->GetFloat(vr::k_pch_SteamVR_Section, vrsettings_steamvr_supersampleScale, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
-			LOG(WARNING) << "Could not read \"" << vr::k_pch_SteamVR_RenderTargetMultiplier_Float << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+			LOG(WARNING) << "Could not read \"" << vrsettings_steamvr_supersampleScale << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 			if (m_superSampling != 1.0) {
 				LOG(DEBUG) << "OpenVR returns an error and we have a custom supersampling value: " << m_superSampling;
 				setSuperSampling(1.0);
@@ -76,7 +76,7 @@ void SteamVRTabController::setSuperSampling(float value, bool notify) {
 	if (override || m_superSampling != value) {
 		LOG(DEBUG) << "Supersampling value changed: " << m_superSampling << " => " << value;
 		m_superSampling = value;
-		vr::VRSettings()->SetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, m_superSampling);
+		vr::VRSettings()->SetFloat(vr::k_pch_SteamVR_Section, vrsettings_steamvr_supersampleScale, m_superSampling);
 		vr::VRSettings()->Sync();
 		if (notify) {
 			emit superSamplingChanged(m_superSampling);
@@ -167,9 +167,9 @@ void SteamVRTabController::setForceReprojection(bool value, bool notify) {
 void SteamVRTabController::reset() {
 	vr::EVRSettingsError vrSettingsError;
 
-	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RenderTargetMultiplier_Float, &vrSettingsError);
+	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_SteamVR_Section, vrsettings_steamvr_supersampleScale, &vrSettingsError);
 	if (vrSettingsError != vr::VRSettingsError_None) {
-		LOG(WARNING) << "Could not remove \"" << vr::k_pch_SteamVR_RenderTargetMultiplier_Float << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		LOG(WARNING) << "Could not remove \"" << vrsettings_steamvr_supersampleScale << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 	}
 
 	setCompositorSuperSampling(1.0f); // Is not in default.vrsettings yet

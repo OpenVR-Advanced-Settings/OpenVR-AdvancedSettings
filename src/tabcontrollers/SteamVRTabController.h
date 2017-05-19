@@ -7,6 +7,7 @@
 //static const char* vrsettings_steamvr_allowAsyncReprojection = "allowAsyncReprojection";
 //static const char* vrsettings_steamvr_allowInterleavedReprojection = "allowInterleavedReprojection";
 static const char* vrsettings_compositor_category = "compositor";
+static const char* vrsettings_steamvr_supersampleScale = "supersampleScale";
 
 
 class QQuickWindow;

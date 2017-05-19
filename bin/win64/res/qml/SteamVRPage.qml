@@ -14,7 +14,7 @@ MyStackViewPage {
             spacing: 16
 
             MyText {
-                text: "Application Supersampling*:"
+                text: "Application Supersampling:"
                 Layout.preferredWidth: 350
                 Layout.rightMargin: 12
             }
@@ -30,7 +30,7 @@ MyStackViewPage {
             MySlider {
                 id: steamvrSupersamplingSlider
                 from: 0.1
-                to: 2
+                to: 5.0
                 stepSize: 0.1
                 value: 1.0
                 snapMode: Slider.SnapAlways
@@ -83,8 +83,8 @@ MyStackViewPage {
             spacing: 16
 
             MyText {
-                text: "Compositor Supersampling*:"
-                Layout.preferredWidth: 350
+                text: "Compositor Render Target Multiplier*:"
+                Layout.preferredWidth: 450
                 Layout.rightMargin: 12
             }
 
