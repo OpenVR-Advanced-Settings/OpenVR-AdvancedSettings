@@ -15,9 +15,9 @@ QtObject {
 		}
 	}
 	property SoundEffect activationSound: SoundEffect {
-		source: vrRuntimePath + "tools/content/panorama/sounds/activation.wav"
+		source: vrRuntimePath + "content/panorama/sounds/activation.wav"
 	}
 	property SoundEffect focusChangedSound: SoundEffect {
-		source: vrRuntimePath + "tools/content/panorama/sounds/focus_change.wav"
+		source: vrRuntimePath + "content/panorama/sounds/focus_change.wav"
 	}
 }
