@@ -30,6 +30,7 @@ namespace advsettings {
 		m_micMuted = audioManager->getMicMuted();
 		reloadPttProfiles();
 		reloadPttConfig();
+		reloadAudioSettings();
 		eventLoopTick();
 	}
 
@@ -59,6 +60,22 @@ namespace advsettings {
 		}
 	}
 
+	void AudioTabController::reloadAudioSettings() {
+		std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup(getSettingsName());
+		setMicProximitySensorCanMute(settings->value("micProximitySensorCanMute", false).toBool(), false);
+		settings->endGroup();
+	}
+
+	void AudioTabController::saveAudioSettings() {
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup(getSettingsName());
+		settings->setValue("micProximitySensorCanMute", micProximitySensorCanMute());
+		settings->endGroup();
+		settings->sync();
+	}
+
 
 	float AudioTabController::mirrorVolume() const {
 		return m_mirrorVolume;
@@ -79,11 +96,33 @@ namespace advsettings {
 		return m_micMuted;
 	}
 
+	bool AudioTabController::micProximitySensorCanMute() const {
+		return m_micProximitySensorCanMute;
+	}
+
 	void AudioTabController::eventLoopTick() {
 		if (!eventLoopMutex.try_lock()) {
 			return;
 		}
 		if (settingsUpdateCounter >= 50) {
+			if (m_micProximitySensorCanMute) {
+				vr::VRControllerState_t controllerState;
+				if (vr::VRSystem()->GetControllerState(vr::k_unTrackedDeviceIndex_Hmd, &controllerState, sizeof(vr::VRControllerState_t))) {
+					if ((controllerState.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor)) == 0) {
+						if (!m_micMuted) {
+							setMicMuted(true);
+						}
+					} else {
+						if (m_micMuted) {
+							setMicMuted(false);
+						}
+					}
+				} else {
+					if (!parent->isDashboardVisible()) {
+						LOG(ERROR) << "Could not read proximity sensor!";
+					}
+				}
+			}
 			vr::EVRSettingsError vrSettingsError;
 			char mirrorDeviceId[1024];
 			vr::VRSettings()->GetString(vr::k_pch_audio_Section, vr::k_pch_audio_OnPlaybackMirrorDevice_String, mirrorDeviceId, 1024, &vrSettingsError);
@@ -179,6 +218,17 @@ namespace advsettings {
 			}
 			if (notify) {
 				emit micMutedChanged(value);
+			}
+		}
+	}
+
+	void AudioTabController::setMicProximitySensorCanMute(bool value, bool notify) {
+		std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
+		if (value != m_micProximitySensorCanMute) {
+			m_micProximitySensorCanMute = value;
+			saveAudioSettings();
+			if (notify) {
+				emit micProximitySensorCanMuteChanged(value);
 			}
 		}
 	}

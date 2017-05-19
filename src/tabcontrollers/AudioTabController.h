@@ -26,6 +26,7 @@ namespace advsettings {
 		//Q_PROPERTY(QString micDevName READ micDevName NOTIFY micDevNameChanged)
 		Q_PROPERTY(float micVolume READ micVolume WRITE setMicVolume NOTIFY micVolumeChanged)
 		Q_PROPERTY(bool micMuted READ micMuted WRITE setMicMuted NOTIFY micMutedChanged)
+		Q_PROPERTY(bool micProximitySensorCanMute READ micProximitySensorCanMute WRITE setMicProximitySensorCanMute NOTIFY micProximitySensorCanMuteChanged)
 
 	private:
 		OverlayController* parent;
@@ -42,6 +43,7 @@ namespace advsettings {
 		int m_recordingDeviceIndex = -1;
 		float m_micVolume = 1.0;
 		bool m_micMuted = false;
+		bool m_micProximitySensorCanMute = false;
 
 		unsigned settingsUpdateCounter = 0;
 
@@ -66,6 +68,9 @@ namespace advsettings {
 		void initStage1();
 		void initStage2(OverlayController* parent, QQuickWindow* widget);
 
+		void reloadAudioSettings();
+		void saveAudioSettings();
+
 		void eventLoopTick();
 
 		int playbackDeviceIndex() const;
@@ -77,6 +82,7 @@ namespace advsettings {
 		int micDeviceIndex() const;
 		float micVolume() const;
 		bool micMuted() const;
+		bool micProximitySensorCanMute() const;
 
 		Q_INVOKABLE int getPlaybackDeviceCount();
 		Q_INVOKABLE QString getPlaybackDeviceName(int index);
@@ -95,6 +101,7 @@ namespace advsettings {
 
 		void setMicVolume(float value, bool notify = true);
 		void setMicMuted(bool value, bool notify = true);
+		void setMicProximitySensorCanMute(bool value, bool notify = true);
 
 		void setPlaybackDeviceIndex(int value, bool notify = true);
 		void setMirrorDeviceIndex(int value, bool notify = true);
@@ -110,6 +117,7 @@ namespace advsettings {
 		void micDeviceIndexChanged(int index);
 		void micVolumeChanged(float value);
 		void micMutedChanged(bool value);
+		void micProximitySensorCanMuteChanged(bool value);
 
 		void playbackDeviceListChanged();
 		void recordingDeviceListChanged();

@@ -79,18 +79,18 @@ MyStackViewPage {
     }
 
     content: ColumnLayout {
-        spacing: 68
+        spacing: 24
 
         RowLayout {
             MyText {
                 text: "Playback Device: "
-                Layout.preferredWidth: 210
+                Layout.preferredWidth: 260
             }
             MyComboBox {
                 id: audioPlaybackNameCombo
-                Layout.maximumWidth: 900
-                Layout.minimumWidth: 900
-                Layout.preferredWidth: 900
+                Layout.maximumWidth: 850
+                Layout.minimumWidth: 850
+                Layout.preferredWidth: 850
                 onCurrentIndexChanged: {
                     if (componentCompleted) {
                         AudioTabController.setPlaybackDeviceIndex(currentIndex)
@@ -104,13 +104,13 @@ MyStackViewPage {
             RowLayout {
                 MyText {
                     text: "Mirror Device: "
-                    Layout.preferredWidth: 210
+                    Layout.preferredWidth: 260
                 }
                 MyComboBox {
                     id: audioMirrorNameCombo
-                    Layout.maximumWidth: 900
-                    Layout.minimumWidth: 900
-                    Layout.preferredWidth: 900
+                    Layout.maximumWidth: 850
+                    Layout.minimumWidth: 850
+                    Layout.preferredWidth: 850
                     onCurrentIndexChanged: {
                         if (componentCompleted) {
                             AudioTabController.setMirrorDeviceIndex(currentIndex - 1)
@@ -120,8 +120,8 @@ MyStackViewPage {
             }
             RowLayout {
                 MyText {
-                    text: "Volume:"
-                    Layout.preferredWidth: 120
+                    text: "Mirror Volume:"
+                    Layout.preferredWidth: 260
                 }
 
                 MyPushButton2 {
@@ -187,13 +187,13 @@ MyStackViewPage {
             RowLayout {
                 MyText {
                     text: "Microphone: "
-                    Layout.preferredWidth: 210
+                    Layout.preferredWidth: 260
                 }
                 MyComboBox {
                     id: audioMicNameCombo
-                    Layout.maximumWidth: 900
-                    Layout.minimumWidth: 900
-                    Layout.preferredWidth: 900
+                    Layout.maximumWidth: 850
+                    Layout.minimumWidth: 850
+                    Layout.preferredWidth: 850
                     onCurrentIndexChanged: {
                         if (componentCompleted) {
                             AudioTabController.setMicDeviceIndex(currentIndex)
@@ -203,8 +203,8 @@ MyStackViewPage {
             }
             RowLayout {
                 MyText {
-                    text: "Volume:"
-                    Layout.preferredWidth: 120
+                    text: "Microphone Volume:"
+                    Layout.preferredWidth: 260
                 }
 
                 MyPushButton2 {
@@ -261,6 +261,14 @@ MyStackViewPage {
                     onCheckedChanged: {
                         AudioTabController.setMicMuted(checked)
                     }
+                }
+            }
+            MyToggleButton {
+                id: audioMuteProximitySensorToggle
+                Layout.preferredWidth: 600
+                text: "Proximity Sensor Mutes/Unmutes Microphone"
+                onClicked: {
+                    AudioTabController.setMicProximitySensorCanMute(checked, false)
                 }
             }
             RowLayout {
@@ -413,13 +421,16 @@ MyStackViewPage {
                 audioMicVolumeSlider.enabled = false
                 audioMicVolumePlusButton.enabled = false
                 audioMicMuteToggle.enabled = false
+                audioMuteProximitySensorToggle.enabled = false
             } else {
                 audioMicVolumeMinusButton.enabled = true
                 audioMicVolumeSlider.enabled = true
                 audioMicVolumePlusButton.enabled = true
                 audioMicMuteToggle.enabled = true
+                audioMuteProximitySensorToggle.enabled = true
                 audioMicVolumeSlider.value = AudioTabController.micVolume
                 audioMicMuteToggle.checked = AudioTabController.micMuted
+                audioMuteProximitySensorToggle.checked = AudioTabController.micProximitySensorCanMute
                 audioMicNameCombo.currentIndex = AudioTabController.micDeviceIndex
             }
             reloadPttProfiles()
@@ -476,6 +487,9 @@ MyStackViewPage {
             }
             onMicMutedChanged: {
                 audioMicMuteToggle.checked = AudioTabController.micMuted
+            }
+            onMicProximitySensorCanMuteChanged: {
+                audioMuteProximitySensorToggle.checked = AudioTabController.micProximitySensorCanMute
             }
             onPttEnabledChanged: {
                 audioPttEnabledToggle.checked = AudioTabController.pttEnabled
