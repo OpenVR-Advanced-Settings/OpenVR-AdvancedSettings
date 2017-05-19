@@ -120,12 +120,12 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 - **Grip Button mode**: Allows to set the grip button mode. (ToggleGrip setting in the vrsettings file)
 - **Deadzone**: Allows to modify the simulated thumbsticks' deadzone. (ThumbDeadzone setting in the vrsettings file)
 - **Sensitivity**: Allows to modify the simulated thumbsticks' sensitivity. (ThumbSensitivity setting the vrsettings file)
-- **Yaw**: Allows to modify the simulated thumbsticks' yaw. (TouchYaw setting the vrsettings file)
-- **Pitch**: Allows to modify the simulated thumbsticks' pitch. (TouchPitch setting the vrsettings file)
-- **Roll**: Allows to modify the simulated thumbsticks' roll. (TouchRoll setting the vrsettings file)
-- **X**: Allows to modify the simulated thumbsticks' x-offset. (TouchX setting the vrsettings file)
-- **Y**: Allows to modify the simulated thumbsticks' y-offset. (TouchY setting the vrsettings file)
-- **Z**: Allows to modify the simulated thumbsticks' z-offset. (TouchZ setting the vrsettings file)
+- **Yaw**: Allows to modify the touch controllers yaw orientation. (TouchYaw setting the vrsettings file)
+- **Pitch**: Allows to modify the touch controllers pitch orientation. (TouchPitch setting the vrsettings file)
+- **Roll**: Allows to modify the touch controllers roll orientation. (TouchRoll setting the vrsettings file)
+- **X**: Allows to modify the touch controllers x-offset. (TouchX setting the vrsettings file)
+- **Y**: Allows to modify the touch controllers y-offset. (TouchY setting the vrsettings file)
+- **Z**: Allows to modify the touch controllers z-offset. (TouchZ setting the vrsettings file)
 - **Controller Profile**: Allows to apply/define/delete controller profiles that save the controller settings (grip button mode, deadzone, sensitivity, pitch/yaw/roll and x/y/z-offsets).
 
 ## - Utilities Page:
