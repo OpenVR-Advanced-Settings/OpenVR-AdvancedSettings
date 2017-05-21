@@ -40,7 +40,6 @@ MyStackViewPage {
                     steamvrSupersamplingText.text = val.toFixed(1)
                 }
                 onValueChanged: {
-                    console.debug("Supersampling Slider: valueChanged(", this.value, ")")
                     SteamVRTabController.setSuperSampling(this.value.toFixed(1), false)
                 }
             }
@@ -66,7 +65,6 @@ MyStackViewPage {
                         if (val < 0.1) {
                             val = 0.1
                         }
-                        console.debug("Supersampling TextField: valueChanged(", val, ")")
                         var v = val.toFixed(1)
                         if (v <= steamvrSupersamplingSlider.to) {
                             steamvrSupersamplingSlider.value = v
@@ -109,7 +107,6 @@ MyStackViewPage {
                     steamvrCompositorSupersamplingText.text = val.toFixed(1)
                 }
                 onValueChanged: {
-                    console.debug("Compositor Supersampling Slider: valueChanged(", this.value, ")")
                     SteamVRTabController.setCompositorSuperSampling(this.value.toFixed(1), false)
                 }
             }
@@ -136,7 +133,6 @@ MyStackViewPage {
                         if (val < 0.1) {
                             val = 0.1
                         }
-                        console.debug("Compositor Supersampling TextField: valueChanged(", val, ")")
                         var v = val.toFixed(1)
                         if (v <= steamvrCompositorSupersamplingSlider.to) {
                             steamvrCompositorSupersamplingSlider.value = v
@@ -146,6 +142,14 @@ MyStackViewPage {
                     }
                     text = SteamVRTabController.compositorSuperSampling.toFixed(1)
                 }
+            }
+        }
+
+        MyToggleButton {
+            id: steamvrAllowSupersampleFilteringToggle
+            text: "Enable Advanced Supersample Filtering"
+            onCheckedChanged: {
+                SteamVRTabController.setAllowSupersampleFiltering(this.checked, false)
             }
         }
 
@@ -217,6 +221,7 @@ MyStackViewPage {
                 steamvrCompositorSupersamplingSlider.value = s2
             }
             steamvrCompositorSupersamplingText.text = s2
+            steamvrAllowSupersampleFilteringToggle.checked = SteamVRTabController.allowSupersampleFiltering
             steamvrAllowInterleavedReprojectionToggle.checked = SteamVRTabController.allowInterleavedReprojection
             steamvrAllowAsyncReprojectionToggle.checked = SteamVRTabController.allowAsyncReprojection
             steamvrForceReprojectionToggle.checked = SteamVRTabController.forceReprojection
@@ -237,6 +242,9 @@ MyStackViewPage {
                     steamvrCompositorSupersamplingSlider.value = s2
                 }
                 steamvrCompositorSupersamplingText.text = s2
+            }
+            onAllowSupersampleFilteringChanged: {
+                steamvrAllowSupersampleFilteringToggle.checked = SteamVRTabController.allowSupersampleFiltering
             }
             onAllowInterleavedReprojectionChanged: {
                 steamvrAllowInterleavedReprojectionToggle.checked = SteamVRTabController.allowInterleavedReprojection

@@ -62,10 +62,11 @@ Executing startdesktopmode.bat from the application folder shows a window on the
 
 - **Application Supersampling**: Supersampling setting for OpenVR applications/games. Application supersampling [now behaves linearly](https://steamcommunity.com/games/250820/announcements/detail/1256913672017664045) where 2.0 means twice the number of pixel.
 - **Compositor Render Target Multiplier**: Supersampling setting for the OpenVR compositor (Requires restart). Compositor supersampling still behaves the old way where 2.0 means four-times the number of pixel.
+- **Enable Advanced Supersample Filtering**: Einable/disable image filtering on supersampled renderings.
 - **Allow Asynchronous Reprojection**: Enable/disable asynchronous reprojection.
 - **Allow Interleaved Reprojection**: Enable/disable interleaved reprojection.
 - **Force Reprojection**: Enable/disable forced reprojection.
-- **Restart SteamVR**: Restart SteamVR.
+- **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
 
 ## - Chaperone Page:
 

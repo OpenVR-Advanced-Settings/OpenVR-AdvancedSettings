@@ -20,4 +20,5 @@ taskkill /im vrdashboard.exe /f >nul 2>nul
 taskkill /im vrserver.exe /f >nul 2>nul
 
 REM Start vrmonitor.exe
-start "" "%steamVRPath%\tools\bin\win32\vrmonitor.exe"
+REM start "" "%steamVRPath%\bin\win32\vrmonitor.exe"
+start "" "%steamVRPath%\bin\win32\vrstartup.exe"

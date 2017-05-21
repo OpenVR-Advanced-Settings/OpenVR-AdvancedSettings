@@ -59,6 +59,11 @@ void SteamVRTabController::eventLoopTick() {
 			LOG(WARNING) << "Could not read \"" << vr::k_pch_SteamVR_ForceReprojection_Bool << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 		}
 		setForceReprojection(fr);
+		auto sf = vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowSupersampleFiltering, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not read \"" << vrsettings_steamvr_allowSupersampleFiltering << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+		setAllowSupersampleFiltering(sf);
 		settingsUpdateCounter = 0;
 	} else {
 		settingsUpdateCounter++;
@@ -164,6 +169,25 @@ void SteamVRTabController::setForceReprojection(bool value, bool notify) {
 }
 
 
+bool SteamVRTabController::allowSupersampleFiltering() const {
+	return m_allowSupersampleFiltering;
+}
+
+
+void SteamVRTabController::setAllowSupersampleFiltering(bool value, bool notify) {
+	if (m_allowSupersampleFiltering != value) {
+		m_allowSupersampleFiltering = value;
+		vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowSupersampleFiltering, m_allowSupersampleFiltering);
+		vr::VRSettings()->Sync();
+		if (notify) {
+			emit allowSupersampleFilteringChanged(m_allowSupersampleFiltering);
+		}
+	}
+}
+
+
+
+
 void SteamVRTabController::reset() {
 	vr::EVRSettingsError vrSettingsError;
 
@@ -191,6 +215,11 @@ void SteamVRTabController::reset() {
 	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_ForceReprojection_Bool, &vrSettingsError);
 	if (vrSettingsError != vr::VRSettingsError_None) {
 		LOG(WARNING) << "Could not remove \"" << vr::k_pch_SteamVR_ForceReprojection_Bool << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+	}
+
+	vr::VRSettings()->RemoveKeyInSection(vr::k_pch_SteamVR_Section, vrsettings_steamvr_allowSupersampleFiltering, &vrSettingsError);
+	if (vrSettingsError != vr::VRSettingsError_None) {
+		LOG(WARNING) << "Could not remove \"" << vrsettings_steamvr_allowSupersampleFiltering << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 	}
 
 	vr::VRSettings()->Sync();
