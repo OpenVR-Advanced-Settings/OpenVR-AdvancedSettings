@@ -9,6 +9,7 @@ namespace advsettings {
 	const char* section_revive = "revive";
 	const char* key_pixelsPerDisplayPixel = "pixelsPerDisplayPixel";
 	const char* key_toggleGrip = "ToggleGrip";
+	const char* key_triggerAsGrip = "TriggerAsGrip";
 	const char* key_toggleDelay = "ToggleDelay";
 	const char* key_thumbDeadzone = "ThumbDeadzone";
 	const char* key_thumbSensitivity = "ThumbSensitivity";
@@ -48,6 +49,13 @@ namespace advsettings {
 				LOG(WARNING) << "Could not read \"revive::" << key_toggleGrip << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 			} else {
 				m_gripButtonMode = valuei;
+			}
+
+			bool valueb = vr::VRSettings()->GetBool(section_revive, key_triggerAsGrip, &vrSettingsError);
+			if (vrSettingsError != vr::VRSettingsError_None) {
+				LOG(WARNING) << "Could not read \"revive::" << key_triggerAsGrip << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+			} else {
+				m_triggerAsGrip = valueb;
 			}
 
 			valuef = vr::VRSettings()->GetFloat(section_revive, key_toggleDelay, &vrSettingsError);
@@ -185,6 +193,11 @@ namespace advsettings {
 					setGripButtonMode(valuei);
 				}
 
+				bool valueb = vr::VRSettings()->GetBool(section_revive, key_triggerAsGrip, &vrSettingsError);
+				if (vrSettingsError == vr::VRSettingsError_None) {
+					setTriggerAsGrip(valueb);
+				}
+
 				valuef = vr::VRSettings()->GetFloat(section_revive, key_toggleDelay, &vrSettingsError);
 				if (vrSettingsError == vr::VRSettingsError_None) {
 					setToggleDelay(valuef);
@@ -276,6 +289,10 @@ namespace advsettings {
 		return m_gripButtonMode;
 	}
 
+	bool ReviveTabController::triggerAsGrip() const {
+		return m_triggerAsGrip;
+	}
+
 	float ReviveTabController::toggleDelay() const {
 		return m_toggleDelay;
 	}
@@ -351,6 +368,21 @@ namespace advsettings {
 			vr::VRSettings()->Sync();
 			if (notify) {
 				emit gripButtonModeChanged(m_gripButtonMode);
+			}
+		}
+	}
+
+	void ReviveTabController::setTriggerAsGrip(bool value, bool notify) {
+		if (m_triggerAsGrip != value) {
+			m_triggerAsGrip = value;
+			vr::EVRSettingsError vrSettingsError;
+			vr::VRSettings()->SetBool(section_revive, key_triggerAsGrip, m_triggerAsGrip, &vrSettingsError);
+			if (vrSettingsError != vr::VRSettingsError_None) {
+				LOG(WARNING) << "Could not set \"revive::" << key_toggleGrip << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+			}
+			vr::VRSettings()->Sync();
+			if (notify) {
+				emit triggerAsGripChanged(m_triggerAsGrip);
 			}
 		}
 	}
@@ -631,12 +663,15 @@ namespace advsettings {
 			LOG(WARNING) << "Could not remove \"revive::" << key_toggleGrip << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 		}
 
-		// This setting has no default value listed in Revive's default.vrsettings yet.
-		/*vr::VRSettings()->RemoveKeyInSection(section_revive, key_toggleDelay, &vrSettingsError);
+		vr::VRSettings()->RemoveKeyInSection(section_revive, key_triggerAsGrip, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not remove \"revive::" << key_triggerAsGrip << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		}
+
+		vr::VRSettings()->RemoveKeyInSection(section_revive, key_toggleDelay, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
 			LOG(WARNING) << "Could not remove \"revive::" << key_toggleDelay << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
-		}*/
-		setToggleDelay(0.5f);
+		}
 
 		vr::VRSettings()->RemoveKeyInSection(section_revive, key_thumbDeadzone, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
@@ -707,6 +742,7 @@ namespace advsettings {
 			auto& entry = controllerProfiles[i];
 			entry.profileName = settings->value("profileName").toString().toStdString();
 			entry.gripButtonMode = settings->value("gripButtonMode", 0).toInt();
+			entry.triggerAsGrip = settings->value("triggerAsGrip", 0).toBool();
 			entry.thumbDeadzone = settings->value("thumbDeadzone", 0.3f).toFloat();
 			entry.thumbRange = settings->value("thumbRange", 2.0f).toFloat();
 			entry.touchPitch = settings->value("touchPitch", -28.0f).toFloat();
@@ -730,6 +766,7 @@ namespace advsettings {
 			settings->setArrayIndex(i);
 			settings->setValue("profileName", QString::fromStdString(p.profileName));
 			settings->setValue("gripButtonMode", p.gripButtonMode);
+			settings->setValue("triggerAsGrip", p.triggerAsGrip);
 			settings->setValue("thumbDeadzone", p.thumbDeadzone);
 			settings->setValue("thumbRange", p.thumbRange);
 			settings->setValue("touchPitch", p.touchPitch);
@@ -771,6 +808,7 @@ namespace advsettings {
 		}
 		profile->profileName = name.toStdString();
 		profile->gripButtonMode = gripButtonMode();
+		profile->triggerAsGrip = triggerAsGrip();
 		profile->thumbDeadzone = thumbDeadzone();
 		profile->thumbRange = thumbRange();
 		profile->touchPitch = touchPitch();
@@ -788,6 +826,7 @@ namespace advsettings {
 		if (index < controllerProfiles.size()) {
 			auto& profile = controllerProfiles[index];
 			setGripButtonMode(profile.gripButtonMode);
+			setTriggerAsGrip(profile.triggerAsGrip);
 			setThumbDeadzone(profile.thumbDeadzone);
 			setThumbRange(profile.thumbRange);
 			setTouchPitch(profile.touchPitch);

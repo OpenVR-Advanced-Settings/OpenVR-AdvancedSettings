@@ -15,6 +15,7 @@ namespace advsettings {
 	struct ReviveControllerProfile {
 		std::string profileName;
 		int gripButtonMode;
+		bool triggerAsGrip;
 		float thumbDeadzone;
 		float thumbRange;
 		float touchPitch;
@@ -30,6 +31,7 @@ namespace advsettings {
 		Q_OBJECT
 		Q_PROPERTY(int isOverlayInstalled READ isOverlayInstalled NOTIFY isOverlayInstalledChanged)
 		Q_PROPERTY(int gripButtonMode READ gripButtonMode WRITE setGripButtonMode NOTIFY gripButtonModeChanged)
+		Q_PROPERTY(int triggerAsGrip READ triggerAsGrip WRITE setTriggerAsGrip NOTIFY triggerAsGripChanged)
 		Q_PROPERTY(bool pixelsPerDisplayPixelOverrideEnabled READ isPixelsPerDisplayPixelOverrideEnabled WRITE setPixelsPerDisplayPixelOverrideEnabled NOTIFY pixelsPerDisplayPixelOverrideEnabledChanged)
 		Q_PROPERTY(float toggleDelay READ toggleDelay WRITE setToggleDelay NOTIFY toggleDelayChanged)
 		Q_PROPERTY(float pixelsPerDisplayPixelOverride READ pixelsPerDisplayPixelOverride WRITE setPixelsPerDisplayPixelOverride NOTIFY pixelsPerDisplayPixelOverrideChanged)
@@ -54,6 +56,7 @@ namespace advsettings {
 		bool m_isOverlayInstalled = false;
 		int m_gripButtonMode = 0;
 		float m_toggleDelay = 0.5f;
+		bool m_triggerAsGrip = false;
 		bool m_pixelsPerDisplayPixelOverrideEnabled = false;
 		float m_pixelsPerDisplayPixelOverride = 1.0f;
 		float m_thumbDeadzone = 0.3f;
@@ -62,7 +65,7 @@ namespace advsettings {
 		float m_touchYaw = 0.0f;
 		float m_touchRoll = -14.0f;
 		float m_touchX = 0.016f;
-		float m_touchY = 0.0f;
+		float m_touchY = -0.036f;
 		float m_touchZ = 0.016f;
 		float m_piPlayerHeight = 1.778f;
 		float m_piEyeHeight = 1.675f;
@@ -83,6 +86,7 @@ namespace advsettings {
 		bool isOverlayInstalled() const;
 
 		int gripButtonMode() const;
+		bool triggerAsGrip() const;
 		float toggleDelay() const;
 
 		bool isPixelsPerDisplayPixelOverrideEnabled() const;
@@ -114,6 +118,7 @@ namespace advsettings {
 
 	public slots:
 		void setGripButtonMode(int value, bool notify = true);
+		void setTriggerAsGrip(bool value, bool notify = true);
 		void setToggleDelay(float value, bool notify = true);
 
 		void setPixelsPerDisplayPixelOverrideEnabled(bool value, bool notify = true);
@@ -145,6 +150,7 @@ namespace advsettings {
 		void isOverlayInstalledChanged(bool value);
 
 		void gripButtonModeChanged(int value);
+		void triggerAsGripChanged(bool value);
 		void toggleDelayChanged(float value);
 
 		void pixelsPerDisplayPixelOverrideEnabledChanged(bool value);
