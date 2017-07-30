@@ -145,12 +145,12 @@ MyStackViewPage {
         RowLayout {
             MyText {
                 text: "Grip Button Mode:"
-                Layout.preferredWidth: 350
+                Layout.preferredWidth: 250
             }
 
             MyComboBox {
                 id: gripButtonModeComboBox
-                Layout.preferredWidth: 300
+                Layout.preferredWidth: 250
                 model: ["Normal Mode", "Toggle Mode", "Hybrid Mode"]
                 onCurrentIndexChanged: {
                     if (componentCompleted) {
@@ -160,9 +160,9 @@ MyStackViewPage {
             }
 
             MyText {
-                Layout.leftMargin: 50
+                Layout.preferredWidth: 150
+                Layout.leftMargin: 25
                 text: "Toggle Delay: "
-                Layout.fillWidth: true
             }
 
             MyTextField {
@@ -170,7 +170,7 @@ MyStackViewPage {
                 text: "0.50"
                 keyBoardUID: 225
                 Layout.preferredWidth: 100
-                Layout.leftMargin: 10
+                Layout.leftMargin: 25
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
@@ -184,6 +184,15 @@ MyStackViewPage {
                 }
             }
 
+            MyToggleButton {
+                id: triggerAsGripToggle
+                text: "Trigger As Grip"
+                Layout.preferredWidth: 250
+                Layout.leftMargin: 25
+                onCheckedChanged: {
+                    ReviveTabController.setTriggerAsGrip(checked, false)
+                }
+            }
         }
 
         GroupBox {
