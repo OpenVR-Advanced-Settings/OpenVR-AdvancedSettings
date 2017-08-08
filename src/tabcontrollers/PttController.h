@@ -48,7 +48,7 @@ namespace advsettings {
     Q_PROPERTY(bool pttLeftControllerEnabled READ pttLeftControllerEnabled WRITE setPttLeftControllerEnabled NOTIFY pttLeftControllerEnabledChanged)
     Q_PROPERTY(bool pttRightControllerEnabled READ pttRightControllerEnabled WRITE setPttRightControllerEnabled NOTIFY pttRightControllerEnabledChanged)
 
-  private:
+  protected:
     bool m_pttEnabled = false;
     bool m_pttActive = false;
     bool m_pttShowNotification = false;

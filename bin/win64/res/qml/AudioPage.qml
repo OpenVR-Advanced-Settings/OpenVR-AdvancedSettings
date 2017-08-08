@@ -310,12 +310,22 @@ MyStackViewPage {
                     }
                 }
             }
-            MyToggleButton {
-                id: audioPttShowNotificationToggle
-                Layout.leftMargin: 265
-                text: "Show notification in HMD."
-                onCheckedChanged: {
-                    AudioTabController.setPttShowNotification(checked, false)
+            RowLayout {
+                MyToggleButton {
+                    id: audioPttShowNotificationToggle
+                    Layout.leftMargin: 265
+                    text: "Show notification in HMD."
+                    onCheckedChanged: {
+                        AudioTabController.setPttShowNotification(checked, false)
+                    }
+                }
+                MyToggleButton {
+                    id: audioPttReverseToggle
+                    Layout.leftMargin: 118
+                    text: "Push-to-Mute"
+                    onClicked: {
+                        AudioTabController.setMicReversePtt(checked, false)
+                    }
                 }
             }
             RowLayout {
@@ -438,6 +448,7 @@ MyStackViewPage {
             audioPttLeftControllerToggle.checked = AudioTabController.pttLeftControllerEnabled
             audioPttRightControllerToggle.checked = AudioTabController.pttRightControllerEnabled
             audioPttShowNotificationToggle.checked = AudioTabController.pttShowNotification
+            audioPttReverseToggle.checked = AudioTabController.micReversePtt
             componentCompleted = true
         }
 
@@ -490,6 +501,9 @@ MyStackViewPage {
             }
             onMicProximitySensorCanMuteChanged: {
                 audioMuteProximitySensorToggle.checked = AudioTabController.micProximitySensorCanMute
+            }
+            onMicReversePttChanged: {
+                audioPttReverseToggle.checked = AudioTabController.micReversePtt
             }
             onPttEnabledChanged: {
                 audioPttEnabledToggle.checked = AudioTabController.pttEnabled

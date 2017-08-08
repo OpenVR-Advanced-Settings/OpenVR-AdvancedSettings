@@ -27,6 +27,7 @@ namespace advsettings {
 		Q_PROPERTY(float micVolume READ micVolume WRITE setMicVolume NOTIFY micVolumeChanged)
 		Q_PROPERTY(bool micMuted READ micMuted WRITE setMicMuted NOTIFY micMutedChanged)
 		Q_PROPERTY(bool micProximitySensorCanMute READ micProximitySensorCanMute WRITE setMicProximitySensorCanMute NOTIFY micProximitySensorCanMuteChanged)
+		Q_PROPERTY(bool micReversePtt READ micReversePtt WRITE setMicReversePtt NOTIFY micReversePttChanged)
 
 	private:
 		OverlayController* parent;
@@ -44,6 +45,7 @@ namespace advsettings {
 		float m_micVolume = 1.0;
 		bool m_micMuted = false;
 		bool m_micProximitySensorCanMute = false;
+		bool m_micReversePtt = false;
 
 		unsigned settingsUpdateCounter = 0;
 
@@ -83,6 +85,7 @@ namespace advsettings {
 		float micVolume() const;
 		bool micMuted() const;
 		bool micProximitySensorCanMute() const;
+		bool micReversePtt() const;
 
 		Q_INVOKABLE int getPlaybackDeviceCount();
 		Q_INVOKABLE QString getPlaybackDeviceName(int index);
@@ -102,6 +105,7 @@ namespace advsettings {
 		void setMicVolume(float value, bool notify = true);
 		void setMicMuted(bool value, bool notify = true);
 		void setMicProximitySensorCanMute(bool value, bool notify = true);
+		void setMicReversePtt(bool value, bool notify = true);
 
 		void setPlaybackDeviceIndex(int value, bool notify = true);
 		void setMirrorDeviceIndex(int value, bool notify = true);
@@ -118,6 +122,7 @@ namespace advsettings {
 		void micVolumeChanged(float value);
 		void micMutedChanged(bool value);
 		void micProximitySensorCanMuteChanged(bool value);
+		void micReversePttChanged(bool value);
 
 		void playbackDeviceListChanged();
 		void recordingDeviceListChanged();

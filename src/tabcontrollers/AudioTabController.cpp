@@ -65,6 +65,7 @@ namespace advsettings {
 		auto settings = OverlayController::appSettings();
 		settings->beginGroup(getSettingsName());
 		setMicProximitySensorCanMute(settings->value("micProximitySensorCanMute", false).toBool(), false);
+		setMicReversePtt(settings->value("micReversePtt", false).toBool(), false);
 		settings->endGroup();
 	}
 
@@ -72,6 +73,7 @@ namespace advsettings {
 		auto settings = OverlayController::appSettings();
 		settings->beginGroup(getSettingsName());
 		settings->setValue("micProximitySensorCanMute", micProximitySensorCanMute());
+		settings->setValue("micReversePtt", micReversePtt());
 		settings->endGroup();
 		settings->sync();
 	}
@@ -98,6 +100,10 @@ namespace advsettings {
 
 	bool AudioTabController::micProximitySensorCanMute() const {
 		return m_micProximitySensorCanMute;
+	}
+
+	bool AudioTabController::micReversePtt() const {
+		return m_micReversePtt;
 	}
 
 	void AudioTabController::eventLoopTick() {
@@ -155,15 +161,27 @@ namespace advsettings {
 	}
 
 	void AudioTabController::onPttStart() {
-		setMicMuted(false);
+		if (m_micReversePtt) {
+			setMicMuted(true);
+		} else {
+			setMicMuted(false);
+		}
 	}
 
 	void AudioTabController::onPttEnabled() {
-		setMicMuted(true);
+		if (m_micReversePtt) {
+			setMicMuted(false);
+		} else {
+			setMicMuted(true);
+		}
 	}
 
 	void AudioTabController::onPttStop() {
-		setMicMuted(true);
+		if (m_micReversePtt) {
+			setMicMuted(false);
+		} else {
+			setMicMuted(true);
+		}
 	}
 
 	void AudioTabController::onPttDisabled() {
@@ -229,6 +247,24 @@ namespace advsettings {
 			saveAudioSettings();
 			if (notify) {
 				emit micProximitySensorCanMuteChanged(value);
+			}
+		}
+	}
+
+	void AudioTabController::setMicReversePtt(bool value, bool notify) {
+		std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
+		if (value != m_micReversePtt) {
+			m_micReversePtt = value;
+			saveAudioSettings();
+			if (m_pttEnabled) {
+				if (m_pttActive) {
+					setMicMuted(value);
+				} else {
+					setMicMuted(!value);
+				}
+			}
+			if (notify) {
+				emit micReversePttChanged(value);
 			}
 		}
 	}
