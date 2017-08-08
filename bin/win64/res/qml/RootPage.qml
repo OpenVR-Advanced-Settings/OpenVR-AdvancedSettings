@@ -150,11 +150,49 @@ MyStackViewPage {
                        spacing: 18
 
                        MyText {
+                           text: "Supersampling Profile:"
+                       }
+
+                       MyComboBox {
+                           id: summarySteamVRProfileComboBox
+                           Layout.maximumWidth: 378
+                           Layout.minimumWidth: 378
+                           Layout.preferredWidth: 378
+                           Layout.fillWidth: true
+                           model: [""]
+                           onCurrentIndexChanged: {
+                               if (currentIndex > 0) {
+                                   summarySteamVRProfileApplyButton.enabled = true
+                               } else {
+                                   summarySteamVRProfileApplyButton.enabled = false
+                               }
+                           }
+                       }
+
+                       MyPushButton {
+                           id: summarySteamVRProfileApplyButton
+                           enabled: false
+                           Layout.preferredWidth: 150
+                           text: "Apply"
+                           onClicked: {
+                               if (summarySteamVRProfileComboBox.currentIndex > 0) {
+                                   SteamVRTabController.applySteamVRProfile(summarySteamVRProfileComboBox.currentIndex - 1)
+                                   summarySteamVRProfileComboBox.currentIndex = 0
+                               }
+                           }
+                       }
+                   }
+
+                   RowLayout {
+                       spacing: 18
+
+                       MyText {
                            text: "Chaperone Profile:"
                        }
 
                        MyComboBox {
                            id: summaryChaperoneProfileComboBox
+                           Layout.leftMargin: 47
                            Layout.maximumWidth: 378
                            Layout.minimumWidth: 378
                            Layout.preferredWidth: 378
@@ -325,7 +363,7 @@ MyStackViewPage {
                            spacing: 18
 
                            MyComboBox {
-                               Layout.leftMargin: 33
+                               Layout.leftMargin: 78
                                id: summaryPttProfileComboBox
                                Layout.maximumWidth: 378
                                Layout.minimumWidth: 378
@@ -375,6 +413,7 @@ MyStackViewPage {
 
    Component.onCompleted: {
        reloadChaperoneProfiles()
+       reloadSteamVRProfiles()
        reloadPttProfiles()
        summaryVersionText.text = applicationVersion
        if (MoveCenterTabController.trackingUniverse === 0) {
@@ -397,6 +436,13 @@ MyStackViewPage {
        target: ChaperoneTabController
        onChaperoneProfilesUpdated: {
            reloadChaperoneProfiles()
+       }
+   }
+
+   Connections {
+       target: SteamVRTabController
+       onSteamVRProfilesUpdated: {
+           reloadSteamVRProfiles()
        }
    }
 
@@ -476,6 +522,17 @@ MyStackViewPage {
        }
        summaryChaperoneProfileComboBox.currentIndex = 0
        summaryChaperoneProfileComboBox.model = profiles
+    }
+
+
+    function reloadSteamVRProfiles() {
+       var profiles = [""]
+       var profileCount = SteamVRTabController.getSteamVRProfileCount()
+       for (var i = 0; i < profileCount; i++) {
+           profiles.push(SteamVRTabController.getSteamVRProfileName(i))
+       }
+       summarySteamVRProfileComboBox.currentIndex = 0
+       summarySteamVRProfileComboBox.model = profiles
     }
 
     function reloadPttProfiles() {

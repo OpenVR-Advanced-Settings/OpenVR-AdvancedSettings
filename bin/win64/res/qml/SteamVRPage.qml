@@ -7,8 +7,171 @@ MyStackViewPage {
     id: myStackViewPage1
     headerText: "SteamVR Settings"
 
+
+    MyDialogOkPopup {
+        id: steamvrMessageDialog
+        function showMessage(title, text) {
+            dialogTitle = title
+            dialogText = text
+            open()
+        }
+    }
+
+    MyDialogOkCancelPopup {
+        id: steamvrDeleteProfileDialog
+        property int profileIndex: -1
+        dialogTitle: "Delete Profile"
+        dialogText: "Do you really want to delete this profile?"
+        onClosed: {
+            if (okClicked) {
+                SteamVRTabController.deleteSteamVRProfile(profileIndex)
+            }
+        }
+    }
+
+    MyDialogOkCancelPopup {
+        id: steamvrNewProfileDialog
+        dialogTitle: "Create New Profile"
+        dialogWidth: 600
+        dialogHeight: 400
+        dialogContentItem: ColumnLayout {
+            RowLayout {
+                Layout.topMargin: 16
+                Layout.leftMargin: 16
+                Layout.rightMargin: 16
+                MyText {
+                    text: "Name: "
+                }
+                MyTextField {
+                    id: steamvrNewProfileName
+                    keyBoardUID: 490
+                    color: "#cccccc"
+                    text: ""
+                    Layout.fillWidth: true
+                    font.pointSize: 20
+                    function onInputEvent(input) {
+                        steamvrNewProfileName.text = input
+                    }
+                }
+            }
+            MyText {
+                Layout.topMargin: 24
+                text: "What to include:"
+            }
+            MyToggleButton {
+                id: steamvrNewProfileIncludeSupersampling
+                Layout.leftMargin: 32
+                text: "Application Supersampling"
+            }
+            MyToggleButton {
+                id: steamvrNewProfileIncludeSupersampleFiltering
+                Layout.leftMargin: 32
+                text: "Supersample Filtering"
+            }
+            MyToggleButton {
+                id: steamvrNewProfileIncludeReprojectionSettingsg
+                Layout.leftMargin: 32
+                text: "Reprojection Settings"
+            }
+        }
+        onClosed: {
+            if (okClicked) {
+                if (steamvrNewProfileName.text == "") {
+                    steamvrMessageDialog.showMessage("Create New Profile", "ERROR: Empty profile name.")
+                } else if (!steamvrNewProfileIncludeSupersampling.checked
+                            && !steamvrNewProfileIncludeSupersampleFiltering.checked
+                            && !steamvrNewProfileIncludeReprojectionSettingsg.checked) {
+                    steamvrMessageDialog.showMessage("Create New Profile", "ERROR: Nothing included.")
+                } else {
+                    SteamVRTabController.addSteamVRProfile(steamvrNewProfileName.text,
+                        steamvrNewProfileIncludeSupersampling.checked,
+                        steamvrNewProfileIncludeSupersampleFiltering.checked,
+                        steamvrNewProfileIncludeReprojectionSettingsg.checked)
+                }
+
+            }
+        }
+        function openPopup() {
+            steamvrNewProfileName.text = ""
+            steamvrNewProfileIncludeSupersampling.checked = false
+            steamvrNewProfileIncludeSupersampleFiltering.checked = false
+            steamvrNewProfileIncludeReprojectionSettingsg.checked = false
+            open()
+        }
+    }
+
+
+
     content: ColumnLayout {
         spacing: 18
+
+        ColumnLayout {
+            Layout.bottomMargin: 32
+            spacing: 18
+            RowLayout {
+                spacing: 18
+
+                MyText {
+                    text: "Profile:"
+                }
+
+                MyComboBox {
+                    id: steamvrProfileComboBox
+                    Layout.maximumWidth: 799
+                    Layout.minimumWidth: 799
+                    Layout.preferredWidth: 799
+                    Layout.fillWidth: true
+                    model: [""]
+                    onCurrentIndexChanged: {
+                        if (currentIndex > 0) {
+                            steamvrApplyProfileButton.enabled = true
+                            steamvrDeleteProfileButton.enabled = true
+                        } else {
+                            steamvrApplyProfileButton.enabled = false
+                            steamvrDeleteProfileButton.enabled = false
+                        }
+                    }
+                }
+
+                MyPushButton {
+                    id: steamvrApplyProfileButton
+                    enabled: false
+                    Layout.preferredWidth: 200
+                    text: "Apply"
+                    onClicked: {
+                        if (steamvrProfileComboBox.currentIndex > 0) {
+                            SteamVRTabController.applySteamVRProfile(steamvrProfileComboBox.currentIndex - 1)
+                            steamvrProfileComboBox.currentIndex = 0
+                        }
+                    }
+                }
+            }
+            RowLayout {
+                spacing: 18
+                Item {
+                    Layout.fillWidth: true
+                }
+                MyPushButton {
+                    id: steamvrDeleteProfileButton
+                    enabled: false
+                    Layout.preferredWidth: 200
+                    text: "Delete Profile"
+                    onClicked: {
+                        if (steamvrProfileComboBox.currentIndex > 0) {
+                            steamvrDeleteProfileDialog.profileIndex = steamvrProfileComboBox.currentIndex - 1
+                            steamvrDeleteProfileDialog.open()
+                        }
+                    }
+                }
+                MyPushButton {
+                    Layout.preferredWidth: 200
+                    text: "New Profile"
+                    onClicked: {
+                        steamvrNewProfileDialog.openPopup()
+                    }
+                }
+            }
+        }
 
         RowLayout {
             spacing: 16
@@ -225,6 +388,7 @@ MyStackViewPage {
             steamvrAllowInterleavedReprojectionToggle.checked = SteamVRTabController.allowInterleavedReprojection
             steamvrAllowAsyncReprojectionToggle.checked = SteamVRTabController.allowAsyncReprojection
             steamvrForceReprojectionToggle.checked = SteamVRTabController.forceReprojection
+            reloadSteamVRProfiles()
         }
 
         Connections {
@@ -255,6 +419,19 @@ MyStackViewPage {
             onForceReprojectionChanged: {
                 steamvrForceReprojectionToggle.checked = SteamVRTabController.forceReprojection
             }
+            onSteamVRProfilesUpdated: {
+                reloadSteamVRProfiles()
+            }
         }
+    }
+
+    function reloadSteamVRProfiles() {
+        var profiles = [""]
+        var profileCount = SteamVRTabController.getSteamVRProfileCount()
+        for (var i = 0; i < profileCount; i++) {
+            profiles.push(SteamVRTabController.getSteamVRProfileName(i))
+        }
+        steamvrProfileComboBox.currentIndex = 0
+        steamvrProfileComboBox.model = profiles
     }
 }

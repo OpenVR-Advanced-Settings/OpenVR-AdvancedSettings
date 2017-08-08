@@ -19,6 +19,22 @@ namespace advsettings {
 class OverlayController;
 
 
+struct SteamVRProfile {
+	std::string profileName;
+
+	bool includesSupersampling = false;
+	float supersampling = 1.0f;
+
+	bool includesSupersampleFiltering = false;
+	bool supersampleFiltering = false;
+
+	bool includesReprojectionSettings = false;
+	bool asynchronousReprojection = true;
+	bool interleavedReprojection = true;
+	bool alwaysOnReprojection = true;
+};
+
+
 class SteamVRTabController : public QObject {
 	Q_OBJECT
 	Q_PROPERTY(float superSampling READ superSampling WRITE setSuperSampling NOTIFY superSamplingChanged)
@@ -39,6 +55,8 @@ private:
 	bool m_forceReprojection = false;
 	bool m_allowSupersampleFiltering = true;
 
+	std::vector<SteamVRProfile> steamvrProfiles;
+
 	unsigned settingsUpdateCounter = 0;
 
 public:
@@ -54,6 +72,12 @@ public:
 	bool forceReprojection() const;
 	bool allowSupersampleFiltering() const;
 
+	void reloadSteamVRProfiles();
+	void saveSteamVRProfiles();
+
+	Q_INVOKABLE unsigned getSteamVRProfileCount();
+	Q_INVOKABLE QString getSteamVRProfileName(unsigned index);
+
 public slots:
 	void setSuperSampling(float value, bool notify = true);
 	void setCompositorSuperSampling(float value, bool notify = true);
@@ -61,6 +85,10 @@ public slots:
 	void setAllowAsyncReprojection(bool value, bool notify = true);
 	void setForceReprojection(bool value, bool notify = true);
 	void setAllowSupersampleFiltering(bool value, bool notify = true);
+
+	void addSteamVRProfile(QString name, bool includeSupersampling, bool includeSupersampleFiltering, bool includeReprojectionSettings);
+	void applySteamVRProfile(unsigned index);
+	void deleteSteamVRProfile(unsigned index);
 
 	void reset();
 	void restartSteamVR();
@@ -72,6 +100,8 @@ signals:
 	void allowAsyncReprojectionChanged(bool value);
 	void forceReprojectionChanged(bool value);
 	void allowSupersampleFilteringChanged(bool value);
+
+	void steamVRProfilesUpdated();
 };
 
 } // namespace advsettings

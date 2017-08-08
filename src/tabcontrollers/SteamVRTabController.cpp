@@ -8,12 +8,86 @@ namespace advsettings {
 
 void SteamVRTabController::initStage1() {
 	eventLoopTick();
+	reloadSteamVRProfiles();
 }
 
 
 void SteamVRTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
 	this->parent = parent;
 	this->widget = widget;
+}
+
+
+void SteamVRTabController::reloadSteamVRProfiles() {
+	steamvrProfiles.clear();
+	auto settings = OverlayController::appSettings();
+	settings->beginGroup("steamVRSettings");
+	auto profileCount = settings->beginReadArray("steamVRProfiles");
+	for (int i = 0; i < profileCount; i++) {
+		settings->setArrayIndex(i);
+		steamvrProfiles.emplace_back();
+		auto& entry = steamvrProfiles[i];
+		entry.profileName = settings->value("profileName").toString().toStdString();
+		entry.includesSupersampling = settings->value("includesSupersampling", false).toBool();
+		if (entry.includesSupersampling) {
+			entry.supersampling = settings->value("supersampling", 1.0f).toFloat();
+		}
+		entry.includesSupersampleFiltering = settings->value("includesSupersampleFiltering", false).toBool();
+		if (entry.includesSupersampleFiltering) {
+			entry.supersampleFiltering = settings->value("supersampleFiltering", true).toBool();
+		}
+		entry.includesReprojectionSettings = settings->value("includesReprojectionSettings", false).toBool();
+		if (entry.includesReprojectionSettings) {
+			entry.asynchronousReprojection = settings->value("asynchronousReprojection", true).toBool();
+			entry.interleavedReprojection = settings->value("interleavedReprojection", true).toBool();
+			entry.alwaysOnReprojection = settings->value("alwaysOnReprojection", true).toBool();
+		}
+	}
+	settings->endArray();
+	settings->endGroup();
+}
+
+
+void SteamVRTabController::saveSteamVRProfiles() {
+	auto settings = OverlayController::appSettings();
+	settings->beginGroup("steamVRSettings");
+	settings->beginWriteArray("steamVRProfiles");
+	unsigned i = 0;
+	for (auto& p : steamvrProfiles) {
+		settings->setArrayIndex(i);
+		settings->setValue("profileName", QString::fromStdString(p.profileName));
+		settings->setValue("includesSupersampling", p.includesSupersampling);
+		if (p.includesSupersampling) {
+			settings->setValue("supersampling", p.supersampling);
+		}
+		settings->setValue("includesSupersampleFiltering", p.includesSupersampleFiltering);
+		if (p.includesSupersampleFiltering) {
+			settings->setValue("supersampleFiltering", p.supersampleFiltering);
+		}
+		settings->setValue("includesReprojectionSettings", p.includesReprojectionSettings);
+		if (p.includesReprojectionSettings) {
+			settings->setValue("asynchronousReprojection", p.asynchronousReprojection);
+			settings->setValue("interleavedReprojection", p.interleavedReprojection);
+			settings->setValue("alwaysOnReprojection", p.alwaysOnReprojection);
+		}
+		i++;
+	}
+	settings->endArray();
+	settings->endGroup();
+
+}
+
+
+Q_INVOKABLE unsigned SteamVRTabController::getSteamVRProfileCount() {
+	return (unsigned)steamvrProfiles.size();
+}
+
+Q_INVOKABLE QString SteamVRTabController::getSteamVRProfileName(unsigned index) {
+	if (index >= steamvrProfiles.size()) {
+		return QString();
+	} else {
+		return QString::fromStdString(steamvrProfiles[index].profileName);
+	}
 }
 
 
@@ -186,8 +260,6 @@ void SteamVRTabController::setAllowSupersampleFiltering(bool value, bool notify)
 }
 
 
-
-
 void SteamVRTabController::reset() {
 	vr::EVRSettingsError vrSettingsError;
 
@@ -232,6 +304,71 @@ void SteamVRTabController::restartSteamVR() {
 	LOG(INFO) << "SteamVR Restart Command: " << cmd;
 	QProcess::startDetached(cmd);
 }
+
+
+void SteamVRTabController::addSteamVRProfile(QString name, bool includeSupersampling, bool includeSupersampleFiltering, bool includeReprojectionSettings) {
+	SteamVRProfile* profile = nullptr;
+	for (auto& p : steamvrProfiles) {
+		if (p.profileName.compare(name.toStdString()) == 0) {
+			profile = &p;
+			break;
+		}
+	}
+	if (!profile) {
+		auto i = steamvrProfiles.size();
+		steamvrProfiles.emplace_back();
+		profile = &steamvrProfiles[i];
+	}
+	profile->profileName = name.toStdString();
+	profile->includesSupersampling = includeSupersampling;
+	if (includeSupersampling) {
+		profile->supersampling = m_superSampling;
+	}
+	profile->includesSupersampleFiltering = includeSupersampleFiltering;
+	if (includeSupersampleFiltering) {
+		profile->supersampleFiltering = m_allowSupersampleFiltering;
+	}
+	profile->includesReprojectionSettings = includeReprojectionSettings;
+	if (includeReprojectionSettings) {
+		profile->asynchronousReprojection = m_allowAsyncReprojection;
+		profile->interleavedReprojection = m_allowInterleavedReprojection;
+		profile->alwaysOnReprojection = m_forceReprojection;
+	}
+	saveSteamVRProfiles();
+	OverlayController::appSettings()->sync();
+	emit steamVRProfilesUpdated();
+}
+
+
+void SteamVRTabController::applySteamVRProfile(unsigned index) {
+	if (index < steamvrProfiles.size()) {
+		auto& profile = steamvrProfiles[index];
+		if (profile.includesSupersampling) {
+			setSuperSampling(profile.supersampling);
+		}
+		if (profile.includesSupersampleFiltering) {
+			setAllowSupersampleFiltering(profile.supersampleFiltering);
+		}
+		if (profile.includesReprojectionSettings) {
+			setAllowAsyncReprojection(profile.asynchronousReprojection);
+			setAllowInterleavedReprojection(profile.interleavedReprojection);
+			setForceReprojection(profile.alwaysOnReprojection);
+		}
+		vr::VRSettings()->Sync(true);
+	}
+}
+
+
+void SteamVRTabController::deleteSteamVRProfile(unsigned index) {
+	if (index < steamvrProfiles.size()) {
+		auto pos = steamvrProfiles.begin() + index;
+		steamvrProfiles.erase(pos);
+		saveSteamVRProfiles();
+		OverlayController::appSettings()->sync();
+		emit steamVRProfilesUpdated();
+	}
+}
+
 
 
 } // namespace advconfig
