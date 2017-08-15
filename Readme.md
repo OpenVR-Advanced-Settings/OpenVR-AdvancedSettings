@@ -5,13 +5,15 @@
 
 Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 
-![Example Screenshot](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/InVRScreenshot.png)
+![Example Screenshot](docs/screenshots/InVRScreenshot.png)
 
 # Features
 
 - Set supersampling values.
 - Enable/disable asynchronous and interleaved reprojection.
+- Save supersampling and reprojection settings into profiles.
 - Change several chaperone settings not accessible via SteamVR settings (to e.g. make it completely invisible).
+- Chaperone Proximity Warning: Several warning methods can be configured.
 - Chaperone Profiles: Allows to quickly switch chaperone geometry and settings while in VR.
 - Temporarily move and rotate the playspace.
 - Floor height fix.
@@ -50,27 +52,29 @@ Executing startdesktopmode.bat from the application folder shows a window on the
 
 ## Top Page:
 
-![Root Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/RootPage.png)
+![Root Page](docs/screenshots/RootPage.png)
 
+- **Supersampling Profile**: Allows to apply supersampling profiles. Profiles can be created on the SteamVR page
 - **Chaperone Profile**: Allows to apply chaperone profiles. Profiles can be created on the Chaperone page
 - **Microphone**: Allows to set the microphone volume and to mute/unmute it.
 - **Push-to-Talk**: Enable/disable push-to-talk and allows to apply push-to-talk profiles. Profiles can be created on the Audio page.
 
 ## - SteamVR Page:
 
-![SteamVR Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/SteamVRPage.png)
+![SteamVR Page](docs/screenshots/SteamVRPage.png)
 
+- **Profile**: Allows to apply/define/delete supersampling profiles that save supersampling and reprojection settings.
 - **Application Supersampling**: Supersampling setting for OpenVR applications/games. Application supersampling [now behaves linearly](https://steamcommunity.com/games/250820/announcements/detail/1256913672017664045) where 2.0 means twice the number of pixel.
 - **Compositor Render Target Multiplier**: Supersampling setting for the OpenVR compositor (Requires restart). Compositor supersampling still behaves the old way where 2.0 means four-times the number of pixel.
 - **Enable Advanced Supersample Filtering**: Einable/disable image filtering on supersampled renderings.
 - **Allow Asynchronous Reprojection**: Enable/disable asynchronous reprojection.
 - **Allow Interleaved Reprojection**: Enable/disable interleaved reprojection.
-- **Force Reprojection**: Enable/disable forced reprojection.
+- **Enable Always-on Reprojection**: Enable/disable forced reprojection.
 - **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
 
 ## - Chaperone Page:
 
-![Chaperone Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/ChaperonePage.png)
+![Chaperone Page](docs/screenshots/ChaperonePage.png)
 
 - **Profile**: Allows to apply/define/delete chaperone profiles that save geometry info, style info or other chaperone settings (What exactly is saved in a chaperone profile can be selected when a profile is created).
 - **Visibility**: Allows to configure the visibility of the chaperone bounds. Unlike the slider in the chaperone settings, this one is not capped at 30%. When set to 0 chaperone bounds are completely invisible.
@@ -79,12 +83,26 @@ Executing startdesktopmode.bat from the application folder shows a window on the
 - **Center Marker**: Displays a marker that represents the center of the playspace.
 - **Play Space Maker**: Displays the outlines of the rectangle representing the playspace.
 - **Force Bounds**: Force chaperone bounds always on.
+- **Proximity Warning Settings**: Opens a page that allows to configure several warning methods for when the user comes too close to the chaperone bounds.
 - **Flip Orientation**: Flips the orientation of the play space.
 - **Reload from Disk**: Reloads the chaperone bounds geometry from disk.
 
+
+## - Chaperone Proximity Warning Settings Page:
+
+![Chaperone Proximity Warning Settings Page](docs/screenshots/ChaperoneWarningPage.png)
+
+- **Switch to Beginner Mode**: Switches the chaperone bound's style to beginner mode when the user's distance to the chaperone falls below the configured activation distance.
+- **Trigger Haptic Feedback**: The left and right controller start vibrating when the user's distance to the chaperone falls below the configured activation distance.
+- **Audio Warning**: Plays an alarm sound when the user's distance to the chaperone falls below the configured activation distance.
+  - **Loop Audio**: Whether the audio alarm should only be played once or in a loop.
+  - **Loop Audio**: Modify audio volume as a function of the user's distance to the chaperone.
+- **Open dashboard**: Opens the dashboard when the user's distance to the chaperone falls below the configured activation distance. The idea is to pause the game (most single-player games auto-pause when the dashboard is shown) to give the user time for reorientation.
+- **Velocity Dependent Fade/Activation Distance**: Dynamically modifies the chaperone's fade distance and the proximity warning's activation distance as a function of the player's speed. The used formula is: *distance = old_distance * ( 1 + distance_modifier * max(left_controller_speed, right_controller_speed, hmd_speed) )*
+
 ## - Play Space Page:
 
-![Play Space Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/PlayspacePage.png)
+![Play Space Page](docs/screenshots/PlayspacePage.png)
 
 Allows to temporarily move and rotate the center of the playspace. This allows to reach interaction elements that are just inside our real-world walls or otherwise inaccessible (e.g. when your playspace is smaller than the recommended one). Can also be used to discover the terrors that lie outside of the intended playspace (ever wondered what's behind the door in The Lab?).
 
@@ -92,13 +110,13 @@ Allows to temporarily move and rotate the center of the playspace. This allows t
 
 ## - Floor Fix Page:
 
-![Floor Fix Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/FloorFixPage.png)
+![Floor Fix Page](docs/screenshots/FloorFixPage.png)
 
 Allows you to fix the height of your floor. Just place one controller on your floor and press the button.
 
 ## - Audio Page:
 
-![Audio Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/AudioPage.png)
+![Audio Page](docs/screenshots/AudioPage.png)
 
 - **Playback Device**: Allows to select the playback device.
 - **Mirror Device**: Allows to select the mirror device, set its volume and to mute/unmute it.
@@ -108,11 +126,12 @@ Allows you to fix the height of your floor. Just place one controller on your fl
 - **Left Controller**: Configure the left controller for push-to-talk.
 - **Right Controller**: Configure the right controller for push-to-talk.
 - **Show Notification**: Shows a notification icon in the headset when push-to-talk is enabled a configured button is pressed.
+- **Push-to-Mute**: Inverse push-to-talk. The Microphone is unmuted by default and muted when any of the configured buttons is pressed.
 - **Profile**: Allows to apply/define/delete push-to-talk profiles that save buttons, controller and notification settings.
 
 ## - Revive Page:
 
-![Revive Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/RevivePage.png)
+![Revive Page](docs/screenshots/RevivePage.png)
 
 The Revive page is only visible when the [Revive overlay](https://github.com/LibreVR/Revive) is installed. In case an installed Revive overlay is not correctly detected you can force the Revive page in the settings.
 
@@ -120,6 +139,8 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 
 - **Render Target Override**: Overrides the Oculus-side render target (aka supersampling). Enabling it prevents Oculus applications from dynamically modifying this value. Warning: Is applied on top of the SteamVR supersampling value. (pixelsPerDisplayPixel setting in the vrsettings file)
 - **Grip Button mode**: Allows to set the grip button mode. (ToggleGrip setting in the vrsettings file)
+- **Toggle Delay**: Allows to configure the toggle delay. (ToggleDelay setting in the vrsettings file)
+- **Trigger As Grip**:  Swaps the trigger and grip. (TriggerAsGrip setting in the vrsettings file)
 - **Deadzone**: Allows to modify the simulated thumbsticks' deadzone. (ThumbDeadzone setting in the vrsettings file)
 - **Sensitivity**: Allows to modify the simulated thumbsticks' sensitivity. (ThumbSensitivity setting the vrsettings file)
 - **Yaw**: Allows to modify the touch controllers yaw orientation. (TouchYaw setting the vrsettings file)
@@ -132,7 +153,7 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 
 ## - Utilities Page:
 
-![Utilities Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/UtilitiesPage.png)
+![Utilities Page](docs/screenshots/UtilitiesPage.png)
 
 - **Keyboard Utilities:** Some applications (mostly 2D-monitor applications with tackled-on/modded-in VR support) do not support the VR keyboard but require an actual physical keyboard for text input. This utilities allow to send emulated key strokes from VR keyboard input to such application to overcome this limitation. Does not work in desktop mode.
 
@@ -142,13 +163,13 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 
 ## - Accessibility Page:
 
-![Accessibility Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/AccessibilityPage.png)
+![Accessibility Page](docs/screenshots/AccessibilityPage.png)
 
 - **Adjust Player Height:** Offsets the player height to allows short or wheelchair-bound players to fully interact with height-limited applications by both boosting their height and being able to touch the in-game floor when necessary by pressing a configurable motion controller button.
 
 ## - Statistics Page:
 
-![Statistics Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/StatisticsPage.png)
+![Statistics Page](docs/screenshots/StatisticsPage.png)
 
 - **HMD Distance Moved**: Shows the distance the headset has moved on the xz-plane.
 - **HMD Rotations**: Shows the number of rotations around the y-axis (Useful for untangling the cord).
@@ -162,7 +183,7 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 
 ## - Settings Page:
 
-![Settings Page](https://raw.githubusercontent.com/matzman666/OpenVR-AdvancedSettings/master/docs/screenshots/SettingsPage.png)
+![Settings Page](docs/screenshots/SettingsPage.png)
 
 - **Autostart:** Allows you to enable/disable auto start.
 - **Force Revive Page:** Force the Revive page button on the root page to be visible.
