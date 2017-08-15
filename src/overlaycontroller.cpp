@@ -15,7 +15,6 @@
 #include <QCursor>
 #include <QProcess>
 #include <QMessageBox>
-#include <exception>
 #include <iostream>
 #include <cmath>
 #include <openvr.h>
@@ -48,6 +47,33 @@ void OverlayController::Init(QQmlEngine* qmlEngine) {
 
 	m_runtimePathUrl = QUrl::fromLocalFile(vr::VR_RuntimePath());
 	LOG(INFO) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
+
+	QString activationSoundFile = m_runtimePathUrl.toLocalFile().append("/content/panorama/sounds/activation.wav");
+	QFileInfo activationSoundFileInfo(activationSoundFile);
+	if (activationSoundFileInfo.exists() && activationSoundFileInfo.isFile()) {
+		activationSoundEffect.setSource(QUrl::fromLocalFile(activationSoundFile));
+		activationSoundEffect.setVolume(1.0);
+	} else {
+		LOG(ERROR) << "Could not find activation sound file " << activationSoundFile;
+	}
+
+	QString focusChangedSoundFile = m_runtimePathUrl.toLocalFile().append("/content/panorama/sounds/focus_change.wav");
+	QFileInfo focusChangedSoundFileInfo(focusChangedSoundFile);
+	if (focusChangedSoundFileInfo.exists() && focusChangedSoundFileInfo.isFile()) {
+		focusChangedSoundEffect.setSource(QUrl::fromLocalFile(focusChangedSoundFile));
+		focusChangedSoundEffect.setVolume(1.0);
+	} else {
+		LOG(ERROR) << "Could not find focus changed sound file " << focusChangedSoundFile;
+	}
+
+	QString alarm01SoundFile = QApplication::applicationDirPath().append("/res/sounds/alarm01.wav");
+	QFileInfo alarm01SoundFileInfo(alarm01SoundFile);
+	if (alarm01SoundFileInfo.exists() && alarm01SoundFileInfo.isFile()) {
+		alarm01SoundEffect.setSource(QUrl::fromLocalFile(alarm01SoundFile));
+		alarm01SoundEffect.setVolume(1.0);
+	} else {
+		LOG(ERROR) << "Could not find alarm01 sound file " << alarm01SoundFile;
+	}
 
 	// Check whether OpenVR is too outdated
 	if (!vr::VR_IsInterfaceVersionValid(vr::IVRSystem_Version)) {
@@ -294,13 +320,21 @@ void OverlayController::renderOverlay() {
 	}
 }
 
+bool OverlayController::pollNextEvent(vr::VROverlayHandle_t ulOverlayHandle, vr::VREvent_t* pEvent) {
+	if (isDesktopMode()) {
+		return vr::VRSystem()->PollNextEvent(pEvent, sizeof(vr::VREvent_t));
+	} else {
+		return vr::VROverlay()->PollNextOverlayEvent(ulOverlayHandle, pEvent, sizeof(vr::VREvent_t));
+	}
+}
 
 void OverlayController::OnTimeoutPumpEvents() {
 	if (!vr::VRSystem())
 		return;
 
 	vr::VREvent_t vrEvent;
-	while (vr::VROverlay()->PollNextOverlayEvent(m_ulOverlayHandle, &vrEvent, sizeof(vrEvent))) {
+	bool chaperoneDataAlreadyUpdated = false;
+	while (pollNextEvent(m_ulOverlayHandle, &vrEvent)) {
 		switch (vrEvent.eventType) {
 			case vr::VREvent_MouseMove: {
 				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
@@ -349,6 +383,7 @@ void OverlayController::OnTimeoutPumpEvents() {
 				LOG(INFO) << "Received quit request.";
 				vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some time just in case
 				moveCenterTabController.reset();
+				chaperoneTabController.shutdown();
 				Shutdown();
 				QApplication::exit();
 				return;
@@ -373,16 +408,54 @@ void OverlayController::OnTimeoutPumpEvents() {
 				emit keyBoardInputSignal(QString(keyboardBuffer), vrEvent.data.keyboard.uUserValue);
 			}
 			break;
+
+			// Multiple ChaperoneUniverseHasChanged are often emitted at the same time (some with a little bit of delay)
+			// There is no sure way to recognize redundant events, we can only exclude redundant events during the same call of OnTimeoutPumpEvents()  
+			case vr::VREvent_ChaperoneUniverseHasChanged:
+			case vr::VREvent_ChaperoneDataHasChanged: {
+				if (!chaperoneDataAlreadyUpdated) {
+					LOG(INFO) << "Re-loading chaperone data ...";
+					m_chaperoneUtils.loadChaperoneData();
+					LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() << " chaperone quads.";
+					if (m_chaperoneUtils.isChaperoneWellFormed()) {
+						LOG(INFO) << "Chaperone data seems to be well-formed.";
+					} else {
+						LOG(INFO) << "Chaperone data is NOT well-formed.";
+					}
+					chaperoneDataAlreadyUpdated = true;
+				}
+			}
+			break;
 		}
 	}
 
 	vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
 	vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0.0f, devicePoses, vr::k_unMaxTrackedDeviceCount);
+	
+	// HMD/Controller Velocities
+	auto leftId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand);
+	float leftSpeed = 0.0f;
+	if (leftId != vr::k_unTrackedDeviceIndexInvalid && devicePoses[leftId].bPoseIsValid && devicePoses[leftId].eTrackingResult == vr::TrackingResult_Running_OK) {
+		auto& vel = devicePoses[leftId].vVelocity.v;
+		leftSpeed = std::sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
+	}
+	auto rightId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_RightHand);
+	auto rightSpeed = 0.0f;
+	if (rightId != vr::k_unTrackedDeviceIndexInvalid && devicePoses[rightId].bPoseIsValid && devicePoses[rightId].eTrackingResult == vr::TrackingResult_Running_OK) {
+		auto& vel = devicePoses[rightId].vVelocity.v;
+		rightSpeed = std::sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
+	}
+	auto hmdSpeed = 0.0f;
+	if (devicePoses[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid && devicePoses[vr::k_unTrackedDeviceIndex_Hmd].eTrackingResult == vr::TrackingResult_Running_OK) {
+		auto& vel = devicePoses[vr::k_unTrackedDeviceIndex_Hmd].vVelocity.v;
+		hmdSpeed = std::sqrt(vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2]);
+	}
+	
 	fixFloorTabController.eventLoopTick(devicePoses);
-	statisticsTabController.eventLoopTick(devicePoses);
+	statisticsTabController.eventLoopTick(devicePoses, leftSpeed, rightSpeed);
 	moveCenterTabController.eventLoopTick(vr::VRCompositor()->GetTrackingSpace());
 	steamVRTabController.eventLoopTick();
-	chaperoneTabController.eventLoopTick();
+	chaperoneTabController.eventLoopTick(devicePoses, leftSpeed, rightSpeed, hmdSpeed);
 	settingsTabController.eventLoopTick();
 	reviveTabController.eventLoopTick();
 	audioTabController.eventLoopTick();
@@ -544,6 +617,39 @@ const vr::VROverlayHandle_t& OverlayController::overlayThumbnailHandle() {
 
 void OverlayController::showKeyboard(QString existingText, unsigned long userValue) {
 	vr::VROverlay()->ShowKeyboardForOverlay(m_ulOverlayHandle, vr::k_EGamepadTextInputModeNormal, vr::k_EGamepadTextInputLineModeSingleLine, "Advanced Settings Overlay", 1024, existingText.toStdString().c_str(), false, userValue);
+}
+
+
+void OverlayController::playActivationSound() {
+	if (!noSound) {
+		activationSoundEffect.play();
+	}
+}
+
+
+void OverlayController::playFocusChangedSound() {
+	if (!noSound) {
+		focusChangedSoundEffect.play();
+	}
+}
+
+void OverlayController::playAlarm01Sound(bool loop) {
+	if (!noSound && !alarm01SoundEffect.isPlaying()) {
+		if (loop) {
+			alarm01SoundEffect.setLoopCount(QSoundEffect::Infinite);
+		} else {
+			alarm01SoundEffect.setLoopCount(1);
+		}
+		alarm01SoundEffect.play();
+	}
+}
+
+void OverlayController::setAlarm01SoundVolume(float vol) {
+	alarm01SoundEffect.setVolume(vol);
+}
+
+void OverlayController::cancelAlarm01Sound() {
+	alarm01SoundEffect.stop();
 }
 
 

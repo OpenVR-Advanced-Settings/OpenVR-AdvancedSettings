@@ -13,7 +13,7 @@ void StatisticsTabController::initStage2(OverlayController * parent, QQuickWindo
 	this->widget = widget;
 }
 
-void StatisticsTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) {
+void StatisticsTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses, float leftSpeed, float rightSpeed) {
 	vr::Compositor_CumulativeStats pStats;
 	vr::VRCompositor()->GetCumulativeStats(&pStats, sizeof(vr::Compositor_CumulativeStats));
 	if (pStats.m_nPid != m_cumStats.m_nPid) {
@@ -48,26 +48,14 @@ void StatisticsTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses
 	}
 
 	// Controller speeds //
-	auto leftId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand);
-	if (leftId != vr::k_unTrackedDeviceIndexInvalid && devicePoses[leftId].bPoseIsValid && devicePoses[leftId].eTrackingResult == vr::TrackingResult_Running_OK) {
-		auto& vel = devicePoses[leftId].vVelocity.v;
-		auto lspeed = std::sqrt(std::pow(vel[0], 2) + std::pow(vel[1], 2) + std::pow(vel[2], 2));
-		if (lspeed > m_leftControllerMaxSpeed) {
-			m_leftControllerMaxSpeed = lspeed;
-		}
+	if (leftSpeed > m_leftControllerMaxSpeed) {
+		m_leftControllerMaxSpeed = leftSpeed;
 	}
-
-	auto rightId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_RightHand);
-	if (rightId != vr::k_unTrackedDeviceIndexInvalid && devicePoses[rightId].bPoseIsValid && devicePoses[rightId].eTrackingResult == vr::TrackingResult_Running_OK) {
-		auto& vel = devicePoses[rightId].vVelocity.v;
-		auto rspeed = std::sqrt(std::pow(vel[0], 2) + std::pow(vel[1], 2) + std::pow(vel[2], 2));
-		if (rspeed > m_rightControllerMaxSpeed) {
-			m_rightControllerMaxSpeed = rspeed;
-		}
+	if (rightSpeed > m_rightControllerMaxSpeed) {
+		m_rightControllerMaxSpeed = rightSpeed;
 	}
 
 	// Hmd Rotation //
-
 	/*
 	| Intrinsic y-x'-z" rotation matrix:
 	| cr*cy+sp*sr*sy | cr*sp*sy-cy*sr | cp*sy |

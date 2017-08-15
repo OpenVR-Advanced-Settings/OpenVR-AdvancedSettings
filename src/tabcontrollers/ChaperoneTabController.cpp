@@ -8,8 +8,26 @@ namespace advsettings {
 
 void ChaperoneTabController::initStage1() {
 	m_height = getBoundsMaxY();
+
+	auto settings = OverlayController::appSettings();
+	settings->beginGroup("chaperoneSettings");
+	m_enableChaperoneSwitchToBeginner = settings->value("chaperoneSwitchToBeginnerEnabled", false).toBool();
+	m_chaperoneSwitchToBeginnerDistance = settings->value("chaperoneSwitchToBeginnerDistance", 0.5f).toFloat();
+	m_enableChaperoneHapticFeedback = settings->value("chaperoneHapticFeedbackEnabled", false).toBool();
+	m_chaperoneHapticFeedbackDistance = settings->value("chaperoneHapticFeedbackDistance", 0.5f).toFloat();
+	m_enableChaperoneAlarmSound = settings->value("chaperoneAlarmSoundEnabled", false).toBool();
+	m_chaperoneAlarmSoundLooping = settings->value("chaperoneAlarmSoundLooping", true).toBool();
+	m_chaperoneAlarmSoundAdjustVolume = settings->value("chaperoneAlarmSoundAdjustVolume", false).toBool();
+	m_chaperoneAlarmSoundDistance = settings->value("chaperoneAlarmSoundDistance", 0.5f).toFloat();
+	m_enableChaperoneShowDashboard = settings->value("chaperoneShowDashboardEnabled", false).toBool();
+	m_chaperoneShowDashboardDistance = settings->value("chaperoneShowDashboardDistance", 0.5f).toFloat();
+	m_enableChaperoneVelocityModifier = settings->value("chaperoneVelocityModifierEnabled", false).toBool();
+	m_chaperoneVelocityModifier = settings->value("chaperoneVelocityModifier", 0.3f).toFloat();
+	m_chaperoneVelocityModifierCurrent = 1.0f;
+	settings->endGroup();
+	
 	reloadChaperoneProfiles();
-	eventLoopTick();
+	eventLoopTick(nullptr, 0.0f, 0.0f, 0.0f);
 }
 
 
@@ -18,6 +36,14 @@ void ChaperoneTabController::initStage2(OverlayController * parent, QQuickWindow
 	this->widget = widget;
 }
 
+
+
+ChaperoneTabController::~ChaperoneTabController() {
+	m_chaperoneHapticFeedbackActive = false;
+	if (m_chaperoneHapticFeedbackThread.joinable()) {
+		m_chaperoneHapticFeedbackThread.join();
+	}
+}
 
 
 void ChaperoneTabController::reloadChaperoneProfiles() {
@@ -93,6 +119,21 @@ void ChaperoneTabController::reloadChaperoneProfiles() {
 		entry.includesForceBounds = settings->value("includesForceBounds", false).toBool();
 		if (entry.includesForceBounds) {
 			entry.forceBounds = settings->value("forceBounds", false).toBool();
+		}
+		entry.includesProximityWarningSettings = settings->value("includesProximityWarningSettings", false).toBool();
+		if (entry.includesProximityWarningSettings){
+			entry.enableChaperoneSwitchToBeginner = settings->value("chaperoneSwitchToBeginnerEnabled", false).toBool();
+			entry.chaperoneSwitchToBeginnerDistance = settings->value("chaperoneSwitchToBeginnerDistance", 0.5f).toFloat();
+			entry.enableChaperoneHapticFeedback = settings->value("chaperoneHapticFeedbackEnabled", false).toBool();
+			entry.chaperoneHapticFeedbackDistance = settings->value("chaperoneHapticFeedbackDistance", 0.5f).toFloat();
+			entry.enableChaperoneAlarmSound = settings->value("chaperoneAlarmSoundEnabled", false).toBool();
+			entry.chaperoneAlarmSoundLooping = settings->value("chaperoneAlarmSoundLooping", true).toBool();
+			entry.chaperoneAlarmSoundAdjustVolume = settings->value("chaperoneAlarmSoundAdjustVolume", false).toBool();
+			entry.chaperoneAlarmSoundDistance = settings->value("chaperoneAlarmSoundDistance", 0.5f).toFloat();
+			entry.enableChaperoneShowDashboard = settings->value("chaperoneShowDashboardEnabled", false).toBool();
+			entry.chaperoneShowDashboardDistance = settings->value("chaperoneShowDashboardDistance", 0.5f).toFloat();
+			entry.enableChaperoneVelocityModifier = settings->value("chaperoneVelocityModifierEnabled", false).toBool();
+			entry.chaperoneVelocityModifier = settings->value("chaperoneVelocityModifier", 0.3f).toFloat();
 		}
 	}
 	settings->endArray();
@@ -171,15 +212,191 @@ void ChaperoneTabController::saveChaperoneProfiles() {
 		if (p.includesForceBounds) {
 			settings->setValue("forceBounds", p.forceBounds);
 		}
+		settings->setValue("includesProximityWarningSettings", p.includesProximityWarningSettings);
+		if (p.includesProximityWarningSettings) {
+			settings->setValue("chaperoneSwitchToBeginnerEnabled", p.enableChaperoneSwitchToBeginner);
+			settings->setValue("chaperoneSwitchToBeginnerDistance", p.chaperoneSwitchToBeginnerDistance);
+			settings->setValue("chaperoneHapticFeedbackEnabled", p.enableChaperoneHapticFeedback);
+			settings->setValue("chaperoneHapticFeedbackDistance", p.chaperoneHapticFeedbackDistance);
+			settings->setValue("chaperoneAlarmSoundEnabled", p.enableChaperoneAlarmSound);
+			settings->setValue("chaperoneAlarmSoundLooping", p.chaperoneAlarmSoundLooping);
+			settings->setValue("chaperoneAlarmSoundAdjustVolume", p.chaperoneAlarmSoundAdjustVolume);
+			settings->setValue("chaperoneAlarmSoundDistance", p.chaperoneAlarmSoundDistance);
+			settings->setValue("chaperoneShowDashboardEnabled", p.enableChaperoneShowDashboard);
+			settings->setValue("chaperoneShowDashboardDistance", p.chaperoneShowDashboardDistance);
+			settings->setValue("chaperoneVelocityModifierEnabled", p.enableChaperoneVelocityModifier);
+			settings->setValue("chaperoneVelocityModifier", p.chaperoneVelocityModifier);
+		}
 		i++;
 	}
 	settings->endArray();
 	settings->endGroup();
-
 }
 
 
-void ChaperoneTabController::eventLoopTick() {
+void ChaperoneTabController::handleChaperoneWarnings(float distance) {
+	vr::VRControllerState_t hmdState;
+	vr::VRSystem()->GetControllerState(vr::k_unTrackedDeviceIndex_Hmd, &hmdState, sizeof(vr::VRControllerState_t));
+
+	// Switch to Beginner Mode
+	if (m_enableChaperoneSwitchToBeginner) {
+		float activationDistance = m_chaperoneSwitchToBeginnerDistance * m_chaperoneVelocityModifierCurrent;
+		if (distance <= activationDistance && (hmdState.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor)) && !m_chaperoneSwitchToBeginnerActive) {
+			vr::EVRSettingsError vrSettingsError;
+			m_chaperoneSwitchToBeginnerLastStyle = vr::VRSettings()->GetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_Style_Int32, &vrSettingsError);
+			if (vrSettingsError != vr::VRSettingsError_None) {
+				LOG(WARNING) << "Could not read \"" << vr::k_pch_CollisionBounds_Style_Int32 << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+			} else {
+				vr::VRSettings()->SetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_Style_Int32, vr::COLLISION_BOUNDS_STYLE_BEGINNER, &vrSettingsError);
+				if (vrSettingsError != vr::VRSettingsError_None) {
+					LOG(WARNING) << "Could not set \"" << vr::k_pch_CollisionBounds_Style_Int32 << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+				} else {
+					vr::VRSettings()->Sync(true);
+					m_chaperoneSwitchToBeginnerActive = true;
+				}
+			}
+		} else if ((distance > activationDistance || !(hmdState.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor))) && m_chaperoneSwitchToBeginnerActive) {
+			vr::EVRSettingsError vrSettingsError;
+			vr::VRSettings()->SetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_Style_Int32, m_chaperoneSwitchToBeginnerLastStyle, &vrSettingsError);
+			if (vrSettingsError != vr::VRSettingsError_None) {
+				LOG(WARNING) << "Could not set \"" << vr::k_pch_CollisionBounds_Style_Int32 << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+			} else {
+				vr::VRSettings()->Sync(true);
+				m_chaperoneSwitchToBeginnerActive = false;
+			}
+		}
+	}
+
+	// Haptic Feedback
+	if (m_enableChaperoneHapticFeedback) {
+		float activationDistance = m_chaperoneHapticFeedbackDistance * m_chaperoneVelocityModifierCurrent;
+		if (distance <= activationDistance && (hmdState.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor))) {
+			if (!m_chaperoneHapticFeedbackActive) {
+				if (m_chaperoneHapticFeedbackThread.joinable()) {
+					m_chaperoneHapticFeedbackActive = false;
+					m_chaperoneHapticFeedbackThread.join();
+				}
+				m_chaperoneHapticFeedbackActive = true;
+				m_chaperoneHapticFeedbackThread = std::thread([](ChaperoneTabController* _this) {
+					auto leftIndex = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand);
+					auto rightIndex = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_RightHand);
+					while (_this->m_chaperoneHapticFeedbackActive) {
+						if (leftIndex != vr::k_unTrackedDeviceIndexInvalid) {
+							vr::VRSystem()->TriggerHapticPulse(leftIndex, 0, 2000);
+						}
+						if (rightIndex != vr::k_unTrackedDeviceIndexInvalid) {
+							vr::VRSystem()->TriggerHapticPulse(rightIndex, 0, 2000);
+						}
+						std::this_thread::sleep_for(std::chrono::milliseconds(5));
+					}
+				}, this);
+			}
+		} else if ((distance > activationDistance || !(hmdState.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor))) && m_chaperoneHapticFeedbackActive) {
+			m_chaperoneHapticFeedbackActive = false;
+		}
+	}
+
+	// Alarm Sound
+	if (m_enableChaperoneAlarmSound) {
+		float activationDistance = m_chaperoneAlarmSoundDistance * m_chaperoneVelocityModifierCurrent;
+		if (distance <= activationDistance && (hmdState.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor))) {
+			if (!m_chaperoneAlarmSoundActive) {
+				parent->playAlarm01Sound(m_chaperoneAlarmSoundLooping);
+				m_chaperoneAlarmSoundActive = true;
+			}
+			if (m_chaperoneAlarmSoundLooping && m_chaperoneAlarmSoundAdjustVolume) {
+				float vol = 1.1f - distance / activationDistance;
+				if (vol > 1.0f) {
+					vol = 1.0f;
+				}
+				parent->setAlarm01SoundVolume(vol);
+			} else {
+				parent->setAlarm01SoundVolume(1.0f);
+			}
+		} else if ((distance > activationDistance || !(hmdState.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor))) && m_chaperoneAlarmSoundActive) {
+			parent->cancelAlarm01Sound();
+			m_chaperoneAlarmSoundActive = false;
+		}
+	}
+
+	// Show Dashboard
+	if (m_enableChaperoneShowDashboard) {
+		float activationDistance = m_chaperoneShowDashboardDistance * m_chaperoneVelocityModifierCurrent;
+		if (distance <= activationDistance && !m_chaperoneShowDashboardActive) {
+			if (!vr::VROverlay()->IsDashboardVisible()) {
+				vr::VROverlay()->ShowDashboard(OverlayController::applicationKey);
+			}
+			m_chaperoneShowDashboardActive = true;
+		} else if (distance > activationDistance && m_chaperoneShowDashboardActive) {
+			m_chaperoneShowDashboardActive = false;
+		}
+	}
+}
+
+
+void ChaperoneTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses, float leftSpeed, float rightSpeed, float hmdSpeed) {
+	m_chaperoneVelocityModifierCurrent = 1.0f;
+	if (m_enableChaperoneVelocityModifier) {
+		float mod = m_chaperoneVelocityModifier * std::max({ leftSpeed, rightSpeed, hmdSpeed });
+		if (mod > 0.02) {
+			m_chaperoneVelocityModifierCurrent += mod;
+		}
+	}
+	//LOG(INFO) << "m_chaperoneVelocityModifierCurrent: " << m_chaperoneVelocityModifierCurrent;
+	float newFadeDistance = m_fadeDistance * m_chaperoneVelocityModifierCurrent;
+	if (m_fadeDistanceModified != newFadeDistance) {
+		m_fadeDistanceModified = newFadeDistance;
+		vr::VRSettings()->SetFloat(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_FadeDistance_Float, m_fadeDistanceModified);
+		vr::VRSettings()->Sync();
+	}
+
+	if (devicePoses) {
+		std::lock_guard<std::recursive_mutex> lock(parent->chaperoneUtils().mutex());
+		auto minDistance = NAN;
+		auto& poseHmd = devicePoses[vr::k_unTrackedDeviceIndex_Hmd];
+		if (poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK) {
+			auto distanceHmd = parent->chaperoneUtils().getDistanceToChaperone({
+				poseHmd.mDeviceToAbsoluteTracking.m[0][3],
+				poseHmd.mDeviceToAbsoluteTracking.m[1][3],
+				poseHmd.mDeviceToAbsoluteTracking.m[2][3]
+			});
+			if (!isnan(distanceHmd)) {
+				minDistance = distanceHmd;
+			}
+		}
+		auto leftIndex = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand);
+		if (leftIndex != vr::k_unTrackedDeviceIndexInvalid) {
+			auto& poseLeft = devicePoses[leftIndex];
+			if (poseLeft.bPoseIsValid && poseLeft.bDeviceIsConnected && poseLeft.eTrackingResult == vr::TrackingResult_Running_OK) {
+				auto distanceLeft = parent->chaperoneUtils().getDistanceToChaperone({
+					poseLeft.mDeviceToAbsoluteTracking.m[0][3],
+					poseLeft.mDeviceToAbsoluteTracking.m[1][3],
+					poseLeft.mDeviceToAbsoluteTracking.m[2][3]
+				});
+				if (!isnan(distanceLeft) && (isnan(minDistance) || distanceLeft < minDistance)) {
+					minDistance = distanceLeft;
+				}
+			}
+		}
+		auto rightIndex = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_RightHand);
+		if (rightIndex != vr::k_unTrackedDeviceIndexInvalid) {
+			auto& poseRight = devicePoses[rightIndex];
+			if (poseRight.bPoseIsValid && poseRight.bDeviceIsConnected && poseRight.eTrackingResult == vr::TrackingResult_Running_OK) {
+				auto distanceRight = parent->chaperoneUtils().getDistanceToChaperone({
+					poseRight.mDeviceToAbsoluteTracking.m[0][3],
+					poseRight.mDeviceToAbsoluteTracking.m[1][3],
+					poseRight.mDeviceToAbsoluteTracking.m[2][3]
+				});
+				if (!isnan(distanceRight) && (isnan(minDistance) || distanceRight < minDistance)) {
+					minDistance = distanceRight;
+				}
+			}
+		}
+		if (!isnan(minDistance)) {
+			handleChaperoneWarnings(minDistance);
+		}
+	}
+
 	if (settingsUpdateCounter >= 50) {
 		vr::EVRSettingsError vrSettingsError;
 		float vis = vr::VRSettings()->GetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_ColorGammaA_Int32, &vrSettingsError);
@@ -187,11 +404,13 @@ void ChaperoneTabController::eventLoopTick() {
 			LOG(WARNING) << "Could not read \"" << vr::k_pch_CollisionBounds_ColorGammaA_Int32 << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
 		}
 		setBoundsVisibility(vis/255.0f);
-		auto fd = vr::VRSettings()->GetFloat(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_FadeDistance_Float, &vrSettingsError);
-		if (vrSettingsError != vr::VRSettingsError_None) {
-			LOG(WARNING) << "Could not read \"" << vr::k_pch_CollisionBounds_FadeDistance_Float << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		if (m_chaperoneVelocityModifierCurrent == 1.0f) {
+			auto fd = vr::VRSettings()->GetFloat(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_FadeDistance_Float, &vrSettingsError);
+			if (vrSettingsError != vr::VRSettingsError_None) {
+				LOG(WARNING) << "Could not read \"" << vr::k_pch_CollisionBounds_FadeDistance_Float << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+			}
+			setFadeDistance(fd);
 		}
-		setFadeDistance(fd);
 		auto cm = vr::VRSettings()->GetBool(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_CenterMarkerOn_Bool, &vrSettingsError);
 		if (vrSettingsError != vr::VRSettingsError_None) {
 			LOG(WARNING) << "Could not read \"" << vr::k_pch_CollisionBounds_CenterMarkerOn_Bool << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
@@ -319,6 +538,62 @@ bool ChaperoneTabController::forceBounds() const {
 	return m_forceBounds;
 }
 
+
+bool ChaperoneTabController::isChaperoneSwitchToBeginnerEnabled() const {
+	return m_enableChaperoneSwitchToBeginner;
+}
+
+float ChaperoneTabController::chaperoneSwitchToBeginnerDistance() const {
+	return m_chaperoneSwitchToBeginnerDistance;
+}
+
+
+bool ChaperoneTabController::isChaperoneHapticFeedbackEnabled() const {
+	return m_enableChaperoneHapticFeedback;
+}
+
+float ChaperoneTabController::chaperoneHapticFeedbackDistance() const {
+	return m_chaperoneHapticFeedbackDistance;
+}
+
+
+bool ChaperoneTabController::isChaperoneAlarmSoundEnabled() const {
+	return m_enableChaperoneAlarmSound;
+}
+
+bool ChaperoneTabController::isChaperoneAlarmSoundLooping() const {
+	return m_chaperoneAlarmSoundLooping;
+}
+
+bool ChaperoneTabController::isChaperoneAlarmSoundAdjustVolume() const {
+	return m_chaperoneAlarmSoundAdjustVolume;
+}
+
+float ChaperoneTabController::chaperoneAlarmSoundDistance() const {
+	return m_chaperoneAlarmSoundDistance;
+}
+
+
+bool ChaperoneTabController::isChaperoneShowDashboardEnabled() const {
+	return m_enableChaperoneShowDashboard;
+}
+
+float ChaperoneTabController::chaperoneShowDashboardDistance() const {
+	return m_chaperoneShowDashboardDistance;
+}
+
+
+bool ChaperoneTabController::isChaperoneVelocityModifierEnabled() const {
+	return m_enableChaperoneVelocityModifier;
+}
+
+float ChaperoneTabController::chaperoneVelocityModifier() const {
+	return m_chaperoneVelocityModifier;
+}
+
+
+
+
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount() {
 	return (unsigned)chaperoneProfiles.size();
 }
@@ -341,6 +616,207 @@ void ChaperoneTabController::setForceBounds(bool value, bool notify) {
 	}
 }
 
+
+void ChaperoneTabController::setChaperoneSwitchToBeginnerEnabled(bool value, bool notify) {
+	if (m_enableChaperoneSwitchToBeginner != value) {
+		if (!value && m_chaperoneSwitchToBeginnerActive) {
+			vr::EVRSettingsError vrSettingsError;
+			vr::VRSettings()->SetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_Style_Int32, m_chaperoneSwitchToBeginnerLastStyle, &vrSettingsError);
+			if (vrSettingsError != vr::VRSettingsError_None) {
+				LOG(WARNING) << "Could not set \"" << vr::k_pch_CollisionBounds_Style_Int32 << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+			} else {
+				vr::VRSettings()->Sync(true);
+			}
+		}
+		m_enableChaperoneSwitchToBeginner = value;
+		m_chaperoneSwitchToBeginnerActive = false;
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("chaperoneSettings");
+		settings->setValue("chaperoneSwitchToBeginnerEnabled", m_enableChaperoneSwitchToBeginner);
+		settings->endGroup();
+		settings->sync();
+		if (notify) {
+			emit chaperoneSwitchToBeginnerEnabledChanged(m_enableChaperoneSwitchToBeginner);
+		}
+	}
+}
+
+void ChaperoneTabController::setChaperoneSwitchToBeginnerDistance(float value, bool notify) {
+	if (m_chaperoneSwitchToBeginnerDistance != value) {
+		m_chaperoneSwitchToBeginnerDistance = value;
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("chaperoneSettings");
+		settings->setValue("chaperoneSwitchToBeginnerDistance", m_chaperoneSwitchToBeginnerDistance);
+		settings->endGroup();
+		settings->sync();
+		if (notify) {
+			emit chaperoneSwitchToBeginnerDistanceChanged(m_chaperoneSwitchToBeginnerDistance);
+		}
+	}
+}
+
+
+void ChaperoneTabController::setChaperoneHapticFeedbackEnabled(bool value, bool notify) {
+	if (m_enableChaperoneHapticFeedback != value) {
+		m_chaperoneHapticFeedbackActive = false;
+		if (m_chaperoneHapticFeedbackThread.joinable()) {
+			m_chaperoneHapticFeedbackThread.join();
+		}
+		m_enableChaperoneHapticFeedback = value;
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("chaperoneSettings");
+		settings->setValue("chaperoneHapticFeedbackEnabled", m_enableChaperoneHapticFeedback);
+		settings->endGroup();
+		settings->sync();
+		if (notify) {
+			emit chaperoneHapticFeedbackEnabledChanged(m_enableChaperoneHapticFeedback);
+		}
+	}
+}
+
+void ChaperoneTabController::setChaperoneHapticFeedbackDistance(float value, bool notify) {
+	if (m_chaperoneHapticFeedbackDistance != value) {
+		m_chaperoneHapticFeedbackDistance = value;
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("chaperoneSettings");
+		settings->setValue("chaperoneHapticFeedbackDistance", m_chaperoneHapticFeedbackDistance);
+		settings->endGroup();
+		settings->sync();
+		if (notify) {
+			emit chaperoneHapticFeedbackDistanceChanged(m_chaperoneHapticFeedbackDistance);
+		}
+	}
+}
+
+
+void ChaperoneTabController::setChaperoneAlarmSoundEnabled(bool value, bool notify) {
+	if (m_enableChaperoneAlarmSound != value) {
+		if (!value && m_chaperoneAlarmSoundActive) {
+			parent->cancelAlarm01Sound();
+		}
+		m_enableChaperoneAlarmSound = value;
+		m_chaperoneAlarmSoundActive = false;
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("chaperoneSettings");
+		settings->setValue("chaperoneAlarmSoundEnabled", m_enableChaperoneAlarmSound);
+		settings->endGroup();
+		settings->sync();
+		if (notify) {
+			emit chaperoneAlarmSoundEnabledChanged(m_enableChaperoneAlarmSound);
+		}
+	}
+}
+
+void ChaperoneTabController::setChaperoneAlarmSoundLooping(bool value, bool notify) {
+	if (m_chaperoneAlarmSoundLooping != value) {
+		m_chaperoneAlarmSoundLooping = value;
+		if (m_enableChaperoneAlarmSound && m_chaperoneAlarmSoundActive) {
+			if (m_chaperoneAlarmSoundLooping) {
+				parent->playAlarm01Sound(m_chaperoneAlarmSoundLooping);
+			} else {
+				parent->cancelAlarm01Sound();
+			}
+		}
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("chaperoneSettings");
+		settings->setValue("chaperoneAlarmSoundLooping", m_chaperoneAlarmSoundLooping);
+		settings->endGroup();
+		settings->sync();
+		if (notify) {
+			emit chaperoneAlarmSoundLoopingChanged(m_chaperoneAlarmSoundLooping);
+		}
+	}
+}
+
+void ChaperoneTabController::setChaperoneAlarmSoundAdjustVolume(bool value, bool notify) {
+	if (m_chaperoneAlarmSoundAdjustVolume != value) {
+		m_chaperoneAlarmSoundAdjustVolume = value;
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("chaperoneSettings");
+		settings->setValue("chaperoneAlarmSoundAdjustVolume", m_chaperoneAlarmSoundAdjustVolume);
+		settings->endGroup();
+		settings->sync();
+		if (notify) {
+			emit chaperoneAlarmSoundAdjustVolumeChanged(m_chaperoneAlarmSoundAdjustVolume);
+		}
+	}
+}
+
+void ChaperoneTabController::setChaperoneAlarmSoundDistance(float value, bool notify) {
+	if (m_chaperoneAlarmSoundDistance != value) {
+		m_chaperoneAlarmSoundDistance = value;
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("chaperoneSettings");
+		settings->setValue("chaperoneAlarmSoundDistance", m_chaperoneAlarmSoundDistance);
+		settings->endGroup();
+		settings->sync();
+		if (notify) {
+			emit chaperoneAlarmSoundDistanceChanged(m_chaperoneAlarmSoundDistance);
+		}
+	}
+}
+
+
+void ChaperoneTabController::setChaperoneShowDashboardEnabled(bool value, bool notify) {
+	if (m_enableChaperoneShowDashboard != value) {
+		m_enableChaperoneShowDashboard = value;
+		m_chaperoneShowDashboardActive = false;
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("chaperoneSettings");
+		settings->setValue("chaperoneShowDashboardEnabled", m_enableChaperoneShowDashboard);
+		settings->endGroup();
+		settings->sync();
+		if (notify) {
+			emit chaperoneShowDashboardEnabledChanged(m_enableChaperoneShowDashboard);
+		}
+	}
+}
+
+void ChaperoneTabController::setChaperoneShowDashboardDistance(float value, bool notify) {
+	if (m_chaperoneShowDashboardDistance != value) {
+		m_chaperoneShowDashboardDistance = value;
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("chaperoneSettings");
+		settings->setValue("chaperoneShowDashboardDistance", m_chaperoneShowDashboardDistance);
+		settings->endGroup();
+		settings->sync();
+		if (notify) {
+			emit chaperoneShowDashboardDistanceChanged(m_chaperoneShowDashboardDistance);
+		}
+	}
+}
+
+
+void ChaperoneTabController::setChaperoneVelocityModifierEnabled(bool value, bool notify) {
+	if (m_enableChaperoneVelocityModifier != value) {
+		m_enableChaperoneVelocityModifier = value;
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("chaperoneSettings");
+		settings->setValue("chaperoneVelocityModifierEnabled", m_enableChaperoneVelocityModifier);
+		settings->endGroup();
+		settings->sync();
+		if (notify) {
+			emit chaperoneVelocityModifierEnabledChanged(m_enableChaperoneVelocityModifier);
+		}
+	}
+}
+
+void ChaperoneTabController::setChaperoneVelocityModifier(float value, bool notify) {
+	if (m_chaperoneVelocityModifier != value) {
+		m_chaperoneVelocityModifier = value;
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("chaperoneSettings");
+		settings->setValue("chaperoneVelocityModifier", m_chaperoneVelocityModifier);
+		settings->endGroup();
+		settings->sync();
+		if (notify) {
+			emit chaperoneVelocityModifierChanged(m_chaperoneVelocityModifier);
+		}
+	}
+}
+
+
+
 void ChaperoneTabController::flipOrientation() {
 	parent->RotateUniverseCenter(vr::TrackingUniverseStanding, (float)M_PI);
 }
@@ -351,7 +827,7 @@ void ChaperoneTabController::reloadFromDisk() {
 }
 
 void ChaperoneTabController::addChaperoneProfile(QString name, bool includeGeometry, bool includeVisbility, bool includeFadeDistance, bool includeCenterMarker,
-		bool includePlaySpaceMarker, bool includeFloorBounds, bool includeBoundsColor, bool includeChaperoneStyle, bool includeForceBounds) {
+		bool includePlaySpaceMarker, bool includeFloorBounds, bool includeBoundsColor, bool includeChaperoneStyle, bool includeForceBounds, bool includesProximityWarningSettings) {
 	vr::EVRSettingsError vrSettingsError;
 	ChaperoneProfile* profile = nullptr;
 	for (auto& p : chaperoneProfiles) {
@@ -426,6 +902,21 @@ void ChaperoneTabController::addChaperoneProfile(QString name, bool includeGeome
 	if (includeForceBounds) {
 		profile->forceBounds = m_forceBounds;
 	}
+	profile->includesProximityWarningSettings = includesProximityWarningSettings;
+	if (includesProximityWarningSettings) {
+		profile->enableChaperoneSwitchToBeginner = m_enableChaperoneSwitchToBeginner;
+		profile->chaperoneSwitchToBeginnerDistance = m_chaperoneSwitchToBeginnerDistance;
+		profile->enableChaperoneHapticFeedback = m_enableChaperoneHapticFeedback;
+		profile->chaperoneHapticFeedbackDistance = m_chaperoneHapticFeedbackDistance;
+		profile->enableChaperoneAlarmSound = m_enableChaperoneAlarmSound;
+		profile->chaperoneAlarmSoundLooping = m_chaperoneAlarmSoundLooping;
+		profile->chaperoneAlarmSoundAdjustVolume = m_chaperoneAlarmSoundAdjustVolume;
+		profile->chaperoneAlarmSoundDistance = m_chaperoneAlarmSoundDistance;
+		profile->enableChaperoneShowDashboard = m_enableChaperoneShowDashboard;
+		profile->chaperoneShowDashboardDistance = m_chaperoneShowDashboardDistance;
+		profile->enableChaperoneVelocityModifier = m_enableChaperoneVelocityModifier;
+		profile->chaperoneVelocityModifier = m_chaperoneVelocityModifier;
+	}
 	saveChaperoneProfiles();
 	OverlayController::appSettings()->sync();
 	emit chaperoneProfilesUpdated();
@@ -467,7 +958,21 @@ void ChaperoneTabController::applyChaperoneProfile(unsigned index) {
 		if (profile.includesForceBounds) {
 			setForceBounds(profile.forceBounds);
 		}
-		vr::VRSettings()->Sync();
+		if (profile.includesProximityWarningSettings) {
+			setChaperoneSwitchToBeginnerDistance(profile.chaperoneSwitchToBeginnerDistance);
+			setChaperoneSwitchToBeginnerEnabled(profile.enableChaperoneSwitchToBeginner);
+			setChaperoneHapticFeedbackDistance(profile.chaperoneHapticFeedbackDistance);
+			setChaperoneHapticFeedbackEnabled(profile.enableChaperoneHapticFeedback);
+			setChaperoneAlarmSoundLooping(profile.chaperoneAlarmSoundLooping);
+			setChaperoneAlarmSoundAdjustVolume(profile.chaperoneAlarmSoundAdjustVolume);
+			setChaperoneAlarmSoundDistance(profile.chaperoneAlarmSoundDistance);
+			setChaperoneAlarmSoundEnabled(profile.enableChaperoneAlarmSound);
+			setChaperoneShowDashboardDistance(profile.chaperoneShowDashboardDistance);
+			setChaperoneShowDashboardEnabled(profile.enableChaperoneShowDashboard);
+			setChaperoneVelocityModifier(profile.chaperoneVelocityModifier);
+			setChaperoneVelocityModifierEnabled(profile.enableChaperoneVelocityModifier);
+		}
+		vr::VRSettings()->Sync(true);
 		updateHeight(getBoundsMaxY());
 	}
 }
@@ -533,5 +1038,19 @@ void ChaperoneTabController::reset() {
 	vr::VRSettings()->Sync();
 	settingsUpdateCounter = 999; // Easiest way to get default values
 }
+
+
+void ChaperoneTabController::shutdown() {
+	if (m_enableChaperoneSwitchToBeginner && m_chaperoneSwitchToBeginnerActive) {
+		vr::EVRSettingsError vrSettingsError;
+		vr::VRSettings()->SetInt32(vr::k_pch_CollisionBounds_Section, vr::k_pch_CollisionBounds_Style_Int32, m_chaperoneSwitchToBeginnerLastStyle, &vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None) {
+			LOG(WARNING) << "Could not set \"" << vr::k_pch_CollisionBounds_Style_Int32 << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+		} else {
+			vr::VRSettings()->Sync(true);
+		}
+	}
+}
+
 
 } // namespace advconfig

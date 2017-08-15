@@ -55,7 +55,7 @@ public:
 	void initStage1();
 	void initStage2(OverlayController* parent, QQuickWindow* widget);
 
-	void eventLoopTick(vr::TrackedDevicePose_t* devicePoses);
+	void eventLoopTick(vr::TrackedDevicePose_t* devicePoses, float leftSpeed, float rightSpeed);
 
 	float hmdDistanceMoved() const;
 	float hmdRotations() const;

@@ -95,6 +95,21 @@ void removeManifest() {
 }
 
 
+class MyQApplication : public QApplication {
+public:
+	using QApplication::QApplication;
+
+	virtual bool notify(QObject * receiver, QEvent * event) override {
+		try {
+			return QApplication::notify(receiver, event);
+		} catch (std::exception& e) {
+			LOG(ERROR) << "Exception thrown from an event handler: " << e.what();
+		}
+		return false;
+	}
+};
+
+
 int main(int argc, char *argv[]) {
 	
 	bool desktopMode = false;
@@ -149,7 +164,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	try {
-		QApplication a(argc, argv);
+		MyQApplication a(argc, argv);
 		a.setOrganizationName("matzman666");
 		a.setApplicationName("OpenVRAdvancedSettings");
 		a.setApplicationDisplayName(advsettings::OverlayController::applicationName);
@@ -174,7 +189,7 @@ int main(int argc, char *argv[]) {
 		}
 		conf.setRemainingToDefault();
 		el::Loggers::reconfigureAllLoggers(conf);
-		LOG(INFO) << "Application started";
+		LOG(INFO) << "Application started (Version " << advsettings::OverlayController::applicationVersionString << ")";
 		LOG(INFO) << "Log Config: " << QDir::toNativeSeparators(logconfigfile).toStdString();
 		if (!logFilePath.isEmpty()) {
 			LOG(INFO) << "Log File: " << logFilePath;

@@ -3,6 +3,7 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
 import matzman666.advsettings 1.0
+import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 
 MyStackViewPage {
     headerText: "Chaperone Settings"
@@ -102,6 +103,11 @@ MyStackViewPage {
                 Layout.leftMargin: 32
                 text: "Force Bounds Setting"
             }
+            MyToggleButton {
+                id: chaperoneNewProfileIncludeProximityWarnings
+                Layout.leftMargin: 32
+                text: "Proximity Warning Settings"
+            }
         }
         onClosed: {
             if (okClicked) {
@@ -115,7 +121,8 @@ MyStackViewPage {
                             && !chaperoneNewProfileIncludeFloorBoundsMarker.checked
                             && !chaperoneNewProfileIncludeBoundsColor.checked
                             && !chaperoneNewProfileIncludeStyle.checked
-                            && !chaperoneNewProfileIncludeForceBounds.checked) {
+                            && !chaperoneNewProfileIncludeForceBounds.checked
+                            && !chaperoneNewProfileIncludeProximityWarnings.checked) {
                     chaperoneMessageDialog.showMessage("Create New Profile", "ERROR: Nothing included.")
                 } else {
                     ChaperoneTabController.addChaperoneProfile(chaperoneNewProfileName.text,
@@ -127,7 +134,8 @@ MyStackViewPage {
                                                                chaperoneNewProfileIncludeFloorBoundsMarker.checked,
                                                                chaperoneNewProfileIncludeBoundsColor.checked,
                                                                chaperoneNewProfileIncludeStyle.checked,
-                                                               chaperoneNewProfileIncludeForceBounds.checked)
+                                                               chaperoneNewProfileIncludeForceBounds.checked,
+                                                               chaperoneNewProfileIncludeProximityWarnings.checked)
                 }
 
             }
@@ -143,6 +151,7 @@ MyStackViewPage {
             chaperoneNewProfileIncludeBoundsColor.checked = false
             chaperoneNewProfileIncludeStyle.checked = false
             chaperoneNewProfileIncludeForceBounds.checked = false
+            chaperoneNewProfileIncludeProximityWarnings.checked = false
             open()
         }
     }
@@ -438,6 +447,18 @@ MyStackViewPage {
                 text: "Force Bounds"
                 onCheckedChanged: {
                     ChaperoneTabController.setForceBounds(this.checked, false)
+                }
+            }
+
+            Item { Layout.fillWidth: true }
+
+            MyPushButton {
+                id: chaperoneWarningsConfigButton
+                text: "Proximity Warning Settings"
+                Layout.preferredWidth: 350
+                onClicked: {
+                    MyResources.playFocusChangedSound()
+                    mainView.push(chaperoneWarningsPage)
                 }
             }
         }

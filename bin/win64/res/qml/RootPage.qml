@@ -144,7 +144,7 @@ MyStackViewPage {
                    Layout.fillHeight: true
                    Layout.fillWidth: true
                    Layout.leftMargin: 80
-                   spacing: 18
+                   spacing: 9
 
                    RowLayout {
                        spacing: 18

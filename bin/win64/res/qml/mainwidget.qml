@@ -23,6 +23,11 @@ Rectangle {
         visible: false
     }
 
+    property ChaperoneWarningsPage chaperoneWarningsPage: ChaperoneWarningsPage {
+        stackView: mainView
+        visible: false
+    }
+
     property PlayspacePage playspacePage: PlayspacePage {
         stackView: mainView
         visible: false
