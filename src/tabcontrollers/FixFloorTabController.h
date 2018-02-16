@@ -25,9 +25,13 @@ private:
 	int state = 0; // 0 .. idle, 1 .. measurement in progress
 	vr::TrackedDeviceIndex_t referenceController = vr::k_unTrackedDeviceIndexInvalid;
 	unsigned measurementCount = 0;
+	double tempOffsetX = 0.0;
 	double tempOffsetY = 0.0;
+	double tempOffsetZ = 0.0;
 	double tempRoll = 0.0;
-	float floorOffset = 0.0f;
+	float floorOffsetX = 0.0f;
+	float floorOffsetY = 0.0f;
+	float floorOffsetZ = 0.0f;
 	QString statusMessage = "";
 	float statusMessageTimeout = 0.0f;
 	bool m_canUndo = false;

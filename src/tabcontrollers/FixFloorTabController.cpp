@@ -62,7 +62,9 @@ void FixFloorTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) 
 				}
 
 				auto& m = devicePoses[referenceController].mDeviceToAbsoluteTracking.m;
+				tempOffsetX = (double)m[0][3];
 				tempOffsetY = (double)m[1][3];
+				tempOffsetZ = (double)m[2][3];
 				/*
 				| Intrinsic y-x'-z" rotation matrix:
 				| cr*cy+sp*sr*sy | cr*sp*sy-cy*sr | cp*sy |
@@ -96,12 +98,14 @@ void FixFloorTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) 
 
 			if (measurementCount >= 25) {
 				if (std::abs(tempRoll) <= M_PI_2) {
-					floorOffset = tempOffsetY - controllerUpOffsetCorrection;
+					floorOffsetY = tempOffsetY - controllerUpOffsetCorrection;
 				} else {
-					floorOffset = tempOffsetY - controllerDownOffsetCorrection;
+					floorOffsetY = tempOffsetY - controllerDownOffsetCorrection;
 				}
-				LOG(INFO) << "Fix Floor: Floor Offset = " << floorOffset;
-				parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, floorOffset, false);
+				LOG(INFO) << "Fix Floor: Floor Offset = [" << floorOffsetX << ", " << floorOffsetY << ", " << floorOffsetZ << "]";
+				parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 0, floorOffsetX, false);
+				parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, floorOffsetY, false);
+				parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 2, floorOffsetZ, false);
 				statusMessage = "Fixing ... OK";
 				statusMessageTimeout = 1.0;
 				emit statusMessageSignal();
@@ -144,9 +148,9 @@ void FixFloorTabController::fixFloorClicked() {
 }
 
 void FixFloorTabController::undoFixFloorClicked() {
-	parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, -floorOffset, false);
-	LOG(INFO) << "Fix Floor: Undo Floor Offset = " << -floorOffset;
-	floorOffset = 0.0f;
+	parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, -floorOffsetY, false);
+	LOG(INFO) << "Fix Floor: Undo Floor Offset = " << -floorOffsetY;
+	floorOffsetY = 0.0f;
 	statusMessage = "Undo ... OK";
 	statusMessageTimeout = 1.0;
 	emit statusMessageSignal();
