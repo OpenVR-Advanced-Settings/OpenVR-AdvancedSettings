@@ -102,7 +102,7 @@ void FixFloorTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) 
 				} else {
 					floorOffsetY = tempOffsetY - controllerDownOffsetCorrection;
 				}
-				LOG(INFO) << "Fix Floor: Floor Offset = [" << floorOffsetX << ", " << floorOffsetY << ", " << floorOffsetZ << "]";
+				LOG(INFO) << "Fix Floor and adjust playspace center: Floor Offset = [" << floorOffsetX << ", " << floorOffsetY << ", " << floorOffsetZ << "]";
 				parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 0, floorOffsetX, false);
 				parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, floorOffsetY, false);
 				parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 2, floorOffsetZ, false);
@@ -148,8 +148,10 @@ void FixFloorTabController::fixFloorClicked() {
 }
 
 void FixFloorTabController::undoFixFloorClicked() {
+	parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 0, -floorOffsetX, false);
 	parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, -floorOffsetY, false);
-	LOG(INFO) << "Fix Floor: Undo Floor Offset = " << -floorOffsetY;
+	parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 2, -floorOffsetZ, false);
+	LOG(INFO) << "Fix Floor: Undo Floor Offset = [" << -floorOffsetX << ", " << -floorOffsetY << ", " << -floorOffsetZ << "]";
 	floorOffsetY = 0.0f;
 	statusMessage = "Undo ... OK";
 	statusMessageTimeout = 1.0;
