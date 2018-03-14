@@ -453,7 +453,7 @@ void OverlayController::OnTimeoutPumpEvents() {
 	
 	fixFloorTabController.eventLoopTick(devicePoses);
 	statisticsTabController.eventLoopTick(devicePoses, leftSpeed, rightSpeed);
-	moveCenterTabController.eventLoopTick(vr::VRCompositor()->GetTrackingSpace());
+	moveCenterTabController.eventLoopTick(vr::VRCompositor()->GetTrackingSpace(), devicePoses);
 	steamVRTabController.eventLoopTick();
 	chaperoneTabController.eventLoopTick(devicePoses, leftSpeed, rightSpeed, hmdSpeed);
 	settingsTabController.eventLoopTick();

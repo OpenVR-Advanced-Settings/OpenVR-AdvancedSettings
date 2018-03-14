@@ -31,6 +31,10 @@ private:
 	float m_offsetZ = 0.0f;
 	int m_rotation = 0;
 	bool m_adjustChaperone = true;
+	bool m_moveActive = false;
+	float m_lastControllerX = 0.0f;
+	float m_lastControllerY = 0.0f;
+	float m_lastControllerZ = 0.0f;
 
 	unsigned settingsUpdateCounter = 0;
 
@@ -38,7 +42,7 @@ public:
 	void initStage1();
 	void initStage2(OverlayController* parent, QQuickWindow* widget);
 
-	void eventLoopTick(vr::ETrackingUniverseOrigin universe);
+	void eventLoopTick(vr::ETrackingUniverseOrigin universe, vr::TrackedDevicePose_t* devicePoses);
 
 	float offsetX() const;
 	float offsetY() const;

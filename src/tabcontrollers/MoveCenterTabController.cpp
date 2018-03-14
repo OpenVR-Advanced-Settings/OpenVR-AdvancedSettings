@@ -192,12 +192,52 @@ void MoveCenterTabController::reset() {
 	emit rotationChanged(m_rotation);
 }
 
-void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe) {
+void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe, vr::TrackedDevicePose_t* devicePoses) {
 	if (settingsUpdateCounter >= 50) {
 		setTrackingUniverse((int)universe);
 		settingsUpdateCounter = 0;
 	} else {
 		settingsUpdateCounter++;
+
+		auto rightId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_RightHand);
+		if (rightId == vr::k_unTrackedDeviceIndexInvalid) {
+			return;
+		}
+		vr::TrackedDevicePose_t* rightPose = devicePoses + rightId;
+		vr::VRControllerState_t state;
+		if (vr::VRSystem()->GetControllerState(rightId, &state, sizeof(vr::VRControllerState_t))) {
+			if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)) {
+				float newControllerX = rightPose->mDeviceToAbsoluteTracking.m[0][3];
+				float newControllerY = rightPose->mDeviceToAbsoluteTracking.m[1][3];
+				float newControllerZ = rightPose->mDeviceToAbsoluteTracking.m[2][3];
+				if (m_moveActive) {
+					float diffX = newControllerX - m_lastControllerX;
+					float diffY = newControllerY - m_lastControllerY;
+					float diffZ = newControllerZ - m_lastControllerZ;
+					vr::VRChaperoneSetup()->RevertWorkingCopy();
+					parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, diffX, m_adjustChaperone, false);
+					parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 1, diffY, m_adjustChaperone, false);
+					parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 2, diffZ, m_adjustChaperone, false);
+					vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
+					m_offsetX += diffX;
+					m_offsetY += diffY;
+					m_offsetZ += diffZ;
+				}
+				m_moveActive = true;
+				m_lastControllerX = newControllerX;
+				m_lastControllerY = newControllerY;
+				m_lastControllerZ = newControllerZ;
+			}
+			else {
+				if (m_moveActive) {
+					emit offsetXChanged(m_offsetX);
+					emit offsetYChanged(m_offsetY);
+					emit offsetZChanged(m_offsetZ);
+				}
+				m_moveActive = false;
+				return;
+			}
+		}
 	}
 }
 
