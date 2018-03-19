@@ -207,13 +207,13 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 		vr::VRControllerState_t state;
 		if (vr::VRSystem()->GetControllerState(rightId, &state, sizeof(vr::VRControllerState_t))) {
 			if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)) {
-				float newControllerX = rightPose->mDeviceToAbsoluteTracking.m[0][3];
-				float newControllerY = rightPose->mDeviceToAbsoluteTracking.m[1][3];
-				float newControllerZ = rightPose->mDeviceToAbsoluteTracking.m[2][3];
+				float newControllerX = rightPose->mDeviceToAbsoluteTracking.m[0][3] + m_offsetX;
+				float newControllerY= rightPose->mDeviceToAbsoluteTracking.m[1][3] + m_offsetY;
+				float newControllerZ= rightPose->mDeviceToAbsoluteTracking.m[2][3] + m_offsetZ;
 				if (m_moveActive) {
-					float diffX = newControllerX - m_lastControllerX;
-					float diffY = newControllerY - m_lastControllerY;
-					float diffZ = newControllerZ - m_lastControllerZ;
+					float diffX = (newControllerX - m_lastControllerX);
+					float diffY = (newControllerY - m_lastControllerY);
+					float diffZ = (newControllerZ - m_lastControllerZ);
 					vr::VRChaperoneSetup()->RevertWorkingCopy();
 					parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, diffX, m_adjustChaperone, false);
 					parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 1, diffY, m_adjustChaperone, false);
