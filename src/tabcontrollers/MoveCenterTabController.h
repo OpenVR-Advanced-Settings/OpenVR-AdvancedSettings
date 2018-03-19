@@ -32,9 +32,7 @@ private:
 	int m_rotation = 0;
 	bool m_adjustChaperone = true;
 	bool m_moveActive = false;
-	float m_lastControllerX = 0.0f;
-	float m_lastControllerY = 0.0f;
-	float m_lastControllerZ = 0.0f;
+	float m_lastControllerPosition[3];
 
 	unsigned settingsUpdateCounter = 0;
 

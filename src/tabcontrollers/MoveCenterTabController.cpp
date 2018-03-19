@@ -2,6 +2,18 @@
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
 
+void rotateCoordinates(float coordinates[3], float angle) {
+	if (angle == 0) {
+		return;
+	}
+	float s = sin(angle);
+	float c = cos(angle);
+	float newX = coordinates[0] * c - coordinates[2] * s;
+	float newZ = coordinates[0] * s + coordinates[2] * c;
+	coordinates[0] = newX;
+	coordinates[2] = newZ;
+}
+
 // application namespace
 namespace advsettings {
 
@@ -207,26 +219,44 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 		vr::VRControllerState_t state;
 		if (vr::VRSystem()->GetControllerState(rightId, &state, sizeof(vr::VRControllerState_t))) {
 			if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)) {
-				float newControllerX = rightPose->mDeviceToAbsoluteTracking.m[0][3] + m_offsetX;
-				float newControllerY= rightPose->mDeviceToAbsoluteTracking.m[1][3] + m_offsetY;
-				float newControllerZ= rightPose->mDeviceToAbsoluteTracking.m[2][3] + m_offsetZ;
+				float relativeControllerPosition[] = {
+					rightPose->mDeviceToAbsoluteTracking.m[0][3],
+					rightPose->mDeviceToAbsoluteTracking.m[1][3],
+					rightPose->mDeviceToAbsoluteTracking.m[2][3]
+				};
+
+				auto angle = m_rotation * 2 * M_PI / 360.0;
+				rotateCoordinates(relativeControllerPosition, -angle);
+				float absoluteControllerPosition[] = {
+					relativeControllerPosition[0] + m_offsetX,
+					relativeControllerPosition[1] + m_offsetY,
+					relativeControllerPosition[2] + m_offsetZ,
+				};
+
 				if (m_moveActive) {
-					float diffX = (newControllerX - m_lastControllerX);
-					float diffY = (newControllerY - m_lastControllerY);
-					float diffZ = (newControllerZ - m_lastControllerZ);
+					float diff[3] = {
+						absoluteControllerPosition[0] - m_lastControllerPosition[0],
+						absoluteControllerPosition[1] - m_lastControllerPosition[1],
+						absoluteControllerPosition[2] - m_lastControllerPosition[2],
+					};
+
+					// offset is un-rotated coordinates
+					m_offsetX += diff[0];
+					m_offsetY += diff[1];
+					m_offsetZ += diff[2];
+
+					rotateCoordinates(diff, angle);
+
 					vr::VRChaperoneSetup()->RevertWorkingCopy();
-					parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, diffX, m_adjustChaperone, false);
-					parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 1, diffY, m_adjustChaperone, false);
-					parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 2, diffZ, m_adjustChaperone, false);
+					parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, diff[0], m_adjustChaperone, false);
+					parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 1, diff[1], m_adjustChaperone, false);
+					parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 2, diff[2], m_adjustChaperone, false);
 					vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
-					m_offsetX += diffX;
-					m_offsetY += diffY;
-					m_offsetZ += diffZ;
 				}
 				m_moveActive = true;
-				m_lastControllerX = newControllerX;
-				m_lastControllerY = newControllerY;
-				m_lastControllerZ = newControllerZ;
+				m_lastControllerPosition[0] = absoluteControllerPosition[0];
+				m_lastControllerPosition[1] = absoluteControllerPosition[1];
+				m_lastControllerPosition[2] = absoluteControllerPosition[2];
 			}
 			else {
 				if (m_moveActive) {
