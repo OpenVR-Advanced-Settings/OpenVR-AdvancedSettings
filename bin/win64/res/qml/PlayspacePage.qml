@@ -282,18 +282,18 @@ MyStackViewPage {
                 anchors.fill: parent
 
                 MyToggleButton {
-                    id: moveShortcutRight
+                    id: moveShortcutLeft
                     text: "Left Menu Button"
                     onCheckedChanged: {
-                        MoveCenterTabController.moveShortcutRight = this.checked
+                        MoveCenterTabController.moveShortcutLeft = this.checked
                     }
                 }
 
                 MyToggleButton {
-                    id: moveShortcutLeft
+                    id: moveShortcutRight
                     text: "Right Menu Button"
                     onCheckedChanged: {
-                        MoveCenterTabController.moveShortcutLeft = this.checked
+                        MoveCenterTabController.moveShortcutRight = this.checked
                     }
                 }
             }
