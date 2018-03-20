@@ -4,22 +4,33 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 
 
 CheckBox {
-	hoverEnabled: true
-	spacing: 12
+    checkState: Qt.Checked
+    tristate: false
+    hoverEnabled: true
+    spacing: 12
 
 	indicator: Rectangle {
 		implicitWidth: 28
 		implicitHeight: 28
 		x: parent.leftPadding
 		y: parent.height / 2 - height / 2
-		color: parent.enabled ? (parent.down ? "#e0e0e0" : "#ffffff") : "#a0a0a0"
-		border.width: 0
+        color: parent.enabled ? (parent.down ? "#e0e0e0" : "#ffffff") : "#a0a0a0"
+        border.width: 0
+        Path {
+            startX: 0
+            startY: 0
+            PathLine {
+                x: 40
+                y: 40
+            }
+        }
+
 		Image {
-			width: 38
-			height: 38
+            width: 28
+            height: 28
 			x: (parent.width - width) / 2
 			y: (parent.height - height) / 2
-			source: "image://default/check/#2c435d"
+            source: "check.svg"
 			sourceSize.width: width
 			sourceSize.height: height
 			visible: parent.parent.checked
@@ -36,7 +47,7 @@ CheckBox {
 
 	background: Rectangle {
 		color: "#2c435d"
-        opacity: parent.activeFocus ? 1.0 : 0.0
+        opacity: parent.activeFocus ? 1.0 : 0
     }
 
     onHoveredChanged: {
