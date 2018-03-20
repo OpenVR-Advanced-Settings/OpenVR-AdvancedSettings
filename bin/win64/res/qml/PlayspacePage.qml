@@ -265,6 +265,40 @@ MyStackViewPage {
             }
         }
 
+        GroupBox {
+            Layout.fillWidth: true
+
+            label: MyText {
+                leftPadding: 10
+                text: "Virtual Move Shortcut"
+                bottomPadding: -10
+            }
+            background: Rectangle {
+                color: "transparent"
+                border.color: "#ffffff"
+                radius: 8
+            }
+            RowLayout {
+                anchors.fill: parent
+
+                MyToggleButton {
+                    id: moveShortcutRight
+                    text: "Left Menu Button"
+                    onCheckedChanged: {
+                        MoveCenterTabController.moveShortcutRight = this.checked
+                    }
+                }
+
+                MyToggleButton {
+                    id: moveShortcutLeft
+                    text: "Right Menu Button"
+                    onCheckedChanged: {
+                        MoveCenterTabController.moveShortcutLeft = this.checked
+                    }
+                }
+            }
+        }
+
         MyToggleButton {
             id: playspaceAdjustChaperoneToggle
             text: "Adjust Chaperone"
@@ -290,6 +324,8 @@ MyStackViewPage {
             playSpaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
             playSpaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
             playspaceRotationSlider.value = MoveCenterTabController.rotation
+            moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight;
+            moveShortcutLeft.checked = MoveCenterTabController.moveShortcutLeft;
             if (MoveCenterTabController.trackingUniverse === 0) {
                 playspaceModeText.text = "Sitting"
                 playSpaceRotationPlusButton.enabled = false
@@ -322,7 +358,13 @@ MyStackViewPage {
                 playspaceRotationSlider.value = MoveCenterTabController.rotation
             }
             onAdjustChaperoneChanged: {
-                playspaceAdjustChaperoneToggle = value
+                playspaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
+            }
+            onMoveShortcutRightChanged: {
+                moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight
+            }
+            onMoveShortcutLeftChanged: {
+                moveShortcutLeft.checked = MoveCenterTabController.moveShortcutLeft
             }
             onTrackingUniverseChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {
