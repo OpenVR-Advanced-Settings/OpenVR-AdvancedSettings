@@ -339,11 +339,7 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 
 				rotateCoordinates(diff, angle);
 
-				vr::VRChaperoneSetup()->RevertWorkingCopy();
-				parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, diff[0], m_adjustChaperone, false);
-				parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 1, diff[1], m_adjustChaperone, false);
-				parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 2, diff[2], m_adjustChaperone, false);
-				vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
+				parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, diff, m_adjustChaperone);
 			}
 			m_lastControllerPosition[0] = absoluteControllerPosition[0];
 			m_lastControllerPosition[1] = absoluteControllerPosition[1];

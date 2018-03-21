@@ -475,7 +475,13 @@ void OverlayController::OnTimeoutPumpEvents() {
 }
 
 void OverlayController::AddOffsetToUniverseCenter(vr::ETrackingUniverseOrigin universe, unsigned axisId, float offset, bool adjustBounds, bool commit) {
-	if (offset != 0.0f) {
+	float offsetArray[3] = { 0,0,0 };
+	offsetArray[axisId] = offset;
+	AddOffsetToUniverseCenter(universe, offsetArray, adjustBounds, commit);
+}
+
+void OverlayController::AddOffsetToUniverseCenter(vr::ETrackingUniverseOrigin universe, float offset[3], bool adjustBounds, bool commit) {
+	if (offset[0] != 0.0f || offset[1] != 0.0f || offset[2] != 0.0f) {
 		if (commit) {
 			vr::VRChaperoneSetup()->RevertWorkingCopy();
 		}
@@ -485,16 +491,23 @@ void OverlayController::AddOffsetToUniverseCenter(vr::ETrackingUniverseOrigin un
 		} else {
 			vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(&curPos);
 		}
-		curPos.m[0][3] += curPos.m[0][axisId] * offset;
-		curPos.m[1][3] += curPos.m[1][axisId] * offset;
-		curPos.m[2][3] += curPos.m[2][axisId] * offset;
+		for (int i = 0; i < 3; i++) {
+			curPos.m[0][3] += curPos.m[0][i] * offset[i];
+			curPos.m[1][3] += curPos.m[1][i] * offset[i];
+			curPos.m[2][3] += curPos.m[2][i] * offset[i];
+		}
 		if (universe == vr::TrackingUniverseStanding) {
 			vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(&curPos);
 		} else {
 			vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(&curPos);
 		}
 		if (adjustBounds && universe == vr::TrackingUniverseStanding) {
-			AddOffsetToCollisionBounds(axisId, -offset, false);
+			float collisionOffset[] = {
+				-offset[0],
+				-offset[1],
+				-offset[2]
+			};
+			AddOffsetToCollisionBounds(collisionOffset, false);
 		}
 		if (commit) {
 			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
@@ -537,6 +550,12 @@ void OverlayController::RotateUniverseCenter(vr::ETrackingUniverseOrigin univers
 
 
 void OverlayController::AddOffsetToCollisionBounds(unsigned axisId, float offset, bool commit) {
+	float offsetArray[3] = { 0,0,0 };
+	offsetArray[axisId] = offset;
+	AddOffsetToCollisionBounds(offsetArray, commit);
+}
+
+void OverlayController::AddOffsetToCollisionBounds(float offset[3], bool commit) {
 	// Apparently Valve sanity-checks the y-coordinates of the collision bounds (and only the y-coordinates)
 	// I can move the bounds on the xz-plane, I can make the "ceiling" of the chaperone cage lower/higher, but when I
 	// dare to set one single lower corner to something non-zero, every corner gets its y-coordinates reset to the defaults.
@@ -551,7 +570,9 @@ void OverlayController::AddOffsetToCollisionBounds(unsigned axisId, float offset
 		vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(collisionBounds, &collisionBoundsCount);
 		for (unsigned b = 0; b < collisionBoundsCount; b++) {
 			for (unsigned c = 0; c < 4; c++) {
-				collisionBounds[b].vCorners[c].v[axisId] += offset;
+				collisionBounds[b].vCorners[c].v[0] += offset[0];
+				collisionBounds[b].vCorners[c].v[2] += offset[1];
+				collisionBounds[b].vCorners[c].v[1] += offset[2];
 			}
 		}
 		vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(collisionBounds, collisionBoundsCount);
