@@ -299,7 +299,12 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 		auto oldMoveHand = m_activeMoveController;
 		auto newMoveHand = getMoveShortcutHand();
 		auto handId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(newMoveHand);
-		if (handId == vr::k_unTrackedDeviceIndexInvalid) {
+		if (newMoveHand == vr::TrackedControllerRole_Invalid || handId == vr::k_unTrackedDeviceIndexInvalid) {
+			if (oldMoveHand != vr::TrackedControllerRole_Invalid) {
+				emit offsetXChanged(m_offsetX);
+				emit offsetYChanged(m_offsetY);
+				emit offsetZChanged(m_offsetZ);
+			}
 			return;
 		}
 		vr::TrackedDevicePose_t* pose = devicePoses + handId;
@@ -343,13 +348,6 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 			m_lastControllerPosition[0] = absoluteControllerPosition[0];
 			m_lastControllerPosition[1] = absoluteControllerPosition[1];
 			m_lastControllerPosition[2] = absoluteControllerPosition[2];
-		}else {
-			if (newMoveHand == vr::TrackedControllerRole_Invalid) {
-				emit offsetXChanged(m_offsetX);
-				emit offsetYChanged(m_offsetY);
-				emit offsetZChanged(m_offsetZ);
-			}
-			return;
 		}
 	}
 }
