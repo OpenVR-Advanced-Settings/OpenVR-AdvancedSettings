@@ -306,6 +306,8 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 				emit offsetZChanged(m_offsetZ);
 			}
 			return;
+		} else if (newMoveHand != vr::TrackedControllerRole_Invalid) {
+			vr::VRChaperoneSetup()->RevertWorkingCopy();
 		}
 		vr::TrackedDevicePose_t* pose = devicePoses + handId;
 		vr::VRControllerState_t state;
@@ -339,7 +341,8 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 
 				rotateCoordinates(diff, angle);
 
-				parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, diff, m_adjustChaperone);
+				parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, diff, m_adjustChaperone, false);
+				vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
 			}
 			m_lastControllerPosition[0] = absoluteControllerPosition[0];
 			m_lastControllerPosition[1] = absoluteControllerPosition[1];
