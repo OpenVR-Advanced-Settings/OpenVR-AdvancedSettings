@@ -571,8 +571,8 @@ void OverlayController::AddOffsetToCollisionBounds(float offset[3], bool commit)
 		for (unsigned b = 0; b < collisionBoundsCount; b++) {
 			for (unsigned c = 0; c < 4; c++) {
 				collisionBounds[b].vCorners[c].v[0] += offset[0];
-				collisionBounds[b].vCorners[c].v[2] += offset[1];
-				collisionBounds[b].vCorners[c].v[1] += offset[2];
+				collisionBounds[b].vCorners[c].v[1] += offset[1];
+				collisionBounds[b].vCorners[c].v[2] += offset[2];
 			}
 		}
 		vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(collisionBounds, collisionBoundsCount);
