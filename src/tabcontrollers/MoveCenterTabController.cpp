@@ -110,37 +110,20 @@ void MoveCenterTabController::setAdjustChaperone(bool value, bool notify) {
 		m_adjustChaperone = value;
 		if (m_trackingUniverse == vr::TrackingUniverseStanding) {
 			vr::VRChaperoneSetup()->RevertWorkingCopy();
-			float offsetdir;
-			if (m_adjustChaperone) {
-				offsetdir = -1.0;
-			} else {
-				offsetdir = 1.0;
-			}
+			auto angle = m_rotation * 2 * M_PI / 360.0;
+			float offsetdir = m_adjustChaperone ? -1.0 : 1.0;
+			float offset[3] = {
+				offsetdir * m_offsetX,
+				offsetdir * m_offsetY,
+				offsetdir * m_offsetZ
+			};
+			rotateCoordinates(offset, angle);
 
-			if (m_offsetX != 0.0f) {
-				if (m_adjustChaperone || m_rotation == 0) {
-					parent->AddOffsetToCollisionBounds(0, offsetdir * m_offsetX, false);
-				} else {
-					auto angle = m_rotation * 2 * M_PI / 360.0;
-					parent->AddOffsetToCollisionBounds(0, offsetdir * m_offsetX * std::cos(angle), false);
-					parent->AddOffsetToCollisionBounds(2, offsetdir * m_offsetX * std::sin(angle), false);
-				}
-			}
-			if (m_offsetY != 0.0f) {
-				parent->AddOffsetToCollisionBounds(1, offsetdir * m_offsetY, false);
-			}
-			if (m_offsetZ != 0.0f) {
-				if (m_adjustChaperone || m_rotation == 0) {
-					parent->AddOffsetToCollisionBounds(2, offsetdir * m_offsetZ, false);
-				} else {
-					auto angle = m_rotation * 2 * M_PI / 360.0;
-					parent->AddOffsetToCollisionBounds(2, offsetdir * m_offsetZ * std::cos(angle), false);
-					parent->AddOffsetToCollisionBounds(0, -offsetdir * m_offsetZ * std::sin(angle), false);
-				}
-			}
+			parent->AddOffsetToCollisionBounds(offset, false);
+
 			if (m_rotation != 0) {
 				float angle = m_rotation * 2 * M_PI / 360.0;
-				parent->RotateCollisionBounds(offsetdir * angle, false);
+				//parent->RotateCollisionBounds(offsetdir * angle, false);
 			}
 			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
 		}
@@ -189,15 +172,10 @@ void MoveCenterTabController::setMoveShortcutLeft(bool value, bool notify) {
 }
 
 void MoveCenterTabController::modOffsetX(float value, bool notify) {
-	if (m_rotation == 0) {
-		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, value, m_adjustChaperone);
-	} else {
-		auto angle = m_rotation * 2 * M_PI / 360.0;
-		vr::VRChaperoneSetup()->RevertWorkingCopy();
-		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, value * std::cos(angle), m_adjustChaperone, false);
-		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 2, value * std::sin(angle), m_adjustChaperone, false);
-		vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
-	}
+	auto angle = m_rotation * 2 * M_PI / 360.0;
+	float offset[3] = { value, 0, 0 };
+	rotateCoordinates(offset, angle);
+	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, offset, m_adjustChaperone);
 	m_offsetX += value;
 	if (notify) {
 		emit offsetXChanged(m_offsetX);
@@ -213,15 +191,10 @@ void MoveCenterTabController::modOffsetY(float value, bool notify) {
 }
 
 void MoveCenterTabController::modOffsetZ(float value, bool notify) {
-	if (m_rotation == 0) {
-		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 2, value, m_adjustChaperone);
-	} else {
-		auto angle = m_rotation * 2 * M_PI / 360.0;
-		vr::VRChaperoneSetup()->RevertWorkingCopy();
-		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 2, value * std::cos(angle), m_adjustChaperone, false);
-		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, -value * std::sin(angle), m_adjustChaperone, false);
-		vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
-	}
+	auto angle = m_rotation * 2 * M_PI / 360.0;
+	float offset[3] = { 0, 0, value };
+	rotateCoordinates(offset, angle);
+	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, offset, m_adjustChaperone);
 	m_offsetZ += value;
 	if (notify) {
 		emit offsetZChanged(m_offsetZ);
@@ -231,9 +204,12 @@ void MoveCenterTabController::modOffsetZ(float value, bool notify) {
 void MoveCenterTabController::reset() {
 	vr::VRChaperoneSetup()->RevertWorkingCopy();
 	parent->RotateUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, -m_rotation * 2 * M_PI / 360.0, m_adjustChaperone, false);
-	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 0, -m_offsetX, m_adjustChaperone, false);
-	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 1, -m_offsetY, m_adjustChaperone, false);
-	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 2, -m_offsetZ, m_adjustChaperone, false);
+	float offset[3] = {
+		-m_offsetX,
+		-m_offsetY,
+		-m_offsetZ
+	};
+	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, offset, m_adjustChaperone, false);
 	vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
 	m_offsetX = 0.0f;
 	m_offsetY = 0.0f;
@@ -306,7 +282,7 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 				emit offsetZChanged(m_offsetZ);
 			}
 			return;
-		} else if (newMoveHand != vr::TrackedControllerRole_Invalid) {
+		} else if (newMoveHand != vr::TrackedControllerRole_Invalid && oldMoveHand == vr::TrackedControllerRole_Invalid) {
 			vr::VRChaperoneSetup()->RevertWorkingCopy();
 		}
 		vr::TrackedDevicePose_t* pose = devicePoses + handId;
