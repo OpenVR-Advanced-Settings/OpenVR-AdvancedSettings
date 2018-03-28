@@ -1,0 +1,9 @@
+debug
+release
+assets
+*.vcxproj*
+*.log
+*.vs
+*.stash
+*.appxmanifest
+*.user
