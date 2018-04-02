@@ -216,7 +216,7 @@ void MoveCenterTabController::reset() {
 
 bool isMoveShortCutPressed(vr::ETrackedControllerRole hand) {
 	auto handId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(hand);
-	if (handId == vr::k_unTrackedDeviceIndexInvalid) {
+	if (handId == vr::k_unTrackedDeviceIndexInvalid || handId >= vr::k_unMaxTrackedDeviceCount) {
 		return false;
 	}
 
@@ -270,55 +270,59 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 		settingsUpdateCounter++;
 		auto oldMoveHand = m_activeMoveController;
 		auto newMoveHand = getMoveShortcutHand();
+		if (newMoveHand == vr::TrackedControllerRole_Invalid) {
+			emit offsetXChanged(m_offsetX);
+			emit offsetYChanged(m_offsetY);
+			emit offsetZChanged(m_offsetZ);
+			return;
+		}
 		auto handId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(newMoveHand);
-		if (newMoveHand == vr::TrackedControllerRole_Invalid || handId == vr::k_unTrackedDeviceIndexInvalid) {
+		if (newMoveHand == vr::TrackedControllerRole_Invalid || handId == vr::k_unTrackedDeviceIndexInvalid || handId >= vr::k_unMaxTrackedDeviceCount) {
 			if (oldMoveHand != vr::TrackedControllerRole_Invalid) {
 				emit offsetXChanged(m_offsetX);
 				emit offsetYChanged(m_offsetY);
 				emit offsetZChanged(m_offsetZ);
-				vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
 			}
 			return;
 		}
 		vr::TrackedDevicePose_t* pose = devicePoses + handId;
-		vr::VRControllerState_t state;
-		if (vr::VRSystem()->GetControllerState(handId, &state, sizeof(vr::VRControllerState_t))) {
-			float relativeControllerPosition[] = {
-				pose->mDeviceToAbsoluteTracking.m[0][3],
-				pose->mDeviceToAbsoluteTracking.m[1][3],
-				pose->mDeviceToAbsoluteTracking.m[2][3]
-			};
-
-			auto angle = m_rotation * 2 * M_PI / 360.0;
-			rotateCoordinates(relativeControllerPosition, -angle);
-			float absoluteControllerPosition[] = {
-				relativeControllerPosition[0] + m_offsetX,
-				relativeControllerPosition[1] + m_offsetY,
-				relativeControllerPosition[2] + m_offsetZ,
-			};
-
-			if (oldMoveHand == newMoveHand) {
-
-				float diff[3] = {
-					absoluteControllerPosition[0] - m_lastControllerPosition[0],
-					absoluteControllerPosition[1] - m_lastControllerPosition[1],
-					absoluteControllerPosition[2] - m_lastControllerPosition[2],
-				};
-
-				// offset is un-rotated coordinates
-				m_offsetX += diff[0];
-				m_offsetY += diff[1];
-				m_offsetZ += diff[2];
-
-				rotateCoordinates(diff, angle);
-
-				parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, diff, m_adjustChaperone, false);
-				vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Temp);
-			}
-			m_lastControllerPosition[0] = absoluteControllerPosition[0];
-			m_lastControllerPosition[1] = absoluteControllerPosition[1];
-			m_lastControllerPosition[2] = absoluteControllerPosition[2];
+		if (!pose->bPoseIsValid || !pose->bDeviceIsConnected || pose->eTrackingResult != vr::TrackingResult_Running_OK) {
+			return;
 		}
+		float relativeControllerPosition[] = {
+			pose->mDeviceToAbsoluteTracking.m[0][3],
+			pose->mDeviceToAbsoluteTracking.m[1][3],
+			pose->mDeviceToAbsoluteTracking.m[2][3]
+		};
+
+		auto angle = m_rotation * 2 * M_PI / 360.0;
+		rotateCoordinates(relativeControllerPosition, -angle);
+		float absoluteControllerPosition[] = {
+			relativeControllerPosition[0] + m_offsetX,
+			relativeControllerPosition[1] + m_offsetY,
+			relativeControllerPosition[2] + m_offsetZ,
+		};
+
+		if (oldMoveHand == newMoveHand) {
+
+			float diff[3] = {
+				absoluteControllerPosition[0] - m_lastControllerPosition[0],
+				absoluteControllerPosition[1] - m_lastControllerPosition[1],
+				absoluteControllerPosition[2] - m_lastControllerPosition[2],
+			};
+
+			// offset is un-rotated coordinates
+			m_offsetX += diff[0];
+			m_offsetY += diff[1];
+			m_offsetZ += diff[2];
+
+			rotateCoordinates(diff, angle);
+
+			parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, diff, m_adjustChaperone);
+		}
+		m_lastControllerPosition[0] = absoluteControllerPosition[0];
+		m_lastControllerPosition[1] = absoluteControllerPosition[1];
+		m_lastControllerPosition[2] = absoluteControllerPosition[2];
 	}
 }
 
