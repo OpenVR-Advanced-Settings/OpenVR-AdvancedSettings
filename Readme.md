@@ -1,5 +1,5 @@
 
-![language](https://img.shields.io/badge/Language-C%2B%2B11%2C%20QML-green.svg) ![dependencies](https://img.shields.io/badge/Dependencies-OpenVR%2C%20Qt5-green.svg) ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg)
+![language](https://img.shields.io/badge/Language-C%2B%2B11%2C%20QML-green.svg) ![dependencies](https://img.shields.io/badge/Dependencies-OpenVR%2C%20Qt5-green.svg) ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg) [![Build status](https://ci.appveyor.com/api/projects/status/8oivf5xws6vsq2x3/branch/master?svg=true)](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master)
 
 # OpenVR Advanced Settings Overlay
 
@@ -30,15 +30,9 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 
 # Usage
 
-## Installer
-
-Download the newest installer from the [release section](https://github.com/matzman666/OpenVR-AdvancedSettings/releases) and execute it.
-
-If you have an older standalone version installed, delete the old application folder first.
-
 ## Standalone
 
-Download the newest standalone archive from the [release section](https://github.com/matzman666/OpenVR-AdvancedSettings/releases) and unpack the archive.
+Download the newest standalone archive from the [release section](https://github.com/icewind1991/OpenVR-AdvancedSettings/releases) and unpack the archive.
 
 To install for the first time simply start AdvancedSettings.exe once while SteamVRis running. It will register with SteamVR and automatically starts whenever SteamVR starts (Can be disabled in the settings).
 
