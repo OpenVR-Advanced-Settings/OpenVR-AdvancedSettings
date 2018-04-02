@@ -1,0 +1,20 @@
+image: Visual Studio 2017
+
+environment:
+  matrix:
+  - QT: C:\Qt\5.10.1\msvc2017_64
+    PLATFORM: amd64
+    COMPILER: msvc
+    VSVER: 14
+
+clone_depth: 1
+
+init:
+  - set TAG_NAME=%APPVEYOR_REPO_TAG_NAME%
+
+build_script:
+  - call "build_windows.cmd"
+
+artifacts:
+  - path: bin\win64\AdvancedSettings.zip
+    name: portable

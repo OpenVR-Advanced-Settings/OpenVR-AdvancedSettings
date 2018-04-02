@@ -1,6 +1,0 @@
-*.log
-*.exe
-*.dll
-*.pdb
-qtdata
-!openvr_api.dll
