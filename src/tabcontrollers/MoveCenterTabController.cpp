@@ -119,13 +119,7 @@ void MoveCenterTabController::setAdjustChaperone(bool value, bool notify) {
 			};
 			rotateCoordinates(offset, angle);
 
-			parent->AddOffsetToCollisionBounds(offset, false);
-
-			if (m_rotation != 0) {
-				float angle = m_rotation * 2 * M_PI / 360.0;
-				//parent->RotateCollisionBounds(offsetdir * angle, false);
-			}
-			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
+			parent->AddOffsetToCollisionBounds(offset);
 		}
 		auto settings = OverlayController::appSettings();
 		settings->beginGroup("playspaceSettings");
