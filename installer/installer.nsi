@@ -6,11 +6,11 @@
 ;--------------------------------
 ;General
 
-	!define BASEDIR "..\bin\win64"
+        !define BASEDIR "..\bin\win64\AdvancedSettings"
 
 	;Name and file
 	Name "OpenVR Advanced Settings"
-	OutFile "OpenVR-AdvancedSettings-Installer.exe"
+        OutFile "AdvancedSettings-Installer.exe"
 	
 	;Default installation folder
 	InstallDir "$PROGRAMFILES64\OpenVR-AdvancedSettings"
@@ -101,7 +101,7 @@ Section "Install" SecInstall
 	SetOutPath "$INSTDIR"
 
 	;ADD YOUR OWN FILES HERE...
-	File "${BASEDIR}\LICENSE"
+        File "${BASEDIR}\LICENSE.txt"
 	File "${BASEDIR}\*.exe"
 	File "${BASEDIR}\*.dll"
 	File "${BASEDIR}\*.bat"

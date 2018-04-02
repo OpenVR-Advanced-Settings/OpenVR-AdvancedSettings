@@ -4,7 +4,7 @@ SET project_dir="%cd%"
 
 echo Set up environment...
 set original_path=%PATH%
-set PATH=%QT%\bin\;C:\Qt\Tools\QtCreator\bin\;C:\Qt\QtIFW2.0.1\bin\;%PATH%
+set PATH=%QT%\bin\;C:\Qt\Tools\QtCreator\bin\;C:\Qt\QtIFW2.0.1\bin\;C:\Program Files (x86)\NSIS\;%PATH%
 call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" %PLATFORM%
 
 cd "%project_dir%
@@ -32,5 +32,10 @@ copy "%project_dir%\third-party\openvr\bin\win64\openvr_api.dll" "AdvancedSettin
 
 echo Packaging portable archive...
 7z a AdvancedSettings.zip AdvancedSettings
+
+echo Creating installer...
+cd %project_dir%/installer
+makensis installer.nsi
+
 set PATH=%original_path%
 cd %project_dir%

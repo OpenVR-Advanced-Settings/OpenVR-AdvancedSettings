@@ -18,3 +18,5 @@ build_script:
 artifacts:
   - path: bin\win64\AdvancedSettings.zip
     name: portable
+  - path: installer\AdvancedSettings-Installer.exe
+    name: installer
