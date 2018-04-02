@@ -27,6 +27,7 @@ xcopy /E /I "%project_dir%\src\res" "AdvancedSettings\res\"
 copy "%project_dir%\src\restartvrserver.bat" "AdvancedSettings\restartvrserver.bat"
 copy "%project_dir%\src\startdesktopmode.bat" "AdvancedSettings\startdesktopmode.bat"
 copy "%project_dir%\src\qt.conf" "AdvancedSettings\qt.conf"
+copy "%project_dir%\src\manifest.vrmanifest" "AdvancedSettings\manifest.vrmanifest"
 copy "%project_dir%\third-party\openvr\bin\win64\openvr_api.dll" "AdvancedSettings\openvr_api.dll"
 
 echo Packaging portable archive...
