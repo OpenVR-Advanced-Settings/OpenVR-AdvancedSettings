@@ -107,7 +107,7 @@ void FixFloorTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) 
 				floorOffsetZ = tempOffsetZ;
 
 				LOG(INFO) << "Fix Floor and adjust playspace center: Floor Offset = [" << floorOffsetX << ", " << floorOffsetY << ", " << floorOffsetZ << "]";
-				float offset[3];
+				float offset[3] = { 0, 0, 0 };
 				offset[1] = floorOffsetY;
 				if (state == 2) {
 					offset[0] = floorOffsetX;
