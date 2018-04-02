@@ -54,6 +54,16 @@ MyStackViewPage {
             }
         }
 
+		MyPushButton {
+            id: recenterButton
+            Layout.fillWidth: true
+            text: "Recenter Playspace"
+            Layout.preferredHeight: 100
+            onClicked: {
+                FixFloorTabController.recenterClicked()
+            }
+        }
+
         MyPushButton {
             id: undoFixButton
             enabled: false

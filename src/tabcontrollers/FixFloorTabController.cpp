@@ -15,7 +15,7 @@ void FixFloorTabController::initStage2(OverlayController * parent, QQuickWindow 
 }
 
 void FixFloorTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) {
-	if (state == 1) {
+	if (state > 0) {
 		if (measurementCount == 0) {
 			// Get Controller ids for left/right hand
 			auto leftId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand);
@@ -107,10 +107,14 @@ void FixFloorTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) 
 				floorOffsetZ = tempOffsetZ;
 
 				LOG(INFO) << "Fix Floor and adjust playspace center: Floor Offset = [" << floorOffsetX << ", " << floorOffsetY << ", " << floorOffsetZ << "]";
-				parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 0, floorOffsetX, false);
-				parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 1, floorOffsetY, false);
-				parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, 2, floorOffsetZ, false);
-				statusMessage = "Fixing ... OK";
+				float offset[3];
+				offset[1] = floorOffsetY;
+				if (state == 2) {
+					offset[0] = floorOffsetX;
+					offset[2] = floorOffsetZ;
+				}
+				parent->AddOffsetToUniverseCenter(vr::TrackingUniverseStanding, offset, true);
+				statusMessage = (state == 2) ? "Recentering ... Ok" : "Fixing ... OK";
 				statusMessageTimeout = 1.0;
 				emit statusMessageSignal();
 				emit measureEndSignal();
@@ -149,6 +153,15 @@ void FixFloorTabController::fixFloorClicked() {
 	emit measureStartSignal();
 	measurementCount = 0;
 	state = 1;
+}
+
+void FixFloorTabController::recenterClicked() {
+	statusMessage = "Fixing ...";
+	statusMessageTimeout = 1.0;
+	emit statusMessageSignal();
+	emit measureStartSignal();
+	measurementCount = 0;
+	state = 2;
 }
 
 void FixFloorTabController::undoFixFloorClicked() {

@@ -22,7 +22,7 @@ private:
 	float controllerUpOffsetCorrection = 0.062f; // Controller touchpad facing upwards
 	float controllerDownOffsetCorrection = 0.006f; // Controller touchpad facing downwards
 
-	int state = 0; // 0 .. idle, 1 .. measurement in progress
+	int state = 0; // 0 .. idle, 1 .. floor fix in progress, 2 .. recenter in progress
 	vr::TrackedDeviceIndex_t referenceController = vr::k_unTrackedDeviceIndexInvalid;
 	unsigned measurementCount = 0;
 	double tempOffsetX = 0.0;
@@ -50,6 +50,7 @@ public:
 
 public slots:
 	void fixFloorClicked();
+	void recenterClicked();
 	void undoFixFloorClicked();
 
 	void setCanUndo(bool value, bool notify = true);
