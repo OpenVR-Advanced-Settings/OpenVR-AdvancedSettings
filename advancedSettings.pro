@@ -49,6 +49,8 @@ HEADERS  += src/overlaycontroller.h \
 INCLUDEPATH += third-party/openvr/include \
 			third-party/easylogging++
 
-LIBS += -Lthird-party/openvr/lib/win64 -lopenvr_api -luser32 -lole32
+win32:LIBS += -L"$$PWD/third-party/openvr/lib/win64"
+unix:LIBS += -L"$$PWD/third-party/openvr/lib/linux64"
+LIBS += -lopenvr_api -luser32 -lole32
 
 DESTDIR = bin/win64/AdvancedSettings
