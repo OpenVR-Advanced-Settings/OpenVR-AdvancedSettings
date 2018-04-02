@@ -250,6 +250,10 @@ vr::ETrackedControllerRole MoveCenterTabController::getMoveShortcutHand() {
 	if (!leftPressed && m_moveShortcutLeftPressed) {
 		activeHand = rightPressed ? vr::TrackedControllerRole_RightHand : vr::TrackedControllerRole_Invalid;
 	}
+
+	if (!leftPressed && !rightPressed) {
+		activeHand = vr::TrackedControllerRole_Invalid;
+	}
 	
 	m_activeMoveController = activeHand;
 	m_moveShortcutRightPressed = rightPressed;
