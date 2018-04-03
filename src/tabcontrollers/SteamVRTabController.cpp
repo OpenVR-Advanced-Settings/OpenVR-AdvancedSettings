@@ -2,6 +2,11 @@
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
 
+namespace vr {
+    // this was removed from openvr_api.h in 1.0.8
+    static const char* const k_pch_SteamVR_RenderTargetMultiplier_Float = "renderTargetMultiplier";
+}
+
 // application namespace
 namespace advsettings {
 

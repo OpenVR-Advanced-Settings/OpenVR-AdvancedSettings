@@ -46,7 +46,7 @@ HEADERS  += src/overlaycontroller.h \
 		src/utils/Matrix.h \
 		src/utils/ChaperoneUtils.h
 
-INCLUDEPATH += third-party/openvr/include \
+INCLUDEPATH += third-party/openvr/headers \
 			third-party/easylogging++
 
 win32:LIBS += -L"$$PWD/third-party/openvr/lib/win64"
