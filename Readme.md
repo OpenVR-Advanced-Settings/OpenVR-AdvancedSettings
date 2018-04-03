@@ -100,13 +100,16 @@ Executing startdesktopmode.bat from the application folder shows a window on the
 
 Allows to temporarily move and rotate the center of the playspace. This allows to reach interaction elements that are just inside our real-world walls or otherwise inaccessible (e.g. when your playspace is smaller than the recommended one). Can also be used to discover the terrors that lie outside of the intended playspace (ever wondered what's behind the door in The Lab?).
 
+- **Virtual Move Shortcut**: Allows moving the placespace center by holding down the application menu shortcut and moving the controller.
 - **Adjust Chaperone**: When enabled then the chaperone bounds stay in place when the playspace is moved or rotated (so noone gets hurt). Unfortunately this does not work when moving up/down.
 
-## - Floor Fix Page:
+## - Playspace Fix Page:
 
-![Floor Fix Page](docs/screenshots/FloorFixPage.png)
+![Playspace Fix Page](docs/screenshots/FloorFixPage.png)
 
-Allows you to fix the height of your floor. Just place one controller on your floor and press the button.
+
+- **Fix Floor** Allows you to fix the height of your floor. Just place one controller on your floor and press the button.
+- **Recenter Playspace** Besides fixing the floor height, also recenters the place space around the controller on the floor.
 
 ## - Audio Page:
 
@@ -184,8 +187,8 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 
 # How to Compile
 
-- Use the Qt addon for Visual Studio to create a Visual Studio project from the .pro file.
-- Execute bin/windeployqt.bat which copies all Qt files necessary for execution into the output directory.
+Building has been tested with Qt 5.10 and Visual Studio 2017 community.
+If both have been installed in their default paths than the project can be build using `build_windows.cmd`, this compiles the binary and copies all files necessary for execution into the output directory.
 
 # Notes:
 
