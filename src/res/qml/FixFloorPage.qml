@@ -6,7 +6,7 @@ import matzman666.advsettings 1.0
 
 
 MyStackViewPage {
-    headerText: "Floor Fix"
+    headerText: "Playspace Fix"
 
     content: ColumnLayout {
         spacing: 18
