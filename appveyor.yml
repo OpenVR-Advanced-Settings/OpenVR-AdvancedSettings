@@ -14,6 +14,7 @@ init:
 
 build_script:
   - call "build_windows.cmd"
+  - call "package.cmd"
 
 artifacts:
   - path: bin\win64\AdvancedSettings.zip

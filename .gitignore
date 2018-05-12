@@ -1,6 +1,8 @@
 debug
 release
 assets
+bin
+Makefile*
 *.vcxproj*
 *.log
 *.vs
