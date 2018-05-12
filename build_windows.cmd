@@ -13,6 +13,7 @@ qmake -spec win32-msvc CONFIG+=x86_64 CONFIG-=debug CONFIG+=release
 nmake
 
 echo Packaging...
+mkdir %project_dir%\bin\win64\
 cd %project_dir%\bin\win64\
 windeployqt --dir AdvancedSettings\qtdata --libdir AdvancedSettings --plugindir AdvancedSettings\qtdata\plugins --no-system-d3d-compiler --no-opengl-sw --release --qmldir ..\..\src\res\qml\ AdvancedSettings\AdvancedSettings.exe
 
@@ -23,7 +24,7 @@ rd /s /q AdvancedSettings\qrc\
 echo Copying project files for archival...
 copy "%project_dir%\Readme.md" "AdvancedSettings\Readme.md"
 copy "%project_dir%\LICENSE" "AdvancedSettings\LICENSE.txt"
-xcopy /E /I "%project_dir%\src\res" "AdvancedSettings\res\"
+xcopy /Y /E /I "%project_dir%\src\res" "AdvancedSettings\res\"
 copy "%project_dir%\src\restartvrserver.bat" "AdvancedSettings\restartvrserver.bat"
 copy "%project_dir%\src\startdesktopmode.bat" "AdvancedSettings\startdesktopmode.bat"
 copy "%project_dir%\src\qt.conf" "AdvancedSettings\qt.conf"
