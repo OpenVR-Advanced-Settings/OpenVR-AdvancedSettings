@@ -190,6 +190,11 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 Building has been tested with Qt 5.10 and Visual Studio 2017 community.
 If both have been installed in their default paths than the project can be build using `build_windows.cmd`, this compiles the binary and copies all files necessary for execution into the output directory.
 
+The following environment variables should be set for the build script to work
+
+- QT: `C:\Qt\5.10.1\msvc2017_64` or wherever you installed Qt.
+- PLATFORM: `amd64` only x64 builds have been tested atm.
+
 # Notes:
 
 - The center marker and the play space marker are provided by the chaperone subsystem, and therefore they will have the same color and visibility settings as the chaperone bounds.
