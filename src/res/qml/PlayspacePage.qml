@@ -278,22 +278,32 @@ MyStackViewPage {
                 border.color: "#ffffff"
                 radius: 8
             }
-            RowLayout {
-                anchors.fill: parent
+            ColumnLayout {
+                RowLayout {
+                    anchors.fill: parent
 
-                MyToggleButton {
-                    id: moveShortcutLeft
-                    text: "Left Menu Button"
-                    onCheckedChanged: {
-                        MoveCenterTabController.moveShortcutLeft = this.checked
+                    MyToggleButton {
+                        id: moveShortcutLeft
+                        text: "Left Menu Button"
+                        onCheckedChanged: {
+                            MoveCenterTabController.moveShortcutLeft = this.checked
+                        }
                     }
-                }
 
-                MyToggleButton {
-                    id: moveShortcutRight
-                    text: "Right Menu Button"
-                    onCheckedChanged: {
-                        MoveCenterTabController.moveShortcutRight = this.checked
+                    MyToggleButton {
+                        id: moveShortcutRight
+                        text: "Right Menu Button"
+                        onCheckedChanged: {
+                            MoveCenterTabController.moveShortcutRight = this.checked
+                        }
+                    }
+
+                    MyToggleButton {
+                        id: requireDoubleClick
+                        text: "Require double click"
+                        onCheckedChanged: {
+                            MoveCenterTabController.requireDoubleClick = this.checked
+                        }
                     }
                 }
             }
@@ -365,6 +375,9 @@ MyStackViewPage {
             }
             onMoveShortcutLeftChanged: {
                 moveShortcutLeft.checked = MoveCenterTabController.moveShortcutLeft
+            }
+            onRequireDoubleClickChanged: {
+                requireDoubleClick.checked = MoveCenterTabController.requireDoubleClick
             }
             onTrackingUniverseChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {

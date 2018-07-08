@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <openvr.h>
+#include <chrono>
 
 class QQuickWindow;
 // application namespace
@@ -22,6 +23,7 @@ class MoveCenterTabController : public QObject {
 	Q_PROPERTY(bool adjustChaperone READ adjustChaperone WRITE setAdjustChaperone NOTIFY adjustChaperoneChanged)
 	Q_PROPERTY(bool moveShortcutRight READ moveShortcutRight WRITE setMoveShortcutRight NOTIFY moveShortcutRightChanged)
 	Q_PROPERTY(bool moveShortcutLeft READ moveShortcutLeft WRITE setMoveShortcutLeft NOTIFY moveShortcutLeftChanged)
+    Q_PROPERTY(bool requireDoubleClick READ requireDoubleClick WRITE setRequireDoubleClick NOTIFY requireDoubleClickChanged)
 
 private:
 	OverlayController* parent;
@@ -30,15 +32,17 @@ private:
 	int m_trackingUniverse = (int)vr::TrackingUniverseStanding;
 	float m_offsetX = 0.0f;
 	float m_offsetY = 0.0f;
-	float m_offsetZ = 0.0f;
+    float m_offsetZ = 0.0f;
 	int m_rotation = 0;
 	bool m_adjustChaperone = true;
 	bool m_moveShortcutRightPressed = false;
 	bool m_moveShortcutLeftPressed = false;
 	vr::ETrackedControllerRole m_activeMoveController;
-	float m_lastControllerPosition[3];
+    float m_lastControllerPosition[3];
 	bool m_moveShortcutRightEnabled = false;
 	bool m_moveShortcutLeftEnabled = false;
+    bool m_requireDoubleClick = false;
+    std::chrono::system_clock::time_point lastMoveButtonClick[2];
 
 	unsigned settingsUpdateCounter = 0;
 
@@ -57,6 +61,7 @@ public:
 	bool adjustChaperone() const;
 	bool moveShortcutRight() const;
 	bool moveShortcutLeft() const;
+    bool requireDoubleClick() const;
 
 public slots:
 	int trackingUniverse() const;
@@ -72,6 +77,7 @@ public slots:
 
 	void setMoveShortcutRight(bool value, bool notify = true);
 	void setMoveShortcutLeft(bool value, bool notify = true);
+    void setRequireDoubleClick(bool value, bool notify = true);
 
 	void modOffsetX(float value, bool notify = true);
 	void modOffsetY(float value, bool notify = true);
@@ -87,6 +93,7 @@ signals:
 	void adjustChaperoneChanged(bool value);
 	void moveShortcutRightChanged(bool value);
 	void moveShortcutLeftChanged(bool value);
+    void requireDoubleClickChanged(bool value);
 };
 
 } // namespace advsettings

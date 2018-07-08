@@ -17,6 +17,10 @@ void rotateCoordinates(float coordinates[3], float angle) {
 // application namespace
 namespace advsettings {
 
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+typedef std::chrono::system_clock clock;
+
 void MoveCenterTabController::initStage1() {
 	setTrackingUniverse(vr::VRCompositor()->GetTrackingSpace());
 	auto settings = OverlayController::appSettings();
@@ -33,7 +37,12 @@ void MoveCenterTabController::initStage1() {
 	if (value.isValid() && !value.isNull()) {
 		m_moveShortcutLeftEnabled = value.toBool();
 	}
+    value = settings->value("requireDoubleClick", m_requireDoubleClick);
+    if (value.isValid() && !value.isNull()) {
+        m_requireDoubleClick = value.toBool();
+    }
 	settings->endGroup();
+    lastMoveButtonClick[0] = lastMoveButtonClick[0] = clock::now();
 }
 
 void MoveCenterTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
@@ -164,6 +173,22 @@ void MoveCenterTabController::setMoveShortcutLeft(bool value, bool notify) {
 	}
 }
 
+bool MoveCenterTabController::requireDoubleClick() const {
+    return m_requireDoubleClick;
+}
+
+void MoveCenterTabController::setRequireDoubleClick(bool value, bool notify) {
+    m_requireDoubleClick = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup("playspaceSettings");
+    settings->setValue("requireDoubleClick", m_requireDoubleClick);
+    settings->endGroup();
+    settings->sync();
+    if (notify) {
+        emit requireDoubleClickChanged(m_requireDoubleClick);
+    }
+}
+
 void MoveCenterTabController::modOffsetX(float value, bool notify) {
 	auto angle = m_rotation * 2 * M_PI / 360.0;
 	float offset[3] = { value, 0, 0 };
@@ -233,13 +258,23 @@ vr::ETrackedControllerRole MoveCenterTabController::getMoveShortcutHand() {
 
 	bool rightPressed = m_moveShortcutRightEnabled && isMoveShortCutPressed(vr::TrackedControllerRole_RightHand);
 	bool leftPressed = m_moveShortcutLeftEnabled && isMoveShortCutPressed(vr::TrackedControllerRole_LeftHand);
+    bool checkDoubleClick = m_requireDoubleClick && activeHand == vr::TrackedControllerRole_Invalid;
 
+    auto now = clock::now();
 	// if we start pressing the shortcut on a controller we set the active one to it
 	if (rightPressed && !m_moveShortcutRightPressed) {
-		activeHand = vr::TrackedControllerRole_RightHand;
+        auto elapsed = duration_cast<milliseconds>(now - lastMoveButtonClick[0]).count();
+        if (!checkDoubleClick || elapsed < 250) {
+            activeHand = vr::TrackedControllerRole_RightHand;
+        }
+        lastMoveButtonClick[0] = now;
 	}
 	if (leftPressed && !m_moveShortcutLeftPressed) {
-		activeHand = vr::TrackedControllerRole_LeftHand;
+        auto elapsed = duration_cast<milliseconds>(now - lastMoveButtonClick[1]).count();
+        if (!checkDoubleClick || elapsed < 250) {
+            activeHand = vr::TrackedControllerRole_LeftHand;
+        }
+        lastMoveButtonClick[1] = now;
 	}
 
 	// if we let down of a shortcut we set the active hand to any remaining pressed down hand
@@ -252,6 +287,10 @@ vr::ETrackedControllerRole MoveCenterTabController::getMoveShortcutHand() {
 
 	if (!leftPressed && !rightPressed) {
 		activeHand = vr::TrackedControllerRole_Invalid;
+        if (m_activeMoveController != vr::TrackedControllerRole_Invalid) {
+            // grace period while switching hands
+            lastMoveButtonClick[0] = lastMoveButtonClick[1] = now;
+        }
 	}
 	
 	m_activeMoveController = activeHand;
@@ -273,7 +312,7 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 		if (newMoveHand == vr::TrackedControllerRole_Invalid) {
 			emit offsetXChanged(m_offsetX);
 			emit offsetYChanged(m_offsetY);
-			emit offsetZChanged(m_offsetZ);
+            emit offsetZChanged(m_offsetZ);
 			return;
 		}
 		auto handId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(newMoveHand);
@@ -281,7 +320,7 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 			if (oldMoveHand != vr::TrackedControllerRole_Invalid) {
 				emit offsetXChanged(m_offsetX);
 				emit offsetYChanged(m_offsetY);
-				emit offsetZChanged(m_offsetZ);
+                emit offsetZChanged(m_offsetZ);
 			}
 			return;
 		}
@@ -293,15 +332,15 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 			pose->mDeviceToAbsoluteTracking.m[0][3],
 			pose->mDeviceToAbsoluteTracking.m[1][3],
 			pose->mDeviceToAbsoluteTracking.m[2][3]
-		};
+        };
 
-		auto angle = m_rotation * 2 * M_PI / 360.0;
+        auto angle = m_rotation * 2 * M_PI / 360.0;
 		rotateCoordinates(relativeControllerPosition, -angle);
 		float absoluteControllerPosition[] = {
 			relativeControllerPosition[0] + m_offsetX,
 			relativeControllerPosition[1] + m_offsetY,
 			relativeControllerPosition[2] + m_offsetZ,
-		};
+        };
 
 		if (oldMoveHand == newMoveHand) {
 
@@ -318,8 +357,8 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 
 			rotateCoordinates(diff, angle);
 
-			parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, diff, m_adjustChaperone);
-		}
+            parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, diff, m_adjustChaperone);
+        }
 		m_lastControllerPosition[0] = absoluteControllerPosition[0];
 		m_lastControllerPosition[1] = absoluteControllerPosition[1];
 		m_lastControllerPosition[2] = absoluteControllerPosition[2];
