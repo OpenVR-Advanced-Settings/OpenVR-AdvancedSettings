@@ -1,5 +1,7 @@
 echo on
 
+SET project_dir="%cd%"
+
 cd %project_dir%\bin\win64\
 
 echo Copying project files for archival...
