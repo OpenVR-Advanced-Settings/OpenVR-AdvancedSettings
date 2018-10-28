@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTime>
+#include <openvr.h>
 
 class QQuickWindow;
 // application namespace
@@ -33,6 +34,9 @@ namespace advsettings {
 		QTime m_alarmLastCheckTime;
 		bool m_steamDesktopOverlayAvailable = false;
 		float m_steamDesktopOverlayWidth = 4.0f;
+        vr::VROverlayHandle_t m_batteryOverlayHandles[vr::k_unMaxTrackedDeviceCount];
+        int m_batteryState[vr::k_unMaxTrackedDeviceCount];
+        bool m_batteryVisible[vr::k_unMaxTrackedDeviceCount];
 
 	public:
 		void initStage1();

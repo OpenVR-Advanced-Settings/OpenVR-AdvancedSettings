@@ -1,5 +1,6 @@
 #include "UtilitiesTabController.h"
 #include <QQuickWindow>
+#include <QApplication>
 #include "../overlaycontroller.h"
 #include <Windows.h>
 #include <thread>
@@ -306,6 +307,32 @@ namespace advsettings {
 		}
 	}
 
+    vr::VROverlayHandle_t createBatteryOverlay(vr::TrackedDeviceIndex_t index) {
+        vr::VROverlayHandle_t handle = vr::k_ulOverlayHandleInvalid;
+        std::string batteryKey = std::string(OverlayController::applicationKey) + ".battery." + std::to_string(index);
+        vr::VROverlayError overlayError = vr::VROverlay()->CreateOverlay(batteryKey.c_str(), batteryKey.c_str(), &handle);
+        if (overlayError == vr::VROverlayError_None) {
+            std::string batteryIconPath = QApplication::applicationDirPath().toStdString() + "/res/battery_0.png";
+            if (QFile::exists(QString::fromStdString(batteryIconPath))) {
+                vr::VROverlay()->SetOverlayFromFile(handle, batteryIconPath.c_str());
+                vr::VROverlay()->SetOverlayWidthInMeters(handle, 0.05f);
+                vr::HmdMatrix34_t notificationTransform = {
+                    1.0f, 0.0f, 0.0f, 0.00f,
+                    0.0f, -1.0f, 0.0f, 0.01f,
+                    0.0f, 0.0f, -1.0f, -0.013f
+                };
+                vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(handle, index, &notificationTransform);
+                 LOG(INFO) << "Created battery overlay for device " << index;
+            } else {
+                LOG(ERROR) << "Could not find battery icon \"" << batteryIconPath << "\"";
+            }
+        } else {
+            LOG(ERROR) << "Could not create ptt notification overlay: " << vr::VROverlay()->GetOverlayErrorNameFromEnum(overlayError);
+        }
+
+        return handle;
+    }
+
 
 	void UtilitiesTabController::eventLoopTick() {
 		if (settingsUpdateCounter >= 10) {
@@ -391,7 +418,7 @@ namespace advsettings {
 								parent->overlayHandle(), 666, vr::EVRNotificationType_Transient, alarmMessageBuffer, vr::EVRNotificationStyle_Application, messageIconPtr, &notificationId
 							);
 							if (nError != vr::VRNotificationError_OK) {
-								LOG(ERROR) << "Error while creating notification: " << nError;
+                                LOG(ERROR) << "Error while creating notification: " << nError;
 								vrnotification = nullptr;
 							}
 						}
@@ -399,11 +426,53 @@ namespace advsettings {
 				}
 				m_alarmLastCheckTime = now;
 			}
+
+
+            // attach battery overlay to all tracked devices that aren't a controller or hmd
+            for(vr::TrackedDeviceIndex_t i = 0; i < vr::k_unMaxTrackedDeviceCount; i++) {
+                vr::ETrackedDeviceClass deviceClass = vr::VRSystem()->GetTrackedDeviceClass(i);
+                if (deviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker) {
+                    if (m_batteryOverlayHandles[i] == vr::k_ulOverlayHandleInvalid) {
+                        LOG(INFO) << "Creating battery overlay for device " << i;
+                        m_batteryOverlayHandles[i] = createBatteryOverlay(i);
+                        m_batteryVisible[i] = true;
+                    }
+
+                    bool shouldShow = vr::VROverlay()->IsDashboardVisible();
+
+                    if (shouldShow != m_batteryVisible[i]) {
+                        if (shouldShow) {
+                            vr::VROverlay()->ShowOverlay(m_batteryOverlayHandles[i]);
+                        } else {
+                            vr::VROverlay()->HideOverlay(m_batteryOverlayHandles[i]);
+                        }
+                        m_batteryVisible[i] = shouldShow;
+                    }
+
+                    bool hasBatteryStatus = vr::VRSystem()->GetBoolTrackedDeviceProperty(i, vr::ETrackedDeviceProperty::Prop_DeviceProvidesBatteryStatus_Bool);
+                    if (hasBatteryStatus) {
+                        float battery = vr::VRSystem()->GetFloatTrackedDeviceProperty(i, vr::ETrackedDeviceProperty::Prop_DeviceBatteryPercentage_Float);
+                        int batteryState = ceil(battery * 5);
+
+                        if (batteryState != m_batteryState[i]) {
+                            LOG(INFO) << "Updating battery overlay for device " << i << " to " << batteryState << "(" << battery << "";
+                            std::string batteryIconPath = QApplication::applicationDirPath().toStdString() + "/res/battery_" + std::to_string(batteryState) + ".png";
+                            if (QFile::exists(QString::fromStdString(batteryIconPath))) {
+                                vr::VROverlay()->SetOverlayFromFile(m_batteryOverlayHandles[i], batteryIconPath.c_str());
+                            } else {
+                                LOG(ERROR) << "Could not find battery icon \"" << batteryIconPath << "\"";
+                            }
+                            m_batteryState[i] = batteryState;
+                        }
+                    }
+                }
+            }
+
 			settingsUpdateCounter = 0;
 		} else {
 			settingsUpdateCounter++;
 		}
-	}
+    }
 
 
 	bool UtilitiesTabController::steamDesktopOverlayAvailable() const {
