@@ -9,5 +9,3 @@ Makefile*
 *.stash
 *.appxmanifest
 *.user
-build_windowsyke.cmd
-*.autosave

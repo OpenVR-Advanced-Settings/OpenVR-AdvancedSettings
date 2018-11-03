@@ -410,18 +410,19 @@ void OverlayController::OnTimeoutPumpEvents() {
 			break;
 
 			// Multiple ChaperoneUniverseHasChanged are often emitted at the same time (some with a little bit of delay)
-			// There is no sure way to recognize redundant events, we can only exclude redundant events during the same call of OnTimeoutPumpEvents()  
+			// There is no sure way to recognize redundant events, we can only exclude redundant events during the same call of OnTimeoutPumpEvents()
+			//INFO Removed logging on play space mover for possible crashing issues.
 			case vr::VREvent_ChaperoneUniverseHasChanged:
 			case vr::VREvent_ChaperoneDataHasChanged: {
 				if (!chaperoneDataAlreadyUpdated) {
-					LOG(INFO) << "Re-loading chaperone data ...";
+					//LOG(INFO) << "Re-loading chaperone data ...";
 					m_chaperoneUtils.loadChaperoneData();
-					LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() << " chaperone quads.";
-					if (m_chaperoneUtils.isChaperoneWellFormed()) {
-						LOG(INFO) << "Chaperone data seems to be well-formed.";
-					} else {
-						LOG(INFO) << "Chaperone data is NOT well-formed.";
-					}
+					//LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() << " chaperone quads.";
+					//if (m_chaperoneUtils.isChaperoneWellFormed()) {
+						//LOG(INFO) << "Chaperone data seems to be well-formed.";
+					//} else {
+						//LOG(INFO) << "Chaperone data is NOT well-formed.";
+					//}
 					chaperoneDataAlreadyUpdated = true;
 				}
 			}
