@@ -106,6 +106,7 @@ Section "Install" SecInstall
     File "${SRCDIR}\LICENSE.txt"
 	File "${BASEDIR}\*.exe"
 	File "${THIRDDIR}\openvr\bin\win64\*.dll"
+	File "${BASEDIR}\*.dll"
 	File "${SRCDIR}\*.bat"
 	File "${SRCDIR}\*.vrmanifest"
 	File "${SRCDIR}\*.conf"
