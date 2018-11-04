@@ -47,7 +47,7 @@ MyStackViewPage {
                 }
 
                 GridLayout {
-                    columns: 4
+                    columns: 5
 
                     MyText {
                         text: "X-Axis (Left/Right):"
@@ -91,6 +91,14 @@ MyStackViewPage {
                         }
                     }
 
+                    MyToggleButton {
+                        id: lockXToggle
+                        text: "Lock X"
+                        onCheckedChanged: {
+                            MoveCenterTabController.lockXToggle = this.checked
+                        }
+                    }
+
                     MyText {
                         text: "Y-Axis (Down/Up):"
                         Layout.preferredWidth: 380
@@ -131,6 +139,15 @@ MyStackViewPage {
                         }
                     }
 
+
+                    MyToggleButton {
+                        id: lockYToggle
+                        text: "Lock Y"
+                        onCheckedChanged: {
+                            MoveCenterTabController.lockYToggle = this.checked
+                        }
+                    }
+
                     MyText {
                         text: "Z-Axis (Forth/Back):"
                         Layout.preferredWidth: 380
@@ -168,6 +185,15 @@ MyStackViewPage {
                         text: "+"
                         onClicked: {
                             MoveCenterTabController.modOffsetZ(0.5)
+                        }
+                    }
+
+
+                    MyToggleButton {
+                        id: lockZToggle
+                        text: "Lock Z"
+                        onCheckedChanged: {
+                            MoveCenterTabController.lockZToggle = this.checked
                         }
                     }
                 }
