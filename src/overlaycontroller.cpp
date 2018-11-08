@@ -330,6 +330,15 @@ bool OverlayController::pollNextEvent(vr::VROverlayHandle_t ulOverlayHandle, vr:
 	}
 }
 
+QPoint OverlayController::getMousePositionForEvent(vr::VREvent_Mouse_t mouse) {
+    float y = mouse.y;
+#ifdef __linux__
+    float h = (float) m_pWindow->height();
+    y = h - y;
+#endif
+    return QPoint(mouse.x, y);
+}
+
 void OverlayController::OnTimeoutPumpEvents() {
 	if (!vr::VRSystem())
 		return;
@@ -339,7 +348,7 @@ void OverlayController::OnTimeoutPumpEvents() {
 	while (pollNextEvent(m_ulOverlayHandle, &vrEvent)) {
 		switch (vrEvent.eventType) {
 			case vr::VREvent_MouseMove: {
-				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+				QPoint ptNewMouse = getMousePositionForEvent(vrEvent.data.mouse);
 				if (ptNewMouse != m_ptLastMouse) {
 					QMouseEvent mouseEvent( QEvent::MouseMove, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), Qt::NoButton, m_lastMouseButtons, 0 );
 					m_ptLastMouse = ptNewMouse;
@@ -350,7 +359,7 @@ void OverlayController::OnTimeoutPumpEvents() {
 			break;
 
 			case vr::VREvent_MouseButtonDown: {
-				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+				QPoint ptNewMouse = getMousePositionForEvent(vrEvent.data.mouse);
 				Qt::MouseButton button = vrEvent.data.mouse.button == vr::VRMouseButton_Right ? Qt::RightButton : Qt::LeftButton;
 				m_lastMouseButtons |= button;
 				QMouseEvent mouseEvent(QEvent::MouseButtonPress, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), button, m_lastMouseButtons, 0);
@@ -359,7 +368,7 @@ void OverlayController::OnTimeoutPumpEvents() {
 			break;
 
 			case vr::VREvent_MouseButtonUp: {
-				QPoint ptNewMouse(vrEvent.data.mouse.x, vrEvent.data.mouse.y);
+				QPoint ptNewMouse = getMousePositionForEvent(vrEvent.data.mouse);
 				Qt::MouseButton button = vrEvent.data.mouse.button == vr::VRMouseButton_Right ? Qt::RightButton : Qt::LeftButton;
 				m_lastMouseButtons &= ~button;
 				QMouseEvent mouseEvent(QEvent::MouseButtonRelease, ptNewMouse, m_pWindow->mapToGlobal(ptNewMouse), button, m_lastMouseButtons, 0);
