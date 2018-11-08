@@ -1,5 +1,6 @@
 #include "KeyboardInputWindows.h"
 #include <Windows.h>
+#include "../../logging.h"
 
 namespace advsettings {
 
