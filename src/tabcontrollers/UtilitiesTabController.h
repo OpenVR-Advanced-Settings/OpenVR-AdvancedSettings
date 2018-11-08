@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QTime>
 #include <openvr.h>
+#include <memory>
+#include "KeyboardInput.h"
 
 class QQuickWindow;
 // application namespace
@@ -37,6 +39,8 @@ namespace advsettings {
         vr::VROverlayHandle_t m_batteryOverlayHandles[vr::k_unMaxTrackedDeviceCount];
         int m_batteryState[vr::k_unMaxTrackedDeviceCount];
         bool m_batteryVisible[vr::k_unMaxTrackedDeviceCount];
+
+        std::unique_ptr<KeyboardInput> keyboardInput;
 
 	public:
 		void initStage1();
