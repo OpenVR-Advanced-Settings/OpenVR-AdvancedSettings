@@ -59,8 +59,9 @@ win32 {
 INCLUDEPATH += third-party/openvr/headers \
 			third-party/easylogging++
 
-win32:LIBS += -L"$$PWD/third-party/openvr/lib/win64"
+win32:LIBS += -L"$$PWD/third-party/openvr/lib/win64" -luser32 -lole32
 unix:LIBS += -L"$$PWD/third-party/openvr/lib/linux64"
-LIBS += -lopenvr_api -luser32 -lole32
+LIBS += -lopenvr_api
 
-DESTDIR = bin/win64/AdvancedSettings
+win32:DESTDIR = bin/win64/AdvancedSettings
+unix:DESTDIR = bin/linux/AdvancedSettings

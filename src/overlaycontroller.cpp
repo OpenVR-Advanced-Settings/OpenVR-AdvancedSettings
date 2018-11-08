@@ -28,6 +28,8 @@ namespace advsettings {
 
 std::unique_ptr<OverlayController> OverlayController::singleton;
 
+constexpr const char* OverlayController::applicationVersionString;
+
 QSettings* OverlayController::_appSettings = nullptr;
 
 OverlayController::~OverlayController() {
