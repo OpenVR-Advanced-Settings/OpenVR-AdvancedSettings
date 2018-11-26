@@ -41,6 +41,18 @@ void MoveCenterTabController::initStage1() {
     if (value.isValid() && !value.isNull()) {
         m_requireDoubleClick = value.toBool();
     }
+	value = settings->value("lockXToggle", m_lockXToggle);
+	if (value.isValid() && !value.isNull()) {
+		m_lockXToggle = value.toBool();
+	}
+	value = settings->value("lockYToggle", m_lockYToggle);
+	if (value.isValid() && !value.isNull()) {
+		m_lockYToggle = value.toBool();
+	}
+	value = settings->value("lockZToggle", m_lockZToggle);
+	if (value.isValid() && !value.isNull()) {
+		m_lockZToggle = value.toBool();
+	}
 	settings->endGroup();
     lastMoveButtonClick[0] = lastMoveButtonClick[0] = clock::now();
 }
@@ -214,7 +226,7 @@ void MoveCenterTabController::setLockY(bool value, bool notify) {
 	m_lockYToggle = value;
 	auto settings = OverlayController::appSettings();
 	settings->beginGroup("playspaceSettings");
-	settings->setValue("lockYToggle", m_lockXToggle);
+	settings->setValue("lockYToggle", m_lockYToggle);
 	settings->endGroup();
 	settings->sync();
 	if (notify) {

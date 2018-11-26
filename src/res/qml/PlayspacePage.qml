@@ -360,8 +360,13 @@ MyStackViewPage {
             playSpaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
             playSpaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
             playspaceRotationSlider.value = MoveCenterTabController.rotation
-            moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight;
-            moveShortcutLeft.checked = MoveCenterTabController.moveShortcutLeft;
+            moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight
+            moveShortcutLeft.checked = MoveCenterTabController.moveShortcutLeft
+			lockXToggle.checked = MoveCenterTabController.lockXToggle
+			lockYToggle.checked = MoveCenterTabController.lockYToggle
+			lockZToggle.checked = MoveCenterTabController.lockZToggle
+			requireDoubleClick.checked = MoveCenterTabController.requireDoubleClick
+			
             if (MoveCenterTabController.trackingUniverse === 0) {
                 playspaceModeText.text = "Sitting"
                 playSpaceRotationPlusButton.enabled = false
@@ -405,6 +410,15 @@ MyStackViewPage {
             onRequireDoubleClickChanged: {
                 requireDoubleClick.checked = MoveCenterTabController.requireDoubleClick
             }
+			onLockXToggleChanged: {
+				lockXToggle.checked = MoveCenterTabController.lockXToggle
+			}
+			onLockYToggleChanged: {
+				lockYToggle.checked = MoveCenterTabController.lockYToggle
+			}
+			onLockZToggleChanged: {
+				lockZToggle.checked = MoveCenterTabController.lockZToggle
+			}
             onTrackingUniverseChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {
                     playspaceModeText.text = "Sitting"
