@@ -90,7 +90,8 @@ public: // I know it's an ugly hack to make them public to enable external acces
 	AccessibilityTabController accessibilityTabController;
 
 private:
-    OverlayController(bool desktopMode, bool noSound) : QObject(), desktopMode(desktopMode), noSound(noSound) {}
+	OverlayController(bool desktopMode, bool noSound) : QObject(), desktopMode(desktopMode), noSound(noSound) {}
+	QPoint getMousePositionForEvent(vr::VREvent_Mouse_t mouse);
 
 public:
 	virtual ~OverlayController();

@@ -2,14 +2,22 @@
 #include <QQuickWindow>
 #include <QApplication>
 #include "../overlaycontroller.h"
-#include "audiomanager/AudioManagerWindows.h"
+#ifdef _WIN32
+    #include "audiomanager/AudioManagerWindows.h"
+#else
+    #include "audiomanager/AudioManagerDummy.h"
+#endif
 
 // application namespace
 namespace advsettings {
 
 	void AudioTabController::initStage1() {
 		vr::EVRSettingsError vrSettingsError;
+        #ifdef _WIN32
 		audioManager.reset(new AudioManagerWindows());
+        #else
+        audioManager.reset(new AudioManagerDummy());
+        #endif
 		audioManager->init(this);
 		m_playbackDevices = audioManager->getPlaybackDevices();
 		m_recordingDevices = audioManager->getRecordingDevices();

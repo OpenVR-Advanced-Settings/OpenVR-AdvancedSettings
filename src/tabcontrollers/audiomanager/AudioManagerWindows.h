@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../audiomanager.h"
+#include "../AudioManager.h"
 
-#include <Mmdeviceapi.h>
-#include <Functiondiscoverykeys_devpkey.h>
-#include <Endpointvolume.h>
+#include <mmdeviceapi.h>
+#include <functiondiscoverykeys_devpkey.h>
+#include <endpointvolume.h>
 #include "IPolicyConfig.h"
 #include <mutex>
 
@@ -26,7 +26,7 @@ private:
 	IPolicyConfig* policyConfig = nullptr;
 
 public:
-	~AudioManagerWindows();
+    ~AudioManagerWindows() override;
 
 	virtual void init(AudioTabController* controller) override;
 

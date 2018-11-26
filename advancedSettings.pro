@@ -41,6 +41,7 @@ SOURCES += src/main.cpp\
     release/moc_UtilitiesTabController.cpp \
     src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
     src/tabcontrollers/AccessibilityTabController.cpp \
+    src/overlaycontroller.cpp \
     src/tabcontrollers/AudioTabController.cpp \
     src/tabcontrollers/ChaperoneTabController.cpp \
     src/tabcontrollers/FixFloorTabController.cpp \
@@ -77,6 +78,19 @@ HEADERS  += src/overlaycontroller.h \
     src/tabcontrollers/audiomanager/IPolicyConfig.h \
     src/tabcontrollers/AccessibilityTabController.h \
     src/tabcontrollers/AudioManager.h \
+    src/tabcontrollers/SettingsTabController.cpp \
+    src/tabcontrollers/StatisticsTabController.cpp \
+    src/tabcontrollers/SteamVRTabController.cpp \
+    src/tabcontrollers/ReviveTabController.cpp \
+    src/tabcontrollers/UtilitiesTabController.cpp \
+    src/tabcontrollers/PttController.cpp \
+    src/tabcontrollers/AccessibilityTabController.cpp \
+    src/utils/ChaperoneUtils.cpp \
+    src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
+    src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp
+
+HEADERS += src/overlaycontroller.h \
+    src/logging.h \
     src/tabcontrollers/AudioTabController.h \
     src/tabcontrollers/ChaperoneTabController.h \
     src/tabcontrollers/FixFloorTabController.h \
@@ -98,13 +112,34 @@ HEADERS  += src/overlaycontroller.h \
     third-party/openvr/headers/openvr.h \
     third-party/openvr/headers/openvr_capi.h \
     third-party/openvr/headers/openvr_driver.h
+    src/tabcontrollers/SettingsTabController.h \
+    src/tabcontrollers/StatisticsTabController.h \
+    src/tabcontrollers/SteamVRTabController.h \
+    src/tabcontrollers/ReviveTabController.h \
+    src/tabcontrollers/UtilitiesTabController.h \
+    src/tabcontrollers/AudioManager.h \
+    src/tabcontrollers/PttController.h \
+    src/tabcontrollers/AccessibilityTabController.h \
+    src/tabcontrollers/KeyboardInput.h \
+    src/utils/Matrix.h \
+    src/utils/ChaperoneUtils.h \
+    src/tabcontrollers/audiomanager/AudioManagerDummy.h \
+    src/tabcontrollers/keyboardinput/KeyboardInputDummy.h
+
+win32 {
+    SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
+        src/tabcontrollers/keyboardinput/KeyboardInputWindows.cpp
+    HEADERS += src/tabcontrollers/audiomanager/AudioManagerWindows.h \
+        src/tabcontrollers/keyboardinput/KeyboardInputWindows.h
+}
 
 INCLUDEPATH += third-party/openvr/headers \
 			third-party/easylogging++
 
-win32:LIBS += -L"$$PWD/third-party/openvr/lib/win64"
+win32:LIBS += -L"$$PWD/third-party/openvr/lib/win64" -luser32 -lole32
 unix:LIBS += -L"$$PWD/third-party/openvr/lib/linux64"
-LIBS += -lopenvr_api -luser32 -lole32
+LIBS += -lopenvr_api
+
 
 DESTDIR = bin/win64/AdvancedSettings
 
@@ -143,3 +178,5 @@ DISTFILES += \
     src/res/qml/StatisticsPage.qml \
     src/res/qml/SteamVRPage.qml \
     src/res/qml/UtilitiesPage.qml
+win32:DESTDIR = bin/win64/AdvancedSettings
+unix:DESTDIR = bin/linux/AdvancedSettings
