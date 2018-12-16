@@ -333,7 +333,7 @@ MyStackViewPage {
 
                 MyText {
                     Layout.leftMargin: 270
-                    text: "Profile:"
+                    text: "PTT Profile:"
                 }
 
                 MyComboBox {
