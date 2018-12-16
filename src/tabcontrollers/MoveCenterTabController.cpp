@@ -41,6 +41,18 @@ void MoveCenterTabController::initStage1() {
     if (value.isValid() && !value.isNull()) {
         m_requireDoubleClick = value.toBool();
     }
+	value = settings->value("lockXToggle", m_lockXToggle);
+	if (value.isValid() && !value.isNull()) {
+		m_lockXToggle = value.toBool();
+	}
+	value = settings->value("lockYToggle", m_lockYToggle);
+	if (value.isValid() && !value.isNull()) {
+		m_lockYToggle = value.toBool();
+	}
+	value = settings->value("lockZToggle", m_lockZToggle);
+	if (value.isValid() && !value.isNull()) {
+		m_lockZToggle = value.toBool();
+	}
 	settings->endGroup();
     lastMoveButtonClick[0] = lastMoveButtonClick[0] = clock::now();
 }
@@ -189,33 +201,91 @@ void MoveCenterTabController::setRequireDoubleClick(bool value, bool notify) {
     }
 }
 
-void MoveCenterTabController::modOffsetX(float value, bool notify) {
-	auto angle = m_rotation * 2 * M_PI / 360.0;
-	float offset[3] = { value, 0, 0 };
-	rotateCoordinates(offset, angle);
-	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, offset, m_adjustChaperone);
-	m_offsetX += value;
+bool MoveCenterTabController::lockXToggle() const {
+	return m_lockXToggle;
+}
+
+void MoveCenterTabController::setLockX(bool value, bool notify) {
+	m_lockXToggle = value;
+	auto settings = OverlayController::appSettings();
+	settings->beginGroup("playspaceSettings");
+	settings->setValue("lockXToggle", m_lockXToggle);
+	settings->endGroup();
+	settings->sync();
 	if (notify) {
-		emit offsetXChanged(m_offsetX);
+		emit requireLockXChanged(m_lockXToggle);
+	}
+}
+
+
+bool MoveCenterTabController::lockYToggle() const {
+	return m_lockYToggle;
+}
+
+void MoveCenterTabController::setLockY(bool value, bool notify) {
+	m_lockYToggle = value;
+	auto settings = OverlayController::appSettings();
+	settings->beginGroup("playspaceSettings");
+	settings->setValue("lockYToggle", m_lockYToggle);
+	settings->endGroup();
+	settings->sync();
+	if (notify) {
+		emit requireLockYChanged(m_lockYToggle);
+	}
+}
+
+bool MoveCenterTabController::lockZToggle() const {
+	return m_lockZToggle;
+}
+
+void MoveCenterTabController::setLockZ(bool value, bool notify) {
+	m_lockZToggle = value;
+	auto settings = OverlayController::appSettings();
+	settings->beginGroup("playspaceSettings");
+	settings->setValue("lockZToggle", m_lockZToggle);
+	settings->endGroup();
+	settings->sync();
+	if (notify) {
+		emit requireLockZChanged(m_lockZToggle);
+	}
+}
+
+
+
+void MoveCenterTabController::modOffsetX(float value, bool notify) {
+	//TODO ? possible issue with locking position this way
+	if (!m_lockXToggle) {
+		auto angle = m_rotation * 2 * M_PI / 360.0;
+		float offset[3] = { value, 0, 0 };
+		rotateCoordinates(offset, angle);
+		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, offset, m_adjustChaperone);
+		m_offsetX += value;
+		if (notify) {
+			emit offsetXChanged(m_offsetX);
+		}
 	}
 }
 
 void MoveCenterTabController::modOffsetY(float value, bool notify) {
-	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 1, value, m_adjustChaperone);
-	m_offsetY += value;
-	if (notify) {
-		emit offsetYChanged(m_offsetY);
+	if (!m_lockYToggle) {
+		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, 1, value, m_adjustChaperone);
+		m_offsetY += value;
+		if (notify) {
+			emit offsetYChanged(m_offsetY);
+		}
 	}
 }
 
 void MoveCenterTabController::modOffsetZ(float value, bool notify) {
-	auto angle = m_rotation * 2 * M_PI / 360.0;
-	float offset[3] = { 0, 0, value };
-	rotateCoordinates(offset, angle);
-	parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, offset, m_adjustChaperone);
-	m_offsetZ += value;
-	if (notify) {
-		emit offsetZChanged(m_offsetZ);
+	if (!m_lockZToggle) {
+		auto angle = m_rotation * 2 * M_PI / 360.0;
+		float offset[3] = { 0, 0, value };
+		rotateCoordinates(offset, angle);
+		parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, offset, m_adjustChaperone);
+		m_offsetZ += value;
+		if (notify) {
+			emit offsetZChanged(m_offsetZ);
+		}
 	}
 }
 
@@ -351,13 +421,33 @@ void MoveCenterTabController::eventLoopTick(vr::ETrackingUniverseOrigin universe
 			};
 
 			// offset is un-rotated coordinates
-			m_offsetX += diff[0];
-			m_offsetY += diff[1];
-			m_offsetZ += diff[2];
+
+			//prevents UI from updating if axis movement is locked
+			if (!m_lockXToggle) {
+				m_offsetX += diff[0];
+			}
+			if (!m_lockYToggle) {
+				m_offsetY += diff[1];
+			}
+			if (!m_lockZToggle) {
+				m_offsetZ += diff[2];
+			}
+
+
 
 			rotateCoordinates(diff, angle);
+			//If locked removes movement
+			if (m_lockXToggle) {
+				diff[0] = 0;
+			}
+			if (m_lockYToggle) {
+				diff[1] = 0;
+			}
+			if (m_lockZToggle) {
+				diff[2] = 0;
+			}
 
-            parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, diff, m_adjustChaperone);
+			parent->AddOffsetToUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse, diff, m_adjustChaperone);
         }
 		m_lastControllerPosition[0] = absoluteControllerPosition[0];
 		m_lastControllerPosition[1] = absoluteControllerPosition[1];

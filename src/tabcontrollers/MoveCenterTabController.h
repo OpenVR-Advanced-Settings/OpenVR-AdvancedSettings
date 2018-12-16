@@ -24,6 +24,9 @@ class MoveCenterTabController : public QObject {
 	Q_PROPERTY(bool moveShortcutRight READ moveShortcutRight WRITE setMoveShortcutRight NOTIFY moveShortcutRightChanged)
 	Q_PROPERTY(bool moveShortcutLeft READ moveShortcutLeft WRITE setMoveShortcutLeft NOTIFY moveShortcutLeftChanged)
     Q_PROPERTY(bool requireDoubleClick READ requireDoubleClick WRITE setRequireDoubleClick NOTIFY requireDoubleClickChanged)
+	Q_PROPERTY(bool lockXToggle READ lockXToggle WRITE setLockX NOTIFY requireLockXChanged)
+	Q_PROPERTY(bool lockYToggle READ lockYToggle WRITE setLockY NOTIFY requireLockYChanged)
+	Q_PROPERTY(bool lockZToggle READ lockZToggle WRITE setLockZ NOTIFY requireLockZChanged)
 
 private:
 	OverlayController* parent;
@@ -42,6 +45,9 @@ private:
 	bool m_moveShortcutRightEnabled = false;
 	bool m_moveShortcutLeftEnabled = false;
     bool m_requireDoubleClick = false;
+	bool m_lockXToggle = false;
+	bool m_lockYToggle = false;
+	bool m_lockZToggle = false;
     std::chrono::system_clock::time_point lastMoveButtonClick[2];
 
 	unsigned settingsUpdateCounter = 0;
@@ -62,6 +68,9 @@ public:
 	bool moveShortcutRight() const;
 	bool moveShortcutLeft() const;
     bool requireDoubleClick() const;
+	bool lockXToggle() const;
+	bool lockYToggle() const;
+	bool lockZToggle() const;
 
 public slots:
 	int trackingUniverse() const;
@@ -82,6 +91,11 @@ public slots:
 	void modOffsetX(float value, bool notify = true);
 	void modOffsetY(float value, bool notify = true);
 	void modOffsetZ(float value, bool notify = true);
+
+	void setLockX(bool value, bool notify = true);
+	void setLockY(bool value, bool notify = true);
+	void setLockZ(bool value, bool notify = true);
+
 	void reset();
 
 signals:
@@ -94,6 +108,9 @@ signals:
 	void moveShortcutRightChanged(bool value);
 	void moveShortcutLeftChanged(bool value);
     void requireDoubleClickChanged(bool value);
+	void requireLockXChanged(bool value);
+	void requireLockYChanged(bool value);
+	void requireLockZChanged(bool value);
 };
 
 } // namespace advsettings
