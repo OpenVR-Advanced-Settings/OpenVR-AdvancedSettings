@@ -30,6 +30,12 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 
 # Usage
 
+## Installer
+
+Download the newest installer from the [release section](https://github.com/icewind1991/OpenVR-AdvancedSettings/releases) and execute it.
+
+If you have an older standalone version installed, delete the old application folder first.
+
 ## Standalone
 
 Download the newest standalone archive from the [release section](https://github.com/icewind1991/OpenVR-AdvancedSettings/releases) and unpack the archive.
@@ -41,6 +47,12 @@ To upgrade an existing installation first stop SteamVR and delete the old applic
 ## Desktop mode
 
 Executing startdesktopmode.bat from the application folder shows a window on the desktop instead of a vr overlay. Desktop mode can be used alongside an already running vr overlay instance.
+
+## Preview builds
+
+If you want to try latest and greatest unreleased features, you can download the latest [automated build](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master/artifacts).
+
+Note that these unreleased builds often only get minimal testing and might be broken.
 
 # Documentation
 
@@ -194,6 +206,11 @@ The following environment variables should be set for the build script to work
 
 - QT: `C:\Qt\5.10.1\msvc2017_64` or wherever you installed Qt.
 - PLATFORM: `amd64` only x64 builds have been tested atm.
+
+## Building on Linux
+
+If you want to run Advanced Settings on linux you can build it yourself using `qmake` and `make` or using Qt Creator, you'll have to copy the `res` folder from the `src` folder into folder that contains the binary
+and copy `third-party/openvr/lib/linux64/libopenvr_api.so` into your systems library path.
 
 # Notes:
 
