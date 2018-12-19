@@ -24,10 +24,23 @@ MyStackViewPage {
         id: pttDeleteProfileDialog
         property int profileIndex: -1
         dialogTitle: "Delete Profile"
-        dialogText: "Do you really want to delete this profile?"
+        dialogText: "Do you really want to delete this ptt profile?"
         onClosed: {
             if (okClicked) {
                 AudioTabController.deletePttProfile(profileIndex)
+            }
+        }
+    }
+
+    MyDialogOkCancelPopup {
+        id: audioDeleteProfileDialog
+        property int profileIndex: -1
+        dialogTitle: "Delete Profile"
+        dialogText: "Do you really want to delete this audio profile?"
+        onClosed: {
+            //TODO audio delete profile
+            if (okClicked) {
+                //AudioTabController.deletePttProfile(profileIndex)
             }
         }
     }
@@ -39,7 +52,7 @@ MyStackViewPage {
 
     MyDialogOkCancelPopup {
         id: pttNewProfileDialog
-        dialogTitle: "Create New Profile"
+        dialogTitle: "Create New PTT Profile"
         dialogWidth: 600
         dialogHeight: 220
         dialogContentItem: ColumnLayout {
@@ -74,6 +87,49 @@ MyStackViewPage {
         }
         function openPopup() {
             pttNewProfileName.text = ""
+            open()
+        }
+    }
+
+
+    MyDialogOkCancelPopup {
+        id: audioNewProfileDialog
+        dialogTitle: "Create New Audio Profile"
+        dialogWidth: 600
+        dialogHeight: 220
+        dialogContentItem: ColumnLayout {
+            RowLayout {
+                Layout.topMargin: 16
+                Layout.leftMargin: 16
+                Layout.rightMargin: 16
+                MyText {
+                    text: "Name: "
+                }
+                MyTextField {
+                    id: audioNewProfileName
+                    keyBoardUID: 590
+                    color: "#cccccc"
+                    text: ""
+                    Layout.fillWidth: true
+                    font.pointSize: 20
+                    function onInputEvent(input) {
+                        audioNewProfileName.text = input
+                    }
+                }
+            }
+        }
+        onClosed: {
+            if (okClicked) {
+                if (audioNewProfileName.text != "") {
+                    //TODO call AUDIO add profile
+                    //AudioTabController.addPttProfile(pttNewProfileName.text)
+                } else {
+                    audioMessageDialog.showMessage("Create New Profile", "ERROR: No name given.")
+                }
+            }
+        }
+        function openPopup() {
+            audioNewProfileName.text = ""
             open()
         }
     }
@@ -329,16 +385,51 @@ MyStackViewPage {
                 }
             }
             RowLayout {
-                spacing: 18
+                spacing: 10
 
                 MyText {
-                    Layout.leftMargin: 270
+                    Layout.preferredWidth: 150
+                    text: "Audio Profile:"
+
+                }
+
+                MyComboBox {
+                    id: audioProfileComboBox
+                    Layout.preferredWidth: 250
+                    model: [""]
+                    onCurrentIndexChanged: {
+                        if (currentIndex > 0) {
+                            audioApplyProfileButton.enabled = true
+                            audioDeleteProfileButton.enabled = true
+                        } else {
+                            audioApplyProfileButton.enabled = false
+                            audioDeleteProfileButton.enabled = false
+                        }
+                    }
+                }
+
+                MyPushButton {
+                    id: audioApplyProfileButton
+                    enabled: true
+                    Layout.preferredWidth: 150
+                    text: "Apply"
+                    onClicked: {
+                        if (audioProfileComboBox.currentIndex > 0) {
+                            //TODO
+                       //     AudioTabController.applyPttProfile(pttProfileComboBox.currentIndex - 1)
+                            audioProfileComboBox.currentIndex = 0
+                        }
+                    }
+                }
+
+                MyText {
                     text: "PTT Profile:"
+                    Layout.preferredWidth: 150
                 }
 
                 MyComboBox {
                     id: pttProfileComboBox
-                    Layout.fillWidth: true
+                    Layout.preferredWidth: 250
                     model: [""]
                     onCurrentIndexChanged: {
                         if (currentIndex > 0) {
@@ -354,7 +445,7 @@ MyStackViewPage {
                 MyPushButton {
                     id: pttApplyProfileButton
                     enabled: true
-                    Layout.preferredWidth: 200
+                    Layout.preferredWidth: 150
                     text: "Apply"
                     onClicked: {
                         if (pttProfileComboBox.currentIndex > 0) {
@@ -366,6 +457,26 @@ MyStackViewPage {
             }
             RowLayout {
                 spacing: 18
+
+                MyPushButton {
+                    id: audioDeleteProfileButton
+                    enabled: true
+                    Layout.preferredWidth: 200
+                    text: "Delete Profile"
+                    onClicked: {
+                        if (audioProfileComboBox.currentIndex > 0) {
+                            audioDeleteProfileDialog.profileIndex = audioProfileComboBox.currentIndex - 1
+                            audioDeleteProfileDialog.open()
+                        }
+                    }
+                }
+                MyPushButton {
+                    Layout.preferredWidth: 200
+                    text: "New Profile"
+                    onClicked: {
+                        audioNewProfileDialog.openPopup()
+                    }
+                }
                 Item {
                     Layout.fillWidth: true
                 }
