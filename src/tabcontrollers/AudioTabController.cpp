@@ -38,6 +38,7 @@ namespace advsettings {
 		m_micMuted = audioManager->getMicMuted();
 		reloadPttProfiles();
 		reloadPttConfig();
+		reloadAudioProfiles();
 		reloadAudioSettings();
 		eventLoopTick();
 	}

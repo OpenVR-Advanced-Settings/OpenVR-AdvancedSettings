@@ -3,6 +3,7 @@
 
 #include "AudioManager.h"
 #include "PttController.h"
+#include "AudioProfileController.h"
 #include <memory>
 
 class QQuickWindow;
@@ -13,7 +14,7 @@ namespace advsettings {
 	class OverlayController;
 
 
-	class AudioTabController : public PttController {
+	class AudioTabController : public AudioProfileController {
 		Q_OBJECT
 		Q_PROPERTY(int playbackDeviceIndex READ playbackDeviceIndex WRITE setPlaybackDeviceIndex NOTIFY playbackDeviceIndexChanged)
 		Q_PROPERTY(int mirrorDeviceIndex READ mirrorDeviceIndex WRITE setMirrorDeviceIndex NOTIFY mirrorDeviceIndexChanged)
@@ -55,6 +56,7 @@ namespace advsettings {
 		std::string lastMirrorDevId;
 
 		QString getSettingsName() override { return "audioSettings"; }
+		//QString getSettingsNameAudio() override { return "audioSettingsTest"; }
 		void onPttStart() override;
 		void onPttStop() override;
 		void onPttEnabled() override;

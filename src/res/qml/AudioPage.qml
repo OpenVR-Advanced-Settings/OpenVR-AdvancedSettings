@@ -38,9 +38,8 @@ MyStackViewPage {
         dialogTitle: "Delete Profile"
         dialogText: "Do you really want to delete this audio profile?"
         onClosed: {
-            //TODO audio delete profile
             if (okClicked) {
-                //AudioTabController.deletePttProfile(profileIndex)
+                AudioTabController.deleteAudioProfile(profileIndex)
             }
         }
     }
@@ -121,8 +120,7 @@ MyStackViewPage {
         onClosed: {
             if (okClicked) {
                 if (audioNewProfileName.text != "") {
-                    //TODO call AUDIO add profile
-                    //AudioTabController.addPttProfile(pttNewProfileName.text)
+                    AudioTabController.addAudioProfile(audioNewProfileName.text)
                 } else {
                     audioMessageDialog.showMessage("Create New Profile", "ERROR: No name given.")
                 }
@@ -415,8 +413,7 @@ MyStackViewPage {
                     text: "Apply"
                     onClicked: {
                         if (audioProfileComboBox.currentIndex > 0) {
-                            //TODO
-                       //     AudioTabController.applyPttProfile(pttProfileComboBox.currentIndex - 1)
+                            AudioTabController.applyAudioProfile(audioProfileComboBox.currentIndex - 1)
                             audioProfileComboBox.currentIndex = 0
                         }
                     }
@@ -555,6 +552,7 @@ MyStackViewPage {
                 audioMicNameCombo.currentIndex = AudioTabController.micDeviceIndex
             }
             reloadPttProfiles()
+            reloadAudioProfiles()
             audioPttEnabledToggle.checked = AudioTabController.pttEnabled
             audioPttLeftControllerToggle.checked = AudioTabController.pttLeftControllerEnabled
             audioPttRightControllerToggle.checked = AudioTabController.pttRightControllerEnabled
@@ -634,6 +632,10 @@ MyStackViewPage {
             onPttProfilesUpdated: {
                 reloadPttProfiles()
             }
+            onAudioProfilesUpdated:{
+                reloadAudioProfiles()
+            }
+
             onPlaybackDeviceListChanged: {
                 var devs1 = []
                 var devs2 = ["<None>"]
@@ -697,5 +699,15 @@ MyStackViewPage {
         }
         pttProfileComboBox.currentIndex = 0
         pttProfileComboBox.model = profiles
+    }
+
+    function reloadAudioProfiles(){
+        var profiles = [""]
+        var profileCount = AudioTabController.getAudioProfileCount()
+        for (var i = 0; i < profileCount; i++) {
+            profiles.push(AudioTabController.getAudioProfileName(i))
+        }
+        audioProfileComboBox.currentIndex = 0
+        audioProfileComboBox.model = profiles
     }
 }
