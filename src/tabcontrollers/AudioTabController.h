@@ -81,7 +81,10 @@ namespace advsettings {
 		void findMirrorDeviceIndex(std::string id, bool notify = true);
 		void findMicDeviceIndex(std::string id, bool notify = true);
 
-		void setPlaybackDeviceControl(int index, bool notify = true);
+		int getPlaybackIndex(std::string str);
+		int getRecordingIndex(std::string str);
+		int getMirrorIndex(std::string str);
+		//void setPlaybackDeviceControl(int index, bool notify = true);
 
 		std::vector<AudioProfile> audioProfiles;
 		//std::recursive_mutex eventLoopMutexAudio;

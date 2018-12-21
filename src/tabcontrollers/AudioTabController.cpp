@@ -69,138 +69,6 @@ namespace advsettings {
 		}
 	}
 
-
-
-	/*AUDIO PROFILE FUNCTIONS
-	The functions in this section pertain to saving the Audio settings.
-	Saved Settings Include:
-	Playback Device
-	Mirror Device
-	Mirror Vol
-	Microphone
-	Microphone Volume
-	Profile Name
-	
-	*/
-
-	void AudioTabController::reloadAudioProfiles() {
-		audioProfiles.clear();
-		auto settings = OverlayController::appSettings();
-		settings->beginGroup(getSettingsName());
-		auto profileCount = settings->beginReadArray("audioProfiles");
-		for (int i = 0; i < profileCount; i++) {
-			settings->setArrayIndex(i);
-			audioProfiles.emplace_back();
-			auto& entry = audioProfiles[i];
-			entry.profileName = settings->value("profileName").toString().toStdString();
-			entry.playbackName = settings->value("playbackName").toString().toStdString();
-		}
-		settings->endArray();
-		settings->endGroup();
-	}
-
-	void AudioTabController::saveAudioProfiles() {
-		auto settings = OverlayController::appSettings();
-		settings->beginGroup(getSettingsName());
-		settings->beginWriteArray("audioProfiles");
-		unsigned i = 0;
-		for (auto& p : audioProfiles) {
-			settings->setArrayIndex(i);
-			settings->setValue("profileName", QString::fromStdString(p.profileName));
-			settings->setValue("playbackName", QString::fromStdString(p.playbackName));
-			i++;
-		}
-		settings->endArray();
-		settings->endGroup();
-	}
-
-
-
-
-	void AudioTabController::addAudioProfile(QString name) {
-		AudioProfile* profile = nullptr;
-		for (auto& p : audioProfiles) {
-			if (p.profileName.compare(name.toStdString()) == 0) {
-				profile = &p;
-				break;
-			}
-		}
-		if (!profile) {
-			auto i = audioProfiles.size();
-			audioProfiles.emplace_back();
-			profile = &audioProfiles[i];
-		}
-		profile->profileName = name.toStdString();
-		profile->playbackName = getPlaybackDeviceName(m_playbackDeviceIndex).toStdString();
-		saveAudioProfiles();
-		OverlayController::appSettings()->sync();
-		emit audioProfilesUpdated();
-	}
-
-	//TODO playback DevicE INDEX FIND UGHU
-	void AudioTabController::applyAudioProfile(unsigned index) {
-		//DO i need?
-		//std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
-		if (index < audioProfiles.size()) {
-			auto& profile = audioProfiles[index];
-			setPlaybackDeviceIndex(findPlaybackDeviceIndex(profile.playbackName, true), true);
-			//TODO apply logic here
-			//setPttShowNotification(profile.showNotification);
-			//reloadAudioProfiles();
-
-		}
-	}
-
-	void AudioTabController::deleteAudioProfile(unsigned index) {
-		if (index < audioProfiles.size()) {
-			auto pos = audioProfiles.begin() + index;
-			audioProfiles.erase(pos);
-			saveAudioProfiles();
-			OverlayController::appSettings()->sync();
-			emit audioProfilesUpdated();
-		}
-	}
-
-
-
-	unsigned AudioTabController::getAudioProfileCount() {
-		return (unsigned)audioProfiles.size();
-	}
-
-	QString AudioTabController::getAudioProfileName(unsigned index) {
-		if (index < audioProfiles.size()) {
-			return QString::fromStdString(audioProfiles[index].profileName);
-		}
-		return "";
-	}
-
-
-
-	/* ---------------------------*/
-
-
-	/*Playback Switch*/
-
-	void AudioTabController::setPlaybackDeviceControl(int index, bool notify) {
-			if (index < m_playbackDevices.size() && index != m_mirrorDeviceIndex) {
-				vr::EVRSettingsError vrSettingsError;
-				vr::VRSettings()->SetString(vr::k_pch_audio_Section, vr::k_pch_audio_OnPlaybackDevice_String, m_playbackDevices[index].first.c_str(), &vrSettingsError);
-				if (vrSettingsError != vr::VRSettingsError_None) {
-					LOG(WARNING) << "Could not write \"" << vr::k_pch_audio_OnPlaybackDevice_String << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
-				}
-				else {
-					vr::VRSettings()->Sync();
-					audioManager->setPlaybackDevice(m_playbackDevices[index].first, notify);
-					emit playbackDeviceIndexChanged(m_playbackDeviceIndex);
-				}
-			}
-			else if (notify) {
-				emit playbackDeviceIndexChanged(m_playbackDeviceIndex);
-			}
-	}
-
-	/*----------------*/
-
 	void AudioTabController::reloadAudioSettings() {
 		std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
 		auto settings = OverlayController::appSettings();
@@ -593,5 +461,155 @@ namespace advsettings {
 			}
 		}
 	}
+
+
+	/*AUDIO PROFILE FUNCTIONS
+	The functions in this section pertain to saving the Audio settings.
+	Saved Settings Include:
+	Playback Device
+	Mirror Device
+	Mirror Vol
+	Microphone
+	Microphone Volume
+	Profile Name
+
+	*/
+
+	void AudioTabController::reloadAudioProfiles() {
+		audioProfiles.clear();
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup(getSettingsName());
+		auto profileCount = settings->beginReadArray("audioProfiles");
+		for (int i = 0; i < profileCount; i++) {
+			settings->setArrayIndex(i);
+			audioProfiles.emplace_back();
+			auto& entry = audioProfiles[i];
+			entry.profileName = settings->value("profileName").toString().toStdString();
+			entry.playbackName = settings->value("playbackName").toString().toStdString();
+			entry.micName = settings->value("micName").toString().toStdString();
+			entry.mirrorName = settings->value("mirrorName").toString().toStdString();
+		}
+		settings->endArray();
+		settings->endGroup();
+	}
+
+	void AudioTabController::saveAudioProfiles() {
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup(getSettingsName());
+		settings->beginWriteArray("audioProfiles");
+		unsigned i = 0;
+		for (auto& p : audioProfiles) {
+			settings->setArrayIndex(i);
+			settings->setValue("profileName", QString::fromStdString(p.profileName));
+			settings->setValue("playbackName", QString::fromStdString(p.playbackName));
+			settings->setValue("micName", QString::fromStdString(p.micName));
+			settings->setValue("mirrorName", QString::fromStdString(p.mirrorName));
+			i++;
+		}
+		settings->endArray();
+		settings->endGroup();
+	}
+
+
+
+
+	void AudioTabController::addAudioProfile(QString name) {
+		AudioProfile* profile = nullptr;
+		for (auto& p : audioProfiles) {
+			if (p.profileName.compare(name.toStdString()) == 0) {
+				profile = &p;
+				break;
+			}
+		}
+		if (!profile) {
+			auto i = audioProfiles.size();
+			audioProfiles.emplace_back();
+			profile = &audioProfiles[i];
+		}
+		profile->profileName = name.toStdString();
+		profile->playbackName = getPlaybackDeviceName(m_playbackDeviceIndex).toStdString();
+		profile->mirrorName = getPlaybackDeviceName(m_mirrorDeviceIndex).toStdString();
+		profile->micName = getRecordingDeviceName(m_recordingDeviceIndex).toStdString();
+
+		saveAudioProfiles();
+		OverlayController::appSettings()->sync();
+		emit audioProfilesUpdated();
+	}
+
+	//POSSIBLE TODO MIRROR/PLAYBACK SAME ON SWTICH
+	void AudioTabController::applyAudioProfile(unsigned index) {
+		if (index < audioProfiles.size()) {
+			auto& profile = audioProfiles[index];
+			setMirrorDeviceIndex(getMirrorIndex(profile.mirrorName), true);
+			setPlaybackDeviceIndex(getPlaybackIndex(profile.playbackName), true);
+			setMicDeviceIndex(getRecordingIndex(profile.micName), true);
+			//TODO apply logic here
+			//setPttShowNotification(profile.showNotification);
+			//reloadAudioProfiles();
+
+		}
+	}
+
+	void AudioTabController::deleteAudioProfile(unsigned index) {
+		if (index < audioProfiles.size()) {
+			auto pos = audioProfiles.begin() + index;
+			audioProfiles.erase(pos);
+			saveAudioProfiles();
+			OverlayController::appSettings()->sync();
+			emit audioProfilesUpdated();
+		}
+	}
+
+
+
+	unsigned AudioTabController::getAudioProfileCount() {
+		return (unsigned)audioProfiles.size();
+	}
+
+	QString AudioTabController::getAudioProfileName(unsigned index) {
+		if (index < audioProfiles.size()) {
+			return QString::fromStdString(audioProfiles[index].profileName);
+		}
+		return "";
+	}
+
+	/*
+		Function getPlaybackIndex,  getRecordingIndex, and getMirrorIndex
+
+		input: string, of microphone/playback device name
+		output: integer for use In: setMicDeviceIndex(int,bool), setMirrorDeviceIndex(int,bool) setPlayBackDeviceIndex(int,bool)
+
+		description: Gets proper index value for selecting specific devices.
+	*/
+	int AudioTabController::getPlaybackIndex(std::string str) {
+		for (int i = 0; i < m_playbackDevices.size(); i++) {
+			if (str.compare(m_playbackDevices[i].second)==0) {
+				return i;
+			}
+		}
+		return m_playbackDeviceIndex;
+	}
+
+	int AudioTabController::getRecordingIndex(std::string str) {
+		for (int i = 0; i < m_recordingDevices.size(); i++) {
+			if (str.compare(m_recordingDevices[i].second) == 0) {
+				return i;
+			}
+		}
+		return m_recordingDeviceIndex;
+	}
+
+	int AudioTabController::getMirrorIndex(std::string str) {
+		for (int i = 0; i < m_playbackDevices.size(); i++) {
+			if (str.compare(m_playbackDevices[i].second) == 0) {
+				return i;
+			}
+		}
+	return -1;
+	}
+
+	/* ---------------------------*/
+
+	/*----------------*/
 
 } // namespace advconfig
