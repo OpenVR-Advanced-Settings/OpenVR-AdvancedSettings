@@ -69,6 +69,138 @@ namespace advsettings {
 		}
 	}
 
+
+
+	/*AUDIO PROFILE FUNCTIONS
+	The functions in this section pertain to saving the Audio settings.
+	Saved Settings Include:
+	Playback Device
+	Mirror Device
+	Mirror Vol
+	Microphone
+	Microphone Volume
+	Profile Name
+	
+	*/
+
+	void AudioTabController::reloadAudioProfiles() {
+		audioProfiles.clear();
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup(getSettingsName());
+		auto profileCount = settings->beginReadArray("audioProfiles");
+		for (int i = 0; i < profileCount; i++) {
+			settings->setArrayIndex(i);
+			audioProfiles.emplace_back();
+			auto& entry = audioProfiles[i];
+			entry.profileName = settings->value("profileName").toString().toStdString();
+			entry.playbackName = settings->value("playbackName").toString().toStdString();
+		}
+		settings->endArray();
+		settings->endGroup();
+	}
+
+	void AudioTabController::saveAudioProfiles() {
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup(getSettingsName());
+		settings->beginWriteArray("audioProfiles");
+		unsigned i = 0;
+		for (auto& p : audioProfiles) {
+			settings->setArrayIndex(i);
+			settings->setValue("profileName", QString::fromStdString(p.profileName));
+			settings->setValue("playbackName", QString::fromStdString(p.playbackName));
+			i++;
+		}
+		settings->endArray();
+		settings->endGroup();
+	}
+
+
+
+
+	void AudioTabController::addAudioProfile(QString name) {
+		AudioProfile* profile = nullptr;
+		for (auto& p : audioProfiles) {
+			if (p.profileName.compare(name.toStdString()) == 0) {
+				profile = &p;
+				break;
+			}
+		}
+		if (!profile) {
+			auto i = audioProfiles.size();
+			audioProfiles.emplace_back();
+			profile = &audioProfiles[i];
+		}
+		profile->profileName = name.toStdString();
+		profile->playbackName = getPlaybackDeviceName(m_playbackDeviceIndex).toStdString();
+		saveAudioProfiles();
+		OverlayController::appSettings()->sync();
+		emit audioProfilesUpdated();
+	}
+
+	//TODO playback DevicE INDEX FIND UGHU
+	void AudioTabController::applyAudioProfile(unsigned index) {
+		//DO i need?
+		//std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
+		if (index < audioProfiles.size()) {
+			auto& profile = audioProfiles[index];
+			setPlaybackDeviceIndex(findPlaybackDeviceIndex(profile.playbackName, true), true);
+			//TODO apply logic here
+			//setPttShowNotification(profile.showNotification);
+			//reloadAudioProfiles();
+
+		}
+	}
+
+	void AudioTabController::deleteAudioProfile(unsigned index) {
+		if (index < audioProfiles.size()) {
+			auto pos = audioProfiles.begin() + index;
+			audioProfiles.erase(pos);
+			saveAudioProfiles();
+			OverlayController::appSettings()->sync();
+			emit audioProfilesUpdated();
+		}
+	}
+
+
+
+	unsigned AudioTabController::getAudioProfileCount() {
+		return (unsigned)audioProfiles.size();
+	}
+
+	QString AudioTabController::getAudioProfileName(unsigned index) {
+		if (index < audioProfiles.size()) {
+			return QString::fromStdString(audioProfiles[index].profileName);
+		}
+		return "";
+	}
+
+
+
+	/* ---------------------------*/
+
+
+	/*Playback Switch*/
+
+	void AudioTabController::setPlaybackDeviceControl(int index, bool notify) {
+			if (index < m_playbackDevices.size() && index != m_mirrorDeviceIndex) {
+				vr::EVRSettingsError vrSettingsError;
+				vr::VRSettings()->SetString(vr::k_pch_audio_Section, vr::k_pch_audio_OnPlaybackDevice_String, m_playbackDevices[index].first.c_str(), &vrSettingsError);
+				if (vrSettingsError != vr::VRSettingsError_None) {
+					LOG(WARNING) << "Could not write \"" << vr::k_pch_audio_OnPlaybackDevice_String << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
+				}
+				else {
+					vr::VRSettings()->Sync();
+					audioManager->setPlaybackDevice(m_playbackDevices[index].first, notify);
+					emit playbackDeviceIndexChanged(m_playbackDeviceIndex);
+				}
+			}
+			else if (notify) {
+				emit playbackDeviceIndexChanged(m_playbackDeviceIndex);
+			}
+	}
+
+	/*----------------*/
+
 	void AudioTabController::reloadAudioSettings() {
 		std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
 		auto settings = OverlayController::appSettings();
@@ -348,6 +480,7 @@ namespace advsettings {
 		if (index != m_playbackDeviceIndex) {
 			if (index < m_playbackDevices.size() && index != m_mirrorDeviceIndex) {
 				vr::EVRSettingsError vrSettingsError;
+				//Applys Audio Switch IN VR
 				vr::VRSettings()->SetString(vr::k_pch_audio_Section, vr::k_pch_audio_OnPlaybackDevice_String, m_playbackDevices[index].first.c_str(), &vrSettingsError);
 				if (vrSettingsError != vr::VRSettingsError_None) {
 					LOG(WARNING) << "Could not write \"" << vr::k_pch_audio_OnPlaybackDevice_String << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);

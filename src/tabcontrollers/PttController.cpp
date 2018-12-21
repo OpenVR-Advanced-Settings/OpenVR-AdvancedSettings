@@ -239,7 +239,6 @@ namespace advsettings {
   }
 
   void PttController::addPttProfile(QString name) {
-	  int a = 0;
     PttProfile* profile = nullptr;
     for (auto& p : pttProfiles) {
       if (p.profileName.compare(name.toStdString()) == 0) {
