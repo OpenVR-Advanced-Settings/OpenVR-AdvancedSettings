@@ -22,8 +22,6 @@ namespace advsettings {
 		float micVol = 0.0;
 		bool micMute = false;
 		bool mirrorMute = false;
-		//TODO all the settings!!! huehue
-		//bool showNotification = false;
 	};
 
 

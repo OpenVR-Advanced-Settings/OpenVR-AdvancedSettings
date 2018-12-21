@@ -57,8 +57,7 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/UtilitiesTabController.cpp \
     src/utils/ChaperoneUtils.cpp \
     src/main.cpp \
-    src/overlaycontroller.cpp \
-    src/tabcontrollers/AudioProfileController.cpp
+    src/overlaycontroller.cpp
 
 HEADERS += src/overlaycontroller.h \
     src/logging.h \
@@ -108,8 +107,7 @@ HEADERS += src/overlaycontroller.h \
     third-party/openvr/bin/osx64/OpenVR.framework/Versions/A/Headers/openvr_driver.h \
     third-party/openvr/headers/openvr.h \
     third-party/openvr/headers/openvr_capi.h \
-    third-party/openvr/headers/openvr_driver.h \
-    src/tabcontrollers/AudioProfileController.h
+    third-party/openvr/headers/openvr_driver.h
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
