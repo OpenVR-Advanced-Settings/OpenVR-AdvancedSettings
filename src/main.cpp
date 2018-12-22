@@ -110,58 +110,75 @@ public:
 };
 
 
-int main(int argc, char *argv[]) {
-	
-	bool desktopMode = false;
-	bool noSound = false;
-	bool noManifest = false;
 
-	// Parse command line arguments
-	for (int i = 1; i < argc; i++) {
-		if (std::string(argv[i]).compare("-desktop") == 0) {
-			desktopMode = true;
-		} else if (std::string(argv[i]).compare("-nosound") == 0) {
-			noSound = true;
-		} else if (std::string(argv[i]).compare("-nomanifest") == 0) {
-			noManifest = true;
-		} else if (std::string(argv[i]).compare("-installmanifest") == 0) {
-			int exitcode = 0;
-			QCoreApplication coreApp(argc, argv);
-			auto initError = vr::VRInitError_None;
-			vr::VR_Init(&initError, vr::VRApplication_Utility);
-			if (initError == vr::VRInitError_None) {
-				try {
-					installManifest(true);
-				} catch (std::exception& e) {
-					exitcode = -1;
-					std::cerr << e.what() << std::endl;
-				}
-			} else {
-				exitcode = -2;
-				std::cerr << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))) << std::endl;
+namespace argument {
+    // Checks whether a specific string was passed as a launch argument.
+    bool CheckCommandLineArgument(int argc, char *argv[], const std::string parameter) {
+        // The old way was one giant loop that tested every single parameter.
+        // Having an individual loop for all args most likely has a very small performance
+        // penalty compared to the original solution,
+        // but the gains in readability and ease of extension of not having a hundred line+ for loop are worth it.
+        for (int i = 0; i < argc; i++) {
+            if (std::string(argv[i]) == parameter) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    constexpr auto DESKTOP_MODE = "-desktop";
+    constexpr auto NO_SOUND = "-nosound";
+    constexpr auto NO_MANIFEST = "-nomanifest";
+    constexpr auto INSTALL_MANIFEST= "-installmanifest";
+    constexpr auto REMOVE_MANIFEST= "-removemanifest";
+}
+
+int main(int argc, char *argv[]) {
+
+    const bool desktop_mode = argument::CheckCommandLineArgument(argc, argv, argument::DESKTOP_MODE);
+    const bool no_sound = argument::CheckCommandLineArgument(argc, argv, argument::NO_SOUND);
+    const bool no_manifest = argument::CheckCommandLineArgument(argc, argv, argument::NO_MANIFEST);
+    const bool install_manifest = argument::CheckCommandLineArgument(argc, argv, argument::INSTALL_MANIFEST);
+    const bool remove_manifest = argument::CheckCommandLineArgument(argc, argv, argument::REMOVE_MANIFEST);
+
+	if (install_manifest) {
+		int exitcode = 0;
+		QCoreApplication coreApp(argc, argv);
+		auto initError = vr::VRInitError_None;
+		vr::VR_Init(&initError, vr::VRApplication_Utility);
+		if (initError == vr::VRInitError_None) {
+			try {
+				installManifest(true);
+			} catch (std::exception& e) {
+				exitcode = -1;
+				std::cerr << e.what() << std::endl;
 			}
-			vr::VR_Shutdown();
-			exit(exitcode);
-		} else if (std::string(argv[i]).compare("-removemanifest") == 0) {
-			int exitcode = 0;
-			QCoreApplication coreApp(argc, argv);
-			auto initError = vr::VRInitError_None;
-			vr::VR_Init(&initError, vr::VRApplication_Utility);
-			if (initError == vr::VRInitError_None) {
-				try {
-					removeManifest();
-				} catch (std::exception& e) {
-					exitcode = -1;
-					std::cerr << e.what() << std::endl;
-				}
-			} else {
-				exitcode = -2;
-				std::cerr << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))) << std::endl;
-			}
-			vr::VR_Shutdown();
-			exit(exitcode);
+		} else {
+			exitcode = -2;
+			std::cerr << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))) << std::endl;
 		}
+		vr::VR_Shutdown();
+		exit(exitcode);
+	} else if (remove_manifest) {
+		int exitcode = 0;
+		QCoreApplication coreApp(argc, argv);
+		auto initError = vr::VRInitError_None;
+		vr::VR_Init(&initError, vr::VRApplication_Utility);
+		if (initError == vr::VRInitError_None) {
+			try {
+				removeManifest();
+			} catch (std::exception& e) {
+				exitcode = -1;
+				std::cerr << e.what() << std::endl;
+			}
+		} else {
+			exitcode = -2;
+			std::cerr << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))) << std::endl;
+		}
+		vr::VR_Shutdown();
+		exit(exitcode);
 	}
+
 
 	try {
 		MyQApplication a(argc, argv);
@@ -195,13 +212,13 @@ int main(int argc, char *argv[]) {
 			LOG(INFO) << "Log File: " << logFilePath;
 		}
 		
-		if (desktopMode) {
+		if (desktop_mode) {
 			LOG(INFO) << "Desktop mode enabled.";
 		}
-		if (noSound) {
+		if (no_sound) {
 			LOG(INFO) << "Sound effects disabled.";
 		}
-		if (noManifest) {
+		if (no_manifest) {
 			LOG(INFO) << "vrmanifest disabled.";
 		}
 
@@ -211,7 +228,7 @@ int main(int argc, char *argv[]) {
 
 		QQmlEngine qmlEngine;
 
-		advsettings::OverlayController* controller = advsettings::OverlayController::createInstance(desktopMode, noSound);
+		advsettings::OverlayController* controller = advsettings::OverlayController::createInstance(desktop_mode, no_sound);
 		controller->Init(&qmlEngine);
 
 		QQmlComponent component(&qmlEngine, QUrl::fromLocalFile("res/qml/mainwidget.qml"));
@@ -222,7 +239,7 @@ int main(int argc, char *argv[]) {
 		auto quickObj = component.create();
 		controller->SetWidget(qobject_cast<QQuickItem*>(quickObj), advsettings::OverlayController::applicationName, advsettings::OverlayController::applicationKey);
 
-		if (!desktopMode && !noManifest) {
+		if (!desktop_mode && !no_manifest) {
 			try {
 				installManifest();
 			} catch (std::exception& e) {
@@ -230,7 +247,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
-		if (desktopMode) {
+		if (desktop_mode) {
 			auto m_pWindow = new QQuickWindow();
 			qobject_cast<QQuickItem*>(quickObj)->setParentItem(m_pWindow->contentItem());
 			m_pWindow->setGeometry(0, 0, qobject_cast<QQuickItem*>(quickObj)->width(), qobject_cast<QQuickItem*>(quickObj)->height());
