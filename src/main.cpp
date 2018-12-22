@@ -133,6 +133,12 @@ namespace argument {
     constexpr auto REMOVE_MANIFEST= "-removemanifest";
 }
 
+enum ReturnErrorCode {
+    SUCCESS = 0,
+    GENERAL_FAILURE = -1,
+    OPENVR_INIT_ERROR = -2,
+};
+
 int main(int argc, char *argv[]) {
 
     const bool desktop_mode = argument::CheckCommandLineArgument(argc, argv, argument::DESKTOP_MODE);
@@ -141,44 +147,34 @@ int main(int argc, char *argv[]) {
     const bool install_manifest = argument::CheckCommandLineArgument(argc, argv, argument::INSTALL_MANIFEST);
     const bool remove_manifest = argument::CheckCommandLineArgument(argc, argv, argument::REMOVE_MANIFEST);
 
-	if (install_manifest) {
-		int exitcode = 0;
-		QCoreApplication coreApp(argc, argv);
-		auto initError = vr::VRInitError_None;
-		vr::VR_Init(&initError, vr::VRApplication_Utility);
-		if (initError == vr::VRInitError_None) {
-			try {
-				installManifest(true);
-			} catch (std::exception& e) {
-				exitcode = -1;
-				std::cerr << e.what() << std::endl;
-			}
-		} else {
-			exitcode = -2;
-			std::cerr << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))) << std::endl;
-		}
-		vr::VR_Shutdown();
-		exit(exitcode);
-	} else if (remove_manifest) {
-		int exitcode = 0;
-		QCoreApplication coreApp(argc, argv);
-		auto initError = vr::VRInitError_None;
-		vr::VR_Init(&initError, vr::VRApplication_Utility);
-		if (initError == vr::VRInitError_None) {
-			try {
-				removeManifest();
-			} catch (std::exception& e) {
-				exitcode = -1;
-				std::cerr << e.what() << std::endl;
-			}
-		} else {
-			exitcode = -2;
-			std::cerr << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(initError))) << std::endl;
-		}
-		vr::VR_Shutdown();
-		exit(exitcode);
-	}
+    if (install_manifest || remove_manifest) {
+        int exit_code = ReturnErrorCode::SUCCESS;
+        QCoreApplication coreApp(argc, argv);
+        auto openvr_init_status = vr::VRInitError_None;
+        vr::VR_Init(&openvr_init_status, vr::VRApplication_Utility);
 
+        if (openvr_init_status == vr::VRInitError_None) {
+            try {
+                if (install_manifest) {
+                    installManifest(true);
+                }
+                else if (remove_manifest) {
+                    removeManifest();
+                }
+            }
+            catch (std::exception& e) {
+                exit_code = ReturnErrorCode::GENERAL_FAILURE;
+                std::cerr << e.what() << std::endl;
+            }
+        }
+        else {
+            exit_code = ReturnErrorCode::OPENVR_INIT_ERROR;
+            std::cerr << std::string("Failed to initialize OpenVR: " + std::string(vr::VR_GetVRInitErrorAsEnglishDescription(openvr_init_status))) << std::endl;
+        }
+
+        vr::VR_Shutdown();
+        exit(exit_code);
+    }
 
 	try {
 		MyQApplication a(argc, argv);
@@ -258,7 +254,7 @@ int main(int argc, char *argv[]) {
 
 	} catch (const std::exception& e) {
 		LOG(FATAL) << e.what();
-		return -1;
+		return ReturnErrorCode::GENERAL_FAILURE;
 	}
-	return 0;
+	return ReturnErrorCode::SUCCESS;
 }
