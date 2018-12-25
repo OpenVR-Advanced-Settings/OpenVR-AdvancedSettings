@@ -3,6 +3,7 @@
 
 #include "AudioManager.h"
 #include "PttController.h"
+//#include "AudioProfileController.h"
 #include <memory>
 
 class QQuickWindow;
@@ -11,6 +12,17 @@ namespace advsettings {
 
 	// forward declaration
 	class OverlayController;
+
+	struct AudioProfile {
+		std::string profileName;
+		std::string playbackName;
+		std::string mirrorName;
+		std::string micName;
+		float mirrorVol = 0.0;
+		float micVol = 0.0;
+		bool micMute = false;
+		bool mirrorMute = false;
+	};
 
 
 	class AudioTabController : public PttController {
@@ -55,6 +67,7 @@ namespace advsettings {
 		std::string lastMirrorDevId;
 
 		QString getSettingsName() override { return "audioSettings"; }
+		//QString getSettingsNameAudio() override { return "audioSettingsTest"; }
 		void onPttStart() override;
 		void onPttStop() override;
 		void onPttEnabled() override;
@@ -66,7 +79,17 @@ namespace advsettings {
 		void findMirrorDeviceIndex(std::string id, bool notify = true);
 		void findMicDeviceIndex(std::string id, bool notify = true);
 
+		int getPlaybackIndex(std::string str);
+		int getRecordingIndex(std::string str);
+		int getMirrorIndex(std::string str);
+		//void setPlaybackDeviceControl(int index, bool notify = true);
+
+		std::vector<AudioProfile> audioProfiles;
+		//std::recursive_mutex eventLoopMutexAudio;
+
 	public:
+
+
 		void initStage1();
 		void initStage2(OverlayController* parent, QQuickWindow* widget);
 
@@ -87,11 +110,18 @@ namespace advsettings {
 		bool micProximitySensorCanMute() const;
 		bool micReversePtt() const;
 
+		void reloadAudioProfiles();
+		void saveAudioProfiles();
+
 		Q_INVOKABLE int getPlaybackDeviceCount();
 		Q_INVOKABLE QString getPlaybackDeviceName(int index);
 
 		Q_INVOKABLE int getRecordingDeviceCount();
 		Q_INVOKABLE QString getRecordingDeviceName(int index);
+
+		//TODO check if needed?
+		Q_INVOKABLE unsigned getAudioProfileCount();
+		Q_INVOKABLE QString getAudioProfileName(unsigned index);
 
 		void onNewRecordingDevice();
 		void onNewPlaybackDevice();
@@ -111,6 +141,10 @@ namespace advsettings {
 		void setMirrorDeviceIndex(int value, bool notify = true);
 		void setMicDeviceIndex(int value, bool notify = true);
 
+		void addAudioProfile(QString name);
+		void applyAudioProfile(unsigned index);
+		void deleteAudioProfile(unsigned index);
+
 	signals:
 		void playbackDeviceIndexChanged(int index);
 
@@ -126,6 +160,8 @@ namespace advsettings {
 
 		void playbackDeviceListChanged();
 		void recordingDeviceListChanged();
+
+		void audioProfilesUpdated();
 	};
 
 } // namespace advsettings
