@@ -1,5 +1,5 @@
 
-![language](https://img.shields.io/badge/Language-C%2B%2B11%2C%20QML-green.svg) ![dependencies](https://img.shields.io/badge/Dependencies-OpenVR%2C%20Qt5-green.svg) ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg) 
+![language](https://img.shields.io/badge/Language-C%2B%2B11%2C%20QML-green.svg) ![dependencies](https://img.shields.io/badge/Dependencies-OpenVR%2C%20Qt5-green.svg) ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg) [![Build status](https://ci.appveyor.com/api/projects/status/8oivf5xws6vsq2x3/branch/master?svg=true)](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master)
 # OpenVR Advanced Settings Overlay
 
 Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
@@ -31,16 +31,16 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 
 ## Installer
 
-Download the newest installer from the [release section](https://github.com/ykeara/OpenVR-AdvancedSettings/releases) and execute it.
+Download the newest installer from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and execute it.
 
 If you have an older standalone version installed, delete the old application folder first.
 
 ## Standalone
 I am not currently providing standalone Archives if you want a standalone version you can:
 
-Download the newest standalone archive from the [release section](https://github.com/icewind1991/OpenVR-AdvancedSettings/releases) and unpack the archive.
+Download the newest standalone archive from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases)and unpack the archive.
 
-To install for the first time simply start AdvancedSettings.exe once while SteamVRis running. It will register with SteamVR and automatically starts whenever SteamVR starts (Can be disabled in the settings).
+To install for the first time simply start AdvancedSettings.exe once while SteamVR is running. It will register with SteamVR and automatically starts whenever SteamVR starts (Can be disabled in the settings).
 
 To upgrade an existing installation first stop SteamVR and delete the old application folder (or override it). Then start SteamVR and run AdvancedSettings.exe once.
 
