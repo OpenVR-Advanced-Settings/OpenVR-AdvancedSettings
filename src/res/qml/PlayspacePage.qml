@@ -92,6 +92,7 @@ MyStackViewPage {
                     }
 
                     MyToggleButton {
+                        Layout.preferredWidth: 240
                         id: lockXToggle
                         text: "Lock X"
                         onCheckedChanged: {
@@ -141,6 +142,7 @@ MyStackViewPage {
 
 
                     MyToggleButton {
+                        Layout.preferredWidth: 240
                         id: lockYToggle
                         text: "Lock Y"
                         onCheckedChanged: {
@@ -190,6 +192,7 @@ MyStackViewPage {
 
 
                     MyToggleButton {
+                        Layout.preferredWidth: 240
                         id: lockZToggle
                         text: "Lock Z"
                         onCheckedChanged: {
@@ -285,6 +288,15 @@ MyStackViewPage {
                                     text = MoveCenterTabController.rotation + "°"
                                 }
                             }
+                        }
+                        MyPushButton {
+                            id: playSpaceRotationApplyButton
+                            Layout.preferredWidth: 145
+                            text:"Apply"
+                            onClicked: {
+                               MoveCenterTabController.applyRotation()
+                            }
+
                         }
                     }
                 }
