@@ -256,5 +256,4 @@ int main(int argc, char *argv[]) {
 		LOG(FATAL) << e.what();
 		return ReturnErrorCode::GENERAL_FAILURE;
 	}
-	return ReturnErrorCode::SUCCESS;
 }
