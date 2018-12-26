@@ -26,25 +26,38 @@ IF NOT DEFINED project_dir (
 
 REM ZIP_LOC can't be called 7Z_LOC because of Windows limitations.
 ECHO %current_activity%: Testing if all required build environment values are set:
+
 IF NOT DEFINED ZIP_LOC (
     ECHO %current_activity%: ZIP_LOC not defined. Using default value.
     SET ZIP_LOC="C:\Program Files\7-Zip\7z.exe"
 )
 ECHO %current_activity%: ZIP_LOC set to '%ZIP_LOC%'.
-IF EXIST %ZIP_LOC% (
+
+REM EXIST won't find items in the PATH. WHERE will.
+SET ZIP_VALID=0
+IF EXIST %ZIP_LOC% SET ZIP_VALID=1
+WHERE /Q %ZIP_LOC%
+IF NOT ERRORLEVEL 1 SET ZIP_VALID=1
+
+IF %ZIP_VALID% EQU 1 (
     ECHO %current_activity%: ZIP_LOC exists.
 ) ELSE (
     ECHO %current_activity%: ZIP_LOC directory does not exist. Exiting.
     EXIT /B %exit_code_failure_build_locations%
 )
 
-ECHO %current_activity%: Testing if all required build environment values are set:
 IF NOT DEFINED NSIS_LOC (
     ECHO %current_activity%: NSIS_LOC not defined. Using default value.
     SET NSIS_LOC="C:\Program Files (x86)\NSIS\"
 )
 ECHO %current_activity%: NSIS_LOC set to '%NSIS_LOC%'.
-IF EXIST %NSIS_LOC% (
+
+SET NSIS_VALID=0
+IF EXIST %NSIS_LOC% SET NSIS_VALID=1
+WHERE /Q %NSIS_LOC%
+IF NOT ERRORLEVEL 1 SET NSIS_VALID=1
+
+IF %NSIS_VALID% EQU 1 (
     ECHO %current_activity%: NSIS_LOC exists.
 ) ELSE (
     ECHO %current_activity%: NSIS_LOC directory does not exist. Exiting.
