@@ -8,4 +8,7 @@ Makefile*
 *.vs
 *.stash
 *.appxmanifest
+*.user
+installer/AdvancedSettings-Installer.exe
 *.user*
+
