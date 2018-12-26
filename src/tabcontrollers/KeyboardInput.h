@@ -16,6 +16,7 @@ public:
     virtual void sendKeyboardInput(QString input) = 0;
     virtual void sendKeyboardEnter() = 0;
     virtual void sendKeyboardBackspace(int count) = 0;
+    virtual void sendKeyboardAltTab() = 0;
 };
 
 }
