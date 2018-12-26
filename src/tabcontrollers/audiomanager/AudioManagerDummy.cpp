@@ -1,16 +1,22 @@
 #include "AudioManagerDummy.h"
 
+// Used to get the compiler to shut up about C4100: unreferenced formal parameter.
+#define UNREFERENCED_PARAMETER(P) (P)
+
 // application namespace
 namespace advsettings {
 
 void AudioManagerDummy::init(AudioTabController *controller)
 {
     // noop
+    UNREFERENCED_PARAMETER(controller);
 }
 
 void AudioManagerDummy::setPlaybackDevice(const std::string &id, bool notify)
 {
     // noop
+    UNREFERENCED_PARAMETER(id);
+    UNREFERENCED_PARAMETER(notify);
 }
 
 std::string AudioManagerDummy::getPlaybackDevName()
@@ -26,6 +32,8 @@ std::string AudioManagerDummy::getPlaybackDevId()
 void AudioManagerDummy::setMirrorDevice(const std::string &id, bool notify)
 {
     // noop
+    UNREFERENCED_PARAMETER(id);
+    UNREFERENCED_PARAMETER(notify);
 }
 
 bool AudioManagerDummy::isMirrorValid()
@@ -50,6 +58,7 @@ float AudioManagerDummy::getMirrorVolume()
 
 bool AudioManagerDummy::setMirrorVolume(float value)
 {
+    UNREFERENCED_PARAMETER(value);
     return false;
 }
 
@@ -60,6 +69,7 @@ bool AudioManagerDummy::getMirrorMuted()
 
 bool AudioManagerDummy::setMirrorMuted(bool value)
 {
+    UNREFERENCED_PARAMETER(value);
     return false;
 }
 
@@ -71,6 +81,8 @@ bool AudioManagerDummy::isMicValid()
 void AudioManagerDummy::setMicDevice(const std::string &id, bool notify)
 {
     // noop
+    UNREFERENCED_PARAMETER(id);
+    UNREFERENCED_PARAMETER(notify);
 }
 
 std::string AudioManagerDummy::getMicDevName()
@@ -90,6 +102,7 @@ float AudioManagerDummy::getMicVolume()
 
 bool AudioManagerDummy::setMicVolume(float value)
 {
+    UNREFERENCED_PARAMETER(value);
     return false;
 }
 
@@ -100,6 +113,7 @@ bool AudioManagerDummy::getMicMuted()
 
 bool AudioManagerDummy::setMicMuted(bool value)
 {
+    UNREFERENCED_PARAMETER(value);
     return false;
 }
 
