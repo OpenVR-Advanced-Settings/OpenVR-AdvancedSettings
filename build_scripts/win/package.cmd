@@ -53,6 +53,14 @@ IF EXIST %NSIS_LOC% (
 
 ECHO %current_activity%: All required build environment values are set.
 
+IF DEFINED BUILD_DEBUG (
+    ECHO %current_activity%: BUILD_DEBUG var set. NOT PACKAGING TO AVOID SHIPPING DEBUG BUILDS.
+    ECHO %current_activity%: NOT PACKAGING TO AVOID SHIPPING DEBUG BUILDS.
+    ECHO %current_activity%: NOT PACKAGING TO AVOID SHIPPING DEBUG BUILDS.
+    ECHO %current_activity%: NOT PACKAGING TO AVOID SHIPPING DEBUG BUILDS.
+    EXIT /B %exit_code_failure_build_apps%
+)
+
 ECHO %current_activity%: Running 7zip:
 %ZIP_LOC% a %project_dir%\%output_dir%\AdvancedSettings.zip %project_dir%\%output_dir%\AdvancedSettings\*
 ECHO %current_activity%: 7zip done.
