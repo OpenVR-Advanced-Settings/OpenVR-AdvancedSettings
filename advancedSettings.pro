@@ -4,10 +4,11 @@
 #
 #-------------------------------------------------
 
-QT       += core gui qml quick multimedia
+QT       += core gui qml quick multimedia widgets
 CONFIG   += c++11
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+lessThan(QT_MAJOR_VERSION, 5): error("requires Qt 5.6 or higher")
+lessThan(QT_MINOR_VERSION, 6): error("requires Qt 5.6 or higher")
 
 TARGET = AdvancedSettings
 TEMPLATE = app
