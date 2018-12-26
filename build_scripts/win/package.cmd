@@ -36,8 +36,10 @@ ECHO %current_activity%: ZIP_LOC set to '%ZIP_LOC%'.
 REM EXIST won't find items in the PATH. WHERE will.
 SET ZIP_VALID=0
 IF EXIST %ZIP_LOC% SET ZIP_VALID=1
-WHERE /Q %ZIP_LOC%
-IF NOT ERRORLEVEL 1 SET ZIP_VALID=1
+IF %ZIP_VALID% EQU 0 (
+    WHERE /Q %ZIP_LOC%
+    IF NOT ERRORLEVEL 1 SET ZIP_VALID=1
+)
 
 IF %ZIP_VALID% EQU 1 (
     ECHO %current_activity%: ZIP_LOC exists.
@@ -52,10 +54,14 @@ IF NOT DEFINED NSIS_LOC (
 )
 ECHO %current_activity%: NSIS_LOC set to '%NSIS_LOC%'.
 
+REM EXIST won't find items in the PATH. WHERE will.
 SET NSIS_VALID=0
 IF EXIST %NSIS_LOC% SET NSIS_VALID=1
-WHERE /Q %NSIS_LOC%
-IF NOT ERRORLEVEL 1 SET NSIS_VALID=1
+REM Prevents error message spam if it doesn't find it in PATH.
+IF %NSIS_VALID% EQU 0 (
+    WHERE /Q %NSIS_LOC%
+    IF NOT ERRORLEVEL 1 SET NSIS_VALID=1
+)
 
 IF %NSIS_VALID% EQU 1 (
     ECHO %current_activity%: NSIS_LOC exists.

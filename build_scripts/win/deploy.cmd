@@ -29,6 +29,7 @@ IF NOT DEFINED QT_LOC (
     ECHO %current_activity%: QT_LOC not defined. Using default value.
     SET QT_LOC="C:\Qt\5.11.1\msvc2017_64\bin\"
 )
+REM QT_LOC is a directory, it can't be in the path, no reason to check using WHERE.
 ECHO %current_activity%: QT_LOC set to '%QT_LOC%'.
 IF EXIST %QT_LOC% (
     ECHO %current_activity%: QT_LOC exists.

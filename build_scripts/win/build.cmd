@@ -25,6 +25,7 @@ IF NOT DEFINED project_dir (
 REM Change dir to the project dir, otherwise qmake doesn't know where it is.
 CD %project_dir%
 
+REM QT_LOC is a directory, it can't be in the path, no reason to check using WHERE.
 ECHO %current_activity%: Testing if all required build environment values are set:
 IF NOT DEFINED QT_LOC (
     ECHO %current_activity%: QT_LOC not defined. Using default value.
@@ -43,7 +44,17 @@ IF NOT DEFINED VS_LOC (
     SET VS_LOC="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
 )
 ECHO %current_activity%: VS_LOC set to '%VS_LOC%'.
-IF EXIST %VS_LOC% (
+
+REM EXIST won't find items in the PATH. WHERE will.
+SET VS_VALID=0
+IF EXIST %VS_LOC% SET VS_VALID=1
+REM Prevents error message spam if it doesn't find it in PATH.
+IF NOT %VS_VALID% EQU 1 (
+    WHERE /Q %VS_LOC%
+    IF NOT ERRORLEVEL 1 SET VS_VALID=1
+)
+
+IF %VS_VALID% EQU 1 (
     ECHO %current_activity%: VS_LOC exists.
 ) ELSE (
     ECHO %current_activity%: VS_LOC directory does not exist. Exiting.
