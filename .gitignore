@@ -8,4 +8,4 @@ Makefile*
 *.vs
 *.stash
 *.appxmanifest
-*.user
+*.user*
