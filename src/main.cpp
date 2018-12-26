@@ -58,8 +58,8 @@ void installManifest(bool cleaninstall = false) {
 		if (apperror != vr::VRApplicationError_None) {
 			throw std::runtime_error(std::string("Could not add application manifest: ") + std::string(vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror)));
 		} else if (!alreadyInstalled || cleaninstall) {
-			auto apperror = vr::VRApplications()->SetApplicationAutoLaunch(advsettings::OverlayController::applicationKey, true);
-			if (apperror != vr::VRApplicationError_None) {
+                        auto app_error = vr::VRApplications()->SetApplicationAutoLaunch(advsettings::OverlayController::applicationKey, true);
+                        if (app_error != vr::VRApplicationError_None) {
 				throw std::runtime_error(std::string("Could not set auto start: ") + std::string(vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror)));
 			}
 		}
