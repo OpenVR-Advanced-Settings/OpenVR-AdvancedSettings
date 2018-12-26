@@ -2,10 +2,10 @@ image: Visual Studio 2017
 
 environment:
   matrix:
-  - QT_LOC: C:\Qt\5.11.2\msvc2017_64\bin\
+  - QT_LOC: '"C:\Qt\5.11.2\msvc2017_64\bin\"'
     VS_LOC: '"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"'
-    JOM_LOC: C:\Qt\Tools\QtCreator\bin\jom.exe
-    NSIS_LOC: C:\Program Files (x86)\NSIS\
+    JOM_LOC: '"C:\Qt\Tools\QtCreator\bin\jom.exe"'
+    NSIS_LOC: '"C:\Program Files (x86)\NSIS\"'
     ZIP_LOC: 7z
     COMPILER: msvc
     VSVER: 14
