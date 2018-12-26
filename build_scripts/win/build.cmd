@@ -17,9 +17,8 @@ IF NOT DEFINED project_dir (
     REM Arg 0 (called %0) is the full path to the file.
     REM https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/call#batch-parameters
     REM As per above link, %~dp0 expands the zeroth arg to a drive letter and path only.
-    SET folder_path=%~dp0
     REM Project dir is up two dirs from the file.
-    SET project_dir=%folder_path%\..\..\
+    SET project_dir=%~dp0\..\..\
 )
 
 REM Change dir to the project dir, otherwise qmake doesn't know where it is.
