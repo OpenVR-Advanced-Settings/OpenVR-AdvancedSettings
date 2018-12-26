@@ -13,7 +13,24 @@ lessThan(QT_MINOR_VERSION, 6): error("requires Qt 5.6 or higher")
 TARGET = AdvancedSettings
 TEMPLATE = app
 
+*msvc* {
+    #/W4 still has warnings. Including warnings in third party files.
+    #QMAKE_CFLAGS_WARN_ON -= -W3
+    #QMAKE_CXXFLAGS_WARN_ON -= -W3
+    #Removing -W3 from both FLAGS is necessary, otherwise compiler will give
+    #D9025: overriding '/W4' with '/W3'
+    #QMAKE_CXXFLAGS += /W4
+    
+    QMAKE_CXXFLAGS += /WX
+}
 
+*g++* {
+    QMAKE_CXXFLAGS += -Werror
+}
+
+*clang* {
+    QMAKE_CXXFLAGS += -Werror
+}
 SOURCES += src/main.cpp\
     src/overlaycontroller.cpp \
     src/tabcontrollers/AudioTabController.cpp \
