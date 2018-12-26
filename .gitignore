@@ -10,3 +10,5 @@ Makefile*
 *.appxmanifest
 *.user
 installer/AdvancedSettings-Installer.exe
+*.user*
+

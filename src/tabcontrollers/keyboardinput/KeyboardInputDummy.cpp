@@ -17,4 +17,9 @@ void KeyboardInputDummy::sendKeyboardBackspace(int count)
     // noop
 }
 
+void KeyboardInputDummy::sendKeyboardAltTab()
+{
+    // noop
+}
+
 }

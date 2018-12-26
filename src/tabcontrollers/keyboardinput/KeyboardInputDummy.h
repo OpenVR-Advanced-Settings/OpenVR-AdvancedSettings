@@ -12,6 +12,7 @@ public:
     virtual void sendKeyboardInput(QString input) override;
     virtual void sendKeyboardEnter() override;
     virtual void sendKeyboardBackspace(int count) override;
+    virtual void sendKeyboardAltTab() override;
 };
 
 }

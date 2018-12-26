@@ -61,6 +61,10 @@ namespace advsettings {
         keyboardInput->sendKeyboardEnter();
 	}
 
+    void UtilitiesTabController::sendKeyboardAltTab() {
+        keyboardInput->sendKeyboardAltTab();
+    }
+
 	void UtilitiesTabController::sendKeyboardBackspace(int count) {
         keyboardInput->sendKeyboardBackspace(count);
 	}
