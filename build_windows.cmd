@@ -14,17 +14,20 @@ IF NOT DEFINED project_dir (
     REM As per above link, %~dp0 expands the zeroth arg to a drive letter and path only.
     SET folder_path=%~dp0
     REM Project dir is up two dirs from the file.
-    SET project_dir=%folder_path%\..\..\
+    SET project_dir=%folder_path%
 )
 
 ECHO %top_level_activity%: Calling build script.
 CALL %project_dir%\build_scripts\win\build_windows.cmd
+IF ERRORLEVEL 1 EXIT /B 1
 
 ECHO %top_level_activity%: Calling deployment script.
 CALL %project_dir%\build_scripts\win\deploy_windows.cmd
+IF ERRORLEVEL 1 EXIT /B 1
 
 ECHO %top_level_activity%: Calling packaging script.
 CALL %project_dir%\build_scripts\win\package_windows.cmd
+IF ERRORLEVEL 1 EXIT /B 1
 
 CD %original_dir%
 
