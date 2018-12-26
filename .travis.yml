@@ -1,0 +1,14 @@
+language: cpp
+dist: xenial
+compiler:
+  - clang
+  - gcc
+
+install:
+  - sudo apt-get update -qq
+  - sudo apt-get install build-essential qtbase5-dev qttools5-dev qtdeclarative5-dev qtmultimedia5-dev qt5-default qttools5-dev-tools
+
+script:
+  - mkdir build && cd build
+  - qmake ..
+  - make
