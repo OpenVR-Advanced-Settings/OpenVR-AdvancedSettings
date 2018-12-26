@@ -10,21 +10,6 @@
 #include <iostream>
 #include "logging.h"
 
-const char* logConfigFileName = "logging.conf";
-
-const char* logConfigDefault =
-"* GLOBAL:\n"
-"	FORMAT = \"[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg\"\n"
-"	FILENAME = \"AdvancedSettings.log\"\n"
-"	ENABLED = true\n"
-"	TO_FILE = true\n"
-"	TO_STANDARD_OUTPUT = true\n"
-"	MAX_LOG_FILE_SIZE = 2097152 ## 2MB\n"
-"* TRACE:\n"
-"	ENABLED = false\n"
-"* DEBUG:\n"
-"	ENABLED = false\n";
-
 INITIALIZE_EASYLOGGINGPP
 
 void myQtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
@@ -140,6 +125,21 @@ enum ReturnErrorCode {
 };
 
 int main(int argc, char *argv[]) {
+
+    const char* logConfigFileName = "logging.conf";
+
+    const char* logConfigDefault =
+        "* GLOBAL:\n"
+        "	FORMAT = \"[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg\"\n"
+        "	FILENAME = \"AdvancedSettings.log\"\n"
+        "	ENABLED = true\n"
+        "	TO_FILE = true\n"
+        "	TO_STANDARD_OUTPUT = true\n"
+        "	MAX_LOG_FILE_SIZE = 2097152 ## 2MB\n"
+        "* TRACE:\n"
+        "	ENABLED = false\n"
+        "* DEBUG:\n"
+        "	ENABLED = false\n";
 
     const bool desktop_mode = argument::CheckCommandLineArgument(argc, argv, argument::DESKTOP_MODE);
     const bool no_sound = argument::CheckCommandLineArgument(argc, argv, argument::NO_SOUND);
