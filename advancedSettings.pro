@@ -22,14 +22,25 @@ TEMPLATE = app
     #QMAKE_CXXFLAGS += /W4
     
     QMAKE_CXXFLAGS += /WX
+    
+    #The MSVC frontend for clang does not understand /external
+    !*clang-msvc{ 
+        #external:anglebrackets suppresses warnings made in #includes
+        #made with angle brackets, like #include <iostream>, but will 
+        #still report for includes done with quotes.
+        QMAKE_CXXFLAGS += /experimental:external /external:anglebrackets
+    }
 }
 
 *g++* {
     QMAKE_CXXFLAGS += -Werror
 }
 
-*clang* {
+#Look for anything clang that is not clang-msvc, since it does not
+#allow all the same switches as regular clang.
+*clang|*clang-g++|*clang-libc++ {
     QMAKE_CXXFLAGS += -Werror
+    #All includes from the third-party directory will not warn.
     QMAKE_CXXFLAGS += --system-header-prefix=third-party
 }
 SOURCES += src/main.cpp\
