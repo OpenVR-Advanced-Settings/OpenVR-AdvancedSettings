@@ -89,7 +89,7 @@ void KeyboardInputWindows::sendKeyboardInput(QString input)
         }
 
         sendKeyboardInputRaw(ii, ips);
-        delete ips;
+        delete[] ips;
     }
 }
 
@@ -100,7 +100,7 @@ void KeyboardInputWindows::sendKeyboardEnter()
     fillKiStruct(ips[1], VK_RETURN, true);
 
     sendKeyboardInputRaw(2, ips);
-    delete ips;
+    delete[] ips;
 }
 
 void KeyboardInputWindows::sendKeyboardBackspace(int count)
@@ -114,7 +114,7 @@ void KeyboardInputWindows::sendKeyboardBackspace(int count)
         }
 
         sendKeyboardInputRaw(count * 2, ips);
-        delete ips;
+        delete[] ips;
     }
 }
 
@@ -128,7 +128,7 @@ void KeyboardInputWindows::sendKeyboardAltTab()
     fillKiStruct(ips[3], VK_MENU, true);
 
     sendKeyboardInputRaw(4, ips);
-    delete ips;
+    delete[] ips;
 }
 
 }
