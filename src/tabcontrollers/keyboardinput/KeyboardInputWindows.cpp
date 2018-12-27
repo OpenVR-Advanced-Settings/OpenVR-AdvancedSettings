@@ -18,7 +18,7 @@ void fillKiStruct(INPUT& ip, WORD scanCode, bool keyup) {
 };
 
 void sendKeyboardInputRaw(int inputCount, LPINPUT input) {
-    if (!SendInput(inputCount, input, sizeof(INPUT))) {
+    if ((inputCount > 0) && !SendInput(static_cast<UINT>(inputCount), input, sizeof(INPUT))) {
         char *err;
         auto errCode = GetLastError();
         if (!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -39,8 +39,8 @@ void KeyboardInputWindows::sendKeyboardInput(QString input)
 {
     int len = input.length();
     if (len > 0) {
-        LPINPUT ips = new INPUT[len * 5 + 3];
-        unsigned ii = 0;
+        LPINPUT ips = new INPUT[static_cast<unsigned int>(len) * 5 + 3];
+        int ii = 0;
         bool shiftPressed = false;
         bool ctrlPressed = false;
         bool altPressed = false;
@@ -106,7 +106,8 @@ void KeyboardInputWindows::sendKeyboardEnter()
 void KeyboardInputWindows::sendKeyboardBackspace(int count)
 {
     if (count > 0) {
-        LPINPUT ips = new INPUT[count * 2];
+        // We ensure that count is nonnegative, therefore safe cast.
+        LPINPUT ips = new INPUT[static_cast<unsigned int>(count) * 2];
         for (int i = 0; i < count; i++) {
             fillKiStruct(ips[2 * i], VK_BACK, false);
             fillKiStruct(ips[2 * i + 1], VK_BACK, true);
