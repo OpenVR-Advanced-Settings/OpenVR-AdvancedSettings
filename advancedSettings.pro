@@ -30,6 +30,7 @@ TEMPLATE = app
 
 *clang* {
     QMAKE_CXXFLAGS += -Werror
+    QMAKE_CXXFLAGS += --system-header-prefix=third-party
 }
 SOURCES += src/main.cpp\
     src/overlaycontroller.cpp \
