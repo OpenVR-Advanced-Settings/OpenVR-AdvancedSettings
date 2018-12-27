@@ -15,6 +15,7 @@ clone_depth: 1
 
 init:
   - set TAG_NAME=%APPVEYOR_REPO_TAG_NAME%
+  - python build_scripts\run-clang-format.py ./src -r --clang-format-executable '"C:\Program Files\LLVM\bin\clang-format.exe"' --color always
 
 build_script:
   - call "build_windows.cmd"
