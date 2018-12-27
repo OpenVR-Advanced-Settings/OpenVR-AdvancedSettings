@@ -1,7 +1,8 @@
 #include "KeyboardInputDummy.h"
 
 // Used to get the compiler to shut up about C4100: unreferenced formal parameter.
-#define UNREFERENCED_PARAMETER(P) (P)
+// The cast is to get GCC to shut up about it.
+#define UNREFERENCED_PARAMETER(P) static_cast<void>((P))
 
 namespace advsettings {
 
