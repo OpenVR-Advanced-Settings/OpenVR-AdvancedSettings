@@ -44,9 +44,9 @@ namespace advsettings {
 	}
 
 
-	void AudioTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
-		this->parent = parent;
-		this->widget = widget;
+        void AudioTabController::initStage2(OverlayController * var_parent, QQuickWindow * var_widget) {
+                this->parent = var_parent;
+                this->widget = var_widget;
 
 		std::string notifKey = std::string(OverlayController::applicationKey) + ".pptnotification";
 		vr::VROverlayError overlayError = vr::VROverlay()->CreateOverlay(notifKey.c_str(), notifKey.c_str(), &m_ulNotificationOverlayHandle);

@@ -31,7 +31,7 @@ AudioManagerWindows::~AudioManagerWindows() {
 	audioDeviceEnumerator->Release();
 }
 
-void AudioManagerWindows::init(AudioTabController* controller) {
+void AudioManagerWindows::init(AudioTabController* var_controller) {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	audioDeviceEnumerator = getAudioDeviceEnumerator();
 	if (!audioDeviceEnumerator) {
@@ -47,7 +47,7 @@ void AudioManagerWindows::init(AudioTabController* controller) {
 	} else {
 		LOG(WARNING) << "Could not find a default recording device.";
 	}
-	this->controller = controller;
+        this->controller = var_controller;
 	audioDeviceEnumerator->RegisterEndpointNotificationCallback((IMMNotificationClient*)this);
 	policyConfig = getPolicyConfig();
 	if (!policyConfig) {

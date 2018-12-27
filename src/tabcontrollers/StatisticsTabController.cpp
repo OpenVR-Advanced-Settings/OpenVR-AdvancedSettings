@@ -8,9 +8,9 @@ namespace advsettings {
 void StatisticsTabController::initStage1() {
 }
 
-void StatisticsTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
-	this->parent = parent;
-	this->widget = widget;
+void StatisticsTabController::initStage2(OverlayController * var_parent, QQuickWindow * var_widget) {
+        this->parent = var_parent;
+        this->widget = var_widget;
 }
 
 void StatisticsTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses, float leftSpeed, float rightSpeed) {

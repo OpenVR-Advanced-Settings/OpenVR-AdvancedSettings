@@ -19,9 +19,9 @@ void AccessibilityTabController::initStage1() {
   reloadPttConfig();
 }
 
-void AccessibilityTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
-  this->parent = parent;
-  this->widget = widget;
+void AccessibilityTabController::initStage2(OverlayController * var_parent, QQuickWindow * var_widget) {
+  this->parent = var_parent;
+  this->widget = var_widget;
 }
 
 void AccessibilityTabController::setTrackingUniverse(int value) {
