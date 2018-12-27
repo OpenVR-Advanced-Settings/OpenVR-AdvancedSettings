@@ -31,7 +31,7 @@ AudioManagerWindows::~AudioManagerWindows() {
 	audioDeviceEnumerator->Release();
 }
 
-void AudioManagerWindows::init(AudioTabController* controller) {
+void AudioManagerWindows::init(AudioTabController* var_controller) {
 	std::lock_guard<std::recursive_mutex> lock(_mutex);
 	audioDeviceEnumerator = getAudioDeviceEnumerator();
 	if (!audioDeviceEnumerator) {
@@ -47,7 +47,7 @@ void AudioManagerWindows::init(AudioTabController* controller) {
 	} else {
 		LOG(WARNING) << "Could not find a default recording device.";
 	}
-	this->controller = controller;
+        this->controller = var_controller;
 	audioDeviceEnumerator->RegisterEndpointNotificationCallback((IMMNotificationClient*)this);
 	policyConfig = getPolicyConfig();
 	if (!policyConfig) {
@@ -277,20 +277,20 @@ IMMDeviceEnumerator* AudioManagerWindows::getAudioDeviceEnumerator() {
 }
 
 IPolicyConfig * AudioManagerWindows::getPolicyConfig() {
-	IPolicyConfig* policyConfig = nullptr;
+        IPolicyConfig* var_policyConfig = nullptr;
 	// for Win 10
-	auto hr = CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_INPROC, IID_IPolicyConfig2, (LPVOID *)&policyConfig);
+        auto hr = CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_INPROC, IID_IPolicyConfig2, (LPVOID *)&var_policyConfig);
 	if (hr != S_OK) {
-		hr = CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_INPROC, IID_IPolicyConfig1, (LPVOID *)&policyConfig);
+                hr = CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_INPROC, IID_IPolicyConfig1, (LPVOID *)&var_policyConfig);
 	}
 	// for Win Vista, 7, 8, 8.1
 	if (hr != S_OK) {
-		hr = CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_INPROC, IID_IPolicyConfig0, (LPVOID *)&policyConfig);
+                hr = CoCreateInstance(__uuidof(CPolicyConfigClient), NULL, CLSCTX_INPROC, IID_IPolicyConfig0, (LPVOID *)&var_policyConfig);
 	}
 	if (hr != S_OK) {
 		return nullptr;
 	} else {
-		return policyConfig;
+                return var_policyConfig;
 	}
 }
 

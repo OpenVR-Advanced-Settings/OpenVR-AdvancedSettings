@@ -32,9 +32,9 @@ void ChaperoneTabController::initStage1() {
 }
 
 
-void ChaperoneTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
-	this->parent = parent;
-	this->widget = widget;
+void ChaperoneTabController::initStage2(OverlayController * var_parent, QQuickWindow * var_widget) {
+        this->parent = var_parent;
+        this->widget = var_widget;
 }
 
 
@@ -486,7 +486,7 @@ void ChaperoneTabController::setHeight(float value, bool notify) {
 			}
 			vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(collisionBounds, collisionBoundsCount);
 			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
-			delete collisionBounds;
+                        delete[] collisionBounds;
 		}
 		if (notify) {
 			emit heightChanged(m_fadeDistance);
@@ -1006,7 +1006,7 @@ float ChaperoneTabController::getBoundsMaxY() {
 				result = collisionBounds[b].vCorners[ci].v[1];
 			}
 		}
-		delete collisionBounds;
+                delete[] collisionBounds;
 	}
 	return result;
 }

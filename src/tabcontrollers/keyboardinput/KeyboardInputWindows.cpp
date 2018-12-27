@@ -18,16 +18,16 @@ void fillKiStruct(INPUT& ip, WORD scanCode, bool keyup) {
 };
 
 void sendKeyboardInputRaw(int inputCount, LPINPUT input) {
-    if (!SendInput(inputCount, input, sizeof(INPUT))) {
+    if ((inputCount > 0) && !SendInput(static_cast<UINT>(inputCount), input, sizeof(INPUT))) {
         char *err;
         auto errCode = GetLastError();
         if (!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                NULL,
+                nullptr,
                 errCode,
                 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
-                (LPTSTR)&err,
+                reinterpret_cast<LPTSTR>(&err),
                 0,
-                NULL)){
+                nullptr)){
             LOG(ERROR) << "Error calling SendInput(): Could not get error message (" << errCode << ")";
         } else {
             LOG(ERROR) << "Error calling SendInput(): " << err;
@@ -39,8 +39,8 @@ void KeyboardInputWindows::sendKeyboardInput(QString input)
 {
     int len = input.length();
     if (len > 0) {
-        LPINPUT ips = new INPUT[len * 5 + 3];
-        unsigned ii = 0;
+        LPINPUT ips = new INPUT[static_cast<unsigned int>(len) * 5 + 3];
+        int ii = 0;
         bool shiftPressed = false;
         bool ctrlPressed = false;
         bool altPressed = false;
@@ -89,7 +89,7 @@ void KeyboardInputWindows::sendKeyboardInput(QString input)
         }
 
         sendKeyboardInputRaw(ii, ips);
-        delete ips;
+        delete[] ips;
     }
 }
 
@@ -100,20 +100,21 @@ void KeyboardInputWindows::sendKeyboardEnter()
     fillKiStruct(ips[1], VK_RETURN, true);
 
     sendKeyboardInputRaw(2, ips);
-    delete ips;
+    delete[] ips;
 }
 
 void KeyboardInputWindows::sendKeyboardBackspace(int count)
 {
     if (count > 0) {
-        LPINPUT ips = new INPUT[count * 2];
+        // We ensure that count is nonnegative, therefore safe cast.
+        LPINPUT ips = new INPUT[static_cast<unsigned int>(count) * 2];
         for (int i = 0; i < count; i++) {
             fillKiStruct(ips[2 * i], VK_BACK, false);
             fillKiStruct(ips[2 * i + 1], VK_BACK, true);
         }
 
         sendKeyboardInputRaw(count * 2, ips);
-        delete ips;
+        delete[] ips;
     }
 }
 
@@ -127,7 +128,7 @@ void KeyboardInputWindows::sendKeyboardAltTab()
     fillKiStruct(ips[3], VK_MENU, true);
 
     sendKeyboardInputRaw(4, ips);
-    delete ips;
+    delete[] ips;
 }
 
 }

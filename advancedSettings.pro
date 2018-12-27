@@ -13,7 +13,29 @@ lessThan(QT_MINOR_VERSION, 6): error("requires Qt 5.6 or higher")
 TARGET = AdvancedSettings
 TEMPLATE = app
 
+*msvc* {
+    #Removing -W3 from both FLAGS is necessary, otherwise compiler will give
+    #D9025: overriding '/W4' with '/W3'
+    QMAKE_CFLAGS_WARN_ON -= -W3
+    QMAKE_CXXFLAGS_WARN_ON -= -W3
+    QMAKE_CXXFLAGS += /W4 /wd4127
+    
+    !*clang-msvc{ 
+        QMAKE_CXXFLAGS += /WX
+    }
+}
 
+*g++* {
+    QMAKE_CXXFLAGS += -Werror
+}
+
+#Look for anything clang that is not clang-msvc, since it does not
+#allow all the same switches as regular clang.
+*clang|*clang-g++|*clang-libc++ {
+    QMAKE_CXXFLAGS += -Werror
+    #All includes from the third-party directory will not warn.
+    QMAKE_CXXFLAGS += --system-header-prefix=third-party
+}
 SOURCES += src/main.cpp\
     src/overlaycontroller.cpp \
     src/tabcontrollers/AudioTabController.cpp \

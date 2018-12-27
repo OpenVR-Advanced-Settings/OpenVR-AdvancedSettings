@@ -301,8 +301,8 @@ void OverlayController::OnRenderRequest() {
 
 void OverlayController::renderOverlay() {
 	if (!desktopMode) {
-		// skip rendering if the overlay isn't visible
-		if (!vr::VROverlay() || !vr::VROverlay()->IsOverlayVisible(m_ulOverlayHandle) && !vr::VROverlay()->IsOverlayVisible(m_ulOverlayThumbnailHandle))
+                // skip rendering if the overlay isn't visible
+                if (!vr::VROverlay() || (!vr::VROverlay()->IsOverlayVisible(m_ulOverlayHandle) && !vr::VROverlay()->IsOverlayVisible(m_ulOverlayThumbnailHandle)))
 			return;
 		m_pRenderControl->polishItems();
 		m_pRenderControl->sync();
@@ -593,7 +593,7 @@ void OverlayController::AddOffsetToCollisionBounds(float offset[3], bool commit)
 			}
 		}
 		vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(collisionBounds, collisionBoundsCount);
-		delete collisionBounds;
+                delete[] collisionBounds;
 	}
 	if (commit && collisionBoundsCount > 0) {
 		vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
@@ -621,7 +621,7 @@ void OverlayController::RotateCollisionBounds(float angle, bool commit) {
 			}
 		}
 		vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(collisionBounds, collisionBoundsCount);
-		delete collisionBounds;
+                delete[] collisionBounds;
 	}
 	if (commit && collisionBoundsCount > 0) {
 		vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
