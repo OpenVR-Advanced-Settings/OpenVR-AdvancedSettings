@@ -25,7 +25,7 @@ void sendKeyboardInputRaw(int inputCount, LPINPUT input) {
                 nullptr,
                 errCode,
                 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
-                (LPTSTR)&err,
+                reinterpret_cast<LPTSTR>(&err),
                 0,
                 nullptr)){
             LOG(ERROR) << "Error calling SendInput(): Could not get error message (" << errCode << ")";
