@@ -14,21 +14,14 @@ TARGET = AdvancedSettings
 TEMPLATE = app
 
 *msvc* {
-    #/W4 still has warnings. Including warnings in third party files.
-    #QMAKE_CFLAGS_WARN_ON -= -W3
-    #QMAKE_CXXFLAGS_WARN_ON -= -W3
     #Removing -W3 from both FLAGS is necessary, otherwise compiler will give
     #D9025: overriding '/W4' with '/W3'
-    #QMAKE_CXXFLAGS += /W4
+    QMAKE_CFLAGS_WARN_ON -= -W3
+    QMAKE_CXXFLAGS_WARN_ON -= -W3
+    QMAKE_CXXFLAGS += /W4 /wd4127
     
-    QMAKE_CXXFLAGS += /WX
-    
-    #The MSVC frontend for clang does not understand /external
     !*clang-msvc{ 
-        #external:anglebrackets suppresses warnings made in #includes
-        #made with angle brackets, like #include <iostream>, but will 
-        #still report for includes done with quotes.
-        QMAKE_CXXFLAGS += /experimental:external /external:anglebrackets
+        QMAKE_CXXFLAGS += /WX
     }
 }
 
