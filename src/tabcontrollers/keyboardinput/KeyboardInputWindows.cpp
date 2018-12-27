@@ -22,12 +22,12 @@ void sendKeyboardInputRaw(int inputCount, LPINPUT input) {
         char *err;
         auto errCode = GetLastError();
         if (!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                NULL,
+                nullptr,
                 errCode,
                 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
                 (LPTSTR)&err,
                 0,
-                NULL)){
+                nullptr)){
             LOG(ERROR) << "Error calling SendInput(): Could not get error message (" << errCode << ")";
         } else {
             LOG(ERROR) << "Error calling SendInput(): " << err;
