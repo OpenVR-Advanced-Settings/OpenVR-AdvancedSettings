@@ -486,7 +486,7 @@ void ChaperoneTabController::setHeight(float value, bool notify) {
 			}
 			vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(collisionBounds, collisionBoundsCount);
 			vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
-			delete collisionBounds;
+                        delete[] collisionBounds;
 		}
 		if (notify) {
 			emit heightChanged(m_fadeDistance);
@@ -1006,7 +1006,7 @@ float ChaperoneTabController::getBoundsMaxY() {
 				result = collisionBounds[b].vCorners[ci].v[1];
 			}
 		}
-		delete collisionBounds;
+                delete[] collisionBounds;
 	}
 	return result;
 }

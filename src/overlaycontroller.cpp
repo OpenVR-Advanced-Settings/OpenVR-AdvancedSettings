@@ -593,7 +593,7 @@ void OverlayController::AddOffsetToCollisionBounds(float offset[3], bool commit)
 			}
 		}
 		vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(collisionBounds, collisionBoundsCount);
-		delete collisionBounds;
+                delete[] collisionBounds;
 	}
 	if (commit && collisionBoundsCount > 0) {
 		vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
@@ -621,7 +621,7 @@ void OverlayController::RotateCollisionBounds(float angle, bool commit) {
 			}
 		}
 		vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(collisionBounds, collisionBoundsCount);
-		delete collisionBounds;
+                delete[] collisionBounds;
 	}
 	if (commit && collisionBoundsCount > 0) {
 		vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
