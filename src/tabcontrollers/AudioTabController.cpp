@@ -54,12 +54,12 @@ namespace advsettings {
 			std::string notifIconPath = QApplication::applicationDirPath().toStdString() + "/res/qml/ptt_notification.png";
 			if (QFile::exists(QString::fromStdString(notifIconPath))) {
 				vr::VROverlay()->SetOverlayFromFile(m_ulNotificationOverlayHandle, notifIconPath.c_str());
-				vr::VROverlay()->SetOverlayWidthInMeters(m_ulNotificationOverlayHandle, 0.02f);
-                                vr::HmdMatrix34_t notificationTransform = {
-                                        1.0f, 0.0f, 0.0f, 0.12f,
-                                        0.0f, 1.0f, 0.0f, 0.08f,
-                                        0.0f, 0.0f, 1.0f, -0.3f
-				};
+                                vr::VROverlay()->SetOverlayWidthInMeters(m_ulNotificationOverlayHandle, 0.02f);
+                        vr::HmdMatrix34_t notificationTransform = {{
+                                        {1.0f, 0.0f, 0.0f, 0.12f},
+                                        {0.0f, 1.0f, 0.0f, 0.08f},
+                                        {0.0f, 0.0f, 1.0f, -0.3f}
+                                }};
 				vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(m_ulNotificationOverlayHandle, vr::k_unTrackedDeviceIndex_Hmd, &notificationTransform);
 			} else {
 				LOG(ERROR) << "Could not find notification icon \"" << notifIconPath << "\"";

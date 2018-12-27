@@ -210,11 +210,11 @@ namespace advsettings {
             if (QFile::exists(QString::fromStdString(batteryIconPath))) {
                 vr::VROverlay()->SetOverlayFromFile(handle, batteryIconPath.c_str());
                 vr::VROverlay()->SetOverlayWidthInMeters(handle, 0.05f);
-                vr::HmdMatrix34_t notificationTransform = {
-                    1.0f, 0.0f, 0.0f, 0.00f,
-                    0.0f, -1.0f, 0.0f, 0.01f,
-                    0.0f, 0.0f, -1.0f, -0.013f
-                };
+            vr::HmdMatrix34_t notificationTransform = {{
+                    {1.0f, 0.0f, 0.0f, 0.00f},
+                    {0.0f, -1.0f, 0.0f, 0.01f},
+                    {0.0f, 0.0f, -1.0f, -0.013f}
+                }};
                 vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(handle, index, &notificationTransform);
                  LOG(INFO) << "Created battery overlay for device " << index;
             } else {
