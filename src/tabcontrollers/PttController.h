@@ -139,7 +139,7 @@ signals:
     void pttRightControllerEnabledChanged( bool value );
 
     void pttProfilesUpdated();
-	void pttProfileAdded();
-  };
+    void pttProfileAdded();
+};
 
 } // namespace advsettings

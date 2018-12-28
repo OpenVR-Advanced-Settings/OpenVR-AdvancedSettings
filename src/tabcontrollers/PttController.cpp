@@ -407,43 +407,58 @@ void PttController::addPttProfile( QString name )
     savePttProfiles();
     OverlayController::appSettings()->sync();
     emit pttProfilesUpdated();
-	emit pttProfileAdded();
-  }
+    emit pttProfileAdded();
+}
 
-  void PttController::applyPttProfile(unsigned index) {
-    std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
-    if (index < pttProfiles.size()) {
-      auto& profile = pttProfiles[index];
-      setPttShowNotification(profile.showNotification);
-      setPttLeftControllerEnabled(profile.leftControllerEnabled);
-      setPttRightControllerEnabled(profile.rightControllerEnabled);
-      m_pttControllerConfigs[0].digitalButtons = profile.controllerConfigs[0].digitalButtons;
-      m_pttControllerConfigs[0].digitalButtonMask = profile.controllerConfigs[0].digitalButtonMask;
-      m_pttControllerConfigs[0].triggerMode = profile.controllerConfigs[0].triggerMode;
-      m_pttControllerConfigs[0].touchpadMode = profile.controllerConfigs[0].touchpadMode;
-      m_pttControllerConfigs[0].touchpadAreas = profile.controllerConfigs[0].touchpadAreas;
-      m_pttControllerConfigs[1].digitalButtons = profile.controllerConfigs[1].digitalButtons;
-      m_pttControllerConfigs[1].digitalButtonMask = profile.controllerConfigs[1].digitalButtonMask;
-      m_pttControllerConfigs[1].triggerMode = profile.controllerConfigs[1].triggerMode;
-      m_pttControllerConfigs[1].touchpadMode = profile.controllerConfigs[1].touchpadMode;
-      m_pttControllerConfigs[1].touchpadAreas = profile.controllerConfigs[1].touchpadAreas;
+void PttController::applyPttProfile( unsigned index )
+{
+    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    if ( index < pttProfiles.size() )
+    {
+        auto& profile = pttProfiles[index];
+        setPttShowNotification( profile.showNotification );
+        setPttLeftControllerEnabled( profile.leftControllerEnabled );
+        setPttRightControllerEnabled( profile.rightControllerEnabled );
+        m_pttControllerConfigs[0].digitalButtons
+            = profile.controllerConfigs[0].digitalButtons;
+        m_pttControllerConfigs[0].digitalButtonMask
+            = profile.controllerConfigs[0].digitalButtonMask;
+        m_pttControllerConfigs[0].triggerMode
+            = profile.controllerConfigs[0].triggerMode;
+        m_pttControllerConfigs[0].touchpadMode
+            = profile.controllerConfigs[0].touchpadMode;
+        m_pttControllerConfigs[0].touchpadAreas
+            = profile.controllerConfigs[0].touchpadAreas;
+        m_pttControllerConfigs[1].digitalButtons
+            = profile.controllerConfigs[1].digitalButtons;
+        m_pttControllerConfigs[1].digitalButtonMask
+            = profile.controllerConfigs[1].digitalButtonMask;
+        m_pttControllerConfigs[1].triggerMode
+            = profile.controllerConfigs[1].triggerMode;
+        m_pttControllerConfigs[1].touchpadMode
+            = profile.controllerConfigs[1].touchpadMode;
+        m_pttControllerConfigs[1].touchpadAreas
+            = profile.controllerConfigs[1].touchpadAreas;
     }
-  }
+}
 
-  void PttController::deletePttProfile(unsigned index) {
-    if (index < pttProfiles.size()) {
-      auto pos = pttProfiles.begin() + index;
-      pttProfiles.erase(pos);
-      savePttProfiles();
-      OverlayController::appSettings()->sync();
-      emit pttProfilesUpdated();
+void PttController::deletePttProfile( unsigned index )
+{
+    if ( index < pttProfiles.size() )
+    {
+        auto pos = pttProfiles.begin() + index;
+        pttProfiles.erase( pos );
+        savePttProfiles();
+        OverlayController::appSettings()->sync();
+        emit pttProfilesUpdated();
     }
-  }
+}
 
-  QVariantList PttController::pttDigitalButtons(unsigned controller) {
-    if (controller < 2) {
-      return m_pttControllerConfigs[controller].digitalButtons;
-
+QVariantList PttController::pttDigitalButtons( unsigned controller )
+{
+    if ( controller < 2 )
+    {
+        return m_pttControllerConfigs[controller].digitalButtons;
     }
     return QVariantList();
 }
@@ -496,138 +511,6 @@ QString PttController::getPttProfileName( unsigned index )
         return QString::fromStdString( pttProfiles[index].profileName );
     }
     return "";
-<<<<<<< HEAD
-  }
-
-  void PttController::setPttEnabled(bool value, bool notify, bool save) {
-    std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
-    if (value != m_pttEnabled) {
-      m_pttEnabled = value;
-      if (value) {
-        onPttEnabled();
-      } else {
-        onPttDisabled();
-      }
-      if (notify) {
-        emit pttEnabledChanged(value);
-      }
-      if (save) {
-        savePttConfig();
-      }
-    }
-  }
-
-  void PttController::setPttShowNotification(bool value, bool notify, bool save) {
-    std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
-    if (value != m_pttShowNotification) {
-      m_pttShowNotification = value;
-      if (notify) {
-        emit pttShowNotificationChanged(value);
-      }
-      if (save) {
-        savePttConfig();
-      }
-    }
-  }
-
-  void PttController::setPttLeftControllerEnabled(bool value, bool notify, bool save) {
-    std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
-    if (value != m_pttLeftControllerEnabled) {
-      m_pttLeftControllerEnabled = value;
-      if (notify) {
-        emit pttLeftControllerEnabledChanged(value);
-      }
-      if (save) {
-        savePttConfig();
-      }
-    }
-  }
-
-  void PttController::setPttRightControllerEnabled(bool value, bool notify, bool save) {
-    std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
-    if (value != m_pttRightControllerEnabled) {
-      m_pttRightControllerEnabled = value;
-      if (notify) {
-        emit pttRightControllerEnabledChanged(value);
-      }
-      if (save) {
-        savePttConfig();
-      }
-    }
-  }
-
-
-  void logControllerState(const vr::VRControllerState_t& state, const std::string& prefix) {
-    if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_ApplicationMenu) << " pressed";
-    }
-    if (state.ulButtonTouched & vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_ApplicationMenu) << " touched";
-    }
-    if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_Grip)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Grip) << " pressed";
-    }
-    if (state.ulButtonTouched & vr::ButtonMaskFromId(vr::k_EButton_Grip)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Grip) << " touched";
-    }
-    if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_DPad_Left)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_DPad_Left) << " pressed";
-    }
-    if (state.ulButtonTouched & vr::ButtonMaskFromId(vr::k_EButton_DPad_Left)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_DPad_Left) << " touched";
-    }
-    if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_DPad_Up)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_DPad_Up) << " pressed";
-    }
-    if (state.ulButtonTouched & vr::ButtonMaskFromId(vr::k_EButton_DPad_Up)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_DPad_Up) << " touched";
-    }
-    if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_DPad_Right)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_DPad_Right) << " pressed";
-    }
-    if (state.ulButtonTouched & vr::ButtonMaskFromId(vr::k_EButton_DPad_Right)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_DPad_Right) << " touched";
-    }
-    if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_DPad_Down)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_DPad_Down) << " pressed";
-    }
-    if (state.ulButtonTouched & vr::ButtonMaskFromId(vr::k_EButton_DPad_Down)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_DPad_Down) << " touched";
-    }
-    if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_A)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_A) << " pressed";
-    }
-    if (state.ulButtonTouched & vr::ButtonMaskFromId(vr::k_EButton_A)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_A) << " touched";
-    }
-    if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_Axis0)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis0) << " pressed";
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis0) << " x: " << state.rAxis[0].x << "  y: " << state.rAxis[0].y;
-    }
-    if (state.ulButtonTouched & vr::ButtonMaskFromId(vr::k_EButton_Axis0)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis0) << " touched";
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis0) << " x: " << state.rAxis[0].x << "  y: " << state.rAxis[0].y;
-    }
-    if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_Axis1)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis1) << " pressed";
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis1) << " x: " << state.rAxis[1].x << "  y: " << state.rAxis[0].y;
-    }
-    if (state.ulButtonTouched & vr::ButtonMaskFromId(vr::k_EButton_Axis1)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis1) << " touched";
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis1) << " x: " << state.rAxis[1].x << "  y: " << state.rAxis[0].y;
-    }
-    if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_Axis2)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis2) << " pressed";
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis2) << " x: " << state.rAxis[2].x << "  y: " << state.rAxis[0].y;
-    }
-    if (state.ulButtonTouched & vr::ButtonMaskFromId(vr::k_EButton_Axis2)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis2) << " touched";
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis2) << " x: " << state.rAxis[2].x << "  y: " << state.rAxis[0].y;
-    }
-    if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_Axis3)) {
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis3) << " pressed";
-      LOG(INFO) << prefix << vr::VRSystem()->GetButtonIdNameFromEnum(vr::k_EButton_Axis3) << " x: " << state.rAxis[3].x << "  y: " << state.rAxis[0].y;
-=======
 }
 
 void PttController::setPttEnabled( bool value, bool notify, bool save )
@@ -652,7 +535,6 @@ void PttController::setPttEnabled( bool value, bool notify, bool save )
         {
             savePttConfig();
         }
->>>>>>> cfde8ada6350ef771b110ba9f12b8b54daa7e07b
     }
 }
 

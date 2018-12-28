@@ -22,7 +22,7 @@
 #include <QQuickRenderControl>
 #include <QSoundEffect>
 #include <memory>
-#include "logging.h"
+#include <easylogging++.h>
 #include "utils/ChaperoneUtils.h"
 
 #include "tabcontrollers/SteamVRTabController.h"

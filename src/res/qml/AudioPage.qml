@@ -663,7 +663,7 @@ MyStackViewPage {
                 //audioProfileComboBox.currentIndex = AudioTabController.audioProfileDefaultIndex+1
             }
             onPttProfileAdded:{
-                pttProfileComboBox.currentIndex = AudioTabController.getpttProfileCount()
+                pttProfileComboBox.currentIndex = AudioTabController.getPttProfileCount()
             }
 
             //onAudioProfileDefaultIndexChanged: {

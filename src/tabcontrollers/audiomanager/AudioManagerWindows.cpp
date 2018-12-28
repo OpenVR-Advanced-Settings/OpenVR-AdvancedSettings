@@ -1,6 +1,6 @@
-#include "audiomanagerwindows.h"
+#include "AudioManagerWindows.h"
 #include <exception>
-#include "../../logging.h"
+#include "easylogging++.h"
 #include "../AudioTabController.h"
 
 #include <locale>
