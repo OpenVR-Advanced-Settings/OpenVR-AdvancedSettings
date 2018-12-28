@@ -1,5 +1,7 @@
-
-![language](https://img.shields.io/badge/Language-C%2B%2B11%2C%20QML-green.svg) ![dependencies](https://img.shields.io/badge/Dependencies-OpenVR%2C%20Qt5-green.svg) ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg) [![Build status](https://ci.appveyor.com/api/projects/status/8oivf5xws6vsq2x3/branch/master?svg=true)](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master)
+![language](https://img.shields.io/badge/Language-C%2B%2B11%2C%20QML-green.svg) ![dependencies](https://img.shields.io/badge/Dependencies-OpenVR%2C%20Qt5-green.svg)
+![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg) 
+[![Build status](https://ci.appveyor.com/api/projects/status/8oivf5xws6vsq2x3/branch/master?svg=true)](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master)
+[![Build Status](https://travis-ci.org/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings.svg?branch=master)](https://travis-ci.org/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings)
 
  > * [Features](#features)
  > * [Usage](#usage)
@@ -271,6 +273,8 @@ Full build instructions can be found [here](docs/building_for_windows.md).
 
 If you want to run Advanced Settings on linux you can build it yourself using `qmake` and `make` or using Qt Creator, you'll have to copy the `res` folder from the `src` folder into folder that contains the binary
 and copy `third-party/openvr/lib/linux64/libopenvr_api.so` into your systems library path.
+
+If you want to contribute changes running `clang-format` is necessary. More details are in the [CONTRIBUTING.md](docs/CONTRIBUTING.md) file.
 
 <a name="notes"></a>
 # Notes:

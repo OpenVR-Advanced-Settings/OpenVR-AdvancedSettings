@@ -5,42 +5,44 @@
 
 class QQuickWindow;
 // application namespace
-namespace advsettings {
-
+namespace advsettings
+{
 // forward declaration
 class OverlayController;
 
-
-class SettingsTabController : public QObject {
-	Q_OBJECT
-	Q_PROPERTY(bool autoStartEnabled READ autoStartEnabled WRITE setAutoStartEnabled NOTIFY autoStartEnabledChanged)
-	Q_PROPERTY(bool forceRevivePage READ forceRevivePage WRITE setForceRevivePage NOTIFY forceRevivePageChanged)
+class SettingsTabController : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY( bool autoStartEnabled READ autoStartEnabled WRITE
+                    setAutoStartEnabled NOTIFY autoStartEnabledChanged )
+    Q_PROPERTY( bool forceRevivePage READ forceRevivePage WRITE
+                    setForceRevivePage NOTIFY forceRevivePageChanged )
 
 private:
-	OverlayController* parent;
-	QQuickWindow* widget;
+    OverlayController* parent;
+    QQuickWindow* widget;
 
-	unsigned settingsUpdateCounter = 0;
+    unsigned settingsUpdateCounter = 0;
 
-	bool m_autoStartEnabled = false;
-	bool m_forceRevivePage = false;
+    bool m_autoStartEnabled = false;
+    bool m_forceRevivePage = false;
 
 public:
-	void initStage1();
-	void initStage2(OverlayController* parent, QQuickWindow* widget);
+    void initStage1();
+    void initStage2( OverlayController* parent, QQuickWindow* widget );
 
-	void eventLoopTick();
+    void eventLoopTick();
 
-	bool autoStartEnabled() const;
-	bool forceRevivePage() const;
+    bool autoStartEnabled() const;
+    bool forceRevivePage() const;
 
 public slots:
-	void setAutoStartEnabled(bool value, bool notify = true);
-	void setForceRevivePage(bool value, bool notify = true);
+    void setAutoStartEnabled( bool value, bool notify = true );
+    void setForceRevivePage( bool value, bool notify = true );
 
 signals:
-	void autoStartEnabledChanged(bool value);
-	void forceRevivePageChanged(bool value);
+    void autoStartEnabledChanged( bool value );
+    void forceRevivePageChanged( bool value );
 };
 
 } // namespace advsettings
