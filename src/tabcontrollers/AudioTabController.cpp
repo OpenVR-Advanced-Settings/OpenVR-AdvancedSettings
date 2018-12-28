@@ -47,9 +47,9 @@ namespace advsettings {
 	}
 
 
-	void AudioTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
-		this->parent = parent;
-		this->widget = widget;
+	void AudioTabController::initStage2(OverlayController * parent1, QQuickWindow * widget1) {
+		this->parent = parent1;
+		this->widget = widget1;
 
 		std::string notifKey = std::string(OverlayController::applicationKey) + ".pptnotification";
 

@@ -41,14 +41,7 @@ namespace advsettings {
 			Q_PROPERTY(bool micMuted READ micMuted WRITE setMicMuted NOTIFY micMutedChanged)
 			Q_PROPERTY(bool micProximitySensorCanMute READ micProximitySensorCanMute WRITE setMicProximitySensorCanMute NOTIFY micProximitySensorCanMuteChanged)
 			Q_PROPERTY(bool micReversePtt READ micReversePtt WRITE setMicReversePtt NOTIFY micReversePttChanged)
-
 			Q_PROPERTY(bool audioProfileDefault READ audioProfileDefault WRITE setAudioProfileDefault NOTIFY audioProfileDefaultChanged)
-
-			//To display default profile
-			//Q_PROPERTY(bool audioProfileDefaultIndex READ audioProfileDefaultIndex NOTIFY audioProfileDefaultIndexChanged)
-
-
-
 
 	private:
 		OverlayController* parent;
@@ -107,7 +100,7 @@ namespace advsettings {
 
 
 		void initStage1();
-		void initStage2(OverlayController* parent, QQuickWindow* widget);
+		void initStage2(OverlayController* parent1, QQuickWindow* widget1);
 
 		void reloadAudioSettings();
 		void saveAudioSettings();
