@@ -70,7 +70,7 @@ With the programs above installed and environment variables set, go into the roo
 <a name="contributing"></a>
 ## Contributing
 
-For full details, see [CONTRIBUTING.md](docs/CONTRIBUTING.md).
+For full details, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 <a name="qt_creator"></a>
 ## Using with QtCreator

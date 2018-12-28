@@ -26,7 +26,7 @@ Include logs if possible. Logs can be found in `%APPDATA%\matzman666\OpenVRAdvan
 <a name="building"></a>
 ### Building
 
-If you haven't already, read the instructions for how to build on [Windows](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/blob/formatting/docs/building_for_windows.md) or [Linux](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/tree/formatting#building_on_linux). Your patch must build on all platforms without errors (warnings are treated as errors). Notice that different compilers have different warning messages, being able to successfully compile on one does not mean that all of them will pass. The pull request will be built on both Windows (msvc) and Linux (gcc and clang) CI servers.
+If you haven't already, read the instructions for how to build on [Windows](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/tree/master#building_on_windows) or [Linux](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/tree/master#building_on_linux). Your patch must build on all platforms without errors (warnings are treated as errors). Notice that different compilers have different warning messages, being able to successfully compile on one does not mean that all of them will pass. The pull request will be built on both Windows (msvc) and Linux (gcc and clang) CI servers.
 
 <a name="formatting"></a>
 ### Formatting
