@@ -18,7 +18,7 @@
 #include <iostream>
 #include <cmath>
 #include <openvr.h>
-#include "logging.h"
+#include <easylogging++.h>
 #include "utils/Matrix.h"
 
 // application namespace
