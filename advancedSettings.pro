@@ -56,7 +56,6 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp
 
 HEADERS += src/overlaycontroller.h \
-    src/logging.h \
     src/tabcontrollers/AudioTabController.h \
     src/tabcontrollers/ChaperoneTabController.h \
     src/tabcontrollers/FixFloorTabController.h \
