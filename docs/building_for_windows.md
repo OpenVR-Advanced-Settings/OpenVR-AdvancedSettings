@@ -57,6 +57,7 @@ Additionally, these optional environment variables are supported.
 | --------------------  | ------------- |
 | `BUILD_DEBUG`         | If set, a debug version will be built. The packaging script will not run with this var set.   |
 | `BUILD_VSPROJ`        | If set, Visual Studio project files will be built.  |
+| `BUILD_PACKAGE`       | If set, the script will create a zipped portable version and installer `.exe`. Unset by default since only the build server really needs to create zips and installer versions. |
 
 Remember that there's a difference between an unset variable and a variable set to an empty string. `SET BUILD_DEBUG=""` does not unset the variable. You need to write `SET BUILD_DEBUG=`.
 
