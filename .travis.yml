@@ -10,7 +10,7 @@ install:
   - sudo apt-get install build-essential qtbase5-dev qttools5-dev qtdeclarative5-dev qtmultimedia5-dev qt5-default qttools5-dev-tools
 
 script:
-  - python build_scripts\run-clang-format.py ./src -r --color always
+  - python ./build_scripts/run-clang-format.py ./src -r --color always
   - mkdir build && cd build
   - qmake ..
   - make
