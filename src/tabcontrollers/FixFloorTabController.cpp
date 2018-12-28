@@ -9,9 +9,9 @@ namespace advsettings {
 void FixFloorTabController::initStage1() {
 }
 
-void FixFloorTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
-	this->parent = parent;
-	this->widget = widget;
+void FixFloorTabController::initStage2(OverlayController * var_parent, QQuickWindow * var_widget) {
+        this->parent = var_parent;
+        this->widget = var_widget;
 }
 
 void FixFloorTabController::eventLoopTick(vr::TrackedDevicePose_t* devicePoses) {

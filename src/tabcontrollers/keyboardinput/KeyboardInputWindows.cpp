@@ -17,12 +17,30 @@ void fillKiStruct(INPUT& ip, WORD scanCode, bool keyup) {
     ip.ki.time = 0;
 };
 
+void sendKeyboardInputRaw(int inputCount, LPINPUT input) {
+    if ((inputCount > 0) && !SendInput(static_cast<UINT>(inputCount), input, sizeof(INPUT))) {
+        char *err;
+        auto errCode = GetLastError();
+        if (!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                nullptr,
+                errCode,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
+                reinterpret_cast<LPTSTR>(&err),
+                0,
+                nullptr)){
+            LOG(ERROR) << "Error calling SendInput(): Could not get error message (" << errCode << ")";
+        } else {
+            LOG(ERROR) << "Error calling SendInput(): " << err;
+        }
+    }
+}
+
 void KeyboardInputWindows::sendKeyboardInput(QString input)
 {
     int len = input.length();
     if (len > 0) {
-        LPINPUT ips = new INPUT[len * 5 + 3];
-        unsigned ii = 0;
+        LPINPUT ips = new INPUT[static_cast<unsigned int>(len) * 5 + 3];
+        int ii = 0;
         bool shiftPressed = false;
         bool ctrlPressed = false;
         bool altPressed = false;
@@ -69,22 +87,9 @@ void KeyboardInputWindows::sendKeyboardInput(QString input)
             fillKiStruct(ips[ii++], VK_MENU, true);
             altPressed = false;
         }
-        if (!SendInput(ii, ips, sizeof(INPUT))) {
-            char *err;
-            auto errCode = GetLastError();
-            if (!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                    NULL,
-                    errCode,
-                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
-                    (LPTSTR)&err,
-                    0,
-                    NULL)){
-                LOG(ERROR) << "Error calling SendInput(): Could not get error message (" << errCode << ")";
-            } else {
-                LOG(ERROR) << "Error calling SendInput(): " << err;
-            }
-        }
-        delete ips;
+
+        sendKeyboardInputRaw(ii, ips);
+        delete[] ips;
     }
 }
 
@@ -93,49 +98,37 @@ void KeyboardInputWindows::sendKeyboardEnter()
     LPINPUT ips = new INPUT[2];
     fillKiStruct(ips[0], VK_RETURN, false);
     fillKiStruct(ips[1], VK_RETURN, true);
-    if (!SendInput(2, ips, sizeof(INPUT))) {
-        char *err;
-        auto errCode = GetLastError();
-        if (!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-            NULL,
-            errCode,
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
-            (LPTSTR)&err,
-            0,
-            NULL)) {
-            LOG(ERROR) << "Error calling SendInput(): Could not get error message (" << errCode << ")";
-        } else {
-            LOG(ERROR) << "Error calling SendInput(): " << err;
-        }
-    }
-    delete ips;
+
+    sendKeyboardInputRaw(2, ips);
+    delete[] ips;
 }
 
 void KeyboardInputWindows::sendKeyboardBackspace(int count)
 {
     if (count > 0) {
-        LPINPUT ips = new INPUT[count * 2];
+        // We ensure that count is nonnegative, therefore safe cast.
+        LPINPUT ips = new INPUT[static_cast<unsigned int>(count) * 2];
         for (int i = 0; i < count; i++) {
             fillKiStruct(ips[2 * i], VK_BACK, false);
             fillKiStruct(ips[2 * i + 1], VK_BACK, true);
         }
-        if (!SendInput(2 * count, ips, sizeof(INPUT))) {
-            char *err;
-            auto errCode = GetLastError();
-            if (!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                NULL,
-                errCode,
-                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // default language
-                (LPTSTR)&err,
-                0,
-                NULL)) {
-                LOG(ERROR) << "Error calling SendInput(): Could not get error message (" << errCode << ")";
-            } else {
-                LOG(ERROR) << "Error calling SendInput(): " << err;
-            }
-        }
-        delete ips;
+
+        sendKeyboardInputRaw(count * 2, ips);
+        delete[] ips;
     }
+}
+
+void KeyboardInputWindows::sendKeyboardAltTab()
+{
+    LPINPUT ips = new INPUT[4];
+    // VK_MENU is alt
+    fillKiStruct(ips[0], VK_MENU, false);
+    fillKiStruct(ips[1], VK_TAB, false);
+    fillKiStruct(ips[2], VK_TAB, true);
+    fillKiStruct(ips[3], VK_MENU, true);
+
+    sendKeyboardInputRaw(4, ips);
+    delete[] ips;
 }
 
 }
