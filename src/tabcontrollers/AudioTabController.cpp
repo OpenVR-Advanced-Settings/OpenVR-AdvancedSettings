@@ -3,12 +3,13 @@
 #include <QApplication>
 #include "../overlaycontroller.h"
 #ifdef _WIN32
-    #include "audiomanager/AudioManagerWindows.h"
+#    include "audiomanager/AudioManagerWindows.h"
 #else
-    #include "audiomanager/AudioManagerDummy.h"
+#    include "audiomanager/AudioManagerDummy.h"
 #endif
 
 // application namespace
+<<<<<<< HEAD
 namespace advsettings {
 
 	void AudioTabController::initStage1() {
@@ -492,324 +493,343 @@ namespace advsettings {
 	}
 
 
-	/*AUDIO PROFILE FUNCTIONS
-	The following section includes the code required to save and load Audio Profiles.
+/*AUDIO PROFILE FUNCTIONS
+The following section includes the code required to save and load Audio
+Profiles.
 
-	Saved Settings Include:
-	Playback Device
-	Mirror Device
-	Mirror Vol
-	Microphone
-	Microphone Volume
-	Profile Name
+Saved Settings Include:
+Playback Device
+Mirror Device
+Mirror Vol
+Microphone
+Microphone Volume
+Profile Name
 
-	*/
+*/
 
-	/*
-		Name:  reloadAudioProfiles
+/*
+    Name:  reloadAudioProfiles
 
-		Inputs: args: none
-				other: Reads audioProfiles setting from file
+    Inputs: args: none
+            other: Reads audioProfiles setting from file
 
 
-		Output: return:none
-				other:none
+    Output: return:none
+            other:none
 
-		Description: Clears working copy, and reloads from Settings file.
+    Description: Clears working copy, and reloads from Settings file.
 
-	*/
-	void AudioTabController::reloadAudioProfiles() {
-		audioProfiles.clear();
-		auto settings = OverlayController::appSettings();
-		settings->beginGroup(getSettingsName());
-		auto profileCount = settings->beginReadArray("audioProfiles");
-		for (int i = 0; i < profileCount; i++) {
-			settings->setArrayIndex(i);
-                        audioProfiles.emplace_back();
-                        auto& entry = audioProfiles[static_cast<size_t>(i)];
-			entry.profileName = settings->value("profileName").toString().toStdString();
-			entry.playbackName = settings->value("playbackName").toString().toStdString();
-			entry.micName = settings->value("micName").toString().toStdString();
-			entry.mirrorName = settings->value("mirrorName").toString().toStdString();
-			entry.micMute = settings->value("micMute", false).toBool();
-			entry.mirrorMute = settings->value("mirrorMute", false).toBool();
-			entry.mirrorVol = settings->value("mirrorVol", 0.0).toFloat();
-			entry.micVol = settings->value("micVol", 1.0).toFloat();
-			entry.defaultProfile = settings->value("defaultProfile", false).toBool();
-		}
-		settings->endArray();
-		settings->endGroup();
+*/
+void AudioTabController::reloadAudioProfiles()
+{
+    audioProfiles.clear();
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( getSettingsName() );
+    auto profileCount = settings->beginReadArray( "audioProfiles" );
+    for ( int i = 0; i < profileCount; i++ )
+    {
+        settings->setArrayIndex( i );
+        audioProfiles.emplace_back();
+        auto& entry = audioProfiles[static_cast<size_t>( i )];
+        entry.profileName
+            = settings->value( "profileName" ).toString().toStdString();
+        entry.playbackName
+            = settings->value( "playbackName" ).toString().toStdString();
+        entry.micName = settings->value( "micName" ).toString().toStdString();
+        entry.mirrorName
+            = settings->value( "mirrorName" ).toString().toStdString();
+        entry.micMute = settings->value( "micMute", false ).toBool();
+        entry.mirrorMute = settings->value( "mirrorMute", false ).toBool();
+        entry.mirrorVol = settings->value( "mirrorVol", 0.0 ).toFloat();
+        entry.micVol = settings->value( "micVol", 1.0 ).toFloat();
+    }
+    settings->endArray();
+    settings->endGroup();
+}
+
+/*AUDIO PROFILE FUNCTIONS
+The following section includes the code required to save and load Audio
+Profiles.
+
+Saved Settings Include:
+Playback Device
+Mirror Device
+Mirror Vol
+Microphone
+Microphone Volume
+Profile Name
+
+*/
+
+/*
+Name:  reloadAudioProfiles
+
+Inputs: args: none
+other: Reads audioProfiles setting from file
+
+
+Output: return:none
+other:none
+
+Description: Clears working copy, and reloads from Settings file.
+
+*/
+void AudioTabController::reloadAudioProfiles()
+{
+	audioProfiles.clear();
+	auto settings = OverlayController::appSettings();
+	settings->beginGroup(getSettingsName());
+	auto profileCount = settings->beginReadArray("audioProfiles");
+	for (int i = 0; i < profileCount; i++)
+	{
+		settings->setArrayIndex(i);
+		audioProfiles.emplace_back();
+		auto& entry = audioProfiles[static_cast<size_t>(i)];
+		entry.profileName
+			= settings->value("profileName").toString().toStdString();
+		entry.playbackName
+			= settings->value("playbackName").toString().toStdString();
+		entry.micName = settings->value("micName").toString().toStdString();
+		entry.mirrorName
+			= settings->value("mirrorName").toString().toStdString();
+		entry.micMute = settings->value("micMute", false).toBool();
+		entry.mirrorMute = settings->value("mirrorMute", false).toBool();
+		entry.mirrorVol = settings->value("mirrorVol", 0.0).toFloat();
+		entry.micVol = settings->value("micVol", 1.0).toFloat();
 	}
+	settings->endArray();
+	settings->endGroup();
+}
 
-	/*
-	Name: saveAudioProfile
+/*
+Name: saveAudioProfile
 
-	Inputs: args: none
-	other: none
+Inputs: args: none
+other: none
 
 
-	Output: return: none
-	other: Writes audioProfiles setting to file
+Output: return: none
+other: Writes audioProfiles setting to file
 
-	Description: saves a copy of the audio profiles from working to Settings file.
+Description: saves a copy of the audio profiles from working to Settings file.
 
-	*/
-	void AudioTabController::saveAudioProfiles() {
-		auto settings = OverlayController::appSettings();
-		settings->beginGroup(getSettingsName());
-		settings->beginWriteArray("audioProfiles");
-                int i = 0;
-                for (auto& p : audioProfiles) {
-                    settings->setArrayIndex(i);
-			settings->setValue("profileName", QString::fromStdString(p.profileName));
-			settings->setValue("playbackName", QString::fromStdString(p.playbackName));
-			settings->setValue("micName", QString::fromStdString(p.micName));
-			settings->setValue("mirrorName", QString::fromStdString(p.mirrorName));
-			settings->setValue("micMute", p.micMute);
-			settings->setValue("mirrorMute", p.mirrorMute);
-			settings->setValue("micVol", p.micVol);
-			settings->setValue("mirrorVol", p.mirrorVol);
-			settings->setValue("defaultProfile", p.defaultProfile);
-			i++;
-		}
-		settings->endArray();
-		settings->endGroup();
+*/
+void AudioTabController::saveAudioProfiles()
+{
+	auto settings = OverlayController::appSettings();
+	settings->beginGroup(getSettingsName());
+	settings->beginWriteArray("audioProfiles");
+	int i = 0;
+	for (auto& p : audioProfiles)
+	{
+		settings->setArrayIndex(i);
+		settings->setValue("profileName",
+			QString::fromStdString(p.profileName));
+		settings->setValue("playbackName",
+			QString::fromStdString(p.playbackName));
+		settings->setValue("micName", QString::fromStdString(p.micName));
+		settings->setValue("mirrorName",
+			QString::fromStdString(p.mirrorName));
+		settings->setValue("micMute", p.micMute);
+		settings->setValue("mirrorMute", p.mirrorMute);
+		settings->setValue("micVol", p.micVol);
+		settings->setValue("mirrorVol", p.mirrorVol);
+		i++;
 	}
+	settings->endArray();
+	settings->endGroup();
+}
+
+/*
+Name: addAudioProfile
+
+Inputs: args: Qstring name - the name of the audio profile
+other: none
 
 
+Output: return: none
+other: audioProfile to audioProfiles array
 
-	/*
-	Name: addAudioProfile
+Description: Creates an audioProfile, and adds it to the working copy of
+audioProfiles[]
 
-	Inputs: args: Qstring name - the name of the audio profile
-	other: none
+*/
 
-
-	Output: return: none
-	other: audioProfile to audioProfiles array
-
-	Description: Creates an audioProfile, and adds it to the working copy of audioProfiles[]
-
-	*/
-
-	void AudioTabController::addAudioProfile(QString name) {
-		AudioProfile* profile = nullptr;
-		for (auto& p : audioProfiles) {
-			if (p.profileName.compare(name.toStdString()) == 0) {
-				profile = &p;
-				break;
-			}
+void AudioTabController::addAudioProfile(QString name)
+{
+	AudioProfile* profile = nullptr;
+	for (auto& p : audioProfiles)
+	{
+		if (p.profileName.compare(name.toStdString()) == 0)
+		{
+			profile = &p;
+			break;
 		}
-		if (!profile) {
-			auto i = audioProfiles.size();
-			audioProfiles.emplace_back();
-			profile = &audioProfiles[i];
-		}
-		profile->profileName = name.toStdString();
-		profile->playbackName = getPlaybackDeviceName(m_playbackDeviceIndex).toStdString();
-		profile->mirrorName = getPlaybackDeviceName(m_mirrorDeviceIndex).toStdString();
-		profile->micName = getRecordingDeviceName(m_recordingDeviceIndex).toStdString();
-		profile->micMute = m_micMuted;
-		profile->mirrorMute = m_mirrorMuted;
-		profile->mirrorVol = m_mirrorVolume;
-		profile->micVol = m_micVolume;
-		profile->defaultProfile = m_isDefaultAudioProfile;
-		if (m_isDefaultAudioProfile) {
-			removeDefaultProfile(name);
+	}
+	if (!profile)
+	{
+		auto i = audioProfiles.size();
+		audioProfiles.emplace_back();
+		profile = &audioProfiles[i];
+	}
+	profile->profileName = name.toStdString();
+	profile->playbackName
+		= getPlaybackDeviceName(m_playbackDeviceIndex).toStdString();
+	profile->mirrorName
+		= getPlaybackDeviceName(m_mirrorDeviceIndex).toStdString();
+	profile->micName
+		= getRecordingDeviceName(m_recordingDeviceIndex).toStdString();
+	profile->micMute = m_micMuted;
+	profile->mirrorMute = m_mirrorMuted;
+	profile->mirrorVol = m_mirrorVolume;
+	profile->micVol = m_micVolume;
 
-			//to prevent confusion, resets checkbox
-			setAudioProfileDefault(false);
+	saveAudioProfiles();
+	OverlayController::appSettings()->sync();
+	emit audioProfilesUpdated();
+}
+
+/*
+Name: applyAudioProfile
+
+Inputs: args: index - index of audioProfile in audioProfiles[]
+other: audioProfile based on index
+
+
+Output: return: none
+other: none
+
+Description: Applies the required logic to activate the audio profile.
+
+*/
+// TODO Remembers Mirror Volume when switching to main volume.
+void AudioTabController::applyAudioProfile(unsigned index)
+{
+	if (index < audioProfiles.size())
+	{
+		auto& profile = audioProfiles[index];
+		int mInd = getMirrorIndex(profile.mirrorName);
+		int pInd = getPlaybackIndex(profile.playbackName);
+
+		// Needed to keep remembering when swtiching from mirror/main etc.
+		setMicMuted(false, false);
+		setMirrorMuted(false, false);
+
+		if ((m_playbackDeviceIndex == mInd)
+			&& (m_mirrorDeviceIndex == pInd))
+		{
+			setMirrorDeviceIndex(-1, true);
 		}
+		if (m_playbackDeviceIndex == mInd)
+		{
+			setPlaybackDeviceIndex(pInd, true);
+			setMirrorDeviceIndex(mInd, true);
+		}
+		else
+		{
+			setMirrorDeviceIndex(mInd, true);
+			setPlaybackDeviceIndex(pInd, true);
+		}
+		setMicDeviceIndex(getRecordingIndex(profile.micName), true);
+		setMicMuted(profile.micMute, true);
+		setMirrorMuted(profile.mirrorMute, true);
+		setMicVolume(profile.micVol, true);
+		setMirrorVolume(profile.mirrorVol, true);
+	}
+}
+
+/*
+Name: deleteAudioProfile
+
+Inputs: args: index - index of audioProfile in audioProfiles[]
+other: audioProfile based on index
+
+
+Output: return: none
+other: none
+
+Description: Removes selected Audio Profile
+
+*/
+void AudioTabController::deleteAudioProfile(unsigned index)
+{
+	if (index < audioProfiles.size())
+	{
+		auto pos = audioProfiles.begin() + index;
+		audioProfiles.erase(pos);
 		saveAudioProfiles();
 		OverlayController::appSettings()->sync();
 		emit audioProfilesUpdated();
-		emit audioProfileAdded();
 	}
+}
 
+unsigned AudioTabController::getAudioProfileCount()
+{
+	return static_cast<unsigned int>(audioProfiles.size());
+}
 
-	/*
-	Name: applyAudioProfile
+QString AudioTabController::getAudioProfileName(unsigned index)
+{
+	if (index < audioProfiles.size())
+	{
+		return QString::fromStdString(audioProfiles[index].profileName);
+	}
+	return "";
+}
 
-	Inputs: args: index - index of audioProfile in audioProfiles[]
-	other: audioProfile based on index
+/*
+Name: getPlaybackIndex,  getRecordingIndex, and getMirrorIndex
 
+input: string, of microphone/playback device name
+output: integer for use In: setMicDeviceIndex(int,bool),
+setMirrorDeviceIndex(int,bool) setPlayBackDeviceIndex(int,bool)
 
-	Output: return: none
-	other: none
-
-	Description: Applies the required logic to activate the audio profile.
-
-	*/
-	//TODO Remembers Mirror Volume when switching to main volume.
-	void AudioTabController::applyAudioProfile(unsigned index) {
-		std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
-		if (index < audioProfiles.size()) {
-			auto& profile = audioProfiles[index];
-			int mInd = getMirrorIndex(profile.mirrorName);
-			int pInd = getPlaybackIndex(profile.playbackName);
-
-			//Needed to keep remembering when swtiching from mirror/main etc.
-			setMicMuted(false, false);
-			setMirrorMuted(false, false);
-
-			if ((m_playbackDeviceIndex == mInd) && (m_mirrorDeviceIndex == pInd)) {
-				setMirrorDeviceIndex(-1, true);
-			}
-			if (m_playbackDeviceIndex == mInd) {
-				setPlaybackDeviceIndex(pInd, true);
-				setMirrorDeviceIndex(mInd, true);
-			}
-			else {
-				setMirrorDeviceIndex(mInd, true);
-				setPlaybackDeviceIndex(pInd, true);
-			}
-			
-
-			setMicDeviceIndex(getRecordingIndex(profile.micName), true);
-			setMicMuted(profile.micMute, true);
-			setMirrorMuted(profile.mirrorMute, true);
-			setMicVolume(profile.micVol, true);
-			setMirrorVolume(profile.mirrorVol, true);
-
+description: Gets proper index value for selecting specific devices.
+*/
+int AudioTabController::getPlaybackIndex(std::string str)
+{
+	// Unsigned to avoid two casts. i won't be negative because we only
+	// increment it.
+	for (unsigned int i = 0; i < m_playbackDevices.size(); i++)
+	{
+		if (str.compare(m_playbackDevices[i].second) == 0)
+		{
+			return static_cast<int>(i);
 		}
 	}
+	return m_playbackDeviceIndex;
+}
 
-	/*
-	Name: deleteAudioProfile
-
-	Inputs: args: index - index of audioProfile in audioProfiles[]
-	other: audioProfile based on index
-
-
-	Output: return: none
-	other: none
-
-	Description: Removes selected Audio Profile
-
-	*/
-	void AudioTabController::deleteAudioProfile(unsigned index) {
-		if (index < audioProfiles.size()) {
-			auto pos = audioProfiles.begin() + index;
-			audioProfiles.erase(pos);
-			//OverlayController::appSettings()->remove("audioProfiles\\" + ind);
-			//I  think I don't need?
-			saveAudioProfiles();
-			OverlayController::appSettings()->sync();
-			emit audioProfilesUpdated();
+int AudioTabController::getRecordingIndex(std::string str)
+{
+	// Unsigned to avoid two casts. i won't be negative because we only
+	// increment it.
+	for (unsigned int i = 0; i < m_recordingDevices.size(); i++)
+	{
+		if (str.compare(m_recordingDevices[i].second) == 0)
+		{
+			return static_cast<int>(i);
 		}
 	}
+	return m_recordingDeviceIndex;
+}
 
-
-        unsigned AudioTabController::getAudioProfileCount() {
-            return static_cast<unsigned int>(audioProfiles.size());
-        }
-
-	QString AudioTabController::getAudioProfileName(unsigned index) {
-		if (index < audioProfiles.size()) {
-			return QString::fromStdString(audioProfiles[index].profileName);
+int AudioTabController::getMirrorIndex(std::string str)
+{
+	// Unsigned to avoid two casts. i won't be negative because we only
+	// increment it.
+	for (unsigned int i = 0; i < m_playbackDevices.size(); i++)
+	{
+		if (str.compare(m_playbackDevices[i].second) == 0)
+		{
+			return static_cast<int>(i);
 		}
-		return "";
 	}
-
-	/*
-		Name: getPlaybackIndex,  getRecordingIndex, and getMirrorIndex
-
-		input: string, of microphone/playback device name
-		output: integer for use In: setMicDeviceIndex(int,bool), setMirrorDeviceIndex(int,bool) setPlayBackDeviceIndex(int,bool)
-
-		description: Gets proper index value for selecting specific devices.
-	*/
-        int AudioTabController::getPlaybackIndex(std::string str) {
-            //Unsigned to avoid two casts. i won't be negative because we only increment it.
-            for (unsigned int i = 0; i < m_playbackDevices.size(); i++) {
-                if (str.compare(m_playbackDevices[i].second)==0) {
-                    return static_cast<int>(i);
-			}
-		}
-		return m_playbackDeviceIndex;
-	}
-
-        int AudioTabController::getRecordingIndex(std::string str) {
-            //Unsigned to avoid two casts. i won't be negative because we only increment it.
-            for (unsigned int i = 0; i < m_recordingDevices.size(); i++) {
-                if (str.compare(m_recordingDevices[i].second) == 0) {
-                    return static_cast<int>(i);
-			}
-		}
-		return m_recordingDeviceIndex;
-	}
-
-	int AudioTabController::getMirrorIndex(std::string str) {
-                //Unsigned to avoid two casts. i won't be negative because we only increment it.
-                for (unsigned int i = 0; i < m_playbackDevices.size(); i++) {
-                        if (str.compare(m_playbackDevices[i].second) == 0) {
-                            return static_cast<int>(i);
-			}
-		}
 	return -1;
-	}
+}
 
-	/*
-	Name: removeDefaultProfile
+/* ---------------------------*/
 
-	input: QString name - name of new default profile
-	output: none
-
-	description: checks all profiles and removes any OTHERS that are set as default.
-	*/
-	void AudioTabController::removeDefaultProfile(QString name) {
-		AudioProfile* profile = nullptr;
-		for (auto& p : audioProfiles) {
-			if (p.profileName.compare(name.toStdString()) != 0) {
-				profile = &p;
-				profile->defaultProfile = false;
-			}
-		}
-		
-	}
-	
-	/*
-	Name: applyDefaultProfile
-
-	input: none
-	output: none
-
-	description: checks all profiles and applies the one (if any) with the default flag);
-	*/
-
-	
-	void AudioTabController::applyDefaultProfile() {
-		for(int i = 0; i<audioProfiles.size(); i++){
-			auto& profile = audioProfiles[i];
-			if (profile.defaultProfile) {
-				applyAudioProfile(i);
-				//setAudioProfileDefaultIndex(i);
-				//setDefaultAudioProfileName(i);
-
-				//emit audioProfileDefaultIndexChanged();
-				break;
-			}
-		}
-
-	}
-	
-
-
-	
-	/*int AudioTabController::audioProfileDefaultIndex() const {
-		return m_defaultAudioProfileIndex;
-	}
-	void AudioTabController::setAudioProfileDefaultIndex(int index) {
-		m_defaultAudioProfileIndex = index;
-		m_defaultAudioProfileIndex = 2;
-	}
-	*/
-
-
-	
-
-	/* ---------------------------*/
-
-	/*----------------*/
+/*----------------*/
 
 } // namespace advconfig

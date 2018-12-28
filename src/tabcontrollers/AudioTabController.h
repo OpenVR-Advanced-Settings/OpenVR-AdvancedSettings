@@ -192,4 +192,3 @@ namespace advsettings {
 		void audioProfileDefaultChanged(bool value);
 	};
 
-} // namespace advsettings
