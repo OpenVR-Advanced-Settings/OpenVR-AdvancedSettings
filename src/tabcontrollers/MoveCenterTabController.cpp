@@ -54,12 +54,12 @@ void MoveCenterTabController::initStage1() {
 		m_lockZToggle = value.toBool();
 	}
 	settings->endGroup();
-    lastMoveButtonClick[0] = lastMoveButtonClick[0] = clock::now();
+    lastMoveButtonClick[0] = lastMoveButtonClick[1] = clock::now();
 }
 
-void MoveCenterTabController::initStage2(OverlayController * parent, QQuickWindow * widget) {
-	this->parent = parent;
-	this->widget = widget;
+void MoveCenterTabController::initStage2(OverlayController * var_parent, QQuickWindow * var_widget) {
+        this->parent = var_parent;
+        this->widget = var_widget;
 }
 
 

@@ -1,7 +1,6 @@
-
 #include "ChaperoneUtils.h"
 #include <iostream>
-#include <math.h>
+#include <cmath>
 
 namespace utils {
 
@@ -43,7 +42,7 @@ float ChaperoneUtils::_getDistanceToChaperone(const vr::HmdVector3_t & x, vr::Hm
 			float d_z = x1_z - x.v[2];
 			d = sqrt(d_x*d_x + d_z*d_z);
 		}
-		if (isnan(distance) || d < distance) {
+		if (std::isnan(distance) || d < distance) {
 			distance = d;
 			if (projectedPoint) {
 				projectedPoint->v[0] = x1_x;

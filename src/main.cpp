@@ -10,21 +10,6 @@
 #include <iostream>
 #include "logging.h"
 
-const char* logConfigFileName = "logging.conf";
-
-const char* logConfigDefault =
-"* GLOBAL:\n"
-"	FORMAT = \"[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg\"\n"
-"	FILENAME = \"AdvancedSettings.log\"\n"
-"	ENABLED = true\n"
-"	TO_FILE = true\n"
-"	TO_STANDARD_OUTPUT = true\n"
-"	MAX_LOG_FILE_SIZE = 2097152 ## 2MB\n"
-"* TRACE:\n"
-"	ENABLED = false\n"
-"* DEBUG:\n"
-"	ENABLED = false\n";
-
 INITIALIZE_EASYLOGGINGPP
 
 void myQtMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
@@ -73,8 +58,8 @@ void installManifest(bool cleaninstall = false) {
 		if (apperror != vr::VRApplicationError_None) {
 			throw std::runtime_error(std::string("Could not add application manifest: ") + std::string(vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror)));
 		} else if (!alreadyInstalled || cleaninstall) {
-			auto apperror = vr::VRApplications()->SetApplicationAutoLaunch(advsettings::OverlayController::applicationKey, true);
-			if (apperror != vr::VRApplicationError_None) {
+                        auto app_error = vr::VRApplications()->SetApplicationAutoLaunch(advsettings::OverlayController::applicationKey, true);
+                        if (app_error != vr::VRApplicationError_None) {
 				throw std::runtime_error(std::string("Could not set auto start: ") + std::string(vr::VRApplications()->GetApplicationsErrorNameFromEnum(apperror)));
 			}
 		}
@@ -140,6 +125,21 @@ enum ReturnErrorCode {
 };
 
 int main(int argc, char *argv[]) {
+
+    const char* logConfigFileName = "logging.conf";
+
+    const char* logConfigDefault =
+        "* GLOBAL:\n"
+        "	FORMAT = \"[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg\"\n"
+        "	FILENAME = \"AdvancedSettings.log\"\n"
+        "	ENABLED = true\n"
+        "	TO_FILE = true\n"
+        "	TO_STANDARD_OUTPUT = true\n"
+        "	MAX_LOG_FILE_SIZE = 2097152 ## 2MB\n"
+        "* TRACE:\n"
+        "	ENABLED = false\n"
+        "* DEBUG:\n"
+        "	ENABLED = false\n";
 
     const bool desktop_mode = argument::CheckCommandLineArgument(argc, argv, argument::DESKTOP_MODE);
     const bool no_sound = argument::CheckCommandLineArgument(argc, argv, argument::NO_SOUND);
@@ -256,5 +256,4 @@ int main(int argc, char *argv[]) {
 		LOG(FATAL) << e.what();
 		return ReturnErrorCode::GENERAL_FAILURE;
 	}
-	return ReturnErrorCode::SUCCESS;
 }

@@ -64,7 +64,7 @@ private:
 	bool dashboardVisible = false;
 
 	QPoint m_ptLastMouse;
-	Qt::MouseButtons m_lastMouseButtons = 0;
+        Qt::MouseButtons m_lastMouseButtons = 0;
 
 	bool desktopMode;
 	bool noSound;
@@ -112,7 +112,7 @@ public:
 	void AddOffsetToCollisionBounds(float offset[3], bool commit = true);
 	void RotateCollisionBounds(float angle, bool commit = true); // around y axis
 
-	bool isDesktopMode() { return desktopMode; };
+        bool isDesktopMode() { return desktopMode; };
 
 	utils::ChaperoneUtils& chaperoneUtils() noexcept { return m_chaperoneUtils; }
 

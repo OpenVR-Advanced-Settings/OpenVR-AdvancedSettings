@@ -45,7 +45,7 @@ MyStackViewPage {
 
                     MyPushButton {
                         text: "Keyboard Input"
-                        Layout.preferredWidth: 250
+                        Layout.preferredWidth: 200
                         onClicked: {
                             OverlayController.showKeyboard("", 601)
                         }
@@ -61,15 +61,23 @@ MyStackViewPage {
 
                     MyPushButton {
                         text: "Enter"
-                        Layout.preferredWidth: 250
+                        Layout.preferredWidth: 200
                         onClicked: {
                             UtilitiesTabController.sendKeyboardEnter()
                         }
                     }
 
                     MyPushButton {
+                        text: "Alt-Tab"
+                        Layout.preferredWidth: 200
+                        onClicked: {
+                            UtilitiesTabController.sendKeyboardAltTab()
+                        }
+                    }
+
+                    MyPushButton {
                         text: "Backspace"
-                        Layout.preferredWidth: 250
+                        Layout.preferredWidth: 200
                         onClicked: {
                             UtilitiesTabController.sendKeyboardBackspace(1)
                         }
@@ -77,7 +85,7 @@ MyStackViewPage {
 
                     MyPushButton {
                         text: "10x Backspace"
-                        Layout.preferredWidth: 250
+                        Layout.preferredWidth: 200
                         onClicked: {
                             UtilitiesTabController.sendKeyboardBackspace(10)
                         }

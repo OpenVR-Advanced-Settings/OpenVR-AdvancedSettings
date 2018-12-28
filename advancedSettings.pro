@@ -4,14 +4,38 @@
 #
 #-------------------------------------------------
 
-QT       += core gui qml quick multimedia
+QT       += core gui qml quick multimedia widgets
+CONFIG   += c++11
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+lessThan(QT_MAJOR_VERSION, 5): error("requires Qt 5.6 or higher")
+lessThan(QT_MINOR_VERSION, 6): error("requires Qt 5.6 or higher")
 
 TARGET = AdvancedSettings
 TEMPLATE = app
 
+*msvc* {
+    #Removing -W3 from both FLAGS is necessary, otherwise compiler will give
+    #D9025: overriding '/W4' with '/W3'
+    QMAKE_CFLAGS_WARN_ON -= -W3
+    QMAKE_CXXFLAGS_WARN_ON -= -W3
+    QMAKE_CXXFLAGS += /W4 /wd4127
+    
+    !*clang-msvc{ 
+        QMAKE_CXXFLAGS += /WX
+    }
+}
 
+*g++* {
+    QMAKE_CXXFLAGS += -Werror
+}
+
+#Look for anything clang that is not clang-msvc, since it does not
+#allow all the same switches as regular clang.
+*clang|*clang-g++|*clang-libc++ {
+    QMAKE_CXXFLAGS += -Werror
+    #All includes from the third-party directory will not warn.
+    QMAKE_CXXFLAGS += --system-header-prefix=third-party
+}
 SOURCES += src/main.cpp\
     src/overlaycontroller.cpp \
     src/tabcontrollers/AudioTabController.cpp \
@@ -27,37 +51,7 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/AccessibilityTabController.cpp \
     src/utils/ChaperoneUtils.cpp \
     src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
-    src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp \
-    release/moc_AccessibilityTabController.cpp \
-    release/moc_AudioTabController.cpp \
-    release/moc_ChaperoneTabController.cpp \
-    release/moc_FixFloorTabController.cpp \
-    release/moc_MoveCenterTabController.cpp \
-    release/moc_overlaycontroller.cpp \
-    release/moc_PttController.cpp \
-    release/moc_ReviveTabController.cpp \
-    release/moc_SettingsTabController.cpp \
-    release/moc_StatisticsTabController.cpp \
-    release/moc_SteamVRTabController.cpp \
-    release/moc_UtilitiesTabController.cpp \
-    src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
-    src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
-    src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp \
-    src/tabcontrollers/keyboardinput/KeyboardInputWindows.cpp \
-    src/tabcontrollers/AccessibilityTabController.cpp \
-    src/tabcontrollers/AudioTabController.cpp \
-    src/tabcontrollers/ChaperoneTabController.cpp \
-    src/tabcontrollers/FixFloorTabController.cpp \
-    src/tabcontrollers/MoveCenterTabController.cpp \
-    src/tabcontrollers/PttController.cpp \
-    src/tabcontrollers/ReviveTabController.cpp \
-    src/tabcontrollers/SettingsTabController.cpp \
-    src/tabcontrollers/StatisticsTabController.cpp \
-    src/tabcontrollers/SteamVRTabController.cpp \
-    src/tabcontrollers/UtilitiesTabController.cpp \
-    src/utils/ChaperoneUtils.cpp \
-    src/main.cpp \
-    src/overlaycontroller.cpp
+    src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp
 
 HEADERS += src/overlaycontroller.h \
     src/logging.h \
@@ -77,42 +71,13 @@ HEADERS += src/overlaycontroller.h \
     src/utils/Matrix.h \
     src/utils/ChaperoneUtils.h \
     src/tabcontrollers/audiomanager/AudioManagerDummy.h \
-    src/tabcontrollers/keyboardinput/KeyboardInputDummy.h \
-    release/moc_predefs.h \
-    src/tabcontrollers/audiomanager/AudioManagerDummy.h \
-    src/tabcontrollers/audiomanager/AudioManagerWindows.h \
-    src/tabcontrollers/audiomanager/IPolicyConfig.h \
-    src/tabcontrollers/keyboardinput/KeyboardInputDummy.h \
-    src/tabcontrollers/keyboardinput/KeyboardInputWindows.h \
-    src/tabcontrollers/AccessibilityTabController.h \
-    src/tabcontrollers/AudioManager.h \
-    src/tabcontrollers/AudioTabController.h \
-    src/tabcontrollers/ChaperoneTabController.h \
-    src/tabcontrollers/FixFloorTabController.h \
-    src/tabcontrollers/KeyboardInput.h \
-    src/tabcontrollers/MoveCenterTabController.h \
-    src/tabcontrollers/PttController.h \
-    src/tabcontrollers/ReviveTabController.h \
-    src/tabcontrollers/SettingsTabController.h \
-    src/tabcontrollers/StatisticsTabController.h \
-    src/tabcontrollers/SteamVRTabController.h \
-    src/tabcontrollers/UtilitiesTabController.h \
-    src/utils/ChaperoneUtils.h \
-    src/utils/Matrix.h \
-    src/logging.h \
-    src/overlaycontroller.h \
-    third-party/easylogging++/easylogging++.h \
-    third-party/openvr/bin/osx64/OpenVR.framework/Versions/A/Headers/openvr.h \
-    third-party/openvr/bin/osx64/OpenVR.framework/Versions/A/Headers/openvr_capi.h \
-    third-party/openvr/bin/osx64/OpenVR.framework/Versions/A/Headers/openvr_driver.h \
-    third-party/openvr/headers/openvr.h \
-    third-party/openvr/headers/openvr_capi.h \
-    third-party/openvr/headers/openvr_driver.h
+    src/tabcontrollers/keyboardinput/KeyboardInputDummy.h
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
         src/tabcontrollers/keyboardinput/KeyboardInputWindows.cpp
     HEADERS += src/tabcontrollers/audiomanager/AudioManagerWindows.h \
+		src/tabcontrollers/audiomanager/IPolicyConfig.h \
         src/tabcontrollers/keyboardinput/KeyboardInputWindows.h
 }
 

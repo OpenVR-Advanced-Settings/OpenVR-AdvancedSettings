@@ -9,3 +9,6 @@ Makefile*
 *.stash
 *.appxmanifest
 *.user
+installer/AdvancedSettings-Installer.exe
+*.user*
+
