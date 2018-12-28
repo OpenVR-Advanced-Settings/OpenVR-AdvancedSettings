@@ -20,11 +20,10 @@ TEMPLATE = app
     #D9025: overriding '/W4' with '/W3'
     QMAKE_CFLAGS_WARN_ON -= -W3
     QMAKE_CXXFLAGS_WARN_ON -= -W3
+    #C4127 was in a third party file with no way to turn off.
     QMAKE_CXXFLAGS += /W4 /wd4127
-    
-    !*clang-msvc{ 
-        QMAKE_CXXFLAGS += /WX
-    }
+    QMAKE_CXXFLAGS += /WX
+
 }
 
 *g++* {
@@ -84,7 +83,8 @@ win32 {
 
 INCLUDEPATH += third-party/openvr/headers \
                         third-party/easylogging++
-
+#easylogging++ used to be a header only lib. Now requires easylogging++.cc
+SOURCES += third-party/easylogging++/easylogging++.cc
 win32:LIBS += -L"$$PWD/third-party/openvr/lib/win64" -luser32 -lole32
 unix:LIBS += -L"$$PWD/third-party/openvr/lib/linux64"
 LIBS += -lopenvr_api
