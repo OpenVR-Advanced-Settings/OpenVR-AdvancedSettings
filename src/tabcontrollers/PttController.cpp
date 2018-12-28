@@ -407,43 +407,58 @@ void PttController::addPttProfile( QString name )
     savePttProfiles();
     OverlayController::appSettings()->sync();
     emit pttProfilesUpdated();
-	emit pttProfileAdded();
-  }
+    emit pttProfileAdded();
+}
 
-  void PttController::applyPttProfile(unsigned index) {
-    std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
-    if (index < pttProfiles.size()) {
-      auto& profile = pttProfiles[index];
-      setPttShowNotification(profile.showNotification);
-      setPttLeftControllerEnabled(profile.leftControllerEnabled);
-      setPttRightControllerEnabled(profile.rightControllerEnabled);
-      m_pttControllerConfigs[0].digitalButtons = profile.controllerConfigs[0].digitalButtons;
-      m_pttControllerConfigs[0].digitalButtonMask = profile.controllerConfigs[0].digitalButtonMask;
-      m_pttControllerConfigs[0].triggerMode = profile.controllerConfigs[0].triggerMode;
-      m_pttControllerConfigs[0].touchpadMode = profile.controllerConfigs[0].touchpadMode;
-      m_pttControllerConfigs[0].touchpadAreas = profile.controllerConfigs[0].touchpadAreas;
-      m_pttControllerConfigs[1].digitalButtons = profile.controllerConfigs[1].digitalButtons;
-      m_pttControllerConfigs[1].digitalButtonMask = profile.controllerConfigs[1].digitalButtonMask;
-      m_pttControllerConfigs[1].triggerMode = profile.controllerConfigs[1].triggerMode;
-      m_pttControllerConfigs[1].touchpadMode = profile.controllerConfigs[1].touchpadMode;
-      m_pttControllerConfigs[1].touchpadAreas = profile.controllerConfigs[1].touchpadAreas;
+void PttController::applyPttProfile( unsigned index )
+{
+    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    if ( index < pttProfiles.size() )
+    {
+        auto& profile = pttProfiles[index];
+        setPttShowNotification( profile.showNotification );
+        setPttLeftControllerEnabled( profile.leftControllerEnabled );
+        setPttRightControllerEnabled( profile.rightControllerEnabled );
+        m_pttControllerConfigs[0].digitalButtons
+            = profile.controllerConfigs[0].digitalButtons;
+        m_pttControllerConfigs[0].digitalButtonMask
+            = profile.controllerConfigs[0].digitalButtonMask;
+        m_pttControllerConfigs[0].triggerMode
+            = profile.controllerConfigs[0].triggerMode;
+        m_pttControllerConfigs[0].touchpadMode
+            = profile.controllerConfigs[0].touchpadMode;
+        m_pttControllerConfigs[0].touchpadAreas
+            = profile.controllerConfigs[0].touchpadAreas;
+        m_pttControllerConfigs[1].digitalButtons
+            = profile.controllerConfigs[1].digitalButtons;
+        m_pttControllerConfigs[1].digitalButtonMask
+            = profile.controllerConfigs[1].digitalButtonMask;
+        m_pttControllerConfigs[1].triggerMode
+            = profile.controllerConfigs[1].triggerMode;
+        m_pttControllerConfigs[1].touchpadMode
+            = profile.controllerConfigs[1].touchpadMode;
+        m_pttControllerConfigs[1].touchpadAreas
+            = profile.controllerConfigs[1].touchpadAreas;
     }
-  }
+}
 
-  void PttController::deletePttProfile(unsigned index) {
-    if (index < pttProfiles.size()) {
-      auto pos = pttProfiles.begin() + index;
-      pttProfiles.erase(pos);
-      savePttProfiles();
-      OverlayController::appSettings()->sync();
-      emit pttProfilesUpdated();
+void PttController::deletePttProfile( unsigned index )
+{
+    if ( index < pttProfiles.size() )
+    {
+        auto pos = pttProfiles.begin() + index;
+        pttProfiles.erase( pos );
+        savePttProfiles();
+        OverlayController::appSettings()->sync();
+        emit pttProfilesUpdated();
     }
-  }
+}
 
-  QVariantList PttController::pttDigitalButtons(unsigned controller) {
-    if (controller < 2) {
-      return m_pttControllerConfigs[controller].digitalButtons;
-
+QVariantList PttController::pttDigitalButtons( unsigned controller )
+{
+    if ( controller < 2 )
+    {
+        return m_pttControllerConfigs[controller].digitalButtons;
     }
     return QVariantList();
 }
