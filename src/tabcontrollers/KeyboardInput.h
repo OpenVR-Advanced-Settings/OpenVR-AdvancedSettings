@@ -4,20 +4,19 @@
 #include <QString>
 
 // application namespace
-namespace advsettings {
-
+namespace advsettings
+{
 class AudioTabController;
 
 class KeyboardInput
 {
 public:
-    virtual ~KeyboardInput() {};
+    virtual ~KeyboardInput(){};
 
-    virtual void sendKeyboardInput(QString input) = 0;
+    virtual void sendKeyboardInput( QString input ) = 0;
     virtual void sendKeyboardEnter() = 0;
-    virtual void sendKeyboardBackspace(int count) = 0;
+    virtual void sendKeyboardBackspace( int count ) = 0;
     virtual void sendKeyboardAltTab() = 0;
 };
 
-}
-
+} // namespace advsettings
