@@ -28,25 +28,25 @@ namespace advsettings {
 
 	class AudioTabController : public PttController {
 		Q_OBJECT
-		Q_PROPERTY(int playbackDeviceIndex READ playbackDeviceIndex WRITE setPlaybackDeviceIndex NOTIFY playbackDeviceIndexChanged)
-		Q_PROPERTY(int mirrorDeviceIndex READ mirrorDeviceIndex WRITE setMirrorDeviceIndex NOTIFY mirrorDeviceIndexChanged)
-		//Q_PROPERTY(bool mirrorPresent READ mirrorPresent NOTIFY mirrorPresentChanged)
-		//Q_PROPERTY(QString mirrorDevName READ mirrorDevName NOTIFY mirrorDevNameChanged)
-		Q_PROPERTY(float mirrorVolume READ mirrorVolume WRITE setMirrorVolume NOTIFY mirrorVolumeChanged)
-		Q_PROPERTY(bool mirrorMuted READ mirrorMuted WRITE setMirrorMuted NOTIFY mirrorMutedChanged)
-		Q_PROPERTY(int micDeviceIndex READ micDeviceIndex WRITE setMicDeviceIndex NOTIFY micDeviceIndexChanged)
-		//Q_PROPERTY(bool micPresent READ micPresent NOTIFY micPresentChanged)
-		//Q_PROPERTY(QString micDevName READ micDevName NOTIFY micDevNameChanged)
-		Q_PROPERTY(float micVolume READ micVolume WRITE setMicVolume NOTIFY micVolumeChanged)
-		Q_PROPERTY(bool micMuted READ micMuted WRITE setMicMuted NOTIFY micMutedChanged)
-		Q_PROPERTY(bool micProximitySensorCanMute READ micProximitySensorCanMute WRITE setMicProximitySensorCanMute NOTIFY micProximitySensorCanMuteChanged)
-		Q_PROPERTY(bool micReversePtt READ micReversePtt WRITE setMicReversePtt NOTIFY micReversePttChanged)
+			Q_PROPERTY(int playbackDeviceIndex READ playbackDeviceIndex WRITE setPlaybackDeviceIndex NOTIFY playbackDeviceIndexChanged)
+			Q_PROPERTY(int mirrorDeviceIndex READ mirrorDeviceIndex WRITE setMirrorDeviceIndex NOTIFY mirrorDeviceIndexChanged)
+			//Q_PROPERTY(bool mirrorPresent READ mirrorPresent NOTIFY mirrorPresentChanged)
+			//Q_PROPERTY(QString mirrorDevName READ mirrorDevName NOTIFY mirrorDevNameChanged)
+			Q_PROPERTY(float mirrorVolume READ mirrorVolume WRITE setMirrorVolume NOTIFY mirrorVolumeChanged)
+			Q_PROPERTY(bool mirrorMuted READ mirrorMuted WRITE setMirrorMuted NOTIFY mirrorMutedChanged)
+			Q_PROPERTY(int micDeviceIndex READ micDeviceIndex WRITE setMicDeviceIndex NOTIFY micDeviceIndexChanged)
+			//Q_PROPERTY(bool micPresent READ micPresent NOTIFY micPresentChanged)
+			//Q_PROPERTY(QString micDevName READ micDevName NOTIFY micDevNameChanged)
+			Q_PROPERTY(float micVolume READ micVolume WRITE setMicVolume NOTIFY micVolumeChanged)
+			Q_PROPERTY(bool micMuted READ micMuted WRITE setMicMuted NOTIFY micMutedChanged)
+			Q_PROPERTY(bool micProximitySensorCanMute READ micProximitySensorCanMute WRITE setMicProximitySensorCanMute NOTIFY micProximitySensorCanMuteChanged)
+			Q_PROPERTY(bool micReversePtt READ micReversePtt WRITE setMicReversePtt NOTIFY micReversePttChanged)
 
-		Q_PROPERTY(bool audioProfileDefault READ audioProfileDefault WRITE setAudioProfileDefault NOTIFY audioProfileDefaultChanged)
+			Q_PROPERTY(bool audioProfileDefault READ audioProfileDefault WRITE setAudioProfileDefault NOTIFY audioProfileDefaultChanged)
 
-		//To display default profile
-		//Q_PROPERTY(bool audioProfileDefaultIndex READ audioProfileDefaultIndex NOTIFY audioProfileDefaultIndexChanged)
-		
+			//To display default profile
+			//Q_PROPERTY(bool audioProfileDefaultIndex READ audioProfileDefaultIndex NOTIFY audioProfileDefaultIndexChanged)
+
 
 
 
@@ -191,4 +191,5 @@ namespace advsettings {
 		//void audioProfileDefaultIndexChanged();
 		void audioProfileDefaultChanged(bool value);
 	};
+}
 
