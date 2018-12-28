@@ -39,7 +39,10 @@ namespace advsettings {
 		reloadPttProfiles();
 		reloadPttConfig();
 		reloadAudioProfiles();
+		applyDefaultProfile();
 		reloadAudioSettings();
+
+
 		eventLoopTick();
 	}
 
@@ -49,6 +52,7 @@ namespace advsettings {
 		this->widget = widget;
 
 		std::string notifKey = std::string(OverlayController::applicationKey) + ".pptnotification";
+
 		vr::VROverlayError overlayError = vr::VROverlay()->CreateOverlay(notifKey.c_str(), notifKey.c_str(), &m_ulNotificationOverlayHandle);
 		if (overlayError == vr::VROverlayError_None) {
 			std::string notifIconPath = QApplication::applicationDirPath().toStdString() + "/res/qml/ptt_notification.png";
@@ -113,6 +117,10 @@ namespace advsettings {
 
 	bool AudioTabController::micReversePtt() const {
 		return m_micReversePtt;
+	}
+
+	bool AudioTabController::audioProfileDefault() const {
+		return m_isDefaultAudioProfile;
 	}
 
 	void AudioTabController::eventLoopTick() {
@@ -278,6 +286,18 @@ namespace advsettings {
 		}
 	}
 
+	void AudioTabController::setAudioProfileDefault(bool value, bool notify) {
+		std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
+		if (value != m_isDefaultAudioProfile) {
+			m_isDefaultAudioProfile = value;
+			//TODO ????
+			// ?? saveAudioSettings();
+			if (notify) {
+				emit audioProfileDefaultChanged(value);
+			}
+		}
+	}
+
 	void AudioTabController::onNewRecordingDevice() {
 		findMicDeviceIndex(audioManager->getMicDevId());
 	}
@@ -352,11 +372,13 @@ namespace advsettings {
 				vr::VRSettings()->SetString(vr::k_pch_audio_Section, vr::k_pch_audio_OnPlaybackDevice_String, m_playbackDevices[index].first.c_str(), &vrSettingsError);
 				if (vrSettingsError != vr::VRSettingsError_None) {
 					LOG(WARNING) << "Could not write \"" << vr::k_pch_audio_OnPlaybackDevice_String << "\" setting: " << vr::VRSettings()->GetSettingsErrorNameFromEnum(vrSettingsError);
-				} else {
+				}
+				else {
 					vr::VRSettings()->Sync();
 					audioManager->setPlaybackDevice(m_playbackDevices[index].first, notify);
 				}
-			} else if (notify) {
+			}
+			else if (notify) {
 				emit playbackDeviceIndexChanged(m_playbackDeviceIndex);
 			}
 		}
@@ -506,6 +528,7 @@ namespace advsettings {
 			entry.mirrorMute = settings->value("mirrorMute", false).toBool();
 			entry.mirrorVol = settings->value("mirrorVol", 0.0).toFloat();
 			entry.micVol = settings->value("micVol", 1.0).toFloat();
+			entry.defaultProfile = settings->value("defaultProfile", false).toBool();
 		}
 		settings->endArray();
 		settings->endGroup();
@@ -539,6 +562,7 @@ namespace advsettings {
 			settings->setValue("mirrorMute", p.mirrorMute);
 			settings->setValue("micVol", p.micVol);
 			settings->setValue("mirrorVol", p.mirrorVol);
+			settings->setValue("defaultProfile", p.defaultProfile);
 			i++;
 		}
 		settings->endArray();
@@ -582,10 +606,17 @@ namespace advsettings {
 		profile->mirrorMute = m_mirrorMuted;
 		profile->mirrorVol = m_mirrorVolume;
 		profile->micVol = m_micVolume;
+		profile->defaultProfile = m_isDefaultAudioProfile;
+		if (m_isDefaultAudioProfile) {
+			removeDefaultProfile(name);
 
+			//to prevent confusion, resets checkbox
+			setAudioProfileDefault(false);
+		}
 		saveAudioProfiles();
 		OverlayController::appSettings()->sync();
 		emit audioProfilesUpdated();
+		emit audioProfileAdded();
 	}
 
 
@@ -604,6 +635,7 @@ namespace advsettings {
 	*/
 	//TODO Remembers Mirror Volume when switching to main volume.
 	void AudioTabController::applyAudioProfile(unsigned index) {
+		std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
 		if (index < audioProfiles.size()) {
 			auto& profile = audioProfiles[index];
 			int mInd = getMirrorIndex(profile.mirrorName);
@@ -624,6 +656,8 @@ namespace advsettings {
 				setMirrorDeviceIndex(mInd, true);
 				setPlaybackDeviceIndex(pInd, true);
 			}
+			
+
 			setMicDeviceIndex(getRecordingIndex(profile.micName), true);
 			setMicMuted(profile.micMute, true);
 			setMirrorMuted(profile.mirrorMute, true);
@@ -650,6 +684,8 @@ namespace advsettings {
 		if (index < audioProfiles.size()) {
 			auto pos = audioProfiles.begin() + index;
 			audioProfiles.erase(pos);
+			//OverlayController::appSettings()->remove("audioProfiles\\" + ind);
+			//I  think I don't need?
 			saveAudioProfiles();
 			OverlayController::appSettings()->sync();
 			emit audioProfilesUpdated();
@@ -686,6 +722,7 @@ namespace advsettings {
 	}
 
 	int AudioTabController::getRecordingIndex(std::string str) {
+		std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
 		for (int i = 0; i < m_recordingDevices.size(); i++) {
 			if (str.compare(m_recordingDevices[i].second) == 0) {
 				return i;
@@ -702,6 +739,65 @@ namespace advsettings {
 		}
 	return -1;
 	}
+
+	/*
+	Name: removeDefaultProfile
+
+	input: QString name - name of new default profile
+	output: none
+
+	description: checks all profiles and removes any OTHERS that are set as default.
+	*/
+	void AudioTabController::removeDefaultProfile(QString name) {
+		AudioProfile* profile = nullptr;
+		for (auto& p : audioProfiles) {
+			if (p.profileName.compare(name.toStdString()) != 0) {
+				profile = &p;
+				profile->defaultProfile = false;
+			}
+		}
+		
+	}
+	
+	/*
+	Name: applyDefaultProfile
+
+	input: none
+	output: none
+
+	description: checks all profiles and applies the one (if any) with the default flag);
+	*/
+
+	
+	void AudioTabController::applyDefaultProfile() {
+		for(int i = 0; i<audioProfiles.size(); i++){
+			auto& profile = audioProfiles[i];
+			if (profile.defaultProfile) {
+				applyAudioProfile(i);
+				//setAudioProfileDefaultIndex(i);
+				//setDefaultAudioProfileName(i);
+
+				//emit audioProfileDefaultIndexChanged();
+				break;
+			}
+		}
+
+	}
+	
+
+
+	
+	/*int AudioTabController::audioProfileDefaultIndex() const {
+		return m_defaultAudioProfileIndex;
+	}
+	void AudioTabController::setAudioProfileDefaultIndex(int index) {
+		m_defaultAudioProfileIndex = index;
+		m_defaultAudioProfileIndex = 2;
+	}
+	*/
+
+
+	
 
 	/* ---------------------------*/
 

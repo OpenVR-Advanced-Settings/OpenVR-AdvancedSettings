@@ -268,6 +268,7 @@ namespace advsettings {
     savePttProfiles();
     OverlayController::appSettings()->sync();
     emit pttProfilesUpdated();
+	emit pttProfileAdded();
   }
 
   void PttController::applyPttProfile(unsigned index) {
@@ -402,6 +403,7 @@ namespace advsettings {
       }
     }
   }
+
 
   void logControllerState(const vr::VRControllerState_t& state, const std::string& prefix) {
     if (state.ulButtonPressed & vr::ButtonMaskFromId(vr::k_EButton_ApplicationMenu)) {

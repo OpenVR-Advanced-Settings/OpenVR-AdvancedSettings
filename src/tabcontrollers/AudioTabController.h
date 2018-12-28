@@ -22,6 +22,7 @@ namespace advsettings {
 		float micVol = 0.0;
 		bool micMute = false;
 		bool mirrorMute = false;
+		bool defaultProfile = false;
 	};
 
 
@@ -41,6 +42,14 @@ namespace advsettings {
 		Q_PROPERTY(bool micProximitySensorCanMute READ micProximitySensorCanMute WRITE setMicProximitySensorCanMute NOTIFY micProximitySensorCanMuteChanged)
 		Q_PROPERTY(bool micReversePtt READ micReversePtt WRITE setMicReversePtt NOTIFY micReversePttChanged)
 
+		Q_PROPERTY(bool audioProfileDefault READ audioProfileDefault WRITE setAudioProfileDefault NOTIFY audioProfileDefaultChanged)
+
+		//To display default profile
+		//Q_PROPERTY(bool audioProfileDefaultIndex READ audioProfileDefaultIndex NOTIFY audioProfileDefaultIndexChanged)
+		
+
+
+
 	private:
 		OverlayController* parent;
 		QQuickWindow* widget;
@@ -58,6 +67,9 @@ namespace advsettings {
 		bool m_micMuted = false;
 		bool m_micProximitySensorCanMute = false;
 		bool m_micReversePtt = false;
+		bool m_isDefaultAudioProfile = false;
+		//int m_defaultAudioProfileIndex = 2;
+		std::string m_defaultProfileName;
 
 		unsigned settingsUpdateCounter = 0;
 
@@ -84,6 +96,10 @@ namespace advsettings {
 		int getMirrorIndex(std::string str);
 		//void setPlaybackDeviceControl(int index, bool notify = true);
 
+		void removeDefaultProfile(QString name);
+		//void setAudioProfileDefaultIndex(int index);
+		//void setDefaultAudioProfileName(int index);
+
 		std::vector<AudioProfile> audioProfiles;
 		//std::recursive_mutex eventLoopMutexAudio;
 
@@ -109,9 +125,12 @@ namespace advsettings {
 		bool micMuted() const;
 		bool micProximitySensorCanMute() const;
 		bool micReversePtt() const;
+		bool audioProfileDefault() const;
+		//int audioProfileDefaultIndex() const;
 
 		void reloadAudioProfiles();
 		void saveAudioProfiles();
+		Q_INVOKABLE void applyDefaultProfile();
 
 		Q_INVOKABLE int getPlaybackDeviceCount();
 		Q_INVOKABLE QString getPlaybackDeviceName(int index);
@@ -123,10 +142,13 @@ namespace advsettings {
 		Q_INVOKABLE unsigned getAudioProfileCount();
 		Q_INVOKABLE QString getAudioProfileName(unsigned index);
 
+
 		void onNewRecordingDevice();
 		void onNewPlaybackDevice();
 		void onNewMirrorDevice();
 		void onDeviceStateChanged();
+
+
 
 	public slots:
 		void setMirrorVolume(float value, bool notify = true);
@@ -145,6 +167,8 @@ namespace advsettings {
 		void applyAudioProfile(unsigned index);
 		void deleteAudioProfile(unsigned index);
 
+		void setAudioProfileDefault(bool value, bool notify = true);
+
 	signals:
 		void playbackDeviceIndexChanged(int index);
 
@@ -162,6 +186,10 @@ namespace advsettings {
 		void recordingDeviceListChanged();
 
 		void audioProfilesUpdated();
+		void audioProfileAdded();
+		//void defaultAudioProfileApplied();
+		//void audioProfileDefaultIndexChanged();
+		void audioProfileDefaultChanged(bool value);
 	};
 
 } // namespace advsettings

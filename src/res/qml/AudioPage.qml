@@ -40,6 +40,7 @@ MyStackViewPage {
         onClosed: {
             if (okClicked) {
                 AudioTabController.deleteAudioProfile(profileIndex)
+                pttProfileComboBox.currentIndex = 0
             }
         }
     }
@@ -79,6 +80,7 @@ MyStackViewPage {
             if (okClicked) {
                 if (pttNewProfileName.text != "") {
                     AudioTabController.addPttProfile(pttNewProfileName.text)
+
                 } else {
                     audioMessageDialog.showMessage("Create New Profile", "ERROR: No name given.")
                 }
@@ -95,7 +97,7 @@ MyStackViewPage {
         id: audioNewProfileDialog
         dialogTitle: "Create New Audio Profile"
         dialogWidth: 600
-        dialogHeight: 220
+        dialogHeight: 300
         dialogContentItem: ColumnLayout {
             RowLayout {
                 Layout.topMargin: 16
@@ -113,6 +115,19 @@ MyStackViewPage {
                     font.pointSize: 20
                     function onInputEvent(input) {
                         audioNewProfileName.text = input
+                    }
+                }
+            }
+            RowLayout {
+                Layout.topMargin: 16
+                Layout.leftMargin: 16
+                Layout.rightMargin: 16
+                MyToggleButton {
+                    id: audioDefaultProfileToggle
+                    Layout.preferredWidth: 250
+                    text: "Make Default"
+                    onCheckedChanged: {
+                        AudioTabController.setAudioProfileDefault(checked, false)
                     }
                 }
             }
@@ -365,10 +380,11 @@ MyStackViewPage {
                 }
             }
             RowLayout {
+
                 MyToggleButton {
                     id: audioPttShowNotificationToggle
-                    Layout.leftMargin: 265
-                    text: "Show notification in HMD."
+                    Layout.leftMargin: 350
+                    text: "Show notification in HMD"
                     onCheckedChanged: {
                         AudioTabController.setPttShowNotification(checked, false)
                     }
@@ -414,7 +430,8 @@ MyStackViewPage {
                     onClicked: {
                         if (audioProfileComboBox.currentIndex > 0) {
                             AudioTabController.applyAudioProfile(audioProfileComboBox.currentIndex - 1)
-                            audioProfileComboBox.currentIndex = 0
+                            //TODO ?
+                            //audioProfileComboBox.currentIndex = 0
                         }
                     }
                 }
@@ -447,7 +464,7 @@ MyStackViewPage {
                     onClicked: {
                         if (pttProfileComboBox.currentIndex > 0) {
                             AudioTabController.applyPttProfile(pttProfileComboBox.currentIndex - 1)
-                            pttProfileComboBox.currentIndex = 0
+                            //pttProfileComboBox.currentIndex = 0
                         }
                     }
                 }
@@ -558,6 +575,9 @@ MyStackViewPage {
             audioPttRightControllerToggle.checked = AudioTabController.pttRightControllerEnabled
             audioPttShowNotificationToggle.checked = AudioTabController.pttShowNotification
             audioPttReverseToggle.checked = AudioTabController.micReversePtt
+            audioDefaultProfileToggle.checked = AudioTabController.audioProfileDefault
+            //audioProfileComboBox.currentIndex = AudioTabController.audioProfileDefaultIndex + 1
+            //AudioTabController.applyDefaultProfile()
             componentCompleted = true
         }
 
@@ -629,12 +649,27 @@ MyStackViewPage {
             onPttRightControllerEnabledChanged: {
                 audioPttRightControllerToggle.checked = AudioTabController.pttRightControllerEnabled
             }
+            onAudioProfileDefaultChanged: {
+                audioDefaultProfileToggle.checked = AudioTabController.audioProfileDefault
+            }
             onPttProfilesUpdated: {
                 reloadPttProfiles()
             }
-            onAudioProfilesUpdated:{
+            onAudioProfilesUpdated: {
                 reloadAudioProfiles()
             }
+            onAudioProfileAdded:{
+                audioProfileComboBox.currentIndex = AudioTabController.getAudioProfileCount()
+                //audioProfileComboBox.currentIndex = AudioTabController.audioProfileDefaultIndex+1
+            }
+            onPttProfileAdded:{
+                pttProfileComboBox.currentIndex = AudioTabController.getpttProfileCount()
+            }
+
+            //onAudioProfileDefaultIndexChanged: {
+            //         audioProfileComboBox.currentIndex = AudioTabController.audioProfileDefaultIndex()
+
+            //}
 
             onPlaybackDeviceListChanged: {
                 var devs1 = []
@@ -707,7 +742,7 @@ MyStackViewPage {
         for (var i = 0; i < profileCount; i++) {
             profiles.push(AudioTabController.getAudioProfileName(i))
         }
-        audioProfileComboBox.currentIndex = 0
+        audioProfileComboBox.currentIndex = 0;
         audioProfileComboBox.model = profiles
     }
 }
