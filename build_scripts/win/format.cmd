@@ -23,38 +23,38 @@ IF NOT DEFINED project_dir (
 
 ECHO %current_activity%: Testing if clang-format can be located:
 
-IF NOT DEFINED CLANG_FORMAT_LOC (
-    ECHO %current_activity%: CLANG_FORMAT_LOC not defined. Using default value.
-    SET CLANG_FORMAT_LOC="C:\Program Files\LLVM\bin\clang-format.exe"
+IF NOT DEFINED LLVM_LOC (
+    ECHO %current_activity%: LLVM_LOC not defined. Using default value.
+    SET LLVM_LOC="C:\Program Files\LLVM\bin\"
 )
-ECHO %current_activity%: CLANG_FORMAT_LOC set to '%CLANG_FORMAT_LOC%'.
+ECHO %current_activity%: LLVM_LOC set to '%LLVM_LOC%'.
 
 REM EXIST won't find items in the PATH. WHERE will.
-SET CLANG_FORMAT_VALID=0
-IF EXIST %CLANG_FORMAT_LOC% SET CLANG_FORMAT_VALID=1
-IF %CLANG_FORMAT_VALID% EQU 0 (
-    WHERE /Q %CLANG_FORMAT_LOC%
-    IF NOT ERRORLEVEL 1 SET CLANG_FORMAT_VALID=1
+SET LLVM_VALID=0
+IF EXIST %LLVM_LOC% SET LLVM_VALID=1
+IF %LLVM_VALID% EQU 0 (
+    WHERE /Q %LLVM_LOC%\clang-format.exe
+    IF NOT ERRORLEVEL 1 SET LLVM_VALID=1
 )
 
-IF %CLANG_FORMAT_VALID% EQU 1 (
-    ECHO %current_activity%: CLANG_FORMAT_LOC exists.
+IF %LLVM_VALID% EQU 1 (
+    ECHO %current_activity%: LLVM_LOC exists.
 ) ELSE (
-    ECHO %current_activity%: CLANG_FORMAT_LOC directory does not exist. Exiting.
+    ECHO %current_activity%: LLVM_LOC directory does not exist. Exiting.
     EXIT /B %exit_code_failure_build_locations%
 )
 
 ECHO %current_activity%: Clang-format located.
 
-%CLANG_FORMAT_LOC% --version
+%LLVM_LOC%\clang-format.exe --version
 
 REM First iteration.
-FOR /R %project_dir%\src\ %%F IN (*.cpp *.h) DO (%CLANG_FORMAT_LOC% --style=file -i %%F & ECHO Iteration 1. %%F)
+FOR /R %project_dir%\src\ %%F IN (*.cpp *.h) DO (%LLVM_LOC%\clang-format.exe --style=file -i %%F & ECHO Iteration 1. %%F)
 
 REM Clang-format is sometimes indecisive about which exact rules to apply,
 REM leading to differences between first and second iteration. 
 REM Do it twice, just to be sure.
 
-FOR /R %project_dir%\src\ %%F IN (*.cpp *.h) DO (%CLANG_FORMAT_LOC% --style=file -i %%F & ECHO Iteration 2. %%F)
+FOR /R %project_dir%\src\ %%F IN (*.cpp *.h) DO (%LLVM_LOC%\clang-format.exe --style=file -i %%F & ECHO Iteration 2. %%F)
 
 ECHO %current_activity%: %current_activity% DONE.

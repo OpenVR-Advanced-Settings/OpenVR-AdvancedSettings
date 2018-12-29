@@ -38,7 +38,7 @@ The following environmental variables are relevant for building the project.
 | `JOM_LOC`             | Path to an `.exe` of `jom.exe`. Usually installed with Qt. `jom` is a wrapper around `nmake` allowing more threads to be used. It is not required, but using `nmake`is slower. If `JOM_LOC` isn't defined, or the `.exe` can't be found `nmake` will be used by default. To force using `nmake`, set `JOM_LOC` to a non-valid path like `1`.  |
 | `ZIP_LOC`             | Path to your 7zip `.exe`. Both portable and installer will work.  |
 | `NSIS_LOC`            | Path to your installation of NSIS containing the `makensis` file. Both portable and installer will work. |
-| `CLANG_FORMAT_LOC`            | Path to your `clang-format.exe`. Not necessary for building, but necessary for pushing changes to the repo. |
+| `LLVM_LOC`            | Path to your LLVM bin directory containing  `clang-format.exe`. Not necessary for building with the MSVC compiler, but necessary for pushing changes to the repo. Leave as empty string if your `clang-format`.exe` and `clang-cl.exe` are in the path. |
 
 If an environment variable isn't set a default value will be provided. The default values are shown in the table below.
 
@@ -49,7 +49,7 @@ If an environment variable isn't set a default value will be provided. The defau
 | `JOM_LOC`             | `"C:\Qt\Tools\QtCreator\bin\jom.exe"`|
 | `ZIP_LOC`             | `"C:\Program Files\7-Zip\7z.exe"`    |
 | `NSIS_LOC`            | `"C:\Program Files (x86)\NSIS\"`     |
-| `CLANG_FORMAT_LOC`            | `"C:\Program Files\LLVM\bin\clang-format.exe"`     |
+| `LLVM_LOC`            | `"C:\Program Files\LLVM\bin\"`       |
 
 Additionally, these optional environment variables are supported.
 
