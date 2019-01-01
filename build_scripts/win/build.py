@@ -83,11 +83,10 @@ def add_error_handling_line_to_bat_file():
     global bat_file_contents
     bat_file_contents += "IF ERRORLEVEL 1 EXIT /B " + str(EXIT_CODE_FAILURE_BUILD_APP) + "\n"
 
-def create_and_run_batch_file():
+def create_batch_file():
     file = open("test.bat", "w+")
     file.write(bat_file_contents)
     file.close()
-    process = subprocess.run("test.bat", stderr=sys.stderr, stdout=sys.stdout)
 
 ###### End of utility funcs
 
@@ -150,9 +149,9 @@ def build():
     if is_env_var_set(JOM_LOC_VAR_NAME):
         JOM_LOC = os.getenv(JOM_LOC_VAR_NAME)
     else:
-        say("{JOM_LOC_VAR_NAME} not defined. Using default value")
+        say(f"{JOM_LOC_VAR_NAME} not defined. Using default value")
         JOM_LOC = JOM_LOC_DEFAULT
-    say("{JOM_LOC_VAR_NAME} set to '{JOM_LOC}")
+    say(f"{JOM_LOC_VAR_NAME} set to '{JOM_LOC}")
 
     if os.path.exists(JOM_LOC):
         say(f"{JOM_LOC_VAR_NAME} exists. Using jom.")
