@@ -9,10 +9,13 @@
         !define BASEDIR "..\bin\win64\AdvancedSettings"
 		!define SRCDIR "..\src"
 		!define THIRDDIR "..\third-party"
+        !define PACKAGEDIR "..\src\package_files"
+        !define PROJECTDIR "..\"
+        !define VERSION_STRING "2-8-0"
 
 	;Name and file
 	Name "OpenVR Advanced Settings"
-        OutFile "AdvancedSettings-Installer.exe"
+        OutFile "AdvancedSettings-${VERSION_STRING}-Installer.exe"
 	
 	;Default installation folder
 	InstallDir "$PROGRAMFILES64\OpenVR-AdvancedSettings"
@@ -103,13 +106,15 @@ Section "Install" SecInstall
 	SetOutPath "$INSTDIR"
 
 	;ADD YOUR OWN FILES HERE...
-    File "${SRCDIR}\LICENSE.txt"
+    File "${BASEDIR}\LICENSE-GPL.txt"
+    File "${BASEDIR}\LICENSE-MIT.txt"
+    File "${BASEDIR}\LICENSE-VALVE.txt"
 	File "${BASEDIR}\*.exe"
 	File "${THIRDDIR}\openvr\bin\win64\*.dll"
 	File "${BASEDIR}\*.dll"
-	File "${SRCDIR}\*.bat"
-	File "${SRCDIR}\*.vrmanifest"
-	File "${SRCDIR}\*.conf"
+	File "${PACKAGEDIR}\*.bat"
+	File "${PACKAGEDIR}\*.vrmanifest"
+	File "${PACKAGEDIR}\*.conf"
 	File /r "${SRCDIR}\res"
 	File /r "${BASEDIR}\qtdata"
 
