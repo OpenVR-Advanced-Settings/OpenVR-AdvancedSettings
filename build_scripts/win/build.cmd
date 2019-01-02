@@ -113,3 +113,9 @@ IF EXIST %JOM_LOC% (
 CD %original_dir%
 
 ECHO %current_activity%: %current_activity% DONE.
+=======
+@ECHO OFF
+python build.py
+call test.bat
+rm test.bat
+PAUSE
