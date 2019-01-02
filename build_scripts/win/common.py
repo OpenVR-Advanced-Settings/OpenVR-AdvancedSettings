@@ -85,24 +85,23 @@ def get_required_env_var_path(env_var_name: str, default_env_var_value: str):
     return path
     
 def create_batch_file():
-    file = open("test.bat", "w+")
+    file = open(get_project_dir() + "\\build_scripts\\win\\test.bat", "w+")
     file.write(bat_file_contents)
     file.close()    
 
 def exit_on_error(error_number):
     sys.exit(error_number)
     
-def set_original_folder(path):
+def set_dirs():
     global ORIGINAL_DIR
-    ORIGINAL_DIR = path
-        
-def set_project_folder(path):
     global PROJECT_DIR
     global DEPLOY_DIR
-    PROJECT_DIR = path   
-    DEPLOY_DIR = PROJECT_DIR + OUTPUT_DIR
-         
-        
+    ORIGINAL_DIR = os.path.dirname(__file__)
+    PROJECT_DIR = os.path.abspath(os.path.join(ORIGINAL_DIR, r"..\.."))
+    DEPLOY_DIR = DEPLOY_DIR = PROJECT_DIR + OUTPUT_DIR
+    
+    print(ORIGINAL_DIR)
+    
 def get_project_dir():
     return PROJECT_DIR
         

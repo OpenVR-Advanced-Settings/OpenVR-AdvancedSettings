@@ -1,11 +1,11 @@
 import os
 from sys import argv
+import inspect
 from common import *
 
 def package():
     set_current_activity("PACKAGE")
-    set_original_folder(os.getcwd())
-    set_project_folder(os.path.abspath(os.path.join(ORIGINAL_DIR , "..\..")))
+    set_dirs()
 
     say("Testing if all required build environment variables are set:")
     ZIP_LOC = get_required_env_var_path(ZIP_LOC_VAR_NAME, ZIP_LOC_DEFAULT)
@@ -34,8 +34,7 @@ def package():
 
 def deploy():
     set_current_activity("DEPLOY")
-    set_original_folder(os.getcwd())
-    set_project_folder(os.path.abspath(os.path.join(ORIGINAL_DIR , "..\..")))
+    set_dirs()
 
     say("Testing if all required build environment variables are set:")
     QT_LOC = get_required_env_var_path(QT_LOC_VAR_NAME, QT_LOC_DEFAULT)
@@ -91,8 +90,7 @@ def deploy():
 
 def build():
     set_current_activity("BUILD")
-    set_original_folder(os.getcwd())
-    set_project_folder(os.path.abspath(os.path.join(ORIGINAL_DIR , "..\..")))
+    set_dirs()
 
     COMPILE_MODE = ""
     COMPILER = ""
