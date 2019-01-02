@@ -5,6 +5,7 @@ import os
 import sys
 import argparse
 import subprocess
+import shutil
 
 #Const globals
 EXIT_CODE_SUCCESS = 0
@@ -34,6 +35,8 @@ PLATFORM_TARGET = "AMD64"
 #Mutable globals
 ORIGINAL_DIR = ""
 PROJECT_DIR = ""
+OUTPUT_DIR = r"\\bin\\win64\\"
+DEPLOY_DIR = ""
 
 current_activity = ""
 
@@ -92,7 +95,10 @@ def set_original_folder(path):
         
 def set_project_folder(path):
     global PROJECT_DIR
-    PROJECT_DIR = path        
+    global DEPLOY_DIR
+    PROJECT_DIR = path   
+    DEPLOY_DIR = PROJECT_DIR + OUTPUT_DIR
+         
         
 def get_project_dir():
     return PROJECT_DIR
@@ -100,13 +106,18 @@ def get_project_dir():
 def get_original_dir():
     return ORIGINAL_DIR        
         
+def get_deploy_dir():
+    return DEPLOY_DIR
         
+def copy_file(src, dest):
+    say(f"Copying {src} to {dest}")
+    shutil.copy(src, dest)
+    say(f"{src} to {dest} copied.")    
         
-        
-        
-        
-        
-        
+def copy_folder(src, dest):
+    say(f"Copying {src} to {dest}")
+    shutil.copy(src, dest)        
+    say(f"{src} to {dest} copied.") 
         
         
         
