@@ -23,7 +23,9 @@ For pushing changes to the repo:
 2. Clang format. Part of the [LLVM collection](https://releases.llvm.org/download.html).
 
 Additionally, for fully building portable and installer release versions:
+
 3. [7zip](https://www.7-zip.org/download.html)
+
 4. [Nullsoft Scriptable Install System (NSIS)](https://sourceforge.net/projects/nsis/)
 
 <a name="locs_and_envs"></a>
@@ -39,6 +41,7 @@ The following environmental variables are relevant for building the project.
 | `ZIP_LOC`             | Path to your 7zip `.exe`. Both portable and installer will work.  |
 | `NSIS_LOC`            | Path to your installation of NSIS containing the `makensis` file. Both portable and installer will work. |
 | `LLVM_LOC`            | Path to your LLVM bin directory containing  `clang-format.exe`. Not necessary for building with the MSVC compiler, but necessary for pushing changes to the repo. Leave as empty string if your `clang-format`.exe` and `clang-cl.exe` are in the path. |
+| `PYTHON_LOC`          | A non-error-checked way of referring to a specific python installation. Must end on a backslash or be undefined. If undefined `python` must be in the path. |
 
 If an environment variable isn't set a default value will be provided. The default values are shown in the table below.
 
@@ -50,6 +53,7 @@ If an environment variable isn't set a default value will be provided. The defau
 | `ZIP_LOC`             | `"C:\Program Files\7-Zip\7z.exe"`    |
 | `NSIS_LOC`            | `"C:\Program Files (x86)\NSIS\"`     |
 | `LLVM_LOC`            | `"C:\Program Files\LLVM\bin\"`       |
+| `PYTHON_LOC`            | NONE SUPPLIED. It is expected that `python` is in the path if `PYTHON_LOC` is defined.|
 
 Additionally, these optional environment variables are supported.
 
