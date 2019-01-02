@@ -36,10 +36,6 @@ TEMPLATE = app
     QMAKE_CXXFLAGS += -Werror
     #All includes from the third-party directory will not warn.
     QMAKE_CXXFLAGS += --system-header-prefix=third-party
-    #need to call pthreads not mthreads mthreads must be removed in makespec
-    #todo check?
-    #QMAKE_CXXFLAGS += -pthread
-    #LIBS += -pthread
 }
 SOURCES += src/main.cpp\
     src/overlaycontroller.cpp \
