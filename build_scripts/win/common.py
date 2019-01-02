@@ -6,8 +6,11 @@ import sys
 import argparse
 import subprocess
 import shutil
+import distutils.dir_util
 
 #Const globals
+VERSION_STRING = "2-8-0"
+
 EXIT_CODE_SUCCESS = 0
 EXIT_CODE_FAILURE_BUILD_APP = 1
 EXIT_CODE_FAILURE_BUILD_LOCATION = 2
@@ -35,7 +38,7 @@ PLATFORM_TARGET = "AMD64"
 #Mutable globals
 ORIGINAL_DIR = ""
 PROJECT_DIR = ""
-OUTPUT_DIR = r"\\bin\\win64\\"
+OUTPUT_DIR = r"\\bin\\win64\\AdvancedSettings"
 DEPLOY_DIR = ""
 
 current_activity = ""
@@ -116,7 +119,7 @@ def copy_file(src, dest):
         
 def copy_folder(src, dest):
     say(f"Copying {src} to {dest}")
-    shutil.copy(src, dest)        
+    distutils.dir_util.copy_tree(src, dest)        
     say(f"{src} to {dest} copied.") 
         
         

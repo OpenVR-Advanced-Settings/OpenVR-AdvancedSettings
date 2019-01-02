@@ -1,5 +1,36 @@
 import os
+from sys import argv
 from common import *
+
+def package():
+    set_current_activity("PACKAGE")
+    set_original_folder(os.getcwd())
+    set_project_folder(os.path.abspath(os.path.join(ORIGINAL_DIR , "..\..")))
+
+    say("Testing if all required build environment variables are set:")
+    ZIP_LOC = get_required_env_var_path(ZIP_LOC_VAR_NAME, ZIP_LOC_DEFAULT)
+    NSIS_LOC = get_required_env_var_path(NSIS_LOC_VAR_NAME, NSIS_LOC_DEFAULT)
+    say("All required build environment values are set.")
+
+    say("Adding 7zip to file:")
+    ZIP_NAME = "AdvancedSettings-" + VERSION_STRING + ".7z"
+
+    add_line_to_run_bat_file("@ECHO Starting 7zip:")
+    add_line_to_run_bat_file('"' + ZIP_LOC + '"' + " a -t7z " + get_project_dir() + "\\" + OUTPUT_DIR + "\\" + ZIP_NAME + " " + get_deploy_dir() + "\\*")
+    add_error_handling_line_to_bat_file()
+    add_line_to_run_bat_file("@ECHO 7zip done.")
+    say("7zip added to file.")
+
+    say("Adding NSIS to file.")
+    add_line_to_run_bat_file("@ECHO Starting NSIS:")
+    add_line_to_run_bat_file("cd " + NSIS_LOC)
+    add_line_to_run_bat_file("makensis /V2 /WX " + get_project_dir() + "\\installer\\installer.nsi")
+    add_error_handling_line_to_bat_file()
+    add_line_to_run_bat_file("@ECHO NSIS done.")
+    say("NSIS added to file.")
+
+    create_batch_file()
+
 
 def deploy():
     set_current_activity("DEPLOY")
@@ -19,8 +50,18 @@ def deploy():
 
     say("Adding windeployqt to file.")
 
+    add_line_to_run_bat_file("set PATH=%PATH%;" + QT_LOC + ";")
+
+    add_line_to_run_bat_file("@ECHO Starting windeployqt:")
+
     #Extremely long line
-    add_line_to_run_bat_file('"' + "windeployqt" + '"' + "--dir $DEPLOY_DIRECTORY\qtdata --libdir $DEPLOY_DIRECTORY --plugindir $DEPLOY_DIRECTORY\qtdata\plugins --no-system-d3d-compiler --no-opengl-sw "+ COMPILE_MODE + " --qmldir $PROJECT_DIRECTORY\src\res\qml\ $DEPLOY_DIRECTORY\AdvancedSettings.exe")
+    add_line_to_run_bat_file('"' + "windeployqt" + '"'
+                             + " --dir " + get_deploy_dir()
+                             + "\\qtdata --libdir " + get_deploy_dir()
+                             + " --plugindir " + get_deploy_dir() + "\\qtdata\\plugins --no-system-d3d-compiler --no-opengl-sw --"
+                             + COMPILE_MODE + " --qmldir " + get_project_dir() + "\\src\\res\\qml\\ " + get_deploy_dir() + "\\AdvancedSettings.exe")
+
+    add_line_to_run_bat_file("@ECHO windeployqt finished.")
 
     say("windeployqt added to file.")        
 
@@ -41,7 +82,12 @@ def deploy():
     copy_folder(get_project_dir() + "\\src\\package_files", get_deploy_dir())
     
     #openvr dll
-    copy_file(get_project_dir() + "\\third-party\\openvr\\bin\\win64\\openvr_api.dll", get_deploy_dir() + "openvr_api.dll") 
+    copy_file(get_project_dir() + "\\third-party\\openvr\\bin\\win64\\openvr_api.dll", get_deploy_dir() + "openvr_api.dll")
+
+    say("Creating batch file:")
+    create_batch_file()
+    say("Batch file created.")
+    
 
 def build():
     set_current_activity("BUILD")
@@ -126,7 +172,12 @@ def build():
     create_batch_file()
     
 if __name__ == "__main__":
-    deploy()
+    if argv[1] == "build":
+        build()
+    elif argv[1] == "deploy":
+        deploy()
+    elif argv[1] == "package":
+        package()
 
 
 
