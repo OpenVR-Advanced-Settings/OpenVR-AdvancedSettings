@@ -16,7 +16,7 @@ def package():
     ZIP_NAME = "AdvancedSettings-" + VERSION_STRING + ".7z"
 
     add_line_to_run_bat_file("@ECHO Starting 7zip:")
-    add_line_to_run_bat_file('"' + ZIP_LOC + '"' + " a -t7z " + get_project_dir() + "\\" + OUTPUT_DIR + "\\" + ZIP_NAME + " " + get_deploy_dir() + "\\*")
+    add_line_to_run_bat_file('"' + ZIP_LOC + '"' + " a -t7z " + get_project_dir() + "\\bin\\win64\\" + ZIP_NAME + " " + get_deploy_dir() + "\\*")
     add_error_handling_line_to_bat_file()
     add_line_to_run_bat_file("@ECHO 7zip done.")
     say("7zip added to file.")
@@ -59,7 +59,7 @@ def deploy():
                              + "\\qtdata --libdir " + get_deploy_dir()
                              + " --plugindir " + get_deploy_dir() + "\\qtdata\\plugins --no-system-d3d-compiler --no-opengl-sw --"
                              + COMPILE_MODE + " --qmldir " + get_project_dir() + "\\src\\res\\qml\\ " + get_deploy_dir() + "\\AdvancedSettings.exe")
-
+    add_error_handling_line_to_bat_file()
     add_line_to_run_bat_file("@ECHO windeployqt finished.")
 
     say("windeployqt added to file.")        
@@ -81,7 +81,7 @@ def deploy():
     copy_folder(get_project_dir() + "\\src\\package_files", get_deploy_dir())
     
     #openvr dll
-    copy_file(get_project_dir() + "\\third-party\\openvr\\bin\\win64\\openvr_api.dll", get_deploy_dir() + "openvr_api.dll")
+    copy_file(get_project_dir() + "\\third-party\\openvr\\bin\\win64\\openvr_api.dll", get_deploy_dir() + "\\openvr_api.dll")
 
     say("Creating batch file:")
     create_batch_file()

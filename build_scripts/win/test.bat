@@ -1,4 +1,9 @@
-set PATH=%PATH%;C:\Qt\5.11.1\msvc2017_64\bin\;
-@ECHO Starting windeployqt:
-"windeployqt" --dir Z:\Programming\Cpp\2018-09-12_OpenVR_AdvancedSettings\OpenVR-AdvancedSettings\\bin\\win64\\AdvancedSettings\qtdata --libdir Z:\Programming\Cpp\2018-09-12_OpenVR_AdvancedSettings\OpenVR-AdvancedSettings\\bin\\win64\\AdvancedSettings --plugindir Z:\Programming\Cpp\2018-09-12_OpenVR_AdvancedSettings\OpenVR-AdvancedSettings\\bin\\win64\\AdvancedSettings\qtdata\plugins --no-system-d3d-compiler --no-opengl-sw --release --qmldir Z:\Programming\Cpp\2018-09-12_OpenVR_AdvancedSettings\OpenVR-AdvancedSettings\src\res\qml\ Z:\Programming\Cpp\2018-09-12_OpenVR_AdvancedSettings\OpenVR-AdvancedSettings\\bin\\win64\\AdvancedSettings\AdvancedSettings.exe
-@ECHO windeployqt finished.
+@ECHO Starting 7zip:
+"C:\Program Files\7-Zip\7z.exe" a -t7z Z:\Programming\Cpp\2018-09-12_OpenVR_AdvancedSettings\OpenVR-AdvancedSettings\\\bin\\win64\\AdvancedSettings\AdvancedSettings-2-8-0.7z Z:\Programming\Cpp\2018-09-12_OpenVR_AdvancedSettings\OpenVR-AdvancedSettings\\bin\\win64\\AdvancedSettings\*
+IF ERRORLEVEL 1 EXIT /B 1
+@ECHO 7zip done.
+@ECHO Starting NSIS:
+cd Z:\Programming\Cpp\2018-09-12_OpenVR_AdvancedSettings\NSISPortable\App\NSIS
+makensis /V2 /WX Z:\Programming\Cpp\2018-09-12_OpenVR_AdvancedSettings\OpenVR-AdvancedSettings\installer\installer.nsi
+IF ERRORLEVEL 1 EXIT /B 1
+@ECHO NSIS done.
