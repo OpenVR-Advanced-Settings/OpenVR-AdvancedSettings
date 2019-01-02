@@ -80,8 +80,9 @@ void AudioTabController::initStage2( OverlayController* parent1,
             vr::VROverlay()->SetOverlayWidthInMeters(
                 m_ulNotificationOverlayHandle, 0.02f );
             vr::HmdMatrix34_t notificationTransform
-                = { 1.0f, 0.0f,  0.0f, 0.12f, 0.0f, 1.0f,
-                    0.0f, 0.08f, 0.0f, 0.0f,  1.0f, -0.3f };
+                = { { { 1.0f, 0.0f, 0.0f, 0.12f },
+                      { 0.0f, 1.0f, 0.0f, 0.08f },
+                      { 0.0f, 0.0f, 1.0f, -0.3f } } };
             vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
                 m_ulNotificationOverlayHandle,
                 vr::k_unTrackedDeviceIndex_Hmd,
@@ -401,8 +402,6 @@ void AudioTabController::setAudioProfileDefault( bool value, bool notify )
     if ( value != m_isDefaultAudioProfile )
     {
         m_isDefaultAudioProfile = value;
-        // TODO ????
-        // ?? saveAudioSettings();
         if ( notify )
         {
             emit audioProfileDefaultChanged( value );
@@ -454,7 +453,7 @@ int AudioTabController::getPlaybackDeviceCount()
 
 QString AudioTabController::getPlaybackDeviceName( int index )
 {
-    if ( index < m_playbackDevices.size() )
+    if ( ( unsigned ) index < m_playbackDevices.size() )
     {
         return QString::fromStdString( m_playbackDevices[index].second );
     }
@@ -471,7 +470,7 @@ int AudioTabController::getRecordingDeviceCount()
 
 QString AudioTabController::getRecordingDeviceName( int index )
 {
-    if ( index < m_recordingDevices.size() )
+    if ( ( unsigned ) index < m_recordingDevices.size() )
     {
         return QString::fromStdString( m_recordingDevices[index].second );
     }
@@ -500,7 +499,8 @@ void AudioTabController::setPlaybackDeviceIndex( int index, bool notify )
 {
     if ( index != m_playbackDeviceIndex )
     {
-        if ( index < m_playbackDevices.size() && index != m_mirrorDeviceIndex )
+        if ( ( unsigned ) index < m_playbackDevices.size()
+             && index != m_mirrorDeviceIndex )
         {
             vr::EVRSettingsError vrSettingsError;
             // Applys Audio Switch IN VR
@@ -557,7 +557,7 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
                 audioManager->setMirrorDevice( "", notify );
             }
         }
-        else if ( index < m_playbackDevices.size()
+        else if ( ( unsigned ) index < m_playbackDevices.size()
                   && index != m_playbackDeviceIndex
                   && index != m_mirrorDeviceIndex )
         {
@@ -594,7 +594,7 @@ void AudioTabController::setMicDeviceIndex( int index, bool notify )
 {
     if ( index != m_recordingDeviceIndex )
     {
-        if ( index < m_recordingDevices.size() )
+        if ( ( unsigned ) index < m_recordingDevices.size() )
         {
             vr::EVRSettingsError vrSettingsError;
             vr::VRSettings()->SetString(
@@ -925,8 +925,6 @@ void AudioTabController::deleteAudioProfile( unsigned index )
     {
         auto pos = audioProfiles.begin() + index;
         audioProfiles.erase( pos );
-        // OverlayController::appSettings()->remove("audioProfiles\\" + ind);
-        // I  think I don't need?
         saveAudioProfiles();
         OverlayController::appSettings()->sync();
         emit audioProfilesUpdated();
@@ -958,7 +956,7 @@ QString AudioTabController::getAudioProfileName( unsigned index )
 */
 int AudioTabController::getPlaybackIndex( std::string str )
 {
-    for ( int i = 0; i < m_playbackDevices.size(); i++ )
+    for ( int i = 0; ( unsigned ) i < m_playbackDevices.size(); i++ )
     {
         if ( str.compare( m_playbackDevices[i].second ) == 0 )
         {
@@ -971,7 +969,7 @@ int AudioTabController::getPlaybackIndex( std::string str )
 int AudioTabController::getRecordingIndex( std::string str )
 {
     std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
-    for ( int i = 0; i < m_recordingDevices.size(); i++ )
+    for ( int i = 0; ( unsigned ) i < m_recordingDevices.size(); i++ )
     {
         if ( str.compare( m_recordingDevices[i].second ) == 0 )
         {
@@ -983,7 +981,7 @@ int AudioTabController::getRecordingIndex( std::string str )
 
 int AudioTabController::getMirrorIndex( std::string str )
 {
-    for ( int i = 0; i < m_playbackDevices.size(); i++ )
+    for ( int i = 0; ( unsigned ) i < m_playbackDevices.size(); i++ )
     {
         if ( str.compare( m_playbackDevices[i].second ) == 0 )
         {
@@ -1026,7 +1024,7 @@ flag);
 
 void AudioTabController::applyDefaultProfile()
 {
-    for ( int i = 0; i < audioProfiles.size(); i++ )
+    for ( int i = 0; ( unsigned ) i < audioProfiles.size(); i++ )
     {
         auto& profile = audioProfiles[i];
         if ( profile.defaultProfile )
