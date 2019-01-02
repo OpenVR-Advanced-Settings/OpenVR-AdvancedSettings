@@ -23,18 +23,13 @@ SET project_dir=%folder_path%
 
 ECHO %top_level_activity%: Calling build script.
 CALL %project_dir%\build_scripts\win\build.cmd
-IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
-
-ECHO %top_level_activity%: Calling deployment script.
-CALL %project_dir%\build_scripts\win\deploy.cmd
-=======
-python %project_dir%\build_scripts\win\build.py build
+%PYTHON%\python %project_dir%\build_scripts\win\build.py build
 IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
 call %project_dir%\build_scripts\win\test.bat
 IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
 
 ECHO %top_level_activity%: Calling deployment script.
-python %project_dir%\build_scripts\win\build.py deploy
+%PYTHON%\python %project_dir%\build_scripts\win\build.py deploy
 IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
 call %project_dir%\build_scripts\win\test.bat
 IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
@@ -46,9 +41,7 @@ IF NOT DEFINED BUILD_PACKAGE (
     EXIT /B %exit_code_success%
 )
 ECHO %top_level_activity%: Calling packaging script.
-CALL %project_dir%\build_scripts\win\package.cmd
-=======
-python %project_dir%\build_scripts\win\build.py package
+%PYTHON%\python %project_dir%\build_scripts\win\build.py package
 IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
 call %project_dir%\build_scripts\win\test.bat
 IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
