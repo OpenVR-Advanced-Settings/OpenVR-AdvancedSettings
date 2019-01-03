@@ -9,6 +9,8 @@ CONFIG   += c++14
 
 DEFINES += ELPP_THREAD_SAFE ELPP_QT_LOGGING ELPP_NO_DEFAULT_LOG_FILE
 
+DEFINES += ELPP_THREAD_SAFE ELPP_QT_LOGGING ELPP_NO_DEFAULT_LOG_FILE
+
 lessThan(QT_MAJOR_VERSION, 5): error("requires Qt 5.6 or higher")
 lessThan(QT_MINOR_VERSION, 6): error("requires Qt 5.6 or higher")
 
