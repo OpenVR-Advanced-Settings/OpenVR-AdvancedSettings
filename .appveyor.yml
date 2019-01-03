@@ -8,7 +8,7 @@ environment:
     NSIS_LOC: '"C:\Program Files (x86)\NSIS\"'
     ZIP_LOC: '"C:\Program Files\7-zip\7z.exe"'
     LLVM_LOC: '"C:\Program Files\LLVM\bin\"'
-    PYTHON: '"C:\Python37\"'
+    PYTHON_LOC: '"C:\Python37\"'
     BUILD_PACKAGE: "1"
     
   - QT_LOC: '"C:\Qt\5.11.2\msvc2017_64\bin\"'
@@ -17,7 +17,7 @@ environment:
     NSIS_LOC: '"C:\Program Files (x86)\NSIS\"'
     ZIP_LOC: '"C:\Program Files\7-zip\7z.exe"'
     LLVM_LOC: '"C:\Program Files\LLVM\bin\"'
-    PYTHON: '"C:\Python37\"'
+    PYTHON_LOC: '"C:\Python37\"'
     BUILD_PACKAGE: "1"
     BUILD_CLANG: '"1"'
     

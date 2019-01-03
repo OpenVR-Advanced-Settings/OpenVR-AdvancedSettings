@@ -11,4 +11,4 @@ Makefile*
 *.user
 installer/*.exe
 *.user*
-
+build_scripts\win\__pycache__
