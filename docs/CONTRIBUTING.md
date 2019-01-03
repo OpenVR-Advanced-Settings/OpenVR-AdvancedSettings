@@ -10,7 +10,9 @@
 <a name="bug_improvement"></a>
 ## You found a bug or have a suggestion for improvement
 
-First, look through the [issues page](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/issues) and see if there are any open issues relevant to yours. If there are, describe your issue in detail and why you think it's relevant to the already open issue. 
+First, update to the newest release.
+
+If the issue persists, look through the [issues page](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/issues) and see if there are any open issues relevant to yours. If there are, describe your issue in detail and why you think it's relevant to the already open issue. 
 
 If there aren't any open issues relevant to yours, create a new issue and give as much detail as possible.
 
@@ -26,7 +28,7 @@ Include logs if possible. Logs can be found in `%APPDATA%\matzman666\OpenVRAdvan
 <a name="building"></a>
 ### Building
 
-If you haven't already, read the instructions for how to build on [Windows](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/tree/master#building_on_windows) or [Linux](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/tree/master#building_on_linux). Your patch must build on all platforms without errors (warnings are treated as errors). Notice that different compilers have different warning messages, being able to successfully compile on one does not mean that all of them will pass. The pull request will be built on both Windows (msvc) and Linux (gcc and clang) CI servers.
+If you haven't already, read the instructions for how to build on [Windows](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/tree/master#building_on_windows) or [Linux](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/tree/master#building_on_linux). Your patch must build on all platforms without errors (warnings are treated as errors). Notice that different compilers have different warning messages, being able to successfully compile on one does not mean that all of them will pass. The pull request will be built on both Windows (msvc and clang-msvc) and Linux (gcc and clang) CI servers.
 
 <a name="formatting"></a>
 ### Formatting
@@ -35,13 +37,13 @@ This project uses `clang-format` (part of the [LLVM collection](https://releases
 
 The `.\build_scripts\win\format.cmd` (for Windows) and `./build_scripts/linux/format` (for Linux) scripts will automatically run `clang-format` on all required files.
 
-The Windows script requires that either your `clang-format.exe` is in `C:\Program Files\LLVM\bin\clang-format.exe` or the `CLANG_FORMAT_LOC` environment variable is set to the location of the `.exe`.
+The Windows script requires that either your `clang-format.exe` is in `C:\Program Files\LLVM\bin\clang-format.exe` or the `LLVM_LOC` environment variable is set to the LLVM bin directory.
 
 The Linux script requires that `clang-format` is in your `path`.
 
 There are `clang-format` plugins for many IDEs, including  [Qt Creator](https://doc.qt.io/qtcreator/creator-beautifier.html) and [Visual Studio](https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.ClangFormat).
 
-To verify that your patch has been formatted correctly, run `.\build_scripts\win\verify_formatting.cmd` on Windows or `./build_scripts/linux/verify_formatting` on Linux. If there are formatting changes needed the script will output a diff showing which changes are needed, otherwise it will output `FORMATTED CORRECTLY.`. The verification script requires `python` in the `path` for Linux and Windows. On Windows the verification script will either use the `CLANG_FORMAT_LOC` environment variable or the default location.
+To verify that your patch has been formatted correctly, run `.\build_scripts\win\verify_formatting.cmd` on Windows or `./build_scripts/linux/verify_formatting` on Linux. If there are formatting changes needed the script will output a diff showing which changes are needed, otherwise it will output `FORMATTED CORRECTLY.`. The verification script requires `python` in the `path` for Linux and Windows. On Windows the verification script will either use the `LLVM_LOC` environment variable or the default location.
 
 <a name="style"></a>
 ### Style guide

@@ -15,17 +15,16 @@ For compiling:
 
 1. [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/) (tested on 2017 Community)
 2. [Qt Framework](https://www.qt.io/download) version later than 5.6 (tested on 5.10 and 5.11)
+3. [Python 3](https://www.python.org/downloads/) (must be in `PATH` environment variable)
 
 For pushing changes to the repo:
 
-1. [Python 3](https://www.python.org/downloads/) (must be in `PATH` environment variable)
 
 2. Clang format. Part of the [LLVM collection](https://releases.llvm.org/download.html).
 
 Additionally, for fully building portable and installer release versions:
 
 3. [7zip](https://www.7-zip.org/download.html)
-
 4. [Nullsoft Scriptable Install System (NSIS)](https://sourceforge.net/projects/nsis/)
 
 <a name="locs_and_envs"></a>
@@ -40,7 +39,7 @@ The following environmental variables are relevant for building the project.
 | `JOM_LOC`             | Path to an `.exe` of `jom.exe`. Usually installed with Qt. `jom` is a wrapper around `nmake` allowing more threads to be used. It is not required, but using `nmake`is slower. If `JOM_LOC` isn't defined, or the `.exe` can't be found `nmake` will be used by default. To force using `nmake`, set `JOM_LOC` to a non-valid path like `1`.  |
 | `ZIP_LOC`             | Path to your 7zip `.exe`. Both portable and installer will work.  |
 | `NSIS_LOC`            | Path to your installation of NSIS containing the `makensis` file. Both portable and installer will work. |
-| `LLVM_LOC`            | Path to your LLVM bin directory containing  `clang-format.exe`. Not necessary for building with the MSVC compiler, but necessary for pushing changes to the repo. Leave as empty string if your `clang-format`.exe` and `clang-cl.exe` are in the path. |
+| `LLVM_LOC`            | Path to your LLVM bin directory containing  `clang-format.exe`. Not necessary for building with the MSVC compiler, but necessary for pushing changes to the repo. Leave as empty string if your `clang-format.exe` and `clang-cl.exe` are in the path. |
 | `PYTHON_LOC`          | A non-error-checked way of referring to a specific python installation. Must end on a backslash or be undefined. If undefined `python` must be in the path. |
 
 If an environment variable isn't set a default value will be provided. The default values are shown in the table below.
