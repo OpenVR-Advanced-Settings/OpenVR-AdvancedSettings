@@ -69,7 +69,6 @@ private:
     bool m_micProximitySensorCanMute = false;
     bool m_micReversePtt = false;
     bool m_isDefaultAudioProfile = false;
-    // int m_defaultAudioProfileIndex = 2;
     std::string m_defaultProfileName;
 
     unsigned settingsUpdateCounter = 0;
@@ -107,7 +106,7 @@ private:
 
 public:
     void initStage1();
-    void initStage2( OverlayController* parent1, QQuickWindow* widget1 );
+    void initStage2( OverlayController* var_parent, QQuickWindow* var_widget );
 
     void reloadAudioSettings();
     void saveAudioSettings();
@@ -126,7 +125,6 @@ public:
     bool micProximitySensorCanMute() const;
     bool micReversePtt() const;
     bool audioProfileDefault() const;
-    // int audioProfileDefaultIndex() const;
 
     void reloadAudioProfiles();
     void saveAudioProfiles();

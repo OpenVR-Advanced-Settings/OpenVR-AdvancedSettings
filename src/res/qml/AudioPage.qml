@@ -430,8 +430,6 @@ MyStackViewPage {
                     onClicked: {
                         if (audioProfileComboBox.currentIndex > 0) {
                             AudioTabController.applyAudioProfile(audioProfileComboBox.currentIndex - 1)
-                            //TODO ?
-                            //audioProfileComboBox.currentIndex = 0
                         }
                     }
                 }
@@ -464,7 +462,6 @@ MyStackViewPage {
                     onClicked: {
                         if (pttProfileComboBox.currentIndex > 0) {
                             AudioTabController.applyPttProfile(pttProfileComboBox.currentIndex - 1)
-                            //pttProfileComboBox.currentIndex = 0
                         }
                     }
                 }
@@ -576,8 +573,6 @@ MyStackViewPage {
             audioPttShowNotificationToggle.checked = AudioTabController.pttShowNotification
             audioPttReverseToggle.checked = AudioTabController.micReversePtt
             audioDefaultProfileToggle.checked = AudioTabController.audioProfileDefault
-            //audioProfileComboBox.currentIndex = AudioTabController.audioProfileDefaultIndex + 1
-            //AudioTabController.applyDefaultProfile()
             componentCompleted = true
         }
 
@@ -660,16 +655,11 @@ MyStackViewPage {
             }
             onAudioProfileAdded:{
                 audioProfileComboBox.currentIndex = AudioTabController.getAudioProfileCount()
-                //audioProfileComboBox.currentIndex = AudioTabController.audioProfileDefaultIndex+1
             }
             onPttProfileAdded:{
                 pttProfileComboBox.currentIndex = AudioTabController.getPttProfileCount()
             }
 
-            //onAudioProfileDefaultIndexChanged: {
-            //         audioProfileComboBox.currentIndex = AudioTabController.audioProfileDefaultIndex()
-
-            //}
 
             onPlaybackDeviceListChanged: {
                 var devs1 = []

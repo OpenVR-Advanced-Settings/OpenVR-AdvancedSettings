@@ -57,11 +57,11 @@ void AudioTabController::initStage1()
     eventLoopTick();
 }
 
-void AudioTabController::initStage2( OverlayController* parent1,
-                                     QQuickWindow* widget1 )
+void AudioTabController::initStage2( OverlayController* var_parent,
+                                     QQuickWindow* var_widget )
 {
-    this->parent = parent1;
-    this->widget = widget1;
+    this->parent = var_parent;
+    this->widget = var_widget;
 
     std::string notifKey
         = std::string( OverlayController::applicationKey ) + ".pptnotification";
@@ -783,7 +783,7 @@ void AudioTabController::saveAudioProfiles()
     auto settings = OverlayController::appSettings();
     settings->beginGroup( getSettingsName() );
     settings->beginWriteArray( "audioProfiles" );
-    unsigned i = 0;
+    int i = 0;
     for ( auto& p : audioProfiles )
     {
         settings->setArrayIndex( i );
@@ -886,7 +886,7 @@ void AudioTabController::applyAudioProfile( unsigned index )
         int pInd = getPlaybackIndex( profile.playbackName );
 
         // Needed to keep remembering when swtiching from mirror/main etc.
-        // TODO can possibly clean up logic to reduce overhead in future.
+        // TODO OPTI can possibly clean up logic to reduce overhead in future.
         setMicMuted( false, false );
         setMirrorMuted( false, false );
 
@@ -1047,7 +1047,6 @@ void AudioTabController::applyDefaultProfile()
 }
 
 /* ---------------------------*/
-
-/*----------------*/
+/*----------------------------*/
 
 } // namespace advsettings
