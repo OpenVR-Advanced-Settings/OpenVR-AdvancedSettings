@@ -51,7 +51,9 @@ void AudioTabController::initStage1()
     reloadPttProfiles();
     reloadPttConfig();
     reloadAudioProfiles();
+    applyDefaultProfile();
     reloadAudioSettings();
+
     eventLoopTick();
 }
 
@@ -63,6 +65,7 @@ void AudioTabController::initStage2( OverlayController* var_parent,
 
     std::string notifKey
         = std::string( OverlayController::applicationKey ) + ".pptnotification";
+
     vr::VROverlayError overlayError = vr::VROverlay()->CreateOverlay(
         notifKey.c_str(), notifKey.c_str(), &m_ulNotificationOverlayHandle );
     if ( overlayError == vr::VROverlayError_None )
@@ -150,6 +153,11 @@ bool AudioTabController::micProximitySensorCanMute() const
 bool AudioTabController::micReversePtt() const
 {
     return m_micReversePtt;
+}
+
+bool AudioTabController::audioProfileDefault() const
+{
+    return m_isDefaultAudioProfile;
 }
 
 void AudioTabController::eventLoopTick()
@@ -388,6 +396,19 @@ void AudioTabController::setMicReversePtt( bool value, bool notify )
     }
 }
 
+void AudioTabController::setAudioProfileDefault( bool value, bool notify )
+{
+    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    if ( value != m_isDefaultAudioProfile )
+    {
+        m_isDefaultAudioProfile = value;
+        if ( notify )
+        {
+            emit audioProfileDefaultChanged( value );
+        }
+    }
+}
+
 void AudioTabController::onNewRecordingDevice()
 {
     findMicDeviceIndex( audioManager->getMicDevId() );
@@ -432,7 +453,7 @@ int AudioTabController::getPlaybackDeviceCount()
 
 QString AudioTabController::getPlaybackDeviceName( int index )
 {
-    if ( index > 0 && static_cast<size_t>( index ) < m_playbackDevices.size() )
+    if ( index >= 0 && static_cast<size_t>( index ) < m_playbackDevices.size() )
     {
         return QString::fromStdString(
             m_playbackDevices[static_cast<size_t>( index )].second );
@@ -450,7 +471,7 @@ int AudioTabController::getRecordingDeviceCount()
 
 QString AudioTabController::getRecordingDeviceName( int index )
 {
-    if ( index > 0 && static_cast<size_t>( index ) < m_playbackDevices.size() )
+    if ( index >= 0 && static_cast<size_t>( index ) < m_playbackDevices.size() )
     {
         return QString::fromStdString(
             m_recordingDevices[static_cast<size_t>( index )].second );
@@ -460,7 +481,6 @@ QString AudioTabController::getRecordingDeviceName( int index )
         return "<ERROR>";
     }
 }
-
 int AudioTabController::playbackDeviceIndex() const
 {
     return m_playbackDeviceIndex;
@@ -480,7 +500,7 @@ void AudioTabController::setPlaybackDeviceIndex( int index, bool notify )
 {
     if ( index != m_playbackDeviceIndex )
     {
-        if ( index > 0
+        if ( index >= 0
              && static_cast<size_t>( index ) < m_playbackDevices.size()
              && index != m_mirrorDeviceIndex )
         {
@@ -540,7 +560,7 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
                 audioManager->setMirrorDevice( "", notify );
             }
         }
-        else if ( index > 0
+        else if ( index >= 0
                   && static_cast<size_t>( index ) < m_playbackDevices.size()
                   && index != m_playbackDeviceIndex
                   && index != m_mirrorDeviceIndex )
@@ -579,7 +599,7 @@ void AudioTabController::setMicDeviceIndex( int index, bool notify )
 {
     if ( index != m_recordingDeviceIndex )
     {
-        if ( index > 0
+        if ( index >= 0
              && static_cast<size_t>( index ) < m_recordingDevices.size() )
         {
             vr::EVRSettingsError vrSettingsError;
@@ -726,7 +746,7 @@ void AudioTabController::reloadAudioProfiles()
     {
         settings->setArrayIndex( i );
         audioProfiles.emplace_back();
-        auto& entry = audioProfiles[static_cast<size_t>( i )];
+        auto& entry = audioProfiles[i];
         entry.profileName
             = settings->value( "profileName" ).toString().toStdString();
         entry.playbackName
@@ -738,6 +758,8 @@ void AudioTabController::reloadAudioProfiles()
         entry.mirrorMute = settings->value( "mirrorMute", false ).toBool();
         entry.mirrorVol = settings->value( "mirrorVol", 0.0 ).toFloat();
         entry.micVol = settings->value( "micVol", 1.0 ).toFloat();
+        entry.defaultProfile
+            = settings->value( "defaultProfile", false ).toBool();
     }
     settings->endArray();
     settings->endGroup();
@@ -776,6 +798,7 @@ void AudioTabController::saveAudioProfiles()
         settings->setValue( "mirrorMute", p.mirrorMute );
         settings->setValue( "micVol", p.micVol );
         settings->setValue( "mirrorVol", p.mirrorVol );
+        settings->setValue( "defaultProfile", p.defaultProfile );
         i++;
     }
     settings->endArray();
@@ -825,10 +848,18 @@ void AudioTabController::addAudioProfile( QString name )
     profile->mirrorMute = m_mirrorMuted;
     profile->mirrorVol = m_mirrorVolume;
     profile->micVol = m_micVolume;
+    profile->defaultProfile = m_isDefaultAudioProfile;
+    if ( m_isDefaultAudioProfile )
+    {
+        removeDefaultProfile( name );
 
+        // to prevent confusion, resets checkbox
+        setAudioProfileDefault( false );
+    }
     saveAudioProfiles();
     OverlayController::appSettings()->sync();
     emit audioProfilesUpdated();
+    emit audioProfileAdded();
 }
 
 /*
@@ -847,6 +878,7 @@ Description: Applies the required logic to activate the audio profile.
 // TODO Remembers Mirror Volume when switching to main volume.
 void AudioTabController::applyAudioProfile( unsigned index )
 {
+    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
     if ( index < audioProfiles.size() )
     {
         auto& profile = audioProfiles[index];
@@ -854,6 +886,7 @@ void AudioTabController::applyAudioProfile( unsigned index )
         int pInd = getPlaybackIndex( profile.playbackName );
 
         // Needed to keep remembering when swtiching from mirror/main etc.
+        // TODO OPTI can possibly clean up logic to reduce overhead in future.
         setMicMuted( false, false );
         setMirrorMuted( false, false );
 
@@ -872,6 +905,7 @@ void AudioTabController::applyAudioProfile( unsigned index )
             setMirrorDeviceIndex( mInd, true );
             setPlaybackDeviceIndex( pInd, true );
         }
+
         setMicDeviceIndex( getRecordingIndex( profile.micName ), true );
         setMicMuted( profile.micMute, true );
         setMirrorMuted( profile.mirrorMute, true );
@@ -920,17 +954,15 @@ QString AudioTabController::getAudioProfileName( unsigned index )
 }
 
 /*
-    Name: getPlaybackIndex,  getRecordingIndex, and getMirrorIndex
-
-    input: string, of microphone/playback device name
-    output: integer for use In: setMicDeviceIndex(int,bool),
-   setMirrorDeviceIndex(int,bool) setPlayBackDeviceIndex(int,bool)
-
-    description: Gets proper index value for selecting specific devices.
+Name: getPlaybackIndex,  getRecordingIndex, and getMirrorIndex
+input: string, of microphone/playback device name
+output: integer for use In: setMicDeviceIndex(int,bool),
+setMirrorDeviceIndex(int,bool) setPlayBackDeviceIndex(int,bool)
+description: Gets proper index value for selecting specific devices.
 */
 int AudioTabController::getPlaybackIndex( std::string str )
 {
-    // Unsigned to avoid two casts. i won't be negative because we only
+    // Unsigned to avoid two casts. it won't be negative because we only
     // increment it.
     for ( unsigned int i = 0; i < m_playbackDevices.size(); i++ )
     {
@@ -944,7 +976,7 @@ int AudioTabController::getPlaybackIndex( std::string str )
 
 int AudioTabController::getRecordingIndex( std::string str )
 {
-    // Unsigned to avoid two casts. i won't be negative because we only
+    // Unsigned to avoid two casts. it won't be negative because we only
     // increment it.
     for ( unsigned int i = 0; i < m_recordingDevices.size(); i++ )
     {
@@ -958,7 +990,7 @@ int AudioTabController::getRecordingIndex( std::string str )
 
 int AudioTabController::getMirrorIndex( std::string str )
 {
-    // Unsigned to avoid two casts. i won't be negative because we only
+    // Unsigned to avoid two casts. it won't be negative because we only
     // increment it.
     for ( unsigned int i = 0; i < m_playbackDevices.size(); i++ )
     {
@@ -970,8 +1002,51 @@ int AudioTabController::getMirrorIndex( std::string str )
     return -1;
 }
 
-/* ---------------------------*/
+/*
+Name: removeDefaultProfile
 
-/*----------------*/
+input: QString name - name of new default profile
+output: none
+
+description: checks all profiles and removes any OTHERS that are set as default.
+*/
+void AudioTabController::removeDefaultProfile( QString name )
+{
+    AudioProfile* profile = nullptr;
+    for ( auto& p : audioProfiles )
+    {
+        if ( p.profileName.compare( name.toStdString() ) != 0 )
+        {
+            profile = &p;
+            profile->defaultProfile = false;
+        }
+    }
+}
+
+/*
+Name: applyDefaultProfile
+
+input: none
+output: none
+
+description: checks all profiles and applies the one (if any) with the default
+flag);
+*/
+
+void AudioTabController::applyDefaultProfile()
+{
+    for ( unsigned i = 0; i < audioProfiles.size(); i++ )
+    {
+        auto& profile = audioProfiles[i];
+        if ( profile.defaultProfile )
+        {
+            applyAudioProfile( i );
+            break;
+        }
+    }
+}
+
+/* ---------------------------*/
+/*----------------------------*/
 
 } // namespace advsettings
