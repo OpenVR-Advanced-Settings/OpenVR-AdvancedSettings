@@ -11,4 +11,5 @@ Makefile*
 *.user
 installer/*.exe
 *.user*
-build_scripts\win\__pycache__
+build_scripts/win/__pycache__
+build_scripts/win/test.bat
