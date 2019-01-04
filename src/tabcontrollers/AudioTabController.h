@@ -3,7 +3,6 @@
 
 #include "AudioManager.h"
 #include "PttController.h"
-//#include "AudioProfileController.h"
 #include <memory>
 
 class QQuickWindow;
@@ -23,6 +22,7 @@ struct AudioProfile
     float micVol = 0.0;
     bool micMute = false;
     bool mirrorMute = false;
+    bool defaultProfile = false;
 };
 
 class AudioTabController : public PttController
@@ -32,17 +32,12 @@ class AudioTabController : public PttController
                     setPlaybackDeviceIndex NOTIFY playbackDeviceIndexChanged )
     Q_PROPERTY( int mirrorDeviceIndex READ mirrorDeviceIndex WRITE
                     setMirrorDeviceIndex NOTIFY mirrorDeviceIndexChanged )
-    // Q_PROPERTY(bool mirrorPresent READ mirrorPresent NOTIFY
-    // mirrorPresentChanged) Q_PROPERTY(QString mirrorDevName READ mirrorDevName
-    // NOTIFY mirrorDevNameChanged)
     Q_PROPERTY( float mirrorVolume READ mirrorVolume WRITE setMirrorVolume
                     NOTIFY mirrorVolumeChanged )
     Q_PROPERTY( bool mirrorMuted READ mirrorMuted WRITE setMirrorMuted NOTIFY
                     mirrorMutedChanged )
     Q_PROPERTY( int micDeviceIndex READ micDeviceIndex WRITE setMicDeviceIndex
                     NOTIFY micDeviceIndexChanged )
-    // Q_PROPERTY(bool micPresent READ micPresent NOTIFY micPresentChanged)
-    // Q_PROPERTY(QString micDevName READ micDevName NOTIFY micDevNameChanged)
     Q_PROPERTY( float micVolume READ micVolume WRITE setMicVolume NOTIFY
                     micVolumeChanged )
     Q_PROPERTY(
@@ -52,6 +47,8 @@ class AudioTabController : public PttController
                         micProximitySensorCanMuteChanged )
     Q_PROPERTY( bool micReversePtt READ micReversePtt WRITE setMicReversePtt
                     NOTIFY micReversePttChanged )
+    Q_PROPERTY( bool audioProfileDefault READ audioProfileDefault WRITE
+                    setAudioProfileDefault NOTIFY audioProfileDefaultChanged )
 
 private:
     OverlayController* parent;
@@ -71,6 +68,8 @@ private:
     bool m_micMuted = false;
     bool m_micProximitySensorCanMute = false;
     bool m_micReversePtt = false;
+    bool m_isDefaultAudioProfile = false;
+    std::string m_defaultProfileName;
 
     unsigned settingsUpdateCounter = 0;
 
@@ -83,7 +82,6 @@ private:
     {
         return "audioSettings";
     }
-    // QString getSettingsNameAudio() override { return "audioSettingsTest"; }
     void onPttStart() override;
     void onPttStop() override;
     void onPttEnabled() override;
@@ -101,14 +99,14 @@ private:
     int getPlaybackIndex( std::string str );
     int getRecordingIndex( std::string str );
     int getMirrorIndex( std::string str );
-    // void setPlaybackDeviceControl(int index, bool notify = true);
+
+    void removeDefaultProfile( QString name );
 
     std::vector<AudioProfile> audioProfiles;
-    // std::recursive_mutex eventLoopMutexAudio;
 
 public:
     void initStage1();
-    void initStage2( OverlayController* parent, QQuickWindow* widget );
+    void initStage2( OverlayController* var_parent, QQuickWindow* var_widget );
 
     void reloadAudioSettings();
     void saveAudioSettings();
@@ -126,9 +124,11 @@ public:
     bool micMuted() const;
     bool micProximitySensorCanMute() const;
     bool micReversePtt() const;
+    bool audioProfileDefault() const;
 
     void reloadAudioProfiles();
     void saveAudioProfiles();
+    Q_INVOKABLE void applyDefaultProfile();
 
     Q_INVOKABLE int getPlaybackDeviceCount();
     Q_INVOKABLE QString getPlaybackDeviceName( int index );
@@ -136,7 +136,6 @@ public:
     Q_INVOKABLE int getRecordingDeviceCount();
     Q_INVOKABLE QString getRecordingDeviceName( int index );
 
-    // TODO check if needed?
     Q_INVOKABLE unsigned getAudioProfileCount();
     Q_INVOKABLE QString getAudioProfileName( unsigned index );
 
@@ -162,6 +161,8 @@ public slots:
     void applyAudioProfile( unsigned index );
     void deleteAudioProfile( unsigned index );
 
+    void setAudioProfileDefault( bool value, bool notify = true );
+
 signals:
     void playbackDeviceIndexChanged( int index );
 
@@ -179,6 +180,7 @@ signals:
     void recordingDeviceListChanged();
 
     void audioProfilesUpdated();
+    void audioProfileAdded();
+    void audioProfileDefaultChanged( bool value );
 };
-
 } // namespace advsettings
