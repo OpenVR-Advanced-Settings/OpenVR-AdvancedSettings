@@ -25,7 +25,9 @@ For pushing changes to the repo:
 Additionally, for fully building portable and installer release versions:
 
 3. [7zip](https://www.7-zip.org/download.html)
+
 4. [Nullsoft Scriptable Install System (NSIS)](https://sourceforge.net/projects/nsis/)
+
 
 <a name="locs_and_envs"></a>
 ## Locations and Environment Variables

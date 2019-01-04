@@ -407,6 +407,7 @@ void PttController::addPttProfile( QString name )
     savePttProfiles();
     OverlayController::appSettings()->sync();
     emit pttProfilesUpdated();
+    emit pttProfileAdded();
 }
 
 void PttController::applyPttProfile( unsigned index )
