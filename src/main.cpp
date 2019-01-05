@@ -297,10 +297,12 @@ int main( int argc, char* argv[] )
             {
                 if ( install_manifest )
                 {
+                    LOG( INFO ) << "Install manifest enabled.";
                     installManifest( true );
                 }
                 else if ( remove_manifest )
                 {
+                    LOG( INFO ) << "Remove manifest enabled.";
                     removeManifest();
                 }
             }
@@ -325,6 +327,10 @@ int main( int argc, char* argv[] )
         exit( exit_code );
     }
 
+    LOG_IF( desktop_mode, INFO ) << "Desktop mode enabled.";
+    LOG_IF( no_sound, INFO ) << "Sound effects disabled.";
+    LOG_IF( no_manifest, INFO ) << "vrmanifest disabled.";
+
     try
     {
         MyQApplication a( argc, argv );
@@ -336,19 +342,6 @@ int main( int argc, char* argv[] )
             advsettings::OverlayController::applicationVersionString );
 
         qInstallMessageHandler( myQtMessageHandler );
-
-        if ( desktop_mode )
-        {
-            LOG( INFO ) << "Desktop mode enabled.";
-        }
-        if ( no_sound )
-        {
-            LOG( INFO ) << "Sound effects disabled.";
-        }
-        if ( no_manifest )
-        {
-            LOG( INFO ) << "vrmanifest disabled.";
-        }
 
         QSettings appSettings( QSettings::IniFormat,
                                QSettings::UserScope,
