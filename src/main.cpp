@@ -144,11 +144,11 @@ void removeManifest()
     }
 }
 
+// Sets up the logging library and outputs startup logging data.
+// argc and argv are necessary for the START_EASYLOGGINGPP() call.
 void setUpLogging( int argc, char* argv[] )
 {
-    const char* logConfigFileName = "logging.conf";
-
-    const char* logConfigDefault
+    constexpr auto logConfigDefault
         = "* GLOBAL:\n"
           "	FORMAT = \"[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg\"\n"
           "	FILENAME = \"AdvancedSettings.log\"\n"
@@ -161,11 +161,20 @@ void setUpLogging( int argc, char* argv[] )
           "* DEBUG:\n"
           "	ENABLED = false\n";
 
-    // Configure logger
-    QString logFilePath;
+    // This allows easylogging++ to parse command line arguments.
+    // For a full list go here
+    // https://github.com/zuhd-org/easyloggingpp#application-arguments
+    // The parsed args are mostly setting the verbosity level or setting the
+    // conf file.
     START_EASYLOGGINGPP( argc, argv );
+
     el::Loggers::addFlag( el::LoggingFlag::DisableApplicationAbortOnFatalLog );
-    auto logconfigfile = QFileInfo( logConfigFileName ).absoluteFilePath();
+
+    // If there is a default logging config file present, use that. If not, use
+    // the default settings.
+    constexpr auto logConfigFileName = "logging.conf";
+    const auto logconfigfile
+        = QFileInfo( logConfigFileName ).absoluteFilePath();
     el::Configurations conf;
     if ( QFile::exists( logconfigfile ) )
     {
@@ -175,26 +184,33 @@ void setUpLogging( int argc, char* argv[] )
     {
         conf.parseFromText( logConfigDefault );
     }
-    if ( !conf.get( el::Level::Global, el::ConfigurationType::Filename ) )
-    {
-        logFilePath = QDir( QStandardPaths::writableLocation(
-                                QStandardPaths::AppDataLocation ) )
-                          .absoluteFilePath( "AdvancedSettings.log" );
-        conf.set( el::Level::Global,
-                  el::ConfigurationType::Filename,
-                  QDir::toNativeSeparators( logFilePath ).toStdString() );
-    }
+
+    // This places the log file in
+    // Roaming/AppData/matzman666/OpenVRAdvancedSettings/AdvancedSettings.log.
+    // The log file placement has been broken since at least git tag "v2.7".
+    // It was being placed in the working dir of the executable.
+    // The change hasn't been documented anywhere, so it is likely that it was
+    // unintentional. This fixes the probable regression until a new path is
+    // decided on.
+    constexpr auto appDataFolders = "/matzman666/OpenVRAdvancedSettings";
+    const QString logFilePath = QDir( QStandardPaths::writableLocation(
+                                          QStandardPaths::AppDataLocation )
+                                      + appDataFolders )
+                                    .absoluteFilePath( "AdvancedSettings.log" );
+    conf.set( el::Level::Global,
+              el::ConfigurationType::Filename,
+              QDir::toNativeSeparators( logFilePath ).toStdString() );
+
     conf.setRemainingToDefault();
+
     el::Loggers::reconfigureAllLoggers( conf );
+
     LOG( INFO ) << "Application started (Version "
                 << advsettings::OverlayController::applicationVersionString
                 << ")";
     LOG( INFO ) << "Log Config: "
                 << QDir::toNativeSeparators( logconfigfile ).toStdString();
-    if ( !logFilePath.isEmpty() )
-    {
-        LOG( INFO ) << "Log File: " << logFilePath;
-    }
+    LOG( INFO ) << "Log File: " << logFilePath;
 }
 
 class MyQApplication : public QApplication
