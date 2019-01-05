@@ -32,7 +32,7 @@ ECHO %current_activity%: Clang-format located.
 
 %CLANG_FORMAT_LOC% --version
 
-python %project_dir%/build_scripts/run-clang-format.py %project_dir%/src -r --color never --clang-format-executable %CLANG_FORMAT_LOC%
+%PYTHON_LOC%python %project_dir%/build_scripts/run-clang-format.py %project_dir%/src -r --color never --clang-format-executable %CLANG_FORMAT_LOC%
 IF NOT ERRORLEVEL 1 (
     ECHO FORMATTED CORRECTLY.
 ) ELSE (

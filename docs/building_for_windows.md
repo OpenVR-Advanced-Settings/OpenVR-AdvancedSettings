@@ -15,10 +15,10 @@ For compiling:
 
 1. [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/) (tested on 2017 Community)
 2. [Qt Framework](https://www.qt.io/download) version later than 5.6 (tested on 5.10 and 5.11)
+3. [Python 3](https://www.python.org/downloads/) (must be in `PATH` environment variable)
 
 For pushing changes to the repo:
 
-1. [Python 3](https://www.python.org/downloads/) (must be in `PATH` environment variable)
 
 2. Clang format. Part of the [LLVM collection](https://releases.llvm.org/download.html).
 
@@ -41,7 +41,8 @@ The following environmental variables are relevant for building the project.
 | `JOM_LOC`             | Path to an `.exe` of `jom.exe`. Usually installed with Qt. `jom` is a wrapper around `nmake` allowing more threads to be used. It is not required, but using `nmake`is slower. If `JOM_LOC` isn't defined, or the `.exe` can't be found `nmake` will be used by default. To force using `nmake`, set `JOM_LOC` to a non-valid path like `1`.  |
 | `ZIP_LOC`             | Path to your 7zip `.exe`. Both portable and installer will work.  |
 | `NSIS_LOC`            | Path to your installation of NSIS containing the `makensis` file. Both portable and installer will work. |
-| `CLANG_FORMAT_LOC`            | Path to your `clang-format.exe`. Not necessary for building, but necessary for pushing changes to the repo. |
+| `LLVM_LOC`            | Path to your LLVM bin directory containing  `clang-format.exe`. Not necessary for building with the MSVC compiler, but necessary for pushing changes to the repo. Leave as empty string if your `clang-format.exe` and `clang-cl.exe` are in the path. |
+| `PYTHON_LOC`          | A non-error-checked way of referring to a specific python installation. Must end on a backslash or be undefined. If undefined `python` must be in the path. |
 
 If an environment variable isn't set a default value will be provided. The default values are shown in the table below.
 
@@ -52,7 +53,8 @@ If an environment variable isn't set a default value will be provided. The defau
 | `JOM_LOC`             | `"C:\Qt\Tools\QtCreator\bin\jom.exe"`|
 | `ZIP_LOC`             | `"C:\Program Files\7-Zip\7z.exe"`    |
 | `NSIS_LOC`            | `"C:\Program Files (x86)\NSIS\"`     |
-| `CLANG_FORMAT_LOC`            | `"C:\Program Files\LLVM\bin\clang-format.exe"`     |
+| `LLVM_LOC`            | `"C:\Program Files\LLVM\bin\"`       |
+| `PYTHON_LOC`            | NONE SUPPLIED. It is expected that `python` is in the path if `PYTHON_LOC` is defined.|
 
 Additionally, these optional environment variables are supported.
 
@@ -60,6 +62,7 @@ Additionally, these optional environment variables are supported.
 | --------------------  | ------------- |
 | `BUILD_DEBUG`         | If set, a debug version will be built. The packaging script will not run with this var set.   |
 | `BUILD_VSPROJ`        | If set, Visual Studio project files will be built.  |
+| `BUILD_PACKAGE`       | If set, the script will create a zipped portable version and installer `.exe`. Unset by default since only the build server really needs to create zips and installer versions. |
 
 Remember that there's a difference between an unset variable and a variable set to an empty string. `SET BUILD_DEBUG=""` does not unset the variable. You need to write `SET BUILD_DEBUG=`.
 

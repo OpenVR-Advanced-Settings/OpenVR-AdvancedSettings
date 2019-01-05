@@ -22,8 +22,13 @@ TEMPLATE = app
     QMAKE_CXXFLAGS_WARN_ON -= -W3
     #C4127 was in a third party file with no way to turn off.
     QMAKE_CXXFLAGS += /W4 /wd4127
-    QMAKE_CXXFLAGS += /WX
-
+    !*clang-msvc {
+        #win32-clang-msvc is unable to correctly build the first time
+        #with warnings as errors on. There seems to be an issue with the moc_predefs.h
+        #file not being built correctly when /WX is on. Until the issue is fixed, 
+        #win32-clang-msvc is built without /WX.
+        QMAKE_CXXFLAGS += /WX
+    }
 }
 
 *g++* {

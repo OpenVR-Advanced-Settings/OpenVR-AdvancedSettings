@@ -6,10 +6,20 @@ environment:
     VS_LOC: '"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"'
     JOM_LOC: '"C:\Qt\Tools\QtCreator\bin\jom.exe"'
     NSIS_LOC: '"C:\Program Files (x86)\NSIS\"'
-    ZIP_LOC: 7z
-    CLANG_FORMAT_LOC: '"C:\Program Files\LLVM\bin\clang-format.exe"'
-    COMPILER: msvc
-    VSVER: 14
+    ZIP_LOC: '"C:\Program Files\7-zip\7z.exe"'
+    LLVM_LOC: '"C:\Program Files\LLVM\bin\"'
+    PYTHON_LOC: '"C:\Python37\"'
+    BUILD_PACKAGE: "1"
+    
+  - QT_LOC: '"C:\Qt\5.11.2\msvc2017_64\bin\"'
+    VS_LOC: '"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"'
+    JOM_LOC: '"C:\Qt\Tools\QtCreator\bin\jom.exe"'
+    NSIS_LOC: '"C:\Program Files (x86)\NSIS\"'
+    ZIP_LOC: '"C:\Program Files\7-zip\7z.exe"'
+    LLVM_LOC: '"C:\Program Files\LLVM\bin\"'
+    PYTHON_LOC: '"C:\Python37\"'
+    BUILD_PACKAGE: "1"
+    BUILD_CLANG: '"1"'
     
 
 clone_depth: 1
@@ -18,11 +28,11 @@ init:
   - set TAG_NAME=%APPVEYOR_REPO_TAG_NAME%
 
 build_script:
-  - python ./build_scripts/run-clang-format.py ./src -r --clang-format-executable %CLANG_FORMAT_LOC%  --color always
+  - python ./build_scripts/run-clang-format.py ./src -r --clang-format-executable "C:\Program Files\LLVM\bin\clang-format.exe" --color always
   - call "build_windows.cmd"
 
 artifacts:
-  - path: bin\win64\AdvancedSettings.zip
+  - path: bin\win64\AdvancedSettings*.7z
     name: portable
-  - path: installer\AdvancedSettings-Installer.exe
+  - path: installer\AdvancedSettings*.exe
     name: installer

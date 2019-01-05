@@ -9,6 +9,7 @@ Makefile*
 *.stash
 *.appxmanifest
 *.user
-installer/AdvancedSettings-Installer.exe
+installer/*.exe
 *.user*
-
+build_scripts/win/__pycache__
+build_scripts/win/current_build.bat
