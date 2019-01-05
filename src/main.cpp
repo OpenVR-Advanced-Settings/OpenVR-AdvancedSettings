@@ -287,10 +287,8 @@ int main( int argc, char* argv[] )
     if ( install_manifest || remove_manifest )
     {
         int exit_code = ReturnErrorCode::SUCCESS;
-        QCoreApplication coreApp( argc, argv );
         auto openvr_init_status = vr::VRInitError_None;
         vr::VR_Init( &openvr_init_status, vr::VRApplication_Utility );
-
         if ( openvr_init_status == vr::VRInitError_None )
         {
             try
