@@ -1,8 +1,8 @@
 @ECHO OFF
 python build.py package
 IF ERRORLEVEL 1 EXIT /B 1
-call test.bat
+call current_build.bat
 IF ERRORLEVEL 1 EXIT /B 1
-del test.bat
+del current_build.bat
 IF ERRORLEVEL 1 EXIT /B 1
 PAUSE
