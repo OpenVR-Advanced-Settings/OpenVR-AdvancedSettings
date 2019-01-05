@@ -144,6 +144,59 @@ void removeManifest()
     }
 }
 
+void setUpLogging( int argc, char* argv[] )
+{
+    const char* logConfigFileName = "logging.conf";
+
+    const char* logConfigDefault
+        = "* GLOBAL:\n"
+          "	FORMAT = \"[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg\"\n"
+          "	FILENAME = \"AdvancedSettings.log\"\n"
+          "	ENABLED = true\n"
+          "	TO_FILE = true\n"
+          "	TO_STANDARD_OUTPUT = true\n"
+          "	MAX_LOG_FILE_SIZE = 2097152 ## 2MB\n"
+          "* TRACE:\n"
+          "	ENABLED = false\n"
+          "* DEBUG:\n"
+          "	ENABLED = false\n";
+
+    // Configure logger
+    QString logFilePath;
+    START_EASYLOGGINGPP( argc, argv );
+    el::Loggers::addFlag( el::LoggingFlag::DisableApplicationAbortOnFatalLog );
+    auto logconfigfile = QFileInfo( logConfigFileName ).absoluteFilePath();
+    el::Configurations conf;
+    if ( QFile::exists( logconfigfile ) )
+    {
+        conf.parseFromFile( logconfigfile.toStdString() );
+    }
+    else
+    {
+        conf.parseFromText( logConfigDefault );
+    }
+    if ( !conf.get( el::Level::Global, el::ConfigurationType::Filename ) )
+    {
+        logFilePath = QDir( QStandardPaths::writableLocation(
+                                QStandardPaths::AppDataLocation ) )
+                          .absoluteFilePath( "AdvancedSettings.log" );
+        conf.set( el::Level::Global,
+                  el::ConfigurationType::Filename,
+                  QDir::toNativeSeparators( logFilePath ).toStdString() );
+    }
+    conf.setRemainingToDefault();
+    el::Loggers::reconfigureAllLoggers( conf );
+    LOG( INFO ) << "Application started (Version "
+                << advsettings::OverlayController::applicationVersionString
+                << ")";
+    LOG( INFO ) << "Log Config: "
+                << QDir::toNativeSeparators( logconfigfile ).toStdString();
+    if ( !logFilePath.isEmpty() )
+    {
+        LOG( INFO ) << "Log File: " << logFilePath;
+    }
+}
+
 class MyQApplication : public QApplication
 {
 public:
@@ -202,20 +255,7 @@ enum ReturnErrorCode
 
 int main( int argc, char* argv[] )
 {
-    const char* logConfigFileName = "logging.conf";
-
-    const char* logConfigDefault
-        = "* GLOBAL:\n"
-          "	FORMAT = \"[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg\"\n"
-          "	FILENAME = \"AdvancedSettings.log\"\n"
-          "	ENABLED = true\n"
-          "	TO_FILE = true\n"
-          "	TO_STANDARD_OUTPUT = true\n"
-          "	MAX_LOG_FILE_SIZE = 2097152 ## 2MB\n"
-          "* TRACE:\n"
-          "	ENABLED = false\n"
-          "* DEBUG:\n"
-          "	ENABLED = false\n";
+    setUpLogging( argc, argv );
 
     const bool desktop_mode = argument::CheckCommandLineArgument(
         argc, argv, argument::DESKTOP_MODE );
@@ -280,42 +320,6 @@ int main( int argc, char* argv[] )
             advsettings::OverlayController::applicationVersionString );
 
         qInstallMessageHandler( myQtMessageHandler );
-
-        // Configure logger
-        QString logFilePath;
-        START_EASYLOGGINGPP( argc, argv );
-        el::Loggers::addFlag(
-            el::LoggingFlag::DisableApplicationAbortOnFatalLog );
-        auto logconfigfile = QFileInfo( logConfigFileName ).absoluteFilePath();
-        el::Configurations conf;
-        if ( QFile::exists( logconfigfile ) )
-        {
-            conf.parseFromFile( logconfigfile.toStdString() );
-        }
-        else
-        {
-            conf.parseFromText( logConfigDefault );
-        }
-        if ( !conf.get( el::Level::Global, el::ConfigurationType::Filename ) )
-        {
-            logFilePath = QDir( QStandardPaths::writableLocation(
-                                    QStandardPaths::AppDataLocation ) )
-                              .absoluteFilePath( "AdvancedSettings.log" );
-            conf.set( el::Level::Global,
-                      el::ConfigurationType::Filename,
-                      QDir::toNativeSeparators( logFilePath ).toStdString() );
-        }
-        conf.setRemainingToDefault();
-        el::Loggers::reconfigureAllLoggers( conf );
-        LOG( INFO ) << "Application started (Version "
-                    << advsettings::OverlayController::applicationVersionString
-                    << ")";
-        LOG( INFO ) << "Log Config: "
-                    << QDir::toNativeSeparators( logconfigfile ).toStdString();
-        if ( !logFilePath.isEmpty() )
-        {
-            LOG( INFO ) << "Log File: " << logFilePath;
-        }
 
         if ( desktop_mode )
         {
