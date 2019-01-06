@@ -148,8 +148,8 @@ void reinstallApplicationManifest( const QString manifestPath )
     installApplicationManifest( manifestPath );
 }
 
-[[noreturn]] void handleManifests( const bool install_manifest,
-                                   const bool remove_manifest )
+[[noreturn]] void handleManifests( const bool installManifest,
+                                   const bool removeManifest )
 {
     int exit_code = ReturnErrorCode::SUCCESS;
     auto openvr_init_status = vr::VRInitError_None;
@@ -162,12 +162,12 @@ void reinstallApplicationManifest( const QString manifestPath )
                 QDir( QCoreApplication::applicationDirPath() )
                     .absoluteFilePath( kVRManifestName ) );
 
-            if ( install_manifest )
+            if ( installManifest )
             {
                 reinstallApplicationManifest( manifestPath );
                 enableApplicationAutostart();
             }
-            else if ( remove_manifest )
+            else if ( removeManifest )
             {
                 removeApplicationManifest( manifestPath );
             }
@@ -305,42 +305,42 @@ bool CheckCommandLineArgument( int argc,
     return false;
 }
 
-constexpr auto DESKTOP_MODE = "-desktop";
-constexpr auto NO_SOUND = "-nosound";
-constexpr auto NO_MANIFEST = "-nomanifest";
-constexpr auto INSTALL_MANIFEST = "-installmanifest";
-constexpr auto REMOVE_MANIFEST = "-removemanifest";
+constexpr auto kDesktopMode = "-desktop";
+constexpr auto kNoSound = "-nosound";
+constexpr auto kNoManifest = "-nomanifest";
+constexpr auto kInstallManifest = "-installmanifest";
+constexpr auto kRemoveManifest = "-removemanifest";
 } // namespace argument
 
 int main( int argc, char* argv[] )
 {
     setUpLogging( argc, argv );
 
-    const bool desktop_mode = argument::CheckCommandLineArgument(
-        argc, argv, argument::DESKTOP_MODE );
-    const bool no_sound
-        = argument::CheckCommandLineArgument( argc, argv, argument::NO_SOUND );
-    const bool no_manifest = argument::CheckCommandLineArgument(
-        argc, argv, argument::NO_MANIFEST );
-    const bool install_manifest = argument::CheckCommandLineArgument(
-        argc, argv, argument::INSTALL_MANIFEST );
-    const bool remove_manifest = argument::CheckCommandLineArgument(
-        argc, argv, argument::REMOVE_MANIFEST );
+    const bool desktopMode = argument::CheckCommandLineArgument(
+        argc, argv, argument::kDesktopMode );
+    const bool noSound
+        = argument::CheckCommandLineArgument( argc, argv, argument::kNoSound );
+    const bool noManifest = argument::CheckCommandLineArgument(
+        argc, argv, argument::kNoManifest );
+    const bool installManifest = argument::CheckCommandLineArgument(
+        argc, argv, argument::kInstallManifest );
+    const bool removeManifest = argument::CheckCommandLineArgument(
+        argc, argv, argument::kRemoveManifest );
 
     // If a command line arg is set, make sure the logs reflect that.
-    LOG_IF( desktop_mode, INFO ) << "Desktop mode enabled.";
-    LOG_IF( no_sound, INFO ) << "Sound effects disabled.";
-    LOG_IF( no_manifest, INFO ) << "vrmanifest disabled.";
-    LOG_IF( install_manifest, INFO ) << "Install manifest enabled.";
-    LOG_IF( remove_manifest, INFO ) << "Remove manifest enabled.";
+    LOG_IF( desktopMode, INFO ) << "Desktop mode enabled.";
+    LOG_IF( noSound, INFO ) << "Sound effects disabled.";
+    LOG_IF( noManifest, INFO ) << "vrmanifest disabled.";
+    LOG_IF( installManifest, INFO ) << "Install manifest enabled.";
+    LOG_IF( removeManifest, INFO ) << "Remove manifest enabled.";
 
     // It is important that either install_manifest or remove_manifest are true,
     // otherwise the handleManifests function will not behave properly.
-    if ( install_manifest || remove_manifest )
+    if ( installManifest || removeManifest )
     {
         // The function does not return, it exits inside the function
         // with an appropriate exit code.
-        manifest::handleManifests( install_manifest, remove_manifest );
+        manifest::handleManifests( installManifest, removeManifest );
     }
 
     try
@@ -366,8 +366,8 @@ int main( int argc, char* argv[] )
         QQmlEngine qmlEngine;
 
         advsettings::OverlayController* controller
-            = advsettings::OverlayController::createInstance( desktop_mode,
-                                                              no_sound );
+            = advsettings::OverlayController::createInstance( desktopMode,
+                                                              noSound );
         controller->Init( &qmlEngine );
 
         QQmlComponent component(
@@ -383,7 +383,7 @@ int main( int argc, char* argv[] )
                                advsettings::OverlayController::applicationName,
                                advsettings::OverlayController::applicationKey );
 
-        if ( !desktop_mode && !no_manifest )
+        if ( !desktopMode && !noManifest )
         {
             try
             {
@@ -398,7 +398,7 @@ int main( int argc, char* argv[] )
             }
         }
 
-        if ( desktop_mode )
+        if ( desktopMode )
         {
             auto m_pWindow = new QQuickWindow();
             qobject_cast<QQuickItem*>( quickObj )
