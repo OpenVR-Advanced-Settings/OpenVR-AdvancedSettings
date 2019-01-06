@@ -12,6 +12,13 @@
 
 INITIALIZE_EASYLOGGINGPP
 
+enum ReturnErrorCode
+{
+    SUCCESS = 0,
+    GENERAL_FAILURE = -1,
+    OPENVR_INIT_ERROR = -2,
+};
+
 void myQtMessageHandler( QtMsgType type,
                          const QMessageLogContext& context,
                          const QString& msg )
@@ -142,6 +149,46 @@ void removeManifest()
     }
 }
 
+[[noreturn]] void handleManifests( const bool install_manifest,
+                                   const bool remove_manifest )
+{
+    int exit_code = ReturnErrorCode::SUCCESS;
+    auto openvr_init_status = vr::VRInitError_None;
+    vr::VR_Init( &openvr_init_status, vr::VRApplication_Utility );
+    if ( openvr_init_status == vr::VRInitError_None )
+    {
+        try
+        {
+            if ( install_manifest )
+            {
+                installManifest( true );
+            }
+            else if ( remove_manifest )
+            {
+                removeManifest();
+            }
+        }
+        catch ( std::exception& e )
+        {
+            exit_code = ReturnErrorCode::GENERAL_FAILURE;
+            std::cerr << e.what() << std::endl;
+        }
+    }
+    else
+    {
+        exit_code = ReturnErrorCode::OPENVR_INIT_ERROR;
+        std::cerr << std::string(
+                         "Failed to initialize OpenVR: "
+                         + std::string(
+                               vr::VR_GetVRInitErrorAsEnglishDescription(
+                                   openvr_init_status ) ) )
+                  << std::endl;
+    }
+
+    vr::VR_Shutdown();
+    exit( exit_code );
+}
+
 // Sets up the logging library and outputs startup logging data.
 // argc and argv are necessary for the START_EASYLOGGINGPP() call.
 void setUpLogging( int argc, char* argv[] )
@@ -260,13 +307,6 @@ constexpr auto INSTALL_MANIFEST = "-installmanifest";
 constexpr auto REMOVE_MANIFEST = "-removemanifest";
 } // namespace argument
 
-enum ReturnErrorCode
-{
-    SUCCESS = 0,
-    GENERAL_FAILURE = -1,
-    OPENVR_INIT_ERROR = -2,
-};
-
 int main( int argc, char* argv[] )
 {
     setUpLogging( argc, argv );
@@ -282,50 +322,21 @@ int main( int argc, char* argv[] )
     const bool remove_manifest = argument::CheckCommandLineArgument(
         argc, argv, argument::REMOVE_MANIFEST );
 
-    if ( install_manifest || remove_manifest )
-    {
-        int exit_code = ReturnErrorCode::SUCCESS;
-        auto openvr_init_status = vr::VRInitError_None;
-        vr::VR_Init( &openvr_init_status, vr::VRApplication_Utility );
-        if ( openvr_init_status == vr::VRInitError_None )
-        {
-            try
-            {
-                if ( install_manifest )
-                {
-                    LOG( INFO ) << "Install manifest enabled.";
-                    installManifest( true );
-                }
-                else if ( remove_manifest )
-                {
-                    LOG( INFO ) << "Remove manifest enabled.";
-                    removeManifest();
-                }
-            }
-            catch ( std::exception& e )
-            {
-                exit_code = ReturnErrorCode::GENERAL_FAILURE;
-                std::cerr << e.what() << std::endl;
-            }
-        }
-        else
-        {
-            exit_code = ReturnErrorCode::OPENVR_INIT_ERROR;
-            std::cerr << std::string(
-                             "Failed to initialize OpenVR: "
-                             + std::string(
-                                   vr::VR_GetVRInitErrorAsEnglishDescription(
-                                       openvr_init_status ) ) )
-                      << std::endl;
-        }
-
-        vr::VR_Shutdown();
-        exit( exit_code );
-    }
-
+    // If a command line arg is set, make sure the logs reflect that.
     LOG_IF( desktop_mode, INFO ) << "Desktop mode enabled.";
     LOG_IF( no_sound, INFO ) << "Sound effects disabled.";
     LOG_IF( no_manifest, INFO ) << "vrmanifest disabled.";
+    LOG_IF( install_manifest, INFO ) << "Install manifest enabled.";
+    LOG_IF( remove_manifest, INFO ) << "Remove manifest enabled.";
+
+    // It is important that either install_manifest or remove_manifest are true,
+    // otherwise the handleManifests function will not behave properly.
+    if ( install_manifest || remove_manifest )
+    {
+        // The function does not return, it exits inside the function
+        // with an appropriate exit code.
+        handleManifests( install_manifest, remove_manifest );
+    }
 
     try
     {
