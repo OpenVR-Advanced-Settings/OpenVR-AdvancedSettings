@@ -60,7 +60,7 @@ void installManifest( bool cleaninstall = false )
     {
         if ( cleaninstall )
         {
-            char buffer[1024];
+            char buffer[1024] = { 0 };
             auto appError = vr::VRApplicationError_None;
             vr::VRApplications()->GetApplicationPropertyString(
                 advsettings::OverlayController::applicationKey,
@@ -92,6 +92,7 @@ void installManifest( bool cleaninstall = false )
             alreadyInstalled = true;
         }
     }
+
     auto apperror = vr::VRApplications()->AddApplicationManifest(
         QDir::toNativeSeparators( manifestQPath ).toStdString().c_str() );
     if ( apperror != vr::VRApplicationError_None )
