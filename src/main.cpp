@@ -130,22 +130,18 @@ void removeManifest()
     auto manifestQPath
         = QDir::cleanPath( QDir( QCoreApplication::applicationDirPath() )
                                .absoluteFilePath( "manifest.vrmanifest" ) );
-    if ( QFile::exists( manifestQPath ) )
-    {
-        if ( vr::VRApplications()->IsApplicationInstalled(
-                 advsettings::OverlayController::applicationKey ) )
-        {
-            vr::VRApplications()->RemoveApplicationManifest(
-                QDir::toNativeSeparators( manifestQPath )
-                    .toStdString()
-                    .c_str() );
-        }
-    }
-    else
+    if ( !QFile::exists( manifestQPath ) )
     {
         throw std::runtime_error(
             std::string( "Could not find application manifest: " )
             + manifestQPath.toStdString() );
+    }
+
+    if ( vr::VRApplications()->IsApplicationInstalled(
+             advsettings::OverlayController::applicationKey ) )
+    {
+        vr::VRApplications()->RemoveApplicationManifest(
+            QDir::toNativeSeparators( manifestQPath ).toStdString().c_str() );
     }
 }
 
