@@ -47,76 +47,73 @@ void installManifest( bool cleaninstall = false )
     auto manifestQPath
         = QDir::cleanPath( QDir( QCoreApplication::applicationDirPath() )
                                .absoluteFilePath( "manifest.vrmanifest" ) );
-    if ( QFile::exists( manifestQPath ) )
-    {
-        bool alreadyInstalled = false;
-        if ( vr::VRApplications()->IsApplicationInstalled(
-                 advsettings::OverlayController::applicationKey ) )
-        {
-            if ( cleaninstall )
-            {
-                char buffer[1024];
-                auto appError = vr::VRApplicationError_None;
-                vr::VRApplications()->GetApplicationPropertyString(
-                    advsettings::OverlayController::applicationKey,
-                    vr::VRApplicationProperty_WorkingDirectory_String,
-                    buffer,
-                    1024,
-                    &appError );
-                if ( appError == vr::VRApplicationError_None )
-                {
-                    auto oldManifestQPath
-                        = QDir::cleanPath( QDir( buffer ).absoluteFilePath(
-                            "manifest.vrmanifest" ) );
-                    if ( oldManifestQPath.compare( manifestQPath,
-                                                   Qt::CaseInsensitive )
-                         != 0 )
-                    {
-                        vr::VRApplications()->RemoveApplicationManifest(
-                            QDir::toNativeSeparators( oldManifestQPath )
-                                .toStdString()
-                                .c_str() );
-                    }
-                    else
-                    {
-                        alreadyInstalled = true;
-                    }
-                }
-            }
-            else
-            {
-                alreadyInstalled = true;
-            }
-        }
-        auto apperror = vr::VRApplications()->AddApplicationManifest(
-            QDir::toNativeSeparators( manifestQPath ).toStdString().c_str() );
-        if ( apperror != vr::VRApplicationError_None )
-        {
-            throw std::runtime_error(
-                std::string( "Could not add application manifest: " )
-                + std::string(
-                      vr::VRApplications()->GetApplicationsErrorNameFromEnum(
-                          apperror ) ) );
-        }
-        else if ( !alreadyInstalled || cleaninstall )
-        {
-            auto app_error = vr::VRApplications()->SetApplicationAutoLaunch(
-                advsettings::OverlayController::applicationKey, true );
-            if ( app_error != vr::VRApplicationError_None )
-            {
-                throw std::runtime_error(
-                    std::string( "Could not set auto start: " )
-                    + std::string( vr::VRApplications()
-                                       ->GetApplicationsErrorNameFromEnum(
-                                           apperror ) ) );
-            }
-        }
-    }
-    else
+    if ( !QFile::exists( manifestQPath ) )
     {
         throw std::runtime_error(
             std::string( "Could not find application manifest: " )
             + manifestQPath.toStdString() );
+    }
+
+    bool alreadyInstalled = false;
+    if ( vr::VRApplications()->IsApplicationInstalled(
+             advsettings::OverlayController::applicationKey ) )
+    {
+        if ( cleaninstall )
+        {
+            char buffer[1024];
+            auto appError = vr::VRApplicationError_None;
+            vr::VRApplications()->GetApplicationPropertyString(
+                advsettings::OverlayController::applicationKey,
+                vr::VRApplicationProperty_WorkingDirectory_String,
+                buffer,
+                1024,
+                &appError );
+            if ( appError == vr::VRApplicationError_None )
+            {
+                auto oldManifestQPath = QDir::cleanPath(
+                    QDir( buffer ).absoluteFilePath( "manifest.vrmanifest" ) );
+                if ( oldManifestQPath.compare( manifestQPath,
+                                               Qt::CaseInsensitive )
+                     != 0 )
+                {
+                    vr::VRApplications()->RemoveApplicationManifest(
+                        QDir::toNativeSeparators( oldManifestQPath )
+                            .toStdString()
+                            .c_str() );
+                }
+                else
+                {
+                    alreadyInstalled = true;
+                }
+            }
+        }
+        else
+        {
+            alreadyInstalled = true;
+        }
+    }
+    auto apperror = vr::VRApplications()->AddApplicationManifest(
+        QDir::toNativeSeparators( manifestQPath ).toStdString().c_str() );
+    if ( apperror != vr::VRApplicationError_None )
+    {
+        throw std::runtime_error(
+            std::string( "Could not add application manifest: " )
+            + std::string(
+                  vr::VRApplications()->GetApplicationsErrorNameFromEnum(
+                      apperror ) ) );
+    }
+    else if ( !alreadyInstalled || cleaninstall )
+    {
+        auto app_error = vr::VRApplications()->SetApplicationAutoLaunch(
+            advsettings::OverlayController::applicationKey, true );
+        if ( app_error != vr::VRApplicationError_None )
+        {
+            throw std::runtime_error(
+                std::string( "Could not set auto start: " )
+                + std::string(
+                      vr::VRApplications()->GetApplicationsErrorNameFromEnum(
+                          apperror ) ) );
+        }
     }
 }
 
