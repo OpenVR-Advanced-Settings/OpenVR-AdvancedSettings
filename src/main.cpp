@@ -19,35 +19,34 @@ enum ReturnErrorCode
     OPENVR_INIT_ERROR = -2,
 };
 
-void myQtMessageHandler( QtMsgType type,
-                         const QMessageLogContext& context,
-                         const QString& msg )
+namespace argument
 {
-    QByteArray localMsg = msg.toLocal8Bit();
-    switch ( type )
+// Checks whether a specific string was passed as a launch argument.
+bool CheckCommandLineArgument( int argc,
+                               char* argv[],
+                               const std::string parameter )
+{
+    // The old way was one giant loop that tested every single parameter.
+    // Having an individual loop for all args most likely has a very small
+    // performance penalty compared to the original solution, but the gains in
+    // readability and ease of extension of not having a hundred line+ for loop
+    // are worth it.
+    for ( int i = 0; i < argc; i++ )
     {
-    case QtDebugMsg:
-        LOG( DEBUG ) << localMsg.constData() << " (" << context.file << ":"
-                     << context.line << ")";
-        break;
-    case QtInfoMsg:
-        LOG( INFO ) << localMsg.constData() << " (" << context.file << ":"
-                    << context.line << ")";
-        break;
-    case QtWarningMsg:
-        LOG( WARNING ) << localMsg.constData() << " (" << context.file << ":"
-                       << context.line << ")";
-        break;
-    case QtCriticalMsg:
-        LOG( ERROR ) << localMsg.constData() << " (" << context.file << ":"
-                     << context.line << ")";
-        break;
-    case QtFatalMsg:
-        LOG( FATAL ) << localMsg.constData() << " (" << context.file << ":"
-                     << context.line << ")";
-        break;
+        if ( std::string( argv[i] ) == parameter )
+        {
+            return true;
+        }
     }
+    return false;
 }
+
+constexpr auto kDesktopMode = "-desktop";
+constexpr auto kNoSound = "-nosound";
+constexpr auto kNoManifest = "-nomanifest";
+constexpr auto kInstallManifest = "-installmanifest";
+constexpr auto kRemoveManifest = "-removemanifest";
+} // namespace argument
 
 namespace manifest
 {
@@ -297,34 +296,35 @@ public:
     }
 };
 
-namespace argument
+void myQtMessageHandler( QtMsgType type,
+                         const QMessageLogContext& context,
+                         const QString& msg )
 {
-// Checks whether a specific string was passed as a launch argument.
-bool CheckCommandLineArgument( int argc,
-                               char* argv[],
-                               const std::string parameter )
-{
-    // The old way was one giant loop that tested every single parameter.
-    // Having an individual loop for all args most likely has a very small
-    // performance penalty compared to the original solution, but the gains in
-    // readability and ease of extension of not having a hundred line+ for loop
-    // are worth it.
-    for ( int i = 0; i < argc; i++ )
+    QByteArray localMsg = msg.toLocal8Bit();
+    switch ( type )
     {
-        if ( std::string( argv[i] ) == parameter )
-        {
-            return true;
-        }
+    case QtDebugMsg:
+        LOG( DEBUG ) << localMsg.constData() << " (" << context.file << ":"
+                     << context.line << ")";
+        break;
+    case QtInfoMsg:
+        LOG( INFO ) << localMsg.constData() << " (" << context.file << ":"
+                    << context.line << ")";
+        break;
+    case QtWarningMsg:
+        LOG( WARNING ) << localMsg.constData() << " (" << context.file << ":"
+                       << context.line << ")";
+        break;
+    case QtCriticalMsg:
+        LOG( ERROR ) << localMsg.constData() << " (" << context.file << ":"
+                     << context.line << ")";
+        break;
+    case QtFatalMsg:
+        LOG( FATAL ) << localMsg.constData() << " (" << context.file << ":"
+                     << context.line << ")";
+        break;
     }
-    return false;
 }
-
-constexpr auto kDesktopMode = "-desktop";
-constexpr auto kNoSound = "-nosound";
-constexpr auto kNoManifest = "-nomanifest";
-constexpr auto kInstallManifest = "-installmanifest";
-constexpr auto kRemoveManifest = "-removemanifest";
-} // namespace argument
 
 int main( int argc, char* argv[] )
 {
