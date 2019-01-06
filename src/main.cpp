@@ -49,7 +49,8 @@ void myQtMessageHandler( QtMsgType type,
     }
 }
 
-void installManifest( const bool cleaninstall, const QString manifestPath )
+void handleManifestInstallationLogic( const bool cleaninstall,
+                                      const QString manifestPath )
 {
     if ( !QFile::exists( manifestPath ) )
     {
@@ -155,7 +156,7 @@ void removeManifest( const QString manifestPath )
 
             if ( install_manifest )
             {
-                installManifest( true, manifestPath );
+                handleManifestInstallationLogic( true, manifestPath );
             }
             else if ( remove_manifest )
             {
@@ -379,7 +380,7 @@ int main( int argc, char* argv[] )
                 const auto manifestPath = QDir::cleanPath(
                     QDir( QCoreApplication::applicationDirPath() )
                         .absoluteFilePath( "manifest.vrmanifest" ) );
-                installManifest( false, manifestPath );
+                handleManifestInstallationLogic( false, manifestPath );
             }
             catch ( std::exception& e )
             {
