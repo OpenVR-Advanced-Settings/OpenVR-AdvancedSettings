@@ -51,8 +51,10 @@ void myQtMessageHandler( QtMsgType type,
 
 namespace manifest
 {
+// File name of the manifest. Is placed in the same directory as the binary.
 constexpr auto kVRManifestName = "manifest.vrmanifest";
 
+// Enables autostart of OpenVR Advanced Settings.
 void enableApplicationAutostart()
 {
     const auto app_error = vr::VRApplications()->SetApplicationAutoLaunch(
@@ -67,6 +69,8 @@ void enableApplicationAutostart()
     }
 }
 
+// Installs the application manifest. If a manifest with the same application
+// key is already installed, nothing will happen.
 void installApplicationManifest( const QString manifestPath )
 {
     if ( vr::VRApplications()->IsApplicationInstalled(
@@ -88,6 +92,7 @@ void installApplicationManifest( const QString manifestPath )
     }
 }
 
+// Removes the application manifest.
 void removeApplicationManifest( const QString manifestPath )
 {
     if ( !QFile::exists( manifestPath ) )
@@ -105,6 +110,7 @@ void removeApplicationManifest( const QString manifestPath )
     }
 }
 
+// Removes and then installs the application manifest.
 void reinstallApplicationManifest( const QString manifestPath )
 {
     if ( !QFile::exists( manifestPath ) )
@@ -148,6 +154,14 @@ void reinstallApplicationManifest( const QString manifestPath )
     installApplicationManifest( manifestPath );
 }
 
+// Initializes OpenVR and calls the relevant manifest functions.
+// The .vrmanifest is used by SteamVR however the exact functiontionality is not
+// documented in the official documentation.
+// The manifest is installed upon using the NSIS installer for windows (this
+// program is called with "-installmanifest" by the installer) and every time
+// the program is launched without both "-desktop" and "-nomanifest".
+// The OpenVR initialization is necessary for both removing and installing
+// manifests.
 [[noreturn]] void handleManifests( const bool installManifest,
                                    const bool removeManifest )
 {
