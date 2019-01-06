@@ -166,27 +166,27 @@ void reinstallApplicationManifest( const QString manifestPath )
             {
                 reinstallApplicationManifest( manifestPath );
                 enableApplicationAutostart();
+                LOG( INFO ) << "Manifest reinstalled.";
             }
             else if ( removeManifest )
             {
                 removeApplicationManifest( manifestPath );
+                LOG( INFO ) << "Manifest removed.";
             }
         }
         catch ( std::exception& e )
         {
             exit_code = ReturnErrorCode::GENERAL_FAILURE;
-            std::cerr << e.what() << std::endl;
+            LOG( ERROR ) << e.what();
         }
     }
     else
     {
         exit_code = ReturnErrorCode::OPENVR_INIT_ERROR;
-        std::cerr << std::string(
-                         "Failed to initialize OpenVR: "
-                         + std::string(
-                               vr::VR_GetVRInitErrorAsEnglishDescription(
-                                   openvr_init_status ) ) )
-                  << std::endl;
+        LOG( ERROR ) << std::string(
+            "Failed to initialize OpenVR: "
+            + std::string( vr::VR_GetVRInitErrorAsEnglishDescription(
+                  openvr_init_status ) ) );
     }
 
     vr::VR_Shutdown();
