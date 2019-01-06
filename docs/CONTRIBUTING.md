@@ -6,6 +6,7 @@
  >   * [Building](#building)
  >   * [Formatting](#formatting)
  >   * [Style guide](#style)
+ > * [Additional License Requirements](#License)
 
 <a name="bug_improvement"></a>
 ## You found a bug or have a suggestion for improvement
@@ -49,3 +50,8 @@ To verify that your patch has been formatted correctly, run `.\build_scripts\win
 ### Style guide
 
 Currently, there are no directives for style other than `clang-format`.
+
+<a name="License"></a>
+## Licensing
+
+By submitting a Pull Request to this Repo you are also granting a [GNU Lesser General Public License 3.0](https://opensource.org/licenses/lgpl-3.0.html) for your contributions to the project for the github user https://github.com/ykeara/ for the purpose of distributing on platforms such as Steam. If you have any questions or concerns, about this clause please email ykeara1@gmail.com BEFORE you submit your pull request.
