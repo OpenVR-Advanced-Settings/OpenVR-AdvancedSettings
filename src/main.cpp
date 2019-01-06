@@ -360,10 +360,11 @@ int main( int argc, char* argv[] )
     try
     {
         MyQApplication a( argc, argv );
-        a.setOrganizationName( "matzman666" );
-        a.setApplicationName( "OpenVRAdvancedSettings" );
+        a.setOrganizationName(
+            advsettings::OverlayController::applicationOrganizationName );
+        a.setApplicationName( advsettings::OverlayController::applicationName );
         a.setApplicationDisplayName(
-            advsettings::OverlayController::applicationName );
+            advsettings::OverlayController::applicationDisplayName );
         a.setApplicationVersion(
             advsettings::OverlayController::applicationVersionString );
 
@@ -393,9 +394,10 @@ int main( int argc, char* argv[] )
                          << std::endl;
         }
         auto quickObj = component.create();
-        controller->SetWidget( qobject_cast<QQuickItem*>( quickObj ),
-                               advsettings::OverlayController::applicationName,
-                               advsettings::OverlayController::applicationKey );
+        controller->SetWidget(
+            qobject_cast<QQuickItem*>( quickObj ),
+            advsettings::OverlayController::applicationDisplayName,
+            advsettings::OverlayController::applicationKey );
 
         if ( !desktopMode && !noManifest )
         {
