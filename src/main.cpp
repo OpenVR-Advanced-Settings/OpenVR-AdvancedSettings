@@ -51,6 +51,8 @@ void myQtMessageHandler( QtMsgType type,
 
 namespace manifest
 {
+constexpr auto kVRManifestName = "manifest.vrmanifest";
+
 void enableApplicationAutostart()
 {
     const auto app_error = vr::VRApplications()->SetApplicationAutoLaunch(
@@ -138,7 +140,7 @@ void reinstallApplicationManifest( const QString manifestPath )
 
         const auto oldManifestPath
             = QDir::cleanPath( QDir( oldApplicationWorkingDir )
-                                   .absoluteFilePath( "manifest.vrmanifest" ) );
+                                   .absoluteFilePath( kVRManifestName ) );
 
         removeApplicationManifest( manifestPath );
     }
@@ -158,7 +160,7 @@ void reinstallApplicationManifest( const QString manifestPath )
         {
             const auto manifestPath = QDir::cleanPath(
                 QDir( QCoreApplication::applicationDirPath() )
-                    .absoluteFilePath( "manifest.vrmanifest" ) );
+                    .absoluteFilePath( kVRManifestName ) );
 
             if ( install_manifest )
             {
@@ -387,7 +389,7 @@ int main( int argc, char* argv[] )
             {
                 const auto manifestPath = QDir::cleanPath(
                     QDir( QCoreApplication::applicationDirPath() )
-                        .absoluteFilePath( "manifest.vrmanifest" ) );
+                        .absoluteFilePath( manifest::kVRManifestName ) );
                 manifest::installApplicationManifest( manifestPath );
             }
             catch ( std::exception& e )
