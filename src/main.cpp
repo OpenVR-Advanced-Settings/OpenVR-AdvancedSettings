@@ -49,6 +49,8 @@ void myQtMessageHandler( QtMsgType type,
     }
 }
 
+namespace manifest
+{
 void handleManifestInstallationLogic( const bool cleaninstall,
                                       const QString manifestPath )
 {
@@ -183,6 +185,7 @@ void removeManifest( const QString manifestPath )
     vr::VR_Shutdown();
     exit( exit_code );
 }
+} // namespace manifest
 
 // Sets up the logging library and outputs startup logging data.
 // argc and argv are necessary for the START_EASYLOGGINGPP() call.
@@ -330,7 +333,7 @@ int main( int argc, char* argv[] )
     {
         // The function does not return, it exits inside the function
         // with an appropriate exit code.
-        handleManifests( install_manifest, remove_manifest );
+        manifest::handleManifests( install_manifest, remove_manifest );
     }
 
     try
@@ -380,7 +383,8 @@ int main( int argc, char* argv[] )
                 const auto manifestPath = QDir::cleanPath(
                     QDir( QCoreApplication::applicationDirPath() )
                         .absoluteFilePath( "manifest.vrmanifest" ) );
-                handleManifestInstallationLogic( false, manifestPath );
+                manifest::handleManifestInstallationLogic( false,
+                                                           manifestPath );
             }
             catch ( std::exception& e )
             {
