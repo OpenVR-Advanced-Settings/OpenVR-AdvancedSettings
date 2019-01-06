@@ -420,8 +420,10 @@ int main( int argc, char* argv[] )
             m_pWindow->setGeometry(
                 0,
                 0,
-                qobject_cast<QQuickItem*>( quickObj )->width(),
-                qobject_cast<QQuickItem*>( quickObj )->height() );
+                static_cast<int>(
+                    qobject_cast<QQuickItem*>( quickObj )->width() ),
+                static_cast<int>(
+                    qobject_cast<QQuickItem*>( quickObj )->height() ) );
             m_pWindow->show();
         }
 
