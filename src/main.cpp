@@ -51,6 +51,34 @@ void myQtMessageHandler( QtMsgType type,
 
 namespace manifest
 {
+void enableApplicationAutostart()
+{
+    const auto app_error = vr::VRApplications()->SetApplicationAutoLaunch(
+        advsettings::OverlayController::applicationKey, true );
+    if ( app_error != vr::VRApplicationError_None )
+    {
+        throw std::runtime_error(
+            std::string( "Could not set auto start: " )
+            + std::string(
+                  vr::VRApplications()->GetApplicationsErrorNameFromEnum(
+                      app_error ) ) );
+    }
+}
+
+void installApplicationManifest( const QString manifestPath )
+{
+    const auto app_error = vr::VRApplications()->AddApplicationManifest(
+        QDir::toNativeSeparators( manifestPath ).toStdString().c_str() );
+    if ( app_error != vr::VRApplicationError_None )
+    {
+        throw std::runtime_error(
+            std::string( "Could not add application manifest: " )
+            + std::string(
+                  vr::VRApplications()->GetApplicationsErrorNameFromEnum(
+                      app_error ) ) );
+    }
+}
+
 void handleManifestInstallationLogic( const bool cleaninstall,
                                       const QString manifestPath )
 {
@@ -100,28 +128,11 @@ void handleManifestInstallationLogic( const bool cleaninstall,
         }
     }
 
-    auto apperror = vr::VRApplications()->AddApplicationManifest(
-        QDir::toNativeSeparators( manifestPath ).toStdString().c_str() );
-    if ( apperror != vr::VRApplicationError_None )
+    installApplicationManifest( manifestPath );
+
+    if ( !alreadyInstalled || cleaninstall )
     {
-        throw std::runtime_error(
-            std::string( "Could not add application manifest: " )
-            + std::string(
-                  vr::VRApplications()->GetApplicationsErrorNameFromEnum(
-                      apperror ) ) );
-    }
-    else if ( !alreadyInstalled || cleaninstall )
-    {
-        auto app_error = vr::VRApplications()->SetApplicationAutoLaunch(
-            advsettings::OverlayController::applicationKey, true );
-        if ( app_error != vr::VRApplicationError_None )
-        {
-            throw std::runtime_error(
-                std::string( "Could not set auto start: " )
-                + std::string(
-                      vr::VRApplications()->GetApplicationsErrorNameFromEnum(
-                          apperror ) ) );
-        }
+        enableApplicationAutostart();
     }
 }
 
