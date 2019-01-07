@@ -51,7 +51,6 @@ Rectangle {
                 id: headerTitle
                 text: headerText
                 font.pointSize: 30
-                anchors.verticalCenter: headerBackButton.verticalCenter
                 Layout.leftMargin: 32
             }
         }
