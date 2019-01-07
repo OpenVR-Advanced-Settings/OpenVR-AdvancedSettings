@@ -24,13 +24,13 @@ SET project_dir=%folder_path%
 ECHO %top_level_activity%: Calling build script.
 %PYTHON_LOC%python %project_dir%\build_scripts\win\build.py build
 IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
-call %project_dir%\build_scripts\win\test.bat
+call %project_dir%\build_scripts\win\current_build.bat
 IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
 
 ECHO %top_level_activity%: Calling deployment script.
 %PYTHON_LOC%python %project_dir%\build_scripts\win\build.py deploy
 IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
-call %project_dir%\build_scripts\win\test.bat
+call %project_dir%\build_scripts\win\current_build.bat
 IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
 
 REM The average dev doesn't need to package and zip it, just build it and test.
@@ -42,7 +42,7 @@ IF NOT DEFINED BUILD_PACKAGE (
 ECHO %top_level_activity%: Calling packaging script.
 %PYTHON_LOC%python %project_dir%\build_scripts\win\build.py package
 IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
-call %project_dir%\build_scripts\win\test.bat
+call %project_dir%\build_scripts\win\current_build.bat
 IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
 
 CD %original_dir%

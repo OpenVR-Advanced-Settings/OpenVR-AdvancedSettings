@@ -122,7 +122,7 @@ def create_batch_file():
     """
     Creates a batch file in the dir. Must be called by another outside batch file.
     """
-    file = open(get_project_dir() + "\\build_scripts\\win\\test.bat", "w+")
+    file = open(get_project_dir() + "\\build_scripts\\win\\current_build.bat", "w+")
     file.write(bat_file_contents)
     file.close()    
 
