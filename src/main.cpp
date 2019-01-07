@@ -70,6 +70,7 @@ void enableApplicationAutostart()
 
 // Installs the application manifest. If a manifest with the same application
 // key is already installed, nothing will happen.
+// OpenVR must be initialized before calling this function.
 void installApplicationManifest( const QString manifestPath )
 {
     if ( vr::VRApplications()->IsApplicationInstalled(
