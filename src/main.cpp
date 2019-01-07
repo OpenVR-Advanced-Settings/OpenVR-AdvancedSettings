@@ -376,6 +376,11 @@ int main( int argc, char* argv[] )
 
     try
     {
+        // QCoreApplication (QApplication inherits it.) can parse the args from
+        // argc and argv. We don't use this since it's relatively slow and we
+        // need the args before the main Qt stuff happens. If the arg parsing
+        // needs of the program grow it could be useful to utilize the Qt arg
+        // parsing.
         MyQApplication mainEventLoop( argc, argv );
         mainEventLoop.setOrganizationName(
             advsettings::OverlayController::applicationOrganizationName );
@@ -388,6 +393,8 @@ int main( int argc, char* argv[] )
 
         qInstallMessageHandler( mainQtMessageHandler );
 
+        // QSettings contains a platform independant way of storing settings in
+        // an .ini file.
         QSettings appSettings( QSettings::IniFormat,
                                QSettings::UserScope,
                                mainEventLoop.organizationName(),
@@ -396,8 +403,17 @@ int main( int argc, char* argv[] )
         LOG( INFO ) << "Settings File: "
                     << appSettings.fileName().toStdString();
 
+        // The QML Engine is necessary for instantiating QML files.
         QQmlEngine qmlEngine;
 
+        // The OverlayController handles the majority of the application specfic
+        // things. It contains all the other tabs.
+        // It is created using a singleton pattern that destructs the old
+        // instance whenever createInstance is called. This is obviously not
+        // ideal since it can lead to dangling points and use after free.
+        // The constructor only sets two member vars called desktopMode and
+        // noSound, the rest of the initialization is done in Init. It is
+        // unknown why this is done.
         advsettings::OverlayController* controller
             = advsettings::OverlayController::createInstance( desktopMode,
                                                               noSound );
@@ -417,6 +433,7 @@ int main( int argc, char* argv[] )
             advsettings::OverlayController::applicationDisplayName,
             advsettings::OverlayController::applicationKey );
 
+        // Attempts to install the application manifest on all "regular" starts.
         if ( !desktopMode && !noManifest )
         {
             try
@@ -432,6 +449,7 @@ int main( int argc, char* argv[] )
             }
         }
 
+        // Creates an identical settings menu on the desktop as well as in VR.
         if ( desktopMode )
         {
             auto m_pWindow = new QQuickWindow();
