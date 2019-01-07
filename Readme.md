@@ -8,7 +8,7 @@
  >   * [Installer](#installer)
  >   * [Standalone](#standalone)
  >   * [Command Line Arguments](#command_line_arguments)
- >   * [Desktop mode](#desktop_mode)
+ >   * [Logging Config](#logging_config)
  >   * [Preview Builds](#preview_builds)
  > * [Documentation](#documentation)
  >   * [Top Page](#top_page)
@@ -84,20 +84,22 @@ To upgrade an existing installation first stop SteamVR and delete the old applic
 
 The application (`AdvancedSettings.exe`) can be run with the following five optional arguments:
 
-`"-desktop"`: Creates a settings window on the desktop.
+`"-desktop"`: Creates a settings window on the desktop as well as in VR. Running `startdesktopmode.bat` in the install directory has the same effect.
 
 `"-nosound"`: Forces sound effects off.
 
-`"-nomanifest"`: Forces not creating a `.vrmanifest`.
+`"-nomanifest"`: Forces not using a `.vrmanifest`.
 
-`"-installmanifest"`: Force installs the `.vrmanifest`.
+`"-installmanifest"`: Force installs the `.vrmanifest` and adds the application to autostart. If you're having issues with autostart not working try running the program once with this set. The program will exit early when this flag is set.
 
-`"-removemanifest"`: Force uninstalls the `.vrmanifest`.
+`"-removemanifest"`: Force uninstalls the `.vrmanifest`. This should be done every time the application is uninstalled. On Windows it is automatically done by the uninstaller. The program will exit early when this flag is set.
 
-<a name="desktop_mode"></a>
-## Desktop mode
+In addition, the application can receive the command line arguments from the [Easylogging++ library](https://github.com/zuhd-org/easyloggingpp#application-arguments).
 
-Executing startdesktopmode.bat from the application folder shows a window on the desktop instead of a vr overlay. Desktop mode can be used alongside an already running vr overlay instance.
+<a name="logging_config"></a>
+## Logging Config
+
+The logging output of the [Easylogging++ library](https://github.com/zuhd-org/easyloggingpp#application-arguments) can be customized by placing a file called `logging.conf` in the directory of the binary. This should be considered for advanced users only and it is not recommended.
 
 <a name="preview_builds"></a>
 ## Preview builds
