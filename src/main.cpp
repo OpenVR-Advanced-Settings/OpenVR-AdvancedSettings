@@ -277,11 +277,24 @@ void setUpLogging( int argc, char* argv[] )
     LOG( INFO ) << "Log File: " << logFilePath;
 }
 
+// Manages the programs control flow and main settings.
 class MyQApplication : public QApplication
 {
 public:
     using QApplication::QApplication;
 
+    // Intercept event calls and log them on exceptions.
+    // From the official docs
+    // https://doc.qt.io/qt-5/qcoreapplication.html#notify:
+    // "Future direction:
+    // This function will not be called for objects that live outside the main
+    // thread in Qt 6. Applications that need that functionality should find
+    // other solutions for their event inspection needs in the meantime. The
+    // change may be extended to the main thread, causing this function to be
+    // deprecated."
+    // Should look into replacements for this function if Qt 6 ever rolls
+    // around. There are multiple suggestions for other solutions in the
+    // provided link.
     virtual bool notify( QObject* receiver, QEvent* event ) override
     {
         try
@@ -297,9 +310,12 @@ public:
     }
 };
 
-void myQtMessageHandler( QtMsgType type,
-                         const QMessageLogContext& context,
-                         const QString& msg )
+// The default Qt message handler prints to stdout on X11 and to the debugger on
+// Windows. That is borderline useless for us, therefore we create our own
+// message handler.
+void mainQtMessageHandler( QtMsgType type,
+                           const QMessageLogContext& context,
+                           const QString& msg )
 {
     QByteArray localMsg = msg.toLocal8Bit();
     switch ( type )
@@ -360,21 +376,22 @@ int main( int argc, char* argv[] )
 
     try
     {
-        MyQApplication a( argc, argv );
-        a.setOrganizationName(
+        MyQApplication mainEventLoop( argc, argv );
+        mainEventLoop.setOrganizationName(
             advsettings::OverlayController::applicationOrganizationName );
-        a.setApplicationName( advsettings::OverlayController::applicationName );
-        a.setApplicationDisplayName(
+        mainEventLoop.setApplicationName(
+            advsettings::OverlayController::applicationName );
+        mainEventLoop.setApplicationDisplayName(
             advsettings::OverlayController::applicationDisplayName );
-        a.setApplicationVersion(
+        mainEventLoop.setApplicationVersion(
             advsettings::OverlayController::applicationVersionString );
 
-        qInstallMessageHandler( myQtMessageHandler );
+        qInstallMessageHandler( mainQtMessageHandler );
 
         QSettings appSettings( QSettings::IniFormat,
                                QSettings::UserScope,
-                               a.organizationName(),
-                               a.applicationName() );
+                               mainEventLoop.organizationName(),
+                               mainEventLoop.applicationName() );
         advsettings::OverlayController::setAppSettings( &appSettings );
         LOG( INFO ) << "Settings File: "
                     << appSettings.fileName().toStdString();
@@ -430,7 +447,7 @@ int main( int argc, char* argv[] )
             m_pWindow->show();
         }
 
-        return a.exec();
+        return mainEventLoop.exec();
     }
     catch ( const std::exception& e )
     {
