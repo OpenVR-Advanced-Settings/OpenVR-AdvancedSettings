@@ -307,7 +307,6 @@ MyStackViewPage {
                 }
             }
         }
-
         MyToggleButton {
             id: steamvrAllowSupersampleFilteringToggle
             text: "Enable Advanced Supersample Filtering"
@@ -316,6 +315,8 @@ MyStackViewPage {
             }
         }
 
+        //No longer Valid
+        /*
         MyToggleButton {
             id: steamvrAllowAsyncReprojectionToggle
             text: "Allow Asynchronous Reprojection"
@@ -339,7 +340,7 @@ MyStackViewPage {
                 SteamVRTabController.setForceReprojection(this.checked, false)
             }
         }
-
+        */
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
 
         MyText {
@@ -385,9 +386,9 @@ MyStackViewPage {
             }
             steamvrCompositorSupersamplingText.text = s2
             steamvrAllowSupersampleFilteringToggle.checked = SteamVRTabController.allowSupersampleFiltering
-            steamvrAllowInterleavedReprojectionToggle.checked = SteamVRTabController.allowInterleavedReprojection
-            steamvrAllowAsyncReprojectionToggle.checked = SteamVRTabController.allowAsyncReprojection
-            steamvrForceReprojectionToggle.checked = SteamVRTabController.forceReprojection
+            //steamvrAllowInterleavedReprojectionToggle.checked = SteamVRTabController.allowInterleavedReprojection
+            //steamvrAllowAsyncReprojectionToggle.checked = SteamVRTabController.allowAsyncReprojection
+            //steamvrForceReprojectionToggle.checked = SteamVRTabController.forceReprojection
             reloadSteamVRProfiles()
         }
 
@@ -410,6 +411,7 @@ MyStackViewPage {
             onAllowSupersampleFilteringChanged: {
                 steamvrAllowSupersampleFilteringToggle.checked = SteamVRTabController.allowSupersampleFiltering
             }
+            /*
             onAllowInterleavedReprojectionChanged: {
                 steamvrAllowInterleavedReprojectionToggle.checked = SteamVRTabController.allowInterleavedReprojection
             }
@@ -419,6 +421,7 @@ MyStackViewPage {
             onForceReprojectionChanged: {
                 steamvrForceReprojectionToggle.checked = SteamVRTabController.forceReprojection
             }
+            */
             onSteamVRProfilesUpdated: {
                 reloadSteamVRProfiles()
             }

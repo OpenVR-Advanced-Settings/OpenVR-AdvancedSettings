@@ -20,10 +20,10 @@ struct SteamVRProfile
     bool includesSupersampleFiltering = false;
     bool supersampleFiltering = false;
 
-    bool includesReprojectionSettings = false;
-    bool asynchronousReprojection = true;
-    bool interleavedReprojection = true;
-    bool alwaysOnReprojection = true;
+    //bool includesReprojectionSettings = false;
+    //bool asynchronousReprojection = true;
+    //bool interleavedReprojection = true;
+    //bool alwaysOnReprojection = true;
 };
 
 class SteamVRTabController : public QObject
@@ -34,7 +34,8 @@ class SteamVRTabController : public QObject
     Q_PROPERTY(
         float compositorSuperSampling READ compositorSuperSampling WRITE
             setCompositorSuperSampling NOTIFY compositorSuperSamplingChanged )
-    Q_PROPERTY(
+    /*
+		Q_PROPERTY(
         bool allowInterleavedReprojection READ allowInterleavedReprojection
             WRITE setAllowInterleavedReprojection NOTIFY
                 allowInterleavedReprojectionChanged )
@@ -43,6 +44,7 @@ class SteamVRTabController : public QObject
             setAllowAsyncReprojection NOTIFY allowAsyncReprojectionChanged )
     Q_PROPERTY( bool forceReprojection READ forceReprojection WRITE
                     setForceReprojection NOTIFY forceReprojectionChanged )
+	*/
     Q_PROPERTY( bool allowSupersampleFiltering READ allowSupersampleFiltering
                     WRITE setAllowSupersampleFiltering NOTIFY
                         allowSupersampleFilteringChanged )
@@ -53,9 +55,9 @@ private:
 
     float m_superSampling = 1.0;
     float m_compositorSuperSampling = 1.0;
-    bool m_allowInterleavedReprojection = true;
-    bool m_allowAsyncReprojection = true;
-    bool m_forceReprojection = false;
+    //bool m_allowInterleavedReprojection = true;
+    //bool m_allowAsyncReprojection = true;
+    //bool m_forceReprojection = false;
     bool m_allowSupersampleFiltering = true;
 
     std::vector<SteamVRProfile> steamvrProfiles;
@@ -70,9 +72,9 @@ public:
 
     float superSampling() const;
     float compositorSuperSampling() const;
-    bool allowInterleavedReprojection() const;
-    bool allowAsyncReprojection() const;
-    bool forceReprojection() const;
+    //bool allowInterleavedReprojection() const;
+    //bool allowAsyncReprojection() const;
+    //bool forceReprojection() const;
     bool allowSupersampleFiltering() const;
 
     void reloadSteamVRProfiles();
@@ -84,9 +86,9 @@ public:
 public slots:
     void setSuperSampling( float value, bool notify = true );
     void setCompositorSuperSampling( float value, bool notify = true );
-    void setAllowInterleavedReprojection( bool value, bool notify = true );
-    void setAllowAsyncReprojection( bool value, bool notify = true );
-    void setForceReprojection( bool value, bool notify = true );
+    //void setAllowInterleavedReprojection( bool value, bool notify = true );
+    //void setAllowAsyncReprojection( bool value, bool notify = true );
+    //void setForceReprojection( bool value, bool notify = true );
     void setAllowSupersampleFiltering( bool value, bool notify = true );
 
     void addSteamVRProfile( QString name,
@@ -102,9 +104,9 @@ public slots:
 signals:
     void superSamplingChanged( float value );
     void compositorSuperSamplingChanged( float value );
-    void allowInterleavedReprojectionChanged( bool value );
-    void allowAsyncReprojectionChanged( bool value );
-    void forceReprojectionChanged( bool value );
+    //void allowInterleavedReprojectionChanged( bool value );
+    //void allowAsyncReprojectionChanged( bool value );
+    //void forceReprojectionChanged( bool value );
     void allowSupersampleFilteringChanged( bool value );
 
     void steamVRProfilesUpdated();

@@ -74,6 +74,7 @@ void SteamVRTabController::reloadSteamVRProfiles()
             entry.supersampleFiltering
                 = settings->value( "supersampleFiltering", true ).toBool();
         }
+		/*
         entry.includesReprojectionSettings
             = settings->value( "includesReprojectionSettings", false ).toBool();
         if ( entry.includesReprojectionSettings )
@@ -85,6 +86,7 @@ void SteamVRTabController::reloadSteamVRProfiles()
             entry.alwaysOnReprojection
                 = settings->value( "alwaysOnReprojection", true ).toBool();
         }
+		*/
     }
     settings->endArray();
     settings->endGroup();
@@ -113,6 +115,7 @@ void SteamVRTabController::saveSteamVRProfiles()
             settings->setValue( "supersampleFiltering",
                                 p.supersampleFiltering );
         }
+		/*
         settings->setValue( "includesReprojectionSettings",
                             p.includesReprojectionSettings );
         if ( p.includesReprojectionSettings )
@@ -124,6 +127,7 @@ void SteamVRTabController::saveSteamVRProfiles()
             settings->setValue( "alwaysOnReprojection",
                                 p.alwaysOnReprojection );
         }
+		*/
         i++;
     }
     settings->endArray();
@@ -210,6 +214,7 @@ void SteamVRTabController::eventLoopTick()
                 << m_compositorSuperSampling << " => " << css;
             setCompositorSuperSampling( css );
         }
+		/*
         auto air = vr::VRSettings()->GetBool(
             vr::k_pch_SteamVR_Section,
             vr::k_pch_SteamVR_AllowReprojection_Bool,
@@ -249,6 +254,7 @@ void SteamVRTabController::eventLoopTick()
                                   vrSettingsError );
         }
         setForceReprojection( fr );
+		*/
         auto sf = vr::VRSettings()->GetBool(
             vr::k_pch_SteamVR_Section,
             vrsettings_steamvr_allowSupersampleFiltering,
@@ -333,7 +339,7 @@ float SteamVRTabController::compositorSuperSampling() const
 {
     return m_compositorSuperSampling;
 }
-
+/*
 bool SteamVRTabController::allowInterleavedReprojection() const
 {
     return m_allowInterleavedReprojection;
@@ -399,7 +405,7 @@ void SteamVRTabController::setForceReprojection( bool value, bool notify )
         }
     }
 }
-
+*/
 bool SteamVRTabController::allowSupersampleFiltering() const
 {
     return m_allowSupersampleFiltering;
@@ -452,7 +458,7 @@ void SteamVRTabController::reset()
                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                               vrSettingsError );
     }
-
+	/*
     vr::VRSettings()->RemoveKeyInSection(
         vr::k_pch_SteamVR_Section,
         vr::k_pch_SteamVR_AllowReprojection_Bool,
@@ -492,6 +498,7 @@ void SteamVRTabController::reset()
                               vrSettingsError );
     }
 
+	*/
     vr::VRSettings()->RemoveKeyInSection(
         vr::k_pch_SteamVR_Section,
         vrsettings_steamvr_allowSupersampleFiltering,
@@ -549,6 +556,7 @@ void SteamVRTabController::addSteamVRProfile( QString name,
     {
         profile->supersampleFiltering = m_allowSupersampleFiltering;
     }
+	/*
     profile->includesReprojectionSettings = includeReprojectionSettings;
     if ( includeReprojectionSettings )
     {
@@ -556,6 +564,7 @@ void SteamVRTabController::addSteamVRProfile( QString name,
         profile->interleavedReprojection = m_allowInterleavedReprojection;
         profile->alwaysOnReprojection = m_forceReprojection;
     }
+	*/
     saveSteamVRProfiles();
     OverlayController::appSettings()->sync();
     emit steamVRProfilesUpdated();
@@ -574,12 +583,14 @@ void SteamVRTabController::applySteamVRProfile( unsigned index )
         {
             setAllowSupersampleFiltering( profile.supersampleFiltering );
         }
+		/*
         if ( profile.includesReprojectionSettings )
         {
             setAllowAsyncReprojection( profile.asynchronousReprojection );
             setAllowInterleavedReprojection( profile.interleavedReprojection );
             setForceReprojection( profile.alwaysOnReprojection );
         }
+		*/
         vr::VRSettings()->Sync( true );
     }
 }
