@@ -318,7 +318,6 @@ MyStackViewPage {
             }
             ColumnLayout {
                 RowLayout {
-                    anchors.fill: parent
 
                     MyToggleButton {
                         id: moveShortcutLeft

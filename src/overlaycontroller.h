@@ -45,8 +45,10 @@ class OverlayController : public QObject
     Q_PROPERTY( bool desktopMode READ isDesktopMode )
 
 public:
+    static constexpr auto applicationOrganizationName = "matzman666";
+    static constexpr auto applicationName = "OpenVRAdvancedSettings";
     static constexpr const char* applicationKey = "matzman666.AdvancedSettings";
-    static constexpr const char* applicationName = "Advanced Settings";
+    static constexpr const char* applicationDisplayName = "Advanced Settings";
     static constexpr const char* applicationVersionString = "v2.8.0";
 
 private:
