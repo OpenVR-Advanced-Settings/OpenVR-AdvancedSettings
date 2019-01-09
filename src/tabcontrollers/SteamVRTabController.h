@@ -120,6 +120,7 @@ signals:
     void allowSupersampleFilteringChanged( bool value );
 
     void steamVRProfilesUpdated();
+	void steamVRProfileAdded();
 };
 
 } // namespace advsettings

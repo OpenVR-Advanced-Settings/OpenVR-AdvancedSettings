@@ -117,6 +117,7 @@ void SteamVRTabController::saveSteamVRProfiles()
             settings->setValue( "supersampleFiltering",
                                 p.supersampleFiltering );
         }
+		settings->setValue("motionSmooth", p.motionSmooth);
 		/*
         settings->setValue( "includesReprojectionSettings",
                             p.includesReprojectionSettings );
@@ -641,6 +642,7 @@ void SteamVRTabController::addSteamVRProfile( QString name,
     saveSteamVRProfiles();
     OverlayController::appSettings()->sync();
     emit steamVRProfilesUpdated();
+	emit steamVRProfileAdded();
 }
 
 void SteamVRTabController::applySteamVRProfile( unsigned index )

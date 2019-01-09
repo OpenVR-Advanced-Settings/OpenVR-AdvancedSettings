@@ -142,7 +142,7 @@ MyStackViewPage {
                     onClicked: {
                         if (steamvrProfileComboBox.currentIndex > 0) {
                             SteamVRTabController.applySteamVRProfile(steamvrProfileComboBox.currentIndex - 1)
-                            steamvrProfileComboBox.currentIndex = 0
+                            //steamvrProfileComboBox.currentIndex = 0
                         }
                     }
                 }
@@ -439,6 +439,9 @@ MyStackViewPage {
 
             onSteamVRProfilesUpdated: {
                 reloadSteamVRProfiles()
+            }
+            onSteamVRProfileAdded:{
+                steamvrProfileComboBox.currentIndex = SteamVRTabController.getSteamVRProfileCount()
             }
         }
     }
