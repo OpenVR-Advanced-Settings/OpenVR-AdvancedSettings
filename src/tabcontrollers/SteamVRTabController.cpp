@@ -75,6 +75,7 @@ void SteamVRTabController::reloadSteamVRProfiles()
             entry.supersampleFiltering
                 = settings->value( "supersampleFiltering", true ).toBool();
         }
+		entry.motionSmooth = settings->value("motionSmooth", true).toBool();
 		/*
         entry.includesReprojectionSettings
             = settings->value( "includesReprojectionSettings", false ).toBool();
@@ -627,6 +628,7 @@ void SteamVRTabController::addSteamVRProfile( QString name,
     {
         profile->supersampleFiltering = m_allowSupersampleFiltering;
     }
+	profile->motionSmooth = m_motionSmoothing;
 	/*
     profile->includesReprojectionSettings = includeReprojectionSettings;
     if ( includeReprojectionSettings )
@@ -654,6 +656,7 @@ void SteamVRTabController::applySteamVRProfile( unsigned index )
         {
             setAllowSupersampleFiltering( profile.supersampleFiltering );
         }
+		setMotionSmoothing(profile.motionSmooth);
 		/*
         if ( profile.includesReprojectionSettings )
         {

@@ -68,11 +68,11 @@ MyStackViewPage {
                 Layout.leftMargin: 32
                 text: "Supersample Filtering"
             }
-            MyToggleButton {
-                id: steamvrNewProfileIncludeReprojectionSettingsg
-                Layout.leftMargin: 32
-                text: "Reprojection Settings"
-            }
+            //MyToggleButton {
+             //   id: steamvrNewProfileIncludeReprojectionSettingsg
+              //  Layout.leftMargin: 32
+               // text: "Reprojection Settings"
+            //}
         }
         onClosed: {
             if (okClicked) {
@@ -80,13 +80,14 @@ MyStackViewPage {
                     steamvrMessageDialog.showMessage("Create New Profile", "ERROR: Empty profile name.")
                 } else if (!steamvrNewProfileIncludeSupersampling.checked
                             && !steamvrNewProfileIncludeSupersampleFiltering.checked
-                            && !steamvrNewProfileIncludeReprojectionSettingsg.checked) {
+                            ) {
                     steamvrMessageDialog.showMessage("Create New Profile", "ERROR: Nothing included.")
                 } else {
                     SteamVRTabController.addSteamVRProfile(steamvrNewProfileName.text,
                         steamvrNewProfileIncludeSupersampling.checked,
-                        steamvrNewProfileIncludeSupersampleFiltering.checked,
-                        steamvrNewProfileIncludeReprojectionSettingsg.checked)
+                        steamvrNewProfileIncludeSupersampleFiltering.checked
+                       // steamvrNewProfileIncludeReprojectionSettingsg.checked
+                                                           )
                 }
 
             }
@@ -95,7 +96,7 @@ MyStackViewPage {
             steamvrNewProfileName.text = ""
             steamvrNewProfileIncludeSupersampling.checked = false
             steamvrNewProfileIncludeSupersampleFiltering.checked = false
-            steamvrNewProfileIncludeReprojectionSettingsg.checked = false
+            //steamvrNewProfileIncludeReprojectionSettingsg.checked = false
             open()
         }
     }
@@ -397,7 +398,7 @@ MyStackViewPage {
             //steamvrAllowInterleavedReprojectionToggle.checked = SteamVRTabController.allowInterleavedReprojection
             //steamvrAllowAsyncReprojectionToggle.checked = SteamVRTabController.allowAsyncReprojection
             //steamvrForceReprojectionToggle.checked = SteamVRTabController.forceReprojection
-            steamvrMotionSmoothingToggle.checked = SteamVRTabController.allowMotionSmoothing
+            steamvrMotionSmoothingToggle.checked = SteamVRTabController.motionSmoothing
             reloadSteamVRProfiles()
         }
 

@@ -19,6 +19,7 @@ struct SteamVRProfile
 
     bool includesSupersampleFiltering = false;
     bool supersampleFiltering = false;
+	bool motionSmooth = false;
 
     //bool includesReprojectionSettings = false;
     //bool asynchronousReprojection = true;
