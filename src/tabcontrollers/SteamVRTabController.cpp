@@ -36,7 +36,7 @@ static const char* vrsettings_compositor_category = "compositor";
 
 void SteamVRTabController::initStage1()
 {
-	initMotionSmoothing();
+    initMotionSmoothing();
     eventLoopTick();
     reloadSteamVRProfiles();
 }
@@ -75,20 +75,13 @@ void SteamVRTabController::reloadSteamVRProfiles()
             entry.supersampleFiltering
                 = settings->value( "supersampleFiltering", true ).toBool();
         }
-		entry.motionSmooth = settings->value("motionSmooth", true).toBool();
-		/*
-        entry.includesReprojectionSettings
-            = settings->value( "includesReprojectionSettings", false ).toBool();
-        if ( entry.includesReprojectionSettings )
+        entry.includesMotionSmoothing
+            = settings->value( "includesMotionSmoothing", false ).toBool();
+        if ( entry.includesMotionSmoothing )
         {
-            entry.asynchronousReprojection
-                = settings->value( "asynchronousReprojection", true ).toBool();
-            entry.interleavedReprojection
-                = settings->value( "interleavedReprojection", true ).toBool();
-            entry.alwaysOnReprojection
-                = settings->value( "alwaysOnReprojection", true ).toBool();
+            entry.motionSmooth
+                = settings->value( "motionSmooth", true ).toBool();
         }
-		*/
     }
     settings->endArray();
     settings->endGroup();
@@ -117,20 +110,13 @@ void SteamVRTabController::saveSteamVRProfiles()
             settings->setValue( "supersampleFiltering",
                                 p.supersampleFiltering );
         }
-		settings->setValue("motionSmooth", p.motionSmooth);
-		/*
-        settings->setValue( "includesReprojectionSettings",
-                            p.includesReprojectionSettings );
-        if ( p.includesReprojectionSettings )
+        settings->setValue( "includesMotionSmoothing",
+                            p.includesMotionSmoothing );
+        if ( p.includesMotionSmoothing )
         {
-            settings->setValue( "asynchronousReprojection",
-                                p.asynchronousReprojection );
-            settings->setValue( "interleavedReprojection",
-                                p.interleavedReprojection );
-            settings->setValue( "alwaysOnReprojection",
-                                p.alwaysOnReprojection );
+            settings->setValue( "motionSmooth", p.motionSmooth );
         }
-		*/
+
         i++;
     }
     settings->endArray();
@@ -217,47 +203,6 @@ void SteamVRTabController::eventLoopTick()
                 << m_compositorSuperSampling << " => " << css;
             setCompositorSuperSampling( css );
         }
-		/*
-        auto air = vr::VRSettings()->GetBool(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_AllowReprojection_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_AllowReprojection_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setAllowInterleavedReprojection( air );
-        auto aar = vr::VRSettings()->GetBool(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_AllowAsyncReprojection_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_AllowAsyncReprojection_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setAllowAsyncReprojection( aar );
-        auto fr = vr::VRSettings()->GetBool(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_ForceReprojection_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_ForceReprojection_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setForceReprojection( fr );
-		*/
         auto sf = vr::VRSettings()->GetBool(
             vr::k_pch_SteamVR_Section,
             vrsettings_steamvr_allowSupersampleFiltering,
@@ -343,10 +288,9 @@ float SteamVRTabController::compositorSuperSampling() const
     return m_compositorSuperSampling;
 }
 
-
-
-bool SteamVRTabController::motionSmoothing() const {
-	return m_motionSmoothing;
+bool SteamVRTabController::motionSmoothing() const
+{
+    return m_motionSmoothing;
 }
 
 /*
@@ -362,22 +306,20 @@ Description:
 sets value of m_motionSmoothing AND applies changes in Steam/OpenVr
 */
 
-void SteamVRTabController::setMotionSmoothing(bool value,
-	bool notify)
+void SteamVRTabController::setMotionSmoothing( bool value, bool notify )
 {
-	if (m_motionSmoothing!= value)
-	{
-		m_motionSmoothing = value;
-		vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section,
-			vr::k_pch_SteamVR_MotionSmoothing_Bool,
-			m_motionSmoothing);
-		vr::VRSettings()->Sync();
-		if (notify)
-		{
-			emit motionSmoothingChanged(
-				m_motionSmoothing);
-		}
-	}
+    if ( m_motionSmoothing != value )
+    {
+        m_motionSmoothing = value;
+        vr::VRSettings()->SetBool( vr::k_pch_SteamVR_Section,
+                                   vr::k_pch_SteamVR_MotionSmoothing_Bool,
+                                   m_motionSmoothing );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit motionSmoothingChanged( m_motionSmoothing );
+        }
+    }
 }
 
 /*
@@ -391,95 +333,30 @@ Sets the member variable of motion smoothing for UI
 Adds error to log if unable to find variable.
 
 OnError:
-default value of true for motion smoothing is initialized, if user has disabled motion smoothing on their end,
-they will have to toggle the variable twice to get it to re-sync.
+default value of true for motion smoothing is initialized, if user has disabled
+motion smoothing on their end, they will have to toggle the variable twice to
+get it to re-sync.
 */
-void SteamVRTabController::initMotionSmoothing() {
-	bool temporary = false;
-	vr::EVRSettingsError vrSettingsError;
-	temporary = vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section,
-		vr::k_pch_SteamVR_MotionSmoothing_Bool,
-		&vrSettingsError);
-	if (vrSettingsError != vr::VRSettingsError_None)
-	{
-		LOG(WARNING) << "Could not get MotionSmoothing State \""
-			<< vr::k_pch_SteamVR_MotionSmoothing_Bool << "\" setting: "
-			<< vr::VRSettings()->GetSettingsErrorNameFromEnum(
-				vrSettingsError);
-	}
-	vr::VRSettings()->Sync();
-	setMotionSmoothing(temporary, true);
-		
-
-}
-
-/*
-bool SteamVRTabController::allowInterleavedReprojection() const
+void SteamVRTabController::initMotionSmoothing()
 {
-    return m_allowInterleavedReprojection;
-}
-
-bool SteamVRTabController::allowAsyncReprojection() const
-{
-    return m_allowAsyncReprojection;
-}
-
-void SteamVRTabController::setAllowInterleavedReprojection( bool value,
-                                                            bool notify )
-{
-    if ( m_allowInterleavedReprojection != value )
+    bool temporary = false;
+    vr::EVRSettingsError vrSettingsError;
+    temporary
+        = vr::VRSettings()->GetBool( vr::k_pch_SteamVR_Section,
+                                     vr::k_pch_SteamVR_MotionSmoothing_Bool,
+                                     &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
     {
-        m_allowInterleavedReprojection = value;
-        vr::VRSettings()->SetBool( vr::k_pch_SteamVR_Section,
-                                   vr::k_pch_SteamVR_AllowReprojection_Bool,
-                                   m_allowInterleavedReprojection );
-        vr::VRSettings()->Sync();
-        if ( notify )
-        {
-            emit allowInterleavedReprojectionChanged(
-                m_allowInterleavedReprojection );
-        }
+        LOG( WARNING ) << "Could not get MotionSmoothing State \""
+                       << vr::k_pch_SteamVR_MotionSmoothing_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
     }
+    vr::VRSettings()->Sync();
+    setMotionSmoothing( temporary, true );
 }
 
-void SteamVRTabController::setAllowAsyncReprojection( bool value, bool notify )
-{
-    if ( m_allowAsyncReprojection != value )
-    {
-        m_allowAsyncReprojection = value;
-        vr::VRSettings()->SetBool(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_AllowAsyncReprojection_Bool,
-            m_allowAsyncReprojection );
-        vr::VRSettings()->Sync();
-        if ( notify )
-        {
-            emit allowAsyncReprojectionChanged( m_allowAsyncReprojection );
-        }
-    }
-}
-
-bool SteamVRTabController::forceReprojection() const
-{
-    return m_forceReprojection;
-}
-
-void SteamVRTabController::setForceReprojection( bool value, bool notify )
-{
-    if ( m_forceReprojection != value )
-    {
-        m_forceReprojection = value;
-        vr::VRSettings()->SetBool( vr::k_pch_SteamVR_Section,
-                                   vr::k_pch_SteamVR_ForceReprojection_Bool,
-                                   m_forceReprojection );
-        vr::VRSettings()->Sync();
-        if ( notify )
-        {
-            emit forceReprojectionChanged( m_forceReprojection );
-        }
-    }
-}
-*/
 bool SteamVRTabController::allowSupersampleFiltering() const
 {
     return m_allowSupersampleFiltering;
@@ -532,47 +409,7 @@ void SteamVRTabController::reset()
                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                               vrSettingsError );
     }
-	/*
-    vr::VRSettings()->RemoveKeyInSection(
-        vr::k_pch_SteamVR_Section,
-        vr::k_pch_SteamVR_AllowReprojection_Bool,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not remove \""
-                       << vr::k_pch_SteamVR_AllowReprojection_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
 
-    vr::VRSettings()->RemoveKeyInSection(
-        vr::k_pch_SteamVR_Section,
-        vr::k_pch_SteamVR_AllowAsyncReprojection_Bool,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not remove \""
-                       << vr::k_pch_SteamVR_AllowAsyncReprojection_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-
-    vr::VRSettings()->RemoveKeyInSection(
-        vr::k_pch_SteamVR_Section,
-        vr::k_pch_SteamVR_ForceReprojection_Bool,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not remove \""
-                       << vr::k_pch_SteamVR_ForceReprojection_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-
-	*/
     vr::VRSettings()->RemoveKeyInSection(
         vr::k_pch_SteamVR_Section,
         vrsettings_steamvr_allowSupersampleFiltering,
@@ -601,7 +438,8 @@ void SteamVRTabController::restartSteamVR()
 
 void SteamVRTabController::addSteamVRProfile( QString name,
                                               bool includeSupersampling,
-                                              bool includeSupersampleFiltering)
+                                              bool includeSupersampleFiltering,
+                                              bool includeMotionSmoothing )
 {
     SteamVRProfile* profile = nullptr;
     for ( auto& p : steamvrProfiles )
@@ -629,20 +467,15 @@ void SteamVRTabController::addSteamVRProfile( QString name,
     {
         profile->supersampleFiltering = m_allowSupersampleFiltering;
     }
-	profile->motionSmooth = m_motionSmoothing;
-	/*
-    profile->includesReprojectionSettings = includeReprojectionSettings;
-    if ( includeReprojectionSettings )
+    profile->includesMotionSmoothing = includeMotionSmoothing;
+    if ( includeMotionSmoothing )
     {
-        profile->asynchronousReprojection = m_allowAsyncReprojection;
-        profile->interleavedReprojection = m_allowInterleavedReprojection;
-        profile->alwaysOnReprojection = m_forceReprojection;
+        profile->motionSmooth = m_motionSmoothing;
     }
-	*/
     saveSteamVRProfiles();
     OverlayController::appSettings()->sync();
     emit steamVRProfilesUpdated();
-	emit steamVRProfileAdded();
+    emit steamVRProfileAdded();
 }
 
 void SteamVRTabController::applySteamVRProfile( unsigned index )
@@ -658,15 +491,10 @@ void SteamVRTabController::applySteamVRProfile( unsigned index )
         {
             setAllowSupersampleFiltering( profile.supersampleFiltering );
         }
-		setMotionSmoothing(profile.motionSmooth);
-		/*
-        if ( profile.includesReprojectionSettings )
+        if ( profile.includesMotionSmoothing )
         {
-            setAllowAsyncReprojection( profile.asynchronousReprojection );
-            setAllowInterleavedReprojection( profile.interleavedReprojection );
-            setForceReprojection( profile.alwaysOnReprojection );
+            setMotionSmoothing( profile.motionSmooth );
         }
-		*/
         vr::VRSettings()->Sync( true );
     }
 }

@@ -68,11 +68,11 @@ MyStackViewPage {
                 Layout.leftMargin: 32
                 text: "Supersample Filtering"
             }
-            //MyToggleButton {
-             //   id: steamvrNewProfileIncludeReprojectionSettingsg
-              //  Layout.leftMargin: 32
-               // text: "Reprojection Settings"
-            //}
+            MyToggleButton {
+                id: steamvrNewProfileIncludeMotionSmoothing
+                Layout.leftMargin: 32
+                text: "Motion Smoothing Setting"
+            }
         }
         onClosed: {
             if (okClicked) {
@@ -80,13 +80,13 @@ MyStackViewPage {
                     steamvrMessageDialog.showMessage("Create New Profile", "ERROR: Empty profile name.")
                 } else if (!steamvrNewProfileIncludeSupersampling.checked
                             && !steamvrNewProfileIncludeSupersampleFiltering.checked
-                            ) {
+                            && !steamvrNewProfileIncludeMotionSmoothing.checked) {
                     steamvrMessageDialog.showMessage("Create New Profile", "ERROR: Nothing included.")
                 } else {
                     SteamVRTabController.addSteamVRProfile(steamvrNewProfileName.text,
                         steamvrNewProfileIncludeSupersampling.checked,
-                        steamvrNewProfileIncludeSupersampleFiltering.checked
-                       // steamvrNewProfileIncludeReprojectionSettingsg.checked
+                        steamvrNewProfileIncludeSupersampleFiltering.checked,
+                       steamvrNewProfileIncludeMotionSmoothing.checked
                                                            )
                 }
 
@@ -96,7 +96,7 @@ MyStackViewPage {
             steamvrNewProfileName.text = ""
             steamvrNewProfileIncludeSupersampling.checked = false
             steamvrNewProfileIncludeSupersampleFiltering.checked = false
-            //steamvrNewProfileIncludeReprojectionSettingsg.checked = false
+            steamvrNewProfileIncludeMotionSmoothing.checked = false
             open()
         }
     }
@@ -142,7 +142,6 @@ MyStackViewPage {
                     onClicked: {
                         if (steamvrProfileComboBox.currentIndex > 0) {
                             SteamVRTabController.applySteamVRProfile(steamvrProfileComboBox.currentIndex - 1)
-                            //steamvrProfileComboBox.currentIndex = 0
                         }
                     }
                 }
@@ -324,32 +323,6 @@ MyStackViewPage {
             }
         }
 
-        //No longer Valid
-        /*
-        MyToggleButton {
-            id: steamvrAllowAsyncReprojectionToggle
-            text: "Allow Asynchronous Reprojection"
-            onCheckedChanged: {
-                SteamVRTabController.setAllowAsyncReprojection(this.checked, false)
-            }
-        }
-
-        MyToggleButton {
-            id: steamvrAllowInterleavedReprojectionToggle
-            text: "Allow Interleaved Reprojection"
-            onCheckedChanged: {
-                SteamVRTabController.setAllowInterleavedReprojection(this.checked, false)
-            }
-        }
-
-        MyToggleButton {
-            id: steamvrForceReprojectionToggle
-            text: "Enable Always-on Reprojection"
-            onCheckedChanged: {
-                SteamVRTabController.setForceReprojection(this.checked, false)
-            }
-        }
-        */
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
 
         MyText {
@@ -395,9 +368,6 @@ MyStackViewPage {
             }
             steamvrCompositorSupersamplingText.text = s2
             steamvrAllowSupersampleFilteringToggle.checked = SteamVRTabController.allowSupersampleFiltering
-            //steamvrAllowInterleavedReprojectionToggle.checked = SteamVRTabController.allowInterleavedReprojection
-            //steamvrAllowAsyncReprojectionToggle.checked = SteamVRTabController.allowAsyncReprojection
-            //steamvrForceReprojectionToggle.checked = SteamVRTabController.forceReprojection
             steamvrMotionSmoothingToggle.checked = SteamVRTabController.motionSmoothing
             reloadSteamVRProfiles()
         }
