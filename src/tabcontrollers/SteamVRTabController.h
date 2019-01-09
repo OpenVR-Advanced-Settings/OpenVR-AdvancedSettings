@@ -45,6 +45,10 @@ class SteamVRTabController : public QObject
     Q_PROPERTY( bool forceReprojection READ forceReprojection WRITE
                     setForceReprojection NOTIFY forceReprojectionChanged )
 	*/
+
+	Q_PROPERTY(bool motionSmoothing READ motionSmoothing
+			WRITE setMotionSmoothing NOTIFY
+			motionSmoothingChanged)
     Q_PROPERTY( bool allowSupersampleFiltering READ allowSupersampleFiltering
                     WRITE setAllowSupersampleFiltering NOTIFY
                         allowSupersampleFilteringChanged )
@@ -58,7 +62,10 @@ private:
     //bool m_allowInterleavedReprojection = true;
     //bool m_allowAsyncReprojection = true;
     //bool m_forceReprojection = false;
+	bool m_motionSmoothing = true;
     bool m_allowSupersampleFiltering = true;
+
+	void initMotionSmoothing();
 
     std::vector<SteamVRProfile> steamvrProfiles;
 
@@ -75,6 +82,7 @@ public:
     //bool allowInterleavedReprojection() const;
     //bool allowAsyncReprojection() const;
     //bool forceReprojection() const;
+	bool motionSmoothing() const;
     bool allowSupersampleFiltering() const;
 
     void reloadSteamVRProfiles();
@@ -89,12 +97,12 @@ public slots:
     //void setAllowInterleavedReprojection( bool value, bool notify = true );
     //void setAllowAsyncReprojection( bool value, bool notify = true );
     //void setForceReprojection( bool value, bool notify = true );
+	void setMotionSmoothing(bool value, bool notify = true);
     void setAllowSupersampleFiltering( bool value, bool notify = true );
 
     void addSteamVRProfile( QString name,
                             bool includeSupersampling,
-                            bool includeSupersampleFiltering,
-                            bool includeReprojectionSettings );
+                            bool includeSupersampleFiltering);
     void applySteamVRProfile( unsigned index );
     void deleteSteamVRProfile( unsigned index );
 
@@ -107,6 +115,7 @@ signals:
     //void allowInterleavedReprojectionChanged( bool value );
     //void allowAsyncReprojectionChanged( bool value );
     //void forceReprojectionChanged( bool value );
+	void motionSmoothingChanged(bool value);
     void allowSupersampleFilteringChanged( bool value );
 
     void steamVRProfilesUpdated();

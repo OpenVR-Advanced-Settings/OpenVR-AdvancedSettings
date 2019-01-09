@@ -36,6 +36,7 @@ static const char* vrsettings_compositor_category = "compositor";
 
 void SteamVRTabController::initStage1()
 {
+	initMotionSmoothing();
     eventLoopTick();
     reloadSteamVRProfiles();
 }
@@ -339,6 +340,77 @@ float SteamVRTabController::compositorSuperSampling() const
 {
     return m_compositorSuperSampling;
 }
+
+
+
+bool SteamVRTabController::motionSmoothing() const {
+	return m_motionSmoothing;
+}
+
+/*
+Name: setMotionSmoothing
+
+input: bool value, bool notify
+output: none
+
+@value - value to be passed to m_motionSMoothing
+@notify - whether QML is informed of change (default true)
+
+Description:
+sets value of m_motionSmoothing AND applies changes in Steam/OpenVr
+*/
+
+void SteamVRTabController::setMotionSmoothing(bool value,
+	bool notify)
+{
+	if (m_motionSmoothing!= value)
+	{
+		m_motionSmoothing = value;
+		vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section,
+			vr::k_pch_SteamVR_MotionSmoothing_Bool,
+			m_motionSmoothing);
+		vr::VRSettings()->Sync();
+		if (notify)
+		{
+			emit motionSmoothingChanged(
+				m_motionSmoothing);
+		}
+	}
+}
+
+/*
+Name: initMotionSmoothing
+
+input: none
+output: none
+
+description: Gets the Value of Motion Smoothing from Steam/OpenVR.
+Sets the member variable of motion smoothing for UI
+Adds error to log if unable to find variable.
+
+OnError:
+default value of true for motion smoothing is initialized, if user has disabled motion smoothing on their end,
+they will have to toggle the variable twice to get it to re-sync.
+*/
+void SteamVRTabController::initMotionSmoothing() {
+	bool temporary = false;
+	vr::EVRSettingsError vrSettingsError;
+	temporary = vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section,
+		vr::k_pch_SteamVR_MotionSmoothing_Bool,
+		&vrSettingsError);
+	if (vrSettingsError != vr::VRSettingsError_None)
+	{
+		LOG(WARNING) << "Could not get MotionSmoothing State \""
+			<< vr::k_pch_SteamVR_MotionSmoothing_Bool << "\" setting: "
+			<< vr::VRSettings()->GetSettingsErrorNameFromEnum(
+				vrSettingsError);
+	}
+	vr::VRSettings()->Sync();
+	setMotionSmoothing(temporary, true);
+		
+
+}
+
 /*
 bool SteamVRTabController::allowInterleavedReprojection() const
 {
@@ -527,8 +599,7 @@ void SteamVRTabController::restartSteamVR()
 
 void SteamVRTabController::addSteamVRProfile( QString name,
                                               bool includeSupersampling,
-                                              bool includeSupersampleFiltering,
-                                              bool includeReprojectionSettings )
+                                              bool includeSupersampleFiltering)
 {
     SteamVRProfile* profile = nullptr;
     for ( auto& p : steamvrProfiles )

@@ -315,6 +315,14 @@ MyStackViewPage {
             }
         }
 
+        MyToggleButton {
+            id: steamvrMotionSmoothingToggle
+            text: "Motion Smoothing"
+            onCheckedChanged: {
+                SteamVRTabController.setMotionSmoothing(this.checked, false)
+            }
+        }
+
         //No longer Valid
         /*
         MyToggleButton {
@@ -389,6 +397,7 @@ MyStackViewPage {
             //steamvrAllowInterleavedReprojectionToggle.checked = SteamVRTabController.allowInterleavedReprojection
             //steamvrAllowAsyncReprojectionToggle.checked = SteamVRTabController.allowAsyncReprojection
             //steamvrForceReprojectionToggle.checked = SteamVRTabController.forceReprojection
+            steamvrMotionSmoothingToggle.checked = SteamVRTabController.allowMotionSmoothing
             reloadSteamVRProfiles()
         }
 
@@ -422,6 +431,11 @@ MyStackViewPage {
                 steamvrForceReprojectionToggle.checked = SteamVRTabController.forceReprojection
             }
             */
+
+            onMotionSmoothingChanged: {
+                steamvrMotionSmoothingToggle.checked = SteamVRTabController.allowMotionSmoothing
+            }
+
             onSteamVRProfilesUpdated: {
                 reloadSteamVRProfiles()
             }
