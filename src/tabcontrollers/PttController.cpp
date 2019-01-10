@@ -232,10 +232,7 @@ void PttController::checkPttStatus()
         if ( config->triggerMode )
         {
             if ( state.ulButtonPressed
-                     & vr::ButtonMaskFromId( vr::k_EButton_SteamVR_Trigger )
-                 || state.ulButtonTouched
-                        & vr::ButtonMaskFromId(
-                              vr::k_EButton_SteamVR_Trigger ) )
+                 & vr::ButtonMaskFromId( vr::k_EButton_SteamVR_Trigger ) )
             {
                 return true;
             }
