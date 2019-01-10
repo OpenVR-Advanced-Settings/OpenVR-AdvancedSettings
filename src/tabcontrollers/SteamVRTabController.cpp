@@ -29,9 +29,8 @@ namespace advsettings
 // vrsettings_steamvr_allowInterleavedReprojection =
 // "allowInterleavedReprojection";
 
-static const char* vrsettings_steamvr_supersampleScale = "supersampleScale";
-static const char* vrsettings_steamvr_allowSupersampleFiltering
-    = "allowSupersampleFiltering";
+//static const char* vrsettings_steamvr_supersampleScale = "supersampleScale";
+//static const char* vrsettings_steamvr_allowSupersampleFiltering    = "allowSupersampleFiltering";
 static const char* vrsettings_compositor_category = "compositor";
 
 void SteamVRTabController::initStage1()
@@ -140,7 +139,7 @@ Q_INVOKABLE QString
         return QString::fromStdString( steamvrProfiles[index].profileName );
     }
 }
-
+//TODO 
 void SteamVRTabController::eventLoopTick()
 {
     if ( settingsUpdateCounter >= 50 )
@@ -148,12 +147,12 @@ void SteamVRTabController::eventLoopTick()
         vr::EVRSettingsError vrSettingsError;
         auto ss
             = vr::VRSettings()->GetFloat( vr::k_pch_SteamVR_Section,
-                                          vrsettings_steamvr_supersampleScale,
+				vr::k_pch_SteamVR_SupersampleScale_Float,
                                           &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
             LOG( WARNING ) << "Could not read \""
-                           << vrsettings_steamvr_supersampleScale
+                           << vr::k_pch_SteamVR_SupersampleScale_Float
                            << "\" setting: "
                            << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                                   vrSettingsError );
@@ -205,12 +204,12 @@ void SteamVRTabController::eventLoopTick()
         }
         auto sf = vr::VRSettings()->GetBool(
             vr::k_pch_SteamVR_Section,
-            vrsettings_steamvr_allowSupersampleFiltering,
+			vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
             &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
             LOG( WARNING ) << "Could not read \""
-                           << vrsettings_steamvr_allowSupersampleFiltering
+                           << vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool
                            << "\" setting: "
                            << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                                   vrSettingsError );
@@ -240,7 +239,7 @@ void SteamVRTabController::setSuperSampling( float value, bool notify )
                      << " => " << value;
         m_superSampling = value;
         vr::VRSettings()->SetFloat( vr::k_pch_SteamVR_Section,
-                                    vrsettings_steamvr_supersampleScale,
+			vr::k_pch_SteamVR_SupersampleScale_Float,
                                     m_superSampling );
         vr::VRSettings()->Sync();
         if ( notify )
@@ -369,7 +368,7 @@ void SteamVRTabController::setAllowSupersampleFiltering( bool value,
     {
         m_allowSupersampleFiltering = value;
         vr::VRSettings()->SetBool( vr::k_pch_SteamVR_Section,
-                                   vrsettings_steamvr_allowSupersampleFiltering,
+			vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
                                    m_allowSupersampleFiltering );
         vr::VRSettings()->Sync();
         if ( notify )
@@ -385,12 +384,12 @@ void SteamVRTabController::reset()
     vr::EVRSettingsError vrSettingsError;
 
     vr::VRSettings()->RemoveKeyInSection( vr::k_pch_SteamVR_Section,
-                                          vrsettings_steamvr_supersampleScale,
+		vr::k_pch_SteamVR_SupersampleScale_Float,
                                           &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
         LOG( WARNING ) << "Could not remove \""
-                       << vrsettings_steamvr_supersampleScale << "\" setting: "
+                       << vr::k_pch_SteamVR_SupersampleScale_Float << "\" setting: "
                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                               vrSettingsError );
     }
@@ -412,12 +411,12 @@ void SteamVRTabController::reset()
 
     vr::VRSettings()->RemoveKeyInSection(
         vr::k_pch_SteamVR_Section,
-        vrsettings_steamvr_allowSupersampleFiltering,
+		vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
         &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
         LOG( WARNING ) << "Could not remove \""
-                       << vrsettings_steamvr_allowSupersampleFiltering
+                       << vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool
                        << "\" setting: "
                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                               vrSettingsError );
