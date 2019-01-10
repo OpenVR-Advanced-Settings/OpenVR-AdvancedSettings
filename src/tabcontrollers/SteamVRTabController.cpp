@@ -2,38 +2,9 @@
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
 
-namespace vr
-{
-// this was removed from openvr_api.h in 1.0.8
-static const char* const k_pch_SteamVR_RenderTargetMultiplier_Float
-    = "renderTargetMultiplier";
-
-// This was removed when updating from an unknown version to OpenVR
-// version 1.1.3. This should probably be removed along with any features
-// connected to it. Valve probably removed it for a reason.
-static const char* const k_pch_SteamVR_AllowAsyncReprojection_Bool
-    = "allowAsyncReprojection";
-static const char* const k_pch_SteamVR_AllowReprojection_Bool
-    = "allowInterleavedReprojection";
-static const char* const k_pch_SteamVR_ForceReprojection_Bool
-    = "forceReprojection";
-} // namespace vr
-
 // application namespace
 namespace advsettings
 {
-// openvr's github repo hasn't been updated yet to reflect changes in beta
-// 1477423729.
-// static const char* vrsettings_steamvr_allowAsyncReprojection =
-// "allowAsyncReprojection"; static const char*
-// vrsettings_steamvr_allowInterleavedReprojection =
-// "allowInterleavedReprojection";
-
-// static const char* vrsettings_steamvr_supersampleScale = "supersampleScale";
-// static const char* vrsettings_steamvr_allowSupersampleFiltering    =
-// "allowSupersampleFiltering"; static const char*
-// vrsettings_compositor_category = "compositor";
-
 void SteamVRTabController::initStage1()
 {
     initMotionSmoothing();

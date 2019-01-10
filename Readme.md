@@ -126,11 +126,8 @@ If you want to try latest and greatest unreleased features, you can download lat
 
 - **Profile**: Allows to apply/define/delete supersampling profiles that save supersampling and reprojection settings.
 - **Application Supersampling**: Supersampling setting for OpenVR applications/games. Application supersampling [now behaves linearly](https://steamcommunity.com/games/250820/announcements/detail/1256913672017664045) where 2.0 means twice the number of pixel.
-- **Compositor Render Target Multiplier**: Supersampling setting for the OpenVR compositor (Requires restart). Compositor supersampling still behaves the old way where 2.0 means four-times the number of pixel.
-- **Enable Advanced Supersample Filtering**: Einable/disable image filtering on supersampled renderings.
-- **Allow Asynchronous Reprojection**: Enable/disable asynchronous reprojection.
-- **Allow Interleaved Reprojection**: Enable/disable interleaved reprojection.
-- **Enable Always-on Reprojection**: Enable/disable forced reprojection.
+  - **Note**: Manual Override for Super-Sampling must be checked in the SteamVR/OpenVR settings menu.
+- **Enable Motion Smoothing**: Enables Motion Smoothing, and disables asynchronous reprojection.
 - **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
 
 <a name="chaperone_page"></a>

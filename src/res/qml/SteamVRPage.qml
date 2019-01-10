@@ -249,20 +249,13 @@ MyStackViewPage {
 
         MyToggleButton {
             id: steamvrMotionSmoothingToggle
-            text: "Motion Smoothing"
+            text: "Enable Motion Smoothing"
             onCheckedChanged: {
                 SteamVRTabController.setMotionSmoothing(this.checked, false)
             }
         }
 
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
-
-        MyText {
-            Layout.fillWidth: true
-            horizontalAlignment: Text.AlignRight
-            text: "* Requires Restart"
-            font.pointSize: 18
-        }
 
         RowLayout {
             Layout.fillWidth: true
