@@ -94,16 +94,12 @@ public: // I know it's an ugly hack to make them public to enable external
     AccessibilityTabController accessibilityTabController;
 
 private:
-    OverlayController( bool desktopMode, bool noSound )
-        : QObject(), desktopMode( desktopMode ), noSound( noSound )
-    {
-    }
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
 
 public:
+    OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
     virtual ~OverlayController();
 
-    void Init( QQmlEngine* qmlEngine );
     void Shutdown();
 
     bool isDashboardVisible()
@@ -174,21 +170,8 @@ signals:
 
 private:
     static QSettings* _appSettings;
-    static std::unique_ptr<OverlayController> singleton;
 
 public:
-    static OverlayController* getInstance()
-    {
-        return singleton.get();
-    }
-
-    static OverlayController* createInstance( bool desktopMode, bool noSound )
-    {
-        singleton.reset(
-            new advsettings::OverlayController( desktopMode, noSound ) );
-        return singleton.get();
-    }
-
     static QSettings* appSettings()
     {
         return _appSettings;

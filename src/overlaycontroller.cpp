@@ -24,18 +24,14 @@
 // application namespace
 namespace advsettings
 {
-std::unique_ptr<OverlayController> OverlayController::singleton;
-
 constexpr const char* OverlayController::applicationVersionString;
 
 QSettings* OverlayController::_appSettings = nullptr;
 
-OverlayController::~OverlayController()
-{
-    Shutdown();
-}
-
-void OverlayController::Init( QQmlEngine* qmlEngine )
+OverlayController::OverlayController( bool desktopMode,
+                                      bool noSound,
+                                      QQmlEngine& qmlEngine )
+    : QObject(), desktopMode( desktopMode ), noSound( noSound )
 {
     // Loading the OpenVR Runtime
     auto initError = vr::VRInitError_None;
@@ -237,29 +233,39 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
     accessibilityTabController.initStage1();
 
     // Set qml context
-    qmlEngine->rootContext()->setContextProperty( "applicationVersion",
-                                                  getVersionString() );
-    qmlEngine->rootContext()->setContextProperty( "vrRuntimePath",
-                                                  getVRRuntimePathUrl() );
+    qmlEngine.rootContext()->setContextProperty( "applicationVersion",
+                                                 getVersionString() );
+    qmlEngine.rootContext()->setContextProperty( "vrRuntimePath",
+                                                 getVRRuntimePathUrl() );
 
-    // Register qml singletons
+    // Pretty disgusting trick to allow qmlRegisterSingletonType to continue
+    // working with the lambdas that were already there. The callback function
+    // in qmlRegisterSingletonType won't work with any lambdas that capture the
+    // environment. The alternative to making a static pointer to this was
+    // rewriting all QML to not be singletons, which should probably be done
+    // whenever possible.
+    static OverlayController* const objectAddress = this;
     qmlRegisterSingletonType<OverlayController>(
         "matzman666.advsettings",
         1,
         0,
         "OverlayController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = getInstance();
+            QObject* obj = objectAddress;
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
+    // It is unknown if it it intended for the generic in
+    // qmlRegisterSingletonType to be <SteamVRTabController> in all the
+    // remaining function calls, or if it's just a copy paste accident that
+    // happens to work.
     qmlRegisterSingletonType<SteamVRTabController>(
         "matzman666.advsettings",
         1,
         0,
         "SteamVRTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->steamVRTabController;
+            QObject* obj = &( objectAddress->steamVRTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -269,7 +275,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "ChaperoneTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->chaperoneTabController;
+            QObject* obj = &( objectAddress->chaperoneTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -279,7 +285,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "MoveCenterTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->moveCenterTabController;
+            QObject* obj = &( objectAddress->moveCenterTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -289,7 +295,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "FixFloorTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->fixFloorTabController;
+            QObject* obj = &( objectAddress->fixFloorTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -299,7 +305,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "AudioTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->audioTabController;
+            QObject* obj = &( objectAddress->audioTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -309,7 +315,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "StatisticsTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->statisticsTabController;
+            QObject* obj = &( objectAddress->statisticsTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -319,7 +325,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "SettingsTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->settingsTabController;
+            QObject* obj = &( objectAddress->settingsTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -329,7 +335,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "ReviveTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->reviveTabController;
+            QObject* obj = &( objectAddress->reviveTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -339,7 +345,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "UtilitiesTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->utilitiesTabController;
+            QObject* obj = &( objectAddress->utilitiesTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -349,10 +355,15 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "AccessibilityTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->accessibilityTabController;
+            QObject* obj = &( objectAddress->accessibilityTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
+}
+
+OverlayController::~OverlayController()
+{
+    Shutdown();
 }
 
 void OverlayController::Shutdown()
