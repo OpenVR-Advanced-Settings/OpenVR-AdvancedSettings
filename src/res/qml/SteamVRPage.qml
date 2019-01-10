@@ -239,7 +239,7 @@ MyStackViewPage {
                 }
             }
         }
-
+        /*
         RowLayout {
             spacing: 16
 
@@ -307,6 +307,7 @@ MyStackViewPage {
                 }
             }
         }
+        */
         MyToggleButton {
             id: steamvrAllowSupersampleFilteringToggle
             text: "Enable Advanced Supersample Filtering"
@@ -381,6 +382,7 @@ MyStackViewPage {
                 }
                 steamvrSupersamplingText.text = s1
             }
+            /*
             onCompositorSuperSamplingChanged: {
                 var s2 = SteamVRTabController.compositorSuperSampling.toFixed(1)
                 if (s2 <= steamvrCompositorSupersamplingSlider.to && Math.abs(steamvrCompositorSupersamplingSlider.value-s2) > 0.08) {
@@ -388,6 +390,7 @@ MyStackViewPage {
                 }
                 steamvrCompositorSupersamplingText.text = s2
             }
+            */
             onAllowSupersampleFilteringChanged: {
                 steamvrAllowSupersampleFilteringToggle.checked = SteamVRTabController.allowSupersampleFiltering
             }

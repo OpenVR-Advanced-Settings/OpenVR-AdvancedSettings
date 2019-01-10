@@ -31,7 +31,7 @@ namespace advsettings
 
 //static const char* vrsettings_steamvr_supersampleScale = "supersampleScale";
 //static const char* vrsettings_steamvr_allowSupersampleFiltering    = "allowSupersampleFiltering";
-static const char* vrsettings_compositor_category = "compositor";
+//static const char* vrsettings_compositor_category = "compositor";
 
 void SteamVRTabController::initStage1()
 {
@@ -139,7 +139,7 @@ Q_INVOKABLE QString
         return QString::fromStdString( steamvrProfiles[index].profileName );
     }
 }
-//TODO 
+//TODO DISC does it make any sense to check these settings once every ~ 1second?
 void SteamVRTabController::eventLoopTick()
 {
     if ( settingsUpdateCounter >= 50 )
@@ -170,38 +170,7 @@ void SteamVRTabController::eventLoopTick()
                          << m_superSampling << " => " << ss;
             setSuperSampling( ss );
         }
-        auto css = vr::VRSettings()->GetFloat(
-            vrsettings_compositor_category,
-            vr::k_pch_SteamVR_RenderTargetMultiplier_Float,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            if ( vrSettingsError
-                 != vr::VRSettingsError_UnsetSettingHasNoDefault )
-            { // does not appear in the default settings file as of beta
-              // 1477423729
-                LOG( WARNING )
-                    << "Could not read \"compositor::"
-                    << vr::k_pch_SteamVR_RenderTargetMultiplier_Float
-                    << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
-            }
-            if ( m_compositorSuperSampling != 1.0 )
-            {
-                LOG( DEBUG ) << "OpenVR returns an error and we have a custom "
-                                "compositor supersampling value: "
-                             << m_compositorSuperSampling;
-                setCompositorSuperSampling( 1.0 );
-            }
-        }
-        else if ( m_compositorSuperSampling != css )
-        {
-            LOG( DEBUG )
-                << "OpenVR reports a changed compositor supersampling value: "
-                << m_compositorSuperSampling << " => " << css;
-            setCompositorSuperSampling( css );
-        }
+        
         auto sf = vr::VRSettings()->GetBool(
             vr::k_pch_SteamVR_Section,
 			vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
@@ -215,7 +184,24 @@ void SteamVRTabController::eventLoopTick()
                                   vrSettingsError );
         }
         setAllowSupersampleFiltering( sf );
+
+		//Checks if Motion smoothing setting can be read
+		auto ms = vr::VRSettings()->GetBool(
+			vr::k_pch_SteamVR_Section,
+			vr::k_pch_SteamVR_MotionSmoothing_Bool,
+			&vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None)
+		{
+			LOG(WARNING) << "Could not read \""
+				<< vr::k_pch_SteamVR_MotionSmoothing_Bool
+				<< "\" setting: "
+				<< vr::VRSettings()->GetSettingsErrorNameFromEnum(
+					vrSettingsError);
+		}
+		setMotionSmoothing(ms);
+
         settingsUpdateCounter = 0;
+
     }
     else
     {
@@ -248,7 +234,7 @@ void SteamVRTabController::setSuperSampling( float value, bool notify )
         }
     }
 }
-
+/*
 void SteamVRTabController::setCompositorSuperSampling( float value,
                                                        bool notify )
 {
@@ -276,16 +262,18 @@ void SteamVRTabController::setCompositorSuperSampling( float value,
         }
     }
 }
+*/
 
 float SteamVRTabController::superSampling() const
 {
     return m_superSampling;
 }
-
+/*
 float SteamVRTabController::compositorSuperSampling() const
 {
     return m_compositorSuperSampling;
 }
+*/
 
 bool SteamVRTabController::motionSmoothing() const
 {
@@ -394,6 +382,7 @@ void SteamVRTabController::reset()
                               vrSettingsError );
     }
 
+	/*
     setCompositorSuperSampling( 1.0f ); // Is not in default.vrsettings yet
     vr::VRSettings()->RemoveKeyInSection(
         vrsettings_compositor_category,
@@ -408,6 +397,7 @@ void SteamVRTabController::reset()
                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                               vrSettingsError );
     }
+	*/
 
     vr::VRSettings()->RemoveKeyInSection(
         vr::k_pch_SteamVR_Section,
