@@ -29,9 +29,10 @@ namespace advsettings
 // vrsettings_steamvr_allowInterleavedReprojection =
 // "allowInterleavedReprojection";
 
-//static const char* vrsettings_steamvr_supersampleScale = "supersampleScale";
-//static const char* vrsettings_steamvr_allowSupersampleFiltering    = "allowSupersampleFiltering";
-//static const char* vrsettings_compositor_category = "compositor";
+// static const char* vrsettings_steamvr_supersampleScale = "supersampleScale";
+// static const char* vrsettings_steamvr_allowSupersampleFiltering    =
+// "allowSupersampleFiltering"; static const char*
+// vrsettings_compositor_category = "compositor";
 
 void SteamVRTabController::initStage1()
 {
@@ -139,16 +140,19 @@ Q_INVOKABLE QString
         return QString::fromStdString( steamvrProfiles[index].profileName );
     }
 }
-//TODO DISC does it make any sense to check these settings once every ~ 1second?
+// TODO DISC does it make any sense to check these settings once every ~
+// 1second. primary purpose seems to be to re-sync settings if changed via other
+// means?
 void SteamVRTabController::eventLoopTick()
 {
     if ( settingsUpdateCounter >= 50 )
     {
         vr::EVRSettingsError vrSettingsError;
-        auto ss
-            = vr::VRSettings()->GetFloat( vr::k_pch_SteamVR_Section,
-				vr::k_pch_SteamVR_SupersampleScale_Float,
-                                          &vrSettingsError );
+        // checks supersampling and re-synchs if necessary
+        auto ss = vr::VRSettings()->GetFloat(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_SupersampleScale_Float,
+            &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
             LOG( WARNING ) << "Could not read \""
@@ -170,10 +174,11 @@ void SteamVRTabController::eventLoopTick()
                          << m_superSampling << " => " << ss;
             setSuperSampling( ss );
         }
-        
+        // checks if Supersampling filter is on and changes if it has been
+        // changed elsewhere
         auto sf = vr::VRSettings()->GetBool(
             vr::k_pch_SteamVR_Section,
-			vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
+            vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
             &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
@@ -185,23 +190,23 @@ void SteamVRTabController::eventLoopTick()
         }
         setAllowSupersampleFiltering( sf );
 
-		//Checks if Motion smoothing setting can be read
-		auto ms = vr::VRSettings()->GetBool(
-			vr::k_pch_SteamVR_Section,
-			vr::k_pch_SteamVR_MotionSmoothing_Bool,
-			&vrSettingsError);
-		if (vrSettingsError != vr::VRSettingsError_None)
-		{
-			LOG(WARNING) << "Could not read \""
-				<< vr::k_pch_SteamVR_MotionSmoothing_Bool
-				<< "\" setting: "
-				<< vr::VRSettings()->GetSettingsErrorNameFromEnum(
-					vrSettingsError);
-		}
-		setMotionSmoothing(ms);
+        // Checks if Motion smoothing setting can be read and synchs adv
+        // settings to steamvr/openvr
+        auto ms
+            = vr::VRSettings()->GetBool( vr::k_pch_SteamVR_Section,
+                                         vr::k_pch_SteamVR_MotionSmoothing_Bool,
+                                         &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_SteamVR_MotionSmoothing_Bool
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        setMotionSmoothing( ms );
 
         settingsUpdateCounter = 0;
-
     }
     else
     {
@@ -225,7 +230,7 @@ void SteamVRTabController::setSuperSampling( float value, bool notify )
                      << " => " << value;
         m_superSampling = value;
         vr::VRSettings()->SetFloat( vr::k_pch_SteamVR_Section,
-			vr::k_pch_SteamVR_SupersampleScale_Float,
+                                    vr::k_pch_SteamVR_SupersampleScale_Float,
                                     m_superSampling );
         vr::VRSettings()->Sync();
         if ( notify )
@@ -234,46 +239,11 @@ void SteamVRTabController::setSuperSampling( float value, bool notify )
         }
     }
 }
-/*
-void SteamVRTabController::setCompositorSuperSampling( float value,
-                                                       bool notify )
-{
-    bool override = false;
-    if ( value <= 0.01f )
-    {
-        LOG( WARNING ) << "Encountered a compositor supersampling value <= "
-                          "0.01, setting supersampling to 1.0";
-        value = 1.0f;
-        override = true;
-    }
-    if ( override || m_compositorSuperSampling != value )
-    {
-        LOG( DEBUG ) << "Compositor supersampling value changed: "
-                     << m_compositorSuperSampling << " => " << value;
-        m_compositorSuperSampling = value;
-        vr::VRSettings()->SetFloat(
-            vrsettings_compositor_category,
-            vr::k_pch_SteamVR_RenderTargetMultiplier_Float,
-            m_compositorSuperSampling );
-        vr::VRSettings()->Sync();
-        if ( notify )
-        {
-            emit compositorSuperSamplingChanged( m_compositorSuperSampling );
-        }
-    }
-}
-*/
 
 float SteamVRTabController::superSampling() const
 {
     return m_superSampling;
 }
-/*
-float SteamVRTabController::compositorSuperSampling() const
-{
-    return m_compositorSuperSampling;
-}
-*/
 
 bool SteamVRTabController::motionSmoothing() const
 {
@@ -355,9 +325,10 @@ void SteamVRTabController::setAllowSupersampleFiltering( bool value,
     if ( m_allowSupersampleFiltering != value )
     {
         m_allowSupersampleFiltering = value;
-        vr::VRSettings()->SetBool( vr::k_pch_SteamVR_Section,
-			vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
-                                   m_allowSupersampleFiltering );
+        vr::VRSettings()->SetBool(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
+            m_allowSupersampleFiltering );
         vr::VRSettings()->Sync();
         if ( notify )
         {
@@ -371,37 +342,22 @@ void SteamVRTabController::reset()
 {
     vr::EVRSettingsError vrSettingsError;
 
-    vr::VRSettings()->RemoveKeyInSection( vr::k_pch_SteamVR_Section,
-		vr::k_pch_SteamVR_SupersampleScale_Float,
-                                          &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not remove \""
-                       << vr::k_pch_SteamVR_SupersampleScale_Float << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-
-	/*
-    setCompositorSuperSampling( 1.0f ); // Is not in default.vrsettings yet
     vr::VRSettings()->RemoveKeyInSection(
-        vrsettings_compositor_category,
-        vr::k_pch_SteamVR_RenderTargetMultiplier_Float,
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_SupersampleScale_Float,
         &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
         LOG( WARNING ) << "Could not remove \""
-                       << vrsettings_compositor_category
-                       << "::" << vr::k_pch_SteamVR_RenderTargetMultiplier_Float
+                       << vr::k_pch_SteamVR_SupersampleScale_Float
                        << "\" setting: "
                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                               vrSettingsError );
     }
-	*/
 
     vr::VRSettings()->RemoveKeyInSection(
         vr::k_pch_SteamVR_Section,
-		vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
+        vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
         &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {

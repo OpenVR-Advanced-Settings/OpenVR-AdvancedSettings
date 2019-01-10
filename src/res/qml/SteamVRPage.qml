@@ -239,75 +239,6 @@ MyStackViewPage {
                 }
             }
         }
-        /*
-        RowLayout {
-            spacing: 16
-
-            MyText {
-                text: "Compositor Render Target Multiplier*:"
-                Layout.preferredWidth: 450
-                Layout.rightMargin: 12
-            }
-
-            MyPushButton2 {
-                text: "-"
-                Layout.preferredWidth: 40
-                onClicked: {
-                    steamvrCompositorSupersamplingSlider.decrease()
-                }
-            }
-
-            MySlider {
-                id: steamvrCompositorSupersamplingSlider
-                from: 0.1
-                to: 2
-                stepSize: 0.1
-                value: 1.0
-                snapMode: Slider.SnapAlways
-                Layout.fillWidth: true
-                onPositionChanged: {
-                    var val = this.from + ( this.position  * (this.to - this.from))
-                    steamvrCompositorSupersamplingText.text = val.toFixed(1)
-                }
-                onValueChanged: {
-                    SteamVRTabController.setCompositorSuperSampling(this.value.toFixed(1), false)
-                }
-            }
-
-            MyPushButton2 {
-                text: "+"
-                Layout.preferredWidth: 40
-                onClicked: {
-                    steamvrCompositorSupersamplingSlider.increase()
-                }
-            }
-
-
-            MyTextField {
-                id: steamvrCompositorSupersamplingText
-                text: "0.0"
-                keyBoardUID: 402
-                Layout.preferredWidth: 100
-                Layout.leftMargin: 10
-                horizontalAlignment: Text.AlignHCenter
-                function onInputEvent(input) {
-                    var val = parseFloat(input)
-                    if (!isNaN(val)) {
-                        if (val < 0.1) {
-                            val = 0.1
-                        }
-                        var v = val.toFixed(1)
-                        if (v <= steamvrCompositorSupersamplingSlider.to) {
-                            steamvrCompositorSupersamplingSlider.value = v
-                        } else {
-                            SteamVRTabController.setCompositorSuperSampling(v, false)
-                        }
-                    }
-                    text = SteamVRTabController.compositorSuperSampling.toFixed(1)
-                }
-            }
-        }
-        */
         MyToggleButton {
             id: steamvrAllowSupersampleFilteringToggle
             text: "Enable Advanced Supersample Filtering"
@@ -362,12 +293,6 @@ MyStackViewPage {
             if (s1 <= steamvrSupersamplingSlider.to) {
                 steamvrSupersamplingSlider.value = s1
             }
-            steamvrSupersamplingText.text = s1
-            var s2 = SteamVRTabController.compositorSuperSampling.toFixed(1)
-            if (s2 <= steamvrCompositorSupersamplingSlider.to) {
-                steamvrCompositorSupersamplingSlider.value = s2
-            }
-            steamvrCompositorSupersamplingText.text = s2
             steamvrAllowSupersampleFilteringToggle.checked = SteamVRTabController.allowSupersampleFiltering
             steamvrMotionSmoothingToggle.checked = SteamVRTabController.motionSmoothing
             reloadSteamVRProfiles()
@@ -382,32 +307,12 @@ MyStackViewPage {
                 }
                 steamvrSupersamplingText.text = s1
             }
-            /*
-            onCompositorSuperSamplingChanged: {
-                var s2 = SteamVRTabController.compositorSuperSampling.toFixed(1)
-                if (s2 <= steamvrCompositorSupersamplingSlider.to && Math.abs(steamvrCompositorSupersamplingSlider.value-s2) > 0.08) {
-                    steamvrCompositorSupersamplingSlider.value = s2
-                }
-                steamvrCompositorSupersamplingText.text = s2
-            }
-            */
             onAllowSupersampleFilteringChanged: {
                 steamvrAllowSupersampleFilteringToggle.checked = SteamVRTabController.allowSupersampleFiltering
             }
-            /*
-            onAllowInterleavedReprojectionChanged: {
-                steamvrAllowInterleavedReprojectionToggle.checked = SteamVRTabController.allowInterleavedReprojection
-            }
-            onAllowAsyncReprojectionChanged: {
-                steamvrAllowAsyncReprojectionToggle.checked = SteamVRTabController.allowAsyncReprojection
-            }
-            onForceReprojectionChanged: {
-                steamvrForceReprojectionToggle.checked = SteamVRTabController.forceReprojection
-            }
-            */
 
             onMotionSmoothingChanged: {
-                steamvrMotionSmoothingToggle.checked = SteamVRTabController.allowMotionSmoothing
+                steamvrMotionSmoothingToggle.checked = SteamVRTabController.motionSmoothing
             }
 
             onSteamVRProfilesUpdated: {
