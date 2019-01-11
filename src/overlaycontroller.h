@@ -64,7 +64,7 @@ private:
 
     std::unique_ptr<QTimer> m_pPumpEventsTimer;
     std::unique_ptr<QTimer> m_pRenderTimer;
-    bool dashboardVisible = false;
+    bool m_dashboardVisible = false;
 
     QPoint m_ptLastMouse;
     Qt::MouseButtons m_lastMouseButtons = 0;
@@ -76,9 +76,9 @@ private:
 
     utils::ChaperoneUtils m_chaperoneUtils;
 
-    QSoundEffect activationSoundEffect;
-    QSoundEffect focusChangedSoundEffect;
-    QSoundEffect alarm01SoundEffect;
+    QSoundEffect m_activationSoundEffect;
+    QSoundEffect m_focusChangedSoundEffect;
+    QSoundEffect m_alarm01SoundEffect;
 
 public: // I know it's an ugly hack to make them public to enable external
         // access, but I am too lazy to implement getters.
@@ -104,7 +104,7 @@ public:
 
     bool isDashboardVisible()
     {
-        return dashboardVisible;
+        return m_dashboardVisible;
     }
 
     void SetWidget( QQuickItem* quickItem,

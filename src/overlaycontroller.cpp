@@ -59,9 +59,9 @@ OverlayController::OverlayController( bool desktopMode,
     QFileInfo activationSoundFileInfo( activationSoundFile );
     if ( activationSoundFileInfo.exists() && activationSoundFileInfo.isFile() )
     {
-        activationSoundEffect.setSource(
+        m_activationSoundEffect.setSource(
             QUrl::fromLocalFile( activationSoundFile ) );
-        activationSoundEffect.setVolume( 1.0 );
+        m_activationSoundEffect.setVolume( 1.0 );
     }
     else
     {
@@ -75,9 +75,9 @@ OverlayController::OverlayController( bool desktopMode,
     if ( focusChangedSoundFileInfo.exists()
          && focusChangedSoundFileInfo.isFile() )
     {
-        focusChangedSoundEffect.setSource(
+        m_focusChangedSoundEffect.setSource(
             QUrl::fromLocalFile( focusChangedSoundFile ) );
-        focusChangedSoundEffect.setVolume( 1.0 );
+        m_focusChangedSoundEffect.setVolume( 1.0 );
     }
     else
     {
@@ -90,8 +90,9 @@ OverlayController::OverlayController( bool desktopMode,
     QFileInfo alarm01SoundFileInfo( alarm01SoundFile );
     if ( alarm01SoundFileInfo.exists() && alarm01SoundFileInfo.isFile() )
     {
-        alarm01SoundEffect.setSource( QUrl::fromLocalFile( alarm01SoundFile ) );
-        alarm01SoundEffect.setVolume( 1.0 );
+        m_alarm01SoundEffect.setSource(
+            QUrl::fromLocalFile( alarm01SoundFile ) );
+        m_alarm01SoundEffect.setVolume( 1.0 );
     }
     else
     {
@@ -675,14 +676,14 @@ void OverlayController::OnTimeoutPumpEvents()
         case vr::VREvent_DashboardActivated:
         {
             LOG( DEBUG ) << "Dashboard activated";
-            dashboardVisible = true;
+            m_dashboardVisible = true;
         }
         break;
 
         case vr::VREvent_DashboardDeactivated:
         {
             LOG( DEBUG ) << "Dashboard deactivated";
-            dashboardVisible = false;
+            m_dashboardVisible = false;
         }
         break;
 
@@ -1052,7 +1053,7 @@ void OverlayController::playActivationSound()
 {
     if ( !m_noSound )
     {
-        activationSoundEffect.play();
+        m_activationSoundEffect.play();
     }
 }
 
@@ -1060,34 +1061,34 @@ void OverlayController::playFocusChangedSound()
 {
     if ( !m_noSound )
     {
-        focusChangedSoundEffect.play();
+        m_focusChangedSoundEffect.play();
     }
 }
 
 void OverlayController::playAlarm01Sound( bool loop )
 {
-    if ( !m_noSound && !alarm01SoundEffect.isPlaying() )
+    if ( !m_noSound && !m_alarm01SoundEffect.isPlaying() )
     {
         if ( loop )
         {
-            alarm01SoundEffect.setLoopCount( QSoundEffect::Infinite );
+            m_alarm01SoundEffect.setLoopCount( QSoundEffect::Infinite );
         }
         else
         {
-            alarm01SoundEffect.setLoopCount( 1 );
+            m_alarm01SoundEffect.setLoopCount( 1 );
         }
-        alarm01SoundEffect.play();
+        m_alarm01SoundEffect.play();
     }
 }
 
 void OverlayController::setAlarm01SoundVolume( float vol )
 {
-    alarm01SoundEffect.setVolume( vol );
+    m_alarm01SoundEffect.setVolume( vol );
 }
 
 void OverlayController::cancelAlarm01Sound()
 {
-    alarm01SoundEffect.stop();
+    m_alarm01SoundEffect.stop();
 }
 
 } // namespace advsettings
