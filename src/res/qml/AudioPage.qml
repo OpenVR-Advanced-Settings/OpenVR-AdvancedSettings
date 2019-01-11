@@ -160,7 +160,7 @@ MyStackViewPage {
                 Layout.maximumWidth: 850
                 Layout.minimumWidth: 850
                 Layout.preferredWidth: 850
-                onCurrentIndexChanged: {
+                onActivated: {
                     if (componentCompleted) {
                         AudioTabController.setPlaybackDeviceIndex(currentIndex)
                     }
@@ -180,7 +180,7 @@ MyStackViewPage {
                     Layout.maximumWidth: 850
                     Layout.minimumWidth: 850
                     Layout.preferredWidth: 850
-                    onCurrentIndexChanged: {
+                    onActivated: {
                         if (componentCompleted) {
                             AudioTabController.setMirrorDeviceIndex(currentIndex - 1)
                         }
@@ -263,7 +263,7 @@ MyStackViewPage {
                     Layout.maximumWidth: 850
                     Layout.minimumWidth: 850
                     Layout.preferredWidth: 850
-                    onCurrentIndexChanged: {
+                    onActivated: {
                         if (componentCompleted) {
                             AudioTabController.setMicDeviceIndex(currentIndex)
                         }
