@@ -82,16 +82,16 @@ private:
 
 public: // I know it's an ugly hack to make them public to enable external
         // access, but I am too lazy to implement getters.
-    SteamVRTabController steamVRTabController;
-    ChaperoneTabController chaperoneTabController;
-    MoveCenterTabController moveCenterTabController;
-    FixFloorTabController fixFloorTabController;
-    AudioTabController audioTabController;
-    StatisticsTabController statisticsTabController;
-    SettingsTabController settingsTabController;
-    ReviveTabController reviveTabController;
-    UtilitiesTabController utilitiesTabController;
-    AccessibilityTabController accessibilityTabController;
+    SteamVRTabController m_steamVRTabController;
+    ChaperoneTabController m_chaperoneTabController;
+    MoveCenterTabController m_moveCenterTabController;
+    FixFloorTabController m_fixFloorTabController;
+    AudioTabController m_audioTabController;
+    StatisticsTabController m_statisticsTabController;
+    SettingsTabController m_settingsTabController;
+    ReviveTabController m_reviveTabController;
+    UtilitiesTabController m_utilitiesTabController;
+    AccessibilityTabController m_accessibilityTabController;
 
 private:
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );

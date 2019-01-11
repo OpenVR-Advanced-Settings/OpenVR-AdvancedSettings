@@ -222,16 +222,17 @@ OverlayController::OverlayController( bool desktopMode,
     }
 
     // Init controllers
-    steamVRTabController.initStage1();
-    chaperoneTabController.initStage1();
-    moveCenterTabController.initStage1();
-    fixFloorTabController.initStage1();
-    audioTabController.initStage1();
-    statisticsTabController.initStage1();
-    settingsTabController.initStage1();
-    reviveTabController.initStage1( settingsTabController.forceRevivePage() );
-    utilitiesTabController.initStage1();
-    accessibilityTabController.initStage1();
+    m_steamVRTabController.initStage1();
+    m_chaperoneTabController.initStage1();
+    m_moveCenterTabController.initStage1();
+    m_fixFloorTabController.initStage1();
+    m_audioTabController.initStage1();
+    m_statisticsTabController.initStage1();
+    m_settingsTabController.initStage1();
+    m_reviveTabController.initStage1(
+        m_settingsTabController.forceRevivePage() );
+    m_utilitiesTabController.initStage1();
+    m_accessibilityTabController.initStage1();
 
     // Set qml context
     qmlEngine.rootContext()->setContextProperty( "applicationVersion",
@@ -266,7 +267,7 @@ OverlayController::OverlayController( bool desktopMode,
         0,
         "SteamVRTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &( objectAddress->steamVRTabController );
+            QObject* obj = &( objectAddress->m_steamVRTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -276,7 +277,7 @@ OverlayController::OverlayController( bool desktopMode,
         0,
         "ChaperoneTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &( objectAddress->chaperoneTabController );
+            QObject* obj = &( objectAddress->m_chaperoneTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -286,7 +287,7 @@ OverlayController::OverlayController( bool desktopMode,
         0,
         "MoveCenterTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &( objectAddress->moveCenterTabController );
+            QObject* obj = &( objectAddress->m_moveCenterTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -296,7 +297,7 @@ OverlayController::OverlayController( bool desktopMode,
         0,
         "FixFloorTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &( objectAddress->fixFloorTabController );
+            QObject* obj = &( objectAddress->m_fixFloorTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -306,7 +307,7 @@ OverlayController::OverlayController( bool desktopMode,
         0,
         "AudioTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &( objectAddress->audioTabController );
+            QObject* obj = &( objectAddress->m_audioTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -316,7 +317,7 @@ OverlayController::OverlayController( bool desktopMode,
         0,
         "StatisticsTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &( objectAddress->statisticsTabController );
+            QObject* obj = &( objectAddress->m_statisticsTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -326,7 +327,7 @@ OverlayController::OverlayController( bool desktopMode,
         0,
         "SettingsTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &( objectAddress->settingsTabController );
+            QObject* obj = &( objectAddress->m_settingsTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -336,7 +337,7 @@ OverlayController::OverlayController( bool desktopMode,
         0,
         "ReviveTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &( objectAddress->reviveTabController );
+            QObject* obj = &( objectAddress->m_reviveTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -346,7 +347,7 @@ OverlayController::OverlayController( bool desktopMode,
         0,
         "UtilitiesTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &( objectAddress->utilitiesTabController );
+            QObject* obj = &( objectAddress->m_utilitiesTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -356,7 +357,7 @@ OverlayController::OverlayController( bool desktopMode,
         0,
         "AccessibilityTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &( objectAddress->accessibilityTabController );
+            QObject* obj = &( objectAddress->m_accessibilityTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -493,16 +494,16 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     m_pPumpEventsTimer->setInterval( 20 );
     m_pPumpEventsTimer->start();
 
-    steamVRTabController.initStage2( this, m_pWindow.get() );
-    chaperoneTabController.initStage2( this, m_pWindow.get() );
-    moveCenterTabController.initStage2( this, m_pWindow.get() );
-    fixFloorTabController.initStage2( this, m_pWindow.get() );
-    audioTabController.initStage2( this, m_pWindow.get() );
-    statisticsTabController.initStage2( this, m_pWindow.get() );
-    settingsTabController.initStage2( this, m_pWindow.get() );
-    reviveTabController.initStage2( this, m_pWindow.get() );
-    utilitiesTabController.initStage2( this, m_pWindow.get() );
-    accessibilityTabController.initStage2( this, m_pWindow.get() );
+    m_steamVRTabController.initStage2( this, m_pWindow.get() );
+    m_chaperoneTabController.initStage2( this, m_pWindow.get() );
+    m_moveCenterTabController.initStage2( this, m_pWindow.get() );
+    m_fixFloorTabController.initStage2( this, m_pWindow.get() );
+    m_audioTabController.initStage2( this, m_pWindow.get() );
+    m_statisticsTabController.initStage2( this, m_pWindow.get() );
+    m_settingsTabController.initStage2( this, m_pWindow.get() );
+    m_reviveTabController.initStage2( this, m_pWindow.get() );
+    m_utilitiesTabController.initStage2( this, m_pWindow.get() );
+    m_accessibilityTabController.initStage2( this, m_pWindow.get() );
 }
 
 void OverlayController::OnRenderRequest()
@@ -665,8 +666,8 @@ void OverlayController::OnTimeoutPumpEvents()
             LOG( INFO ) << "Received quit request.";
             vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some time
                                                        // just in case
-            moveCenterTabController.reset();
-            chaperoneTabController.shutdown();
+            m_moveCenterTabController.reset();
+            m_chaperoneTabController.shutdown();
             Shutdown();
             QApplication::exit();
             return;
@@ -765,18 +766,19 @@ void OverlayController::OnTimeoutPumpEvents()
             = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
     }
 
-    fixFloorTabController.eventLoopTick( devicePoses );
-    statisticsTabController.eventLoopTick( devicePoses, leftSpeed, rightSpeed );
-    moveCenterTabController.eventLoopTick(
+    m_fixFloorTabController.eventLoopTick( devicePoses );
+    m_statisticsTabController.eventLoopTick(
+        devicePoses, leftSpeed, rightSpeed );
+    m_moveCenterTabController.eventLoopTick(
         vr::VRCompositor()->GetTrackingSpace(), devicePoses );
-    steamVRTabController.eventLoopTick();
-    chaperoneTabController.eventLoopTick(
+    m_steamVRTabController.eventLoopTick();
+    m_chaperoneTabController.eventLoopTick(
         devicePoses, leftSpeed, rightSpeed, hmdSpeed );
-    settingsTabController.eventLoopTick();
-    reviveTabController.eventLoopTick();
-    audioTabController.eventLoopTick();
-    utilitiesTabController.eventLoopTick();
-    accessibilityTabController.eventLoopTick(
+    m_settingsTabController.eventLoopTick();
+    m_reviveTabController.eventLoopTick();
+    m_audioTabController.eventLoopTick();
+    m_utilitiesTabController.eventLoopTick();
+    m_accessibilityTabController.eventLoopTick(
         vr::VRCompositor()->GetTrackingSpace() );
 
     if ( m_ulOverlayThumbnailHandle != vr::k_ulOverlayHandleInvalid )
