@@ -221,6 +221,7 @@ bool SteamVRTabController::motionSmoothing() const
     return m_motionSmoothing;
 }
 
+
 /*
 Name: setMotionSmoothing
 
@@ -307,6 +308,29 @@ void SteamVRTabController::setAllowSupersampleFiltering( bool value,
                 m_allowSupersampleFiltering );
         }
     }
+}
+
+bool SteamVRTabController::allowSupersampleOverride() const
+{
+	return m_allowSupersampleOverride;
+}
+
+void SteamVRTabController::setAllowSupersampleOverride(bool value,
+	bool notify)
+{
+	if (m_allowSupersampleOverride != value)
+	{
+		m_allowSupersampleOverride = value;
+		vr::VRSettings()->SetBool(
+			vr::k_pch_SteamVR_Section,
+			vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
+			m_allowSupersampleOverride);
+		vr::VRSettings()->Sync();
+		if (notify)
+		{
+			emit allowSupersampleOverrideChanged(m_allowSupersampleOverride);
+		}
+	}
 }
 
 void SteamVRTabController::reset()

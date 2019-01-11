@@ -240,6 +240,13 @@ MyStackViewPage {
             }
         }
         MyToggleButton {
+            id: steamvrAllowSupersampleOverrideToggle
+            text: "Enable Manual Supersampling Override"
+            onCheckedChanged: {
+                SteamVRTabController.setAllowSupersampleOverride(this.checked, false)
+            }
+        }
+        MyToggleButton {
             id: steamvrAllowSupersampleFilteringToggle
             text: "Enable Advanced Supersample Filtering"
             onCheckedChanged: {
@@ -286,6 +293,7 @@ MyStackViewPage {
             if (s1 <= steamvrSupersamplingSlider.to) {
                 steamvrSupersamplingSlider.value = s1
             }
+            steamvrAllowSupersampleOverride.checked = SteamVRTabController.allowSupersampleOverride
             steamvrAllowSupersampleFilteringToggle.checked = SteamVRTabController.allowSupersampleFiltering
             steamvrMotionSmoothingToggle.checked = SteamVRTabController.motionSmoothing
             reloadSteamVRProfiles()
@@ -299,6 +307,9 @@ MyStackViewPage {
                     steamvrSupersamplingSlider.value = s1
                 }
                 steamvrSupersamplingText.text = s1
+            }
+            onAllowSupersampleOverrideChanged: {
+                steamvrAllowSupersampleOverrideToggle.checked = SteamVRTabController.allowSupersampleOverride
             }
             onAllowSupersampleFilteringChanged: {
                 steamvrAllowSupersampleFilteringToggle.checked = SteamVRTabController.allowSupersampleFiltering
