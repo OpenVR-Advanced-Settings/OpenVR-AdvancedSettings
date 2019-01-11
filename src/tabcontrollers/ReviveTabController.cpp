@@ -307,7 +307,7 @@ void ReviveTabController::initStage2( OverlayController* var_parent,
 void ReviveTabController::eventLoopTick()
 {
     if ( m_isOverlayInstalled
-         || parent->settingsTabController.forceRevivePage() )
+         || parent->m_settingsTabController.forceRevivePage() )
     {
         if ( settingsUpdateCounter >= 50 )
         {
