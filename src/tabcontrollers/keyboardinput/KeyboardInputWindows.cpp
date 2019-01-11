@@ -4,6 +4,17 @@
 
 namespace advsettings
 {
+/*!
+Represents the state of a keyboard button press. Can be either Up or Down.
+
+Implemented because neither Qt nor Windows.h included a sensible key state enum.
+*/
+enum class KeyStatus
+{
+    Up,
+    Down,
+};
+
 void fillKiStruct( INPUT& ip, WORD scanCode, bool keyup )
 {
     ip.type = INPUT_KEYBOARD;
@@ -21,11 +32,12 @@ void fillKiStruct( INPUT& ip, WORD scanCode, bool keyup )
     ip.ki.time = 0;
 };
 
-void sendKeyboardInputRaw( int inputCount, LPINPUT input )
+void sendKeyboardInputRaw( const int inputCount, const LPINPUT input )
 {
-    if ( ( inputCount > 0 )
-         && !SendInput(
-                static_cast<UINT>( inputCount ), input, sizeof( INPUT ) ) )
+    const auto success
+        = SendInput( static_cast<UINT>( inputCount ), input, sizeof( INPUT ) );
+
+    if ( ( inputCount > 0 ) && !success )
     {
         char* err;
         auto errCode = GetLastError();
@@ -48,6 +60,62 @@ void sendKeyboardInputRaw( int inputCount, LPINPUT input )
             LOG( ERROR ) << "Error calling SendInput(): " << err;
         }
     }
+}
+
+/*!
+Returns an INPUT struct with the corresponding virtualKeyCode and keyStatus set.
+
+All fields except ki.wVk and ki.dwFlags are zero.
+The INPUT struct is used with the SendInput Windows function.
+Official Docs:
+https://docs.microsoft.com/en-us/windows/desktop/api/winuser/ns-winuser-taginput
+*/
+INPUT createInputStruct( const WORD virtualKeyCode, const KeyStatus keyStatus )
+{
+    // Zero init to ensure random data doesn't muck something up.
+    INPUT input = {};
+
+    input.type = INPUT_KEYBOARD;
+
+    input.ki.wVk = virtualKeyCode;
+
+    if ( keyStatus == KeyStatus::Up )
+    {
+        input.ki.dwFlags = KEYEVENTF_KEYUP;
+    }
+    else if ( keyStatus == KeyStatus::Down )
+    {
+        // Struct is already zero initialized, but this is here for clarity.
+        // Compiler will likely sort this out, otherwise the performance hit is
+        // negligible.
+        // There is no corresponding KEYDOWN event, you just don't
+        // set KEYEVENTF_KEYUP.
+        input.ki.dwFlags = 0;
+    }
+
+    // The sizeof(INPUT) on MSVC is 28. Returning by value is a non-issue
+    // compared to the simplicity of not having to pass a ref to an already
+    // existing INPUT struct, and possibly forgetting to zero it out.
+    return input;
+}
+
+/*!
+Sends a key press to Windows. The virtualKeyCode is a Windows specific define
+found in <windows.h>.
+
+Virtual Key Codes offical docs:
+https://docs.microsoft.com/en-us/windows/desktop/inputdev/virtual-key-codes
+*/
+void sendKeyPressAndRelease( const WORD virtualKeyCode )
+{
+    const auto press = createInputStruct( virtualKeyCode, KeyStatus::Down );
+    const auto release = createInputStruct( virtualKeyCode, KeyStatus::Up );
+
+    constexpr auto numberOfActions = 2;
+
+    INPUT actions[numberOfActions] = { press, release };
+
+    sendKeyboardInputRaw( numberOfActions, actions );
 }
 
 void KeyboardInputWindows::sendKeyboardInput( QString input )
