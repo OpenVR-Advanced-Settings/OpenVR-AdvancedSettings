@@ -21,6 +21,7 @@ struct SteamVRProfile
     bool supersampleFiltering = false;
     bool motionSmooth = false;
     bool includesMotionSmoothing = false;
+	bool supersampleOverride = false;
 };
 
 class SteamVRTabController : public QObject
@@ -53,6 +54,7 @@ private:
 	bool m_allowSupersampleOverride = false;
 
     void initMotionSmoothing();
+	void initSupersampleOverride();
 
     std::vector<SteamVRProfile> steamvrProfiles;
 

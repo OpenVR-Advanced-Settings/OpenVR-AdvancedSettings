@@ -8,6 +8,7 @@ namespace advsettings
 void SteamVRTabController::initStage1()
 {
     initMotionSmoothing();
+	initSupersampleOverride();
     eventLoopTick();
     reloadSteamVRProfiles();
 }
@@ -36,6 +37,7 @@ void SteamVRTabController::reloadSteamVRProfiles()
             = settings->value( "includesSupersampling", false ).toBool();
         if ( entry.includesSupersampling )
         {
+			entry.supersampleOverride = settings->value("supersamplingOverride", false).toBool();
             entry.supersampling
                 = settings->value( "supersampling", 1.0f ).toFloat();
         }
@@ -72,6 +74,7 @@ void SteamVRTabController::saveSteamVRProfiles()
         settings->setValue( "includesSupersampling", p.includesSupersampling );
         if ( p.includesSupersampling )
         {
+			settings->setValue("supersamplingOverride", p.supersampleOverride);
             settings->setValue( "supersampling", p.supersampling );
         }
         settings->setValue( "includesSupersampleFiltering",
@@ -93,13 +96,12 @@ void SteamVRTabController::saveSteamVRProfiles()
     settings->endArray();
     settings->endGroup();
 }
-
-Q_INVOKABLE unsigned SteamVRTabController::getSteamVRProfileCount()
+unsigned SteamVRTabController::getSteamVRProfileCount()
 {
     return ( unsigned ) steamvrProfiles.size();
 }
 
-Q_INVOKABLE QString
+QString
     SteamVRTabController::getSteamVRProfileName( unsigned index )
 {
     if ( index >= steamvrProfiles.size() )
@@ -119,6 +121,21 @@ void SteamVRTabController::eventLoopTick()
     if ( settingsUpdateCounter >= 50 )
     {
         vr::EVRSettingsError vrSettingsError;
+		//checks supersampling override and resynchs if necessry
+		//also prints error if can't find.
+		auto sso
+			= vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section,
+				vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
+				&vrSettingsError);
+		if (vrSettingsError != vr::VRSettingsError_None)
+		{
+			LOG(WARNING) << "Could not read \""
+				<< vr::k_pch_SteamVR_SupersampleManualOverride_Bool
+				<< "\" setting: "
+				<< vr::VRSettings()->GetSettingsErrorNameFromEnum(
+					vrSettingsError);
+		}
+		setAllowSupersampleOverride(sso);
         // checks supersampling and re-synchs if necessary
         auto ss = vr::VRSettings()->GetFloat(
             vr::k_pch_SteamVR_Section,
@@ -310,11 +327,26 @@ void SteamVRTabController::setAllowSupersampleFiltering( bool value,
     }
 }
 
+/* -----------------------------------------*/
+/*------------------------------------------*/
+/*SuperSampling Override boolean/toggle functions*/
+
+
 bool SteamVRTabController::allowSupersampleOverride() const
 {
 	return m_allowSupersampleOverride;
 }
 
+/*
+Name setAllowSuperSampleOverride
+
+input: @value - bool value of SSOverride
+	   @notify - bool value, default true. whether to update QML or not
+output: none
+
+description:
+Sets the value of the SuperSample override, and handles synchronization with Steam/OVR
+*/
 void SteamVRTabController::setAllowSupersampleOverride(bool value,
 	bool notify)
 {
@@ -332,6 +364,44 @@ void SteamVRTabController::setAllowSupersampleOverride(bool value,
 		}
 	}
 }
+
+/*
+Name: initSupersampleOverride
+
+input: none
+output: none
+
+description: Gets the Value of the SuperSample Override from Steam/OpenVR.
+Sets the member variable @m_allowSupersampleOverride
+Adds error to log if unable to find variable.
+
+OnError:
+default value of FALSE for SS overide is initialized, if user has disabled
+SS override on their end, they will have to toggle the variable twice to
+get it to re-sync.
+*/
+void SteamVRTabController::initSupersampleOverride()
+{
+	bool temporary = false;
+	vr::EVRSettingsError vrSettingsError;
+	temporary
+		= vr::VRSettings()->GetBool(vr::k_pch_SteamVR_Section,
+			vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
+			&vrSettingsError);
+	if (vrSettingsError != vr::VRSettingsError_None)
+	{
+		LOG(WARNING) << "Could not get SuperSampling Override State \""
+			<< vr::k_pch_SteamVR_SupersampleManualOverride_Bool
+			<< "\" setting: "
+			<< vr::VRSettings()->GetSettingsErrorNameFromEnum(
+				vrSettingsError);
+	}
+	vr::VRSettings()->Sync();
+	setAllowSupersampleOverride(temporary, true);
+}
+
+/*------------------------------------------*/
+/* -----------------------------------------*/
 
 void SteamVRTabController::reset()
 {
@@ -400,6 +470,7 @@ void SteamVRTabController::addSteamVRProfile( QString name,
     profile->includesSupersampling = includeSupersampling;
     if ( includeSupersampling )
     {
+		profile->supersampleOverride = m_allowSupersampleOverride;
         profile->supersampling = m_superSampling;
     }
     profile->includesSupersampleFiltering = includeSupersampleFiltering;
@@ -425,6 +496,7 @@ void SteamVRTabController::applySteamVRProfile( unsigned index )
         auto& profile = steamvrProfiles[index];
         if ( profile.includesSupersampling )
         {
+			setAllowSupersampleOverride(profile.supersampleOverride);
             setSuperSampling( profile.supersampling );
         }
         if ( profile.includesSupersampleFiltering )

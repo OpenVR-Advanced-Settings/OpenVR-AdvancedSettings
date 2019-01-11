@@ -183,6 +183,7 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
+                id: steamvrSupersampleDecrement
                 text: "-"
                 Layout.preferredWidth: 40
                 onClicked: {
@@ -208,6 +209,7 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
+                id: steamvrSupersampleIncrement
                 text: "+"
                 Layout.preferredWidth: 40
                 onClicked: {
@@ -244,6 +246,17 @@ MyStackViewPage {
             text: "Enable Manual Supersampling Override"
             onCheckedChanged: {
                 SteamVRTabController.setAllowSupersampleOverride(this.checked, false)
+                if(!this.checked){
+                    steamvrSupersamplingText.enabled = false
+                    steamvrSupersamplingSlider.enabled = false
+                    steamvrSupersampleIncrement.enabled = false
+                    steamvrSupersampleDecrement.enabled = false
+                }else{
+                    steamvrSupersamplingText.enabled = true
+                    steamvrSupersamplingSlider.enabled = true
+                    steamvrSupersampleIncrement.enabled = true
+                    steamvrSupersampleDecrement.enabled = true
+                }
             }
         }
         MyToggleButton {
@@ -293,9 +306,16 @@ MyStackViewPage {
             if (s1 <= steamvrSupersamplingSlider.to) {
                 steamvrSupersamplingSlider.value = s1
             }
-            steamvrAllowSupersampleOverride.checked = SteamVRTabController.allowSupersampleOverride
+            steamvrAllowSupersampleOverrideToggle.checked = SteamVRTabController.allowSupersampleOverride
             steamvrAllowSupersampleFilteringToggle.checked = SteamVRTabController.allowSupersampleFiltering
             steamvrMotionSmoothingToggle.checked = SteamVRTabController.motionSmoothing
+            if(!steamvrAllowSupersampleOverrideToggle.checked){
+                steamvrSupersamplingText.enabled = false
+                steamvrSupersamplingSlider.enabled = false
+                steamvrSupersampleIncrement.enabled = false
+                steamvrSupersampleDecrement.enabled = false
+            }
+
             reloadSteamVRProfiles()
         }
 
