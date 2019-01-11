@@ -31,7 +31,7 @@ QSettings* OverlayController::_appSettings = nullptr;
 OverlayController::OverlayController( bool desktopMode,
                                       bool noSound,
                                       QQmlEngine& qmlEngine )
-    : QObject(), desktopMode( desktopMode ), noSound( noSound )
+    : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound )
 {
     // Loading the OpenVR Runtime
     auto initError = vr::VRInitError_None;
@@ -405,7 +405,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                                    const std::string& name,
                                    const std::string& key )
 {
-    if ( !desktopMode )
+    if ( !m_desktopMode )
     {
         vr::VROverlayError overlayError
             = vr::VROverlay()->CreateDashboardOverlay(
@@ -514,7 +514,7 @@ void OverlayController::OnRenderRequest()
 
 void OverlayController::renderOverlay()
 {
-    if ( !desktopMode )
+    if ( !m_desktopMode )
     {
         // skip rendering if the overlay isn't visible
         if ( !vr::VROverlay()
@@ -1021,7 +1021,7 @@ QUrl OverlayController::getVRRuntimePathUrl()
 
 bool OverlayController::soundDisabled()
 {
-    return noSound;
+    return m_noSound;
 }
 
 const vr::VROverlayHandle_t& OverlayController::overlayHandle()
@@ -1050,7 +1050,7 @@ void OverlayController::showKeyboard( QString existingText,
 
 void OverlayController::playActivationSound()
 {
-    if ( !noSound )
+    if ( !m_noSound )
     {
         activationSoundEffect.play();
     }
@@ -1058,7 +1058,7 @@ void OverlayController::playActivationSound()
 
 void OverlayController::playFocusChangedSound()
 {
-    if ( !noSound )
+    if ( !m_noSound )
     {
         focusChangedSoundEffect.play();
     }
@@ -1066,7 +1066,7 @@ void OverlayController::playFocusChangedSound()
 
 void OverlayController::playAlarm01Sound( bool loop )
 {
-    if ( !noSound && !alarm01SoundEffect.isPlaying() )
+    if ( !m_noSound && !alarm01SoundEffect.isPlaying() )
     {
         if ( loop )
         {

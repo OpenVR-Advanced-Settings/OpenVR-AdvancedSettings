@@ -42,7 +42,7 @@ namespace advsettings
 class OverlayController : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY( bool desktopMode READ isDesktopMode )
+    Q_PROPERTY( bool m_desktopMode READ isDesktopMode )
 
 public:
     static constexpr auto applicationOrganizationName = "matzman666";
@@ -69,8 +69,8 @@ private:
     QPoint m_ptLastMouse;
     Qt::MouseButtons m_lastMouseButtons = 0;
 
-    bool desktopMode;
-    bool noSound;
+    bool m_desktopMode;
+    bool m_noSound;
 
     QUrl m_runtimePathUrl;
 
@@ -133,7 +133,7 @@ public:
 
     bool isDesktopMode()
     {
-        return desktopMode;
+        return m_desktopMode;
     };
 
     utils::ChaperoneUtils& chaperoneUtils() noexcept
