@@ -21,7 +21,7 @@ struct SteamVRProfile
     bool supersampleFiltering = false;
     bool motionSmooth = false;
     bool includesMotionSmoothing = false;
-	bool supersampleOverride = false;
+    bool supersampleOverride = false;
 };
 
 class SteamVRTabController : public QObject
@@ -39,9 +39,9 @@ class SteamVRTabController : public QObject
     Q_PROPERTY( bool allowSupersampleFiltering READ allowSupersampleFiltering
                     WRITE setAllowSupersampleFiltering NOTIFY
                         allowSupersampleFilteringChanged )
-	Q_PROPERTY(bool allowSupersampleOverride READ allowSupersampleOverride
-			WRITE setAllowSupersampleOverride NOTIFY
-			allowSupersampleOverrideChanged)
+    Q_PROPERTY(
+        bool allowSupersampleOverride READ allowSupersampleOverride WRITE
+            setAllowSupersampleOverride NOTIFY allowSupersampleOverrideChanged )
 
 private:
     OverlayController* parent;
@@ -51,10 +51,10 @@ private:
     // float m_compositorSuperSampling = 1.0;
     bool m_motionSmoothing = true;
     bool m_allowSupersampleFiltering = true;
-	bool m_allowSupersampleOverride = false;
+    bool m_allowSupersampleOverride = false;
 
     void initMotionSmoothing();
-	void initSupersampleOverride();
+    void initSupersampleOverride();
 
     std::vector<SteamVRProfile> steamvrProfiles;
 
@@ -70,7 +70,7 @@ public:
     // float compositorSuperSampling() const;
     bool motionSmoothing() const;
     bool allowSupersampleFiltering() const;
-	bool allowSupersampleOverride() const;
+    bool allowSupersampleOverride() const;
 
     void reloadSteamVRProfiles();
     void saveSteamVRProfiles();
@@ -83,7 +83,7 @@ public slots:
     // void setCompositorSuperSampling( float value, bool notify = true );
     void setMotionSmoothing( bool value, bool notify = true );
     void setAllowSupersampleFiltering( bool value, bool notify = true );
-	void setAllowSupersampleOverride(bool value, bool notify = true);
+    void setAllowSupersampleOverride( bool value, bool notify = true );
 
     void addSteamVRProfile( QString name,
                             bool includeSupersampling,
@@ -100,7 +100,7 @@ signals:
     // void compositorSuperSamplingChanged( float value );
     void motionSmoothingChanged( bool value );
     void allowSupersampleFilteringChanged( bool value );
-	void allowSupersampleOverrideChanged( bool value );
+    void allowSupersampleOverrideChanged( bool value );
 
     void steamVRProfilesUpdated();
     void steamVRProfileAdded();
