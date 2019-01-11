@@ -126,7 +126,8 @@ If you want to try latest and greatest unreleased features, you can download lat
 
 - **Profile**: Allows to apply/define/delete supersampling profiles that save supersampling and reprojection settings.
 - **Application Supersampling**: Supersampling setting for OpenVR applications/games. Application supersampling [now behaves linearly](https://steamcommunity.com/games/250820/announcements/detail/1256913672017664045) where 2.0 means twice the number of pixel.
-  - **Note**: Manual Override for Super-Sampling must be checked in the SteamVR/OpenVR settings menu.
+  - **Note**: Manual Supersampling Override be checked.
+- **Enable Manual Supersampling Override**: Enables user control of Supersampling, instead of SteamVR auto profiles.
 - **Enable Motion Smoothing**: Enables Motion Smoothing, and disables asynchronous reprojection.
 - **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
 
