@@ -44,8 +44,8 @@ private:
     QTime m_alarmLastCheckTime;
     bool m_steamDesktopOverlayAvailable = false;
     float m_steamDesktopOverlayWidth = 4.0f;
-    vr::VROverlayHandle_t
-        m_batteryOverlayHandles[vr::k_unMaxTrackedDeviceCount];
+    vr::VROverlayHandle_t m_batteryOverlayHandles[vr::k_unMaxTrackedDeviceCount]
+        = { 0 };
     int m_batteryState[vr::k_unMaxTrackedDeviceCount];
     bool m_batteryVisible[vr::k_unMaxTrackedDeviceCount];
 
