@@ -25,6 +25,8 @@ class MoveCenterTabController : public QObject
         float offsetZ READ offsetZ WRITE setOffsetZ NOTIFY offsetZChanged )
     Q_PROPERTY(
         int rotation READ rotation WRITE setRotation NOTIFY rotationChanged )
+    Q_PROPERTY( int tempRotation READ tempRotation WRITE setTempRotation NOTIFY
+                    tempRotationChanged )
     Q_PROPERTY( bool adjustChaperone READ adjustChaperone WRITE
                     setAdjustChaperone NOTIFY adjustChaperoneChanged )
     Q_PROPERTY( bool moveShortcutRight READ moveShortcutRight WRITE
@@ -39,6 +41,8 @@ class MoveCenterTabController : public QObject
                     requireLockYChanged )
     Q_PROPERTY( bool lockZToggle READ lockZToggle WRITE setLockZ NOTIFY
                     requireLockZChanged )
+    Q_PROPERTY( bool rotateHand READ rotateHand WRITE setRotateHand NOTIFY
+                    rotateHandChanged )
 
 private:
     OverlayController* parent;
@@ -49,8 +53,9 @@ private:
     float m_offsetY = 0.0f;
     float m_offsetZ = 0.0f;
     int m_rotation = 0;
-    int m_rotationOld = 0;
+    int m_tempRotation = 0;
     bool m_adjustChaperone = true;
+    bool m_rotateHand = false;
     bool m_moveShortcutRightPressed = false;
     bool m_moveShortcutLeftPressed = false;
     vr::ETrackedControllerRole m_activeMoveController;
@@ -62,6 +67,9 @@ private:
     bool m_lockYToggle = false;
     bool m_lockZToggle = false;
     std::chrono::system_clock::time_point lastMoveButtonClick[2];
+    // Set to -10.0 when last hand is invalid.
+    double lastHandYaw = -10.0;
+    double handYaw;
 
     unsigned settingsUpdateCounter = 0;
 
@@ -78,7 +86,9 @@ public:
     float offsetY() const;
     float offsetZ() const;
     int rotation() const;
+    int tempRotation() const;
     bool adjustChaperone() const;
+    bool rotateHand() const;
     bool moveShortcutRight() const;
     bool moveShortcutLeft() const;
     bool requireDoubleClick() const;
@@ -96,7 +106,11 @@ public slots:
 
     void setRotation( int value, bool notify = true );
 
+    void setTempRotation( int value, bool notify = true );
+
     void setAdjustChaperone( bool value, bool notify = true );
+
+    void setRotateHand( bool value, bool notify = true );
 
     void setMoveShortcutRight( bool value, bool notify = true );
     void setMoveShortcutLeft( bool value, bool notify = true );
@@ -110,7 +124,6 @@ public slots:
     void setLockY( bool value, bool notify = true );
     void setLockZ( bool value, bool notify = true );
 
-    void applyRotation();
     void reset();
 
 signals:
@@ -119,7 +132,9 @@ signals:
     void offsetYChanged( float value );
     void offsetZChanged( float value );
     void rotationChanged( int value );
+    void tempRotationChanged( int value );
     void adjustChaperoneChanged( bool value );
+    void rotateHandChanged( bool value );
     void moveShortcutRightChanged( bool value );
     void moveShortcutLeftChanged( bool value );
     void requireDoubleClickChanged( bool value );

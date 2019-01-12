@@ -47,11 +47,16 @@ MyStackViewPage {
                 }
 
                 GridLayout {
-                    columns: 5
+                    columns: 6
 
                     MyText {
                         text: "X-Axis (Left/Right):"
-                        Layout.preferredWidth: 500
+                        Layout.preferredWidth: 340
+                    }
+
+                    MyText {
+                        text: " "
+                        Layout.preferredWidth: 40
                     }
 
                     MyPushButton2 {
@@ -59,7 +64,7 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
-                            MoveCenterTabController.modOffsetX(-0.5)
+                            MoveCenterTabController.modOffsetX(-0.1)
                         }
                     }
 
@@ -87,12 +92,11 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
-                            MoveCenterTabController.modOffsetX(0.5)
+                            MoveCenterTabController.modOffsetX(0.1)
                         }
                     }
 
                     MyToggleButton {
-                        Layout.preferredWidth: 240
                         id: lockXToggle
                         text: "Lock X"
                         onCheckedChanged: {
@@ -102,14 +106,22 @@ MyStackViewPage {
 
                     MyText {
                         text: "Y-Axis (Down/Up):"
-                        Layout.preferredWidth: 380
+                        Layout.preferredWidth: 340
+                    }
+
+                    MyPushButton2 {
+                        Layout.preferredWidth: 40
+                        text: "0"
+                        onClicked: {
+                            MoveCenterTabController.offsetY = 0
+                        }
                     }
 
                     MyPushButton2 {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
-                            MoveCenterTabController.modOffsetY(-0.5)
+                            MoveCenterTabController.modOffsetY(-0.1)
                         }
                     }
 
@@ -136,13 +148,12 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
-                            MoveCenterTabController.modOffsetY(0.5)
+                            MoveCenterTabController.modOffsetY(0.1)
                         }
                     }
 
 
                     MyToggleButton {
-                        Layout.preferredWidth: 240
                         id: lockYToggle
                         text: "Lock Y"
                         onCheckedChanged: {
@@ -152,14 +163,19 @@ MyStackViewPage {
 
                     MyText {
                         text: "Z-Axis (Forth/Back):"
-                        Layout.preferredWidth: 380
+                        Layout.preferredWidth: 340
+                    }
+
+                    MyText {
+                        text: " "
+                        Layout.preferredWidth: 40
                     }
 
                     MyPushButton2 {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
-                            MoveCenterTabController.modOffsetZ(-0.5)
+                            MoveCenterTabController.modOffsetZ(-0.1)
                         }
                     }
 
@@ -186,13 +202,12 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
-                            MoveCenterTabController.modOffsetZ(0.5)
+                            MoveCenterTabController.modOffsetZ(0.1)
                         }
                     }
 
 
                     MyToggleButton {
-                        Layout.preferredWidth: 240
                         id: lockZToggle
                         text: "Lock Z"
                         onCheckedChanged: {
@@ -216,6 +231,7 @@ MyStackViewPage {
                 border.color: "#ffffff"
                 radius: 8
             }
+
             ColumnLayout {
                 anchors.fill: parent
 
@@ -233,11 +249,11 @@ MyStackViewPage {
                             Layout.preferredWidth: 40
                             text: "-"
                             onClicked: {
-                                var val = MoveCenterTabController.rotation - 45
+                                var val = MoveCenterTabController.tempRotation - 45
                                 if (val < -180) {
                                     val = val + 360;
                                 }
-                                MoveCenterTabController.rotation = val
+                                MoveCenterTabController.tempRotation = val
                             }
                         }
 
@@ -250,11 +266,11 @@ MyStackViewPage {
                             Layout.fillWidth: true
                             onPositionChanged: {
                                 var val = this.from + ( this.position  * (this.to - this.from))
-                                playspaceRotationText.text = Math.round(val) + "°"
+                                MoveCenterTabController.tempRotation = Math.round(val)
                             }
                             onValueChanged: {
-                                MoveCenterTabController.rotation = playspaceRotationSlider.value
-                                playspaceRotationText.text = Math.round(playspaceRotationSlider.value) + "°"
+                                MoveCenterTabController.tempRotation = Math.round(playspaceRotationSlider.value)
+                                //playspaceRotationText.text = Math.round(playspaceRotationSlider.value) + "°"
                             }
                         }
 
@@ -263,11 +279,11 @@ MyStackViewPage {
                             Layout.preferredWidth: 40
                             text: "+"
                             onClicked: {
-                                var val = MoveCenterTabController.rotation + 45
+                                var val = MoveCenterTabController.tempRotation + 45
                                 if (val > 180) {
                                     val = val -360;
                                 }
-                                MoveCenterTabController.rotation = val
+                                MoveCenterTabController.tempRotation = val
                             }
                         }
 
@@ -282,10 +298,10 @@ MyStackViewPage {
                                 var val = parseInt(input)
                                 if (!isNaN(val)) {
                                     val = val % 180
-                                    MoveCenterTabController.rotation = val
-                                    text = MoveCenterTabController.rotation + "°"
+                                    MoveCenterTabController.tempRotation = val
+                                    text = MoveCenterTabController.tempRotation + "°"
                                 } else {
-                                    text = MoveCenterTabController.rotation + "°"
+                                    text = MoveCenterTabController.tempRotation + "°"
                                 }
                             }
                         }
@@ -294,10 +310,22 @@ MyStackViewPage {
                             Layout.preferredWidth: 145
                             text:"Apply"
                             onClicked: {
-                               MoveCenterTabController.applyRotation()
+                                MoveCenterTabController.rotation = MoveCenterTabController.tempRotation
                             }
+                       }
+                    }
 
+                    MyToggleButton {
+                        id: playspaceRotateHandToggle
+                        text: "Virtual Move Shortcut Controls Rotation !ALPHA TEST!"
+                        onCheckedChanged: {
+                            MoveCenterTabController.rotateHand = this.checked
                         }
+                    }
+
+                    MyText {
+                        text: "Note: Stats page / TurnSignal will ignore turning during virtual move rotation."
+                        font.pointSize: 15.0
                     }
                 }
             }
@@ -318,6 +346,7 @@ MyStackViewPage {
             }
             ColumnLayout {
                 RowLayout {
+                    anchors.fill: parent
 
                     MyToggleButton {
                         id: moveShortcutLeft
@@ -346,27 +375,37 @@ MyStackViewPage {
             }
         }
 
-        MyToggleButton {
-            id: playspaceAdjustChaperoneToggle
-            text: "Adjust Chaperone"
-            onCheckedChanged: {
-                MoveCenterTabController.adjustChaperone = this.checked
+        ColumnLayout {
+            RowLayout {
+                anchors.fill: parent
+
+                MyPushButton {
+                    id: playspaceResetButton
+                    Layout.preferredWidth: 250
+                    text: "Reset"
+                    onClicked: {
+                        MoveCenterTabController.reset()
+                    }
+                }
+
+                MyToggleButton {
+                    id: playspaceAdjustChaperoneToggle
+                    text: "Adjust Chaperone"
+                    onCheckedChanged: {
+                        MoveCenterTabController.adjustChaperone = this.checked
+                    }
+                }
+
             }
         }
+
+
 
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
 
-        MyPushButton {
-            id: playspaceResetButton
-            Layout.preferredWidth: 250
-            text: "Reset"
-            onClicked: {
-                MoveCenterTabController.reset()
-            }
-        }
-
         Component.onCompleted: {
             playspaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
+            playspaceRotateHandToggle.checked = MoveCenterTabController.rotateHand
             playSpaceMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
             playSpaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
             playSpaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
@@ -409,8 +448,15 @@ MyStackViewPage {
             onRotationChanged: {
                 playspaceRotationSlider.value = MoveCenterTabController.rotation
             }
+            onTempRotationChanged: {
+                playspaceRotationSlider.value = MoveCenterTabController.tempRotation
+                playspaceRotationText.text = MoveCenterTabController.tempRotation + "°"
+            }
             onAdjustChaperoneChanged: {
                 playspaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
+            }
+            onRotateHandChanged: {
+                playspaceRotateHandToggle.checked = MoveCenterTabController.rotateHand
             }
             onMoveShortcutRightChanged: {
                 moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight
