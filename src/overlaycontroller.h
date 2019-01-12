@@ -42,7 +42,7 @@ namespace advsettings
 class OverlayController : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY( bool desktopMode READ isDesktopMode )
+    Q_PROPERTY( bool m_desktopMode READ isDesktopMode )
 
 public:
     static constexpr auto applicationOrganizationName = "matzman666";
@@ -64,51 +64,47 @@ private:
 
     std::unique_ptr<QTimer> m_pPumpEventsTimer;
     std::unique_ptr<QTimer> m_pRenderTimer;
-    bool dashboardVisible = false;
+    bool m_dashboardVisible = false;
 
     QPoint m_ptLastMouse;
     Qt::MouseButtons m_lastMouseButtons = 0;
 
-    bool desktopMode;
-    bool noSound;
+    bool m_desktopMode;
+    bool m_noSound;
 
     QUrl m_runtimePathUrl;
 
     utils::ChaperoneUtils m_chaperoneUtils;
 
-    QSoundEffect activationSoundEffect;
-    QSoundEffect focusChangedSoundEffect;
-    QSoundEffect alarm01SoundEffect;
+    QSoundEffect m_activationSoundEffect;
+    QSoundEffect m_focusChangedSoundEffect;
+    QSoundEffect m_alarm01SoundEffect;
 
 public: // I know it's an ugly hack to make them public to enable external
         // access, but I am too lazy to implement getters.
-    SteamVRTabController steamVRTabController;
-    ChaperoneTabController chaperoneTabController;
-    MoveCenterTabController moveCenterTabController;
-    FixFloorTabController fixFloorTabController;
-    AudioTabController audioTabController;
-    StatisticsTabController statisticsTabController;
-    SettingsTabController settingsTabController;
-    ReviveTabController reviveTabController;
-    UtilitiesTabController utilitiesTabController;
-    AccessibilityTabController accessibilityTabController;
+    SteamVRTabController m_steamVRTabController;
+    ChaperoneTabController m_chaperoneTabController;
+    MoveCenterTabController m_moveCenterTabController;
+    FixFloorTabController m_fixFloorTabController;
+    AudioTabController m_audioTabController;
+    StatisticsTabController m_statisticsTabController;
+    SettingsTabController m_settingsTabController;
+    ReviveTabController m_reviveTabController;
+    UtilitiesTabController m_utilitiesTabController;
+    AccessibilityTabController m_accessibilityTabController;
 
 private:
-    OverlayController( bool desktopMode, bool noSound )
-        : QObject(), desktopMode( desktopMode ), noSound( noSound )
-    {
-    }
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
 
 public:
+    OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
     virtual ~OverlayController();
 
-    void Init( QQmlEngine* qmlEngine );
     void Shutdown();
 
     bool isDashboardVisible()
     {
-        return dashboardVisible;
+        return m_dashboardVisible;
     }
 
     void SetWidget( QQuickItem* quickItem,
@@ -137,7 +133,7 @@ public:
 
     bool isDesktopMode()
     {
-        return desktopMode;
+        return m_desktopMode;
     };
 
     utils::ChaperoneUtils& chaperoneUtils() noexcept
@@ -174,21 +170,8 @@ signals:
 
 private:
     static QSettings* _appSettings;
-    static std::unique_ptr<OverlayController> singleton;
 
 public:
-    static OverlayController* getInstance()
-    {
-        return singleton.get();
-    }
-
-    static OverlayController* createInstance( bool desktopMode, bool noSound )
-    {
-        singleton.reset(
-            new advsettings::OverlayController( desktopMode, noSound ) );
-        return singleton.get();
-    }
-
     static QSettings* appSettings()
     {
         return _appSettings;

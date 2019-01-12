@@ -408,16 +408,8 @@ int main( int argc, char* argv[] )
 
         // The OverlayController handles the majority of the application specfic
         // things. It contains all the other tabs.
-        // It is created using a singleton pattern that destructs the old
-        // instance whenever createInstance is called. This is obviously not
-        // ideal since it can lead to dangling points and use after free.
-        // The constructor only sets two member vars called desktopMode and
-        // noSound, the rest of the initialization is done in Init. It is
-        // unknown why this is done.
-        advsettings::OverlayController* controller
-            = advsettings::OverlayController::createInstance( desktopMode,
-                                                              noSound );
-        controller->Init( &qmlEngine );
+        advsettings::OverlayController controller(
+            desktopMode, noSound, qmlEngine );
 
         QQmlComponent component(
             &qmlEngine, QUrl::fromLocalFile( "res/qml/mainwidget.qml" ) );
@@ -428,7 +420,7 @@ int main( int argc, char* argv[] )
                          << std::endl;
         }
         auto quickObj = component.create();
-        controller->SetWidget(
+        controller.SetWidget(
             qobject_cast<QQuickItem*>( quickObj ),
             advsettings::OverlayController::applicationDisplayName,
             advsettings::OverlayController::applicationKey );

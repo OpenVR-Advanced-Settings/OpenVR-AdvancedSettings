@@ -24,18 +24,14 @@
 // application namespace
 namespace advsettings
 {
-std::unique_ptr<OverlayController> OverlayController::singleton;
-
 constexpr const char* OverlayController::applicationVersionString;
 
 QSettings* OverlayController::_appSettings = nullptr;
 
-OverlayController::~OverlayController()
-{
-    Shutdown();
-}
-
-void OverlayController::Init( QQmlEngine* qmlEngine )
+OverlayController::OverlayController( bool desktopMode,
+                                      bool noSound,
+                                      QQmlEngine& qmlEngine )
+    : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound )
 {
     // Loading the OpenVR Runtime
     auto initError = vr::VRInitError_None;
@@ -63,9 +59,9 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
     QFileInfo activationSoundFileInfo( activationSoundFile );
     if ( activationSoundFileInfo.exists() && activationSoundFileInfo.isFile() )
     {
-        activationSoundEffect.setSource(
+        m_activationSoundEffect.setSource(
             QUrl::fromLocalFile( activationSoundFile ) );
-        activationSoundEffect.setVolume( 1.0 );
+        m_activationSoundEffect.setVolume( 1.0 );
     }
     else
     {
@@ -79,9 +75,9 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
     if ( focusChangedSoundFileInfo.exists()
          && focusChangedSoundFileInfo.isFile() )
     {
-        focusChangedSoundEffect.setSource(
+        m_focusChangedSoundEffect.setSource(
             QUrl::fromLocalFile( focusChangedSoundFile ) );
-        focusChangedSoundEffect.setVolume( 1.0 );
+        m_focusChangedSoundEffect.setVolume( 1.0 );
     }
     else
     {
@@ -94,8 +90,9 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
     QFileInfo alarm01SoundFileInfo( alarm01SoundFile );
     if ( alarm01SoundFileInfo.exists() && alarm01SoundFileInfo.isFile() )
     {
-        alarm01SoundEffect.setSource( QUrl::fromLocalFile( alarm01SoundFile ) );
-        alarm01SoundEffect.setVolume( 1.0 );
+        m_alarm01SoundEffect.setSource(
+            QUrl::fromLocalFile( alarm01SoundFile ) );
+        m_alarm01SoundEffect.setVolume( 1.0 );
     }
     else
     {
@@ -225,41 +222,52 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
     }
 
     // Init controllers
-    steamVRTabController.initStage1();
-    chaperoneTabController.initStage1();
-    moveCenterTabController.initStage1();
-    fixFloorTabController.initStage1();
-    audioTabController.initStage1();
-    statisticsTabController.initStage1();
-    settingsTabController.initStage1();
-    reviveTabController.initStage1( settingsTabController.forceRevivePage() );
-    utilitiesTabController.initStage1();
-    accessibilityTabController.initStage1();
+    m_steamVRTabController.initStage1();
+    m_chaperoneTabController.initStage1();
+    m_moveCenterTabController.initStage1();
+    m_fixFloorTabController.initStage1();
+    m_audioTabController.initStage1();
+    m_statisticsTabController.initStage1();
+    m_settingsTabController.initStage1();
+    m_reviveTabController.initStage1(
+        m_settingsTabController.forceRevivePage() );
+    m_utilitiesTabController.initStage1();
+    m_accessibilityTabController.initStage1();
 
     // Set qml context
-    qmlEngine->rootContext()->setContextProperty( "applicationVersion",
-                                                  getVersionString() );
-    qmlEngine->rootContext()->setContextProperty( "vrRuntimePath",
-                                                  getVRRuntimePathUrl() );
+    qmlEngine.rootContext()->setContextProperty( "applicationVersion",
+                                                 getVersionString() );
+    qmlEngine.rootContext()->setContextProperty( "vrRuntimePath",
+                                                 getVRRuntimePathUrl() );
 
-    // Register qml singletons
+    // Pretty disgusting trick to allow qmlRegisterSingletonType to continue
+    // working with the lambdas that were already there. The callback function
+    // in qmlRegisterSingletonType won't work with any lambdas that capture the
+    // environment. The alternative to making a static pointer to this was
+    // rewriting all QML to not be singletons, which should probably be done
+    // whenever possible.
+    static OverlayController* const objectAddress = this;
     qmlRegisterSingletonType<OverlayController>(
         "matzman666.advsettings",
         1,
         0,
         "OverlayController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = getInstance();
+            QObject* obj = objectAddress;
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
+    // It is unknown if it it intended for the generic in
+    // qmlRegisterSingletonType to be <SteamVRTabController> in all the
+    // remaining function calls, or if it's just a copy paste accident that
+    // happens to work.
     qmlRegisterSingletonType<SteamVRTabController>(
         "matzman666.advsettings",
         1,
         0,
         "SteamVRTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->steamVRTabController;
+            QObject* obj = &( objectAddress->m_steamVRTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -269,7 +277,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "ChaperoneTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->chaperoneTabController;
+            QObject* obj = &( objectAddress->m_chaperoneTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -279,7 +287,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "MoveCenterTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->moveCenterTabController;
+            QObject* obj = &( objectAddress->m_moveCenterTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -289,7 +297,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "FixFloorTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->fixFloorTabController;
+            QObject* obj = &( objectAddress->m_fixFloorTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -299,7 +307,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "AudioTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->audioTabController;
+            QObject* obj = &( objectAddress->m_audioTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -309,7 +317,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "StatisticsTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->statisticsTabController;
+            QObject* obj = &( objectAddress->m_statisticsTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -319,7 +327,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "SettingsTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->settingsTabController;
+            QObject* obj = &( objectAddress->m_settingsTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -329,7 +337,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "ReviveTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->reviveTabController;
+            QObject* obj = &( objectAddress->m_reviveTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -339,7 +347,7 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "UtilitiesTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->utilitiesTabController;
+            QObject* obj = &( objectAddress->m_utilitiesTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -349,10 +357,15 @@ void OverlayController::Init( QQmlEngine* qmlEngine )
         0,
         "AccessibilityTabController",
         []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &getInstance()->accessibilityTabController;
+            QObject* obj = &( objectAddress->m_accessibilityTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
+}
+
+OverlayController::~OverlayController()
+{
+    Shutdown();
 }
 
 void OverlayController::Shutdown()
@@ -394,7 +407,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                                    const std::string& name,
                                    const std::string& key )
 {
-    if ( !desktopMode )
+    if ( !m_desktopMode )
     {
         vr::VROverlayError overlayError
             = vr::VROverlay()->CreateDashboardOverlay(
@@ -481,16 +494,16 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     m_pPumpEventsTimer->setInterval( 20 );
     m_pPumpEventsTimer->start();
 
-    steamVRTabController.initStage2( this, m_pWindow.get() );
-    chaperoneTabController.initStage2( this, m_pWindow.get() );
-    moveCenterTabController.initStage2( this, m_pWindow.get() );
-    fixFloorTabController.initStage2( this, m_pWindow.get() );
-    audioTabController.initStage2( this, m_pWindow.get() );
-    statisticsTabController.initStage2( this, m_pWindow.get() );
-    settingsTabController.initStage2( this, m_pWindow.get() );
-    reviveTabController.initStage2( this, m_pWindow.get() );
-    utilitiesTabController.initStage2( this, m_pWindow.get() );
-    accessibilityTabController.initStage2( this, m_pWindow.get() );
+    m_steamVRTabController.initStage2( this, m_pWindow.get() );
+    m_chaperoneTabController.initStage2( this, m_pWindow.get() );
+    m_moveCenterTabController.initStage2( this, m_pWindow.get() );
+    m_fixFloorTabController.initStage2( this, m_pWindow.get() );
+    m_audioTabController.initStage2( this, m_pWindow.get() );
+    m_statisticsTabController.initStage2( this, m_pWindow.get() );
+    m_settingsTabController.initStage2( this, m_pWindow.get() );
+    m_reviveTabController.initStage2( this, m_pWindow.get() );
+    m_utilitiesTabController.initStage2( this, m_pWindow.get() );
+    m_accessibilityTabController.initStage2( this, m_pWindow.get() );
 }
 
 void OverlayController::OnRenderRequest()
@@ -503,7 +516,7 @@ void OverlayController::OnRenderRequest()
 
 void OverlayController::renderOverlay()
 {
-    if ( !desktopMode )
+    if ( !m_desktopMode )
     {
         // skip rendering if the overlay isn't visible
         if ( !vr::VROverlay()
@@ -653,8 +666,8 @@ void OverlayController::OnTimeoutPumpEvents()
             LOG( INFO ) << "Received quit request.";
             vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some time
                                                        // just in case
-            moveCenterTabController.reset();
-            chaperoneTabController.shutdown();
+            m_moveCenterTabController.reset();
+            m_chaperoneTabController.shutdown();
             Shutdown();
             QApplication::exit();
             return;
@@ -664,14 +677,14 @@ void OverlayController::OnTimeoutPumpEvents()
         case vr::VREvent_DashboardActivated:
         {
             LOG( DEBUG ) << "Dashboard activated";
-            dashboardVisible = true;
+            m_dashboardVisible = true;
         }
         break;
 
         case vr::VREvent_DashboardDeactivated:
         {
             LOG( DEBUG ) << "Dashboard deactivated";
-            dashboardVisible = false;
+            m_dashboardVisible = false;
         }
         break;
 
@@ -753,18 +766,19 @@ void OverlayController::OnTimeoutPumpEvents()
             = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
     }
 
-    fixFloorTabController.eventLoopTick( devicePoses );
-    statisticsTabController.eventLoopTick( devicePoses, leftSpeed, rightSpeed );
-    moveCenterTabController.eventLoopTick(
+    m_fixFloorTabController.eventLoopTick( devicePoses );
+    m_statisticsTabController.eventLoopTick(
+        devicePoses, leftSpeed, rightSpeed );
+    m_moveCenterTabController.eventLoopTick(
         vr::VRCompositor()->GetTrackingSpace(), devicePoses );
-    steamVRTabController.eventLoopTick();
-    chaperoneTabController.eventLoopTick(
+    m_steamVRTabController.eventLoopTick();
+    m_chaperoneTabController.eventLoopTick(
         devicePoses, leftSpeed, rightSpeed, hmdSpeed );
-    settingsTabController.eventLoopTick();
-    reviveTabController.eventLoopTick();
-    audioTabController.eventLoopTick();
-    utilitiesTabController.eventLoopTick();
-    accessibilityTabController.eventLoopTick(
+    m_settingsTabController.eventLoopTick();
+    m_reviveTabController.eventLoopTick();
+    m_audioTabController.eventLoopTick();
+    m_utilitiesTabController.eventLoopTick();
+    m_accessibilityTabController.eventLoopTick(
         vr::VRCompositor()->GetTrackingSpace() );
 
     if ( m_ulOverlayThumbnailHandle != vr::k_ulOverlayHandleInvalid )
@@ -1010,7 +1024,7 @@ QUrl OverlayController::getVRRuntimePathUrl()
 
 bool OverlayController::soundDisabled()
 {
-    return noSound;
+    return m_noSound;
 }
 
 const vr::VROverlayHandle_t& OverlayController::overlayHandle()
@@ -1039,44 +1053,44 @@ void OverlayController::showKeyboard( QString existingText,
 
 void OverlayController::playActivationSound()
 {
-    if ( !noSound )
+    if ( !m_noSound )
     {
-        activationSoundEffect.play();
+        m_activationSoundEffect.play();
     }
 }
 
 void OverlayController::playFocusChangedSound()
 {
-    if ( !noSound )
+    if ( !m_noSound )
     {
-        focusChangedSoundEffect.play();
+        m_focusChangedSoundEffect.play();
     }
 }
 
 void OverlayController::playAlarm01Sound( bool loop )
 {
-    if ( !noSound && !alarm01SoundEffect.isPlaying() )
+    if ( !m_noSound && !m_alarm01SoundEffect.isPlaying() )
     {
         if ( loop )
         {
-            alarm01SoundEffect.setLoopCount( QSoundEffect::Infinite );
+            m_alarm01SoundEffect.setLoopCount( QSoundEffect::Infinite );
         }
         else
         {
-            alarm01SoundEffect.setLoopCount( 1 );
+            m_alarm01SoundEffect.setLoopCount( 1 );
         }
-        alarm01SoundEffect.play();
+        m_alarm01SoundEffect.play();
     }
 }
 
 void OverlayController::setAlarm01SoundVolume( float vol )
 {
-    alarm01SoundEffect.setVolume( vol );
+    m_alarm01SoundEffect.setVolume( vol );
 }
 
 void OverlayController::cancelAlarm01Sound()
 {
-    alarm01SoundEffect.stop();
+    m_alarm01SoundEffect.stop();
 }
 
 } // namespace advsettings
