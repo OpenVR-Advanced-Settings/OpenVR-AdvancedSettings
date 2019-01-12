@@ -75,7 +75,7 @@ public:
     void reloadSteamVRProfiles();
     void saveSteamVRProfiles();
 
-    Q_INVOKABLE unsigned getSteamVRProfileCount();
+    Q_INVOKABLE int getSteamVRProfileCount();
     Q_INVOKABLE QString getSteamVRProfileName( unsigned index );
 
 public slots:

@@ -269,9 +269,9 @@ void SteamVRTabController::saveSteamVRProfiles()
     settings->endArray();
     settings->endGroup();
 }
-unsigned SteamVRTabController::getSteamVRProfileCount()
+int SteamVRTabController::getSteamVRProfileCount()
 {
-    return (unsigned) steamvrProfiles.size();
+    return static_cast<int>(steamvrProfiles.size());
 }
 
 QString SteamVRTabController::getSteamVRProfileName( const unsigned index )
