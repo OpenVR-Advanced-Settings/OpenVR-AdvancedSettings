@@ -349,12 +349,17 @@ MyStackViewPage {
                     property bool playButtonIsPlay: false
                     MyPushButton2 {
                         id: previousSongButton
-                        Layout.preferredHeight: 50
-                        Layout.preferredWidth: 50
+                        Layout.preferredHeight: 48
+                        Layout.preferredWidth: 48
                         contentItem: Image {
-                            source: "media_keys/outline_skip_previous_white_24dp.png"
-                            sourceSize.width: 50
-                            sourceSize.height: 50
+                            source: "media_keys/outline_skip_previous_white_24dp.svg"
+                            sourceSize: Qt.size( imgSP.sourceSize.width*2, imgSP.sourceSize.height*2 )
+                            Image{
+                                id: imgSP
+                                source: parent.source
+                                width:0
+                                height:0
+                            }
                             anchors.fill: parent
                         }
                         onClicked: {
@@ -370,18 +375,23 @@ MyStackViewPage {
                     }
                     MyPushButton2 {
                         id: stopSongButton
-                        Layout.preferredHeight: 50
-                        Layout.preferredWidth: 50
+                        Layout.preferredHeight: 48
+                        Layout.preferredWidth: 48
 
                         contentItem: Image {
-                            source: "media_keys/outline_stop_white_24dp.png"
-                            sourceSize.width: 50
-                            sourceSize.height: 50
+                            source: "media_keys/outline_stop_white_24dp.svg"
+                            sourceSize: Qt.size( imgS.sourceSize.width*2, imgS.sourceSize.height*2 )
+                            Image{
+                                id: imgS
+                                source: parent.source
+                                width:0
+                                height:0
+                            }
                             anchors.fill: parent
                         }
                         onClicked: {
                             UtilitiesTabController.sendMediaStopSong()
-                            playPauseSongButton.contentItem.source = "media_keys/outline_play_arrow_white_24dp.png"
+                            playPauseSongButton.contentItem.source = "media_keys/outline_play_arrow_white_24dp.svg"
                             parent.playButtonIsPlay = true
                         }
 
@@ -394,23 +404,28 @@ MyStackViewPage {
                     }
                     MyPushButton2 {
                         id: playPauseSongButton
-                        Layout.preferredHeight: 50
-                        Layout.preferredWidth: 50
+                        Layout.preferredHeight: 48
+                        Layout.preferredWidth: 48
                         contentItem: Image {
                             // Assume that music is playing when people enter VR.
-                            source: "media_keys/outline_pause_white_24dp.png"
-                            sourceSize.width: 50
-                            sourceSize.height: 50
+                            source: "media_keys/outline_pause_white_24dp.svg"
+                            sourceSize: Qt.size( imgP.sourceSize.width*2, imgP.sourceSize.height*2 )
+                            Image{
+                                id: imgP
+                                source: parent.source
+                                width:0
+                                height:0
+                            }
 
                             anchors.fill: parent
                         }
                         onClicked: {
                             UtilitiesTabController.sendMediaPausePlay()
                             if (parent.playButtonIsPlay) {
-                                playPauseSongButton.contentItem.source = "media_keys/outline_pause_white_24dp.png"
+                                playPauseSongButton.contentItem.source = "media_keys/outline_pause_white_24dp.svg"
                                 parent.playButtonIsPlay = false
                             } else {
-                                playPauseSongButton.contentItem.source = "media_keys/outline_play_arrow_white_24dp.png"
+                                playPauseSongButton.contentItem.source = "media_keys/outline_play_arrow_white_24dp.svg"
                                 parent.playButtonIsPlay = true
                             }
 
@@ -425,13 +440,18 @@ MyStackViewPage {
                     }
                     MyPushButton2 {
                         id: nextSongButton
-                        Layout.preferredHeight: 50
-                        Layout.preferredWidth: 50
+                        Layout.preferredHeight: 48
+                        Layout.preferredWidth: 48
 
                         contentItem: Image {
-                            source: "media_keys/outline_skip_next_white_24dp.png"
-                            sourceSize.width: 50
-                            sourceSize.height: 50
+                            source: "media_keys/outline_skip_next_white_24dp.svg"
+                            sourceSize: Qt.size( imgSN.sourceSize.width*2, imgSN.sourceSize.height*2 )
+                            Image{
+                                id: imgSN
+                                source: parent.source
+                                width:0
+                                height:0
+                            }
                             anchors.fill: parent
                         }
                         onClicked: {
