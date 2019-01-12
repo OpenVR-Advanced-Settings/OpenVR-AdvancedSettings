@@ -8,6 +8,7 @@ namespace advsettings
 void SteamVRTabController::initStage1()
 {
     initMotionSmoothing();
+    initSupersampleOverride();
     eventLoopTick();
     reloadSteamVRProfiles();
 }
@@ -19,106 +20,26 @@ void SteamVRTabController::initStage2( OverlayController* var_parent,
     this->widget = var_widget;
 }
 
-void SteamVRTabController::reloadSteamVRProfiles()
-{
-    steamvrProfiles.clear();
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "steamVRSettings" );
-    auto profileCount = settings->beginReadArray( "steamVRProfiles" );
-    for ( int i = 0; i < profileCount; i++ )
-    {
-        settings->setArrayIndex( i );
-        steamvrProfiles.emplace_back();
-        auto& entry = steamvrProfiles[i];
-        entry.profileName
-            = settings->value( "profileName" ).toString().toStdString();
-        entry.includesSupersampling
-            = settings->value( "includesSupersampling", false ).toBool();
-        if ( entry.includesSupersampling )
-        {
-            entry.supersampling
-                = settings->value( "supersampling", 1.0f ).toFloat();
-        }
-        entry.includesSupersampleFiltering
-            = settings->value( "includesSupersampleFiltering", false ).toBool();
-        if ( entry.includesSupersampleFiltering )
-        {
-            entry.supersampleFiltering
-                = settings->value( "supersampleFiltering", true ).toBool();
-        }
-        entry.includesMotionSmoothing
-            = settings->value( "includesMotionSmoothing", false ).toBool();
-        if ( entry.includesMotionSmoothing )
-        {
-            entry.motionSmooth
-                = settings->value( "motionSmooth", true ).toBool();
-        }
-    }
-    settings->endArray();
-    settings->endGroup();
-}
-
-void SteamVRTabController::saveSteamVRProfiles()
-{
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "steamVRSettings" );
-    settings->beginWriteArray( "steamVRProfiles" );
-    unsigned i = 0;
-    for ( auto& p : steamvrProfiles )
-    {
-        settings->setArrayIndex( i );
-        settings->setValue( "profileName",
-                            QString::fromStdString( p.profileName ) );
-        settings->setValue( "includesSupersampling", p.includesSupersampling );
-        if ( p.includesSupersampling )
-        {
-            settings->setValue( "supersampling", p.supersampling );
-        }
-        settings->setValue( "includesSupersampleFiltering",
-                            p.includesSupersampleFiltering );
-        if ( p.includesSupersampleFiltering )
-        {
-            settings->setValue( "supersampleFiltering",
-                                p.supersampleFiltering );
-        }
-        settings->setValue( "includesMotionSmoothing",
-                            p.includesMotionSmoothing );
-        if ( p.includesMotionSmoothing )
-        {
-            settings->setValue( "motionSmooth", p.motionSmooth );
-        }
-
-        i++;
-    }
-    settings->endArray();
-    settings->endGroup();
-}
-
-Q_INVOKABLE unsigned SteamVRTabController::getSteamVRProfileCount()
-{
-    return ( unsigned ) steamvrProfiles.size();
-}
-
-Q_INVOKABLE QString
-    SteamVRTabController::getSteamVRProfileName( unsigned index )
-{
-    if ( index >= steamvrProfiles.size() )
-    {
-        return QString();
-    }
-    else
-    {
-        return QString::fromStdString( steamvrProfiles[index].profileName );
-    }
-}
-// TODO DISC does it make any sense to check these settings once every ~
-// 1second. primary purpose seems to be to re-sync settings if changed via other
-// means?
 void SteamVRTabController::eventLoopTick()
 {
     if ( settingsUpdateCounter >= 50 )
     {
         vr::EVRSettingsError vrSettingsError;
+        // checks supersampling override and resynchs if necessry
+        // also prints error if can't find.
+        auto sso = vr::VRSettings()->GetBool(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_SteamVR_SupersampleManualOverride_Bool
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        setAllowSupersampleOverride( sso );
         // checks supersampling and re-synchs if necessary
         auto ss = vr::VRSettings()->GetFloat(
             vr::k_pch_SteamVR_Section,
@@ -185,10 +106,192 @@ void SteamVRTabController::eventLoopTick()
     }
 }
 
-void SteamVRTabController::setSuperSampling( float value, bool notify )
+/* -----------------------------------------*/
+/*------------------------------------------*/
+/*Profile Logic Functions*/
+
+void SteamVRTabController::addSteamVRProfile(
+    const QString name,
+    const bool includeSupersampling,
+    const bool includeSupersampleFiltering,
+    const bool includeMotionSmoothing )
+{
+    SteamVRProfile* profile = nullptr;
+    for ( auto& p : steamvrProfiles )
+    {
+        if ( p.profileName.compare( name.toStdString() ) == 0 )
+        {
+            profile = &p;
+            break;
+        }
+    }
+    if ( !profile )
+    {
+        auto i = steamvrProfiles.size();
+        steamvrProfiles.emplace_back();
+        profile = &steamvrProfiles[i];
+    }
+    profile->profileName = name.toStdString();
+    profile->includesSupersampling = includeSupersampling;
+    if ( includeSupersampling )
+    {
+        profile->supersampleOverride = m_allowSupersampleOverride;
+        profile->supersampling = m_superSampling;
+    }
+    profile->includesSupersampleFiltering = includeSupersampleFiltering;
+    if ( includeSupersampleFiltering )
+    {
+        profile->supersampleFiltering = m_allowSupersampleFiltering;
+    }
+    profile->includesMotionSmoothing = includeMotionSmoothing;
+    if ( includeMotionSmoothing )
+    {
+        profile->motionSmooth = m_motionSmoothing;
+    }
+    saveSteamVRProfiles();
+    OverlayController::appSettings()->sync();
+    emit steamVRProfilesUpdated();
+    emit steamVRProfileAdded();
+}
+
+void SteamVRTabController::applySteamVRProfile( const unsigned index )
+{
+    if ( index < steamvrProfiles.size() )
+    {
+        auto& profile = steamvrProfiles[index];
+        if ( profile.includesSupersampling )
+        {
+            setAllowSupersampleOverride( profile.supersampleOverride );
+            setSuperSampling( profile.supersampling );
+        }
+        if ( profile.includesSupersampleFiltering )
+        {
+            setAllowSupersampleFiltering( profile.supersampleFiltering );
+        }
+        if ( profile.includesMotionSmoothing )
+        {
+            setMotionSmoothing( profile.motionSmooth );
+        }
+        vr::VRSettings()->Sync( true );
+    }
+}
+
+void SteamVRTabController::deleteSteamVRProfile( const unsigned index )
+{
+    if ( index < steamvrProfiles.size() )
+    {
+        auto pos = steamvrProfiles.begin() + index;
+        steamvrProfiles.erase( pos );
+        saveSteamVRProfiles();
+        OverlayController::appSettings()->sync();
+        emit steamVRProfilesUpdated();
+    }
+}
+
+void SteamVRTabController::reloadSteamVRProfiles()
+{
+    steamvrProfiles.clear();
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "steamVRSettings" );
+    auto profileCount = settings->beginReadArray( "steamVRProfiles" );
+    for ( int i = 0; i < profileCount; i++ )
+    {
+        settings->setArrayIndex( i );
+        steamvrProfiles.emplace_back();
+        auto& entry = steamvrProfiles[i];
+        entry.profileName
+            = settings->value( "profileName" ).toString().toStdString();
+        entry.includesSupersampling
+            = settings->value( "includesSupersampling", false ).toBool();
+        if ( entry.includesSupersampling )
+        {
+            entry.supersampleOverride
+                = settings->value( "supersamplingOverride", false ).toBool();
+            entry.supersampling
+                = settings->value( "supersampling", 1.0f ).toFloat();
+        }
+        entry.includesSupersampleFiltering
+            = settings->value( "includesSupersampleFiltering", false ).toBool();
+        if ( entry.includesSupersampleFiltering )
+        {
+            entry.supersampleFiltering
+                = settings->value( "supersampleFiltering", true ).toBool();
+        }
+        entry.includesMotionSmoothing
+            = settings->value( "includesMotionSmoothing", false ).toBool();
+        if ( entry.includesMotionSmoothing )
+        {
+            entry.motionSmooth
+                = settings->value( "motionSmooth", true ).toBool();
+        }
+    }
+    settings->endArray();
+    settings->endGroup();
+}
+
+void SteamVRTabController::saveSteamVRProfiles()
+{
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "steamVRSettings" );
+    settings->beginWriteArray( "steamVRProfiles" );
+    unsigned i = 0;
+    for ( auto& p : steamvrProfiles )
+    {
+        settings->setArrayIndex( i );
+        settings->setValue( "profileName",
+                            QString::fromStdString( p.profileName ) );
+        settings->setValue( "includesSupersampling", p.includesSupersampling );
+        if ( p.includesSupersampling )
+        {
+            settings->setValue( "supersamplingOverride",
+                                p.supersampleOverride );
+            settings->setValue( "supersampling", p.supersampling );
+        }
+        settings->setValue( "includesSupersampleFiltering",
+                            p.includesSupersampleFiltering );
+        if ( p.includesSupersampleFiltering )
+        {
+            settings->setValue( "supersampleFiltering",
+                                p.supersampleFiltering );
+        }
+        settings->setValue( "includesMotionSmoothing",
+                            p.includesMotionSmoothing );
+        if ( p.includesMotionSmoothing )
+        {
+            settings->setValue( "motionSmooth", p.motionSmooth );
+        }
+
+        i++;
+    }
+    settings->endArray();
+    settings->endGroup();
+}
+int SteamVRTabController::getSteamVRProfileCount()
+{
+    return static_cast<int>( steamvrProfiles.size() );
+}
+
+QString SteamVRTabController::getSteamVRProfileName( const unsigned index )
+{
+    if ( index >= steamvrProfiles.size() )
+    {
+        return QString();
+    }
+    else
+    {
+        return QString::fromStdString( steamvrProfiles[index].profileName );
+    }
+}
+
+/* -----------------------------------------*/
+/*------------------------------------------*/
+/*SuperSample (value) functions*/
+
+void SteamVRTabController::setSuperSampling( float value, const bool notify )
 {
     bool override = false;
-    if ( value <= 0.01f )
+    // Mirrors Desktop Clamp
+    if ( value <= 0.2f )
     {
         LOG( WARNING ) << "Encountered a supersampling value <= 0.01, setting "
                           "supersampling to 1.0";
@@ -215,26 +318,16 @@ float SteamVRTabController::superSampling() const
 {
     return m_superSampling;
 }
-
+/* -----------------------------------------*/
+/*------------------------------------------*/
+/*Motion Smoothing boolean/toggle functions*/
 bool SteamVRTabController::motionSmoothing() const
 {
     return m_motionSmoothing;
 }
 
-/*
-Name: setMotionSmoothing
-
-input: bool value, bool notify
-output: none
-
-@value - value to be passed to m_motionSMoothing
-@notify - whether QML is informed of change (default true)
-
-Description:
-sets value of m_motionSmoothing AND applies changes in Steam/OpenVr
-*/
-
-void SteamVRTabController::setMotionSmoothing( bool value, bool notify )
+void SteamVRTabController::setMotionSmoothing( const bool value,
+                                               const bool notify )
 {
     if ( m_motionSmoothing != value )
     {
@@ -250,21 +343,6 @@ void SteamVRTabController::setMotionSmoothing( bool value, bool notify )
     }
 }
 
-/*
-Name: initMotionSmoothing
-
-input: none
-output: none
-
-description: Gets the Value of Motion Smoothing from Steam/OpenVR.
-Sets the member variable of motion smoothing for UI
-Adds error to log if unable to find variable.
-
-OnError:
-default value of true for motion smoothing is initialized, if user has disabled
-motion smoothing on their end, they will have to toggle the variable twice to
-get it to re-sync.
-*/
 void SteamVRTabController::initMotionSmoothing()
 {
     bool temporary = false;
@@ -285,13 +363,17 @@ void SteamVRTabController::initMotionSmoothing()
     setMotionSmoothing( temporary, true );
 }
 
+/* -----------------------------------------*/
+/*------------------------------------------*/
+/*Supersample Filtering boolean/toggle functions*/
+
 bool SteamVRTabController::allowSupersampleFiltering() const
 {
     return m_allowSupersampleFiltering;
 }
 
-void SteamVRTabController::setAllowSupersampleFiltering( bool value,
-                                                         bool notify )
+void SteamVRTabController::setAllowSupersampleFiltering( const bool value,
+                                                         const bool notify )
 {
     if ( m_allowSupersampleFiltering != value )
     {
@@ -308,6 +390,56 @@ void SteamVRTabController::setAllowSupersampleFiltering( bool value,
         }
     }
 }
+
+/* -----------------------------------------*/
+/*------------------------------------------*/
+/*SuperSampling Override boolean/toggle functions*/
+
+bool SteamVRTabController::allowSupersampleOverride() const
+{
+    return m_allowSupersampleOverride;
+}
+
+void SteamVRTabController::setAllowSupersampleOverride( const bool value,
+                                                        const bool notify )
+{
+    if ( m_allowSupersampleOverride != value )
+    {
+        m_allowSupersampleOverride = value;
+        vr::VRSettings()->SetBool(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
+            m_allowSupersampleOverride );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit allowSupersampleOverrideChanged( m_allowSupersampleOverride );
+        }
+    }
+}
+
+void SteamVRTabController::initSupersampleOverride()
+{
+    bool temporary = false;
+    vr::EVRSettingsError vrSettingsError;
+    temporary = vr::VRSettings()->GetBool(
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not get SuperSampling Override State \""
+                       << vr::k_pch_SteamVR_SupersampleManualOverride_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    vr::VRSettings()->Sync();
+    setAllowSupersampleOverride( temporary, true );
+}
+
+/*------------------------------------------*/
+/* -----------------------------------------*/
 
 void SteamVRTabController::reset()
 {
@@ -339,6 +471,45 @@ void SteamVRTabController::reset()
                               vrSettingsError );
     }
 
+    vr::VRSettings()->RemoveKeyInSection(
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not remove \""
+                       << vr::k_pch_SteamVR_SupersampleManualOverride_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+
+    vr::VRSettings()->RemoveKeyInSection(
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_SupersampleScale_Float,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not remove \""
+                       << vr::k_pch_SteamVR_SupersampleScale_Float
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+
+    vr::VRSettings()->RemoveKeyInSection(
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_MotionSmoothing_Bool,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not remove \""
+                       << vr::k_pch_SteamVR_MotionSmoothing_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+
     vr::VRSettings()->Sync();
     settingsUpdateCounter = 999; // Easiest way to get default values
 }
@@ -350,81 +521,6 @@ void SteamVRTabController::restartSteamVR()
                   + QString( "\"" );
     LOG( INFO ) << "SteamVR Restart Command: " << cmd;
     QProcess::startDetached( cmd );
-}
-
-void SteamVRTabController::addSteamVRProfile( QString name,
-                                              bool includeSupersampling,
-                                              bool includeSupersampleFiltering,
-                                              bool includeMotionSmoothing )
-{
-    SteamVRProfile* profile = nullptr;
-    for ( auto& p : steamvrProfiles )
-    {
-        if ( p.profileName.compare( name.toStdString() ) == 0 )
-        {
-            profile = &p;
-            break;
-        }
-    }
-    if ( !profile )
-    {
-        auto i = steamvrProfiles.size();
-        steamvrProfiles.emplace_back();
-        profile = &steamvrProfiles[i];
-    }
-    profile->profileName = name.toStdString();
-    profile->includesSupersampling = includeSupersampling;
-    if ( includeSupersampling )
-    {
-        profile->supersampling = m_superSampling;
-    }
-    profile->includesSupersampleFiltering = includeSupersampleFiltering;
-    if ( includeSupersampleFiltering )
-    {
-        profile->supersampleFiltering = m_allowSupersampleFiltering;
-    }
-    profile->includesMotionSmoothing = includeMotionSmoothing;
-    if ( includeMotionSmoothing )
-    {
-        profile->motionSmooth = m_motionSmoothing;
-    }
-    saveSteamVRProfiles();
-    OverlayController::appSettings()->sync();
-    emit steamVRProfilesUpdated();
-    emit steamVRProfileAdded();
-}
-
-void SteamVRTabController::applySteamVRProfile( unsigned index )
-{
-    if ( index < steamvrProfiles.size() )
-    {
-        auto& profile = steamvrProfiles[index];
-        if ( profile.includesSupersampling )
-        {
-            setSuperSampling( profile.supersampling );
-        }
-        if ( profile.includesSupersampleFiltering )
-        {
-            setAllowSupersampleFiltering( profile.supersampleFiltering );
-        }
-        if ( profile.includesMotionSmoothing )
-        {
-            setMotionSmoothing( profile.motionSmooth );
-        }
-        vr::VRSettings()->Sync( true );
-    }
-}
-
-void SteamVRTabController::deleteSteamVRProfile( unsigned index )
-{
-    if ( index < steamvrProfiles.size() )
-    {
-        auto pos = steamvrProfiles.begin() + index;
-        steamvrProfiles.erase( pos );
-        saveSteamVRProfiles();
-        OverlayController::appSettings()->sync();
-        emit steamVRProfilesUpdated();
-    }
 }
 
 } // namespace advsettings
