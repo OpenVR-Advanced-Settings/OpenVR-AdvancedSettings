@@ -334,105 +334,116 @@ MyStackViewPage {
                 border.color: "#ffffff"
                 radius: 8
             }
+            ColumnLayout {
+                anchors.fill: parent
 
-            RowLayout {
-                property bool playButtonIsPlay: false
-                MyPushButton2 {
-                    id: previousSongButton
-                    Layout.preferredHeight: 50
-                    Layout.preferredWidth: 50
-                    contentItem: Image {
-                        source: "media_keys/outline_skip_previous_white_24dp.png"
-                        sourceSize.width: 50
-                        sourceSize.height: 50
-                        anchors.fill: parent
-                    }
-                    onClicked: {
-                        UtilitiesTabController.sendMediaPreviousSong()
-                    }
-
-                    background: Rectangle {
-                        opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-                        color: "#406288"
-                        radius: 4
-                        anchors.fill: parent
-                    }
+                Rectangle {
+                    color: "#ffffff"
+                    height: 1
+                    Layout.fillWidth: true
+                    Layout.bottomMargin: 5
                 }
-                MyPushButton2 {
-                    id: stopSongButton
-                    Layout.preferredHeight: 50
-                    Layout.preferredWidth: 50
 
-                    contentItem: Image {
-                        source: "media_keys/outline_stop_white_24dp.png"
-                        sourceSize.width: 50
-                        sourceSize.height: 50
-                        anchors.fill: parent
-                    }
-                    onClicked: {
-                        UtilitiesTabController.sendMediaStopSong()
-                        playPauseSongButton.contentItem.source = "media_keys/outline_play_arrow_white_24dp.png"
-                        parent.playButtonIsPlay = true
-                    }
 
-                    background: Rectangle {
-                        opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-                        color: "#406288"
-                        radius: 4
-                        anchors.fill: parent
-                    }
-                }
-                MyPushButton2 {
-                    id: playPauseSongButton
-                    Layout.preferredHeight: 50
-                    Layout.preferredWidth: 50
-                    contentItem: Image {
-                        // Assume that music is playing when people enter VR.
-                        source: "media_keys/outline_pause_white_24dp.png"
-                        sourceSize.width: 50
-                        sourceSize.height: 50
+                RowLayout {
+                    property bool playButtonIsPlay: false
+                    MyPushButton2 {
+                        id: previousSongButton
+                        Layout.preferredHeight: 50
+                        Layout.preferredWidth: 50
+                        contentItem: Image {
+                            source: "media_keys/outline_skip_previous_white_24dp.png"
+                            sourceSize.width: 50
+                            sourceSize.height: 50
+                            anchors.fill: parent
+                        }
+                        onClicked: {
+                            UtilitiesTabController.sendMediaPreviousSong()
+                        }
 
-                        anchors.fill: parent
+                        background: Rectangle {
+                            opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
+                            color: "#406288"
+                            radius: 4
+                            anchors.fill: parent
+                        }
                     }
-                    onClicked: {
-                        UtilitiesTabController.sendMediaPausePlay()
-                        if (parent.playButtonIsPlay) {
-                            playPauseSongButton.contentItem.source = "media_keys/outline_pause_white_24dp.png"
-                            parent.playButtonIsPlay = false
-                        } else {
+                    MyPushButton2 {
+                        id: stopSongButton
+                        Layout.preferredHeight: 50
+                        Layout.preferredWidth: 50
+
+                        contentItem: Image {
+                            source: "media_keys/outline_stop_white_24dp.png"
+                            sourceSize.width: 50
+                            sourceSize.height: 50
+                            anchors.fill: parent
+                        }
+                        onClicked: {
+                            UtilitiesTabController.sendMediaStopSong()
                             playPauseSongButton.contentItem.source = "media_keys/outline_play_arrow_white_24dp.png"
                             parent.playButtonIsPlay = true
                         }
 
+                        background: Rectangle {
+                            opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
+                            color: "#406288"
+                            radius: 4
+                            anchors.fill: parent
+                        }
                     }
+                    MyPushButton2 {
+                        id: playPauseSongButton
+                        Layout.preferredHeight: 50
+                        Layout.preferredWidth: 50
+                        contentItem: Image {
+                            // Assume that music is playing when people enter VR.
+                            source: "media_keys/outline_pause_white_24dp.png"
+                            sourceSize.width: 50
+                            sourceSize.height: 50
 
-                    background: Rectangle {
-                        opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-                        color: "#406288"
-                        radius: 4
-                        anchors.fill: parent
-                    }
-                }
-                MyPushButton2 {
-                    id: nextSongButton
-                    Layout.preferredHeight: 50
-                    Layout.preferredWidth: 50
+                            anchors.fill: parent
+                        }
+                        onClicked: {
+                            UtilitiesTabController.sendMediaPausePlay()
+                            if (parent.playButtonIsPlay) {
+                                playPauseSongButton.contentItem.source = "media_keys/outline_pause_white_24dp.png"
+                                parent.playButtonIsPlay = false
+                            } else {
+                                playPauseSongButton.contentItem.source = "media_keys/outline_play_arrow_white_24dp.png"
+                                parent.playButtonIsPlay = true
+                            }
 
-                    contentItem: Image {
-                        source: "media_keys/outline_skip_next_white_24dp.png"
-                        sourceSize.width: 50
-                        sourceSize.height: 50
-                        anchors.fill: parent
-                    }
-                    onClicked: {
-                        UtilitiesTabController.sendMediaNextSong()
-                    }
+                        }
 
-                    background: Rectangle {
-                        opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-                        color: "#406288"
-                        radius: 4
-                        anchors.fill: parent
+                        background: Rectangle {
+                            opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
+                            color: "#406288"
+                            radius: 4
+                            anchors.fill: parent
+                        }
+                    }
+                    MyPushButton2 {
+                        id: nextSongButton
+                        Layout.preferredHeight: 50
+                        Layout.preferredWidth: 50
+
+                        contentItem: Image {
+                            source: "media_keys/outline_skip_next_white_24dp.png"
+                            sourceSize.width: 50
+                            sourceSize.height: 50
+                            anchors.fill: parent
+                        }
+                        onClicked: {
+                            UtilitiesTabController.sendMediaNextSong()
+                        }
+
+                        background: Rectangle {
+                            opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
+                            color: "#406288"
+                            radius: 4
+                            anchors.fill: parent
+                        }
                     }
                 }
             }
