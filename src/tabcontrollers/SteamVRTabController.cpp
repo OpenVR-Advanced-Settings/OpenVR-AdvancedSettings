@@ -20,14 +20,6 @@ void SteamVRTabController::initStage2( OverlayController* var_parent,
     this->widget = var_widget;
 }
 
-/*
-name: eventLoopTick()
-input: none
-output: none
-
-Description: Checks all settings, logs error If any, and re-synchs value between
-Steam/OVR
-*/
 void SteamVRTabController::eventLoopTick()
 {
     if ( settingsUpdateCounter >= 50 )
@@ -118,23 +110,11 @@ void SteamVRTabController::eventLoopTick()
 /*------------------------------------------*/
 /*Profile Logic Functions*/
 
-/*
-name:
 
-input: @name - QString name of profile (from QML UI)
-       @includeSupersampling, @includeSupersampleFiltering,
-@includeMotionSmoothing bool values to include associated settings
-
-output: none
-
-Description: Adds a steamVrProfile, name given by @name, and what settings to
-save given by bool params
-
-*/
-void SteamVRTabController::addSteamVRProfile( QString name,
-                                              bool includeSupersampling,
-                                              bool includeSupersampleFiltering,
-                                              bool includeMotionSmoothing )
+void SteamVRTabController::addSteamVRProfile( const QString name,
+                                              const bool includeSupersampling,
+                                              const bool includeSupersampleFiltering,
+                                              const bool includeMotionSmoothing )
 {
     SteamVRProfile* profile = nullptr;
     for ( auto& p : steamvrProfiles )
@@ -174,17 +154,8 @@ void SteamVRTabController::addSteamVRProfile( QString name,
     emit steamVRProfileAdded();
 }
 
-/*
-name: applySteamVRProfile
 
-input: @index - unsigned index of selected profile
-output: none
-
-description: applies logic of saved settings, based on selected profile via
-@index
-
-*/
-void SteamVRTabController::applySteamVRProfile( unsigned index )
+void SteamVRTabController::applySteamVRProfile( const unsigned index )
 {
     if ( index < steamvrProfiles.size() )
     {
@@ -206,16 +177,8 @@ void SteamVRTabController::applySteamVRProfile( unsigned index )
     }
 }
 
-/*
-name: deleteSteamVRProfile
 
-input:@index - unsigned index of a profile
-output:none
-
-description: Deletes the profile Given by @index
-
-*/
-void SteamVRTabController::deleteSteamVRProfile( unsigned index )
+void SteamVRTabController::deleteSteamVRProfile( const unsigned index )
 {
     if ( index < steamvrProfiles.size() )
     {
@@ -227,15 +190,7 @@ void SteamVRTabController::deleteSteamVRProfile( unsigned index )
     }
 }
 
-/*
-name: reloadSteamVrProfile
 
-input: none
-output: none
-
-description: Reloads profiles from disk, and stores in steamvrProfiles
-
-*/
 void SteamVRTabController::reloadSteamVRProfiles()
 {
     steamvrProfiles.clear();
@@ -276,15 +231,6 @@ void SteamVRTabController::reloadSteamVRProfiles()
     settings->endArray();
     settings->endGroup();
 }
-/*
-name: saveSteamVRProfiles
-
-input:none
-output:none
-
-description: saves the steamvrProfile object to disk.
-
-*/
 
 void SteamVRTabController::saveSteamVRProfiles()
 {
@@ -325,10 +271,10 @@ void SteamVRTabController::saveSteamVRProfiles()
 }
 unsigned SteamVRTabController::getSteamVRProfileCount()
 {
-    return ( unsigned ) steamvrProfiles.size();
+    return (unsigned) steamvrProfiles.size();
 }
 
-QString SteamVRTabController::getSteamVRProfileName( unsigned index )
+QString SteamVRTabController::getSteamVRProfileName( const unsigned index )
 {
     if ( index >= steamvrProfiles.size() )
     {
@@ -344,22 +290,13 @@ QString SteamVRTabController::getSteamVRProfileName( unsigned index )
 /*------------------------------------------*/
 /*SuperSample (value) functions*/
 
-/*
-Name: setSuperSampling()
 
-inputs: @value - float value to set supersampling to
-        @notify - bool value to decide to update qml or not Default = true
-outputs: none
 
-Description:
-Sets supersampling value based on @value and synchs with steam/OVR
-Updates QML/UI based on @notify
-*/
-
-void SteamVRTabController::setSuperSampling( float value, bool notify )
+void SteamVRTabController::setSuperSampling( float value, const bool notify )
 {
     bool override = false;
-    if ( value <= 0.01f )
+	//Mirrors Desktop Clamp
+    if ( value <= 0.2f )
     {
         LOG( WARNING ) << "Encountered a supersampling value <= 0.01, setting "
                           "supersampling to 1.0";
@@ -394,20 +331,9 @@ bool SteamVRTabController::motionSmoothing() const
     return m_motionSmoothing;
 }
 
-/*
-Name: setMotionSmoothing
 
-input: bool value, bool notify
-output: none
 
-@value - value to be passed to m_motionSMoothing
-@notify - whether QML is informed of change (default true)
-
-Description:
-sets value of m_motionSmoothing AND applies changes in Steam/OpenVr
-*/
-
-void SteamVRTabController::setMotionSmoothing( bool value, bool notify )
+void SteamVRTabController::setMotionSmoothing( const bool value, const bool notify )
 {
     if ( m_motionSmoothing != value )
     {
@@ -423,21 +349,7 @@ void SteamVRTabController::setMotionSmoothing( bool value, bool notify )
     }
 }
 
-/*
-Name: initMotionSmoothing
 
-input: none
-output: none
-
-description: Gets the Value of Motion Smoothing from Steam/OpenVR.
-Sets the member variable of motion smoothing for UI
-Adds error to log if unable to find variable.
-
-OnError:
-default value of true for motion smoothing is initialized, if user has disabled
-motion smoothing on their end, they will have to toggle the variable twice to
-get it to re-sync.
-*/
 void SteamVRTabController::initMotionSmoothing()
 {
     bool temporary = false;
@@ -467,20 +379,10 @@ bool SteamVRTabController::allowSupersampleFiltering() const
     return m_allowSupersampleFiltering;
 }
 
-/*
-Name setAllowSupersampleFiltering
 
-input: @value - bool value to check against stored member variable
-       @notify - bool value, default true. whether to update QML or not
-output: none
 
-description:
-Sets the value of the supersample filtering option, and handles synchronization
-with Steam/OVR
-*/
-
-void SteamVRTabController::setAllowSupersampleFiltering( bool value,
-                                                         bool notify )
+void SteamVRTabController::setAllowSupersampleFiltering(const bool value,
+	const bool notify )
 {
     if ( m_allowSupersampleFiltering != value )
     {
@@ -507,19 +409,9 @@ bool SteamVRTabController::allowSupersampleOverride() const
     return m_allowSupersampleOverride;
 }
 
-/*
-Name setAllowSuperSampleOverride
 
-input: @value - bool value of SSOverride
-       @notify - bool value, default true. whether to update QML or not
-output: none
-
-description:
-Sets the value of the SuperSample override, and handles synchronization with
-Steam/OVR
-*/
-void SteamVRTabController::setAllowSupersampleOverride( bool value,
-                                                        bool notify )
+void SteamVRTabController::setAllowSupersampleOverride( const bool value,
+                                                        const bool notify )
 {
     if ( m_allowSupersampleOverride != value )
     {
@@ -536,21 +428,7 @@ void SteamVRTabController::setAllowSupersampleOverride( bool value,
     }
 }
 
-/*
-Name: initSupersampleOverride
 
-input: none
-output: none
-
-description: Gets the Value of the SuperSample Override from Steam/OpenVR.
-Sets the member variable @m_allowSupersampleOverride
-Adds error to log if unable to find variable.
-
-OnError:
-default value of FALSE for SS overide is initialized, if user has disabled
-SS override on their end, they will have to toggle the variable twice to
-get it to re-sync.
-*/
 void SteamVRTabController::initSupersampleOverride()
 {
     bool temporary = false;
@@ -574,14 +452,7 @@ void SteamVRTabController::initSupersampleOverride()
 /*------------------------------------------*/
 /* -----------------------------------------*/
 
-/*
-name: reset
 
-input: none
-output: none
-
-description: resets and resynchs the SteamVR keys (settings)
-*/
 void SteamVRTabController::reset()
 {
     vr::EVRSettingsError vrSettingsError;
@@ -654,15 +525,7 @@ void SteamVRTabController::reset()
     vr::VRSettings()->Sync();
     settingsUpdateCounter = 999; // Easiest way to get default values
 }
-/*
-name:restartSteamVR
 
-input: none
-output: none
-
-description: restarts steamvr
-
-*/
 void SteamVRTabController::restartSteamVR()
 {
     QString cmd = QString( "cmd.exe /C restartvrserver.bat \"" )

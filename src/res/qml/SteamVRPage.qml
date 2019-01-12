@@ -193,7 +193,7 @@ MyStackViewPage {
 
             MySlider {
                 id: steamvrSupersamplingSlider
-                from: 0.1
+                from: 0.2
                 to: 5.0
                 stepSize: 0.1
                 value: 1.0
