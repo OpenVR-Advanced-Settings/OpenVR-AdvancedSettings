@@ -28,4 +28,24 @@ void KeyboardInputDummy::sendKeyboardAltTab()
     // noop
 }
 
+void KeyboardInputDummy::sendMediaNextSong()
+{
+    // noop
+}
+
+void KeyboardInputDummy::sendMediaPreviousSong()
+{
+    // noop
+}
+
+void KeyboardInputDummy::sendMediaPausePlay()
+{
+    // noop
+}
+
+void KeyboardInputDummy::sendMediaStopSong()
+{
+    // noop
+}
+
 } // namespace advsettings

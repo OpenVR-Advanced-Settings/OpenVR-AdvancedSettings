@@ -248,4 +248,36 @@ void KeyboardInputWindows::sendKeyboardAltTab()
     sendKeyboardInputRaw( numberOfActions, actions );
 }
 
+/*!
+Sends a media key Next Song button to Windows.
+*/
+void KeyboardInputWindows::sendMediaNextSong()
+{
+    sendKeyPressAndRelease( VK_MEDIA_NEXT_TRACK );
+}
+
+/*!
+Sends a media key Previous Song button to Windows.
+*/
+void KeyboardInputWindows::sendMediaPreviousSong()
+{
+    sendKeyPressAndRelease( VK_MEDIA_PREV_TRACK );
+}
+
+/*!
+Sends a media key Play/Pause button to Windows.
+*/
+void KeyboardInputWindows::sendMediaPausePlay()
+{
+    sendKeyPressAndRelease( VK_MEDIA_PLAY_PAUSE );
+}
+
+/*!
+Sends a media key Stop button to Windows.
+*/
+void KeyboardInputWindows::sendMediaStopSong()
+{
+    sendKeyPressAndRelease( VK_MEDIA_STOP );
+}
+
 } // namespace advsettings

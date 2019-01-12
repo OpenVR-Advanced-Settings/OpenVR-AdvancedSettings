@@ -13,6 +13,10 @@ public:
     virtual void sendKeyboardEnter() override;
     virtual void sendKeyboardBackspace( const int count ) override;
     virtual void sendKeyboardAltTab() override;
+    virtual void sendMediaNextSong() override;
+    virtual void sendMediaPreviousSong() override;
+    virtual void sendMediaPausePlay() override;
+    virtual void sendMediaStopSong() override;
 };
 
 } // namespace advsettings
