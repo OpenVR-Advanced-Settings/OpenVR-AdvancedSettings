@@ -85,8 +85,9 @@ OverlayController::OverlayController( bool desktopMode,
                      << focusChangedSoundFile;
     }
 
-    QString alarm01SoundFile = QApplication::applicationDirPath().append(
-        "/res/sounds/alarm01.wav" );
+    QString alarm01SoundFile
+        = QStandardPaths::locate( QStandardPaths::AppDataLocation,
+                                  QStringLiteral( "res/sounds/alarm01.wav" ) );
     QFileInfo alarm01SoundFileInfo( alarm01SoundFile );
     if ( alarm01SoundFileInfo.exists() && alarm01SoundFileInfo.isFile() )
     {
@@ -433,13 +434,14 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse );
         vr::VROverlay()->SetOverlayFlag(
             m_ulOverlayHandle, vr::VROverlayFlags_SendVRScrollEvents, true );
-        std::string thumbIconPath
-            = QApplication::applicationDirPath().toStdString()
-              + "\\res\\thumbicon.png";
-        if ( QFile::exists( QString::fromStdString( thumbIconPath ) ) )
+        QString thumbIconPath
+            = QStandardPaths::locate( QStandardPaths::AppDataLocation,
+                                      QStringLiteral( "res/thumbicon.png" ) );
+        if ( QFile::exists( thumbIconPath ) )
         {
-            vr::VROverlay()->SetOverlayFromFile( m_ulOverlayThumbnailHandle,
-                                                 thumbIconPath.c_str() );
+            vr::VROverlay()->SetOverlayFromFile(
+                m_ulOverlayThumbnailHandle,
+                thumbIconPath.toStdString().c_str() );
         }
         else
         {
