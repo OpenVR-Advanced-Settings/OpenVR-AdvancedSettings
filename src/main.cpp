@@ -411,8 +411,11 @@ int main( int argc, char* argv[] )
         advsettings::OverlayController controller(
             desktopMode, noSound, qmlEngine );
 
-        QQmlComponent component(
-            &qmlEngine, QUrl::fromLocalFile( "res/qml/mainwidget.qml" ) );
+        QString path = QStandardPaths::locate(
+            QStandardPaths::AppDataLocation,
+            QStringLiteral( "res/qml/mainwidget.qml" ) );
+
+        QQmlComponent component( &qmlEngine, QUrl::fromLocalFile( path ) );
         auto errors = component.errors();
         for ( auto& e : errors )
         {
