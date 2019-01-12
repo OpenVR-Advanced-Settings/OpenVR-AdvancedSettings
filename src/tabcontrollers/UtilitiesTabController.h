@@ -70,6 +70,10 @@ public slots:
     void sendKeyboardEnter();
     void sendKeyboardAltTab();
     void sendKeyboardBackspace( const int count );
+    void sendMediaNextSong();
+    void sendMediaPreviousSong();
+    void sendMediaPausePlay();
+    void sendMediaStopSong();
 
     void setAlarmEnabled( bool enabled, bool notify = true );
     void setAlarmIsModal( bool modal, bool notify = true );

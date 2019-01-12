@@ -88,6 +88,23 @@ void UtilitiesTabController::sendKeyboardBackspace( const int count )
     keyboardInput->sendKeyboardBackspace( count );
 }
 
+void UtilitiesTabController::sendMediaNextSong()
+{
+    keyboardInput->sendMediaNextSong();
+}
+void UtilitiesTabController::sendMediaPreviousSong()
+{
+    keyboardInput->sendMediaPreviousSong();
+}
+void UtilitiesTabController::sendMediaPausePlay()
+{
+    keyboardInput->sendMediaPausePlay();
+}
+void UtilitiesTabController::sendMediaStopSong()
+{
+    keyboardInput->sendMediaStopSong();
+}
+
 bool UtilitiesTabController::alarmEnabled() const
 {
     return m_alarmEnabled;
