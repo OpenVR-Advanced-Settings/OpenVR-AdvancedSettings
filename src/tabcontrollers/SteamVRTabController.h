@@ -29,10 +29,6 @@ class SteamVRTabController : public QObject
     Q_OBJECT
     Q_PROPERTY( float superSampling READ superSampling WRITE setSuperSampling
                     NOTIFY superSamplingChanged )
-    /*Q_PROPERTY(
-        float compositorSuperSampling READ compositorSuperSampling WRITE
-            setCompositorSuperSampling NOTIFY compositorSuperSamplingChanged )
-    */
 
     Q_PROPERTY( bool motionSmoothing READ motionSmoothing WRITE
                     setMotionSmoothing NOTIFY motionSmoothingChanged )
@@ -48,7 +44,6 @@ private:
     QQuickWindow* widget;
 
     float m_superSampling = 1.0;
-    // float m_compositorSuperSampling = 1.0;
     bool m_motionSmoothing = true;
     bool m_allowSupersampleFiltering = true;
     bool m_allowSupersampleOverride = false;
@@ -67,7 +62,6 @@ public:
     void eventLoopTick();
 
     float superSampling() const;
-    // float compositorSuperSampling() const;
     bool motionSmoothing() const;
     bool allowSupersampleFiltering() const;
     bool allowSupersampleOverride() const;
@@ -80,7 +74,6 @@ public:
 
 public slots:
     void setSuperSampling( float value, bool notify = true );
-    // void setCompositorSuperSampling( float value, bool notify = true );
     void setMotionSmoothing( bool value, bool notify = true );
     void setAllowSupersampleFiltering( bool value, bool notify = true );
     void setAllowSupersampleOverride( bool value, bool notify = true );
@@ -97,7 +90,6 @@ public slots:
 
 signals:
     void superSamplingChanged( float value );
-    // void compositorSuperSamplingChanged( float value );
     void motionSmoothingChanged( bool value );
     void allowSupersampleFilteringChanged( bool value );
     void allowSupersampleOverrideChanged( bool value );
