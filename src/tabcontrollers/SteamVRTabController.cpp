@@ -110,11 +110,11 @@ void SteamVRTabController::eventLoopTick()
 /*------------------------------------------*/
 /*Profile Logic Functions*/
 
-
-void SteamVRTabController::addSteamVRProfile( const QString name,
-                                              const bool includeSupersampling,
-                                              const bool includeSupersampleFiltering,
-                                              const bool includeMotionSmoothing )
+void SteamVRTabController::addSteamVRProfile(
+    const QString name,
+    const bool includeSupersampling,
+    const bool includeSupersampleFiltering,
+    const bool includeMotionSmoothing )
 {
     SteamVRProfile* profile = nullptr;
     for ( auto& p : steamvrProfiles )
@@ -154,7 +154,6 @@ void SteamVRTabController::addSteamVRProfile( const QString name,
     emit steamVRProfileAdded();
 }
 
-
 void SteamVRTabController::applySteamVRProfile( const unsigned index )
 {
     if ( index < steamvrProfiles.size() )
@@ -177,7 +176,6 @@ void SteamVRTabController::applySteamVRProfile( const unsigned index )
     }
 }
 
-
 void SteamVRTabController::deleteSteamVRProfile( const unsigned index )
 {
     if ( index < steamvrProfiles.size() )
@@ -189,7 +187,6 @@ void SteamVRTabController::deleteSteamVRProfile( const unsigned index )
         emit steamVRProfilesUpdated();
     }
 }
-
 
 void SteamVRTabController::reloadSteamVRProfiles()
 {
@@ -271,7 +268,7 @@ void SteamVRTabController::saveSteamVRProfiles()
 }
 int SteamVRTabController::getSteamVRProfileCount()
 {
-    return static_cast<int>(steamvrProfiles.size());
+    return static_cast<int>( steamvrProfiles.size() );
 }
 
 QString SteamVRTabController::getSteamVRProfileName( const unsigned index )
@@ -290,12 +287,10 @@ QString SteamVRTabController::getSteamVRProfileName( const unsigned index )
 /*------------------------------------------*/
 /*SuperSample (value) functions*/
 
-
-
 void SteamVRTabController::setSuperSampling( float value, const bool notify )
 {
     bool override = false;
-	//Mirrors Desktop Clamp
+    // Mirrors Desktop Clamp
     if ( value <= 0.2f )
     {
         LOG( WARNING ) << "Encountered a supersampling value <= 0.01, setting "
@@ -331,9 +326,8 @@ bool SteamVRTabController::motionSmoothing() const
     return m_motionSmoothing;
 }
 
-
-
-void SteamVRTabController::setMotionSmoothing( const bool value, const bool notify )
+void SteamVRTabController::setMotionSmoothing( const bool value,
+                                               const bool notify )
 {
     if ( m_motionSmoothing != value )
     {
@@ -348,7 +342,6 @@ void SteamVRTabController::setMotionSmoothing( const bool value, const bool noti
         }
     }
 }
-
 
 void SteamVRTabController::initMotionSmoothing()
 {
@@ -379,10 +372,8 @@ bool SteamVRTabController::allowSupersampleFiltering() const
     return m_allowSupersampleFiltering;
 }
 
-
-
-void SteamVRTabController::setAllowSupersampleFiltering(const bool value,
-	const bool notify )
+void SteamVRTabController::setAllowSupersampleFiltering( const bool value,
+                                                         const bool notify )
 {
     if ( m_allowSupersampleFiltering != value )
     {
@@ -409,7 +400,6 @@ bool SteamVRTabController::allowSupersampleOverride() const
     return m_allowSupersampleOverride;
 }
 
-
 void SteamVRTabController::setAllowSupersampleOverride( const bool value,
                                                         const bool notify )
 {
@@ -427,7 +417,6 @@ void SteamVRTabController::setAllowSupersampleOverride( const bool value,
         }
     }
 }
-
 
 void SteamVRTabController::initSupersampleOverride()
 {
@@ -451,7 +440,6 @@ void SteamVRTabController::initSupersampleOverride()
 
 /*------------------------------------------*/
 /* -----------------------------------------*/
-
 
 void SteamVRTabController::reset()
 {
