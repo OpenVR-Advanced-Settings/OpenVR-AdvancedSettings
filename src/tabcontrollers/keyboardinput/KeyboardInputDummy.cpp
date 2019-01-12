@@ -17,13 +17,33 @@ void KeyboardInputDummy::sendKeyboardEnter()
     // noop
 }
 
-void KeyboardInputDummy::sendKeyboardBackspace( int count )
+void KeyboardInputDummy::sendKeyboardBackspace( const int count )
 {
     // noop
     UNREFERENCED_PARAMETER( count );
 }
 
 void KeyboardInputDummy::sendKeyboardAltTab()
+{
+    // noop
+}
+
+void KeyboardInputDummy::sendMediaNextSong()
+{
+    // noop
+}
+
+void KeyboardInputDummy::sendMediaPreviousSong()
+{
+    // noop
+}
+
+void KeyboardInputDummy::sendMediaPausePlay()
+{
+    // noop
+}
+
+void KeyboardInputDummy::sendMediaStopSong()
 {
     // noop
 }
