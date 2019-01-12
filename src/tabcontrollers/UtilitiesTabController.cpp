@@ -83,7 +83,7 @@ void UtilitiesTabController::sendKeyboardAltTab()
     keyboardInput->sendKeyboardAltTab();
 }
 
-void UtilitiesTabController::sendKeyboardBackspace( int count )
+void UtilitiesTabController::sendKeyboardBackspace( const int count )
 {
     keyboardInput->sendKeyboardBackspace( count );
 }

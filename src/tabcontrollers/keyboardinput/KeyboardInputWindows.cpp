@@ -15,6 +15,9 @@ enum class KeyStatus
     Down,
 };
 
+/*!
+Fills out an INPUT struct ip with scanCode and keyup status.
+*/
 void fillKiStruct( INPUT& ip, WORD scanCode, bool keyup )
 {
     ip.type = INPUT_KEYBOARD;
@@ -32,6 +35,12 @@ void fillKiStruct( INPUT& ip, WORD scanCode, bool keyup )
     ip.ki.time = 0;
 };
 
+/*!
+Calls SendInput on an INPUT struct and has associated error handling.
+
+inputCount can't be deduced from input because of implicit conversions from
+arrays to pointers when passed as arguments.
+*/
 void sendKeyboardInputRaw( const int inputCount, const LPINPUT input )
 {
     const auto success
@@ -190,44 +199,53 @@ void KeyboardInputWindows::sendKeyboardInput( QString input )
     }
 }
 
+/*!
+Sends a single Enter keypress to Windows.
+*/
 void KeyboardInputWindows::sendKeyboardEnter()
 {
-    LPINPUT ips = new INPUT[2];
-    fillKiStruct( ips[0], VK_RETURN, false );
-    fillKiStruct( ips[1], VK_RETURN, true );
-
-    sendKeyboardInputRaw( 2, ips );
-    delete[] ips;
+    sendKeyPressAndRelease( VK_RETURN );
 }
 
-void KeyboardInputWindows::sendKeyboardBackspace( int count )
+/*!
+Sends count amount of backspaces to Windows. count of 0 or below will do
+nothing.
+*/
+void KeyboardInputWindows::sendKeyboardBackspace( const int count )
 {
-    if ( count > 0 )
+    // We can only send a positive amount of key presses.
+    if ( count <= 0 )
     {
-        // We ensure that count is nonnegative, therefore safe cast.
-        LPINPUT ips = new INPUT[static_cast<unsigned int>( count ) * 2];
-        for ( int i = 0; i < count; i++ )
-        {
-            fillKiStruct( ips[2 * i], VK_BACK, false );
-            fillKiStruct( ips[2 * i + 1], VK_BACK, true );
-        }
+        return;
+    }
 
-        sendKeyboardInputRaw( count * 2, ips );
-        delete[] ips;
+    for ( int presses = 0; presses < count; ++presses )
+    {
+        sendKeyPressAndRelease( VK_BACK );
     }
 }
 
+/*!
+Sends an Alt + Tab combination to Windows.
+
+Used for tabbing out of game windows blocking other programs on desktop while in
+VR. At least one use case was tabbing out of a fullscreen game to be able to use
+a music player.
+*/
 void KeyboardInputWindows::sendKeyboardAltTab()
 {
-    LPINPUT ips = new INPUT[4];
-    // VK_MENU is alt
-    fillKiStruct( ips[0], VK_MENU, false );
-    fillKiStruct( ips[1], VK_TAB, false );
-    fillKiStruct( ips[2], VK_TAB, true );
-    fillKiStruct( ips[3], VK_MENU, true );
+    // VK_MENU is Alt.
+    const auto pressAlt = createInputStruct( VK_MENU, KeyStatus::Down );
+    const auto pressTab = createInputStruct( VK_TAB, KeyStatus::Down );
+    const auto releaseAlt = createInputStruct( VK_MENU, KeyStatus::Up );
+    const auto releaseTab = createInputStruct( VK_TAB, KeyStatus::Up );
 
-    sendKeyboardInputRaw( 4, ips );
-    delete[] ips;
+    constexpr auto numberOfActions = 4;
+
+    INPUT actions[numberOfActions]
+        = { pressAlt, pressTab, releaseAlt, releaseTab };
+
+    sendKeyboardInputRaw( numberOfActions, actions );
 }
 
 } // namespace advsettings

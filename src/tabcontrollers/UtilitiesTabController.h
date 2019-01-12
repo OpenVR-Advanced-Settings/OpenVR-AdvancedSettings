@@ -69,7 +69,7 @@ public slots:
     void sendKeyboardInput( QString input );
     void sendKeyboardEnter();
     void sendKeyboardAltTab();
-    void sendKeyboardBackspace( int count );
+    void sendKeyboardBackspace( const int count );
 
     void setAlarmEnabled( bool enabled, bool notify = true );
     void setAlarmIsModal( bool modal, bool notify = true );
