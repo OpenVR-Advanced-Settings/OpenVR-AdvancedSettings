@@ -4,6 +4,20 @@
 
 namespace advsettings
 {
+/*!
+Represents the state of a keyboard button press. Can be either Up or Down.
+
+Implemented because neither Qt nor Windows.h included a sensible key state enum.
+*/
+enum class KeyStatus
+{
+    Up,
+    Down,
+};
+
+/*!
+Fills out an INPUT struct ip with scanCode and keyup status.
+*/
 void fillKiStruct( INPUT& ip, WORD scanCode, bool keyup )
 {
     ip.type = INPUT_KEYBOARD;
@@ -21,11 +35,18 @@ void fillKiStruct( INPUT& ip, WORD scanCode, bool keyup )
     ip.ki.time = 0;
 };
 
-void sendKeyboardInputRaw( int inputCount, LPINPUT input )
+/*!
+Calls SendInput on an INPUT struct and has associated error handling.
+
+inputCount can't be deduced from input because of implicit conversions from
+arrays to pointers when passed as arguments.
+*/
+void sendKeyboardInputRaw( const int inputCount, const LPINPUT input )
 {
-    if ( ( inputCount > 0 )
-         && !SendInput(
-                static_cast<UINT>( inputCount ), input, sizeof( INPUT ) ) )
+    const auto success
+        = SendInput( static_cast<UINT>( inputCount ), input, sizeof( INPUT ) );
+
+    if ( ( inputCount > 0 ) && !success )
     {
         char* err;
         auto errCode = GetLastError();
@@ -48,6 +69,62 @@ void sendKeyboardInputRaw( int inputCount, LPINPUT input )
             LOG( ERROR ) << "Error calling SendInput(): " << err;
         }
     }
+}
+
+/*!
+Returns an INPUT struct with the corresponding virtualKeyCode and keyStatus set.
+
+All fields except ki.wVk and ki.dwFlags are zero.
+The INPUT struct is used with the SendInput Windows function.
+Official Docs:
+https://docs.microsoft.com/en-us/windows/desktop/api/winuser/ns-winuser-taginput
+*/
+INPUT createInputStruct( const WORD virtualKeyCode, const KeyStatus keyStatus )
+{
+    // Zero init to ensure random data doesn't muck something up.
+    INPUT input = {};
+
+    input.type = INPUT_KEYBOARD;
+
+    input.ki.wVk = virtualKeyCode;
+
+    if ( keyStatus == KeyStatus::Up )
+    {
+        input.ki.dwFlags = KEYEVENTF_KEYUP;
+    }
+    else if ( keyStatus == KeyStatus::Down )
+    {
+        // Struct is already zero initialized, but this is here for clarity.
+        // Compiler will likely sort this out, otherwise the performance hit is
+        // negligible.
+        // There is no corresponding KEYDOWN event, you just don't
+        // set KEYEVENTF_KEYUP.
+        input.ki.dwFlags = 0;
+    }
+
+    // The sizeof(INPUT) on MSVC is 28. Returning by value is a non-issue
+    // compared to the simplicity of not having to pass a ref to an already
+    // existing INPUT struct, and possibly forgetting to zero it out.
+    return input;
+}
+
+/*!
+Sends a key press to Windows. The virtualKeyCode is a Windows specific define
+found in <windows.h>.
+
+Virtual Key Codes offical docs:
+https://docs.microsoft.com/en-us/windows/desktop/inputdev/virtual-key-codes
+*/
+void sendKeyPressAndRelease( const WORD virtualKeyCode )
+{
+    const auto press = createInputStruct( virtualKeyCode, KeyStatus::Down );
+    const auto release = createInputStruct( virtualKeyCode, KeyStatus::Up );
+
+    constexpr auto numberOfActions = 2;
+
+    INPUT actions[numberOfActions] = { press, release };
+
+    sendKeyboardInputRaw( numberOfActions, actions );
 }
 
 void KeyboardInputWindows::sendKeyboardInput( QString input )
@@ -122,44 +199,85 @@ void KeyboardInputWindows::sendKeyboardInput( QString input )
     }
 }
 
+/*!
+Sends a single Enter keypress to Windows.
+*/
 void KeyboardInputWindows::sendKeyboardEnter()
 {
-    LPINPUT ips = new INPUT[2];
-    fillKiStruct( ips[0], VK_RETURN, false );
-    fillKiStruct( ips[1], VK_RETURN, true );
-
-    sendKeyboardInputRaw( 2, ips );
-    delete[] ips;
+    sendKeyPressAndRelease( VK_RETURN );
 }
 
-void KeyboardInputWindows::sendKeyboardBackspace( int count )
+/*!
+Sends count amount of backspaces to Windows. count of 0 or below will do
+nothing.
+*/
+void KeyboardInputWindows::sendKeyboardBackspace( const int count )
 {
-    if ( count > 0 )
+    // We can only send a positive amount of key presses.
+    if ( count <= 0 )
     {
-        // We ensure that count is nonnegative, therefore safe cast.
-        LPINPUT ips = new INPUT[static_cast<unsigned int>( count ) * 2];
-        for ( int i = 0; i < count; i++ )
-        {
-            fillKiStruct( ips[2 * i], VK_BACK, false );
-            fillKiStruct( ips[2 * i + 1], VK_BACK, true );
-        }
+        return;
+    }
 
-        sendKeyboardInputRaw( count * 2, ips );
-        delete[] ips;
+    for ( int presses = 0; presses < count; ++presses )
+    {
+        sendKeyPressAndRelease( VK_BACK );
     }
 }
 
+/*!
+Sends an Alt + Tab combination to Windows.
+
+Used for tabbing out of game windows blocking other programs on desktop while in
+VR. At least one use case was tabbing out of a fullscreen game to be able to use
+a music player.
+*/
 void KeyboardInputWindows::sendKeyboardAltTab()
 {
-    LPINPUT ips = new INPUT[4];
-    // VK_MENU is alt
-    fillKiStruct( ips[0], VK_MENU, false );
-    fillKiStruct( ips[1], VK_TAB, false );
-    fillKiStruct( ips[2], VK_TAB, true );
-    fillKiStruct( ips[3], VK_MENU, true );
+    // VK_MENU is Alt.
+    const auto pressAlt = createInputStruct( VK_MENU, KeyStatus::Down );
+    const auto pressTab = createInputStruct( VK_TAB, KeyStatus::Down );
+    const auto releaseAlt = createInputStruct( VK_MENU, KeyStatus::Up );
+    const auto releaseTab = createInputStruct( VK_TAB, KeyStatus::Up );
 
-    sendKeyboardInputRaw( 4, ips );
-    delete[] ips;
+    constexpr auto numberOfActions = 4;
+
+    INPUT actions[numberOfActions]
+        = { pressAlt, pressTab, releaseAlt, releaseTab };
+
+    sendKeyboardInputRaw( numberOfActions, actions );
+}
+
+/*!
+Sends a media key Next Song button to Windows.
+*/
+void KeyboardInputWindows::sendMediaNextSong()
+{
+    sendKeyPressAndRelease( VK_MEDIA_NEXT_TRACK );
+}
+
+/*!
+Sends a media key Previous Song button to Windows.
+*/
+void KeyboardInputWindows::sendMediaPreviousSong()
+{
+    sendKeyPressAndRelease( VK_MEDIA_PREV_TRACK );
+}
+
+/*!
+Sends a media key Play/Pause button to Windows.
+*/
+void KeyboardInputWindows::sendMediaPausePlay()
+{
+    sendKeyPressAndRelease( VK_MEDIA_PLAY_PAUSE );
+}
+
+/*!
+Sends a media key Stop button to Windows.
+*/
+void KeyboardInputWindows::sendMediaStopSong()
+{
+    sendKeyPressAndRelease( VK_MEDIA_STOP );
 }
 
 } // namespace advsettings

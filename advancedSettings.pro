@@ -139,4 +139,5 @@ DISTFILES += \
     src/res/qml/SettingsPage.qml \
     src/res/qml/StatisticsPage.qml \
     src/res/qml/SteamVRPage.qml \
-    src/res/qml/UtilitiesPage.qml
+    src/res/qml/UtilitiesPage.qml \
+    src/res/qml/media_keys/*

@@ -230,6 +230,7 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 
 - **Steam Desktop Overlay Width:** Allows to increase the size of the Steam desktop overlay. Useful for multi-monitor setups.
 
+- **Media Control Keys:** Allows controlling a media player through the media keys. This is the same as having a keyboard with media keys and then pressing them. Should support most common media players.
 <a name="accessibility_page"></a>
 ## - Accessibility Page:
 
