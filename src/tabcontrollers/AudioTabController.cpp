@@ -70,13 +70,14 @@ void AudioTabController::initStage2( OverlayController* var_parent,
         notifKey.c_str(), notifKey.c_str(), &m_ulNotificationOverlayHandle );
     if ( overlayError == vr::VROverlayError_None )
     {
-        std::string notifIconPath
-            = QApplication::applicationDirPath().toStdString()
-              + "/res/qml/ptt_notification.png";
-        if ( QFile::exists( QString::fromStdString( notifIconPath ) ) )
+        QString notifIconPath = QStandardPaths::locate(
+            QStandardPaths::AppDataLocation,
+            QStringLiteral( "/res/qml/ptt_notification.png" ) );
+        if ( QFile::exists( notifIconPath ) )
         {
-            vr::VROverlay()->SetOverlayFromFile( m_ulNotificationOverlayHandle,
-                                                 notifIconPath.c_str() );
+            vr::VROverlay()->SetOverlayFromFile(
+                m_ulNotificationOverlayHandle,
+                notifIconPath.toStdString().c_str() );
             vr::VROverlay()->SetOverlayWidthInMeters(
                 m_ulNotificationOverlayHandle, 0.02f );
             vr::HmdMatrix34_t notificationTransform

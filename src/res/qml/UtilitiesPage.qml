@@ -320,6 +320,155 @@ MyStackViewPage {
             }
         }
 
+        GroupBox {
+            id: mediaKeysGroupBox
+            Layout.fillWidth: true
+
+            label: MyText {
+                leftPadding: 10
+                text: "Media Control Keys"
+                bottomPadding: -10
+            }
+            background: Rectangle {
+                color: "transparent"
+                border.color: "#ffffff"
+                radius: 8
+            }
+            ColumnLayout {
+                anchors.fill: parent
+
+                Rectangle {
+                    color: "#ffffff"
+                    height: 1
+                    Layout.fillWidth: true
+                    Layout.bottomMargin: 5
+                }
+
+
+                RowLayout {
+                    property bool playButtonIsPlay: false
+                    MyPushButton2 {
+                        id: previousSongButton
+                        Layout.preferredHeight: 48
+                        Layout.preferredWidth: 48
+                        contentItem: Image {
+                            source: "media_keys/outline_skip_previous_white_24dp.svg"
+                            sourceSize: Qt.size( imgSP.sourceSize.width*2, imgSP.sourceSize.height*2 )
+                            Image{
+                                id: imgSP
+                                source: parent.source
+                                width:0
+                                height:0
+                            }
+                            anchors.fill: parent
+                        }
+                        onClicked: {
+                            UtilitiesTabController.sendMediaPreviousSong()
+                        }
+
+                        background: Rectangle {
+                            opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
+                            color: "#406288"
+                            radius: 4
+                            anchors.fill: parent
+                        }
+                    }
+                    MyPushButton2 {
+                        id: stopSongButton
+                        Layout.preferredHeight: 48
+                        Layout.preferredWidth: 48
+
+                        contentItem: Image {
+                            source: "media_keys/outline_stop_white_24dp.svg"
+                            sourceSize: Qt.size( imgS.sourceSize.width*2, imgS.sourceSize.height*2 )
+                            Image{
+                                id: imgS
+                                source: parent.source
+                                width:0
+                                height:0
+                            }
+                            anchors.fill: parent
+                        }
+                        onClicked: {
+                            UtilitiesTabController.sendMediaStopSong()
+                            playPauseSongButton.contentItem.source = "media_keys/outline_play_arrow_white_24dp.svg"
+                            parent.playButtonIsPlay = true
+                        }
+
+                        background: Rectangle {
+                            opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
+                            color: "#406288"
+                            radius: 4
+                            anchors.fill: parent
+                        }
+                    }
+                    MyPushButton2 {
+                        id: playPauseSongButton
+                        Layout.preferredHeight: 48
+                        Layout.preferredWidth: 48
+                        contentItem: Image {
+                            // Assume that music is playing when people enter VR.
+                            source: "media_keys/outline_pause_white_24dp.svg"
+                            sourceSize: Qt.size( imgP.sourceSize.width*2, imgP.sourceSize.height*2 )
+                            Image{
+                                id: imgP
+                                source: parent.source
+                                width:0
+                                height:0
+                            }
+
+                            anchors.fill: parent
+                        }
+                        onClicked: {
+                            UtilitiesTabController.sendMediaPausePlay()
+                            if (parent.playButtonIsPlay) {
+                                playPauseSongButton.contentItem.source = "media_keys/outline_pause_white_24dp.svg"
+                                parent.playButtonIsPlay = false
+                            } else {
+                                playPauseSongButton.contentItem.source = "media_keys/outline_play_arrow_white_24dp.svg"
+                                parent.playButtonIsPlay = true
+                            }
+
+                        }
+
+                        background: Rectangle {
+                            opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
+                            color: "#406288"
+                            radius: 4
+                            anchors.fill: parent
+                        }
+                    }
+                    MyPushButton2 {
+                        id: nextSongButton
+                        Layout.preferredHeight: 48
+                        Layout.preferredWidth: 48
+
+                        contentItem: Image {
+                            source: "media_keys/outline_skip_next_white_24dp.svg"
+                            sourceSize: Qt.size( imgSN.sourceSize.width*2, imgSN.sourceSize.height*2 )
+                            Image{
+                                id: imgSN
+                                source: parent.source
+                                width:0
+                                height:0
+                            }
+                            anchors.fill: parent
+                        }
+                        onClicked: {
+                            UtilitiesTabController.sendMediaNextSong()
+                        }
+
+                        background: Rectangle {
+                            opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
+                            color: "#406288"
+                            radius: 4
+                            anchors.fill: parent
+                        }
+                    }
+                }
+            }
+        }
+
         Item {
             Layout.fillHeight: true
         }

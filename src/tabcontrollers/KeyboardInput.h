@@ -15,8 +15,12 @@ public:
 
     virtual void sendKeyboardInput( QString input ) = 0;
     virtual void sendKeyboardEnter() = 0;
-    virtual void sendKeyboardBackspace( int count ) = 0;
+    virtual void sendKeyboardBackspace( const int count ) = 0;
     virtual void sendKeyboardAltTab() = 0;
+    virtual void sendMediaNextSong() = 0;
+    virtual void sendMediaPreviousSong() = 0;
+    virtual void sendMediaPausePlay() = 0;
+    virtual void sendMediaStopSong() = 0;
 };
 
 } // namespace advsettings

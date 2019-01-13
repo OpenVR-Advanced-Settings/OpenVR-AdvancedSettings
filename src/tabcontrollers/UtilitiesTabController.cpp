@@ -83,9 +83,26 @@ void UtilitiesTabController::sendKeyboardAltTab()
     keyboardInput->sendKeyboardAltTab();
 }
 
-void UtilitiesTabController::sendKeyboardBackspace( int count )
+void UtilitiesTabController::sendKeyboardBackspace( const int count )
 {
     keyboardInput->sendKeyboardBackspace( count );
+}
+
+void UtilitiesTabController::sendMediaNextSong()
+{
+    keyboardInput->sendMediaNextSong();
+}
+void UtilitiesTabController::sendMediaPreviousSong()
+{
+    keyboardInput->sendMediaPreviousSong();
+}
+void UtilitiesTabController::sendMediaPausePlay()
+{
+    keyboardInput->sendMediaPausePlay();
+}
+void UtilitiesTabController::sendMediaStopSong()
+{
+    keyboardInput->sendMediaStopSong();
 }
 
 bool UtilitiesTabController::alarmEnabled() const
@@ -250,6 +267,14 @@ void UtilitiesTabController::modAlarmTimeMinute( int value, bool notify )
     }
 }
 
+QString getBatteryIconPath( int batteryState )
+{
+    QString batteryPrefix = "/res/battery_";
+    return QStandardPaths::locate(
+        QStandardPaths::AppDataLocation,
+        batteryPrefix + QString::number( batteryState ) + ".png" );
+}
+
 vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index )
 {
     vr::VROverlayHandle_t handle = vr::k_ulOverlayHandleInvalid;
@@ -259,13 +284,11 @@ vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index )
         batteryKey.c_str(), batteryKey.c_str(), &handle );
     if ( overlayError == vr::VROverlayError_None )
     {
-        std::string batteryIconPath
-            = QApplication::applicationDirPath().toStdString()
-              + "/res/battery_0.png";
-        if ( QFile::exists( QString::fromStdString( batteryIconPath ) ) )
+        QString batteryIconPath = getBatteryIconPath( 0 );
+        if ( QFile::exists( batteryIconPath ) )
         {
-            vr::VROverlay()->SetOverlayFromFile( handle,
-                                                 batteryIconPath.c_str() );
+            vr::VROverlay()->SetOverlayFromFile(
+                handle, batteryIconPath.toStdString().c_str() );
             vr::VROverlay()->SetOverlayWidthInMeters( handle, 0.05f );
             vr::HmdMatrix34_t notificationTransform
                 = { { { 1.0f, 0.0f, 0.0f, 0.00f },
@@ -469,8 +492,7 @@ void UtilitiesTabController::eventLoopTick()
             if ( deviceClass
                  == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker )
             {
-                if ( m_batteryOverlayHandles[i]
-                     == vr::k_ulOverlayHandleInvalid )
+                if ( m_batteryOverlayHandles[i] == 0 )
                 {
                     LOG( INFO ) << "Creating battery overlay for device " << i;
                     m_batteryOverlayHandles[i] = createBatteryOverlay( i );
@@ -512,17 +534,15 @@ void UtilitiesTabController::eventLoopTick()
                     {
                         LOG( INFO )
                             << "Updating battery overlay for device " << i
-                            << " to " << batteryState << "(" << battery << "";
-                        std::string batteryIconPath
-                            = QApplication::applicationDirPath().toStdString()
-                              + "/res/battery_" + std::to_string( batteryState )
-                              + ".png";
-                        if ( QFile::exists(
-                                 QString::fromStdString( batteryIconPath ) ) )
+                            << " to " << batteryState << "(" << battery << ")"
+                            << QString::number( m_batteryOverlayHandles[i] );
+                        QString batteryIconPath
+                            = getBatteryIconPath( batteryState );
+                        if ( QFile::exists( batteryIconPath ) )
                         {
                             vr::VROverlay()->SetOverlayFromFile(
                                 m_batteryOverlayHandles[i],
-                                batteryIconPath.c_str() );
+                                batteryIconPath.toStdString().c_str() );
                         }
                         else
                         {
