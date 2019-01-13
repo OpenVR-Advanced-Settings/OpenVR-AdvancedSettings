@@ -140,4 +140,5 @@ DISTFILES += \
     src/res/qml/StatisticsPage.qml \
     src/res/qml/SteamVRPage.qml \
     src/res/qml/UtilitiesPage.qml \
-    src/res/qml/media_keys/*
+    src/res/qml/media_keys/* \
+    src/res/qml/LineSeparator.qml
