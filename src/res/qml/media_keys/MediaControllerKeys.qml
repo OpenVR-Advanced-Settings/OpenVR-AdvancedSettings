@@ -26,10 +26,7 @@ GroupBox {
         }
 
         RowLayout {
-            property bool playButtonIsPlay: false
-
-            property string playButtonPath: "outline_play_arrow_white_24dp.svg"
-            property string pauseButtonPath: "outline_pause_white_24dp.svg"
+            property string playPauseButtonPath: "outline_play_pause_white_24dp.svg"
             property string stopButtonPath: "outline_stop_white_24dp.svg"
             property string previousButtonPath: "outline_skip_previous_white_24dp.svg"
             property string nextButtonPath: "outline_skip_next_white_24dp.svg"
@@ -47,24 +44,14 @@ GroupBox {
                 imagePath: parent.stopButtonPath
                 onClicked: {
                     UtilitiesTabController.sendMediaStopSong()
-                    playPauseSongButton.contentItem.source = parent.playButtonPath
-                    parent.playButtonIsPlay = true
                 }
             }
 
             MediaButton {
                 id: playPauseSongButton
-                imagePath: parent.pauseButtonPath
+                imagePath: parent.playPauseButtonPath
                 onClicked: {
                     UtilitiesTabController.sendMediaPausePlay()
-                    if (parent.playButtonIsPlay) {
-                        playPauseSongButton.contentItem.source = parent.pauseButtonPath
-                        parent.playButtonIsPlay = false
-                    } else {
-                        playPauseSongButton.contentItem.source = parent.playButtonPath
-                        parent.playButtonIsPlay = true
-                    }
-
                 }
             }
 
