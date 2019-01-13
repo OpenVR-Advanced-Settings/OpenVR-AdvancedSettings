@@ -151,7 +151,7 @@ void MoveCenterTabController::setRotation( int value, bool notify )
 {
     if ( m_rotation != value )
     {
-        double angle = ( value - m_rotation ) * 2 * M_PI / 360.0;
+        double angle = ( value - m_rotation ) * M_PI / 18000.0;
 
         // Revert now because we don't commit in RotateUniverseCenter and
         // AddOffsetToUniverseCenter. We do this so rotation and offset can
@@ -176,7 +176,7 @@ void MoveCenterTabController::setRotation( int value, bool notify )
             = { oldHmdPos.m[0][3], oldHmdPos.m[1][3], oldHmdPos.m[2][3] };
 
         // Convert oldHmdXyz into un-rotated coordinates.
-        double oldAngle = -m_rotation * 2 * M_PI / 360.0;
+        double oldAngle = -m_rotation * M_PI / 18000.0;
         rotateCoordinates( oldHmdXyz, oldAngle );
 
         // Set newHmdXyz to have additional rotation from incoming angle change.
@@ -204,7 +204,7 @@ void MoveCenterTabController::setRotation( int value, bool notify )
         // We use rotated coordinates here because we have already applied
         // RotateUniverseCenter. This will be the final offset ready to apply,
         // so it must match the current universe axis rotation.
-        double finalAngle = m_rotation * 2 * M_PI / 360.0;
+        double finalAngle = m_rotation * M_PI / 18000.0;
         double finalHmdRotDiff[3] = { hmdRotDiff[0], 0, hmdRotDiff[2] };
         rotateCoordinates( finalHmdRotDiff, finalAngle );
 
@@ -262,7 +262,7 @@ void MoveCenterTabController::setAdjustChaperone( bool value, bool notify )
         m_adjustChaperone = value;
         if ( m_trackingUniverse == vr::TrackingUniverseStanding )
         {
-            double angle = m_rotation * 2 * M_PI / 360.0;
+            double angle = m_rotation * M_PI / 18000.0;
             double offsetdir = m_adjustChaperone ? -1.0 : 1.0;
             double offset[3] = { offsetdir * m_offsetX,
                                  offsetdir * m_offsetY,
@@ -428,7 +428,7 @@ void MoveCenterTabController::modOffsetX( float value, bool notify )
     // TODO ? possible issue with locking position this way
     if ( !m_lockXToggle )
     {
-        double angle = m_rotation * 2 * M_PI / 360.0;
+        double angle = m_rotation * M_PI / 18000.0;
         double offset[3] = { value, 0, 0 };
         rotateCoordinates( offset, angle );
         float offsetFloat[3] = { static_cast<float>( offset[0] ),
@@ -467,7 +467,7 @@ void MoveCenterTabController::modOffsetZ( float value, bool notify )
 {
     if ( !m_lockZToggle )
     {
-        double angle = m_rotation * 2 * M_PI / 360.0;
+        double angle = m_rotation * M_PI / 18000.0;
         double offset[3] = { 0, 0, value };
         rotateCoordinates( offset, angle );
         float offsetFloat[3] = { static_cast<float>( offset[0] ),
@@ -490,7 +490,7 @@ void MoveCenterTabController::reset()
     vr::VRChaperoneSetup()->RevertWorkingCopy();
     parent->RotateUniverseCenter(
         vr::TrackingUniverseOrigin( m_trackingUniverse ),
-        -m_rotation * 2 * M_PI / 360.0,
+        static_cast<float>( -m_rotation * M_PI / 18000.0 ),
         m_adjustChaperone,
         false );
     float offset[3] = { -m_offsetX, -m_offsetY, -m_offsetZ };
@@ -660,7 +660,7 @@ void MoveCenterTabController::eventLoopTick(
             pose->mDeviceToAbsoluteTracking.m[1][3],
             pose->mDeviceToAbsoluteTracking.m[2][3] };
 
-    double angle = m_rotation * 2 * M_PI / 360.0;
+    double angle = m_rotation * M_PI / 18000.0;
     rotateCoordinates( relativeControllerPosition, -angle );
     float absoluteControllerPosition[] = {
         static_cast<float>( relativeControllerPosition[0] ) + m_offsetX,
@@ -758,16 +758,16 @@ void MoveCenterTabController::eventLoopTick(
 
                 // TODO: Increase angular granularity beyond 1 degree.
                 int newRotationAngleDeg = static_cast<int>(
-                    round( handYawDiff * 180.0 / M_PI ) + m_rotation );
+                    round( handYawDiff * 18000.0 / M_PI ) + m_rotation );
 
-                // Keep angle within -180 ~ 180
-                if ( newRotationAngleDeg > 180 )
+                // Keep angle within -18000 ~ 18000
+                if ( newRotationAngleDeg > 18000 )
                 {
-                    newRotationAngleDeg -= 360;
+                    newRotationAngleDeg -= 36000;
                 }
-                else if ( newRotationAngleDeg < -180 )
+                else if ( newRotationAngleDeg < -18000 )
                 {
-                    newRotationAngleDeg += 360;
+                    newRotationAngleDeg += 36000;
                 }
 
                 setRotation( newRotationAngleDeg );

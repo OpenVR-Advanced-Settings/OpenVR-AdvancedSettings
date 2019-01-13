@@ -249,11 +249,11 @@ MyStackViewPage {
                             Layout.preferredWidth: 40
                             text: "-"
                             onClicked: {
-                                var val = MoveCenterTabController.tempRotation - 45
+                                var val = ( MoveCenterTabController.tempRotation / 100 ) - 45
                                 if (val < -180) {
                                     val = val + 360;
                                 }
-                                MoveCenterTabController.tempRotation = val
+                                MoveCenterTabController.tempRotation = val * 100
                             }
                         }
 
@@ -261,15 +261,15 @@ MyStackViewPage {
                             id: playspaceRotationSlider
                             from: -180
                             to: 180
-                            stepSize: 1
+                            stepSize: 0.01
                             value: 0
                             Layout.fillWidth: true
                             onPositionChanged: {
                                 var val = this.from + ( this.position  * (this.to - this.from))
-                                MoveCenterTabController.tempRotation = Math.round(val)
+                                MoveCenterTabController.tempRotation = Math.round(val * 100)
                             }
                             onValueChanged: {
-                                MoveCenterTabController.tempRotation = Math.round(playspaceRotationSlider.value)
+                                MoveCenterTabController.tempRotation = Math.round(playspaceRotationSlider.value * 100)
                                 //playspaceRotationText.text = Math.round(playspaceRotationSlider.value) + "°"
                             }
                         }
@@ -279,11 +279,11 @@ MyStackViewPage {
                             Layout.preferredWidth: 40
                             text: "+"
                             onClicked: {
-                                var val = MoveCenterTabController.tempRotation + 45
+                                var val = ( MoveCenterTabController.tempRotation / 100 ) + 45
                                 if (val > 180) {
                                     val = val -360;
                                 }
-                                MoveCenterTabController.tempRotation = val
+                                MoveCenterTabController.tempRotation = val * 100
                             }
                         }
 
@@ -291,17 +291,17 @@ MyStackViewPage {
                             id: playspaceRotationText
                             text: "0°"
                             keyBoardUID: 104
-                            Layout.preferredWidth: 100
+                            Layout.preferredWidth: 150
                             Layout.leftMargin: 10
                             horizontalAlignment: Text.AlignHCenter
                             function onInputEvent(input) {
-                                var val = parseInt(input)
+                                var val = parseFloat(input)
                                 if (!isNaN(val)) {
                                     val = val % 180
-                                    MoveCenterTabController.tempRotation = val
-                                    text = MoveCenterTabController.tempRotation + "°"
+                                    MoveCenterTabController.tempRotation = Math.round(val * 100)
+                                    text = ( MoveCenterTabController.tempRotation / 100 ) + "°"
                                 } else {
-                                    text = MoveCenterTabController.tempRotation + "°"
+                                    text = ( MoveCenterTabController.tempRotation / 100 ) + "°"
                                 }
                             }
                         }
@@ -446,11 +446,11 @@ MyStackViewPage {
                 playSpaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
             }
             onRotationChanged: {
-                playspaceRotationSlider.value = MoveCenterTabController.rotation
+                playspaceRotationSlider.value = ( MoveCenterTabController.rotation / 100 )
             }
             onTempRotationChanged: {
-                playspaceRotationSlider.value = MoveCenterTabController.tempRotation
-                playspaceRotationText.text = MoveCenterTabController.tempRotation + "°"
+                playspaceRotationSlider.value = ( MoveCenterTabController.tempRotation / 100 )
+                playspaceRotationText.text = ( MoveCenterTabController.tempRotation / 100 ) + "°"
             }
             onAdjustChaperoneChanged: {
                 playspaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
