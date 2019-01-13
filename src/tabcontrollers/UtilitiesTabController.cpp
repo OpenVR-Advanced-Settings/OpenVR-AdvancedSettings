@@ -316,7 +316,7 @@ vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index )
 
 void UtilitiesTabController::eventLoopTick()
 {
-    if ( settingsUpdateCounter >= 10 )
+    if ( settingsUpdateCounter >= 19 )
     {
         vr::VROverlayHandle_t pOverlayHandle;
         auto error = vr::VROverlay()->FindOverlay( steamDesktopOverlaykey,

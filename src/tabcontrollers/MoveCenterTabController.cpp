@@ -604,9 +604,12 @@ void MoveCenterTabController::eventLoopTick(
     vr::ETrackingUniverseOrigin universe,
     vr::TrackedDevicePose_t* devicePoses )
 {
-    if ( settingsUpdateCounter >= 100 )
+    if ( settingsUpdateCounter >= 149 )
     {
-        setTrackingUniverse( int( universe ) );
+        if ( parent->isDashboardVisible() )
+        {
+            setTrackingUniverse( int( universe ) );
+        }
         settingsUpdateCounter = 0;
     }
     else

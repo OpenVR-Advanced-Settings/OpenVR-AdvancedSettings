@@ -495,7 +495,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
              SLOT( OnTimeoutPumpEvents() ) );
 
     // was     m_pPumpEventsTimer->setInterval( 20 );
-    m_pPumpEventsTimer->setInterval( 5 );
+    m_pPumpEventsTimer->setInterval( 1 );
 
     m_pPumpEventsTimer->start();
 
@@ -580,226 +580,235 @@ QPoint OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
 
 void OverlayController::OnTimeoutPumpEvents()
 {
-    if ( !vr::VRSystem() )
-        return;
+    vr::VRSystem()->GetTimeSinceLastVsync( nullptr, &m_currentFrame );
 
-    vr::VREvent_t vrEvent;
-    bool chaperoneDataAlreadyUpdated = false;
-    while ( pollNextEvent( m_ulOverlayHandle, &vrEvent ) )
+    if ( m_currentFrame > m_lastFrame )
     {
-        switch ( vrEvent.eventType )
-        {
-        case vr::VREvent_MouseMove:
-        {
-            QPoint ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
-            if ( ptNewMouse != m_ptLastMouse )
-            {
-                QMouseEvent mouseEvent( QEvent::MouseMove,
-                                        ptNewMouse,
-                                        m_pWindow->mapToGlobal( ptNewMouse ),
-                                        Qt::NoButton,
-                                        m_lastMouseButtons,
-                                        0 );
-                m_ptLastMouse = ptNewMouse;
-                QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
-                OnRenderRequest();
-            }
-        }
-        break;
-
-        case vr::VREvent_MouseButtonDown:
-        {
-            QPoint ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
-            Qt::MouseButton button
-                = vrEvent.data.mouse.button == vr::VRMouseButton_Right
-                      ? Qt::RightButton
-                      : Qt::LeftButton;
-            m_lastMouseButtons |= button;
-            QMouseEvent mouseEvent( QEvent::MouseButtonPress,
-                                    ptNewMouse,
-                                    m_pWindow->mapToGlobal( ptNewMouse ),
-                                    button,
-                                    m_lastMouseButtons,
-                                    0 );
-            QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
-        }
-        break;
-
-        case vr::VREvent_MouseButtonUp:
-        {
-            QPoint ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
-            Qt::MouseButton button
-                = vrEvent.data.mouse.button == vr::VRMouseButton_Right
-                      ? Qt::RightButton
-                      : Qt::LeftButton;
-            m_lastMouseButtons &= ~button;
-            QMouseEvent mouseEvent( QEvent::MouseButtonRelease,
-                                    ptNewMouse,
-                                    m_pWindow->mapToGlobal( ptNewMouse ),
-                                    button,
-                                    m_lastMouseButtons,
-                                    0 );
-            QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
-        }
-        break;
-
-        case vr::VREvent_Scroll:
-        {
-            // Wheel speed is defined as 1/8 of a degree
-            QWheelEvent wheelEvent(
-                m_ptLastMouse,
-                m_pWindow->mapToGlobal( m_ptLastMouse ),
-                QPoint(),
-                QPoint( vrEvent.data.scroll.xdelta * 360.0f * 8.0f,
-                        vrEvent.data.scroll.ydelta * 360.0f * 8.0f ),
-                0,
-                Qt::Vertical,
-                m_lastMouseButtons,
-                0 );
-            QCoreApplication::sendEvent( m_pWindow.get(), &wheelEvent );
-        }
-        break;
-
-        case vr::VREvent_OverlayShown:
-        {
-            m_pWindow->update();
-        }
-        break;
-
-        case vr::VREvent_Quit:
-        {
-            LOG( INFO ) << "Received quit request.";
-            vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some time
-                                                       // just in case
-            m_moveCenterTabController.reset();
-            m_chaperoneTabController.shutdown();
-            Shutdown();
-            QApplication::exit();
+        if ( !vr::VRSystem() )
             return;
-        }
-        break;
 
-        case vr::VREvent_DashboardActivated:
-        {
-            LOG( DEBUG ) << "Dashboard activated";
-            m_dashboardVisible = true;
-        }
-        break;
-
-        case vr::VREvent_DashboardDeactivated:
-        {
-            LOG( DEBUG ) << "Dashboard deactivated";
-            m_dashboardVisible = false;
-        }
-        break;
-
-        case vr::VREvent_KeyboardDone:
-        {
-            char keyboardBuffer[1024];
-            vr::VROverlay()->GetKeyboardText( keyboardBuffer, 1024 );
-            emit keyBoardInputSignal( QString( keyboardBuffer ),
-                                      vrEvent.data.keyboard.uUserValue );
-        }
-        break;
-
-        // Multiple ChaperoneUniverseHasChanged are often emitted at the same
-        // time (some with a little bit of delay) There is no sure way to
-        // recognize redundant events, we can only exclude redundant events
-        // during the same call of OnTimeoutPumpEvents()
-        // INFO Removed logging on play space mover for possible crashing
-        // issues.
-        case vr::VREvent_ChaperoneUniverseHasChanged:
-        case vr::VREvent_ChaperoneDataHasChanged:
-        {
-            if ( !chaperoneDataAlreadyUpdated )
-            {
-                // LOG(INFO) << "Re-loading chaperone data ...";
-                m_chaperoneUtils.loadChaperoneData();
-                // LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() << "
-                // chaperone quads."; if
-                // (m_chaperoneUtils.isChaperoneWellFormed()) { LOG(INFO) <<
-                // "Chaperone data seems to be well-formed.";
-                //} else {
-                // LOG(INFO) << "Chaperone data is NOT well-formed.";
-                //}
-                chaperoneDataAlreadyUpdated = true;
-            }
-        }
-        break;
-        }
-    }
-
-    vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
-    vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
-        vr::TrackingUniverseStanding,
-        0.0f,
-        devicePoses,
-        vr::k_unMaxTrackedDeviceCount );
-
-    // HMD/Controller Velocities
-    auto leftId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
-        vr::TrackedControllerRole_LeftHand );
-    float leftSpeed = 0.0f;
-    if ( leftId != vr::k_unTrackedDeviceIndexInvalid
-         && devicePoses[leftId].bPoseIsValid
-         && devicePoses[leftId].eTrackingResult
-                == vr::TrackingResult_Running_OK )
-    {
-        auto& vel = devicePoses[leftId].vVelocity.v;
-        leftSpeed
-            = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
-    }
-    auto rightId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
-        vr::TrackedControllerRole_RightHand );
-    auto rightSpeed = 0.0f;
-    if ( rightId != vr::k_unTrackedDeviceIndexInvalid
-         && devicePoses[rightId].bPoseIsValid
-         && devicePoses[rightId].eTrackingResult
-                == vr::TrackingResult_Running_OK )
-    {
-        auto& vel = devicePoses[rightId].vVelocity.v;
-        rightSpeed
-            = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
-    }
-    auto hmdSpeed = 0.0f;
-    if ( devicePoses[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid
-         && devicePoses[vr::k_unTrackedDeviceIndex_Hmd].eTrackingResult
-                == vr::TrackingResult_Running_OK )
-    {
-        auto& vel = devicePoses[vr::k_unTrackedDeviceIndex_Hmd].vVelocity.v;
-        hmdSpeed
-            = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
-    }
-
-    m_fixFloorTabController.eventLoopTick( devicePoses );
-    m_statisticsTabController.eventLoopTick(
-        devicePoses, leftSpeed, rightSpeed );
-    m_moveCenterTabController.eventLoopTick(
-        vr::VRCompositor()->GetTrackingSpace(), devicePoses );
-    m_steamVRTabController.eventLoopTick();
-    m_chaperoneTabController.eventLoopTick(
-        devicePoses, leftSpeed, rightSpeed, hmdSpeed );
-    m_settingsTabController.eventLoopTick();
-    m_reviveTabController.eventLoopTick();
-    m_audioTabController.eventLoopTick();
-    m_utilitiesTabController.eventLoopTick();
-    m_accessibilityTabController.eventLoopTick(
-        vr::VRCompositor()->GetTrackingSpace() );
-
-    if ( m_ulOverlayThumbnailHandle != vr::k_ulOverlayHandleInvalid )
-    {
-        while ( vr::VROverlay()->PollNextOverlayEvent(
-            m_ulOverlayThumbnailHandle, &vrEvent, sizeof( vrEvent ) ) )
+        vr::VREvent_t vrEvent;
+        bool chaperoneDataAlreadyUpdated = false;
+        while ( pollNextEvent( m_ulOverlayHandle, &vrEvent ) )
         {
             switch ( vrEvent.eventType )
             {
+            case vr::VREvent_MouseMove:
+            {
+                QPoint ptNewMouse
+                    = getMousePositionForEvent( vrEvent.data.mouse );
+                if ( ptNewMouse != m_ptLastMouse )
+                {
+                    QMouseEvent mouseEvent(
+                        QEvent::MouseMove,
+                        ptNewMouse,
+                        m_pWindow->mapToGlobal( ptNewMouse ),
+                        Qt::NoButton,
+                        m_lastMouseButtons,
+                        0 );
+                    m_ptLastMouse = ptNewMouse;
+                    QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
+                    OnRenderRequest();
+                }
+            }
+            break;
+
+            case vr::VREvent_MouseButtonDown:
+            {
+                QPoint ptNewMouse
+                    = getMousePositionForEvent( vrEvent.data.mouse );
+                Qt::MouseButton button
+                    = vrEvent.data.mouse.button == vr::VRMouseButton_Right
+                          ? Qt::RightButton
+                          : Qt::LeftButton;
+                m_lastMouseButtons |= button;
+                QMouseEvent mouseEvent( QEvent::MouseButtonPress,
+                                        ptNewMouse,
+                                        m_pWindow->mapToGlobal( ptNewMouse ),
+                                        button,
+                                        m_lastMouseButtons,
+                                        0 );
+                QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
+            }
+            break;
+
+            case vr::VREvent_MouseButtonUp:
+            {
+                QPoint ptNewMouse
+                    = getMousePositionForEvent( vrEvent.data.mouse );
+                Qt::MouseButton button
+                    = vrEvent.data.mouse.button == vr::VRMouseButton_Right
+                          ? Qt::RightButton
+                          : Qt::LeftButton;
+                m_lastMouseButtons &= ~button;
+                QMouseEvent mouseEvent( QEvent::MouseButtonRelease,
+                                        ptNewMouse,
+                                        m_pWindow->mapToGlobal( ptNewMouse ),
+                                        button,
+                                        m_lastMouseButtons,
+                                        0 );
+                QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
+            }
+            break;
+
+            case vr::VREvent_Scroll:
+            {
+                // Wheel speed is defined as 1/8 of a degree
+                QWheelEvent wheelEvent(
+                    m_ptLastMouse,
+                    m_pWindow->mapToGlobal( m_ptLastMouse ),
+                    QPoint(),
+                    QPoint( vrEvent.data.scroll.xdelta * 360.0f * 8.0f,
+                            vrEvent.data.scroll.ydelta * 360.0f * 8.0f ),
+                    0,
+                    Qt::Vertical,
+                    m_lastMouseButtons,
+                    0 );
+                QCoreApplication::sendEvent( m_pWindow.get(), &wheelEvent );
+            }
+            break;
+
             case vr::VREvent_OverlayShown:
             {
                 m_pWindow->update();
             }
             break;
+
+            case vr::VREvent_Quit:
+            {
+                LOG( INFO ) << "Received quit request.";
+                vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some
+                                                           // time just in case
+                m_moveCenterTabController.reset();
+                m_chaperoneTabController.shutdown();
+                Shutdown();
+                QApplication::exit();
+                return;
+            }
+            break;
+
+            case vr::VREvent_DashboardActivated:
+            {
+                LOG( DEBUG ) << "Dashboard activated";
+                m_dashboardVisible = true;
+            }
+            break;
+
+            case vr::VREvent_DashboardDeactivated:
+            {
+                LOG( DEBUG ) << "Dashboard deactivated";
+                m_dashboardVisible = false;
+            }
+            break;
+
+            case vr::VREvent_KeyboardDone:
+            {
+                char keyboardBuffer[1024];
+                vr::VROverlay()->GetKeyboardText( keyboardBuffer, 1024 );
+                emit keyBoardInputSignal( QString( keyboardBuffer ),
+                                          vrEvent.data.keyboard.uUserValue );
+            }
+            break;
+
+            // Multiple ChaperoneUniverseHasChanged are often emitted at the
+            // same time (some with a little bit of delay) There is no sure way
+            // to recognize redundant events, we can only exclude redundant
+            // events during the same call of OnTimeoutPumpEvents() INFO Removed
+            // logging on play space mover for possible crashing issues.
+            case vr::VREvent_ChaperoneUniverseHasChanged:
+            case vr::VREvent_ChaperoneDataHasChanged:
+            {
+                if ( !chaperoneDataAlreadyUpdated )
+                {
+                    // LOG(INFO) << "Re-loading chaperone data ...";
+                    m_chaperoneUtils.loadChaperoneData();
+                    // LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() <<
+                    // " chaperone quads."; if
+                    // (m_chaperoneUtils.isChaperoneWellFormed()) { LOG(INFO) <<
+                    // "Chaperone data seems to be well-formed.";
+                    //} else {
+                    // LOG(INFO) << "Chaperone data is NOT well-formed.";
+                    //}
+                    chaperoneDataAlreadyUpdated = true;
+                }
+            }
+            break;
             }
         }
+
+        vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
+        vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+            vr::TrackingUniverseStanding,
+            0.0f,
+            devicePoses,
+            vr::k_unMaxTrackedDeviceCount );
+
+        // HMD/Controller Velocities
+        auto leftId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
+            vr::TrackedControllerRole_LeftHand );
+        float leftSpeed = 0.0f;
+        if ( leftId != vr::k_unTrackedDeviceIndexInvalid
+             && devicePoses[leftId].bPoseIsValid
+             && devicePoses[leftId].eTrackingResult
+                    == vr::TrackingResult_Running_OK )
+        {
+            auto& vel = devicePoses[leftId].vVelocity.v;
+            leftSpeed = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1]
+                                   + vel[2] * vel[2] );
+        }
+        auto rightId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
+            vr::TrackedControllerRole_RightHand );
+        auto rightSpeed = 0.0f;
+        if ( rightId != vr::k_unTrackedDeviceIndexInvalid
+             && devicePoses[rightId].bPoseIsValid
+             && devicePoses[rightId].eTrackingResult
+                    == vr::TrackingResult_Running_OK )
+        {
+            auto& vel = devicePoses[rightId].vVelocity.v;
+            rightSpeed = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1]
+                                    + vel[2] * vel[2] );
+        }
+        auto hmdSpeed = 0.0f;
+        if ( devicePoses[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid
+             && devicePoses[vr::k_unTrackedDeviceIndex_Hmd].eTrackingResult
+                    == vr::TrackingResult_Running_OK )
+        {
+            auto& vel = devicePoses[vr::k_unTrackedDeviceIndex_Hmd].vVelocity.v;
+            hmdSpeed = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1]
+                                  + vel[2] * vel[2] );
+        }
+
+        m_moveCenterTabController.eventLoopTick(
+            vr::VRCompositor()->GetTrackingSpace(), devicePoses );
+        m_utilitiesTabController.eventLoopTick();
+        m_fixFloorTabController.eventLoopTick( devicePoses );
+        m_statisticsTabController.eventLoopTick(
+            devicePoses, leftSpeed, rightSpeed );
+        m_steamVRTabController.eventLoopTick();
+        m_chaperoneTabController.eventLoopTick(
+            devicePoses, leftSpeed, rightSpeed, hmdSpeed );
+        m_settingsTabController.eventLoopTick();
+        m_reviveTabController.eventLoopTick();
+        m_audioTabController.eventLoopTick();
+        m_accessibilityTabController.eventLoopTick(
+            vr::VRCompositor()->GetTrackingSpace() );
+
+        if ( m_ulOverlayThumbnailHandle != vr::k_ulOverlayHandleInvalid )
+        {
+            while ( vr::VROverlay()->PollNextOverlayEvent(
+                m_ulOverlayThumbnailHandle, &vrEvent, sizeof( vrEvent ) ) )
+            {
+                switch ( vrEvent.eventType )
+                {
+                case vr::VREvent_OverlayShown:
+                {
+                    m_pWindow->update();
+                }
+                break;
+                }
+            }
+        }
+        m_lastFrame = m_currentFrame;
     }
 }
 

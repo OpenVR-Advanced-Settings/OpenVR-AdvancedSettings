@@ -649,66 +649,72 @@ void ChaperoneTabController::eventLoopTick(
         }
     }
 
-    if ( settingsUpdateCounter >= 50 )
+    if ( settingsUpdateCounter >= 101 )
     {
-        vr::EVRSettingsError vrSettingsError;
-        float vis = vr::VRSettings()->GetInt32(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
+        if ( parent->isDashboardVisible() )
         {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_CollisionBounds_ColorGammaA_Int32
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setBoundsVisibility( vis / 255.0f );
-        if ( m_chaperoneVelocityModifierCurrent == 1.0f )
-        {
-            auto fd = vr::VRSettings()->GetFloat(
+            vr::EVRSettingsError vrSettingsError;
+            float vis = vr::VRSettings()->GetInt32(
                 vr::k_pch_CollisionBounds_Section,
-                vr::k_pch_CollisionBounds_FadeDistance_Float,
+                vr::k_pch_CollisionBounds_ColorGammaA_Int32,
                 &vrSettingsError );
             if ( vrSettingsError != vr::VRSettingsError_None )
             {
                 LOG( WARNING )
                     << "Could not read \""
-                    << vr::k_pch_CollisionBounds_FadeDistance_Float
+                    << vr::k_pch_CollisionBounds_ColorGammaA_Int32
                     << "\" setting: "
                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                            vrSettingsError );
             }
-            setFadeDistance( fd );
+            setBoundsVisibility( vis / 255.0f );
+            if ( m_chaperoneVelocityModifierCurrent == 1.0f )
+            {
+                auto fd = vr::VRSettings()->GetFloat(
+                    vr::k_pch_CollisionBounds_Section,
+                    vr::k_pch_CollisionBounds_FadeDistance_Float,
+                    &vrSettingsError );
+                if ( vrSettingsError != vr::VRSettingsError_None )
+                {
+                    LOG( WARNING )
+                        << "Could not read \""
+                        << vr::k_pch_CollisionBounds_FadeDistance_Float
+                        << "\" setting: "
+                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                               vrSettingsError );
+                }
+                setFadeDistance( fd );
+            }
+            auto cm = vr::VRSettings()->GetBool(
+                vr::k_pch_CollisionBounds_Section,
+                vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
+                &vrSettingsError );
+            if ( vrSettingsError != vr::VRSettingsError_None )
+            {
+                LOG( WARNING )
+                    << "Could not read \""
+                    << vr::k_pch_CollisionBounds_CenterMarkerOn_Bool
+                    << "\" setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
+            }
+            setCenterMarker( cm );
+            auto ps = vr::VRSettings()->GetBool(
+                vr::k_pch_CollisionBounds_Section,
+                vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
+                &vrSettingsError );
+            if ( vrSettingsError != vr::VRSettingsError_None )
+            {
+                LOG( WARNING )
+                    << "Could not read \""
+                    << vr::k_pch_CollisionBounds_PlaySpaceOn_Bool
+                    << "\" setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
+            }
+            setPlaySpaceMarker( ps );
+            updateHeight( getBoundsMaxY() );
         }
-        auto cm = vr::VRSettings()->GetBool(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_CollisionBounds_CenterMarkerOn_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setCenterMarker( cm );
-        auto ps = vr::VRSettings()->GetBool(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_CollisionBounds_PlaySpaceOn_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setPlaySpaceMarker( ps );
-        updateHeight( getBoundsMaxY() );
         settingsUpdateCounter = 0;
     }
     else

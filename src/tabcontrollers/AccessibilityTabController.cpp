@@ -116,9 +116,12 @@ void AccessibilityTabController::eventLoopTick(
     {
         return;
     }
-    if ( settingsUpdateCounter >= 50 )
+    if ( settingsUpdateCounter >= 151 )
     {
-        setTrackingUniverse( ( int ) universe );
+        if ( parent->isDashboardVisible() )
+        {
+            setTrackingUniverse( ( int ) universe );
+        }
         settingsUpdateCounter = 0;
     }
     else

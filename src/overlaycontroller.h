@@ -80,6 +80,9 @@ private:
     QSoundEffect m_focusChangedSoundEffect;
     QSoundEffect m_alarm01SoundEffect;
 
+    uint64_t m_currentFrame = 0;
+    uint64_t m_lastFrame = 0;
+
 public: // I know it's an ugly hack to make them public to enable external
         // access, but I am too lazy to implement getters.
     SteamVRTabController m_steamVRTabController;

@@ -309,153 +309,168 @@ void ReviveTabController::eventLoopTick()
     if ( m_isOverlayInstalled
          || parent->m_settingsTabController.forceRevivePage() )
     {
-        if ( settingsUpdateCounter >= 50 )
+        if ( settingsUpdateCounter >= 139 )
         {
+            if ( parent->isDashboardVisible() )
+            {
+                vr::EVRSettingsError vrSettingsError;
+
+                float valuef
+                    = vr::VRSettings()->GetFloat( section_revive,
+                                                  key_pixelsPerDisplayPixel,
+                                                  &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    if ( valuef == 0.0 )
+                    {
+                        setPixelsPerDisplayPixelOverrideEnabled( false );
+                    }
+                    else
+                    {
+                        setPixelsPerDisplayPixelOverrideEnabled( true );
+                        setPixelsPerDisplayPixelOverride( valuef );
+                    }
+                }
+
+                int valuei = vr::VRSettings()->GetInt32(
+                    section_revive, key_toggleGrip, &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setGripButtonMode( valuei );
+                }
+
+                bool valueb = vr::VRSettings()->GetBool(
+                    section_revive, key_triggerAsGrip, &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setTriggerAsGrip( valueb );
+                }
+
+                valuef = vr::VRSettings()->GetFloat(
+                    section_revive, key_toggleDelay, &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setToggleDelay( valuef );
+                }
+
+                valuef = vr::VRSettings()->GetFloat(
+                    section_revive, key_thumbDeadzone, &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setThumbDeadzone( valuef );
+                }
+
+                valuef = vr::VRSettings()->GetFloat(
+                    section_revive, key_thumbSensitivity, &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setThumbRange( valuef );
+                }
+
+                valuef = vr::VRSettings()->GetFloat(
+                    section_revive, key_touchPitch, &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setTouchPitch( valuef );
+                }
+
+                valuef = vr::VRSettings()->GetFloat(
+                    section_revive, key_touchYaw, &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setTouchYaw( valuef );
+                }
+
+                valuef = vr::VRSettings()->GetFloat(
+                    section_revive, key_touchRoll, &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setTouchRoll( valuef );
+                }
+
+                valuef = vr::VRSettings()->GetFloat(
+                    section_revive, key_touchX, &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setTouchX( valuef );
+                }
+
+                valuef = vr::VRSettings()->GetFloat(
+                    section_revive, key_touchY, &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setTouchY( valuef );
+                }
+
+                valuef = vr::VRSettings()->GetFloat(
+                    section_revive, key_touchZ, &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setTouchZ( valuef );
+                }
+
+                valuef = vr::VRSettings()->GetFloat(
+                    section_revive, key_playerHeight, &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setPiPlayerHeight( valuef );
+                }
+
+                valuef = vr::VRSettings()->GetFloat(
+                    section_revive, key_eyeHeight, &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setPiEyeHeight( valuef );
+                }
+
+                char buffer[1024];
+                vr::VRSettings()->GetString( section_revive,
+                                             key_piUser,
+                                             buffer,
+                                             1024,
+                                             &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setPiUsername( buffer );
+                }
+
+                vr::VRSettings()->GetString( section_revive,
+                                             key_piName,
+                                             buffer,
+                                             1024,
+                                             &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    setPiName( buffer );
+                }
+
+                vr::VRSettings()->GetString( section_revive,
+                                             key_piGender,
+                                             buffer,
+                                             1024,
+                                             &vrSettingsError );
+                if ( vrSettingsError == vr::VRSettingsError_None )
+                {
+                    if ( QString( buffer ).compare( "male",
+                                                    Qt::CaseInsensitive )
+                         == 0 )
+                    {
+                        valuei = 1;
+                    }
+                    else if ( QString( buffer ).compare( "female",
+                                                         Qt::CaseInsensitive )
+                              == 0 )
+                    {
+                        valuei = 2;
+                    }
+                    else
+                    {
+                        valuei = 0;
+                    }
+                    setPiGender( valuei );
+                }
+            }
             settingsUpdateCounter = 0;
-            vr::EVRSettingsError vrSettingsError;
-
-            float valuef = vr::VRSettings()->GetFloat(
-                section_revive, key_pixelsPerDisplayPixel, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                if ( valuef == 0.0 )
-                {
-                    setPixelsPerDisplayPixelOverrideEnabled( false );
-                }
-                else
-                {
-                    setPixelsPerDisplayPixelOverrideEnabled( true );
-                    setPixelsPerDisplayPixelOverride( valuef );
-                }
-            }
-
-            int valuei = vr::VRSettings()->GetInt32(
-                section_revive, key_toggleGrip, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setGripButtonMode( valuei );
-            }
-
-            bool valueb = vr::VRSettings()->GetBool(
-                section_revive, key_triggerAsGrip, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setTriggerAsGrip( valueb );
-            }
-
-            valuef = vr::VRSettings()->GetFloat(
-                section_revive, key_toggleDelay, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setToggleDelay( valuef );
-            }
-
-            valuef = vr::VRSettings()->GetFloat(
-                section_revive, key_thumbDeadzone, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setThumbDeadzone( valuef );
-            }
-
-            valuef = vr::VRSettings()->GetFloat(
-                section_revive, key_thumbSensitivity, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setThumbRange( valuef );
-            }
-
-            valuef = vr::VRSettings()->GetFloat(
-                section_revive, key_touchPitch, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setTouchPitch( valuef );
-            }
-
-            valuef = vr::VRSettings()->GetFloat(
-                section_revive, key_touchYaw, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setTouchYaw( valuef );
-            }
-
-            valuef = vr::VRSettings()->GetFloat(
-                section_revive, key_touchRoll, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setTouchRoll( valuef );
-            }
-
-            valuef = vr::VRSettings()->GetFloat(
-                section_revive, key_touchX, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setTouchX( valuef );
-            }
-
-            valuef = vr::VRSettings()->GetFloat(
-                section_revive, key_touchY, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setTouchY( valuef );
-            }
-
-            valuef = vr::VRSettings()->GetFloat(
-                section_revive, key_touchZ, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setTouchZ( valuef );
-            }
-
-            valuef = vr::VRSettings()->GetFloat(
-                section_revive, key_playerHeight, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setPiPlayerHeight( valuef );
-            }
-
-            valuef = vr::VRSettings()->GetFloat(
-                section_revive, key_eyeHeight, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setPiEyeHeight( valuef );
-            }
-
-            char buffer[1024];
-            vr::VRSettings()->GetString(
-                section_revive, key_piUser, buffer, 1024, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setPiUsername( buffer );
-            }
-
-            vr::VRSettings()->GetString(
-                section_revive, key_piName, buffer, 1024, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                setPiName( buffer );
-            }
-
-            vr::VRSettings()->GetString(
-                section_revive, key_piGender, buffer, 1024, &vrSettingsError );
-            if ( vrSettingsError == vr::VRSettingsError_None )
-            {
-                if ( QString( buffer ).compare( "male", Qt::CaseInsensitive )
-                     == 0 )
-                {
-                    valuei = 1;
-                }
-                else if ( QString( buffer ).compare( "female",
-                                                     Qt::CaseInsensitive )
-                          == 0 )
-                {
-                    valuei = 2;
-                }
-                else
-                {
-                    valuei = 0;
-                }
-                setPiGender( valuei );
-            }
         }
         else
         {
