@@ -491,7 +491,10 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
              SIGNAL( timeout() ),
              this,
              SLOT( OnTimeoutPumpEvents() ) );
-    m_pPumpEventsTimer->setInterval( 20 );
+
+    // was     m_pPumpEventsTimer->setInterval( 20 );
+    m_pPumpEventsTimer->setInterval( 5 );
+
     m_pPumpEventsTimer->start();
 
     m_steamVRTabController.initStage2( this, m_pWindow.get() );
