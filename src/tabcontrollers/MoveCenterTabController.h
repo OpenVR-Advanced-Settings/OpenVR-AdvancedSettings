@@ -25,6 +25,8 @@ class MoveCenterTabController : public QObject
         float offsetZ READ offsetZ WRITE setOffsetZ NOTIFY offsetZChanged )
     Q_PROPERTY(
         int rotation READ rotation WRITE setRotation NOTIFY rotationChanged )
+    Q_PROPERTY( int tempRotation READ tempRotation WRITE setTempRotation NOTIFY
+                    tempRotationChanged )
     Q_PROPERTY( bool adjustChaperone READ adjustChaperone WRITE
                     setAdjustChaperone NOTIFY adjustChaperoneChanged )
     Q_PROPERTY( bool moveShortcutRight READ moveShortcutRight WRITE
@@ -49,6 +51,7 @@ private:
     float m_offsetY = 0.0f;
     float m_offsetZ = 0.0f;
     int m_rotation = 0;
+    int m_tempRotation = 0;
     int m_rotationOld = 0;
     bool m_adjustChaperone = true;
     bool m_moveShortcutRightPressed = false;
@@ -78,6 +81,7 @@ public:
     float offsetY() const;
     float offsetZ() const;
     int rotation() const;
+    int tempRotation() const;
     bool adjustChaperone() const;
     bool moveShortcutRight() const;
     bool moveShortcutLeft() const;
@@ -95,6 +99,8 @@ public slots:
     void setOffsetZ( float value, bool notify = true );
 
     void setRotation( int value, bool notify = true );
+
+    void setTempRotation( int value, bool notify = true );
 
     void setAdjustChaperone( bool value, bool notify = true );
 
@@ -119,6 +125,7 @@ signals:
     void offsetYChanged( float value );
     void offsetZChanged( float value );
     void rotationChanged( int value );
+    void tempRotationChanged( int value );
     void adjustChaperoneChanged( bool value );
     void moveShortcutRightChanged( bool value );
     void moveShortcutLeftChanged( bool value );
