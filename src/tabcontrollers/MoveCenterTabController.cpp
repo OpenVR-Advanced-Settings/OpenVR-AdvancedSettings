@@ -136,18 +136,34 @@ int MoveCenterTabController::rotation() const
     return m_rotation;
 }
 
+int MoveCenterTabController::tempRotation() const
+{
+    return m_tempRotation;
+}
+
 void MoveCenterTabController::setRotation( int value, bool notify )
 {
     if ( m_rotation != value )
     {
-        // float angle = (value - m_rotation) * 2 * M_PI / 360.0;
-        // parent->RotateUniverseCenter((vr::TrackingUniverseOrigin)m_trackingUniverse,
-        // angle, m_adjustChaperone);
+        float angle = ( value - m_rotation ) * 2 * M_PI / 360.0;
+        parent->RotateUniverseCenter(
+            ( vr::TrackingUniverseOrigin ) m_trackingUniverse,
+            angle,
+            m_adjustChaperone );
         m_rotation = value;
         if ( notify )
         {
             emit rotationChanged( m_rotation );
         }
+    }
+}
+
+void MoveCenterTabController::setTempRotation( int value, bool notify )
+{
+    m_tempRotation = value;
+    if ( notify )
+    {
+        emit tempRotationChanged( m_tempRotation );
     }
 }
 

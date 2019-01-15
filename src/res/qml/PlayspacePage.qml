@@ -233,11 +233,11 @@ MyStackViewPage {
                             Layout.preferredWidth: 40
                             text: "-"
                             onClicked: {
-                                var val = MoveCenterTabController.rotation - 45
+                                var val = MoveCenterTabController.tempRotation - 45
                                 if (val < -180) {
                                     val = val + 360;
                                 }
-                                MoveCenterTabController.rotation = val
+                                MoveCenterTabController.tempRotation = val
                             }
                         }
 
@@ -250,11 +250,11 @@ MyStackViewPage {
                             Layout.fillWidth: true
                             onPositionChanged: {
                                 var val = this.from + ( this.position  * (this.to - this.from))
-                                playspaceRotationText.text = Math.round(val) + "°"
+                                MoveCenterTabController.tempRotation = Math.round(val)
                             }
                             onValueChanged: {
-                                MoveCenterTabController.rotation = playspaceRotationSlider.value
-                                playspaceRotationText.text = Math.round(playspaceRotationSlider.value) + "°"
+                                MoveCenterTabController.tempRotation = Math.round(playspaceRotationSlider.value)
+                                //playspaceRotationText.text = Math.round(playspaceRotationSlider.value) + "°"
                             }
                         }
 
@@ -263,11 +263,11 @@ MyStackViewPage {
                             Layout.preferredWidth: 40
                             text: "+"
                             onClicked: {
-                                var val = MoveCenterTabController.rotation + 45
+                                var val = MoveCenterTabController.tempRotation + 45
                                 if (val > 180) {
                                     val = val -360;
                                 }
-                                MoveCenterTabController.rotation = val
+                                MoveCenterTabController.tempRotation = val
                             }
                         }
 
@@ -282,10 +282,10 @@ MyStackViewPage {
                                 var val = parseInt(input)
                                 if (!isNaN(val)) {
                                     val = val % 180
-                                    MoveCenterTabController.rotation = val
-                                    text = MoveCenterTabController.rotation + "°"
+                                    MoveCenterTabController.tempRotation = val
+                                    text = MoveCenterTabController.tempRotation + "°"
                                 } else {
-                                    text = MoveCenterTabController.rotation + "°"
+                                    text = MoveCenterTabController.tempRotation + "°"
                                 }
                             }
                         }
@@ -294,7 +294,7 @@ MyStackViewPage {
                             Layout.preferredWidth: 145
                             text:"Apply"
                             onClicked: {
-                               MoveCenterTabController.applyRotation()
+                               MoveCenterTabController.rotation = MoveCenterTabController.tempRotation
                             }
 
                         }
@@ -408,6 +408,10 @@ MyStackViewPage {
             }
             onRotationChanged: {
                 playspaceRotationSlider.value = MoveCenterTabController.rotation
+            }
+            onTempRotationChanged: {
+                            playspaceRotationSlider.value = MoveCenterTabController.tempRotation
+                            playspaceRotationText.text = MoveCenterTabController.tempRotation + "°"
             }
             onAdjustChaperoneChanged: {
                 playspaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
