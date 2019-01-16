@@ -151,7 +151,6 @@ void MoveCenterTabController::setRotation( int value, bool notify )
 {
     if ( m_rotation != value )
     {
-<<<<<<< HEAD
         double angle = ( value - m_rotation ) * M_PI / 18000.0;
 
         // Revert now because we don't commit in RotateUniverseCenter and
@@ -195,13 +194,6 @@ void MoveCenterTabController::setRotation( int value, bool notify )
             m_adjustChaperone,
             false );
 
-=======
-        float angle = ( value - m_rotation ) * 2 * M_PI / 360.0;
-        parent->RotateUniverseCenter(
-            ( vr::TrackingUniverseOrigin ) m_trackingUniverse,
-            angle,
-            m_adjustChaperone );
->>>>>>> master
         m_rotation = value;
         if ( notify )
         {
@@ -250,18 +242,6 @@ void MoveCenterTabController::setRotation( int value, bool notify )
 }
 
 void MoveCenterTabController::setTempRotation( int value, bool notify )
-<<<<<<< HEAD
-=======
-{
-    m_tempRotation = value;
-    if ( notify )
-    {
-        emit tempRotationChanged( m_tempRotation );
-    }
-}
-
-void MoveCenterTabController::applyRotation()
->>>>>>> master
 {
     m_tempRotation = value;
     if ( notify )
