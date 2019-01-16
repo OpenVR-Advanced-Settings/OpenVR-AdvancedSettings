@@ -624,11 +624,11 @@ void MoveCenterTabController::eventLoopTick(
         emit offsetYChanged( m_offsetY );
         emit offsetZChanged( m_offsetZ );
 
-        // Set lastHandYaw to placeholder value for invalid (-10.0) when we
-        // release move shortcut.
+        // Set lastHandQuaternion.w to placeholder value for invalid (-1000.0)
+        // when we release move shortcut.
         if ( m_rotateHand )
         {
-            lastHandYaw = -10.0;
+            lastHandQuaternion.w = -1000.0;
         }
 
         return;
@@ -647,7 +647,7 @@ void MoveCenterTabController::eventLoopTick(
 
             if ( m_rotateHand )
             {
-                lastHandYaw = -10.0;
+                lastHandQuaternion.w = -1000.0;
             }
         }
         return;
@@ -678,7 +678,7 @@ void MoveCenterTabController::eventLoopTick(
         vr::HmdMatrix34_t handMatrix = pose->mDeviceToAbsoluteTracking;
 
         // We need un-rotated coordinates for valid comparison between
-        // handYaw and lastHandYaw. Set up (un)rotation matrix.
+        // handQuaternion and lastHandQuaternion. Set up (un)rotation matrix.
         vr::HmdMatrix34_t handMatrixRotMat;
         vr::HmdMatrix34_t handMatrixAbsolute;
         utils::initRotationMatrix(
@@ -687,9 +687,8 @@ void MoveCenterTabController::eventLoopTick(
         // Get handMatrixAbsolute in un-rotated coordinates.
         utils::matMul33( handMatrixAbsolute, handMatrixRotMat, handMatrix );
 
-        // Convert pose matrix to yaw.
-        handYaw = std::atan2( handMatrixAbsolute.m[0][2],
-                              handMatrixAbsolute.m[2][2] );
+        // Convert pose matrix to quaternion
+        handQuaternion = utils::getQuaternion( handMatrixAbsolute );
     }
 
     if ( oldMoveHand == newMoveHand )
@@ -749,17 +748,25 @@ void MoveCenterTabController::eventLoopTick(
         // Get rotation change of hand.
         if ( m_rotateHand )
         {
-            // Checking if set to -10.0 placeholder for invalid hand.
-            if ( lastHandYaw < -9.0 )
+            // Checking if set to -1000.0 placeholder for invalid hand.
+            if ( lastHandQuaternion.w < -900.0 )
             {
-                lastHandYaw = handYaw;
+                lastHandQuaternion = handQuaternion;
             }
 
             else
             {
-                double handYawDiff = handYaw - lastHandYaw;
+                // Construct a quaternion representing difference between old
+                // hand and new hand.
+                vr::HmdQuaternion_t handDiffQuaternion
+                    = utils::multiplyQuaternion(
+                        handQuaternion,
+                        utils::quaternionConjugate( lastHandQuaternion ) );
 
-                // TODO: Increase angular granularity beyond 1 degree.
+                // Calculate yaw from quaternion.
+                double handYawDiff
+                    = atan2( handDiffQuaternion.y, handDiffQuaternion.w ) * 2.0;
+
                 int newRotationAngleDeg = static_cast<int>(
                     round( handYawDiff * 18000.0 / M_PI ) + m_rotation );
 
@@ -780,6 +787,6 @@ void MoveCenterTabController::eventLoopTick(
     m_lastControllerPosition[0] = absoluteControllerPosition[0];
     m_lastControllerPosition[1] = absoluteControllerPosition[1];
     m_lastControllerPosition[2] = absoluteControllerPosition[2];
-    lastHandYaw = handYaw;
+    lastHandQuaternion = handQuaternion;
 }
 } // namespace advsettings

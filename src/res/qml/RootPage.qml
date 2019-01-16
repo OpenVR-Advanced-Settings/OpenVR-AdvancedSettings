@@ -418,7 +418,7 @@ MyStackViewPage {
 
 // REVERT TO THIS LATER:      summaryVersionText.text = applicationVersion
 // TEMP VERSION:
-       summaryVersionText.text = "Alpha-Kung v1.3"
+       summaryVersionText.text = "Alpha-Kung v1.4"
 
        if (MoveCenterTabController.trackingUniverse === 0) {
            summaryPlaySpaceModeText.text = "Sitting"

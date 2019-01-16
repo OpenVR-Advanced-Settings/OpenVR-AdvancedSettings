@@ -67,9 +67,9 @@ private:
     bool m_lockYToggle = false;
     bool m_lockZToggle = false;
     std::chrono::system_clock::time_point lastMoveButtonClick[2];
-    // Set to -10.0 when last hand is invalid.
-    double lastHandYaw = -10.0;
-    double handYaw;
+    // Set lastHandQuaternion.w to -1000.0 when last hand is invalid.
+    vr::HmdQuaternion_t lastHandQuaternion = { -1000.0, 0.0, 0.0, 0.0 };
+    vr::HmdQuaternion_t handQuaternion;
 
     unsigned settingsUpdateCounter = 0;
 
