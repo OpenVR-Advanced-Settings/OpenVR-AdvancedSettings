@@ -49,7 +49,7 @@ public:
     static constexpr auto applicationName = "OpenVRAdvancedSettings";
     static constexpr const char* applicationKey = "matzman666.AdvancedSettings";
     static constexpr const char* applicationDisplayName = "Advanced Settings";
-    static constexpr const char* applicationVersionString = "v2.8.0";
+    static constexpr const char* applicationVersionString = "v2.8.0-dev";
 
 private:
     vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;

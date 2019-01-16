@@ -54,6 +54,10 @@ private:
     float m_offsetZ = 0.0f;
     int m_rotation = 0;
     int m_tempRotation = 0;
+<<<<<<< HEAD
+=======
+    int m_rotationOld = 0;
+>>>>>>> master
     bool m_adjustChaperone = true;
     bool m_rotateHand = false;
     bool m_moveShortcutRightPressed = false;
