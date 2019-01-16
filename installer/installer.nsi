@@ -11,7 +11,7 @@
 		!define THIRDDIR "..\third-party"
         !define PACKAGEDIR "..\src\package_files"
         !define PROJECTDIR "..\"
-        !define VERSION_STRING "2-8-0"
+        !define VERSION_STRING "2-8-0-dev"
 
 	;Name and file
 	Name "OpenVR Advanced Settings"
