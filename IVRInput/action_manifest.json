@@ -1,0 +1,30 @@
+{
+  "default_bindings": [
+   {
+      "controller_type": "vive_controller",
+      "binding_url": "legacy_actions.json"
+   }
+  ], 
+  "actions": [
+    {
+      "name": "/actions/main/in/PlayNextTrack",
+      "requirement": "optional",
+      "type": "boolean"
+    }
+  ],
+  "action_sets": [
+    {
+      "name": "/actions/main",
+      "usage": "leftright"
+    }
+  ],
+  "localization" : [
+   {
+       "language_tag": "en",
+
+        "/actions/main" : "My Game Actions",
+
+        "/actions/main/in/PlayNextTrack" : "Play Next Track"
+    }
+  ]
+}

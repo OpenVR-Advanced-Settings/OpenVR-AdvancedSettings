@@ -58,8 +58,8 @@ SOURCES += src/main.cpp\
     src/utils/ChaperoneUtils.cpp \
     src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
     src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp \
-    src/overlaycontroller/openvr_init.cpp
-
+    src/overlaycontroller/openvr_init.cpp \
+    src/steamivrinput.cpp
 
 HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/AudioTabController.h \
@@ -79,7 +79,8 @@ HEADERS += src/overlaycontroller.h \
     src/utils/ChaperoneUtils.h \
     src/tabcontrollers/audiomanager/AudioManagerDummy.h \
     src/tabcontrollers/keyboardinput/KeyboardInputDummy.h \
-    src/overlaycontroller/openvr_init.h
+    src/overlaycontroller/openvr_init.h \
+    src/steamivrinput.h
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
