@@ -1,6 +1,7 @@
 #include "steamivrinput.h"
 #include <openvr.h>
 #include <iostream>
+#include <QStandardPaths>
 
 void SteamIVRInput::Init( const bool init )
 {
@@ -14,8 +15,11 @@ void SteamIVRInput::Init( const bool init )
         }
     }
 
-    auto error
-        = vr::VRInput()->SetActionManifestPath( m_actionManifestPath.c_str() );
+    QString manifestPath
+        = QStandardPaths::locate( QStandardPaths::AppDataLocation,
+                                  QStringLiteral( "action_manifest.json" ) );
+    auto error = vr::VRInput()->SetActionManifestPath(
+        manifestPath.toStdString().c_str() );
     if ( error != vr::EVRInputError::VRInputError_None )
     {
         std::cout << "Action manifest error\n";
