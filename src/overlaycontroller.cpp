@@ -31,26 +31,13 @@ QSettings* OverlayController::_appSettings = nullptr;
 OverlayController::OverlayController( bool desktopMode,
                                       bool noSound,
                                       QQmlEngine& qmlEngine )
-    : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound )
+    : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ),
+      openVrInit()
 {
-    // Loading the OpenVR Runtime
-    auto initError = vr::VRInitError_None;
-    vr::VR_Init( &initError, vr::VRApplication_Overlay );
-    if ( initError != vr::VRInitError_None )
-    {
-        if ( initError == vr::VRInitError_Init_HmdNotFound
-             || initError == vr::VRInitError_Init_HmdNotFoundPresenceFailed )
-        {
-            QMessageBox::critical( nullptr,
-                                   "OpenVR Advanced Settings Overlay",
-                                   "Could not find HMD!" );
-        }
-        throw std::runtime_error(
-            std::string( "Failed to initialize OpenVR: " )
-            + std::string(
-                  vr::VR_GetVRInitErrorAsEnglishDescription( initError ) ) );
-    }
-
+    // Despite arguably being OpenVR init code, the call is still here because
+    // the TabController uses this directly. Offering it through OpenVR_Init
+    // might be an option, but it might scope creep OpenVR_Init which currently
+    // doesn't contain any member variables.
     m_runtimePathUrl = QUrl::fromLocalFile( vr::VR_RuntimePath() );
     LOG( INFO ) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
@@ -99,96 +86,6 @@ OverlayController::OverlayController( bool desktopMode,
     {
         LOG( ERROR ) << "Could not find alarm01 sound file "
                      << alarm01SoundFile;
-    }
-
-    // Check whether OpenVR is too outdated
-    if ( !vr::VR_IsInterfaceVersionValid( vr::IVRSystem_Version ) )
-    {
-        QMessageBox::critical(
-            nullptr,
-            "OpenVR Advanced Settings Overlay",
-            "OpenVR version is too outdated. Please update OpenVR." );
-        throw std::runtime_error(
-            std::string( "OpenVR version is too outdated: Interface version " )
-            + std::string( vr::IVRSystem_Version )
-            + std::string( " not found." ) );
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRSettings_Version ) )
-    {
-        QMessageBox::critical(
-            nullptr,
-            "OpenVR Advanced Settings Overlay",
-            "OpenVR version is too outdated. Please update OpenVR." );
-        throw std::runtime_error(
-            std::string( "OpenVR version is too outdated: Interface version " )
-            + std::string( vr::IVRSettings_Version )
-            + std::string( " not found." ) );
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVROverlay_Version ) )
-    {
-        QMessageBox::critical(
-            nullptr,
-            "OpenVR Advanced Settings Overlay",
-            "OpenVR version is too outdated. Please update OpenVR." );
-        throw std::runtime_error(
-            std::string( "OpenVR version is too outdated: Interface version " )
-            + std::string( vr::IVROverlay_Version )
-            + std::string( " not found." ) );
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRApplications_Version ) )
-    {
-        QMessageBox::critical(
-            nullptr,
-            "OpenVR Advanced Settings Overlay",
-            "OpenVR version is too outdated. Please update OpenVR." );
-        throw std::runtime_error(
-            std::string( "OpenVR version is too outdated: Interface version " )
-            + std::string( vr::IVRApplications_Version )
-            + std::string( " not found." ) );
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRChaperone_Version ) )
-    {
-        QMessageBox::critical(
-            nullptr,
-            "OpenVR Advanced Settings Overlay",
-            "OpenVR version is too outdated. Please update OpenVR." );
-        throw std::runtime_error(
-            std::string( "OpenVR version is too outdated: Interface version " )
-            + std::string( vr::IVRChaperone_Version )
-            + std::string( " not found." ) );
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRChaperoneSetup_Version ) )
-    {
-        QMessageBox::critical(
-            nullptr,
-            "OpenVR Advanced Settings Overlay",
-            "OpenVR version is too outdated. Please update OpenVR." );
-        throw std::runtime_error(
-            std::string( "OpenVR version is too outdated: Interface version " )
-            + std::string( vr::IVRChaperoneSetup_Version )
-            + std::string( " not found." ) );
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRCompositor_Version ) )
-    {
-        QMessageBox::critical(
-            nullptr,
-            "OpenVR Advanced Settings Overlay",
-            "OpenVR version is too outdated. Please update OpenVR." );
-        throw std::runtime_error(
-            std::string( "OpenVR version is too outdated: Interface version " )
-            + std::string( vr::IVRCompositor_Version )
-            + std::string( " not found." ) );
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRNotifications_Version ) )
-    {
-        QMessageBox::critical(
-            nullptr,
-            "OpenVR Advanced Settings Overlay",
-            "OpenVR version is too outdated. Please update OpenVR." );
-        throw std::runtime_error(
-            std::string( "OpenVR version is too outdated: Interface version " )
-            + std::string( vr::IVRNotifications_Version )
-            + std::string( " not found." ) );
     }
 
     QSurfaceFormat format;
