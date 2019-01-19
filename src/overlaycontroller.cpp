@@ -32,7 +32,7 @@ OverlayController::OverlayController( bool desktopMode,
                                       bool noSound,
                                       QQmlEngine& qmlEngine )
     : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ),
-      openVrInit()
+      m_openVrInit()
 {
     // Despite arguably being OpenVR init code, the call is still here because
     // the TabController uses this directly. Offering it through OpenVR_Init
