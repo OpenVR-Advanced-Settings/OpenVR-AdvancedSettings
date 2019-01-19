@@ -80,7 +80,8 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/audiomanager/AudioManagerDummy.h \
     src/tabcontrollers/keyboardinput/KeyboardInputDummy.h \
     src/overlaycontroller/openvr_init.h \
-    src/steamivrinput.h
+    src/steamivrinput.h \
+    src/ivrinput/ivrinput_action.h
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \

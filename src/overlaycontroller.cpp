@@ -118,7 +118,7 @@ OverlayController::OverlayController( bool desktopMode,
             nullptr, "OpenVR Advanced Settings Overlay", "Is OpenVR running?" );
         throw std::runtime_error( std::string( "No Overlay interface" ) );
     }
-    m_actions.Init( false );
+    m_actions.Init();
     // Init controllers
     m_steamVRTabController.initStage1();
     m_chaperoneTabController.initStage1();

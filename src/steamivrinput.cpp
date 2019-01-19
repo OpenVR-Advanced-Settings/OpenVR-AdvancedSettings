@@ -2,43 +2,84 @@
 #include <openvr.h>
 #include <iostream>
 #include <QStandardPaths>
+#include <easylogging++.h>
 
-void SteamIVRInput::Init( const bool init )
+void setActionManifestPath( const QString actionManifestPath )
 {
-    if ( init )
+    auto error = vr::VRInput()->SetActionManifestPath(
+        actionManifestPath.toStdString().c_str() );
+    if ( error != vr::EVRInputError::VRInputError_None )
     {
-        auto initError = vr::VRInitError_None;
-        vr::VR_Init( &initError, vr::VRApplication_Overlay );
-        if ( initError != vr::VRInitError_None )
-        {
-            std::cout << "SteamVR init error.";
-        }
+        LOG( ERROR ) << "Error setting action manifest path: "
+                     << actionManifestPath << ". OpenVR Error: " << error;
+    }
+}
+
+vr::VRActionHandle_t getActionHandle( const char* const action )
+{
+    vr::VRActionHandle_t actionHandle = 0;
+
+    auto error = vr::VRInput()->GetActionHandle( action, &actionHandle );
+
+    if ( error != vr::EVRInputError::VRInputError_None )
+    {
+        LOG( ERROR ) << "Error getting handle for '" << action
+                     << "'. OpenVR Error: " << error;
     }
 
-    QString manifestPath
+    return actionHandle;
+}
+
+vr::VRActionSetHandle_t getActionSetHandle( const char* const set )
+{
+    vr::VRActionSetHandle_t setHandle = 0;
+
+    auto error = vr::VRInput()->GetActionSetHandle( set, &setHandle );
+    if ( error != vr::EVRInputError::VRInputError_None )
+    {
+        LOG( ERROR ) << "Error getting handle for '" << set
+                     << "'. OpenVR Error: " << error;
+    }
+
+    return setHandle;
+}
+
+vr::InputDigitalActionData_t getDigitalActionData( vr::VRActionHandle_t handle )
+{
+    vr::InputDigitalActionData_t handleData = {};
+
+    auto error = vr::VRInput()->GetDigitalActionData(
+        handle,
+        &handleData,
+        sizeof( handleData ),
+        vr::k_ulInvalidInputValueHandle );
+
+    if ( error != vr::EVRInputError::VRInputError_None )
+    {
+        LOG( ERROR ) << "Error getting Digital Action Data for handle "
+                     << handle << ". SteamVR Error: " << error;
+    }
+
+    return handleData;
+}
+
+bool isActionActivatedOnce( vr::VRActionHandle_t handle )
+{
+    auto handleData = getDigitalActionData( handle );
+
+    return handleData.bState && handleData.bChanged;
+}
+
+void SteamIVRInput::Init()
+{
+    QString actionManifestPath
         = QStandardPaths::locate( QStandardPaths::AppDataLocation,
                                   QStringLiteral( "action_manifest.json" ) );
-    auto error = vr::VRInput()->SetActionManifestPath(
-        manifestPath.toStdString().c_str() );
-    if ( error != vr::EVRInputError::VRInputError_None )
-    {
-        std::cout << "Action manifest error\n";
-    }
+    setActionManifestPath( actionManifestPath );
 
-    // Get action handle
-    error = vr::VRInput()->GetActionHandle( "/actions/main/in/PlayNextTrack",
-                                            &m_nextSongHandler );
-    if ( error != vr::EVRInputError::VRInputError_None )
-    {
-        std::cout << "Handle error.\n";
-    }
+    m_nextSongHandler = getActionHandle( input_strings::k_actionNextTrack );
 
-    error = vr::VRInput()->GetActionSetHandle( "/actions/main",
-                                               &m_mainSetHandler );
-    if ( error != vr::EVRInputError::VRInputError_None )
-    {
-        std::cout << "Handle error.\n";
-    }
+    m_mainSetHandler = getActionSetHandle( input_strings::k_setMain );
 
     m_activeActionSet.ulActionSet = m_mainSetHandler;
     m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;
@@ -47,24 +88,7 @@ void SteamIVRInput::Init( const bool init )
 
 bool SteamIVRInput::nextSongSet()
 {
-    auto e = vr::VRInput()->GetDigitalActionData(
-        m_nextSongHandler,
-        &m_nextSongData,
-        sizeof( m_nextSongData ),
-        vr::k_ulInvalidInputValueHandle );
-
-    if ( e != vr::EVRInputError::VRInputError_None )
-    {
-        std::cout << e;
-        std::cout << "GetDigitalAction error.\n";
-    }
-
-    if ( m_nextSongData.bActive )
-    {
-        std::cout << "Action Set Active!\n";
-    }
-
-    return m_nextSongData.bState;
+    return isActionActivatedOnce( m_nextSongHandler );
 }
 
 void SteamIVRInput::Loop()
@@ -74,6 +98,6 @@ void SteamIVRInput::Loop()
 
     if ( error != vr::EVRInputError::VRInputError_None )
     {
-        std::cout << "Loop error.\n";
+        LOG( ERROR ) << "Loop error.";
     }
 }
