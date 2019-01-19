@@ -32,7 +32,7 @@ OverlayController::OverlayController( bool desktopMode,
                                       bool noSound,
                                       QQmlEngine& qmlEngine )
     : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ),
-      m_openVrInit()
+      m_openVrInit(), m_actions()
 {
     // Despite arguably being OpenVR init code, the call is still here because
     // the TabController uses this directly. Offering it through OpenVR_Init
@@ -118,7 +118,6 @@ OverlayController::OverlayController( bool desktopMode,
             nullptr, "OpenVR Advanced Settings Overlay", "Is OpenVR running?" );
         throw std::runtime_error( std::string( "No Overlay interface" ) );
     }
-    m_actions.Init();
     // Init controllers
     m_steamVRTabController.initStage1();
     m_chaperoneTabController.initStage1();
@@ -479,7 +478,7 @@ void OverlayController::OnTimeoutPumpEvents()
 
     m_actions.Loop();
 
-    if ( m_actions.nextSongSet() )
+    if ( m_actions.nextSong() )
     {
         LOG( INFO ) << "NEXT SONG SET!";
     }

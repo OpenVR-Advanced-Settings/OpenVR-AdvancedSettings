@@ -70,6 +70,10 @@ OpenVR_Init::OpenVR_Init()
     {
         reportVersionError( vr::IVRNotifications_Version );
     }
+    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRInput_Version ) )
+    {
+        reportVersionError( vr::IVRInput_Version );
+    }
 }
 
 OpenVR_Init::~OpenVR_Init()

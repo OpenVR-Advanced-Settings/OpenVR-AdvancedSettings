@@ -2,10 +2,13 @@
 #include <openvr.h>
 #include <easylogging++.h>
 
+namespace input
+{
 enum class ActionType
 {
     Undefined,
     Digital,
+    Analog,
 };
 
 class Action
@@ -22,21 +25,23 @@ public:
                          << "'. OpenVR Error: " << error;
         }
     }
-    vr::VRActionHandle_t handle()
+    vr::VRActionHandle_t handle() const noexcept
     {
         return m_handle;
     }
-    const char* name()
+    std::string name() const noexcept
     {
         return m_name;
     }
-    ActionType type()
+    ActionType type() const noexcept
     {
         return m_type;
     }
 
 private:
     vr::VRActionHandle_t m_handle = 0;
-    const char* m_name;
-    ActionType m_type = ActionType::Undefined;
+    const std::string m_name;
+    const ActionType m_type = ActionType::Undefined;
 };
+
+} // namespace input

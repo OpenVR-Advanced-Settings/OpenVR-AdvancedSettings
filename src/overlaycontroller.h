@@ -39,7 +39,7 @@
 #include "tabcontrollers/UtilitiesTabController.h"
 #include "tabcontrollers/AccessibilityTabController.h"
 
-#include "steamivrinput.h"
+#include "ivrinput/steamivrinput.h"
 
 // application namespace
 namespace advsettings
@@ -92,7 +92,7 @@ private:
 
 public: // I know it's an ugly hack to make them public to enable external
         // access, but I am too lazy to implement getters.
-    SteamIVRInput m_actions;
+    input::SteamIVRInput m_actions;
     SteamVRTabController m_steamVRTabController;
     ChaperoneTabController m_chaperoneTabController;
     MoveCenterTabController m_moveCenterTabController;
