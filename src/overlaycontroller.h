@@ -23,6 +23,9 @@
 #include <QSoundEffect>
 #include <memory>
 #include <easylogging++.h>
+
+#include "overlaycontroller/openvr_init.h"
+
 #include "utils/ChaperoneUtils.h"
 
 #include "tabcontrollers/SteamVRTabController.h"
@@ -79,6 +82,11 @@ private:
     QSoundEffect m_activationSoundEffect;
     QSoundEffect m_focusChangedSoundEffect;
     QSoundEffect m_alarm01SoundEffect;
+
+    // OpenVR_Init must be declared before any other class that uses OpenVR
+    // function calls since objects are initialized in order of declaration in
+    // the class.
+    OpenVR_Init m_openVrInit;
 
 public: // I know it's an ugly hack to make them public to enable external
         // access, but I am too lazy to implement getters.
