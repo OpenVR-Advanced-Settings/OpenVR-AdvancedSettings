@@ -2,7 +2,7 @@
   "default_bindings": [
    {
       "controller_type": "vive_controller",
-      "binding_url": "legacy_actions.json"
+      "binding_url": "default_action_manifests/vive_defaults.json"
    }
   ], 
   "actions": [
