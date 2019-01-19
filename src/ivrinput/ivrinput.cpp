@@ -1,4 +1,4 @@
-#include "steamivrinput.h"
+#include "ivrinput.h"
 #include <openvr.h>
 #include <iostream>
 #include <QStandardPaths>

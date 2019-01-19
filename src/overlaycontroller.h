@@ -39,7 +39,7 @@
 #include "tabcontrollers/UtilitiesTabController.h"
 #include "tabcontrollers/AccessibilityTabController.h"
 
-#include "ivrinput/steamivrinput.h"
+#include "ivrinput/ivrinput.h"
 
 // application namespace
 namespace advsettings
