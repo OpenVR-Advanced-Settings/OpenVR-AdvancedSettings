@@ -109,7 +109,13 @@ Section "Install" SecInstall
     File "${BASEDIR}\LICENSE-GPL.txt"
     File "${BASEDIR}\LICENSE-MIT.txt"
     File "${BASEDIR}\LICENSE-VALVE.txt"
+    
 	File "${BASEDIR}\*.exe"
+    ;Any action manifests
+    File "${BASEDIR}\*.json"
+    ;And their defaults
+    File "${BASEDIR}\default_action_manifests\*.json"
+    
 	File "${THIRDDIR}\openvr\bin\win64\*.dll"
 	File "${BASEDIR}\*.dll"
 	File "${PACKAGEDIR}\*.bat"
