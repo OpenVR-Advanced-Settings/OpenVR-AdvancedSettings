@@ -73,6 +73,8 @@ time).
         LOG( INFO ) << logPrefix << "Application initialized as scene.";
     }
 
+    // This needs to be initialized, otherwise the bindings won't show up in the
+    // menu.
     input::Manifest manifest;
 
     // SteamVR just needs a good enough time to start up comfortably and for the
