@@ -4,6 +4,9 @@
 
 namespace input
 {
+/*!
+Represents an action set from the action manifest.
+*/
 class ActionSet
 {
 public:
@@ -16,10 +19,16 @@ public:
                          << "'. OpenVR Error: " << error;
         }
     }
+    /*!
+    The actions manfiest name of the set. Used for error reporting.
+    */
     std::string name()
     {
         return m_name;
     }
+    /*!
+    An API internal handle that identifies a set.
+    */
     vr::VRActionSetHandle_t handle()
     {
         return m_handle;

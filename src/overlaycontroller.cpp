@@ -476,7 +476,7 @@ void OverlayController::OnTimeoutPumpEvents()
     if ( !vr::VRSystem() )
         return;
 
-    m_actions.Loop();
+    m_actions.UpdateStates();
 
     if ( m_actions.nextSong() )
     {

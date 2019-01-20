@@ -4,6 +4,11 @@
 
 namespace input
 {
+/*!
+The type of function that should be called to get data for the action.
+The IVRInput API does not give explicit warnings when the wrong functions are
+called. This enum is an attempt at runtime checking.
+*/
 enum class ActionType
 {
     Undefined,
@@ -11,6 +16,10 @@ enum class ActionType
     Analog,
 };
 
+/*!
+Represents a single action from the actions manifest. Should be instantiated
+with a name similar to that of the one in the actions manifest.
+*/
 class Action
 {
 public:
@@ -25,14 +34,24 @@ public:
                          << "'. OpenVR Error: " << error;
         }
     }
+    /*!
+    An API internal handle that identifies an action.
+    */
     vr::VRActionHandle_t handle() const noexcept
     {
         return m_handle;
     }
+    /*!
+    The actions manfiest name of the action. Used for error reporting.
+    */
     std::string name() const noexcept
     {
         return m_name;
     }
+    /*!
+    The type of the action. Used for runtime checking that the wrong functions
+    aren't called.
+    */
     ActionType type() const noexcept
     {
         return m_type;
