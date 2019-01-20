@@ -88,7 +88,7 @@ private:
     // OpenVR_Init must be declared before any other class that uses OpenVR
     // function calls since objects are initialized in order of declaration in
     // the class.
-    OpenVR_Init m_openVrInit;
+    openvr_init::OpenVR_Init m_openVrInit;
 
 public: // I know it's an ugly hack to make them public to enable external
         // access, but I am too lazy to implement getters.

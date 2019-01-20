@@ -46,6 +46,7 @@ constexpr auto kNoSound = "-nosound";
 constexpr auto kNoManifest = "-nomanifest";
 constexpr auto kInstallManifest = "-installmanifest";
 constexpr auto kRemoveManifest = "-removemanifest";
+constexpr auto kEnableBindingsInterface = "-bindingsinterface";
 } // namespace argument
 
 namespace manifest
@@ -357,6 +358,8 @@ int main( int argc, char* argv[] )
         argc, argv, argument::kInstallManifest );
     const bool removeManifest = argument::CheckCommandLineArgument(
         argc, argv, argument::kRemoveManifest );
+    const bool bindingsInterface = argument::CheckCommandLineArgument(
+        argc, argv, argument::kEnableBindingsInterface );
 
     // If a command line arg is set, make sure the logs reflect that.
     LOG_IF( desktopMode, INFO ) << "Desktop mode enabled.";
@@ -364,6 +367,15 @@ int main( int argc, char* argv[] )
     LOG_IF( noManifest, INFO ) << "vrmanifest disabled.";
     LOG_IF( installManifest, INFO ) << "Install manifest enabled.";
     LOG_IF( removeManifest, INFO ) << "Remove manifest enabled.";
+    LOG_IF( bindingsInterface, INFO ) << "Bindings interface enabled.";
+
+    if ( bindingsInterface )
+    {
+        // This is a temporary solution until Valve fixes overlays not
+        // showing up in the bindings interface. See function description for
+        // more info.
+        openvr_init::openBindingsMenu();
+    }
 
     // It is important that either install_manifest or remove_manifest are true,
     // otherwise the handleManifests function will not behave properly.

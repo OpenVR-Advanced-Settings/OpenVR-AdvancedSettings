@@ -1,5 +1,9 @@
 #pragma once
 
+namespace openvr_init
+{
+[[noreturn]] void openBindingsMenu();
+
 /*!
 Initializes OpenVR and checks validity of interface versions. Shuts down OpenVR
 when destroyed.
@@ -33,3 +37,4 @@ public:
     // Move assignment
     const OpenVR_Init operator=( OpenVR_Init&& ) = delete;
 };
+} // namespace openvr_init
