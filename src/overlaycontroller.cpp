@@ -471,6 +471,33 @@ QPoint OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
     return QPoint( mouse.x, y );
 }
 
+/*!
+Checks if an action has been activated and dispatches the related action if it
+has been.
+
+This function should probably be split into several functions that are specific
+to a binding type as the amount of actions grows.
+*/
+void OverlayController::processInputBindings()
+{
+    if ( m_actions.nextSong() )
+    {
+        m_utilitiesTabController.sendMediaNextSong();
+    }
+    if ( m_actions.previousSong() )
+    {
+        m_utilitiesTabController.sendMediaPreviousSong();
+    }
+    if ( m_actions.pausePlaySong() )
+    {
+        m_utilitiesTabController.sendMediaPausePlay();
+    }
+    if ( m_actions.stopSong() )
+    {
+        m_utilitiesTabController.sendMediaStopSong();
+    }
+}
+
 void OverlayController::OnTimeoutPumpEvents()
 {
     if ( !vr::VRSystem() )
@@ -478,10 +505,7 @@ void OverlayController::OnTimeoutPumpEvents()
 
     m_actions.UpdateStates();
 
-    if ( m_actions.nextSong() )
-    {
-        LOG( INFO ) << "NEXT SONG SET!";
-    }
+    processInputBindings();
 
     vr::VREvent_t vrEvent;
     bool chaperoneDataAlreadyUpdated = false;

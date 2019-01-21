@@ -37,6 +37,9 @@ public:
 
     void UpdateStates();
     bool nextSong();
+    bool previousSong();
+    bool pausePlaySong();
+    bool stopSong();
 
     // Destructor. There are no terminating calls for the IVRInput API, so it
     // is left blank.
@@ -61,7 +64,11 @@ private:
     ActionSet m_mainSet;
     vr::VRActiveActionSet_t m_activeActionSet = {};
 
+    // Music player bindings
     Action m_nextTrack;
+    Action m_previousTrack;
+    Action m_pausePlayTrack;
+    Action m_stopTrack;
 };
 
 /*!
@@ -71,7 +78,11 @@ should be used to refer to all action manifest strings.
 */
 namespace input_strings
 {
-    constexpr auto k_actionNextTrack = "/actions/main/in/PlayNextTrack";
+    constexpr auto k_actionNextTrack = "/actions/main/in/NextTrack";
+    constexpr auto k_actionPreviousTrack = "/actions/main/in/PreviousTrack";
+    constexpr auto k_actionPausePlayTrack = "/actions/main/in/PausePlayTrack";
+    constexpr auto k_actionStopTrack = "/actions/main/in/StopTrack";
+
     constexpr auto k_setMain = "/actions/main";
 
 } // namespace input_strings

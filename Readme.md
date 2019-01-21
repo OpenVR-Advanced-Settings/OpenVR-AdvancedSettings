@@ -83,20 +83,25 @@ To upgrade an existing installation first stop SteamVR and delete the old applic
 <a name="bindings"></a>
 ## Bindings
 
-Advanced Settings supports the OpenVR IVRInput API. In order to make the bindings interface visible, run the `bindingsinterface.bat` file from the install directory. When SteamVR starts, click the menu -> Settings -> Controller Binding.
+Advanced Settings supports the OpenVR IVRInput API. In order to make the bindings interface visible, run the `bindingsinterface.bat` file from the install directory. After you're done configuring your bindings, close SteamVR and start it up again. You are now using your new bindings.
 
-If you just run the application normally it will not show up in the bindings interface, this is an OpenVR bug.
+Alternatively, you can change the `matzman666.AdvancedSettings.vrappconfig` in `C:\Program Files (x86)\Steam\config\vrappconfig` to have a `last_launch_time` close to the current date (in [Unix time](https://en.wikipedia.org/wiki/Unix_time)). If in doubt, try using the value from [this](https://time.is/Unix_time_now) site. Running the application normally will now make it show up in the bindings interface.
 
-After you're done configuring your bindings, close SteamVR and start it up again. You are now using your new bindings.
+The above two solutions are workarounds to a bug in the OpenVR API.
+
+After doing one of the above workarounds, when SteamVR starts click the menu -> Settings -> Controller Binding.
 
 By default no buttons are bound.
 
-The following actions exist:
+The following actions currently exist:
 
 |    Action     |     Type      |  Explanation  |
 | ------------- | ------------- |  ------------ |
-| PlayNextSong  | Binary/Button | The same as using the media keys. Plays the next song. |
-| TODO  | TODO | TODO |
+| NextSong      | Binary/Button | The same as using the media keys. Tells a media player to play the next song.|
+| PreviousSong  | Binary/Button | The same as using the media keys. Tells a media player to play the previous song. |
+| pausePlaySong | Binary/Button | The same as using the media keys. Tells the media player to press play/pause. |
+| stopSong      | Binary/Button | The same as using the media keys. Tells the media player to stop playback. |
+
 
 <a name="command_line_arguments"></a>
 ## Command Line Arguments

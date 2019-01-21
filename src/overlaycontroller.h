@@ -90,9 +90,10 @@ private:
     // the class.
     openvr_init::OpenVR_Init m_openVrInit;
 
+    input::SteamIVRInput m_actions;
+
 public: // I know it's an ugly hack to make them public to enable external
         // access, but I am too lazy to implement getters.
-    input::SteamIVRInput m_actions;
     SteamVRTabController m_steamVRTabController;
     ChaperoneTabController m_chaperoneTabController;
     MoveCenterTabController m_moveCenterTabController;
@@ -106,6 +107,7 @@ public: // I know it's an ugly hack to make them public to enable external
 
 private:
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
+    void processInputBindings();
 
 public:
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );

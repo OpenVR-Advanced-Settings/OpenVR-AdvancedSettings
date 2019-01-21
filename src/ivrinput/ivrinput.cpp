@@ -124,7 +124,12 @@ mystically not working.
 */
 SteamIVRInput::SteamIVRInput()
     : m_manifest(), m_mainSet( input_strings::k_setMain ),
-      m_nextTrack( input_strings::k_actionNextTrack, ActionType::Digital )
+      m_nextTrack( input_strings::k_actionNextTrack, ActionType::Digital ),
+      m_previousTrack( input_strings::k_actionPreviousTrack,
+                       ActionType::Digital ),
+      m_pausePlayTrack( input_strings::k_actionPausePlayTrack,
+                        ActionType::Digital ),
+      m_stopTrack( input_strings::k_actionStopTrack, ActionType::Digital )
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
     m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;
@@ -139,6 +144,39 @@ button down will result in false until it has been released and pushed again.
 bool SteamIVRInput::nextSong()
 {
     return isDigitalActionActivatedOnce( m_nextTrack );
+}
+
+/*!
+Returns true if the previous media track should be played.
+
+Will only return true the first time that the button is pressed. Holding the
+button down will result in false until it has been released and pushed again.
+*/
+bool SteamIVRInput::previousSong()
+{
+    return isDigitalActionActivatedOnce( m_previousTrack );
+}
+
+/*!
+Returns true if media playback should be paused/played.
+
+Will only return true the first time that the button is pressed. Holding the
+button down will result in false until it has been released and pushed again.
+*/
+bool SteamIVRInput::pausePlaySong()
+{
+    return isDigitalActionActivatedOnce( m_pausePlayTrack );
+}
+
+/*!
+Returns true if media playback should be stopped.
+
+Will only return true the first time that the button is pressed. Holding the
+button down will result in false until it has been released and pushed again.
+*/
+bool SteamIVRInput::stopSong()
+{
+    return isDigitalActionActivatedOnce( m_stopTrack );
 }
 
 /*!
