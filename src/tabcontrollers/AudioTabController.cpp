@@ -101,7 +101,7 @@ void AudioTabController::initStage2( OverlayController* var_parent,
                      << vr::VROverlay()->GetOverlayErrorNameFromEnum(
                             overlayError );
     }
-	emit defaultProfileDisplay();
+    emit defaultProfileDisplay();
 }
 
 void AudioTabController::reloadAudioSettings()
@@ -1042,14 +1042,15 @@ void AudioTabController::applyDefaultProfile()
         if ( profile.defaultProfile )
         {
             applyAudioProfile( i );
-			m_defaultProfileIndex = i;
+            m_defaultProfileIndex = i;
             break;
         }
     }
 }
 
-int AudioTabController::getDefaultAudioProfileIndex() {
-	return m_defaultProfileIndex;
+int AudioTabController::getDefaultAudioProfileIndex()
+{
+    return m_defaultProfileIndex;
 }
 
 /* ---------------------------*/

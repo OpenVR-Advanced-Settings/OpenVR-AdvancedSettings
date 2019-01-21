@@ -70,7 +70,7 @@ private:
     bool m_micReversePtt = false;
     bool m_isDefaultAudioProfile = false;
 
-	int m_defaultProfileIndex = -1;
+    int m_defaultProfileIndex = -1;
 
     unsigned settingsUpdateCounter = 0;
 
@@ -139,7 +139,7 @@ public:
 
     Q_INVOKABLE unsigned getAudioProfileCount();
     Q_INVOKABLE QString getAudioProfileName( unsigned index );
-	Q_INVOKABLE int getDefaultAudioProfileIndex();
+    Q_INVOKABLE int getDefaultAudioProfileIndex();
 
     void onNewRecordingDevice();
     void onNewPlaybackDevice();
@@ -185,6 +185,6 @@ signals:
     void audioProfileAdded();
     void audioProfileDefaultChanged( bool value );
 
-	void defaultProfileDisplay();
+    void defaultProfileDisplay();
 };
 } // namespace advsettings
