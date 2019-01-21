@@ -101,6 +101,7 @@ void AudioTabController::initStage2( OverlayController* var_parent,
                      << vr::VROverlay()->GetOverlayErrorNameFromEnum(
                             overlayError );
     }
+    emit defaultProfileDisplay();
 }
 
 void AudioTabController::reloadAudioSettings()
@@ -852,9 +853,8 @@ void AudioTabController::addAudioProfile( QString name )
     profile->defaultProfile = m_isDefaultAudioProfile;
     if ( m_isDefaultAudioProfile )
     {
-        removeDefaultProfile( name );
+        removeOtherDefaultProfiles( name );
 
-        // to prevent confusion, resets checkbox
         setAudioProfileDefault( false );
     }
     saveAudioProfiles();
@@ -1004,14 +1004,14 @@ int AudioTabController::getMirrorIndex( std::string str )
 }
 
 /*
-Name: removeDefaultProfile
+Name: removeOtherDefaultProfiles
 
 input: QString name - name of new default profile
 output: none
 
 description: checks all profiles and removes any OTHERS that are set as default.
 */
-void AudioTabController::removeDefaultProfile( QString name )
+void AudioTabController::removeOtherDefaultProfiles( QString name )
 {
     AudioProfile* profile = nullptr;
     for ( auto& p : audioProfiles )
@@ -1042,9 +1042,15 @@ void AudioTabController::applyDefaultProfile()
         if ( profile.defaultProfile )
         {
             applyAudioProfile( i );
+            m_defaultProfileIndex = i;
             break;
         }
     }
+}
+
+int AudioTabController::getDefaultAudioProfileIndex()
+{
+    return m_defaultProfileIndex;
 }
 
 /* ---------------------------*/
