@@ -1,0 +1,48 @@
+{
+  "default_bindings": [
+   {
+      "controller_type": "vive_controller",
+      "binding_url": "default_action_manifests/vive_defaults.json"
+   }
+  ], 
+  "actions": [
+    {
+      "name": "/actions/main/in/NextTrack",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/PreviousTrack",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/PausePlayTrack",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/StopTrack",
+      "requirement": "optional",
+      "type": "boolean"
+    }
+  ],
+  "action_sets": [
+    {
+      "name": "/actions/main",
+      "usage": "leftright"
+    }
+  ],
+  "localization" : [
+   {
+       "language_tag": "en",
+
+        "/actions/main" : "Advanced Settings Actions",
+
+        "/actions/main/in/NextTrack" : "Play Next Track",
+        "/actions/main/in/PreviousTrack" : "Play Previous Track",
+        "/actions/main/in/PausePlayTrack" : "Pause/Play Track",
+        "/actions/main/in/StopTrack" : "Stop Track"
+    }
+  ]
+}

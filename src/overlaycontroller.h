@@ -39,6 +39,8 @@
 #include "tabcontrollers/UtilitiesTabController.h"
 #include "tabcontrollers/AccessibilityTabController.h"
 
+#include "ivrinput/ivrinput.h"
+
 // application namespace
 namespace advsettings
 {
@@ -86,7 +88,9 @@ private:
     // OpenVR_Init must be declared before any other class that uses OpenVR
     // function calls since objects are initialized in order of declaration in
     // the class.
-    OpenVR_Init m_openVrInit;
+    openvr_init::OpenVR_Init m_openVrInit;
+
+    input::SteamIVRInput m_actions;
 
 public: // I know it's an ugly hack to make them public to enable external
         // access, but I am too lazy to implement getters.
@@ -103,6 +107,7 @@ public: // I know it's an ugly hack to make them public to enable external
 
 private:
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
+    void processInputBindings();
 
 public:
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
