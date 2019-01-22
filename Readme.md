@@ -89,7 +89,7 @@ Alternatively, if the above doesn't work, run the `bindingsinterface.bat` file f
 
 The above two solutions are workarounds to a bug in the OpenVR API.
 
-After doing one of the above workarounds, when SteamVR starts click the menu -> Settings -> Controller Binding.
+After doing one of the above workarounds, when SteamVR starts click the menu -> Settings -> Controller Binding. You can also visit [this](127.0.0.1:8998/dashboard/controllerbinding.html) site in your internet browser. It's the same as the built in SteamVR bindings menu. SteamVR must be running for it to work.
 
 By default no buttons are bound.
 
