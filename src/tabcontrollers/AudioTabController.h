@@ -69,7 +69,8 @@ private:
     bool m_micProximitySensorCanMute = false;
     bool m_micReversePtt = false;
     bool m_isDefaultAudioProfile = false;
-    std::string m_defaultProfileName;
+
+    int m_defaultProfileIndex = -1;
 
     unsigned settingsUpdateCounter = 0;
 
@@ -100,7 +101,7 @@ private:
     int getRecordingIndex( std::string str );
     int getMirrorIndex( std::string str );
 
-    void removeDefaultProfile( QString name );
+    void removeOtherDefaultProfiles( QString name );
 
     std::vector<AudioProfile> audioProfiles;
 
@@ -138,6 +139,7 @@ public:
 
     Q_INVOKABLE unsigned getAudioProfileCount();
     Q_INVOKABLE QString getAudioProfileName( unsigned index );
+    Q_INVOKABLE int getDefaultAudioProfileIndex();
 
     void onNewRecordingDevice();
     void onNewPlaybackDevice();
@@ -182,5 +184,7 @@ signals:
     void audioProfilesUpdated();
     void audioProfileAdded();
     void audioProfileDefaultChanged( bool value );
+
+    void defaultProfileDisplay();
 };
 } // namespace advsettings
