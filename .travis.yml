@@ -1,8 +1,24 @@
 language: cpp
 dist: xenial
-compiler:
-  - clang
-  - gcc
+
+matrix:
+  include:
+  - os: linux
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-7
+    env:
+    - QMAKE_SPEC=linux-g++
+    
+  - os: linux
+    env:
+    - QMAKE_SPEC=linux-clang
+
+before_install:
+  - python ./build_scripts/run-clang-format.py ./src -r --color always  
 
 install:
   - sudo add-apt-repository ppa:kubuntu-ppa/backports -y
@@ -10,7 +26,6 @@ install:
   - sudo apt-get install build-essential qtbase5-dev qttools5-dev qtdeclarative5-dev qtmultimedia5-dev qt5-default qttools5-dev-tools
 
 script:
-  - python ./build_scripts/run-clang-format.py ./src -r --color always
   - mkdir build && cd build
-  - qmake ..
+  - qmake .. -spec $QMAKE_SPEC
   - make

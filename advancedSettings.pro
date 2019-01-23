@@ -40,7 +40,10 @@ win32-clang-msvc{
 }
 
 *g++* {
+    #g++-7 is needed for C++17 features. travis does not supply this by default.
+    QMAKE_CXX = g++-7
     QMAKE_CXXFLAGS += -Werror
+    QMAKE_CXXFLAGS += -std=c++17
 }
 
 #Look for anything clang that is not clang-msvc, since it does not
@@ -49,6 +52,7 @@ win32-clang-msvc{
     QMAKE_CXXFLAGS += -Werror
     #All includes from the third-party directory will not warn.
     QMAKE_CXXFLAGS += --system-header-prefix=third-party
+    QMAKE_CXXFLAGS += -std=c++17
 }
 SOURCES += src/main.cpp\
     src/overlaycontroller.cpp \
