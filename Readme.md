@@ -1,5 +1,6 @@
 ![language](https://img.shields.io/badge/Language-C%2B%2B17%2C%20QML-green.svg) ![dependencies](https://img.shields.io/badge/Dependencies-OpenVR%2C%20Qt5%2C%20Python3-green.svg)
 ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg) 
+
 [![Build status](https://ci.appveyor.com/api/projects/status/8oivf5xws6vsq2x3/branch/master?svg=true)](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master)
 [![Build Status](https://travis-ci.org/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings.svg?branch=master)](https://travis-ci.org/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings)
 
@@ -128,7 +129,7 @@ The logging output of the [Easylogging++ library](https://github.com/zuhd-org/ea
 <a name="preview_builds"></a>
 ## Preview builds
 
-If you want to try latest and greatest unreleased features, you can download latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings). The Linux CI does not provide binary artifacts.
+If you want to try latest and greatest unreleased features, you can download latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master). The Linux CI does not provide binary artifacts.
 
 These version are not stable and this should be considered for advanced users only.
 
