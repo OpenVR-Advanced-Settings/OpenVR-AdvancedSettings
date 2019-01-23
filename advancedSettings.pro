@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui qml quick multimedia widgets
-CONFIG   += c++14
+CONFIG   += c++1z
 
 DEFINES += ELPP_THREAD_SAFE ELPP_QT_LOGGING ELPP_NO_DEFAULT_LOG_FILE
 
