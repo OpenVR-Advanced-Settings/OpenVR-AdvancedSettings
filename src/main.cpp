@@ -348,15 +348,6 @@ int main( int argc, char* argv[] )
 {
     setUpLogging( argc, argv );
 
-    // Initializers in if statements is a C++17 feature. Should be removed after
-    // making sure CI works with this.
-    if ( constexpr int i = 2; i > 10 )
-    {
-        // static_assert with no message is a C++17 feature. Should be removed
-        // after making sure CI works with this.
-        static_assert( i < 5 );
-    }
-
     const bool desktopMode = argument::CheckCommandLineArgument(
         argc, argv, argument::kDesktopMode );
     const bool noSound
