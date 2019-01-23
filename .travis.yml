@@ -12,7 +12,7 @@ matrix:
         - g++-7
     env:
     - QMAKE_SPEC=linux-g++
-    
+
   - os: linux
     env:
     - QMAKE_SPEC=linux-clang
