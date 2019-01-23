@@ -70,6 +70,10 @@ private:
     // Set lastHandQuaternion.w to -1000.0 when last hand is invalid.
     vr::HmdQuaternion_t lastHandQuaternion = { -1000.0, 0.0, 0.0, 0.0 };
     vr::HmdQuaternion_t handQuaternion;
+    // Set lastHmdQuaternion.w to -1000.0 when last hmd pose is invalid.
+    vr::HmdQuaternion_t lastHmdQuaternion = { -1000.0, 0.0, 0.0, 0.0 };
+    vr::HmdQuaternion_t hmdQuaternion;
+    double m_hmdYawTotal = 0.0;
 
     unsigned settingsUpdateCounter = 0;
 
@@ -95,6 +99,8 @@ public:
     bool lockXToggle() const;
     bool lockYToggle() const;
     bool lockZToggle() const;
+    double getHmdYawTotal();
+    void resetHmdYawTotal();
 
 public slots:
     int trackingUniverse() const;

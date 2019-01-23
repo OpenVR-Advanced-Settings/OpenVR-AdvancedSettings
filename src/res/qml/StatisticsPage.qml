@@ -198,9 +198,9 @@ MyStackViewPage {
             statsHmdMovedText.text = StatisticsTabController.hmdDistanceMoved.toFixed(1) + " m"
             var rotations = StatisticsTabController.hmdRotations
             if (rotations > 0) {
-                statsHmdRotationText.text = rotations.toFixed(1) + " CCW"
+                statsHmdRotationText.text = rotations.toFixed(2) + " CCW"
             } else {
-                statsHmdRotationText.text = -rotations.toFixed(1) + " CW"
+                statsHmdRotationText.text = -rotations.toFixed(2) + " CW"
             }
             statsLeftControllerSpeedText.text = "    " + StatisticsTabController.leftControllerMaxSpeed.toFixed(1) + " m/s"
             statsRightControllerSpeedText.text = "    " + StatisticsTabController.rightControllerMaxSpeed.toFixed(1) + " m/s"

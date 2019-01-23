@@ -489,9 +489,9 @@ MyStackViewPage {
    function updateStatistics() {
        var rotations = StatisticsTabController.hmdRotations
        if (rotations > 0) {
-           summaryHmdRotationsText.text = rotations.toFixed(1) + " CCW"
+           summaryHmdRotationsText.text = rotations.toFixed(2) + " CCW"
        } else {
-           summaryHmdRotationsText.text = -rotations.toFixed(1) + " CW"
+           summaryHmdRotationsText.text = -rotations.toFixed(2) + " CW"
        }
        summaryDroppedFramesText.text = StatisticsTabController.droppedFrames
        summaryReprojectedFramesText.text = StatisticsTabController.reprojectedFrames

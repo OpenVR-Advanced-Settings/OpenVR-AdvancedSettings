@@ -510,6 +510,16 @@ void MoveCenterTabController::reset()
     emit rotationChanged( m_rotation );
 }
 
+double MoveCenterTabController::getHmdYawTotal()
+{
+    return m_hmdYawTotal;
+}
+
+void MoveCenterTabController::resetHmdYawTotal()
+{
+    m_hmdYawTotal = 0.0;
+}
+
 bool isMoveShortCutPressed( vr::ETrackedControllerRole hand )
 {
     auto handId
@@ -618,6 +628,67 @@ void MoveCenterTabController::eventLoopTick(
     }
     auto oldMoveHand = m_activeMoveController;
     auto newMoveHand = getMoveShortcutHand();
+    double angle = m_rotation * M_PI / 18000.0;
+
+    // hmd rotation tracking stuff:
+    // Check if hmd is tracking ok and do everything
+    if ( devicePoses[0].bPoseIsValid
+         && devicePoses[0].eTrackingResult == vr::TrackingResult_Running_OK )
+    {
+        // Get hmd pose matrix (in rotated coordinates)
+        vr::HmdMatrix34_t hmdMatrix = devicePoses[0].mDeviceToAbsoluteTracking;
+
+        // Set up (un)rotation matrix
+        vr::HmdMatrix34_t hmdMatrixRotMat;
+        vr::HmdMatrix34_t hmdMatrixAbsolute;
+        utils::initRotationMatrix(
+            hmdMatrixRotMat, 1, static_cast<float>( angle ) );
+
+        // Get hmdMatrixAbsolute in un-rotated coordinates.
+        utils::matMul33( hmdMatrixAbsolute, hmdMatrixRotMat, hmdMatrix );
+
+        // Convert pose matrix to quaternion
+        hmdQuaternion = utils::getQuaternion( hmdMatrixAbsolute );
+
+        // Get rotation change of hmd
+        // Checking if set to -1000.0 placeholder for invalid hmd pose.
+        if ( lastHmdQuaternion.w < -900.0 )
+        {
+            lastHmdQuaternion = hmdQuaternion;
+        }
+
+        else
+        {
+            // Construct a quaternion representing difference between old
+            // hmd pose and new hmd pose.
+            vr::HmdQuaternion_t hmdDiffQuaternion = utils::multiplyQuaternion(
+                hmdQuaternion,
+                utils::quaternionConjugate( lastHmdQuaternion ) );
+
+            // Calculate yaw from quaternion.
+            double hmdYawDiff = atan2(
+                2.0
+                    * ( hmdDiffQuaternion.y * hmdDiffQuaternion.w
+                        + hmdDiffQuaternion.x * hmdDiffQuaternion.z ),
+                -1.0
+                    + 2.0
+                          * ( hmdDiffQuaternion.w * hmdDiffQuaternion.w
+                              + hmdDiffQuaternion.x * hmdDiffQuaternion.x ) );
+
+            // Apply yaw difference to m_hmdYawTotal.
+            m_hmdYawTotal += hmdYawDiff;
+            lastHmdQuaternion = hmdQuaternion;
+        }
+
+        // end check if hmdpose is ok
+    }
+    else
+    {
+        // set lastHmdQuaternion.w to placeholder -1000.0 for invalid
+        lastHmdQuaternion.w = -1000.0;
+    }
+    // end hmd rotating tracking stuff
+
     if ( newMoveHand == vr::TrackedControllerRole_Invalid )
     {
         emit offsetXChanged( m_offsetX );
@@ -663,7 +734,6 @@ void MoveCenterTabController::eventLoopTick(
             pose->mDeviceToAbsoluteTracking.m[1][3],
             pose->mDeviceToAbsoluteTracking.m[2][3] };
 
-    double angle = m_rotation * M_PI / 18000.0;
     rotateCoordinates( relativeControllerPosition, -angle );
     float absoluteControllerPosition[] = {
         static_cast<float>( relativeControllerPosition[0] ) + m_offsetX,
@@ -764,8 +834,15 @@ void MoveCenterTabController::eventLoopTick(
                         utils::quaternionConjugate( lastHandQuaternion ) );
 
                 // Calculate yaw from quaternion.
-                double handYawDiff
-                    = atan2( handDiffQuaternion.y, handDiffQuaternion.w ) * 2.0;
+                double handYawDiff = atan2(
+                    2.0
+                        * ( handDiffQuaternion.y * handDiffQuaternion.w
+                            + handDiffQuaternion.x * handDiffQuaternion.z ),
+                    -1.0
+                        + 2.0
+                              * ( handDiffQuaternion.w * handDiffQuaternion.w
+                                  + handDiffQuaternion.x
+                                        * handDiffQuaternion.x ) );
 
                 int newRotationAngleDeg = static_cast<int>(
                     round( handYawDiff * 18000.0 / M_PI ) + m_rotation );

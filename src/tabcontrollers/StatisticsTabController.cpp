@@ -77,126 +77,12 @@ void StatisticsTabController::eventLoopTick(
         m_rightControllerMaxSpeed = rightSpeed;
     }
 
-    // Hmd Rotation //
-    /*
-    | Intrinsic y-x'-z" rotation matrix:
-    | cr*cy+sp*sr*sy | cr*sp*sy-cy*sr | cp*sy |
-    | cp*sr          | cp*cr          |-sp    |
-    | cy*sp*sr-cr*sy | cr*cy*sp+sr*sy | cp*cy |
+    // HMD Rotation //
+    double playspaceHmdYawTotal
+        = parent->m_moveCenterTabController.getHmdYawTotal();
+    m_hmdRotation = static_cast<float>( playspaceHmdYawTotal / ( 2.0 * M_PI ) );
 
-    yaw = atan2(cp*sy, cp*cy) [pi, -pi], CCW
-    pitch = -asin(-sp) [pi/2, -pi/2]
-    roll = atan2(cp*sr, cp*cr) [pi, -pi], CW
-    */
-
-    double yawRaw = 0.0;
-    double yaw = 0.0;
-    bool rotationChanged = false;
-    if ( devicePoses[0].bPoseIsValid
-         && devicePoses[0].eTrackingResult == vr::TrackingResult_Running_OK )
-    {
-        yawRaw = std::atan2( m[0][2], m[2][2] );
-        if ( yawRaw < 0.0f )
-        {
-            yawRaw += 2 * M_PI; // map to [0, 2*pi], CCW
-        }
-        yaw = yawRaw - rotationOffset;
-        if ( yaw < 0.0 )
-        {
-            yaw = 2 * M_PI + yaw;
-        }
-        if ( rotationResetFlag )
-        {
-            rotationDir = 0;
-            rotationCounter = 0;
-            rotationOffset = yawRaw;
-            rotationResetFlag = false;
-            lastYaw = -1.0f;
-            rotationChanged = true;
-        }
-        else if ( lastYaw < 0.0f && yaw > 0.0 )
-        {
-            lastYaw = yaw;
-            rotationChanged = true;
-            if ( yaw <= M_PI )
-            {
-                rotationDir = 1;
-            }
-            else
-            {
-                rotationDir = -1;
-            }
-        }
-        else if ( std::abs( lastYaw - yaw ) >= 0.01 && yaw > 0.0 )
-        {
-            auto diff = yaw - lastYaw;
-            int mode = 0;
-            if ( std::abs( diff ) > M_PI )
-            {
-                if ( diff < -M_PI )
-                { // CCW overflow
-                    mode = 1;
-                }
-                else if ( diff > M_PI )
-                { // CW overflow
-                    mode = -1;
-                }
-            }
-            else
-            {
-                if ( lastYaw < 0.0 && yaw > 0.0 )
-                {
-                    mode = 1;
-                }
-                else if ( lastYaw > 0.0 && yaw < 0.0 )
-                {
-                    mode = -1;
-                }
-            }
-            if ( mode > 0 )
-            {
-                if ( rotationCounter == 0 && rotationDir <= 0 )
-                {
-                    rotationDir = 1;
-                }
-                else
-                {
-                    rotationCounter++;
-                }
-            }
-            else if ( mode < 0 )
-            {
-                if ( rotationCounter == 0 && rotationDir >= 0 )
-                {
-                    rotationDir = -1;
-                }
-                else
-                {
-                    rotationCounter--;
-                }
-            }
-            lastYaw = yaw;
-            rotationChanged = true;
-        }
-    }
-    else
-    {
-        lastYaw = -1;
-    }
-
-    if ( rotationChanged )
-    {
-        m_hmdRotation = ( float ) rotationCounter;
-        if ( rotationDir > 0 )
-        {
-            m_hmdRotation += yaw / ( 2 * M_PI );
-        }
-        else if ( rotationDir < 0 )
-        {
-            m_hmdRotation += -1.0f + yaw / ( 2 * M_PI );
-        }
-    }
-    if ( lastPosTimer == 0 )
+    if ( lastPosTimer <= 0 )
     {
         lastPosTimer = 10;
     }
@@ -273,7 +159,8 @@ void StatisticsTabController::statsDistanceResetClicked()
 
 void StatisticsTabController::statsRotationResetClicked()
 {
-    rotationResetFlag = true;
+    // rotationResetFlag = true;
+    parent->m_moveCenterTabController.resetHmdYawTotal();
 }
 
 void StatisticsTabController::statsLeftControllerSpeedResetClicked()
