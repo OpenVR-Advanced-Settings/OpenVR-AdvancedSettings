@@ -28,7 +28,6 @@
  >   * [Building on Windows](#building_on_windows)
  >   * [Building on Linux](#building_on_linux)
  > * [Notes](#notes)
- > * [Known Bugs](#known_bugs)
  > * [License](#license)
 
 <a name="top"></a>
@@ -42,7 +41,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 # Features
 
 - Set supersampling values.
-- Enable/disable asynchronous and interleaved reprojection.
+- Enable/disable motion smoothing and advanced supersample filtering.
 - Save supersampling and reprojection settings into profiles.
 - Change several chaperone settings not accessible via SteamVR settings (to e.g. make it completely invisible).
 - Chaperone Proximity Warning: Several warning methods can be configured.
@@ -54,7 +53,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 - Mute/unmute and set volume of audio mirror device.
 - Mute/unmute and set volume of microphone device.
 - Implements push-to-talk and allows to configure push-to-talk profiles.
-- Desktop mode shows a window on the desktop instead of a vr overlay.
+- Desktop mode shows a window on the desktop instead of a VR overlay.
 - Revive settings support (Requires [Revive 1.0.4+](https://github.com/LibreVR/Revive) for full functionality).
 - VR Keyboard Input Utilities
 - Simple Alarm Clock
@@ -68,13 +67,12 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 
 Download the newest installer from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and execute it.
 
-If you have an older standalone version installed, delete the old application folder first.
+If you have an older standalone version installed, the installer will automatically uninstall the old version and install the new version.
 
 <a name="standalone"></a>
 ## Standalone
-I am not currently providing standalone Archives if you want a standalone version you can:
 
-Download the newest standalone archive from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases)and unpack the archive.
+Download the newest standalone archive from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and unpack the archive.
 
 To install for the first time simply start AdvancedSettings.exe once while SteamVR is running. It will register with SteamVR and automatically starts whenever SteamVR starts (Can be disabled in the settings).
 
@@ -108,7 +106,7 @@ The following actions currently exist:
 
 The application (`AdvancedSettings.exe`) can be run with the following optional arguments:
 
-`"-desktop"`: Creates a settings window on the desktop as well as in VR. Running `startdesktopmode.bat` in the install directory has the same effect.
+`"-desktop"`: Creates a settings window on the desktop, but not in VR. Running `startdesktopmode.bat` in the install directory has the same effect.
 
 `"-nosound"`: Forces sound effects off.
 
@@ -118,7 +116,7 @@ The application (`AdvancedSettings.exe`) can be run with the following optional 
 
 `"-removemanifest"`: Force uninstalls the `.vrmanifest`. This should be done every time the application is uninstalled. On Windows it is automatically done by the uninstaller. The program will exit early when this flag is set.
 
-`"-bindingsinterface"`: Makes Advanced Settings show up in the SteamVR bindings interface. This is necessary for binding keys to actions. This is the same as running `bindingsinterface.bat` from the executable directory.
+`"-bindingsinterface"`: Makes Advanced Settings show up in the SteamVR bindings interface. This is necessary for binding keys to actions. This is the same as running `bindingsinterface.bat` from the executable directory. The program will not exit when this is set. No normal functionality is available except using the bindings interface. Bindings set with this active will be available when this isn't active.
 
 In addition, the application can receive the command line arguments from the [Easylogging++ library](https://github.com/zuhd-org/easyloggingpp#application-arguments).
 
@@ -130,7 +128,9 @@ The logging output of the [Easylogging++ library](https://github.com/zuhd-org/ea
 <a name="preview_builds"></a>
 ## Preview builds
 
-If you want to try latest and greatest unreleased features, you can download latest changes in the alpha branches of the repository.
+If you want to try latest and greatest unreleased features, you can download latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings). The Linux CI does not provide binary artifacts.
+
+These version are not stable and this should be considered for advanced users only.
 
 <a name="documentation"></a>
 # Documentation
@@ -227,6 +227,8 @@ Allows to temporarily move and rotate the center of the playspace. This allows t
 
 ![Revive Page](docs/screenshots/RevivePage.png)
 
+**The Revive page is not currently being maintained. Features may not be stable, performant or actually work.**
+
 The Revive page is only visible when the [Revive overlay](https://github.com/LibreVR/Revive) is installed. In case an installed Revive overlay is not correctly detected you can force the Revive page in the settings.
 
 Any changes to controller settings are immediately applied by Revive (Requires Revive 1.0.4+).
@@ -311,11 +313,6 @@ If you want to contribute changes running `clang-format` is necessary. More deta
 - Application autostart can also be configured in the SteamVR menu (SteamVR->Settings->Applications->"Advanced Settings").
 
 - You can modify the shutdown wait time when restarting SteamVR by opening restartvrserver.bat and changing the number behind "timeout /t" (unit is seconds).
-
-<a name="known_bugs"></a>
-# Known Bugs
-
-- None yet.
 
 <a name="license"></a>
 # License
