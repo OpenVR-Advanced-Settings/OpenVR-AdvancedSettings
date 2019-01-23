@@ -78,6 +78,11 @@ void UtilitiesTabController::sendKeyboardEnter()
     keyboardInput->sendKeyboardEnter();
 }
 
+void UtilitiesTabController::sendKeyboardAltEnter()
+{
+    keyboardInput->sendKeyboardAltEnter();
+}
+
 void UtilitiesTabController::sendKeyboardAltTab()
 {
     keyboardInput->sendKeyboardAltTab();

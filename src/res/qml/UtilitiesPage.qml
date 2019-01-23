@@ -42,10 +42,11 @@ MyStackViewPage {
 
                 RowLayout {
                     spacing: 18
+                    Layout.fillWidth: true
 
                     MyPushButton {
                         text: "Keyboard Input"
-                        Layout.preferredWidth: 200
+                        Layout.fillWidth: true
                         onClicked: {
                             OverlayController.showKeyboard("", 601)
                         }
@@ -61,7 +62,7 @@ MyStackViewPage {
 
                     MyPushButton {
                         text: "Enter"
-                        Layout.preferredWidth: 200
+                        Layout.fillWidth: true
                         onClicked: {
                             UtilitiesTabController.sendKeyboardEnter()
                         }
@@ -69,7 +70,7 @@ MyStackViewPage {
 
                     MyPushButton {
                         text: "Alt-Tab"
-                        Layout.preferredWidth: 200
+                        Layout.fillWidth: true
                         onClicked: {
                             UtilitiesTabController.sendKeyboardAltTab()
                         }
@@ -77,7 +78,7 @@ MyStackViewPage {
 
                     MyPushButton {
                         text: "Backspace"
-                        Layout.preferredWidth: 200
+                        Layout.fillWidth: true
                         onClicked: {
                             UtilitiesTabController.sendKeyboardBackspace(1)
                         }
@@ -85,9 +86,17 @@ MyStackViewPage {
 
                     MyPushButton {
                         text: "10x Backspace"
-                        Layout.preferredWidth: 200
+                        Layout.fillWidth: true
                         onClicked: {
                             UtilitiesTabController.sendKeyboardBackspace(10)
+                        }
+                    }
+
+                    MyPushButton {
+                        text: "Alt-Enter"
+                        Layout.fillWidth: true
+                        onClicked: {
+                            UtilitiesTabController.sendKeyboardAltEnter()
                         }
                     }
                 }
