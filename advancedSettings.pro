@@ -22,6 +22,10 @@ TEMPLATE = app
     QMAKE_CXXFLAGS_WARN_ON -= -W3
     #C4127 was in a third party file with no way to turn off.
     QMAKE_CXXFLAGS += /W4 /wd4127
+    # The codecvt header being used in AudioManagerWindows.cpp is deprecated by the standard,
+    # but no suitable replacement has been standardized yet. It is possible to use the Windows
+    # specific MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h>
+    DEFINES += _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
     !*clang-msvc {
         #win32-clang-msvc is unable to correctly build the first time
         #with warnings as errors on. There seems to be an issue with the moc_predefs.h
@@ -29,6 +33,10 @@ TEMPLATE = app
         #win32-clang-msvc is built without /WX.
         QMAKE_CXXFLAGS += /WX
     }
+}
+
+win32-clang-msvc{
+    QMAKE_CXXFLAGS += /std:c++17
 }
 
 *g++* {
