@@ -69,6 +69,7 @@ public slots:
     void sendKeyboardInput( QString input );
     void sendKeyboardEnter();
     void sendKeyboardAltTab();
+    void sendKeyboardAltEnter();
     void sendKeyboardBackspace( const int count );
     void sendMediaNextSong();
     void sendMediaPreviousSong();

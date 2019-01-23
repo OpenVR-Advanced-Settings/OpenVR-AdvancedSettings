@@ -28,6 +28,11 @@ void KeyboardInputDummy::sendKeyboardAltTab()
     // noop
 }
 
+void KeyboardInputDummy::sendKeyboardAltEnter()
+{
+    // noop
+}
+
 void KeyboardInputDummy::sendMediaNextSong()
 {
     // noop
