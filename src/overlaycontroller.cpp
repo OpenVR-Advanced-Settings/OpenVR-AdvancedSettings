@@ -32,7 +32,7 @@ OverlayController::OverlayController( bool desktopMode,
                                       bool noSound,
                                       QQmlEngine& qmlEngine )
     : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ),
-      m_openVrInit()
+      m_openVrInit(), m_actions()
 {
     // Despite arguably being OpenVR init code, the call is still here because
     // the TabController uses this directly. Offering it through OpenVR_Init
@@ -118,7 +118,6 @@ OverlayController::OverlayController( bool desktopMode,
             nullptr, "OpenVR Advanced Settings Overlay", "Is OpenVR running?" );
         throw std::runtime_error( std::string( "No Overlay interface" ) );
     }
-
     // Init controllers
     m_steamVRTabController.initStage1();
     m_chaperoneTabController.initStage1();
@@ -475,15 +474,47 @@ QPoint OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
     return QPoint( mouse.x, y );
 }
 
+/*!
+Checks if an action has been activated and dispatches the related action if it
+has been.
+
+This function should probably be split into several functions that are specific
+to a binding type as the amount of actions grows.
+*/
+void OverlayController::processInputBindings()
+{
+    if ( m_actions.nextSong() )
+    {
+        m_utilitiesTabController.sendMediaNextSong();
+    }
+    if ( m_actions.previousSong() )
+    {
+        m_utilitiesTabController.sendMediaPreviousSong();
+    }
+    if ( m_actions.pausePlaySong() )
+    {
+        m_utilitiesTabController.sendMediaPausePlay();
+    }
+    if ( m_actions.stopSong() )
+    {
+        m_utilitiesTabController.sendMediaStopSong();
+    }
+}
+
 void OverlayController::OnTimeoutPumpEvents()
 {
     vr::VRSystem()->GetTimeSinceLastVsync( nullptr, &m_currentFrame );
+
 
     if ( m_currentFrame > m_lastFrame )
     {
         if ( !vr::VRSystem() )
             return;
 
+		m_actions.UpdateStates();
+		
+		processInputBindings();
+		
         vr::VREvent_t vrEvent;
         bool chaperoneDataAlreadyUpdated = false;
         while ( pollNextEvent( m_ulOverlayHandle, &vrEvent ) )

@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui qml quick multimedia widgets
-CONFIG   += c++14
+CONFIG   += c++1z
 
 DEFINES += ELPP_THREAD_SAFE ELPP_QT_LOGGING ELPP_NO_DEFAULT_LOG_FILE
 
@@ -20,8 +20,13 @@ TEMPLATE = app
     #D9025: overriding '/W4' with '/W3'
     QMAKE_CFLAGS_WARN_ON -= -W3
     QMAKE_CXXFLAGS_WARN_ON -= -W3
-    #C4127 was in a third party file with no way to turn off.
+    #C4127 is a warning in qvarlengtharray.h that can not be turned off
+    #on the current version of MSVC.
     QMAKE_CXXFLAGS += /W4 /wd4127
+    # The codecvt header being used in AudioManagerWindows.cpp is deprecated by the standard,
+    # but no suitable replacement has been standardized yet. It is possible to use the Windows
+    # specific MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h>
+    DEFINES += _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
     !*clang-msvc {
         #win32-clang-msvc is unable to correctly build the first time
         #with warnings as errors on. There seems to be an issue with the moc_predefs.h
@@ -31,7 +36,14 @@ TEMPLATE = app
     }
 }
 
+win32-clang-msvc{
+    #clang-msvc does not enable the c++17 flag with qmake's c++1z flag.
+    QMAKE_CXXFLAGS += /std:c++17
+}
+
 *g++* {
+    #g++-7 is needed for C++17 features. travis does not supply this by default.
+    QMAKE_CXX = g++-7
     QMAKE_CXXFLAGS += -Werror
 }
 
@@ -58,8 +70,8 @@ SOURCES += src/main.cpp\
     src/utils/ChaperoneUtils.cpp \
     src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
     src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp \
-    src/overlaycontroller/openvr_init.cpp
-
+    src/overlaycontroller/openvr_init.cpp \
+    src/ivrinput/ivrinput.cpp
 
 HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/AudioTabController.h \
@@ -79,7 +91,11 @@ HEADERS += src/overlaycontroller.h \
     src/utils/ChaperoneUtils.h \
     src/tabcontrollers/audiomanager/AudioManagerDummy.h \
     src/tabcontrollers/keyboardinput/KeyboardInputDummy.h \
-    src/overlaycontroller/openvr_init.h
+    src/overlaycontroller/openvr_init.h \
+    src/ivrinput/ivrinput_action.h \
+    src/ivrinput/ivrinput_manifest.h \
+    src/ivrinput/ivrinput_action_set.h \
+    src/ivrinput/ivrinput.h
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \

@@ -1,0 +1,14 @@
+{
+   "alias_info" : {},
+   "app_key" : "matzman666.advancedsettings",
+   "bindings" : {
+      "/actions/main" : {
+         "sources" : []
+      }
+   },
+   "controller_type" : "vive_controller",
+   "description" : "Nothing has been bound by default.",
+   "name" : "Empty Bindings (default)",
+   "options" : {},
+   "simulated_actions" : []
+}
