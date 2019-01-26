@@ -436,6 +436,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     // Haptic Feedback
     if ( m_enableChaperoneHapticFeedback )
     {
+		LOG(WARNING)<< "In haptics";
         float activationDistance = m_chaperoneHapticFeedbackDistance
                                    * m_chaperoneVelocityModifierCurrent;
         if ( distance <= activationDistance
@@ -462,6 +463,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                                       vr::TrackedControllerRole_RightHand );
                         while ( _this->m_chaperoneHapticFeedbackActive )
                         {
+							LOG(WARNING) << "In haptic thread";
                             if ( leftIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
@@ -494,6 +496,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     // Alarm Sound
     if ( m_enableChaperoneAlarmSound )
     {
+		LOG(WARNING) << "In alarm";
         float activationDistance = m_chaperoneAlarmSoundDistance
                                    * m_chaperoneVelocityModifierCurrent;
         if ( distance <= activationDistance
@@ -534,6 +537,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     // Show Dashboard
     if ( m_enableChaperoneShowDashboard )
     {
+		LOG(WARNING) << "In dash";
         float activationDistance = m_chaperoneShowDashboardDistance
                                    * m_chaperoneVelocityModifierCurrent;
         if ( distance <= activationDistance && !m_chaperoneShowDashboardActive )
@@ -597,6 +601,7 @@ void ChaperoneTabController::eventLoopTick(
                   poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
             if ( !std::isnan( distanceHmd ) )
             {
+
                 minDistance = distanceHmd;
             }
         }

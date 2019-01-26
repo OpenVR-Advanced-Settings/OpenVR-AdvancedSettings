@@ -68,7 +68,11 @@ private:
     Action m_nextTrack;
     Action m_previousTrack;
     Action m_pausePlayTrack;
-    Action m_stopTrack;
+	Action m_stopTrack;
+
+	//haptic bindings
+	Action m_leftHaptic;
+	Action m_rightHaptic;
 };
 
 /*!
@@ -82,6 +86,9 @@ namespace input_strings
     constexpr auto k_actionPreviousTrack = "/actions/main/in/PreviousTrack";
     constexpr auto k_actionPausePlayTrack = "/actions/main/in/PausePlayTrack";
     constexpr auto k_actionStopTrack = "/actions/main/in/StopTrack";
+
+	constexpr auto k_actionHapticsLeft = "/actions/main/out/HapticsLeft";
+	constexpr auto k_actionHapticsRight = "/actions/main/out/HapticsRight";
 
     constexpr auto k_setMain = "/actions/main";
 

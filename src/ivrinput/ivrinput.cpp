@@ -7,7 +7,7 @@
 namespace input
 {
 /*!
-Wrapper around the IVRInput GetAnalogActionData with error handling.
+Wrapper around the IVRInput GetDigitalActionData with error handling.
 
 The struct is created and zero initalized in this function instead of being
 passed as reference since the size is currently only 28 bytes, and currently
@@ -129,7 +129,9 @@ SteamIVRInput::SteamIVRInput()
                        ActionType::Digital ),
       m_pausePlayTrack( input_strings::k_actionPausePlayTrack,
                         ActionType::Digital ),
-      m_stopTrack( input_strings::k_actionStopTrack, ActionType::Digital )
+      m_stopTrack( input_strings::k_actionStopTrack, ActionType::Digital ),
+	  m_leftHaptic( input_strings::k_actionHapticsLeft, ActionType::Haptic),
+	  m_rightHaptic(input_strings::k_actionHapticsRight, ActionType::Haptic)
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
     m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;
