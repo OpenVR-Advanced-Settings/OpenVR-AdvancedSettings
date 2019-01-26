@@ -3,6 +3,9 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import matzman666.advsettings 1.0
 import "media_keys"
+import "alarm_clock"
+import "desktop_size"
+import "keyboard_utils"
 import ".."
 
 MyStackViewPage {
@@ -10,7 +13,6 @@ MyStackViewPage {
 
     content: ColumnLayout {
         spacing: 18
-
 
         KeyboardGroupBox {
             id: keyboardGroupBox
