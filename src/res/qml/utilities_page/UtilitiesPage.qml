@@ -3,6 +3,7 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import matzman666.advsettings 1.0
 import "media_keys"
+import ".."
 
 MyStackViewPage {
     headerText: "Utilities"
