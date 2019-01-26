@@ -160,4 +160,7 @@ DISTFILES += \
     src/res/qml/SteamVRPage.qml \
     src/res/qml/utilities_page/* \
     src/res/qml/utilities_page/media_keys/* \
-    src/res/qml/LineSeparator.qml
+    src/res/qml/LineSeparator.qml \
+    src/res/qml/utilities_page/KeyboardGroupBox.qml \
+    src/res/qml/utilities_page/AlarmGroupBox.qml \
+    src/res/qml/utilities_page/SteamDesktopGroupBox.qml
