@@ -135,7 +135,7 @@ DISTFILES += \
     src/res/qml/speaker_on.svg \
     src/res/qml/qmldir \
     src/res/qml/AccessibilityPage.qml \
-    src/res/qml/AudioPage.qml \
+    src/res/qml/audio_page/* \
     src/res/qml/ChaperonePage.qml \
     src/res/qml/ChaperoneWarningsPage.qml \
     src/res/qml/FixFloorPage.qml \
