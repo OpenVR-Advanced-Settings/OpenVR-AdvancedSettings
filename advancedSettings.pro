@@ -163,4 +163,6 @@ DISTFILES += \
     src/res/qml/LineSeparator.qml \
     src/res/qml/utilities_page/keyboard_utils/* \
     src/res/qml/utilities_page/desktop_size/* \
-    src/res/qml/utilities_page/alarm_clock/*
+    src/res/qml/utilities_page/alarm_clock/* \
+    src/res/qml/audio_page/dialog_boxes/* \
+    src/res/qml/audio_page/dialog_boxes/AudioDeleteProfileDialog.qml

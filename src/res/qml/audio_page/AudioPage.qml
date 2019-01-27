@@ -2,7 +2,8 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import matzman666.advsettings 1.0
-import ".."
+import ".." //common imports
+import "dialog_boxes"
 
 MyStackViewPage {
     width: 1200
@@ -11,38 +12,16 @@ MyStackViewPage {
     property bool componentCompleted: false
 
 
-    MyDialogOkPopup {
+    AudioMessageDialog {
         id: audioMessageDialog
-        function showMessage(title, text) {
-            dialogTitle = title
-            dialogText = text
-            open()
-        }
     }
 
-    MyDialogOkCancelPopup {
+    PttDeleteProfileDialog {
         id: pttDeleteProfileDialog
-        property int profileIndex: -1
-        dialogTitle: "Delete Profile"
-        dialogText: "Do you really want to delete this ptt profile?"
-        onClosed: {
-            if (okClicked) {
-                AudioTabController.deletePttProfile(profileIndex)
-            }
-        }
     }
 
-    MyDialogOkCancelPopup {
+    AudioDeleteProfileDialog {
         id: audioDeleteProfileDialog
-        property int profileIndex: -1
-        dialogTitle: "Delete Profile"
-        dialogText: "Do you really want to delete this audio profile?"
-        onClosed: {
-            if (okClicked) {
-                AudioTabController.deleteAudioProfile(profileIndex)
-                pttProfileComboBox.currentIndex = 0
-            }
-        }
     }
 
     PttControllerConfigDialog {
@@ -50,101 +29,12 @@ MyStackViewPage {
         pttControllerConfigClass: AudioTabController
     }
 
-    MyDialogOkCancelPopup {
+    PttNewProfileDialog {
         id: pttNewProfileDialog
-        dialogTitle: "Create New PTT Profile"
-        dialogWidth: 600
-        dialogHeight: 220
-        dialogContentItem: ColumnLayout {
-            RowLayout {
-                Layout.topMargin: 16
-                Layout.leftMargin: 16
-                Layout.rightMargin: 16
-                MyText {
-                    text: "Name: "
-                }
-                MyTextField {
-                    id: pttNewProfileName
-                    keyBoardUID: 590
-                    color: "#cccccc"
-                    text: ""
-                    Layout.fillWidth: true
-                    font.pointSize: 20
-                    function onInputEvent(input) {
-                        pttNewProfileName.text = input
-                    }
-                }
-            }
-        }
-        onClosed: {
-            if (okClicked) {
-                if (pttNewProfileName.text != "") {
-                    AudioTabController.addPttProfile(pttNewProfileName.text)
-
-                } else {
-                    audioMessageDialog.showMessage("Create New Profile", "ERROR: No name given.")
-                }
-            }
-        }
-        function openPopup() {
-            pttNewProfileName.text = ""
-            open()
-        }
     }
 
-
-    MyDialogOkCancelPopup {
+    AudioNewProfileDialog {
         id: audioNewProfileDialog
-        dialogTitle: "Create New Audio Profile"
-        dialogWidth: 600
-        dialogHeight: 300
-        dialogContentItem: ColumnLayout {
-            RowLayout {
-                Layout.topMargin: 16
-                Layout.leftMargin: 16
-                Layout.rightMargin: 16
-                MyText {
-                    text: "Name: "
-                }
-                MyTextField {
-                    id: audioNewProfileName
-                    keyBoardUID: 590
-                    color: "#cccccc"
-                    text: ""
-                    Layout.fillWidth: true
-                    font.pointSize: 20
-                    function onInputEvent(input) {
-                        audioNewProfileName.text = input
-                    }
-                }
-            }
-            RowLayout {
-                Layout.topMargin: 16
-                Layout.leftMargin: 16
-                Layout.rightMargin: 16
-                MyToggleButton {
-                    id: audioDefaultProfileToggle
-                    Layout.preferredWidth: 250
-                    text: "Make Default"
-                    onCheckedChanged: {
-                        AudioTabController.setAudioProfileDefault(checked, false)
-                    }
-                }
-            }
-        }
-        onClosed: {
-            if (okClicked) {
-                if (audioNewProfileName.text != "") {
-                    AudioTabController.addAudioProfile(audioNewProfileName.text)
-                } else {
-                    audioMessageDialog.showMessage("Create New Profile", "ERROR: No name given.")
-                }
-            }
-        }
-        function openPopup() {
-            audioNewProfileName.text = ""
-            open()
-        }
     }
 
     content: ColumnLayout {
@@ -572,7 +462,6 @@ MyStackViewPage {
             audioPttRightControllerToggle.checked = AudioTabController.pttRightControllerEnabled
             audioPttShowNotificationToggle.checked = AudioTabController.pttShowNotification
             audioPttReverseToggle.checked = AudioTabController.micReversePtt
-            audioDefaultProfileToggle.checked = AudioTabController.audioProfileDefault
             componentCompleted = true
         }
 
