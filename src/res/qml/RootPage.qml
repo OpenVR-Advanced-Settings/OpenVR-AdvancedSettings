@@ -417,9 +417,8 @@ MyStackViewPage {
        reloadSteamVRProfiles()
        reloadPttProfiles()
 
-// REVERT TO THIS LATER:      summaryVersionText.text = applicationVersion
-// TEMP VERSION:
-       summaryVersionText.text = "Alpha-Kung v1.6"
+       summaryVersionText.text = applicationVersion
+
 
        if (MoveCenterTabController.trackingUniverse === 0) {
            summaryPlaySpaceModeText.text = "Sitting"

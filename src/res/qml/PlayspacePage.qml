@@ -317,14 +317,14 @@ MyStackViewPage {
 
                     MyToggleButton {
                         id: playspaceRotateHandToggle
-                        text: "Virtual Move Shortcut Controls Rotation !ALPHA TEST!"
+                        text: "Virtual Move Shortcut Controls Rotation"
                         onCheckedChanged: {
                             MoveCenterTabController.rotateHand = this.checked
                         }
                     }
 
                     MyText {
-                        text: "Note: Stats page / TurnSignal will ignore turning during virtual move rotation."
+                        text: "Note: TurnSignal will ignore turning during virtual move rotation."
                         font.pointSize: 15.0
                     }
                 }
