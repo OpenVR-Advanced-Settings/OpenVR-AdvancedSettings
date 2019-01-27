@@ -25,6 +25,46 @@
       "name": "/actions/main/in/StopTrack",
       "requirement": "optional",
       "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/LeftHandPlayspaceRotate",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+	{
+      "name": "/actions/main/in/RightHandPlayspaceRotate",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/LeftHandPlayspaceMove",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+	{
+      "name": "/actions/main/in/RightHandPlayspaceMove",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+	    {
+      "name": "/actions/main/in/OptionalOverrideLeftHandPlayspaceRotate",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+	{
+      "name": "/actions/main/in/OptionalOverrideRightHandPlayspaceRotate",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/OptionalOverrideLeftHandPlayspaceMove",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+	{
+      "name": "/actions/main/in/OptionalOverrideRightHandPlayspaceMove",
+      "requirement": "optional",
+      "type": "boolean"
     }
   ],
   "action_sets": [
@@ -42,7 +82,15 @@
         "/actions/main/in/NextTrack" : "Play Next Track",
         "/actions/main/in/PreviousTrack" : "Play Previous Track",
         "/actions/main/in/PausePlayTrack" : "Pause/Play Track",
-        "/actions/main/in/StopTrack" : "Stop Track"
+        "/actions/main/in/StopTrack" : "Stop Track",
+		"/actions/main/in/LeftHandPlayspaceRotate" : "Left Hand Playspace Rotate",
+		"/actions/main/in/RightHandPlayspaceRotate" : "Right Hand Playspace Rotate",
+		"/actions/main/in/LeftHandPlayspaceMove" : "Left Hand Playspace Move",
+		"/actions/main/in/RightHandPlayspaceMove" : "Right Hand Playspace Move",
+		"/actions/main/in/OptionalOverrideLeftHandPlayspaceRotate" : "Optional Override Left Hand Playspace Rotate",
+		"/actions/main/in/OptionalOverrideRightHandPlayspaceRotate" : "Optional Override Right Hand Playspace Rotate",
+		"/actions/main/in/OptionalOverrideLeftHandPlayspaceMove" : "Optional Override Left Hand Playspace Move",
+		"/actions/main/in/OptionalOverrideRightHandPlayspaceMove" : "Optional Override Right Hand Playspace Move"
     }
   ]
 }

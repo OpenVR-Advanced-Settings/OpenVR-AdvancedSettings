@@ -58,7 +58,7 @@ private:
     bool m_rotateHand = false;
     bool m_moveShortcutRightPressed = false;
     bool m_moveShortcutLeftPressed = false;
-    vr::ETrackedControllerRole m_activeMoveController;
+    vr::TrackedDeviceIndex_t m_activeMoveController;
     float m_lastControllerPosition[3];
     bool m_moveShortcutRightEnabled = false;
     bool m_moveShortcutLeftEnabled = false;
@@ -74,10 +74,26 @@ private:
     vr::HmdQuaternion_t lastHmdQuaternion = { -1000.0, 0.0, 0.0, 0.0 };
     vr::HmdQuaternion_t hmdQuaternion;
     double m_hmdYawTotal = 0.0;
+    vr::ETrackedControllerRole m_activeMoveHand
+        = vr::TrackedControllerRole_Invalid;
+    vr::ETrackedControllerRole m_lastMoveHand
+        = vr::TrackedControllerRole_Invalid;
+    vr::ETrackedControllerRole m_activeRotateHand
+        = vr::TrackedControllerRole_Invalid;
+    vr::ETrackedControllerRole m_lastRotateHand
+        = vr::TrackedControllerRole_Invalid;
+    bool m_leftHandMovePressed = false;
+    bool m_rightHandMovePressed = false;
+    bool m_overrideLeftHandMovePressed = false;
+    bool m_overrideRightHandMovePressed = false;
+    bool m_leftHandRotatePressed = false;
+    bool m_rightHandRotatePressed = false;
+    bool m_overrideLeftHandRotatePressed = false;
+    bool m_overrideRightHandRotatePressed = false;
 
     unsigned settingsUpdateCounter = 0;
 
-    vr::ETrackedControllerRole getMoveShortcutHand();
+    //    vr::ETrackedControllerRole getMoveShortcutHand();
 
 public:
     void initStage1();
@@ -101,6 +117,20 @@ public:
     bool lockZToggle() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
+
+    // actions:
+    void leftHandPlayspaceMove( bool leftHandMoveActive );
+    void rightHandPlayspaceMove( bool rightHandMoveActive );
+    void optionalOverrideLeftHandPlayspaceMove(
+        bool overrideLeftHandMoveActive );
+    void optionalOverrideRightHandPlayspaceMove(
+        bool overrideRightHandMoveActive );
+    void leftHandPlayspaceRotate( bool leftHandRotateActive );
+    void rightHandPlayspaceRotate( bool rightHandRotateActive );
+    void optionalOverrideLeftHandPlayspaceRotate(
+        bool overrideLeftHandRotateActive );
+    void optionalOverrideRightHandPlayspaceRotate(
+        bool overrideRightHandRotateActive );
 
 public slots:
     int trackingUniverse() const;
@@ -131,6 +161,7 @@ public slots:
     void setLockZ( bool value, bool notify = true );
 
     void reset();
+    void zeroOffsets();
 
 signals:
     void trackingUniverseChanged( int value );

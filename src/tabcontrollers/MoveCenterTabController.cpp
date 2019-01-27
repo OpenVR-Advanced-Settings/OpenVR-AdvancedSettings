@@ -510,6 +510,18 @@ void MoveCenterTabController::reset()
     emit rotationChanged( m_rotation );
 }
 
+void MoveCenterTabController::zeroOffsets()
+{
+    m_offsetX = 0.0f;
+    m_offsetY = 0.0f;
+    m_offsetZ = 0.0f;
+    m_rotation = 0;
+    emit offsetXChanged( m_offsetX );
+    emit offsetYChanged( m_offsetY );
+    emit offsetZChanged( m_offsetZ );
+    emit rotationChanged( m_rotation );
+}
+
 double MoveCenterTabController::getHmdYawTotal()
 {
     return m_hmdYawTotal;
@@ -520,6 +532,353 @@ void MoveCenterTabController::resetHmdYawTotal()
     m_hmdYawTotal = 0.0;
 }
 
+// START of move bindings:
+
+void MoveCenterTabController::leftHandPlayspaceMove( bool leftHandMoveActive )
+{
+    if ( m_moveShortcutLeftEnabled )
+    {
+        // cancel if other hand is active in override
+        if ( !m_overrideRightHandMovePressed )
+        {
+            // detect new press
+            if ( leftHandMoveActive && !m_leftHandMovePressed )
+            {
+                m_activeMoveHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // detect new release
+            else if ( !leftHandMoveActive && m_leftHandMovePressed )
+            {
+                // check overrides
+                // pass back to right hand?
+                if ( m_overrideRightHandMovePressed )
+                {
+                    m_activeMoveHand = vr::TrackedControllerRole_RightHand;
+                }
+                // override of left hand still active?
+                else if ( m_overrideLeftHandMovePressed )
+                {
+                    m_activeMoveHand = vr::TrackedControllerRole_LeftHand;
+                }
+                // check non-override right hand action
+                if ( m_rightHandMovePressed )
+                {
+                    m_activeMoveHand = vr::TrackedControllerRole_RightHand;
+                }
+                // nothing else is pressed, deactivate move
+                else
+                {
+                    m_activeMoveHand = vr::TrackedControllerRole_Invalid;
+                }
+            }
+        }
+        m_leftHandMovePressed = leftHandMoveActive;
+    }
+}
+
+void MoveCenterTabController::rightHandPlayspaceMove( bool rightHandMoveActive )
+{
+    if ( m_moveShortcutRightEnabled )
+    {
+        // cancel if other hand is active in override
+        if ( !m_overrideLeftHandMovePressed )
+        {
+            // detect new press
+            if ( rightHandMoveActive && !m_rightHandMovePressed )
+            {
+                m_activeMoveHand = vr::TrackedControllerRole_RightHand;
+            }
+            // detect new release
+            else if ( !rightHandMoveActive && m_rightHandMovePressed )
+            {
+                // check overrides
+                // pass back to left hand?
+                if ( m_overrideLeftHandMovePressed )
+                {
+                    m_activeMoveHand = vr::TrackedControllerRole_LeftHand;
+                }
+                // override of right hand still active?
+                else if ( m_overrideRightHandMovePressed )
+                {
+                    m_activeMoveHand = vr::TrackedControllerRole_RightHand;
+                }
+                // check non-override left hand action
+                if ( m_leftHandMovePressed )
+                {
+                    m_activeMoveHand = vr::TrackedControllerRole_LeftHand;
+                }
+                // nothing else is pressed, deactivate move
+                else
+                {
+                    m_activeMoveHand = vr::TrackedControllerRole_Invalid;
+                }
+            }
+        }
+        m_rightHandMovePressed = rightHandMoveActive;
+    }
+}
+
+void MoveCenterTabController::optionalOverrideLeftHandPlayspaceMove(
+    bool overrideLeftHandMoveActive )
+{
+    if ( m_moveShortcutLeftEnabled )
+    {
+        // detect new press
+        if ( overrideLeftHandMoveActive && !m_overrideLeftHandMovePressed )
+        {
+            m_activeMoveHand = vr::TrackedControllerRole_LeftHand;
+            // stop any active rotate because we're in override mode
+            m_activeRotateHand = vr::TrackedControllerRole_Invalid;
+        }
+        // detect new release
+        else if ( !overrideLeftHandMoveActive && m_overrideLeftHandMovePressed )
+        {
+            // check if we should pass back to other hand
+            // give priority to override action
+            if ( m_overrideRightHandMovePressed )
+            {
+                m_activeMoveHand = vr::TrackedControllerRole_RightHand;
+            }
+            // otherwise check normal action
+            else if ( m_rightHandMovePressed )
+            {
+                m_activeMoveHand = vr::TrackedControllerRole_RightHand;
+            }
+            // check if we should fall back to non-override left hand
+            else if ( m_leftHandMovePressed )
+            {
+                m_activeMoveHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // nothing else is pressed, deactivate move
+            else
+            {
+                m_activeMoveHand = vr::TrackedControllerRole_Invalid;
+            }
+        }
+        m_overrideLeftHandMovePressed = overrideLeftHandMoveActive;
+    }
+}
+
+void MoveCenterTabController::optionalOverrideRightHandPlayspaceMove(
+    bool overrideRightHandMoveActive )
+{
+    if ( m_moveShortcutRightEnabled )
+    {
+        // detect new press
+        if ( overrideRightHandMoveActive && !m_overrideRightHandMovePressed )
+        {
+            m_activeMoveHand = vr::TrackedControllerRole_RightHand;
+            // stop any active rotate because we're in override mode
+            m_activeRotateHand = vr::TrackedControllerRole_Invalid;
+        }
+        // detect new release
+        else if ( !overrideRightHandMoveActive
+                  && m_overrideRightHandMovePressed )
+        {
+            // check if we should pass back to other hand
+            // give priority to override action
+            if ( m_overrideLeftHandMovePressed )
+            {
+                m_activeMoveHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // otherwise check normal action
+            else if ( m_leftHandMovePressed )
+            {
+                m_activeMoveHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // check if we should fall back to non-override left hand
+            else if ( m_rightHandMovePressed )
+            {
+                m_activeMoveHand = vr::TrackedControllerRole_RightHand;
+            }
+            // nothing else is pressed, deactivate move
+            else
+            {
+                m_activeMoveHand = vr::TrackedControllerRole_Invalid;
+            }
+        }
+        m_overrideRightHandMovePressed = overrideRightHandMoveActive;
+    }
+}
+
+// END of move bindings
+
+// START of rotate bindgins
+
+void MoveCenterTabController::leftHandPlayspaceRotate(
+    bool leftHandRotateActive )
+{
+    if ( m_rotateHand )
+    {
+        // cancel if other hand is active in override
+        if ( !m_overrideRightHandRotatePressed )
+        {
+            // detect new press
+            if ( leftHandRotateActive && !m_leftHandRotatePressed )
+            {
+                m_activeRotateHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // detect new release
+            else if ( !leftHandRotateActive && m_leftHandRotatePressed )
+            {
+                // check overrides
+                // pass back to right hand?
+                if ( m_overrideRightHandRotatePressed )
+                {
+                    m_activeRotateHand = vr::TrackedControllerRole_RightHand;
+                }
+                // override of left hand still active?
+                else if ( m_overrideLeftHandRotatePressed )
+                {
+                    m_activeRotateHand = vr::TrackedControllerRole_LeftHand;
+                }
+                // check non-override right hand action
+                if ( m_rightHandRotatePressed )
+                {
+                    m_activeRotateHand = vr::TrackedControllerRole_RightHand;
+                }
+                // nothing else is pressed, deactivate rotate
+                else
+                {
+                    m_activeRotateHand = vr::TrackedControllerRole_Invalid;
+                }
+            }
+        }
+        m_leftHandRotatePressed = leftHandRotateActive;
+    }
+}
+
+void MoveCenterTabController::rightHandPlayspaceRotate(
+    bool rightHandRotateActive )
+{
+    if ( m_rotateHand )
+    {
+        // cancel if other hand is active in override
+        if ( !m_overrideLeftHandRotatePressed )
+        {
+            // detect new press
+            if ( rightHandRotateActive && !m_rightHandRotatePressed )
+            {
+                m_activeRotateHand = vr::TrackedControllerRole_RightHand;
+            }
+            // detect new release
+            else if ( !rightHandRotateActive && m_rightHandRotatePressed )
+            {
+                // check overrides
+                // pass back to left hand?
+                if ( m_overrideLeftHandRotatePressed )
+                {
+                    m_activeRotateHand = vr::TrackedControllerRole_LeftHand;
+                }
+                // override of right hand still active?
+                else if ( m_overrideRightHandRotatePressed )
+                {
+                    m_activeRotateHand = vr::TrackedControllerRole_RightHand;
+                }
+                // check non-override left hand action
+                if ( m_leftHandRotatePressed )
+                {
+                    m_activeRotateHand = vr::TrackedControllerRole_LeftHand;
+                }
+                // nothing else is pressed, deactivate rotate
+                else
+                {
+                    m_activeRotateHand = vr::TrackedControllerRole_Invalid;
+                }
+            }
+        }
+        m_rightHandRotatePressed = rightHandRotateActive;
+    }
+}
+
+void MoveCenterTabController::optionalOverrideLeftHandPlayspaceRotate(
+    bool overrideLeftHandRotateActive )
+{
+    if ( m_rotateHand )
+    {
+        // detect new press
+        if ( overrideLeftHandRotateActive && !m_overrideLeftHandRotatePressed )
+        {
+            m_activeRotateHand = vr::TrackedControllerRole_LeftHand;
+            // stop any active move because we're in override mode
+            m_activeMoveHand = vr::TrackedControllerRole_Invalid;
+        }
+        // detect new release
+        else if ( !overrideLeftHandRotateActive
+                  && m_overrideLeftHandRotatePressed )
+        {
+            // check if we should pass back to other hand
+            // give priority to override action
+            if ( m_overrideRightHandRotatePressed )
+            {
+                m_activeRotateHand = vr::TrackedControllerRole_RightHand;
+            }
+            // otherwise check normal action
+            else if ( m_rightHandRotatePressed )
+            {
+                m_activeRotateHand = vr::TrackedControllerRole_RightHand;
+            }
+            // check if we should fall back to non-override left hand
+            else if ( m_leftHandRotatePressed )
+            {
+                m_activeRotateHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // nothing else is pressed, deactivate rotate
+            else
+            {
+                m_activeRotateHand = vr::TrackedControllerRole_Invalid;
+            }
+        }
+        m_overrideLeftHandRotatePressed = overrideLeftHandRotateActive;
+    }
+}
+
+void MoveCenterTabController::optionalOverrideRightHandPlayspaceRotate(
+    bool overrideRightHandRotateActive )
+{
+    if ( m_rotateHand )
+    {
+        // detect new press
+        if ( overrideRightHandRotateActive
+             && !m_overrideRightHandRotatePressed )
+        {
+            m_activeRotateHand = vr::TrackedControllerRole_RightHand;
+            // stop any active move because we're in override mode
+            m_activeMoveHand = vr::TrackedControllerRole_Invalid;
+        }
+        // detect new release
+        else if ( !overrideRightHandRotateActive
+                  && m_overrideRightHandRotatePressed )
+        {
+            // check if we should pass back to other hand
+            // give priority to override action
+            if ( m_overrideLeftHandRotatePressed )
+            {
+                m_activeRotateHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // otherwise check normal action
+            else if ( m_leftHandRotatePressed )
+            {
+                m_activeRotateHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // check if we should fall back to non-override left hand
+            else if ( m_rightHandRotatePressed )
+            {
+                m_activeRotateHand = vr::TrackedControllerRole_RightHand;
+            }
+            // nothing else is pressed, deactivate rotate
+            else
+            {
+                m_activeRotateHand = vr::TrackedControllerRole_Invalid;
+            }
+        }
+        m_overrideRightHandRotatePressed = overrideRightHandRotateActive;
+    }
+}
+
+// END of rotate bindings.
+
+/*
 bool isMoveShortCutPressed( vr::ETrackedControllerRole hand )
 {
     auto handId
@@ -540,7 +899,9 @@ bool isMoveShortCutPressed( vr::ETrackedControllerRole hand )
 
     return false;
 }
+*/
 
+/*
 vr::ETrackedControllerRole MoveCenterTabController::getMoveShortcutHand()
 {
     auto activeHand = m_activeMoveController;
@@ -609,6 +970,7 @@ vr::ETrackedControllerRole MoveCenterTabController::getMoveShortcutHand()
 
     return activeHand;
 }
+*/
 
 void MoveCenterTabController::eventLoopTick(
     vr::ETrackingUniverseOrigin universe,
@@ -626,11 +988,10 @@ void MoveCenterTabController::eventLoopTick(
     {
         settingsUpdateCounter++;
     }
-    auto oldMoveHand = m_activeMoveController;
-    auto newMoveHand = getMoveShortcutHand();
+
     double angle = m_rotation * M_PI / 18000.0;
 
-    // hmd rotation tracking stuff:
+    // START of hmd rotation stats tracking:
     // Check if hmd is tracking ok and do everything
     if ( devicePoses[0].bPoseIsValid
          && devicePoses[0].eTrackingResult == vr::TrackingResult_Running_OK )
@@ -686,184 +1047,220 @@ void MoveCenterTabController::eventLoopTick(
     {
         // set lastHmdQuaternion.w to placeholder -1000.0 for invalid
         lastHmdQuaternion.w = -1000.0;
-    }
-    // end hmd rotating tracking stuff
+    } // END of hmd rotation stats tracking
 
-    if ( newMoveHand == vr::TrackedControllerRole_Invalid )
-    {
-        emit offsetXChanged( m_offsetX );
-        emit offsetYChanged( m_offsetY );
-        emit offsetZChanged( m_offsetZ );
-
-        // Set lastHandQuaternion.w to placeholder value for invalid (-1000.0)
-        // when we release move shortcut.
-        if ( m_rotateHand )
-        {
-            lastHandQuaternion.w = -1000.0;
-        }
-
-        return;
-    }
-    auto handId
-        = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole( newMoveHand );
-    if ( newMoveHand == vr::TrackedControllerRole_Invalid
-         || handId == vr::k_unTrackedDeviceIndexInvalid
-         || handId >= vr::k_unMaxTrackedDeviceCount )
-    {
-        if ( oldMoveHand != vr::TrackedControllerRole_Invalid )
+    /*
+        if ( m_activeMoveHand == vr::TrackedControllerRole_Invalid )
         {
             emit offsetXChanged( m_offsetX );
             emit offsetYChanged( m_offsetY );
             emit offsetZChanged( m_offsetZ );
 
+            // Set lastHandQuaternion.w to placeholder value for invalid
+       (-1000.0)
+            // when we release move shortcut.
             if ( m_rotateHand )
             {
                 lastHandQuaternion.w = -1000.0;
             }
+            m_lastMoveHand = m_activeMoveHand;
+            return;
         }
-        return;
-    }
-    vr::TrackedDevicePose_t* pose = devicePoses + handId;
-    if ( !pose->bPoseIsValid || !pose->bDeviceIsConnected
-         || pose->eTrackingResult != vr::TrackingResult_Running_OK )
+    */
+    auto moveHandId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
+        m_activeMoveHand );
+    auto rotateHandId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
+        m_activeRotateHand );
+
+    // START of hand move
+    if ( m_activeMoveHand == vr::TrackedControllerRole_Invalid
+         || moveHandId == vr::k_unTrackedDeviceIndexInvalid
+         || moveHandId >= vr::k_unMaxTrackedDeviceCount )
     {
-        return;
+        if ( m_lastMoveHand != vr::TrackedControllerRole_Invalid )
+        {
+            emit offsetXChanged( m_offsetX );
+            emit offsetYChanged( m_offsetY );
+            emit offsetZChanged( m_offsetZ );
+        }
+        m_lastMoveHand = m_activeMoveHand;
     }
-    double relativeControllerPosition[]
-        = { pose->mDeviceToAbsoluteTracking.m[0][3],
-            pose->mDeviceToAbsoluteTracking.m[1][3],
-            pose->mDeviceToAbsoluteTracking.m[2][3] };
-
-    rotateCoordinates( relativeControllerPosition, -angle );
-    float absoluteControllerPosition[] = {
-        static_cast<float>( relativeControllerPosition[0] ) + m_offsetX,
-        static_cast<float>( relativeControllerPosition[1] ) + m_offsetY,
-        static_cast<float>( relativeControllerPosition[2] ) + m_offsetZ,
-    };
-
-    // Get hand's rotation.
-    if ( m_rotateHand )
+    else
     {
-        // handMatrix is in rotated coordinates.
-        vr::HmdMatrix34_t handMatrix = pose->mDeviceToAbsoluteTracking;
-
-        // We need un-rotated coordinates for valid comparison between
-        // handQuaternion and lastHandQuaternion. Set up (un)rotation matrix.
-        vr::HmdMatrix34_t handMatrixRotMat;
-        vr::HmdMatrix34_t handMatrixAbsolute;
-        utils::initRotationMatrix(
-            handMatrixRotMat, 1, static_cast<float>( angle ) );
-
-        // Get handMatrixAbsolute in un-rotated coordinates.
-        utils::matMul33( handMatrixAbsolute, handMatrixRotMat, handMatrix );
-
-        // Convert pose matrix to quaternion
-        handQuaternion = utils::getQuaternion( handMatrixAbsolute );
-    }
-
-    if ( oldMoveHand == newMoveHand )
-    {
-        double diff[3] = {
-            absoluteControllerPosition[0] - m_lastControllerPosition[0],
-            absoluteControllerPosition[1] - m_lastControllerPosition[1],
-            absoluteControllerPosition[2] - m_lastControllerPosition[2],
-        };
-
-        // offset is un-rotated coordinates
-
-        // prevents UI from updating if axis movement is locked
-        if ( !m_lockXToggle )
+        vr::TrackedDevicePose_t* movePose = devicePoses + moveHandId;
+        if ( !movePose->bPoseIsValid || !movePose->bDeviceIsConnected
+             || movePose->eTrackingResult != vr::TrackingResult_Running_OK )
         {
-            m_offsetX += diff[0];
+            m_lastMoveHand = m_activeMoveHand;
         }
-        if ( !m_lockYToggle )
+        else
         {
-            m_offsetY += diff[1];
-        }
-        if ( !m_lockZToggle )
-        {
-            m_offsetZ += diff[2];
-        }
+            double relativeControllerPosition[]
+                = { movePose->mDeviceToAbsoluteTracking.m[0][3],
+                    movePose->mDeviceToAbsoluteTracking.m[1][3],
+                    movePose->mDeviceToAbsoluteTracking.m[2][3] };
 
-        rotateCoordinates( diff, angle );
+            rotateCoordinates( relativeControllerPosition, -angle );
+            float absoluteControllerPosition[] = {
+                static_cast<float>( relativeControllerPosition[0] ) + m_offsetX,
+                static_cast<float>( relativeControllerPosition[1] ) + m_offsetY,
+                static_cast<float>( relativeControllerPosition[2] ) + m_offsetZ,
+            };
 
-        // Done calculating rotation so we down-cast double to float for openvr
-        // format
-        float diffFloat[3] = { static_cast<float>( diff[0] ),
-                               static_cast<float>( diff[1] ),
-                               static_cast<float>( diff[2] ) };
-        // If locked removes movement
-        if ( m_lockXToggle )
-        {
-            diffFloat[0] = 0;
-        }
-        if ( m_lockYToggle )
-        {
-            diffFloat[1] = 0;
-        }
-        if ( m_lockZToggle )
-        {
-            diffFloat[2] = 0;
-        }
-
-        // Check if diffFloat is anything before comitting.
-        if ( diffFloat[0] != 0 || diffFloat[1] != 0 || diffFloat[2] != 0 )
-        {
-            parent->AddOffsetToUniverseCenter(
-                vr::TrackingUniverseOrigin( m_trackingUniverse ),
-                diffFloat,
-                m_adjustChaperone );
-        }
-
-        // Get rotation change of hand.
-        if ( m_rotateHand )
-        {
-            // Checking if set to -1000.0 placeholder for invalid hand.
-            if ( lastHandQuaternion.w < -900.0 )
+            if ( m_lastMoveHand == m_activeMoveHand )
             {
-                lastHandQuaternion = handQuaternion;
-            }
+                double diff[3] = {
+                    absoluteControllerPosition[0] - m_lastControllerPosition[0],
+                    absoluteControllerPosition[1] - m_lastControllerPosition[1],
+                    absoluteControllerPosition[2] - m_lastControllerPosition[2],
+                };
 
-            else
-            {
-                // Construct a quaternion representing difference between old
-                // hand and new hand.
-                vr::HmdQuaternion_t handDiffQuaternion
-                    = utils::multiplyQuaternion(
-                        handQuaternion,
-                        utils::quaternionConjugate( lastHandQuaternion ) );
+                // offset is un-rotated coordinates
 
-                // Calculate yaw from quaternion.
-                double handYawDiff = atan2(
-                    2.0
-                        * ( handDiffQuaternion.y * handDiffQuaternion.w
-                            + handDiffQuaternion.x * handDiffQuaternion.z ),
-                    -1.0
-                        + 2.0
-                              * ( handDiffQuaternion.w * handDiffQuaternion.w
-                                  + handDiffQuaternion.x
-                                        * handDiffQuaternion.x ) );
-
-                int newRotationAngleDeg = static_cast<int>(
-                    round( handYawDiff * 18000.0 / M_PI ) + m_rotation );
-
-                // Keep angle within -18000 ~ 18000
-                if ( newRotationAngleDeg > 18000 )
+                // prevents UI from updating if axis movement is locked
+                if ( !m_lockXToggle )
                 {
-                    newRotationAngleDeg -= 36000;
+                    m_offsetX += diff[0];
                 }
-                else if ( newRotationAngleDeg < -18000 )
+                if ( !m_lockYToggle )
                 {
-                    newRotationAngleDeg += 36000;
+                    m_offsetY += diff[1];
+                }
+                if ( !m_lockZToggle )
+                {
+                    m_offsetZ += diff[2];
                 }
 
-                setRotation( newRotationAngleDeg );
+                rotateCoordinates( diff, angle );
+
+                // Done calculating rotation so we down-cast double to float for
+                // openvr format
+                float diffFloat[3] = { static_cast<float>( diff[0] ),
+                                       static_cast<float>( diff[1] ),
+                                       static_cast<float>( diff[2] ) };
+                // If locked removes movement
+                if ( m_lockXToggle )
+                {
+                    diffFloat[0] = 0;
+                }
+                if ( m_lockYToggle )
+                {
+                    diffFloat[1] = 0;
+                }
+                if ( m_lockZToggle )
+                {
+                    diffFloat[2] = 0;
+                }
+
+                // Check if diffFloat is anything before comitting.
+                if ( diffFloat[0] != 0 || diffFloat[1] != 0
+                     || diffFloat[2] != 0 )
+                {
+                    parent->AddOffsetToUniverseCenter(
+                        vr::TrackingUniverseOrigin( m_trackingUniverse ),
+                        diffFloat,
+                        m_adjustChaperone );
+                }
             }
+            m_lastControllerPosition[0] = absoluteControllerPosition[0];
+            m_lastControllerPosition[1] = absoluteControllerPosition[1];
+            m_lastControllerPosition[2] = absoluteControllerPosition[2];
+            m_lastMoveHand = m_activeMoveHand;
         }
+    } // END of hand move
+
+    // START of hand rotation
+
+    if ( m_activeRotateHand == vr::TrackedControllerRole_Invalid
+         || rotateHandId == vr::k_unTrackedDeviceIndexInvalid
+         || rotateHandId >= vr::k_unMaxTrackedDeviceCount )
+    {
+        if ( m_lastRotateHand != vr::TrackedControllerRole_Invalid )
+        {
+            // Set lastHandQuaternion.w to placeholder value for invalid
+            // (-1000.0)
+            lastHandQuaternion.w = -1000.0;
+        }
+        m_lastRotateHand = m_activeRotateHand;
     }
-    m_lastControllerPosition[0] = absoluteControllerPosition[0];
-    m_lastControllerPosition[1] = absoluteControllerPosition[1];
-    m_lastControllerPosition[2] = absoluteControllerPosition[2];
-    lastHandQuaternion = handQuaternion;
+    else
+    {
+        vr::TrackedDevicePose_t* rotatePose = devicePoses + rotateHandId;
+        if ( !rotatePose->bPoseIsValid || !rotatePose->bDeviceIsConnected
+             || rotatePose->eTrackingResult != vr::TrackingResult_Running_OK )
+        {
+            m_lastRotateHand = m_activeRotateHand;
+        }
+        else
+        {
+            // Get hand's rotation.
+            // handMatrix is in rotated coordinates.
+            vr::HmdMatrix34_t handMatrix
+                = rotatePose->mDeviceToAbsoluteTracking;
+
+            // We need un-rotated coordinates for valid comparison between
+            // handQuaternion and lastHandQuaternion. Set up (un)rotation
+            // matrix.
+            vr::HmdMatrix34_t handMatrixRotMat;
+            vr::HmdMatrix34_t handMatrixAbsolute;
+            utils::initRotationMatrix(
+                handMatrixRotMat, 1, static_cast<float>( angle ) );
+
+            // Get handMatrixAbsolute in un-rotated coordinates.
+            utils::matMul33( handMatrixAbsolute, handMatrixRotMat, handMatrix );
+
+            // Convert pose matrix to quaternion
+            handQuaternion = utils::getQuaternion( handMatrixAbsolute );
+
+            if ( m_lastRotateHand == m_activeRotateHand )
+            {
+                // Get rotation change of hand.
+                // Checking if set to -1000.0 placeholder for invalid hand.
+                if ( lastHandQuaternion.w < -900.0 )
+                {
+                    lastHandQuaternion = handQuaternion;
+                }
+
+                else
+                {
+                    // Construct a quaternion representing difference
+                    // between old hand and new hand.
+                    vr::HmdQuaternion_t handDiffQuaternion
+                        = utils::multiplyQuaternion(
+                            handQuaternion,
+                            utils::quaternionConjugate( lastHandQuaternion ) );
+
+                    // Calculate yaw from quaternion.
+                    double handYawDiff = atan2(
+                        2.0
+                            * ( handDiffQuaternion.y * handDiffQuaternion.w
+                                + handDiffQuaternion.x * handDiffQuaternion.z ),
+                        -1.0
+                            + 2.0
+                                  * ( handDiffQuaternion.w
+                                          * handDiffQuaternion.w
+                                      + handDiffQuaternion.x
+                                            * handDiffQuaternion.x ) );
+
+                    int newRotationAngleDeg = static_cast<int>(
+                        round( handYawDiff * 18000.0 / M_PI ) + m_rotation );
+
+                    // Keep angle within -18000 ~ 18000
+                    if ( newRotationAngleDeg > 18000 )
+                    {
+                        newRotationAngleDeg -= 36000;
+                    }
+                    else if ( newRotationAngleDeg < -18000 )
+                    {
+                        newRotationAngleDeg += 36000;
+                    }
+
+                    setRotation( newRotationAngleDeg );
+                }
+            }
+            lastHandQuaternion = handQuaternion;
+            m_lastRotateHand = m_activeRotateHand;
+        }
+    } // END of hand rotation
 }
 } // namespace advsettings

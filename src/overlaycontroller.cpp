@@ -499,22 +499,43 @@ void OverlayController::processInputBindings()
     {
         m_utilitiesTabController.sendMediaStopSong();
     }
+    // Execution order for moveCenterTabController actions is important. Don't
+    // reorder these. Override actions must always come after normal because
+    // active priority is set based on which action is "newest"
+    // normal actions:
+    m_moveCenterTabController.leftHandPlayspaceMove(
+        m_actions.leftHandPlayspaceMove() );
+    m_moveCenterTabController.rightHandPlayspaceMove(
+        m_actions.rightHandPlayspaceMove() );
+    m_moveCenterTabController.leftHandPlayspaceRotate(
+        m_actions.leftHandPlayspaceRotate() );
+    m_moveCenterTabController.rightHandPlayspaceRotate(
+        m_actions.rightHandPlayspaceRotate() );
+
+    // override actions:
+    m_moveCenterTabController.optionalOverrideLeftHandPlayspaceMove(
+        m_actions.optionalOverrideLeftHandPlayspaceMove() );
+    m_moveCenterTabController.optionalOverrideRightHandPlayspaceMove(
+        m_actions.optionalOverrideRightHandPlayspaceMove() );
+    m_moveCenterTabController.optionalOverrideLeftHandPlayspaceRotate(
+        m_actions.optionalOverrideLeftHandPlayspaceRotate() );
+    m_moveCenterTabController.optionalOverrideRightHandPlayspaceRotate(
+        m_actions.optionalOverrideRightHandPlayspaceRotate() );
 }
 
 void OverlayController::OnTimeoutPumpEvents()
 {
     vr::VRSystem()->GetTimeSinceLastVsync( nullptr, &m_currentFrame );
 
-
     if ( m_currentFrame > m_lastFrame )
     {
         if ( !vr::VRSystem() )
             return;
 
-		m_actions.UpdateStates();
-		
-		processInputBindings();
-		
+        m_actions.UpdateStates();
+
+        processInputBindings();
+
         vr::VREvent_t vrEvent;
         bool chaperoneDataAlreadyUpdated = false;
         while ( pollNextEvent( m_ulOverlayHandle, &vrEvent ) )
@@ -705,7 +726,6 @@ void OverlayController::OnTimeoutPumpEvents()
             hmdSpeed = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1]
                                   + vel[2] * vel[2] );
         }
-
         m_moveCenterTabController.eventLoopTick(
             vr::VRCompositor()->GetTrackingSpace(), devicePoses );
         m_utilitiesTabController.eventLoopTick();

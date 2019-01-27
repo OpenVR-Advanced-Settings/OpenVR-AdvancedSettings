@@ -7,7 +7,7 @@
 namespace input
 {
 /*!
-Wrapper around the IVRInput GetAnalogActionData with error handling.
+Wrapper around the IVRInput GetDigitalActionData with error handling.
 
 The struct is created and zero initalized in this function instead of being
 passed as reference since the size is currently only 28 bytes, and currently
@@ -129,7 +129,28 @@ SteamIVRInput::SteamIVRInput()
                        ActionType::Digital ),
       m_pausePlayTrack( input_strings::k_actionPausePlayTrack,
                         ActionType::Digital ),
-      m_stopTrack( input_strings::k_actionStopTrack, ActionType::Digital )
+      m_stopTrack( input_strings::k_actionStopTrack, ActionType::Digital ),
+      m_leftHandPlayspaceRotate( input_strings::k_actionLeftHandPlayspaceRotate,
+                                 ActionType::Digital ),
+      m_rightHandPlayspaceRotate(
+          input_strings::k_actionRightHandPlayspaceRotate,
+          ActionType::Digital ),
+      m_leftHandPlayspaceMove( input_strings::k_actionLeftHandPlayspaceMove,
+                               ActionType::Digital ),
+      m_rightHandPlayspaceMove( input_strings::k_actionRightHandPlayspaceMove,
+                                ActionType::Digital ),
+      m_optionalOverrideLeftHandPlayspaceRotate(
+          input_strings::k_actionOptionalOverrideLeftHandPlayspaceRotate,
+          ActionType::Digital ),
+      m_optionalOverrideRightHandPlayspaceRotate(
+          input_strings::k_actionOptionalOverrideRightHandPlayspaceRotate,
+          ActionType::Digital ),
+      m_optionalOverrideLeftHandPlayspaceMove(
+          input_strings::k_actionOptionalOverrideLeftHandPlayspaceMove,
+          ActionType::Digital ),
+      m_optionalOverrideRightHandPlayspaceMove(
+          input_strings::k_actionOptionalOverrideRightHandPlayspaceMove,
+          ActionType::Digital )
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
     m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;
@@ -177,6 +198,49 @@ button down will result in false until it has been released and pushed again.
 bool SteamIVRInput::stopSong()
 {
     return isDigitalActionActivatedOnce( m_stopTrack );
+}
+
+bool SteamIVRInput::leftHandPlayspaceRotate()
+{
+    return isDigitalActionActivatedConstant( m_leftHandPlayspaceRotate );
+}
+
+bool SteamIVRInput::rightHandPlayspaceRotate()
+{
+    return isDigitalActionActivatedConstant( m_rightHandPlayspaceRotate );
+}
+
+bool SteamIVRInput::leftHandPlayspaceMove()
+{
+    return isDigitalActionActivatedConstant( m_leftHandPlayspaceMove );
+}
+
+bool SteamIVRInput::rightHandPlayspaceMove()
+{
+    return isDigitalActionActivatedConstant( m_rightHandPlayspaceMove );
+}
+bool SteamIVRInput::optionalOverrideLeftHandPlayspaceRotate()
+{
+    return isDigitalActionActivatedConstant(
+        m_optionalOverrideLeftHandPlayspaceRotate );
+}
+
+bool SteamIVRInput::optionalOverrideRightHandPlayspaceRotate()
+{
+    return isDigitalActionActivatedConstant(
+        m_optionalOverrideRightHandPlayspaceRotate );
+}
+
+bool SteamIVRInput::optionalOverrideLeftHandPlayspaceMove()
+{
+    return isDigitalActionActivatedConstant(
+        m_optionalOverrideLeftHandPlayspaceMove );
+}
+
+bool SteamIVRInput::optionalOverrideRightHandPlayspaceMove()
+{
+    return isDigitalActionActivatedConstant(
+        m_optionalOverrideRightHandPlayspaceMove );
 }
 
 /*!

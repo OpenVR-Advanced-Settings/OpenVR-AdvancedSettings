@@ -74,6 +74,16 @@ MyStackViewPage {
             }
         }
 
+        MyPushButton {
+            id: zeroPlayspaceButton
+            Layout.fillWidth: true
+            text: "Zero Playspace Tab Offsets"
+            Layout.preferredHeight: 100
+            onClicked: {
+                MoveCenterTabController.zeroOffsets()
+            }
+        }
+
         Item {
             Layout.preferredHeight: 32
         }

@@ -40,6 +40,14 @@ public:
     bool previousSong();
     bool pausePlaySong();
     bool stopSong();
+    bool leftHandPlayspaceRotate();
+    bool rightHandPlayspaceRotate();
+    bool leftHandPlayspaceMove();
+    bool rightHandPlayspaceMove();
+    bool optionalOverrideLeftHandPlayspaceRotate();
+    bool optionalOverrideRightHandPlayspaceRotate();
+    bool optionalOverrideLeftHandPlayspaceMove();
+    bool optionalOverrideRightHandPlayspaceMove();
 
     // Destructor. There are no terminating calls for the IVRInput API, so it
     // is left blank.
@@ -69,6 +77,16 @@ private:
     Action m_previousTrack;
     Action m_pausePlayTrack;
     Action m_stopTrack;
+
+    // Playspace bindings
+    Action m_leftHandPlayspaceRotate;
+    Action m_rightHandPlayspaceRotate;
+    Action m_leftHandPlayspaceMove;
+    Action m_rightHandPlayspaceMove;
+    Action m_optionalOverrideLeftHandPlayspaceRotate;
+    Action m_optionalOverrideRightHandPlayspaceRotate;
+    Action m_optionalOverrideLeftHandPlayspaceMove;
+    Action m_optionalOverrideRightHandPlayspaceMove;
 };
 
 /*!
@@ -82,6 +100,23 @@ namespace input_strings
     constexpr auto k_actionPreviousTrack = "/actions/main/in/PreviousTrack";
     constexpr auto k_actionPausePlayTrack = "/actions/main/in/PausePlayTrack";
     constexpr auto k_actionStopTrack = "/actions/main/in/StopTrack";
+
+    constexpr auto k_actionLeftHandPlayspaceRotate
+        = "/actions/main/in/LeftHandPlayspaceRotate";
+    constexpr auto k_actionRightHandPlayspaceRotate
+        = "/actions/main/in/RightHandPlayspaceRotate";
+    constexpr auto k_actionLeftHandPlayspaceMove
+        = "/actions/main/in/LeftHandPlayspaceMove";
+    constexpr auto k_actionRightHandPlayspaceMove
+        = "/actions/main/in/RightHandPlayspaceMove";
+    constexpr auto k_actionOptionalOverrideLeftHandPlayspaceRotate
+        = "/actions/main/in/OptionalOverrideLeftHandPlayspaceRotate";
+    constexpr auto k_actionOptionalOverrideRightHandPlayspaceRotate
+        = "/actions/main/in/OptionalOverrideRightHandPlayspaceRotate";
+    constexpr auto k_actionOptionalOverrideLeftHandPlayspaceMove
+        = "/actions/main/in/OptionalOverrideLeftHandPlayspaceMove";
+    constexpr auto k_actionOptionalOverrideRightHandPlayspaceMove
+        = "/actions/main/in/OptionalOverrideRightHandPlayspaceMove";
 
     constexpr auto k_setMain = "/actions/main";
 
