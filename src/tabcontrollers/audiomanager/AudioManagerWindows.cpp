@@ -457,7 +457,7 @@ IMMDevice*
                                     LPCWSTR id )
 {
     IMMDevice* pDevice;
-    if ( deviceEnumerator->GetDevice( id, &pDevice ) < 0 )
+    if ( !id || deviceEnumerator->GetDevice( id, &pDevice ) < 0 )
     {
         return nullptr;
     }
@@ -606,6 +606,10 @@ AudioManagerWindows::OnDefaultDeviceChanged( EDataFlow flow,
                     micAudioEndpointVolume
                         = getAudioEndpointVolume( micAudioDevice );
                 }
+                else if ( !pwstrDefaultDeviceId )
+                {
+                    LOG( WARNING ) << "No recording device available.";
+                }
                 else
                 {
                     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>
@@ -632,7 +636,11 @@ AudioManagerWindows::OnDefaultDeviceChanged( EDataFlow flow,
                     playbackAudioDevice->Release();
                 }
                 playbackAudioDevice = device;
-                if ( !playbackAudioDevice )
+                if ( !pwstrDefaultDeviceId )
+                {
+                    LOG( WARNING ) << "No playback device available.";
+                }
+                else if ( !playbackAudioDevice )
                 {
                     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>
                         converter;
