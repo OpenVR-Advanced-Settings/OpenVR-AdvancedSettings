@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.3
 import matzman666.advsettings 1.0
 import ".." //common imports
 import "dialog_boxes"
+import "device_selector"
 
 MyStackViewPage {
     width: 1200
@@ -40,22 +41,8 @@ MyStackViewPage {
     content: ColumnLayout {
         spacing: 24
 
-        RowLayout {
-            MyText {
-                text: "Playback Device: "
-                Layout.preferredWidth: 260
-            }
-            MyComboBox {
-                id: audioPlaybackNameCombo
-                Layout.maximumWidth: 850
-                Layout.minimumWidth: 850
-                Layout.preferredWidth: 850
-                onActivated: {
-                    if (componentCompleted) {
-                        AudioTabController.setPlaybackDeviceIndex(currentIndex)
-                    }
-                }
-            }
+        AudioDeviceSelector {
+            id: audioPlaybackNameCombo
         }
 
         ColumnLayout {
@@ -404,16 +391,16 @@ MyStackViewPage {
         }
 
         Component.onCompleted: {
-            var devs1 = []
+
             var devs2 = ["<None>"]
             var playbackDeviceCount = AudioTabController.getPlaybackDeviceCount()
             for (var i = 0; i < playbackDeviceCount; i++) {
                 var name = AudioTabController.getPlaybackDeviceName(i)
-                devs1.push(name)
+
                 devs2.push(name)
             }
-            audioPlaybackNameCombo.model = devs1
-            audioPlaybackNameCombo.currentIndex = AudioTabController.playbackDeviceIndex
+
+
             audioMirrorNameCombo.model = devs2
             if (AudioTabController.mirrorDeviceIndex < 0) {
                 audioMirrorNameCombo.currentIndex = 0
@@ -467,9 +454,7 @@ MyStackViewPage {
 
         Connections {
             target: AudioTabController
-            onPlaybackDeviceIndexChanged: {
-                audioPlaybackNameCombo.currentIndex = index
-            }
+
             onMirrorDeviceIndexChanged: {
                 if (index < 0) {
                     audioMirrorNameCombo.currentIndex = 0
@@ -554,16 +539,16 @@ MyStackViewPage {
 
 
             onPlaybackDeviceListChanged: {
-                var devs1 = []
+
                 var devs2 = ["<None>"]
                 var playbackDeviceCount = AudioTabController.getPlaybackDeviceCount()
                 for (var i = 0; i < playbackDeviceCount; i++) {
                     var name = AudioTabController.getPlaybackDeviceName(i)
-                    devs1.push(name)
+
                     devs2.push(name)
                 }
-                audioPlaybackNameCombo.model = devs1
-                audioPlaybackNameCombo.currentIndex = AudioTabController.playbackDeviceIndex
+
+
                 audioMirrorNameCombo.model = devs2
                 if (AudioTabController.mirrorDeviceIndex < 0) {
                     audioMirrorNameCombo.currentIndex = 0
