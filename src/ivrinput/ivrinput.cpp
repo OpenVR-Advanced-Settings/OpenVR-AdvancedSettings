@@ -182,6 +182,21 @@ bool SteamIVRInput::stopSong()
 }
 
 /*!
+Returns the action handle of the Left Haptic Action
+*/
+
+vr::VRActionHandle_t SteamIVRInput::getLeftHaptichandle() {
+	return m_leftHaptic.handle();
+}
+
+/*!
+Returns the action handle of the Right Haptic Action
+*/
+vr::VRActionHandle_t SteamIVRInput::getRightHaptichandle() {
+	return m_rightHaptic.handle();
+}
+
+/*!
 Updates the active action set(s).
 Should be called every frame, or however often you want the input system to
 update state.

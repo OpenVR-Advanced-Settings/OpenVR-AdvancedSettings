@@ -118,6 +118,11 @@ OverlayController::OverlayController( bool desktopMode,
             nullptr, "OpenVR Advanced Settings Overlay", "Is OpenVR running?" );
         throw std::runtime_error( std::string( "No Overlay interface" ) );
     }
+
+	// gets and sets haptic actions.
+	m_leftHapticHandle = (m_actions.getLeftHaptichandle());
+	m_rightHapticHandle = (m_actions.getRightHaptichandle());
+
     // Init controllers
     m_steamVRTabController.initStage1();
     m_chaperoneTabController.initStage1();
@@ -130,6 +135,7 @@ OverlayController::OverlayController( bool desktopMode,
         m_settingsTabController.forceRevivePage() );
     m_utilitiesTabController.initStage1();
     m_accessibilityTabController.initStage1();
+
 
     // Set qml context
     qmlEngine.rootContext()->setContextProperty( "applicationVersion",

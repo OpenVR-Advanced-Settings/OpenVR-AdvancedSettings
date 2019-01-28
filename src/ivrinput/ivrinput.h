@@ -40,6 +40,8 @@ public:
     bool previousSong();
     bool pausePlaySong();
     bool stopSong();
+	vr::VRActionHandle_t getLeftHaptichandle();
+	vr::VRActionHandle_t getRightHaptichandle();
 
     // Destructor. There are no terminating calls for the IVRInput API, so it
     // is left blank.

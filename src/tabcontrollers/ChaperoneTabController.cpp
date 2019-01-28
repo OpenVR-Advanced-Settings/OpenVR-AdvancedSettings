@@ -49,6 +49,8 @@ void ChaperoneTabController::initStage2( OverlayController* var_parent,
 {
     this->parent = var_parent;
     this->widget = var_widget;
+	m_rightHandle = parent->getRightHandle();
+	m_leftHandle = parent->getLeftHandle();
 }
 
 ChaperoneTabController::~ChaperoneTabController()
@@ -436,13 +438,12 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     // Haptic Feedback
     if ( m_enableChaperoneHapticFeedback )
     {
-		LOG(WARNING)<< "In haptics";
         float activationDistance = m_chaperoneHapticFeedbackDistance
                                    * m_chaperoneVelocityModifierCurrent;
-        if ( distance <= activationDistance
-             && ( hmdState.ulButtonPressed
-                  & vr::ButtonMaskFromId( vr::k_EButton_ProximitySensor ) ) )
+        if ( distance <= activationDistance         )
+			//&& ( hmdState.ulButtonPressed	& vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor) )
         {
+			LOG(WARNING) << "In haptics";
             if ( !m_chaperoneHapticFeedbackActive )
             {
                 if ( m_chaperoneHapticFeedbackThread.joinable() )
@@ -452,7 +453,11 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                 }
                 m_chaperoneHapticFeedbackActive = true;
                 m_chaperoneHapticFeedbackThread = std::thread(
-                    []( ChaperoneTabController* _this ) {
+                    [&]( ChaperoneTabController* _this ) {
+					vr::VRInputValueHandle_t* leftHand = NULL;
+					vr::VRInputValueHandle_t* rightHand = NULL;
+					vr::VRInput()->GetInputSourceHandle("/user/hand/left", leftHand);
+					vr::VRInput()->GetInputSourceHandle("/user/hand/right", rightHand);
                         auto leftIndex
                             = vr::VRSystem()
                                   ->GetTrackedDeviceIndexForControllerRole(
@@ -467,15 +472,16 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                             if ( leftIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
-                                vr::VRSystem()->TriggerHapticPulse(
-                                    leftIndex, 0, 2000 );
+								LOG(INFO) << "In Right Haptic Trigger";
+								vr::VRInput()->TriggerHapticVibrationAction(m_leftHandle, 0.0f, 1.0f, 100.0f, 0.8f, *leftHand);
                             }
                             if ( rightIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
-                                vr::VRSystem()->TriggerHapticPulse(
-                                    rightIndex, 0, 2000 );
+								LOG(INFO) << "In left Haptic Trigger";
+								vr::VRInput()->TriggerHapticVibrationAction(m_rightHandle, 0.0f, 1.0f, 100.0f, 0.8f, *rightHand);
                             }
+							LOG(INFO) << "Made it out of call";
                             std::this_thread::sleep_for(
                                 std::chrono::milliseconds( 5 ) );
                         }
@@ -496,7 +502,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     // Alarm Sound
     if ( m_enableChaperoneAlarmSound )
     {
-		LOG(WARNING) << "In alarm";
+		//LOG(WARNING) << "In alarm";
         float activationDistance = m_chaperoneAlarmSoundDistance
                                    * m_chaperoneVelocityModifierCurrent;
         if ( distance <= activationDistance
@@ -537,7 +543,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     // Show Dashboard
     if ( m_enableChaperoneShowDashboard )
     {
-		LOG(WARNING) << "In dash";
+		//LOG(WARNING) << "In dash";
         float activationDistance = m_chaperoneShowDashboardDistance
                                    * m_chaperoneVelocityModifierCurrent;
         if ( distance <= activationDistance && !m_chaperoneShowDashboardActive )
@@ -590,6 +596,7 @@ void ChaperoneTabController::eventLoopTick(
     {
         std::lock_guard<std::recursive_mutex> lock(
             parent->chaperoneUtils().mutex() );
+		//LOG(INFO) << "in loop";
         auto minDistance = NAN;
         auto& poseHmd = devicePoses[vr::k_unTrackedDeviceIndex_Hmd];
         if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
@@ -648,8 +655,10 @@ void ChaperoneTabController::eventLoopTick(
                 }
             }
         }
-        if ( !std::isnan( minDistance ) )
+        //if ( !std::isnan( minDistance ) )
+		if(true)
         {
+			//LOG(INFO) << "chaperone warnings";
             handleChaperoneWarnings( minDistance );
         }
     }

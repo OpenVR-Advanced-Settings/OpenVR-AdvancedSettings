@@ -169,6 +169,9 @@ private:
 
     unsigned settingsUpdateCounter = 0;
 
+	vr::VRActionHandle_t m_rightHandle;
+	vr::VRActionHandle_t m_leftHandle;
+
     std::vector<ChaperoneProfile> chaperoneProfiles;
 
 public:
