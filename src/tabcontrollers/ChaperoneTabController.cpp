@@ -649,6 +649,18 @@ void ChaperoneTabController::eventLoopTick(
         }
     }
 
+    // 101 was chosen because it's a prime number (to reduce overlap of
+    // simultaneous settings updates).
+    // Actual rate of updates is 101 * vsync (~11ms)
+    // Values chosen based on update speed priority
+    // Values in other tabs are as follows (avoid using same values):
+    // AccessibiltyTabController: 151
+    // AudioTabController: 89
+    // MoveCenterTabController: 149
+    // ReviveTabController: 139
+    // SettingsTabController: 157
+    // SteamVRTabController: 97
+    // UtilitiesTabController: 19
     if ( settingsUpdateCounter >= 101 )
     {
         if ( parent->isDashboardVisible() )

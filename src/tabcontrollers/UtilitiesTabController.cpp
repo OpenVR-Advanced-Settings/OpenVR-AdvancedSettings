@@ -321,6 +321,18 @@ vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index )
 
 void UtilitiesTabController::eventLoopTick()
 {
+    // 19 was chosen because it's a prime number (to reduce overlap of
+    // simultaneous settings updates).
+    // Actual rate of updates is 19 * vsync (~11ms)
+    // Values chosen based on update speed priority
+    // Values in other tabs are as follows (avoid using same values):
+    // AccessibiltyTabController: 151
+    // AudioTabController: 89
+    // ChaperoneTabController: 101
+    // MoveCenterTabController: 149
+    // ReviveTabController: 139
+    // SettingsTabController: 157
+    // SteamVRTabController: 97
     if ( settingsUpdateCounter >= 19 )
     {
         vr::VROverlayHandle_t pOverlayHandle;

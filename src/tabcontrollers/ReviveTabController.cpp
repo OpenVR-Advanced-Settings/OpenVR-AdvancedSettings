@@ -309,6 +309,18 @@ void ReviveTabController::eventLoopTick()
     if ( m_isOverlayInstalled
          || parent->m_settingsTabController.forceRevivePage() )
     {
+        // 139 was chosen because it's a prime number (to reduce overlap of
+        // simultaneous settings updates).
+        // Actual rate of updates is 139 * vsync (~11ms)
+        // Values chosen based on update speed priority
+        // Values in other tabs are as follows (avoid using same values):
+        // AccessibiltyTabController: 151
+        // AudioTabController: 89
+        // ChaperoneTabController: 101
+        // MoveCenterTabController: 149
+        // SettingsTabController: 157
+        // SteamVRTabController: 97
+        // UtilitiesTabController: 19
         if ( settingsUpdateCounter >= 139 )
         {
             if ( parent->isDashboardVisible() )

@@ -22,6 +22,18 @@ void SteamVRTabController::initStage2( OverlayController* var_parent,
 
 void SteamVRTabController::eventLoopTick()
 {
+    // 97 was chosen because it's a prime number (to reduce overlap of
+    // simultaneous settings updates).
+    // Actual rate of updates is 97 * vsync (~11ms)
+    // Values chosen based on update speed priority
+    // Values in other tabs are as follows (avoid using same values):
+    // AccessibiltyTabController: 151
+    // AudioTabController: 89
+    // ChaperoneTabController: 101
+    // MoveCenterTabController: 149
+    // ReviveTabController: 139
+    // SettingsTabController: 157
+    // UtilitiesTabController: 19
     if ( settingsUpdateCounter >= 97 )
     {
         if ( parent->isDashboardVisible() )
