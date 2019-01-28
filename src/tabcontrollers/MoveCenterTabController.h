@@ -33,8 +33,6 @@ class MoveCenterTabController : public QObject
                     setMoveShortcutRight NOTIFY moveShortcutRightChanged )
     Q_PROPERTY( bool moveShortcutLeft READ moveShortcutLeft WRITE
                     setMoveShortcutLeft NOTIFY moveShortcutLeftChanged )
-    Q_PROPERTY( bool requireDoubleClick READ requireDoubleClick WRITE
-                    setRequireDoubleClick NOTIFY requireDoubleClickChanged )
     Q_PROPERTY( bool lockXToggle READ lockXToggle WRITE setLockX NOTIFY
                     requireLockXChanged )
     Q_PROPERTY( bool lockYToggle READ lockYToggle WRITE setLockY NOTIFY
@@ -55,14 +53,13 @@ private:
     int m_rotation = 0;
     int m_tempRotation = 0;
     bool m_adjustChaperone = true;
-    bool m_rotateHand = false;
+    bool m_settingsHandTurningEnabled = false;
     bool m_moveShortcutRightPressed = false;
     bool m_moveShortcutLeftPressed = false;
     vr::TrackedDeviceIndex_t m_activeMoveController;
     float m_lastControllerPosition[3];
-    bool m_moveShortcutRightEnabled = false;
-    bool m_moveShortcutLeftEnabled = false;
-    bool m_requireDoubleClick = false;
+    bool m_settingsRightHandDragEnabled = false;
+    bool m_settingsLeftHandDragEnabled = false;
     bool m_lockXToggle = false;
     bool m_lockYToggle = false;
     bool m_lockZToggle = false;
@@ -74,22 +71,22 @@ private:
     vr::HmdQuaternion_t lastHmdQuaternion = { -1000.0, 0.0, 0.0, 0.0 };
     vr::HmdQuaternion_t hmdQuaternion;
     double m_hmdYawTotal = 0.0;
-    vr::ETrackedControllerRole m_activeMoveHand
+    vr::ETrackedControllerRole m_activeDragHand
         = vr::TrackedControllerRole_Invalid;
     vr::ETrackedControllerRole m_lastMoveHand
         = vr::TrackedControllerRole_Invalid;
-    vr::ETrackedControllerRole m_activeRotateHand
+    vr::ETrackedControllerRole m_activeTurnHand
         = vr::TrackedControllerRole_Invalid;
     vr::ETrackedControllerRole m_lastRotateHand
         = vr::TrackedControllerRole_Invalid;
-    bool m_leftHandMovePressed = false;
-    bool m_rightHandMovePressed = false;
-    bool m_overrideLeftHandMovePressed = false;
-    bool m_overrideRightHandMovePressed = false;
-    bool m_leftHandRotatePressed = false;
-    bool m_rightHandRotatePressed = false;
-    bool m_overrideLeftHandRotatePressed = false;
-    bool m_overrideRightHandRotatePressed = false;
+    bool m_leftHandDragPressed = false;
+    bool m_rightHandDragPressed = false;
+    bool m_overrideLeftHandDragPressed = false;
+    bool m_overrideRightHandDragPressed = false;
+    bool m_leftHandTurnPressed = false;
+    bool m_rightHandTurnPressed = false;
+    bool m_overrideLeftHandTurnPressed = false;
+    bool m_overrideRightHandTurnPressed = false;
 
     unsigned settingsUpdateCounter = 0;
 
@@ -111,7 +108,6 @@ public:
     bool rotateHand() const;
     bool moveShortcutRight() const;
     bool moveShortcutLeft() const;
-    bool requireDoubleClick() const;
     bool lockXToggle() const;
     bool lockYToggle() const;
     bool lockZToggle() const;
@@ -119,18 +115,14 @@ public:
     void resetHmdYawTotal();
 
     // actions:
-    void leftHandPlayspaceMove( bool leftHandMoveActive );
-    void rightHandPlayspaceMove( bool rightHandMoveActive );
-    void optionalOverrideLeftHandPlayspaceMove(
-        bool overrideLeftHandMoveActive );
-    void optionalOverrideRightHandPlayspaceMove(
-        bool overrideRightHandMoveActive );
-    void leftHandPlayspaceRotate( bool leftHandRotateActive );
-    void rightHandPlayspaceRotate( bool rightHandRotateActive );
-    void optionalOverrideLeftHandPlayspaceRotate(
-        bool overrideLeftHandRotateActive );
-    void optionalOverrideRightHandPlayspaceRotate(
-        bool overrideRightHandRotateActive );
+    void leftHandRoomDrag( bool leftHandDragActive );
+    void rightHandRoomDrag( bool rightHandDragActive );
+    void optionalOverrideLeftHandRoomDrag( bool overrideLeftHandDragActive );
+    void optionalOverrideRightHandRoomDrag( bool overrideRightHandDragActive );
+    void leftHandRoomTurn( bool leftHandTurnActive );
+    void rightHandRoomTurn( bool rightHandTurnActive );
+    void optionalOverrideLeftHandRoomTurn( bool overrideLeftHandTurnActive );
+    void optionalOverrideRightHandRoomTurn( bool overrideRightHandTurnActive );
 
 public slots:
     int trackingUniverse() const;
@@ -150,7 +142,6 @@ public slots:
 
     void setMoveShortcutRight( bool value, bool notify = true );
     void setMoveShortcutLeft( bool value, bool notify = true );
-    void setRequireDoubleClick( bool value, bool notify = true );
 
     void modOffsetX( float value, bool notify = true );
     void modOffsetY( float value, bool notify = true );
@@ -174,7 +165,6 @@ signals:
     void rotateHandChanged( bool value );
     void moveShortcutRightChanged( bool value );
     void moveShortcutLeftChanged( bool value );
-    void requireDoubleClickChanged( bool value );
     void requireLockXChanged( bool value );
     void requireLockYChanged( bool value );
     void requireLockZChanged( bool value );

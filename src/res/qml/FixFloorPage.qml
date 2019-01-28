@@ -6,7 +6,7 @@ import matzman666.advsettings 1.0
 
 
 MyStackViewPage {
-    headerText: "Playspace Fix"
+    headerText: "Room Fix"
 
     content: ColumnLayout {
         spacing: 18
@@ -57,7 +57,7 @@ MyStackViewPage {
 		MyPushButton {
             id: recenterButton
             Layout.fillWidth: true
-            text: "Recenter Playspace"
+            text: "Recenter Room"
             Layout.preferredHeight: 100
             onClicked: {
                 FixFloorTabController.recenterClicked()
@@ -75,9 +75,9 @@ MyStackViewPage {
         }
 
         MyPushButton {
-            id: zeroPlayspaceButton
+            id: zeroRoomButton
             Layout.fillWidth: true
-            text: "Zero Playspace Tab Offsets"
+            text: "Apply Room Settings Offsets as Center"
             Layout.preferredHeight: 100
             onClicked: {
                 MoveCenterTabController.zeroOffsets()

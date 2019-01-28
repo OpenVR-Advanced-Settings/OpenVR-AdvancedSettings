@@ -130,26 +130,25 @@ SteamIVRInput::SteamIVRInput()
       m_pausePlayTrack( input_strings::k_actionPausePlayTrack,
                         ActionType::Digital ),
       m_stopTrack( input_strings::k_actionStopTrack, ActionType::Digital ),
-      m_leftHandPlayspaceRotate( input_strings::k_actionLeftHandPlayspaceRotate,
-                                 ActionType::Digital ),
-      m_rightHandPlayspaceRotate(
-          input_strings::k_actionRightHandPlayspaceRotate,
+      m_leftHandRoomTurn( input_strings::k_actionLeftHandRoomTurn,
+                          ActionType::Digital ),
+      m_rightHandRoomTurn( input_strings::k_actionRightHandRoomTurn,
+                           ActionType::Digital ),
+      m_leftHandRoomDrag( input_strings::k_actionLeftHandRoomDrag,
+                          ActionType::Digital ),
+      m_rightHandRoomDrag( input_strings::k_actionRightHandRoomDrag,
+                           ActionType::Digital ),
+      m_optionalOverrideLeftHandRoomTurn(
+          input_strings::k_actionOptionalOverrideLeftHandRoomTurn,
           ActionType::Digital ),
-      m_leftHandPlayspaceMove( input_strings::k_actionLeftHandPlayspaceMove,
-                               ActionType::Digital ),
-      m_rightHandPlayspaceMove( input_strings::k_actionRightHandPlayspaceMove,
-                                ActionType::Digital ),
-      m_optionalOverrideLeftHandPlayspaceRotate(
-          input_strings::k_actionOptionalOverrideLeftHandPlayspaceRotate,
+      m_optionalOverrideRightHandRoomTurn(
+          input_strings::k_actionOptionalOverrideRightHandRoomTurn,
           ActionType::Digital ),
-      m_optionalOverrideRightHandPlayspaceRotate(
-          input_strings::k_actionOptionalOverrideRightHandPlayspaceRotate,
+      m_optionalOverrideLeftHandRoomDrag(
+          input_strings::k_actionOptionalOverrideLeftHandRoomDrag,
           ActionType::Digital ),
-      m_optionalOverrideLeftHandPlayspaceMove(
-          input_strings::k_actionOptionalOverrideLeftHandPlayspaceMove,
-          ActionType::Digital ),
-      m_optionalOverrideRightHandPlayspaceMove(
-          input_strings::k_actionOptionalOverrideRightHandPlayspaceMove,
+      m_optionalOverrideRightHandRoomDrag(
+          input_strings::k_actionOptionalOverrideRightHandRoomDrag,
           ActionType::Digital )
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
@@ -200,47 +199,47 @@ bool SteamIVRInput::stopSong()
     return isDigitalActionActivatedOnce( m_stopTrack );
 }
 
-bool SteamIVRInput::leftHandPlayspaceRotate()
+bool SteamIVRInput::leftHandRoomTurn()
 {
-    return isDigitalActionActivatedConstant( m_leftHandPlayspaceRotate );
+    return isDigitalActionActivatedConstant( m_leftHandRoomTurn );
 }
 
-bool SteamIVRInput::rightHandPlayspaceRotate()
+bool SteamIVRInput::rightHandRoomTurn()
 {
-    return isDigitalActionActivatedConstant( m_rightHandPlayspaceRotate );
+    return isDigitalActionActivatedConstant( m_rightHandRoomTurn );
 }
 
-bool SteamIVRInput::leftHandPlayspaceMove()
+bool SteamIVRInput::leftHandRoomDrag()
 {
-    return isDigitalActionActivatedConstant( m_leftHandPlayspaceMove );
+    return isDigitalActionActivatedConstant( m_leftHandRoomDrag );
 }
 
-bool SteamIVRInput::rightHandPlayspaceMove()
+bool SteamIVRInput::rightHandRoomDrag()
 {
-    return isDigitalActionActivatedConstant( m_rightHandPlayspaceMove );
+    return isDigitalActionActivatedConstant( m_rightHandRoomDrag );
 }
-bool SteamIVRInput::optionalOverrideLeftHandPlayspaceRotate()
+bool SteamIVRInput::optionalOverrideLeftHandRoomTurn()
 {
     return isDigitalActionActivatedConstant(
-        m_optionalOverrideLeftHandPlayspaceRotate );
+        m_optionalOverrideLeftHandRoomTurn );
 }
 
-bool SteamIVRInput::optionalOverrideRightHandPlayspaceRotate()
+bool SteamIVRInput::optionalOverrideRightHandRoomTurn()
 {
     return isDigitalActionActivatedConstant(
-        m_optionalOverrideRightHandPlayspaceRotate );
+        m_optionalOverrideRightHandRoomTurn );
 }
 
-bool SteamIVRInput::optionalOverrideLeftHandPlayspaceMove()
+bool SteamIVRInput::optionalOverrideLeftHandRoomDrag()
 {
     return isDigitalActionActivatedConstant(
-        m_optionalOverrideLeftHandPlayspaceMove );
+        m_optionalOverrideLeftHandRoomDrag );
 }
 
-bool SteamIVRInput::optionalOverrideRightHandPlayspaceMove()
+bool SteamIVRInput::optionalOverrideRightHandRoomDrag()
 {
     return isDigitalActionActivatedConstant(
-        m_optionalOverrideRightHandPlayspaceMove );
+        m_optionalOverrideRightHandRoomDrag );
 }
 
 /*!

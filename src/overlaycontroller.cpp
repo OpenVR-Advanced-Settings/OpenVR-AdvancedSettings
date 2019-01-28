@@ -503,24 +503,22 @@ void OverlayController::processInputBindings()
     // reorder these. Override actions must always come after normal because
     // active priority is set based on which action is "newest"
     // normal actions:
-    m_moveCenterTabController.leftHandPlayspaceMove(
-        m_actions.leftHandPlayspaceMove() );
-    m_moveCenterTabController.rightHandPlayspaceMove(
-        m_actions.rightHandPlayspaceMove() );
-    m_moveCenterTabController.leftHandPlayspaceRotate(
-        m_actions.leftHandPlayspaceRotate() );
-    m_moveCenterTabController.rightHandPlayspaceRotate(
-        m_actions.rightHandPlayspaceRotate() );
+    m_moveCenterTabController.leftHandRoomDrag( m_actions.leftHandRoomDrag() );
+    m_moveCenterTabController.rightHandRoomDrag(
+        m_actions.rightHandRoomDrag() );
+    m_moveCenterTabController.leftHandRoomTurn( m_actions.leftHandRoomTurn() );
+    m_moveCenterTabController.rightHandRoomTurn(
+        m_actions.rightHandRoomTurn() );
 
     // override actions:
-    m_moveCenterTabController.optionalOverrideLeftHandPlayspaceMove(
-        m_actions.optionalOverrideLeftHandPlayspaceMove() );
-    m_moveCenterTabController.optionalOverrideRightHandPlayspaceMove(
-        m_actions.optionalOverrideRightHandPlayspaceMove() );
-    m_moveCenterTabController.optionalOverrideLeftHandPlayspaceRotate(
-        m_actions.optionalOverrideLeftHandPlayspaceRotate() );
-    m_moveCenterTabController.optionalOverrideRightHandPlayspaceRotate(
-        m_actions.optionalOverrideRightHandPlayspaceRotate() );
+    m_moveCenterTabController.optionalOverrideLeftHandRoomDrag(
+        m_actions.optionalOverrideLeftHandRoomDrag() );
+    m_moveCenterTabController.optionalOverrideRightHandRoomDrag(
+        m_actions.optionalOverrideRightHandRoomDrag() );
+    m_moveCenterTabController.optionalOverrideLeftHandRoomTurn(
+        m_actions.optionalOverrideLeftHandRoomTurn() );
+    m_moveCenterTabController.optionalOverrideRightHandRoomTurn(
+        m_actions.optionalOverrideRightHandRoomTurn() );
 }
 
 // vsync implementation:

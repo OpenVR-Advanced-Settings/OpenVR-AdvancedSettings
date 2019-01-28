@@ -48,7 +48,7 @@ MyStackViewPage {
                    MyPushButton {
                        id: playSpaceButton
                        activationSoundEnabled: false
-                       text: "Play Space"
+                       text: "Room Settings"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -59,7 +59,7 @@ MyStackViewPage {
                    MyPushButton {
                        id: fixFloorButton
                        activationSoundEnabled: false
-                       text: "Playspace Fix"
+                       text: "Room Fix"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
