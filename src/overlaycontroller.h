@@ -166,11 +166,6 @@ public:
                         vr::VREvent_t* pEvent );
 
 
-	vr::VRActionHandle_t m_leftHapticHandle;
-	vr::VRActionHandle_t m_rightHapticHandle;
-
-	vr::VRActionHandle_t getRightHandle() { return m_rightHapticHandle; };
-	vr::VRActionHandle_t getLeftHandle() { return m_leftHapticHandle; };
 
 public slots:
     void renderOverlay();

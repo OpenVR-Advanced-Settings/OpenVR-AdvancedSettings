@@ -119,9 +119,6 @@ OverlayController::OverlayController( bool desktopMode,
         throw std::runtime_error( std::string( "No Overlay interface" ) );
     }
 
-	// gets and sets haptic actions.
-	m_leftHapticHandle = (m_actions.getLeftHaptichandle());
-	m_rightHapticHandle = (m_actions.getRightHaptichandle());
 
     // Init controllers
     m_steamVRTabController.initStage1();

@@ -169,8 +169,21 @@ private:
 
     unsigned settingsUpdateCounter = 0;
 
+	bool m_isHapticGood = true;
+
 	vr::VRActionHandle_t m_rightHandle;
 	vr::VRActionHandle_t m_leftHandle;
+	vr::VRInputValueHandle_t m_leftHandHandle;
+	vr::VRInputValueHandle_t m_rightHandHandle;
+
+	//ACTION HANDLES IN invrinput.h
+	const char* k_actionHapticsLeft = "/actions/main/out/HapticsLeft";
+	const char* k_actionHapticsRight = "/actions/main/out/HapticsRight";
+
+	const char* k_inputSourceLeft = "/user/hand/left";
+	const char* k_inputSourceRight = "/user/hand/right";
+
+	void ChaperoneTabController::initHaptics();
 
     std::vector<ChaperoneProfile> chaperoneProfiles;
 

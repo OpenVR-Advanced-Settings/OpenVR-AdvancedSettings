@@ -39,7 +39,8 @@ void ChaperoneTabController::initStage1()
         = settings->value( "chaperoneVelocityModifier", 0.3f ).toFloat();
     m_chaperoneVelocityModifierCurrent = 1.0f;
     settings->endGroup();
-
+	//TODO move?
+	initHaptics();
     reloadChaperoneProfiles();
     eventLoopTick( nullptr, 0.0f, 0.0f, 0.0f );
 }
@@ -49,8 +50,6 @@ void ChaperoneTabController::initStage2( OverlayController* var_parent,
 {
     this->parent = var_parent;
     this->widget = var_widget;
-	m_rightHandle = parent->getRightHandle();
-	m_leftHandle = parent->getLeftHandle();
 }
 
 ChaperoneTabController::~ChaperoneTabController()
@@ -440,8 +439,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     {
         float activationDistance = m_chaperoneHapticFeedbackDistance
                                    * m_chaperoneVelocityModifierCurrent;
-        if ( distance <= activationDistance         )
-			//&& ( hmdState.ulButtonPressed	& vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor) )
+        if ( distance <= activationDistance )//&& ( hmdState.ulButtonPressed	& vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor)) )
         {
 			LOG(WARNING) << "In haptics";
             if ( !m_chaperoneHapticFeedbackActive )
@@ -454,10 +452,6 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                 m_chaperoneHapticFeedbackActive = true;
                 m_chaperoneHapticFeedbackThread = std::thread(
                     [&]( ChaperoneTabController* _this ) {
-					vr::VRInputValueHandle_t* leftHand = NULL;
-					vr::VRInputValueHandle_t* rightHand = NULL;
-					vr::VRInput()->GetInputSourceHandle("/user/hand/left", leftHand);
-					vr::VRInput()->GetInputSourceHandle("/user/hand/right", rightHand);
                         auto leftIndex
                             = vr::VRSystem()
                                   ->GetTrackedDeviceIndexForControllerRole(
@@ -473,13 +467,13 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
 								LOG(INFO) << "In Right Haptic Trigger";
-								vr::VRInput()->TriggerHapticVibrationAction(m_leftHandle, 0.0f, 1.0f, 100.0f, 0.8f, *leftHand);
+								vr::VRInput()->TriggerHapticVibrationAction(m_leftHandle, 0.0f, 0.5f, 80.0f, 0.8f, m_leftHandHandle);
                             }
                             if ( rightIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
 								LOG(INFO) << "In left Haptic Trigger";
-								vr::VRInput()->TriggerHapticVibrationAction(m_rightHandle, 0.0f, 1.0f, 100.0f, 0.8f, *rightHand);
+								vr::VRInput()->TriggerHapticVibrationAction(m_rightHandle, 0.0f, 0.5f, 80.0f, 0.8f, m_rightHandHandle);
                             }
 							LOG(INFO) << "Made it out of call";
                             std::this_thread::sleep_for(
@@ -950,6 +944,31 @@ Q_INVOKABLE QString
     {
         return QString::fromStdString( chaperoneProfiles[index].profileName );
     }
+}
+
+void ChaperoneTabController::initHaptics() {
+	//TODO
+	auto vrInputError = vr::VRInput()->GetInputSourceHandle(k_inputSourceLeft, &m_leftHandHandle);
+	
+	if (vrInputError != vr::VRInputError_None) {
+		LOG(WARNING) << "intput handle left fail";
+		m_isHapticGood = false;
+	}
+	vrInputError = vr::VRInput()->GetInputSourceHandle(k_inputSourceRight, &m_rightHandHandle);
+	if (vrInputError != vr::VRInputError_None) {
+		LOG(WARNING) << "intput handle right fail";
+		m_isHapticGood = false;
+	}
+	vrInputError = vr::VRInput()->GetActionHandle(k_actionHapticsLeft, &m_leftHandle);
+	if (vrInputError != vr::VRInputError_None) {
+		LOG(WARNING) << "action handle left fail";
+		m_isHapticGood = false;
+	}
+	vrInputError = vr::VRInput()->GetActionHandle(k_actionHapticsRight, &m_rightHandle);
+	if (vrInputError != vr::VRInputError_None) {
+		LOG(WARNING) << "action handle right fail";
+		m_isHapticGood = false;
+	}
 }
 
 void ChaperoneTabController::setForceBounds( bool value, bool notify )
