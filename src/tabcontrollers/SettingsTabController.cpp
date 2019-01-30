@@ -28,19 +28,7 @@ void SettingsTabController::initStage2( OverlayController* var_parent,
 
 void SettingsTabController::eventLoopTick()
 {
-    // 157 was chosen because it's a prime number (to reduce overlap of
-    // simultaneous settings updates).
-    // Actual rate of updates is 157 * vsync (~11ms)
-    // Values chosen based on update speed priority
-    // Values in other tabs are as follows (avoid using same values):
-    // AccessibiltyTabController: 151
-    // AudioTabController: 89
-    // ChaperoneTabController: 101
-    // MoveCenterTabController: 149
-    // ReviveTabController: 139
-    // SteamVRTabController: 97
-    // UtilitiesTabController: 19
-    if ( settingsUpdateCounter >= 157 )
+    if ( settingsUpdateCounter >= parent->k_settingsTabSettingsUpdateCounter )
     {
         if ( parent->isDashboardVisible() )
         {

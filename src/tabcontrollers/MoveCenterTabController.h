@@ -4,6 +4,7 @@
 #include <QObject>
 #include <openvr.h>
 #include <chrono>
+#include <qmath.h>
 
 class QQuickWindow;
 // application namespace
@@ -65,11 +66,11 @@ private:
     bool m_lockZToggle = false;
     std::chrono::system_clock::time_point lastMoveButtonClick[2];
     // Set lastHandQuaternion.w to -1000.0 when last hand is invalid.
-    vr::HmdQuaternion_t lastHandQuaternion = { -1000.0, 0.0, 0.0, 0.0 };
-    vr::HmdQuaternion_t handQuaternion;
+    vr::HmdQuaternion_t m_lastHandQuaternion = { -1000.0, 0.0, 0.0, 0.0 };
+    vr::HmdQuaternion_t m_handQuaternion;
     // Set lastHmdQuaternion.w to -1000.0 when last hmd pose is invalid.
-    vr::HmdQuaternion_t lastHmdQuaternion = { -1000.0, 0.0, 0.0, 0.0 };
-    vr::HmdQuaternion_t hmdQuaternion;
+    vr::HmdQuaternion_t m_lastHmdQuaternion = { -1000.0, 0.0, 0.0, 0.0 };
+    vr::HmdQuaternion_t m_hmdQuaternion;
     double m_hmdYawTotal = 0.0;
     vr::ETrackedControllerRole m_activeDragHand
         = vr::TrackedControllerRole_Invalid;
@@ -87,10 +88,9 @@ private:
     bool m_rightHandTurnPressed = false;
     bool m_overrideLeftHandTurnPressed = false;
     bool m_overrideRightHandTurnPressed = false;
-
     unsigned settingsUpdateCounter = 0;
-
-    //    vr::ETrackedControllerRole getMoveShortcutHand();
+    static constexpr double k_centidegreesToRadians = M_PI / 18000.0;
+    static constexpr double k_radiansToCentidegrees = 18000.0 / M_PI;
 
 public:
     void initStage1();

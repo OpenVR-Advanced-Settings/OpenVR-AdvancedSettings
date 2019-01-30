@@ -148,7 +148,7 @@ void MoveCenterTabController::setRotation( int value, bool notify )
 {
     if ( m_rotation != value )
     {
-        double angle = ( value - m_rotation ) * M_PI / 18000.0;
+        double angle = ( value - m_rotation ) * k_centidegreesToRadians;
 
         // Revert now because we don't commit in RotateUniverseCenter and
         // AddOffsetToUniverseCenter. We do this so rotation and offset can
@@ -173,7 +173,7 @@ void MoveCenterTabController::setRotation( int value, bool notify )
             = { oldHmdPos.m[0][3], oldHmdPos.m[1][3], oldHmdPos.m[2][3] };
 
         // Convert oldHmdXyz into un-rotated coordinates.
-        double oldAngle = -m_rotation * M_PI / 18000.0;
+        double oldAngle = -m_rotation * k_centidegreesToRadians;
         rotateCoordinates( oldHmdXyz, oldAngle );
 
         // Set newHmdXyz to have additional rotation from incoming angle change.
@@ -201,7 +201,7 @@ void MoveCenterTabController::setRotation( int value, bool notify )
         // We use rotated coordinates here because we have already applied
         // RotateUniverseCenter. This will be the final offset ready to apply,
         // so it must match the current universe axis rotation.
-        double finalAngle = m_rotation * M_PI / 18000.0;
+        double finalAngle = m_rotation * k_centidegreesToRadians;
         double finalHmdRotDiff[3] = { hmdRotDiff[0], 0, hmdRotDiff[2] };
         rotateCoordinates( finalHmdRotDiff, finalAngle );
 
@@ -259,7 +259,7 @@ void MoveCenterTabController::setAdjustChaperone( bool value, bool notify )
         m_adjustChaperone = value;
         if ( m_trackingUniverse == vr::TrackingUniverseStanding )
         {
-            double angle = m_rotation * M_PI / 18000.0;
+            double angle = m_rotation * k_centidegreesToRadians;
             double offsetdir = m_adjustChaperone ? -1.0 : 1.0;
             double offset[3] = { offsetdir * m_offsetX,
                                  offsetdir * m_offsetY,
@@ -406,7 +406,7 @@ void MoveCenterTabController::modOffsetX( float value, bool notify )
     // TODO ? possible issue with locking position this way
     if ( !m_lockXToggle )
     {
-        double angle = m_rotation * M_PI / 18000.0;
+        double angle = m_rotation * k_centidegreesToRadians;
         double offset[3] = { value, 0, 0 };
         rotateCoordinates( offset, angle );
         float offsetFloat[3] = { static_cast<float>( offset[0] ),
@@ -445,7 +445,7 @@ void MoveCenterTabController::modOffsetZ( float value, bool notify )
 {
     if ( !m_lockZToggle )
     {
-        double angle = m_rotation * M_PI / 18000.0;
+        double angle = m_rotation * k_centidegreesToRadians;
         double offset[3] = { 0, 0, value };
         rotateCoordinates( offset, angle );
         float offsetFloat[3] = { static_cast<float>( offset[0] ),
@@ -468,7 +468,7 @@ void MoveCenterTabController::reset()
     vr::VRChaperoneSetup()->RevertWorkingCopy();
     parent->RotateUniverseCenter(
         vr::TrackingUniverseOrigin( m_trackingUniverse ),
-        static_cast<float>( -m_rotation * M_PI / 18000.0 ),
+        static_cast<float>( -m_rotation * k_centidegreesToRadians ),
         m_adjustChaperone,
         false );
     float offset[3] = { -m_offsetX, -m_offsetY, -m_offsetZ };
@@ -862,19 +862,7 @@ void MoveCenterTabController::eventLoopTick(
     vr::ETrackingUniverseOrigin universe,
     vr::TrackedDevicePose_t* devicePoses )
 {
-    // 149 was chosen because it's a prime number (to reduce overlap of
-    // simultaneous settings updates).
-    // Actual rate of updates is 149 * vsync (~11ms)
-    // Values chosen based on update speed priority
-    // Values in other tabs are as follows (avoid using same values):
-    // AccessibiltyTabController: 151
-    // AudioTabController: 89
-    // ChaperoneTabController: 101
-    // ReviveTabController: 139
-    // SettingsTabController: 157
-    // SteamVRTabController: 97
-    // UtilitiesTabController: 19
-    if ( settingsUpdateCounter >= 149 )
+    if ( settingsUpdateCounter >= parent->k_moveCenterSettingsUpdateCounter )
     {
         if ( parent->isDashboardVisible() )
         {
@@ -887,7 +875,7 @@ void MoveCenterTabController::eventLoopTick(
         settingsUpdateCounter++;
     }
 
-    double angle = m_rotation * M_PI / 18000.0;
+    double angle = m_rotation * k_centidegreesToRadians;
 
     // START of hmd rotation stats tracking:
     // Check if hmd is tracking ok and do everything
@@ -907,13 +895,13 @@ void MoveCenterTabController::eventLoopTick(
         utils::matMul33( hmdMatrixAbsolute, hmdMatrixRotMat, hmdMatrix );
 
         // Convert pose matrix to quaternion
-        hmdQuaternion = utils::getQuaternion( hmdMatrixAbsolute );
+        m_hmdQuaternion = utils::getQuaternion( hmdMatrixAbsolute );
 
         // Get rotation change of hmd
         // Checking if set to -1000.0 placeholder for invalid hmd pose.
-        if ( lastHmdQuaternion.w < -900.0 )
+        if ( m_lastHmdQuaternion.w < -900.0 )
         {
-            lastHmdQuaternion = hmdQuaternion;
+            m_lastHmdQuaternion = m_hmdQuaternion;
         }
 
         else
@@ -921,8 +909,8 @@ void MoveCenterTabController::eventLoopTick(
             // Construct a quaternion representing difference between old
             // hmd pose and new hmd pose.
             vr::HmdQuaternion_t hmdDiffQuaternion = utils::multiplyQuaternion(
-                hmdQuaternion,
-                utils::quaternionConjugate( lastHmdQuaternion ) );
+                m_hmdQuaternion,
+                utils::quaternionConjugate( m_lastHmdQuaternion ) );
 
             // Calculate yaw from quaternion.
             double hmdYawDiff = atan2(
@@ -936,7 +924,7 @@ void MoveCenterTabController::eventLoopTick(
 
             // Apply yaw difference to m_hmdYawTotal.
             m_hmdYawTotal += hmdYawDiff;
-            lastHmdQuaternion = hmdQuaternion;
+            m_lastHmdQuaternion = m_hmdQuaternion;
         }
 
         // end check if hmdpose is ok
@@ -944,7 +932,7 @@ void MoveCenterTabController::eventLoopTick(
     else
     {
         // set lastHmdQuaternion.w to placeholder -1000.0 for invalid
-        lastHmdQuaternion.w = -1000.0;
+        m_lastHmdQuaternion.w = -1000.0;
     } // END of hmd rotation stats tracking
 
     /*
@@ -1077,7 +1065,7 @@ void MoveCenterTabController::eventLoopTick(
         {
             // Set lastHandQuaternion.w to placeholder value for invalid
             // (-1000.0)
-            lastHandQuaternion.w = -1000.0;
+            m_lastHandQuaternion.w = -1000.0;
         }
         m_lastRotateHand = m_activeTurnHand;
     }
@@ -1108,15 +1096,15 @@ void MoveCenterTabController::eventLoopTick(
             utils::matMul33( handMatrixAbsolute, handMatrixRotMat, handMatrix );
 
             // Convert pose matrix to quaternion
-            handQuaternion = utils::getQuaternion( handMatrixAbsolute );
+            m_handQuaternion = utils::getQuaternion( handMatrixAbsolute );
 
             if ( m_lastRotateHand == m_activeTurnHand )
             {
                 // Get rotation change of hand.
                 // Checking if set to -1000.0 placeholder for invalid hand.
-                if ( lastHandQuaternion.w < -900.0 )
+                if ( m_lastHandQuaternion.w < -900.0 )
                 {
-                    lastHandQuaternion = handQuaternion;
+                    m_lastHandQuaternion = m_handQuaternion;
                 }
 
                 else
@@ -1125,8 +1113,9 @@ void MoveCenterTabController::eventLoopTick(
                     // between old hand and new hand.
                     vr::HmdQuaternion_t handDiffQuaternion
                         = utils::multiplyQuaternion(
-                            handQuaternion,
-                            utils::quaternionConjugate( lastHandQuaternion ) );
+                            m_handQuaternion,
+                            utils::quaternionConjugate(
+                                m_lastHandQuaternion ) );
 
                     // Calculate yaw from quaternion.
                     double handYawDiff = atan2(
@@ -1141,9 +1130,10 @@ void MoveCenterTabController::eventLoopTick(
                                             * handDiffQuaternion.x ) );
 
                     int newRotationAngleDeg = static_cast<int>(
-                        round( handYawDiff * 18000.0 / M_PI ) + m_rotation );
+                        round( handYawDiff * k_radiansToCentidegrees )
+                        + m_rotation );
 
-                    // Keep angle within -18000 ~ 18000
+                    // Keep angle within -18000 ~ 18000 centidegrees
                     if ( newRotationAngleDeg > 18000 )
                     {
                         newRotationAngleDeg -= 36000;
@@ -1156,7 +1146,7 @@ void MoveCenterTabController::eventLoopTick(
                     setRotation( newRotationAngleDeg );
                 }
             }
-            lastHandQuaternion = handQuaternion;
+            m_lastHandQuaternion = m_handQuaternion;
             m_lastRotateHand = m_activeTurnHand;
         }
     } // END of hand rotation

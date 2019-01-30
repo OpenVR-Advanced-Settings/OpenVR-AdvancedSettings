@@ -55,6 +55,20 @@ public:
     static constexpr const char* applicationKey = "matzman666.AdvancedSettings";
     static constexpr const char* applicationDisplayName = "Advanced Settings";
     static constexpr const char* applicationVersionString = "v2.8.0-dev";
+    // These counters set timing for refreshing settings changes in tab ui
+    // SettingsUpdateCounter values are set as prime numbers to reduce overlap
+    // of simultaneous settings updates.
+    // Actual rates of updates are counter * vsync (~11ms)
+    // Values chosen based on update speed priority
+    // Avoid setting values to the same numbers.
+    static constexpr int k_accessibilitySettingsUpdateCounter = 151;
+    static constexpr int k_audioSettingsUpdateCounter = 89;
+    static constexpr int k_chaperoneSettingsUpdateCounter = 101;
+    static constexpr int k_moveCenterSettingsUpdateCounter = 149;
+    static constexpr int k_reviveSettingsUpdateCounter = 139;
+    static constexpr int k_settingsTabSettingsUpdateCounter = 157;
+    static constexpr int k_steamVrSettingsUpdateCounter = 97;
+    static constexpr int k_utilitiesSettingsUpdateCounter = 19;
 
 private:
     vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
