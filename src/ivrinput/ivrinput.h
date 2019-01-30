@@ -40,6 +40,14 @@ public:
     bool previousSong();
     bool pausePlaySong();
     bool stopSong();
+    bool leftHandRoomTurn();
+    bool rightHandRoomTurn();
+    bool leftHandRoomDrag();
+    bool rightHandRoomDrag();
+    bool optionalOverrideLeftHandRoomTurn();
+    bool optionalOverrideRightHandRoomTurn();
+    bool optionalOverrideLeftHandRoomDrag();
+    bool optionalOverrideRightHandRoomDrag();
 
     // Destructor. There are no terminating calls for the IVRInput API, so it
     // is left blank.
@@ -69,6 +77,16 @@ private:
     Action m_previousTrack;
     Action m_pausePlayTrack;
     Action m_stopTrack;
+
+    // Room bindings
+    Action m_leftHandRoomTurn;
+    Action m_rightHandRoomTurn;
+    Action m_leftHandRoomDrag;
+    Action m_rightHandRoomDrag;
+    Action m_optionalOverrideLeftHandRoomTurn;
+    Action m_optionalOverrideRightHandRoomTurn;
+    Action m_optionalOverrideLeftHandRoomDrag;
+    Action m_optionalOverrideRightHandRoomDrag;
 };
 
 /*!
@@ -82,6 +100,23 @@ namespace input_strings
     constexpr auto k_actionPreviousTrack = "/actions/main/in/PreviousTrack";
     constexpr auto k_actionPausePlayTrack = "/actions/main/in/PausePlayTrack";
     constexpr auto k_actionStopTrack = "/actions/main/in/StopTrack";
+
+    constexpr auto k_actionLeftHandRoomTurn
+        = "/actions/main/in/LeftHandRoomTurn";
+    constexpr auto k_actionRightHandRoomTurn
+        = "/actions/main/in/RightHandRoomTurn";
+    constexpr auto k_actionLeftHandRoomDrag
+        = "/actions/main/in/LeftHandRoomDrag";
+    constexpr auto k_actionRightHandRoomDrag
+        = "/actions/main/in/RightHandRoomDrag";
+    constexpr auto k_actionOptionalOverrideLeftHandRoomTurn
+        = "/actions/main/in/OptionalOverrideLeftHandRoomTurn";
+    constexpr auto k_actionOptionalOverrideRightHandRoomTurn
+        = "/actions/main/in/OptionalOverrideRightHandRoomTurn";
+    constexpr auto k_actionOptionalOverrideLeftHandRoomDrag
+        = "/actions/main/in/OptionalOverrideLeftHandRoomDrag";
+    constexpr auto k_actionOptionalOverrideRightHandRoomDrag
+        = "/actions/main/in/OptionalOverrideRightHandRoomDrag";
 
     constexpr auto k_setMain = "/actions/main";
 

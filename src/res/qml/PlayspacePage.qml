@@ -6,7 +6,7 @@ import matzman666.advsettings 1.0
 
 
 MyStackViewPage {
-    headerText: "Play Space Settings"
+    headerText: "Room Settings"
 
     content: ColumnLayout {
         spacing: 18
@@ -17,7 +17,7 @@ MyStackViewPage {
                 Layout.preferredWidth: 230
             }
             MyText {
-                id: playspaceModeText
+                id: roomModeText
                 font.bold: true
                 text: "Standing"
             }
@@ -28,7 +28,7 @@ MyStackViewPage {
 
             label: MyText {
                 leftPadding: 10
-                text: "Move Play Space"
+                text: "Move Room"
                 bottomPadding: -10
             }
             background: Rectangle {
@@ -47,24 +47,29 @@ MyStackViewPage {
                 }
 
                 GridLayout {
-                    columns: 5
+                    columns: 6
 
                     MyText {
                         text: "X-Axis (Left/Right):"
-                        Layout.preferredWidth: 500
+                        Layout.preferredWidth: 340
+                    }
+
+                    MyText {
+                        text: " "
+                        Layout.preferredWidth: 40
                     }
 
                     MyPushButton2 {
-                        id: playSpaceMoveXMinusButton
+                        id: roomMoveXMinusButton
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
-                            MoveCenterTabController.modOffsetX(-0.5)
+                            MoveCenterTabController.modOffsetX(-0.1)
                         }
                     }
 
 					MyTextField {
-                        id: playSpaceMoveXText
+                        id: roomMoveXText
                         text: "0.00"
 						keyBoardUID: 101
                         Layout.preferredWidth: 140
@@ -83,16 +88,15 @@ MyStackViewPage {
                     }
 
                     MyPushButton2 {
-                        id: playSpaceMoveXPlusButton
+                        id: roomMoveXPlusButton
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
-                            MoveCenterTabController.modOffsetX(0.5)
+                            MoveCenterTabController.modOffsetX(0.1)
                         }
                     }
 
                     MyToggleButton {
-                        Layout.preferredWidth: 240
                         id: lockXToggle
                         text: "Lock X"
                         onCheckedChanged: {
@@ -102,19 +106,27 @@ MyStackViewPage {
 
                     MyText {
                         text: "Y-Axis (Down/Up):"
-                        Layout.preferredWidth: 380
+                        Layout.preferredWidth: 340
+                    }
+
+                    MyPushButton2 {
+                        Layout.preferredWidth: 40
+                        text: "0"
+                        onClicked: {
+                            MoveCenterTabController.offsetY = 0
+                        }
                     }
 
                     MyPushButton2 {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
-                            MoveCenterTabController.modOffsetY(-0.5)
+                            MoveCenterTabController.modOffsetY(-0.1)
                         }
                     }
 
                     MyTextField {
-                        id: playSpaceMoveYText
+                        id: roomMoveYText
                         text: "0.00"
                         keyBoardUID: 102
                         Layout.preferredWidth: 140
@@ -136,13 +148,12 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
-                            MoveCenterTabController.modOffsetY(0.5)
+                            MoveCenterTabController.modOffsetY(0.1)
                         }
                     }
 
 
                     MyToggleButton {
-                        Layout.preferredWidth: 240
                         id: lockYToggle
                         text: "Lock Y"
                         onCheckedChanged: {
@@ -152,19 +163,24 @@ MyStackViewPage {
 
                     MyText {
                         text: "Z-Axis (Forth/Back):"
-                        Layout.preferredWidth: 380
+                        Layout.preferredWidth: 340
+                    }
+
+                    MyText {
+                        text: " "
+                        Layout.preferredWidth: 40
                     }
 
                     MyPushButton2 {
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
-                            MoveCenterTabController.modOffsetZ(-0.5)
+                            MoveCenterTabController.modOffsetZ(-0.1)
                         }
                     }
 
                     MyTextField {
-                        id: playSpaceMoveZText
+                        id: roomMoveZText
                         text: "0.00"
                         keyBoardUID: 103
                         Layout.preferredWidth: 140
@@ -186,13 +202,12 @@ MyStackViewPage {
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
-                            MoveCenterTabController.modOffsetZ(0.5)
+                            MoveCenterTabController.modOffsetZ(0.1)
                         }
                     }
 
 
                     MyToggleButton {
-                        Layout.preferredWidth: 240
                         id: lockZToggle
                         text: "Lock Z"
                         onCheckedChanged: {
@@ -208,7 +223,7 @@ MyStackViewPage {
 
             label: MyText {
                 leftPadding: 10
-                text: "Rotate Play Space"
+                text: "Rotate Room"
                 bottomPadding: -10
             }
             background: Rectangle {
@@ -216,6 +231,7 @@ MyStackViewPage {
                 border.color: "#ffffff"
                 radius: 8
             }
+
             ColumnLayout {
                 anchors.fill: parent
 
@@ -229,75 +245,87 @@ MyStackViewPage {
                 ColumnLayout {
                     RowLayout {
                         MyPushButton2 {
-                            id: playSpaceRotationMinusButton
+                            id: roomRotationMinusButton
                             Layout.preferredWidth: 40
                             text: "-"
                             onClicked: {
-                                var val = MoveCenterTabController.tempRotation - 45
+                                var val = ( MoveCenterTabController.tempRotation / 100 ) - 45
                                 if (val < -180) {
                                     val = val + 360;
                                 }
-                                MoveCenterTabController.tempRotation = val
+                                MoveCenterTabController.tempRotation = val * 100
                             }
                         }
 
                         MySlider {
-                            id: playspaceRotationSlider
+                            id: roomRotationSlider
                             from: -180
                             to: 180
-                            stepSize: 1
+                            stepSize: 0.01
                             value: 0
                             Layout.fillWidth: true
                             onPositionChanged: {
                                 var val = this.from + ( this.position  * (this.to - this.from))
-                                MoveCenterTabController.tempRotation = Math.round(val)
+                                MoveCenterTabController.tempRotation = Math.round(val * 100)
                             }
                             onValueChanged: {
-                                MoveCenterTabController.tempRotation = Math.round(playspaceRotationSlider.value)
-                                //playspaceRotationText.text = Math.round(playspaceRotationSlider.value) + "°"
+                                MoveCenterTabController.tempRotation = Math.round(roomRotationSlider.value * 100)
+                                //roomRotationText.text = Math.round(roomRotationSlider.value) + "°"
                             }
                         }
 
                         MyPushButton2 {
-                            id: playSpaceRotationPlusButton
+                            id: roomRotationPlusButton
                             Layout.preferredWidth: 40
                             text: "+"
                             onClicked: {
-                                var val = MoveCenterTabController.tempRotation + 45
+                                var val = ( MoveCenterTabController.tempRotation / 100 ) + 45
                                 if (val > 180) {
                                     val = val -360;
                                 }
-                                MoveCenterTabController.tempRotation = val
+                                MoveCenterTabController.tempRotation = val * 100
                             }
                         }
 
                         MyTextField {
-                            id: playspaceRotationText
+                            id: roomRotationText
                             text: "0°"
                             keyBoardUID: 104
-                            Layout.preferredWidth: 100
+                            Layout.preferredWidth: 150
                             Layout.leftMargin: 10
                             horizontalAlignment: Text.AlignHCenter
                             function onInputEvent(input) {
-                                var val = parseInt(input)
+                                var val = parseFloat(input)
                                 if (!isNaN(val)) {
                                     val = val % 180
-                                    MoveCenterTabController.tempRotation = val
-                                    text = MoveCenterTabController.tempRotation + "°"
+                                    MoveCenterTabController.tempRotation = Math.round(val * 100)
+                                    text = ( MoveCenterTabController.tempRotation / 100 ) + "°"
                                 } else {
-                                    text = MoveCenterTabController.tempRotation + "°"
+                                    text = ( MoveCenterTabController.tempRotation / 100 ) + "°"
                                 }
                             }
                         }
                         MyPushButton {
-                            id: playSpaceRotationApplyButton
+                            id: roomRotationApplyButton
                             Layout.preferredWidth: 145
                             text:"Apply"
                             onClicked: {
-                               MoveCenterTabController.rotation = MoveCenterTabController.tempRotation
+                                MoveCenterTabController.rotation = MoveCenterTabController.tempRotation
                             }
+                       }
+                    }
 
+                    MyToggleButton {
+                        id: roomRotateHandToggle
+                        text: "Enable Room-Turn Binding"
+                        onCheckedChanged: {
+                            MoveCenterTabController.rotateHand = this.checked
                         }
+                    }
+
+                    MyText {
+                        text: "Note: TurnSignal will ignore turning during Room-Turn rotation."
+                        font.pointSize: 15.0
                     }
                 }
             }
@@ -308,7 +336,7 @@ MyStackViewPage {
 
             label: MyText {
                 leftPadding: 10
-                text: "Virtual Move Shortcut"
+                text: "Room Drag Binding"
                 bottomPadding: -10
             }
             background: Rectangle {
@@ -318,10 +346,11 @@ MyStackViewPage {
             }
             ColumnLayout {
                 RowLayout {
+                    Layout.fillWidth: true
 
                     MyToggleButton {
                         id: moveShortcutLeft
-                        text: "Left Menu Button"
+                        text: "Enable Left Hand"
                         onCheckedChanged: {
                             MoveCenterTabController.moveShortcutLeft = this.checked
                         }
@@ -329,101 +358,102 @@ MyStackViewPage {
 
                     MyToggleButton {
                         id: moveShortcutRight
-                        text: "Right Menu Button"
+                        text: "Enable Right Hand"
                         onCheckedChanged: {
                             MoveCenterTabController.moveShortcutRight = this.checked
-                        }
-                    }
-
-                    MyToggleButton {
-                        id: requireDoubleClick
-                        text: "Require double click"
-                        onCheckedChanged: {
-                            MoveCenterTabController.requireDoubleClick = this.checked
                         }
                     }
                 }
             }
         }
 
-        MyToggleButton {
-            id: playspaceAdjustChaperoneToggle
-            text: "Adjust Chaperone"
-            onCheckedChanged: {
-                MoveCenterTabController.adjustChaperone = this.checked
+        ColumnLayout {
+            RowLayout {
+                Layout.fillWidth: true
+
+                MyPushButton {
+                    id: roomResetButton
+                    Layout.preferredWidth: 250
+                    text: "Reset"
+                    onClicked: {
+                        MoveCenterTabController.reset()
+                    }
+                }
+
+                MyToggleButton {
+                    id: roomAdjustChaperoneToggle
+                    text: "Adjust Chaperone"
+                    onCheckedChanged: {
+                        MoveCenterTabController.adjustChaperone = this.checked
+                    }
+                }
+
             }
         }
+
+
 
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
 
-        MyPushButton {
-            id: playspaceResetButton
-            Layout.preferredWidth: 250
-            text: "Reset"
-            onClicked: {
-                MoveCenterTabController.reset()
-            }
-        }
-
         Component.onCompleted: {
-            playspaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
-            playSpaceMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
-            playSpaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
-            playSpaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
-            playspaceRotationSlider.value = MoveCenterTabController.rotation
+            roomAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
+            roomRotateHandToggle.checked = MoveCenterTabController.rotateHand
+            roomMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
+            roomMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
+            roomMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
+            roomRotationSlider.value = MoveCenterTabController.rotation
             moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight
             moveShortcutLeft.checked = MoveCenterTabController.moveShortcutLeft
 			lockXToggle.checked = MoveCenterTabController.lockXToggle
 			lockYToggle.checked = MoveCenterTabController.lockYToggle
 			lockZToggle.checked = MoveCenterTabController.lockZToggle
-			requireDoubleClick.checked = MoveCenterTabController.requireDoubleClick
 			
             if (MoveCenterTabController.trackingUniverse === 0) {
-                playspaceModeText.text = "Sitting"
-                playSpaceRotationPlusButton.enabled = false
-                playSpaceRotationMinusButton.enabled = false
-                playspaceRotationSlider.enabled = false
-                playspaceRotationText.text = "-"
+                roomModeText.text = "Sitting"
+                roomRotationPlusButton.enabled = false
+                roomRotationMinusButton.enabled = false
+                roomRotationSlider.enabled = false
+                roomRotationText.text = "-"
             } else if (MoveCenterTabController.trackingUniverse === 1) {
-                playspaceModeText.text = "Standing"
-                playSpaceRotationPlusButton.enabled = true
-                playSpaceRotationMinusButton.enabled = true
-                playspaceRotationSlider.enabled = true
-                playspaceRotationText.text = "0°"
+                roomModeText.text = "Standing"
+                roomRotationPlusButton.enabled = true
+                roomRotationMinusButton.enabled = true
+                roomRotationSlider.enabled = true
+                roomRotationText.text = "0°"
             } else {
-                playspaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
+                roomModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
             }
         }
 
         Connections {
             target: MoveCenterTabController
             onOffsetXChanged: {
-                playSpaceMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
+                roomMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
             }
             onOffsetYChanged: {
-                playSpaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
+                roomMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
             }
             onOffsetZChanged: {
-                playSpaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
+                roomMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
             }
             onRotationChanged: {
-                playspaceRotationSlider.value = MoveCenterTabController.rotation
+                roomRotationSlider.value = ( MoveCenterTabController.rotation / 100 )
             }
             onTempRotationChanged: {
-                            playspaceRotationSlider.value = MoveCenterTabController.tempRotation
-                            playspaceRotationText.text = MoveCenterTabController.tempRotation + "°"
+                roomRotationSlider.value = ( MoveCenterTabController.tempRotation / 100 )
+                roomRotationText.text = ( MoveCenterTabController.tempRotation / 100 ) + "°"
             }
             onAdjustChaperoneChanged: {
-                playspaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
+                roomAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
+            }
+            onRotateHandChanged: {
+                roomRotateHandToggle.checked = MoveCenterTabController.rotateHand
             }
             onMoveShortcutRightChanged: {
                 moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight
             }
             onMoveShortcutLeftChanged: {
                 moveShortcutLeft.checked = MoveCenterTabController.moveShortcutLeft
-            }
-            onRequireDoubleClickChanged: {
-                requireDoubleClick.checked = MoveCenterTabController.requireDoubleClick
             }
 			onLockXToggleChanged: {
 				lockXToggle.checked = MoveCenterTabController.lockXToggle
@@ -436,19 +466,19 @@ MyStackViewPage {
 			}
             onTrackingUniverseChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {
-                    playspaceModeText.text = "Sitting"
-                    playSpaceRotationPlusButton.enabled = false
-                    playSpaceRotationMinusButton.enabled = false
-                    playspaceRotationSlider.enabled = false
-                    playspaceRotationText.text = "-"
+                    roomModeText.text = "Sitting"
+                    roomRotationPlusButton.enabled = false
+                    roomRotationMinusButton.enabled = false
+                    roomRotationSlider.enabled = false
+                    roomRotationText.text = "-"
                 } else if (MoveCenterTabController.trackingUniverse === 1) {
-                    playspaceModeText.text = "Standing"
-                    playSpaceRotationPlusButton.enabled = true
-                    playSpaceRotationMinusButton.enabled = true
-                    playspaceRotationSlider.enabled = true
-                    playspaceRotationText.text = "0°"
+                    roomModeText.text = "Standing"
+                    roomRotationPlusButton.enabled = true
+                    roomRotationMinusButton.enabled = true
+                    roomRotationSlider.enabled = true
+                    roomRotationText.text = "0°"
                 } else {
-                    playspaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
+                    roomModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
                 }
             }
         }

@@ -7,7 +7,7 @@
 namespace input
 {
 /*!
-Wrapper around the IVRInput GetAnalogActionData with error handling.
+Wrapper around the IVRInput GetDigitalActionData with error handling.
 
 The struct is created and zero initalized in this function instead of being
 passed as reference since the size is currently only 28 bytes, and currently
@@ -129,7 +129,27 @@ SteamIVRInput::SteamIVRInput()
                        ActionType::Digital ),
       m_pausePlayTrack( input_strings::k_actionPausePlayTrack,
                         ActionType::Digital ),
-      m_stopTrack( input_strings::k_actionStopTrack, ActionType::Digital )
+      m_stopTrack( input_strings::k_actionStopTrack, ActionType::Digital ),
+      m_leftHandRoomTurn( input_strings::k_actionLeftHandRoomTurn,
+                          ActionType::Digital ),
+      m_rightHandRoomTurn( input_strings::k_actionRightHandRoomTurn,
+                           ActionType::Digital ),
+      m_leftHandRoomDrag( input_strings::k_actionLeftHandRoomDrag,
+                          ActionType::Digital ),
+      m_rightHandRoomDrag( input_strings::k_actionRightHandRoomDrag,
+                           ActionType::Digital ),
+      m_optionalOverrideLeftHandRoomTurn(
+          input_strings::k_actionOptionalOverrideLeftHandRoomTurn,
+          ActionType::Digital ),
+      m_optionalOverrideRightHandRoomTurn(
+          input_strings::k_actionOptionalOverrideRightHandRoomTurn,
+          ActionType::Digital ),
+      m_optionalOverrideLeftHandRoomDrag(
+          input_strings::k_actionOptionalOverrideLeftHandRoomDrag,
+          ActionType::Digital ),
+      m_optionalOverrideRightHandRoomDrag(
+          input_strings::k_actionOptionalOverrideRightHandRoomDrag,
+          ActionType::Digital )
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
     m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;
@@ -177,6 +197,49 @@ button down will result in false until it has been released and pushed again.
 bool SteamIVRInput::stopSong()
 {
     return isDigitalActionActivatedOnce( m_stopTrack );
+}
+
+bool SteamIVRInput::leftHandRoomTurn()
+{
+    return isDigitalActionActivatedConstant( m_leftHandRoomTurn );
+}
+
+bool SteamIVRInput::rightHandRoomTurn()
+{
+    return isDigitalActionActivatedConstant( m_rightHandRoomTurn );
+}
+
+bool SteamIVRInput::leftHandRoomDrag()
+{
+    return isDigitalActionActivatedConstant( m_leftHandRoomDrag );
+}
+
+bool SteamIVRInput::rightHandRoomDrag()
+{
+    return isDigitalActionActivatedConstant( m_rightHandRoomDrag );
+}
+bool SteamIVRInput::optionalOverrideLeftHandRoomTurn()
+{
+    return isDigitalActionActivatedConstant(
+        m_optionalOverrideLeftHandRoomTurn );
+}
+
+bool SteamIVRInput::optionalOverrideRightHandRoomTurn()
+{
+    return isDigitalActionActivatedConstant(
+        m_optionalOverrideRightHandRoomTurn );
+}
+
+bool SteamIVRInput::optionalOverrideLeftHandRoomDrag()
+{
+    return isDigitalActionActivatedConstant(
+        m_optionalOverrideLeftHandRoomDrag );
+}
+
+bool SteamIVRInput::optionalOverrideRightHandRoomDrag()
+{
+    return isDigitalActionActivatedConstant(
+        m_optionalOverrideRightHandRoomDrag );
 }
 
 /*!

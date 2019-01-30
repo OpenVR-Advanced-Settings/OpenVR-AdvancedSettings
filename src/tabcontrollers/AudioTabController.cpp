@@ -168,7 +168,8 @@ void AudioTabController::eventLoopTick()
     {
         return;
     }
-    if ( settingsUpdateCounter >= 50 )
+
+    if ( settingsUpdateCounter >= k_audioSettingsUpdateCounter )
     {
         if ( m_micProximitySensorCanMute )
         {

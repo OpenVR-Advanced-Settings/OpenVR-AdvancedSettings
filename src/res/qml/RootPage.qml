@@ -48,7 +48,7 @@ MyStackViewPage {
                    MyPushButton {
                        id: playSpaceButton
                        activationSoundEnabled: false
-                       text: "Play Space"
+                       text: "Room Settings"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -59,7 +59,7 @@ MyStackViewPage {
                    MyPushButton {
                        id: fixFloorButton
                        activationSoundEnabled: false
-                       text: "Playspace Fix"
+                       text: "Room Fix"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -416,7 +416,10 @@ MyStackViewPage {
        reloadChaperoneProfiles()
        reloadSteamVRProfiles()
        reloadPttProfiles()
+
        summaryVersionText.text = applicationVersion
+
+
        if (MoveCenterTabController.trackingUniverse === 0) {
            summaryPlaySpaceModeText.text = "Sitting"
        } else if (MoveCenterTabController.trackingUniverse === 1) {
@@ -486,9 +489,9 @@ MyStackViewPage {
    function updateStatistics() {
        var rotations = StatisticsTabController.hmdRotations
        if (rotations > 0) {
-           summaryHmdRotationsText.text = rotations.toFixed(1) + " CCW"
+           summaryHmdRotationsText.text = rotations.toFixed(2) + " CCW"
        } else {
-           summaryHmdRotationsText.text = -rotations.toFixed(1) + " CW"
+           summaryHmdRotationsText.text = -rotations.toFixed(2) + " CW"
        }
        summaryDroppedFramesText.text = StatisticsTabController.droppedFrames
        summaryReprojectedFramesText.text = StatisticsTabController.reprojectedFrames

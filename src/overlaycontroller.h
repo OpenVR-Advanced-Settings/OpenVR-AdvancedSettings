@@ -44,6 +44,21 @@
 // application namespace
 namespace advsettings
 {
+// These counters set timing for refreshing settings changes in tab ui
+// SettingsUpdateCounter values are set as prime numbers to reduce overlap
+// of simultaneous settings updates.
+// Actual rates of updates are counter * vsync (~11ms)
+// Values chosen based on update speed priority
+// Avoid setting values to the same numbers.
+constexpr int k_accessibilitySettingsUpdateCounter = 151;
+constexpr int k_audioSettingsUpdateCounter = 89;
+constexpr int k_chaperoneSettingsUpdateCounter = 101;
+constexpr int k_moveCenterSettingsUpdateCounter = 149;
+constexpr int k_reviveSettingsUpdateCounter = 139;
+constexpr int k_settingsTabSettingsUpdateCounter = 157;
+constexpr int k_steamVrSettingsUpdateCounter = 97;
+constexpr int k_utilitiesSettingsUpdateCounter = 19;
+
 class OverlayController : public QObject
 {
     Q_OBJECT
@@ -84,6 +99,9 @@ private:
     QSoundEffect m_activationSoundEffect;
     QSoundEffect m_focusChangedSoundEffect;
     QSoundEffect m_alarm01SoundEffect;
+
+    uint64_t m_currentFrame = 0;
+    uint64_t m_lastFrame = 0;
 
     // OpenVR_Init must be declared before any other class that uses OpenVR
     // function calls since objects are initialized in order of declaration in
@@ -164,6 +182,7 @@ public:
 
     bool pollNextEvent( vr::VROverlayHandle_t ulOverlayHandle,
                         vr::VREvent_t* pEvent );
+    void mainEventLoop();
 
 public slots:
     void renderOverlay();

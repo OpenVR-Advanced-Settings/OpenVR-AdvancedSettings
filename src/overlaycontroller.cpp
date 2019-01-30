@@ -389,7 +389,10 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
              SIGNAL( timeout() ),
              this,
              SLOT( OnTimeoutPumpEvents() ) );
-    m_pPumpEventsTimer->setInterval( 20 );
+
+    // Every 1ms we check if the current frame has advanced (for vysnc)
+    m_pPumpEventsTimer->setInterval( 1 );
+
     m_pPumpEventsTimer->start();
 
     m_steamVRTabController.initStage2( this, m_pWindow.get() );
@@ -496,9 +499,49 @@ void OverlayController::processInputBindings()
     {
         m_utilitiesTabController.sendMediaStopSong();
     }
+    // Execution order for moveCenterTabController actions is important. Don't
+    // reorder these. Override actions must always come after normal because
+    // active priority is set based on which action is "newest"
+    // normal actions:
+    m_moveCenterTabController.leftHandRoomDrag( m_actions.leftHandRoomDrag() );
+    m_moveCenterTabController.rightHandRoomDrag(
+        m_actions.rightHandRoomDrag() );
+    m_moveCenterTabController.leftHandRoomTurn( m_actions.leftHandRoomTurn() );
+    m_moveCenterTabController.rightHandRoomTurn(
+        m_actions.rightHandRoomTurn() );
+
+    // override actions:
+    m_moveCenterTabController.optionalOverrideLeftHandRoomDrag(
+        m_actions.optionalOverrideLeftHandRoomDrag() );
+    m_moveCenterTabController.optionalOverrideRightHandRoomDrag(
+        m_actions.optionalOverrideRightHandRoomDrag() );
+    m_moveCenterTabController.optionalOverrideLeftHandRoomTurn(
+        m_actions.optionalOverrideLeftHandRoomTurn() );
+    m_moveCenterTabController.optionalOverrideRightHandRoomTurn(
+        m_actions.optionalOverrideRightHandRoomTurn() );
 }
 
+// vsync implementation:
+// (this function triggers every 1ms)
 void OverlayController::OnTimeoutPumpEvents()
+{
+    // get the current frame number from the VRSystem frame counter
+    vr::VRSystem()->GetTimeSinceLastVsync( nullptr, &m_currentFrame );
+
+    // Check if we are in the next frame yet
+    if ( m_currentFrame > m_lastFrame )
+    {
+        // If the frame has advanced since last check, it's time for our main
+        // event loop. (this function should trigger about every 11ms assuming
+        // 90fps compositor)
+        mainEventLoop();
+
+        // wait for the next frame after executing our main event loop once.
+        m_lastFrame = m_currentFrame;
+    }
+}
+
+void OverlayController::mainEventLoop()
 {
     if ( !vr::VRSystem() )
         return;
@@ -593,8 +636,8 @@ void OverlayController::OnTimeoutPumpEvents()
         case vr::VREvent_Quit:
         {
             LOG( INFO ) << "Received quit request.";
-            vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some time
-                                                       // just in case
+            vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some
+                                                       // time just in case
             m_moveCenterTabController.reset();
             m_chaperoneTabController.shutdown();
             Shutdown();
@@ -626,12 +669,11 @@ void OverlayController::OnTimeoutPumpEvents()
         }
         break;
 
-        // Multiple ChaperoneUniverseHasChanged are often emitted at the same
-        // time (some with a little bit of delay) There is no sure way to
-        // recognize redundant events, we can only exclude redundant events
-        // during the same call of OnTimeoutPumpEvents()
-        // INFO Removed logging on play space mover for possible crashing
-        // issues.
+        // Multiple ChaperoneUniverseHasChanged are often emitted at the
+        // same time (some with a little bit of delay) There is no sure way
+        // to recognize redundant events, we can only exclude redundant
+        // events during the same call of OnTimeoutPumpEvents() INFO Removed
+        // logging on play space mover for possible crashing issues.
         case vr::VREvent_ChaperoneUniverseHasChanged:
         case vr::VREvent_ChaperoneDataHasChanged:
         {
@@ -639,8 +681,8 @@ void OverlayController::OnTimeoutPumpEvents()
             {
                 // LOG(INFO) << "Re-loading chaperone data ...";
                 m_chaperoneUtils.loadChaperoneData();
-                // LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() << "
-                // chaperone quads."; if
+                // LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() <<
+                // " chaperone quads."; if
                 // (m_chaperoneUtils.isChaperoneWellFormed()) { LOG(INFO) <<
                 // "Chaperone data seems to be well-formed.";
                 //} else {
@@ -694,19 +736,18 @@ void OverlayController::OnTimeoutPumpEvents()
         hmdSpeed
             = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
     }
-
+    m_moveCenterTabController.eventLoopTick(
+        vr::VRCompositor()->GetTrackingSpace(), devicePoses );
+    m_utilitiesTabController.eventLoopTick();
     m_fixFloorTabController.eventLoopTick( devicePoses );
     m_statisticsTabController.eventLoopTick(
         devicePoses, leftSpeed, rightSpeed );
-    m_moveCenterTabController.eventLoopTick(
-        vr::VRCompositor()->GetTrackingSpace(), devicePoses );
     m_steamVRTabController.eventLoopTick();
     m_chaperoneTabController.eventLoopTick(
         devicePoses, leftSpeed, rightSpeed, hmdSpeed );
     m_settingsTabController.eventLoopTick();
     m_reviveTabController.eventLoopTick();
     m_audioTabController.eventLoopTick();
-    m_utilitiesTabController.eventLoopTick();
     m_accessibilityTabController.eventLoopTick(
         vr::VRCompositor()->GetTrackingSpace() );
 
