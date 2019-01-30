@@ -39,7 +39,6 @@ void ChaperoneTabController::initStage1()
         = settings->value( "chaperoneVelocityModifier", 0.3f ).toFloat();
     m_chaperoneVelocityModifierCurrent = 1.0f;
     settings->endGroup();
-	//TODO move?
 	initHaptics();
     reloadChaperoneProfiles();
     eventLoopTick( nullptr, 0.0f, 0.0f, 0.0f );
@@ -367,8 +366,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
     {
         float activationDistance = m_chaperoneSwitchToBeginnerDistance
                                    * m_chaperoneVelocityModifierCurrent;
-		//m_isHMDActive is true when prox sensor OR HMD is moving (0.5 second update I think)
-		// THIS IS A WORK-AROUND Until proper binding support/calls are made availble for prox sensor
+
         if ( distance <= activationDistance && m_isHMDActive
              && !m_chaperoneSwitchToBeginnerActive )
         {
@@ -440,8 +438,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
     {
         float activationDistance = m_chaperoneHapticFeedbackDistance
                                    * m_chaperoneVelocityModifierCurrent;
-		//m_isHMDActive is true when prox sensor OR HMD is moving (0.5 second update I think)
-		// THIS IS A WORK-AROUND Until proper binding support/calls are made availble for prox sensor
+
         if ( distance <= activationDistance && m_isHMDActive)//&& ( hmdState.ulButtonPressed	& vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor)) )
         {
 			LOG(WARNING) << "In haptics";
@@ -501,9 +498,9 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
 		//LOG(WARNING) << "In alarm";
         float activationDistance = m_chaperoneAlarmSoundDistance
                                    * m_chaperoneVelocityModifierCurrent;
-        if ( distance <= activationDistance
-             && ( hmdState.ulButtonPressed
-                  & vr::ButtonMaskFromId( vr::k_EButton_ProximitySensor ) ) )
+        
+		if ( distance <= activationDistance
+             && m_isHMDActive )
         {
             if ( !m_chaperoneAlarmSoundActive )
             {
@@ -526,9 +523,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
             }
         }
         else if ( ( distance > activationDistance
-                    || !( hmdState.ulButtonPressed
-                          & vr::ButtonMaskFromId(
-                                vr::k_EButton_ProximitySensor ) ) )
+                    || !m_isHMDActive )
                   && m_chaperoneAlarmSoundActive )
         {
             parent->cancelAlarm01Sound();
@@ -588,7 +583,6 @@ void ChaperoneTabController::eventLoopTick(
         vr::VRSettings()->Sync();
     }
 
-	//TODO device poses not guranteed to be set?
     if ( devicePoses )
     {
 		m_isHMDActive = false;
@@ -598,10 +592,9 @@ void ChaperoneTabController::eventLoopTick(
         auto minDistance = NAN;
         auto& poseHmd = devicePoses[vr::k_unTrackedDeviceIndex_Hmd];
 
-		//m_isHMDActive is true when prox sensor OR HMD is moving (0.5 second update I think)
+		//m_isHMDActive is true when prox sensor OR HMD is moving (~10 seconds to update from OVR)
 		// THIS IS A WORK-AROUND Until proper binding support/calls are made availble for prox sensor
 		if (vr::VRSystem()->GetTrackedDeviceActivityLevel(vr::k_unTrackedDeviceIndex_Hmd) == vr::k_EDeviceActivityLevel_UserInteraction) {
-			//LOG(INFO) << "hmd is active";
 			m_isHMDActive = true;
 		}
         if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
@@ -960,7 +953,7 @@ Q_INVOKABLE QString
 }
 
 void ChaperoneTabController::initHaptics() {
-	//TODO
+	//TODO cleanup? and better error messages
 	auto vrInputError = vr::VRInput()->GetInputSourceHandle(k_inputSourceLeft, &m_leftHandHandle);
 	
 	if (vrInputError != vr::VRInputError_None) {
