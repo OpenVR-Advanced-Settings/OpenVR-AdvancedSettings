@@ -117,7 +117,7 @@ void AccessibilityTabController::eventLoopTick(
         return;
     }
 
-    if ( settingsUpdateCounter >= parent->k_accessibilitySettingsUpdateCounter )
+    if ( settingsUpdateCounter >= k_accessibilitySettingsUpdateCounter )
     {
         if ( parent->isDashboardVisible() )
         {

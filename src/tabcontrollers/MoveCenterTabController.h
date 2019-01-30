@@ -11,6 +11,11 @@ class QQuickWindow;
 namespace advsettings
 {
 // forward declaration
+constexpr double k_centidegreesToRadians = M_PI / 18000.0;
+constexpr double k_radiansToCentidegrees = 18000.0 / M_PI;
+constexpr double k_quaternionInvalidValue = -1000.0;
+constexpr double k_quaternionUnderIsInvalidValueThreshold = -900.0;
+
 class OverlayController;
 
 class MoveCenterTabController : public QObject
@@ -66,10 +71,12 @@ private:
     bool m_lockZToggle = false;
     std::chrono::system_clock::time_point lastMoveButtonClick[2];
     // Set lastHandQuaternion.w to -1000.0 when last hand is invalid.
-    vr::HmdQuaternion_t m_lastHandQuaternion = { -1000.0, 0.0, 0.0, 0.0 };
+    vr::HmdQuaternion_t m_lastHandQuaternion
+        = { k_quaternionInvalidValue, 0.0, 0.0, 0.0 };
     vr::HmdQuaternion_t m_handQuaternion;
     // Set lastHmdQuaternion.w to -1000.0 when last hmd pose is invalid.
-    vr::HmdQuaternion_t m_lastHmdQuaternion = { -1000.0, 0.0, 0.0, 0.0 };
+    vr::HmdQuaternion_t m_lastHmdQuaternion
+        = { k_quaternionInvalidValue, 0.0, 0.0, 0.0 };
     vr::HmdQuaternion_t m_hmdQuaternion;
     double m_hmdYawTotal = 0.0;
     vr::ETrackedControllerRole m_activeDragHand
@@ -89,8 +96,6 @@ private:
     bool m_overrideLeftHandTurnPressed = false;
     bool m_overrideRightHandTurnPressed = false;
     unsigned settingsUpdateCounter = 0;
-    static constexpr double k_centidegreesToRadians = M_PI / 18000.0;
-    static constexpr double k_radiansToCentidegrees = 18000.0 / M_PI;
 
 public:
     void initStage1();

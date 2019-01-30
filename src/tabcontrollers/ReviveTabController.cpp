@@ -309,7 +309,7 @@ void ReviveTabController::eventLoopTick()
     if ( m_isOverlayInstalled
          || parent->m_settingsTabController.forceRevivePage() )
     {
-        if ( settingsUpdateCounter >= parent->k_reviveSettingsUpdateCounter )
+        if ( settingsUpdateCounter >= k_reviveSettingsUpdateCounter )
         {
             if ( parent->isDashboardVisible() )
             {

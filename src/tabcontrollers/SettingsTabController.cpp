@@ -28,7 +28,7 @@ void SettingsTabController::initStage2( OverlayController* var_parent,
 
 void SettingsTabController::eventLoopTick()
 {
-    if ( settingsUpdateCounter >= parent->k_settingsTabSettingsUpdateCounter )
+    if ( settingsUpdateCounter >= k_settingsTabSettingsUpdateCounter )
     {
         if ( parent->isDashboardVisible() )
         {

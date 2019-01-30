@@ -649,7 +649,7 @@ void ChaperoneTabController::eventLoopTick(
         }
     }
 
-    if ( settingsUpdateCounter >= parent->k_chaperoneSettingsUpdateCounter )
+    if ( settingsUpdateCounter >= k_chaperoneSettingsUpdateCounter )
     {
         if ( parent->isDashboardVisible() )
         {

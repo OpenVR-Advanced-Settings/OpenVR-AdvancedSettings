@@ -862,7 +862,7 @@ void MoveCenterTabController::eventLoopTick(
     vr::ETrackingUniverseOrigin universe,
     vr::TrackedDevicePose_t* devicePoses )
 {
-    if ( settingsUpdateCounter >= parent->k_moveCenterSettingsUpdateCounter )
+    if ( settingsUpdateCounter >= k_moveCenterSettingsUpdateCounter )
     {
         if ( parent->isDashboardVisible() )
         {
@@ -899,7 +899,7 @@ void MoveCenterTabController::eventLoopTick(
 
         // Get rotation change of hmd
         // Checking if set to -1000.0 placeholder for invalid hmd pose.
-        if ( m_lastHmdQuaternion.w < -900.0 )
+        if ( m_lastHmdQuaternion.w < k_quaternionUnderIsInvalidValueThreshold )
         {
             m_lastHmdQuaternion = m_hmdQuaternion;
         }
@@ -932,27 +932,9 @@ void MoveCenterTabController::eventLoopTick(
     else
     {
         // set lastHmdQuaternion.w to placeholder -1000.0 for invalid
-        m_lastHmdQuaternion.w = -1000.0;
+        m_lastHmdQuaternion.w = k_quaternionInvalidValue;
     } // END of hmd rotation stats tracking
 
-    /*
-        if ( m_activeMoveHand == vr::TrackedControllerRole_Invalid )
-        {
-            emit offsetXChanged( m_offsetX );
-            emit offsetYChanged( m_offsetY );
-            emit offsetZChanged( m_offsetZ );
-
-            // Set lastHandQuaternion.w to placeholder value for invalid
-       (-1000.0)
-            // when we release move shortcut.
-            if ( m_rotateHand )
-            {
-                lastHandQuaternion.w = -1000.0;
-            }
-            m_lastMoveHand = m_activeMoveHand;
-            return;
-        }
-    */
     auto moveHandId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
         m_activeDragHand );
     auto rotateHandId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
@@ -1063,9 +1045,7 @@ void MoveCenterTabController::eventLoopTick(
     {
         if ( m_lastRotateHand != vr::TrackedControllerRole_Invalid )
         {
-            // Set lastHandQuaternion.w to placeholder value for invalid
-            // (-1000.0)
-            m_lastHandQuaternion.w = -1000.0;
+            m_lastHandQuaternion.w = k_quaternionInvalidValue;
         }
         m_lastRotateHand = m_activeTurnHand;
     }
@@ -1101,8 +1081,9 @@ void MoveCenterTabController::eventLoopTick(
             if ( m_lastRotateHand == m_activeTurnHand )
             {
                 // Get rotation change of hand.
-                // Checking if set to -1000.0 placeholder for invalid hand.
-                if ( m_lastHandQuaternion.w < -900.0 )
+                // Checking if m_lastHandQuaternion is invalid
+                if ( m_lastHandQuaternion.w
+                     < k_quaternionUnderIsInvalidValueThreshold )
                 {
                     m_lastHandQuaternion = m_handQuaternion;
                 }

@@ -22,7 +22,7 @@ void SteamVRTabController::initStage2( OverlayController* var_parent,
 
 void SteamVRTabController::eventLoopTick()
 {
-    if ( settingsUpdateCounter >= parent->k_steamVrSettingsUpdateCounter )
+    if ( settingsUpdateCounter >= k_steamVrSettingsUpdateCounter )
     {
         if ( parent->isDashboardVisible() )
         {
