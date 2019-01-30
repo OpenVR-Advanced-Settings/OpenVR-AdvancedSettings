@@ -361,8 +361,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
                                         &hmdState,
                                         sizeof( vr::VRControllerState_t ) );
 
-	//if(vr::GetTrackedDeviceActivityLevel())
-	//TODO crazy shit
+	LOG(WARNING) << "distance is: " << distance;
     // Switch to Beginner Mode
     if ( m_enableChaperoneSwitchToBeginner )
     {
@@ -410,9 +409,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
             }
         }
         else if ( ( distance > activationDistance
-                    || !( hmdState.ulButtonPressed
-                          & vr::ButtonMaskFromId(
-                                vr::k_EButton_ProximitySensor ) ) )
+                    || !m_isHMDActive)
                   && m_chaperoneSwitchToBeginnerActive )
         {
             vr::EVRSettingsError vrSettingsError;
