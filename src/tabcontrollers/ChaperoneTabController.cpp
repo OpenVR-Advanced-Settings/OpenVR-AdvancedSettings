@@ -957,7 +957,7 @@ void ChaperoneTabController::initHaptics() {
 	auto vrInputError = vr::VRInput()->GetInputSourceHandle(k_inputSourceLeft, &m_leftHandHandle);
 	
 	if (vrInputError != vr::VRInputError_None) {
-		LOG(WARNING) << "intput handle left fail";
+		LOG(WARNING) << "get input handle Left Failed";
 		m_isHapticGood = false;
 	}
 	vrInputError = vr::VRInput()->GetInputSourceHandle(k_inputSourceRight, &m_rightHandHandle);

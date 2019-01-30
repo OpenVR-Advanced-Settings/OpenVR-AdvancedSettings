@@ -246,7 +246,7 @@ MyStackViewPage {
 
             MySlider {
                 id: chaperoneVisibilitySlider
-                from: 0.0
+                from: 0.5
                 to: 1.0
                 stepSize: 0.01
                 value: 0.6
