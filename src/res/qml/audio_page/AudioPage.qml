@@ -47,22 +47,8 @@ MyStackViewPage {
 
         ColumnLayout {
             spacing: 18
-            RowLayout {
-                MyText {
-                    text: "Mirror Device: "
-                    Layout.preferredWidth: 260
-                }
-                MyComboBox {
-                    id: audioMirrorNameCombo
-                    Layout.maximumWidth: 850
-                    Layout.minimumWidth: 850
-                    Layout.preferredWidth: 850
-                    onActivated: {
-                        if (componentCompleted) {
-                            AudioTabController.setMirrorDeviceIndex(currentIndex - 1)
-                        }
-                    }
-                }
+            MirrorDeviceSelector {
+                id: audioMirrorNameCombo
             }
             RowLayout {
                 MyText {
@@ -391,19 +377,7 @@ MyStackViewPage {
         }
 
         Component.onCompleted: {
-
-            var devs2 = ["<None>"]
-            var playbackDeviceCount = AudioTabController.getPlaybackDeviceCount()
-            for (var i = 0; i < playbackDeviceCount; i++) {
-                var name = AudioTabController.getPlaybackDeviceName(i)
-
-                devs2.push(name)
-            }
-
-
-            audioMirrorNameCombo.model = devs2
             if (AudioTabController.mirrorDeviceIndex < 0) {
-                audioMirrorNameCombo.currentIndex = 0
                 audioMirrorVolumeMinusButton.enabled = false
                 audioMirrorVolumeSlider.enabled = false
                 audioMirrorVolumePlusButton.enabled = false
@@ -415,8 +389,8 @@ MyStackViewPage {
                 audioMirrorMuteToggle.enabled = true
                 audioMirrorVolumeSlider.value = AudioTabController.mirrorVolume
                 audioMirrorMuteToggle.checked = AudioTabController.mirrorMuted
-                audioMirrorNameCombo.currentIndex = AudioTabController.mirrorDeviceIndex + 1
             }
+
             var devs3 = []
             var micDeviceCount = AudioTabController.getRecordingDeviceCount()
             for (var i = 0; i < micDeviceCount; i++) {
@@ -442,6 +416,8 @@ MyStackViewPage {
                 audioMuteProximitySensorToggle.checked = AudioTabController.micProximitySensorCanMute
                 audioMicNameCombo.currentIndex = AudioTabController.micDeviceIndex
             }
+
+
             reloadPttProfiles()
             reloadAudioProfiles()
             audioPttEnabledToggle.checked = AudioTabController.pttEnabled
@@ -457,7 +433,7 @@ MyStackViewPage {
 
             onMirrorDeviceIndexChanged: {
                 if (index < 0) {
-                    audioMirrorNameCombo.currentIndex = 0
+                    audioMirrorNameCombo.deviceIndex = 0
                     audioMirrorVolumeMinusButton.enabled = false
                     audioMirrorVolumeSlider.enabled = false
                     audioMirrorVolumePlusButton.enabled = false
@@ -467,7 +443,7 @@ MyStackViewPage {
                     audioMirrorVolumeSlider.enabled = true
                     audioMirrorVolumePlusButton.enabled = true
                     audioMirrorMuteToggle.enabled = true
-                    audioMirrorNameCombo.currentIndex = index + 1
+                    audioMirrorNameCombo.deviceIndex = index + 1
                 }
             }
             onMirrorVolumeChanged: {
@@ -540,18 +516,8 @@ MyStackViewPage {
 
             onPlaybackDeviceListChanged: {
 
-                var devs2 = ["<None>"]
-                var playbackDeviceCount = AudioTabController.getPlaybackDeviceCount()
-                for (var i = 0; i < playbackDeviceCount; i++) {
-                    var name = AudioTabController.getPlaybackDeviceName(i)
-
-                    devs2.push(name)
-                }
-
-
-                audioMirrorNameCombo.model = devs2
                 if (AudioTabController.mirrorDeviceIndex < 0) {
-                    audioMirrorNameCombo.currentIndex = 0
+                    audioMirrorNameCombo.deviceIndex = 0
                     audioMirrorVolumeMinusButton.enabled = false
                     audioMirrorVolumeSlider.enabled = false
                     audioMirrorVolumePlusButton.enabled = false
@@ -563,7 +529,7 @@ MyStackViewPage {
                     audioMirrorMuteToggle.enabled = true
                     audioMirrorVolumeSlider.value = AudioTabController.mirrorVolume
                     audioMirrorMuteToggle.checked = AudioTabController.mirrorMuted
-                    audioMirrorNameCombo.currentIndex = AudioTabController.mirrorDeviceIndex + 1
+                    audioMirrorNameCombo.deviceIndex = AudioTabController.mirrorDeviceIndex + 1
                 }
             }
             onRecordingDeviceListChanged: {

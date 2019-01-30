@@ -20,24 +20,25 @@ RowLayout {
         Layout.minimumWidth: 850
         Layout.preferredWidth: 850
         onActivated: {
-            if (currentIndex >= 0) {
-                AudioTabController.setPlaybackDeviceIndex(currentIndex, false)
+            if (deviceIndex >= 0) {
+                AudioTabController.setPlaybackDeviceIndex(deviceIndex, false)
             }
+            setShownAudioDevice(index)
         }
     }
     Component.onCompleted: {
         audioPlaybackNameCombo.devices = getAudioDeviceList()
-        audioPlaybackNameCombo.deviceIndex = AudioTabController.playbackDeviceIndex
+        setShownAudioDevice(AudioTabController.playbackDeviceIndex)
     }
 
     Connections {
         target: AudioTabController
         onPlaybackDeviceIndexChanged: {
-            audioPlaybackNameCombo.deviceIndex = index
+            setShownAudioDevice(index)
         }
         onPlaybackDeviceListChanged: {
             audioPlaybackNameCombo.devices = getAudioDeviceList()
-            audioPlaybackNameCombo.deviceIndex = AudioTabController.playbackDeviceIndex
+            setShownAudioDevice(AudioTabController.playbackDeviceIndex)
         }
     }
     function getAudioDeviceList() {
@@ -50,5 +51,14 @@ RowLayout {
         // Setting the model zeroes out the
         // index so we need to set devices first.
         return devices
+    }
+    function setShownAudioDevice(index) {
+        // If incorrect device, show "None".
+        if (index < 0) {
+            deviceIndex = 0
+        }
+        else {
+            deviceIndex = index
+        }
     }
 }
