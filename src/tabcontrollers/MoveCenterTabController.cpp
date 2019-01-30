@@ -898,7 +898,8 @@ void MoveCenterTabController::eventLoopTick(
         m_hmdQuaternion = utils::getQuaternion( hmdMatrixAbsolute );
 
         // Get rotation change of hmd
-        // Checking if set to -1000.0 placeholder for invalid hmd pose.
+        // Checking for invalid quaternion using < because == isn't guaranteed
+        // for doubles comparison.
         if ( m_lastHmdQuaternion.w < k_quaternionUnderIsInvalidValueThreshold )
         {
             m_lastHmdQuaternion = m_hmdQuaternion;
@@ -931,7 +932,6 @@ void MoveCenterTabController::eventLoopTick(
     }
     else
     {
-        // set lastHmdQuaternion.w to placeholder -1000.0 for invalid
         m_lastHmdQuaternion.w = k_quaternionInvalidValue;
     } // END of hmd rotation stats tracking
 
@@ -1081,7 +1081,8 @@ void MoveCenterTabController::eventLoopTick(
             if ( m_lastRotateHand == m_activeTurnHand )
             {
                 // Get rotation change of hand.
-                // Checking if m_lastHandQuaternion is invalid
+                // Checking for invalid quaternion using < because == isn't
+                // guaranteed for doubles comparison.
                 if ( m_lastHandQuaternion.w
                      < k_quaternionUnderIsInvalidValueThreshold )
                 {
