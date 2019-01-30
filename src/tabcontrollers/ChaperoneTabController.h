@@ -170,6 +170,7 @@ private:
     unsigned settingsUpdateCounter = 0;
 
 	bool m_isHapticGood = true;
+	bool m_isHMDActive = false;
 
 	vr::VRActionHandle_t m_rightHandle;
 	vr::VRActionHandle_t m_leftHandle;

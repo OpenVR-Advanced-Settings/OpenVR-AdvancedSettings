@@ -354,21 +354,23 @@ void ChaperoneTabController::saveChaperoneProfiles()
     settings->endGroup();
 }
 
-void ChaperoneTabController::handleChaperoneWarnings( float distance )
+void ChaperoneTabController::handleChaperoneWarnings( float distance)
 {
     vr::VRControllerState_t hmdState;
     vr::VRSystem()->GetControllerState( vr::k_unTrackedDeviceIndex_Hmd,
                                         &hmdState,
                                         sizeof( vr::VRControllerState_t ) );
 
+	//if(vr::GetTrackedDeviceActivityLevel())
+	//TODO crazy shit
     // Switch to Beginner Mode
     if ( m_enableChaperoneSwitchToBeginner )
     {
         float activationDistance = m_chaperoneSwitchToBeginnerDistance
                                    * m_chaperoneVelocityModifierCurrent;
-        if ( distance <= activationDistance
-             && ( hmdState.ulButtonPressed
-                  & vr::ButtonMaskFromId( vr::k_EButton_ProximitySensor ) )
+		//m_isHMDActive is true when prox sensor OR HMD is moving (0.5 second update I think)
+		// THIS IS A WORK-AROUND Until proper binding support/calls are made availble for prox sensor
+        if ( distance <= activationDistance && m_isHMDActive
              && !m_chaperoneSwitchToBeginnerActive )
         {
             vr::EVRSettingsError vrSettingsError;
@@ -435,11 +437,15 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     }
 
     // Haptic Feedback
-    if ( m_enableChaperoneHapticFeedback )
+
+
+    if ( m_enableChaperoneHapticFeedback)
     {
         float activationDistance = m_chaperoneHapticFeedbackDistance
                                    * m_chaperoneVelocityModifierCurrent;
-        if ( distance <= activationDistance )//&& ( hmdState.ulButtonPressed	& vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor)) )
+		//m_isHMDActive is true when prox sensor OR HMD is moving (0.5 second update I think)
+		// THIS IS A WORK-AROUND Until proper binding support/calls are made availble for prox sensor
+        if ( distance <= activationDistance && m_isHMDActive)//&& ( hmdState.ulButtonPressed	& vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor)) )
         {
 			LOG(WARNING) << "In haptics";
             if ( !m_chaperoneHapticFeedbackActive )
@@ -462,20 +468,21 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                                       vr::TrackedControllerRole_RightHand );
                         while ( _this->m_chaperoneHapticFeedbackActive )
                         {
-							LOG(WARNING) << "In haptic thread";
+							//AS it stands both controllers will vibrate regardless of which is closer to wall
+							//LOG(WARNING) << "In haptic thread";
                             if ( leftIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
-								LOG(INFO) << "In Right Haptic Trigger";
+								//LOG(INFO) << "In Right Haptic Trigger";
 								vr::VRInput()->TriggerHapticVibrationAction(m_leftHandle, 0.0f, 0.5f, 80.0f, 0.8f, m_leftHandHandle);
                             }
                             if ( rightIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
-								LOG(INFO) << "In left Haptic Trigger";
+								//LOG(INFO) << "In left Haptic Trigger";
 								vr::VRInput()->TriggerHapticVibrationAction(m_rightHandle, 0.0f, 0.5f, 80.0f, 0.8f, m_rightHandHandle);
                             }
-							LOG(INFO) << "Made it out of call";
+							//LOG(INFO) << "Made it out of call";
                             std::this_thread::sleep_for(
                                 std::chrono::milliseconds( 5 ) );
                         }
@@ -484,9 +491,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
             }
         }
         else if ( ( distance > activationDistance
-                    || !( hmdState.ulButtonPressed
-                          & vr::ButtonMaskFromId(
-                                vr::k_EButton_ProximitySensor ) ) )
+                    || !m_isHMDActive )
                   && m_chaperoneHapticFeedbackActive )
         {
             m_chaperoneHapticFeedbackActive = false;
@@ -586,16 +591,26 @@ void ChaperoneTabController::eventLoopTick(
         vr::VRSettings()->Sync();
     }
 
+	//TODO device poses not guranteed to be set?
     if ( devicePoses )
     {
+		m_isHMDActive = false;
         std::lock_guard<std::recursive_mutex> lock(
             parent->chaperoneUtils().mutex() );
 		//LOG(INFO) << "in loop";
         auto minDistance = NAN;
         auto& poseHmd = devicePoses[vr::k_unTrackedDeviceIndex_Hmd];
+
+		//m_isHMDActive is true when prox sensor OR HMD is moving (0.5 second update I think)
+		// THIS IS A WORK-AROUND Until proper binding support/calls are made availble for prox sensor
+		if (vr::VRSystem()->GetTrackedDeviceActivityLevel(vr::k_unTrackedDeviceIndex_Hmd) == vr::k_EDeviceActivityLevel_UserInteraction) {
+			//LOG(INFO) << "hmd is active";
+			m_isHMDActive = true;
+		}
         if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK )
         {
+			
             auto distanceHmd = parent->chaperoneUtils().getDistanceToChaperone(
                 { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
                   poseHmd.mDeviceToAbsoluteTracking.m[1][3],
@@ -650,6 +665,7 @@ void ChaperoneTabController::eventLoopTick(
             }
         }
         //if ( !std::isnan( minDistance ) )
+		//TODO check against value
 		if(true)
         {
 			//LOG(INFO) << "chaperone warnings";
