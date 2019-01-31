@@ -23,7 +23,7 @@ RowLayout {
         Layout.minimumWidth: 850
         Layout.preferredWidth: 850
         onActivated: {
-            if (componentCompleted) {
+            if (deviceIndex >= 0) {
                 AudioTabController.setMicDeviceIndex(currentIndex)
             }
         }

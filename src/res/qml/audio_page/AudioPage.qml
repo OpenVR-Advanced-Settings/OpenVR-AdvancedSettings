@@ -116,7 +116,9 @@ MyStackViewPage {
                     }
                 }
             }
-
+        }
+        ColumnLayout {
+            spacing: 18
             MyToggleButton {
                 id: audioMuteProximitySensorToggle
                 Layout.preferredWidth: 600
@@ -252,50 +254,50 @@ MyStackViewPage {
                 }
             }
             RowLayout {
-                spacing: 18
+            spacing: 18
 
-                MyPushButton {
-                    id: audioDeleteProfileButton
-                    enabled: true
-                    Layout.preferredWidth: 200
-                    text: "Delete Profile"
-                    onClicked: {
-                        if (audioProfileComboBox.currentIndex > 0) {
-                            audioDeleteProfileDialog.profileIndex = audioProfileComboBox.currentIndex - 1
-                            audioDeleteProfileDialog.open()
-                        }
-                    }
-                }
-                MyPushButton {
-                    Layout.preferredWidth: 200
-                    text: "New Profile"
-                    onClicked: {
-                        audioNewProfileDialog.openPopup()
-                    }
-                }
-                Item {
-                    Layout.fillWidth: true
-                }
-                MyPushButton {
-                    id: pttDeleteProfileButton
-                    enabled: true
-                    Layout.preferredWidth: 200
-                    text: "Delete Profile"
-                    onClicked: {
-                        if (pttProfileComboBox.currentIndex > 0) {
-                            pttDeleteProfileDialog.profileIndex = pttProfileComboBox.currentIndex - 1
-                            pttDeleteProfileDialog.open()
-                        }
-                    }
-                }
-                MyPushButton {
-                    Layout.preferredWidth: 200
-                    text: "New Profile"
-                    onClicked: {
-                        pttNewProfileDialog.openPopup()
+            MyPushButton {
+                id: audioDeleteProfileButton
+                enabled: true
+                Layout.preferredWidth: 200
+                text: "Delete Profile"
+                onClicked: {
+                    if (audioProfileComboBox.currentIndex > 0) {
+                        audioDeleteProfileDialog.profileIndex = audioProfileComboBox.currentIndex - 1
+                        audioDeleteProfileDialog.open()
                     }
                 }
             }
+            MyPushButton {
+                Layout.preferredWidth: 200
+                text: "New Profile"
+                onClicked: {
+                    audioNewProfileDialog.openPopup()
+                }
+            }
+            Item {
+                Layout.fillWidth: true
+            }
+            MyPushButton {
+                id: pttDeleteProfileButton
+                enabled: true
+                Layout.preferredWidth: 200
+                text: "Delete Profile"
+                onClicked: {
+                    if (pttProfileComboBox.currentIndex > 0) {
+                        pttDeleteProfileDialog.profileIndex = pttProfileComboBox.currentIndex - 1
+                        pttDeleteProfileDialog.open()
+                    }
+                }
+            }
+            MyPushButton {
+                Layout.preferredWidth: 200
+                text: "New Profile"
+                onClicked: {
+                    pttNewProfileDialog.openPopup()
+                }
+            }
+        }
         }
 
         Component.onCompleted: {
