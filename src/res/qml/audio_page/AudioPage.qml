@@ -28,22 +28,18 @@ MyStackViewPage {
     }
 
     PttNewProfileDialog {
-        id: pttNewProfileDialog
     }
 
     AudioNewProfileDialog {
-        id: audioNewProfileDialog
     }
 
     content: ColumnLayout {
         spacing: 24
 
         AudioDeviceSelector {
-            id: audioPlaybackNameCombo
         }
 
         MirrorVolumeSlider {
-            id: audioMirrorNameCombo
         }
 
         MicVolumeSlider {
