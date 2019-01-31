@@ -78,6 +78,7 @@ class ChaperoneTabController : public QObject
                     setPlaySpaceMarker NOTIFY playSpaceMarkerChanged )
     Q_PROPERTY( bool forceBounds READ forceBounds WRITE setForceBounds NOTIFY
                     forceBoundsChanged )
+	Q_PROPERTY( bool disableChaperone Read disableChaperone Write setDisableChaperone Notify disableChaperoneChanged)
 
     Q_PROPERTY( bool chaperoneSwitchToBeginnerEnabled READ
                     isChaperoneSwitchToBeginnerEnabled WRITE
@@ -142,6 +143,8 @@ private:
     bool m_centerMarker = false;
     bool m_playSpaceMarker = false;
     bool m_forceBounds = false;
+	bool m_disableChaperone = false;
+	float m_fadeDistanceRemembered = 0.0f;
 
     bool m_enableChaperoneSwitchToBeginner = false;
     float m_chaperoneSwitchToBeginnerDistance = 0.5f;
@@ -206,6 +209,7 @@ public:
     bool centerMarker() const;
     bool playSpaceMarker() const;
     bool forceBounds() const;
+	bool disableChaperone() const;
 
     bool isChaperoneSwitchToBeginnerEnabled() const;
     float chaperoneSwitchToBeginnerDistance() const;
@@ -240,6 +244,7 @@ public slots:
     void setCenterMarker( bool value, bool notify = true );
     void setPlaySpaceMarker( bool value, bool notify = true );
     void setForceBounds( bool value, bool notify = true );
+	void setDisableChaperone(bool value, bool notify = true);
 
     void setChaperoneSwitchToBeginnerEnabled( bool value, bool notify = true );
     void setChaperoneSwitchToBeginnerDistance( float value,

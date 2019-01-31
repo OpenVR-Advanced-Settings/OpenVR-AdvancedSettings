@@ -38,6 +38,7 @@ void ChaperoneTabController::initStage1()
     m_chaperoneVelocityModifier
         = settings->value( "chaperoneVelocityModifier", 0.3f ).toFloat();
     m_chaperoneVelocityModifierCurrent = 1.0f;
+	m_disableChaperone = = settings->value("disableChaperone", false).toBool();
     settings->endGroup();
 	initHaptics();
     reloadChaperoneProfiles();
@@ -439,7 +440,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
         float activationDistance = m_chaperoneHapticFeedbackDistance
                                    * m_chaperoneVelocityModifierCurrent;
 
-        if ( distance <= activationDistance && m_isHMDActive)//&& ( hmdState.ulButtonPressed	& vr::ButtonMaskFromId(vr::k_EButton_ProximitySensor)) )
+        if ( distance <= activationDistance && m_isHMDActive)
         {
 			LOG(WARNING) << "In haptics";
             if ( !m_chaperoneHapticFeedbackActive )
@@ -463,20 +464,16 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
                         while ( _this->m_chaperoneHapticFeedbackActive )
                         {
 							//AS it stands both controllers will vibrate regardless of which is closer to wall
-							//LOG(WARNING) << "In haptic thread";
                             if ( leftIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
-								//LOG(INFO) << "In Right Haptic Trigger";
-								vr::VRInput()->TriggerHapticVibrationAction(m_leftHandle, 0.0f, 0.5f, 80.0f, 0.8f, m_leftHandHandle);
+								vr::VRInput()->TriggerHapticVibrationAction(m_leftHandle, 0.0f, 0.2f, 80.0f, 0.75f, m_leftHandHandle);
                             }
                             if ( rightIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
-								//LOG(INFO) << "In left Haptic Trigger";
-								vr::VRInput()->TriggerHapticVibrationAction(m_rightHandle, 0.0f, 0.5f, 80.0f, 0.8f, m_rightHandHandle);
+								vr::VRInput()->TriggerHapticVibrationAction(m_rightHandle, 0.0f, 0.2f, 80.0f, 0.75f, m_rightHandHandle);
                             }
-							//LOG(INFO) << "Made it out of call";
                             std::this_thread::sleep_for(
                                 std::chrono::milliseconds( 5 ) );
                         }
@@ -909,6 +906,11 @@ bool ChaperoneTabController::isChaperoneAlarmSoundAdjustVolume() const
     return m_chaperoneAlarmSoundAdjustVolume;
 }
 
+bool ChaperoneTabController::disableChaperone() const
+{
+	return m_disableChaperone;
+}
+
 float ChaperoneTabController::chaperoneAlarmSoundDistance() const
 {
     return m_chaperoneAlarmSoundDistance;
@@ -977,6 +979,8 @@ void ChaperoneTabController::initHaptics() {
 	}
 }
 
+
+//TODO save?
 void ChaperoneTabController::setForceBounds( bool value, bool notify )
 {
     if ( m_forceBounds != value )
@@ -1271,6 +1275,31 @@ void ChaperoneTabController::setChaperoneVelocityModifier( float value,
                 m_chaperoneVelocityModifier );
         }
     }
+}
+
+//TODO verify
+void ChaperoneTabController::setDisableChaperone(bool value, bool notify) {
+	if (m_disableChaperone != value) {
+		m_disableChaperone = value;
+		if (m_disableChaperone) {
+			m_fadeDistanceRemembered = m_fadeDistance;
+			setFadeDistance(0.0f, true);
+		}
+		else {
+			setFadeDistance(m_fadeDistanceRemembered, true);
+		}
+		settings->beginGroup("chaperoneSettings")
+		settings->setValue("disableChaperone",
+				m_disableChaperone);
+		settings->endGroup();
+		settings->sync();
+		if (notify)
+		{
+			emit chaperoneDisableChanged(
+				m_disableChaperone);
+		}
+
+	}
 }
 
 void ChaperoneTabController::flipOrientation()

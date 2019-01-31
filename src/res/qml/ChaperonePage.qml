@@ -279,8 +279,8 @@ MyStackViewPage {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.0) {
-                            val = 0.0
+                        if (val < 50.0) {
+                            val = 50.0
                         } else if (val > 100.0) {
                             val = 100.0
                         }
@@ -449,17 +449,25 @@ MyStackViewPage {
                     ChaperoneTabController.setForceBounds(this.checked, false)
                 }
             }
+            MyToggleButton {
+                id: chaperoneDisableChaperone
+                text: "Disable Chaperone"
+                onCheckedChanged: {
+                    ChaperoneTabController.setDisableChaperone(this.checked, false)
+                }
+            }
 
             Item { Layout.fillWidth: true }
+        }
 
-            MyPushButton {
-                id: chaperoneWarningsConfigButton
-                text: "Proximity Warning Settings"
-                Layout.preferredWidth: 350
-                onClicked: {
-                    MyResources.playFocusChangedSound()
-                    mainView.push(chaperoneWarningsPage)
-                }
+
+        MyPushButton {
+            id: chaperoneWarningsConfigButton
+            text: "Proximity Warning Settings"
+            Layout.preferredWidth: 350
+            onClicked: {
+                MyResources.playFocusChangedSound()
+                mainView.push(chaperoneWarningsPage)
             }
         }
 
@@ -513,6 +521,7 @@ MyStackViewPage {
             chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarker
             chaperonePlaySpaceToggle.checked = ChaperoneTabController.playSpaceMarker
             chaperoneForceBoundsToggle.checked = ChaperoneTabController.forceBounds
+            chaperoneDisableChaperone.checked = ChaperoneTabController.disableChaperone
             reloadChaperoneProfiles()
         }
 
