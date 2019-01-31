@@ -1242,6 +1242,7 @@ void ChaperoneTabController::setChaperoneVelocityModifier( float value,
 
 void ChaperoneTabController::flipOrientation()
 {
+    parent->m_moveCenterTabController.reset();
     parent->RotateUniverseCenter( vr::TrackingUniverseStanding,
                                   ( float ) M_PI );
 }
