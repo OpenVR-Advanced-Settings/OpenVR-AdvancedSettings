@@ -46,26 +46,13 @@ MyStackViewPage {
         }
 
         MirrorVolumeSlider {
+            id: audioMirrorNameCombo
         }
 
         ColumnLayout {
             spacing: 18
-            RowLayout {
-                MyText {
-                    text: "Microphone: "
-                    Layout.preferredWidth: 260
-                }
-                MyComboBox {
-                    id: audioMicNameCombo
-                    Layout.maximumWidth: 850
-                    Layout.minimumWidth: 850
-                    Layout.preferredWidth: 850
-                    onActivated: {
-                        if (componentCompleted) {
-                            AudioTabController.setMicDeviceIndex(currentIndex)
-                        }
-                    }
-                }
+            MicDeviceSelector {
+                id: audioMicNameCombo
             }
             RowLayout {
                 MyText {
@@ -129,6 +116,7 @@ MyStackViewPage {
                     }
                 }
             }
+
             MyToggleButton {
                 id: audioMuteProximitySensorToggle
                 Layout.preferredWidth: 600
@@ -311,15 +299,7 @@ MyStackViewPage {
         }
 
         Component.onCompleted: {
-            var devs3 = []
-            var micDeviceCount = AudioTabController.getRecordingDeviceCount()
-            for (var i = 0; i < micDeviceCount; i++) {
-                var name = AudioTabController.getRecordingDeviceName(i)
-                devs3.push(name)
-            }
-            audioMicNameCombo.model = devs3
             if (AudioTabController.micDeviceIndex < 0) {
-                audioMicNameCombo.currentIndex = 0
                 audioMicVolumeMinusButton.enabled = false
                 audioMicVolumeSlider.enabled = false
                 audioMicVolumePlusButton.enabled = false
@@ -334,7 +314,6 @@ MyStackViewPage {
                 audioMicVolumeSlider.value = AudioTabController.micVolume
                 audioMicMuteToggle.checked = AudioTabController.micMuted
                 audioMuteProximitySensorToggle.checked = AudioTabController.micProximitySensorCanMute
-                audioMicNameCombo.currentIndex = AudioTabController.micDeviceIndex
             }
 
 
@@ -352,7 +331,6 @@ MyStackViewPage {
             target: AudioTabController
             onMicDeviceIndexChanged: {
                 if (index < 0) {
-                    audioMicNameCombo.currentIndex = 0
                     audioMicVolumeMinusButton.enabled = false
                     audioMicVolumeSlider.enabled = false
                     audioMicVolumePlusButton.enabled = false
@@ -362,7 +340,6 @@ MyStackViewPage {
                     audioMicVolumeSlider.enabled = true
                     audioMicVolumePlusButton.enabled = true
                     audioMicMuteToggle.enabled = true
-                    audioMicNameCombo.currentIndex = index
                 }
             }
             onMicVolumeChanged: {
@@ -431,15 +408,7 @@ MyStackViewPage {
                 }
             }
             onRecordingDeviceListChanged: {
-                var devs3 = []
-                var micDeviceCount = AudioTabController.getRecordingDeviceCount()
-                for (var i = 0; i < micDeviceCount; i++) {
-                    var name = AudioTabController.getRecordingDeviceName(i)
-                    devs3.push(name)
-                }
-                audioMicNameCombo.model = devs3
                 if (AudioTabController.micDeviceIndex < 0) {
-                    audioMicNameCombo.currentIndex = 0
                     audioMicVolumeMinusButton.enabled = false
                     audioMicVolumeSlider.enabled = false
                     audioMicVolumePlusButton.enabled = false
@@ -451,7 +420,6 @@ MyStackViewPage {
                     audioMicMuteToggle.enabled = true
                     audioMicVolumeSlider.value = AudioTabController.micVolume
                     audioMicMuteToggle.checked = AudioTabController.micMuted
-                    audioMicNameCombo.currentIndex = AudioTabController.micDeviceIndex
                 }
             }
         }
