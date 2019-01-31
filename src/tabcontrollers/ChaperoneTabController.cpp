@@ -38,7 +38,7 @@ void ChaperoneTabController::initStage1()
     m_chaperoneVelocityModifier
         = settings->value( "chaperoneVelocityModifier", 0.3f ).toFloat();
     m_chaperoneVelocityModifierCurrent = 1.0f;
-	m_disableChaperone = = settings->value("disableChaperone", false).toBool();
+	m_disableChaperone = settings->value("disableChaperone", false).toBool();
     settings->endGroup();
 	initHaptics();
     reloadChaperoneProfiles();
@@ -1288,14 +1288,15 @@ void ChaperoneTabController::setDisableChaperone(bool value, bool notify) {
 		else {
 			setFadeDistance(m_fadeDistanceRemembered, true);
 		}
-		settings->beginGroup("chaperoneSettings")
+		auto settings = OverlayController::appSettings();
+		settings->beginGroup("chaperoneSettings");
 		settings->setValue("disableChaperone",
 				m_disableChaperone);
 		settings->endGroup();
 		settings->sync();
 		if (notify)
 		{
-			emit chaperoneDisableChanged(
+			emit disableChaperoneChanged(
 				m_disableChaperone);
 		}
 

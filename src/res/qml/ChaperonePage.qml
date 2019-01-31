@@ -237,6 +237,7 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
+                id: chaperoneVisibilityMinus
                 text: "-"
                 Layout.preferredWidth: 40
                 onClicked: {
@@ -261,6 +262,7 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
+                id: chaperoneVisibilityPlus
                 text: "+"
                 Layout.preferredWidth: 40
                 onClicked: {
@@ -271,7 +273,7 @@ MyStackViewPage {
 
             MyTextField {
                 id: chaperoneVisibilityText
-                text: "0.00"
+                text: "50.00"
                 keyBoardUID: 301
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
@@ -454,6 +456,18 @@ MyStackViewPage {
                 text: "Disable Chaperone"
                 onCheckedChanged: {
                     ChaperoneTabController.setDisableChaperone(this.checked, false)
+                    if(this.checked){
+                        chaperoneVisibilityMinus.enabled = false;
+                        chaperoneVisibilityPlus.enabled = false;
+                        chaperoneVisibilitySlider.enabled = false;
+                        chaperoneVisibilityText.enabled = false;
+
+                    }else{
+                        chaperoneVisibilityMinus.enabled = true;
+                        chaperoneVisibilityPlus.enabled = true;
+                        chaperoneVisibilitySlider.enabled = true;
+                        chaperoneVisibilityText.enabled = true;
+                    }
                 }
             }
 
@@ -522,6 +536,18 @@ MyStackViewPage {
             chaperonePlaySpaceToggle.checked = ChaperoneTabController.playSpaceMarker
             chaperoneForceBoundsToggle.checked = ChaperoneTabController.forceBounds
             chaperoneDisableChaperone.checked = ChaperoneTabController.disableChaperone
+            if(chaperoneDisableChaperone.checked){
+                chaperoneVisibilityMinus.enabled = false;
+                chaperoneVisibilityPlus.enabled = false;
+                chaperoneVisibilitySlider.enabled = false;
+                chaperoneVisibilityText.enabled = false;
+
+            }else{
+                chaperoneVisibilityMinus.enabled = true;
+                chaperoneVisibilityPlus.enabled = true;
+                chaperoneVisibilitySlider.enabled = true;
+                chaperoneVisibilityText.enabled = true;
+            }
             reloadChaperoneProfiles()
         }
 

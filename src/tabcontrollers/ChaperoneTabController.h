@@ -78,7 +78,7 @@ class ChaperoneTabController : public QObject
                     setPlaySpaceMarker NOTIFY playSpaceMarkerChanged )
     Q_PROPERTY( bool forceBounds READ forceBounds WRITE setForceBounds NOTIFY
                     forceBoundsChanged )
-	Q_PROPERTY( bool disableChaperone Read disableChaperone Write setDisableChaperone Notify disableChaperoneChanged)
+	Q_PROPERTY( bool disableChaperone READ disableChaperone WRITE setDisableChaperone NOTIFY disableChaperoneChanged)
 
     Q_PROPERTY( bool chaperoneSwitchToBeginnerEnabled READ
                     isChaperoneSwitchToBeginnerEnabled WRITE
@@ -292,6 +292,7 @@ signals:
     void centerMarkerChanged( bool value );
     void playSpaceMarkerChanged( bool value );
     void forceBoundsChanged( bool value );
+	void disableChaperoneChanged(bool value);
 
     void chaperoneSwitchToBeginnerEnabledChanged( bool value );
     void chaperoneSwitchToBeginnerDistanceChanged( float value );
