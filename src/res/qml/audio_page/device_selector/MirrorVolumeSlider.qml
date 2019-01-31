@@ -110,5 +110,20 @@ ColumnLayout {
         onMirrorMutedChanged: {
             audioMirrorMuteToggle.checked = AudioTabController.mirrorMuted
         }
+        onPlaybackDeviceListChanged: {
+            if (AudioTabController.mirrorDeviceIndex < 0) {
+                audioMirrorVolumeMinusButton.enabled = false
+                audioMirrorVolumeSlider.enabled = false
+                audioMirrorVolumePlusButton.enabled = false
+                audioMirrorMuteToggle.enabled = false
+            } else {
+                audioMirrorVolumeMinusButton.enabled = true
+                audioMirrorVolumeSlider.enabled = true
+                audioMirrorVolumePlusButton.enabled = true
+                audioMirrorMuteToggle.enabled = true
+                audioMirrorVolumeSlider.value = AudioTabController.mirrorVolume
+                audioMirrorMuteToggle.checked = AudioTabController.mirrorMuted
+            }
+        }
     }
 }
