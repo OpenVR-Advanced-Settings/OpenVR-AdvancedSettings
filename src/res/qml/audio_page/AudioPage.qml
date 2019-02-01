@@ -29,9 +29,11 @@ MyStackViewPage {
     }
 
     PttNewProfileDialog {
+        id: pttNewProfileDialog
     }
 
     AudioNewProfileDialog {
+        id: audioNewProfileDialog
     }
 
     content: ColumnLayout {
@@ -248,9 +250,6 @@ MyStackViewPage {
             }
             onPttRightControllerEnabledChanged: {
                 audioPttRightControllerToggle.checked = AudioTabController.pttRightControllerEnabled
-            }
-            onAudioProfileDefaultChanged: {
-                audioDefaultProfileToggle.checked = AudioTabController.audioProfileDefault
             }
             onPttProfilesUpdated: {
                 reloadPttProfiles()

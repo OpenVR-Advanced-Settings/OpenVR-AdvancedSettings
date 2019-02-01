@@ -6,6 +6,7 @@ import "../.." //common imports
 
 MyDialogOkCancelPopup {
     id: audioNewProfileDialog
+    property alias defaultProfileToggle: test.audioDefaultProfileToggle.checked
     dialogTitle: "Create New Audio Profile"
     dialogWidth: 600
     dialogHeight: 300
@@ -56,6 +57,13 @@ MyDialogOkCancelPopup {
             }
         }
     }
+    Connections {
+        target: AudioTabController
+        onAudioProfileDefaultChanged: {
+            defaultProfileToggle = AudioTabController.audioProfileDefault
+        }
+    }
+
     function openPopup() {
         audioNewProfileName.text = ""
         open()
