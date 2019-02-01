@@ -49,25 +49,7 @@ MyStackViewPage {
             }
             PttButtons {
             }
-            RowLayout {
 
-                MyToggleButton {
-                    id: audioPttShowNotificationToggle
-                    Layout.leftMargin: 350
-                    text: "Show notification in HMD"
-                    onCheckedChanged: {
-                        AudioTabController.setPttShowNotification(checked, false)
-                    }
-                }
-                MyToggleButton {
-                    id: audioPttReverseToggle
-                    Layout.leftMargin: 118
-                    text: "Push-to-Mute"
-                    onClicked: {
-                        AudioTabController.setMicReversePtt(checked, false)
-                    }
-                }
-            }
             RowLayout {
                 spacing: 10
 
@@ -186,18 +168,10 @@ MyStackViewPage {
         Component.onCompleted: {
             reloadPttProfiles()
             reloadAudioProfiles()
-            audioPttShowNotificationToggle.checked = AudioTabController.pttShowNotification
-            audioPttReverseToggle.checked = AudioTabController.micReversePtt
         }
 
         Connections {
             target: AudioTabController
-            onMicReversePttChanged: {
-                audioPttReverseToggle.checked = AudioTabController.micReversePtt
-            }
-            onPttShowNotificationChanged: {
-                audioPttShowNotificationToggle.checked = AudioTabController.pttShowNotification
-            }
             onPttProfilesUpdated: {
                 reloadPttProfiles()
             }
