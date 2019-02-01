@@ -540,7 +540,18 @@ void OverlayController::OnTimeoutPumpEvents()
 
         // wait for the next frame after executing our main event loop once.
         m_lastFrame = m_currentFrame;
+        m_vsyncTooLateCounter = 0;
     }
+    else if ( m_vsyncTooLateCounter >= k_nonVsyncTickRate )
+    {
+        mainEventLoop();
+        // m_lastFrame = m_currentFrame + 1 skips the next vsync frame in case
+        // it was just about to trigger, to prevent double updates faster than
+        // 11ms.
+        m_lastFrame = m_currentFrame + 1;
+        m_vsyncTooLateCounter = 0;
+    }
+    m_vsyncTooLateCounter++;
 }
 
 void OverlayController::mainEventLoop()

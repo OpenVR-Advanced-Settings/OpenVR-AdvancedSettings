@@ -58,6 +58,9 @@ constexpr int k_reviveSettingsUpdateCounter = 139;
 constexpr int k_settingsTabSettingsUpdateCounter = 157;
 constexpr int k_steamVrSettingsUpdateCounter = 97;
 constexpr int k_utilitiesSettingsUpdateCounter = 19;
+// k_nonVsyncTickRate determines number of ms we wait to force the next event
+// loop tick when vsync is too late due to dropped frames.
+constexpr int k_nonVsyncTickRate = 20;
 
 class OverlayController : public QObject
 {
@@ -102,6 +105,7 @@ private:
 
     uint64_t m_currentFrame = 0;
     uint64_t m_lastFrame = 0;
+    int m_vsyncTooLateCounter = 0;
 
     // OpenVR_Init must be declared before any other class that uses OpenVR
     // function calls since objects are initialized in order of declaration in
