@@ -166,3 +166,6 @@ DISTFILES += \
     src/res/qml/utilities_page/alarm_clock/* \
     src/res/qml/audio_page/dialog_boxes/* \
     src/res/qml/audio_page/device_selector/*
+    src/res/qml/audio_page/proximity/*
+    src/res/qml/audio_page/push_to_talk/*
+    src/res/qml/audio_page/profiles/*
