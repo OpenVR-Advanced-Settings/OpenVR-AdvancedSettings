@@ -5,6 +5,7 @@ import matzman666.advsettings 1.0
 import ".." //common imports
 import "dialog_boxes"
 import "device_selector"
+import "proximity"
 
 MyStackViewPage {
     width: 1200
@@ -46,13 +47,7 @@ MyStackViewPage {
         }
         ColumnLayout {
             spacing: 18
-            MyToggleButton {
-                id: audioMuteProximitySensorToggle
-                Layout.preferredWidth: 600
-                text: "Proximity Sensor Mutes/Unmutes Microphone"
-                onClicked: {
-                    AudioTabController.setMicProximitySensorCanMute(checked, false)
-                }
+            ProximityToggle {
             }
             RowLayout {
                 MyToggleButton {
@@ -228,12 +223,6 @@ MyStackViewPage {
         }
 
         Component.onCompleted: {
-            if (AudioTabController.micDeviceIndex < 0) {
-                audioMuteProximitySensorToggle.enabled = false
-            } else {
-                audioMuteProximitySensorToggle.enabled = true
-                audioMuteProximitySensorToggle.checked = AudioTabController.micProximitySensorCanMute
-            }
             reloadPttProfiles()
             reloadAudioProfiles()
             audioPttEnabledToggle.checked = AudioTabController.pttEnabled
@@ -245,17 +234,11 @@ MyStackViewPage {
 
         Connections {
             target: AudioTabController
-            onMicProximitySensorCanMuteChanged: {
-                audioMuteProximitySensorToggle.checked = AudioTabController.micProximitySensorCanMute
-            }
             onMicReversePttChanged: {
                 audioPttReverseToggle.checked = AudioTabController.micReversePtt
             }
             onPttEnabledChanged: {
                 audioPttEnabledToggle.checked = AudioTabController.pttEnabled
-            }
-            onPttActiveChanged: {
-
             }
             onPttShowNotificationChanged: {
                 audioPttShowNotificationToggle.checked = AudioTabController.pttShowNotification
