@@ -6,6 +6,7 @@ import ".." //common imports
 import "dialog_boxes"
 import "device_selector"
 import "proximity"
+import "push_to_talk"
 
 MyStackViewPage {
     width: 1200
@@ -21,11 +22,6 @@ MyStackViewPage {
 
     AudioDeleteProfileDialog {
         id: audioDeleteProfileDialog
-    }
-
-    PttControllerConfigDialog {
-        id: pttControllerConfigDialog
-        pttControllerConfigClass: AudioTabController
     }
 
     PttNewProfileDialog {
@@ -51,44 +47,7 @@ MyStackViewPage {
             spacing: 18
             ProximityToggle {
             }
-            RowLayout {
-                MyToggleButton {
-                    id: audioPttEnabledToggle
-                    Layout.preferredWidth: 260
-                    text: "Push-to-Talk:"
-                    onClicked: {
-                        AudioTabController.pttEnabled = checked
-                    }
-                }
-                MyToggleButton {
-                    id: audioPttLeftControllerToggle
-                    text: "Left Controller"
-                    onClicked: {
-                        AudioTabController.setPttLeftControllerEnabled(checked, false)
-                    }
-                }
-                MyPushButton {
-                    text: "Configure"
-                    onClicked: {
-                        pttControllerConfigDialog.openPopup(0)
-                    }
-                }
-                Item {
-                    Layout.fillWidth: true
-                }
-                MyToggleButton {
-                    id: audioPttRightControllerToggle
-                    text: "Right Controller"
-                    onClicked: {
-                        AudioTabController.setPttRightControllerEnabled(checked, false)
-                    }
-                }
-                MyPushButton {
-                    text: "Configure"
-                    onClicked: {
-                        pttControllerConfigDialog.openPopup(1)
-                    }
-                }
+            PttButtons {
             }
             RowLayout {
 
@@ -227,9 +186,6 @@ MyStackViewPage {
         Component.onCompleted: {
             reloadPttProfiles()
             reloadAudioProfiles()
-            audioPttEnabledToggle.checked = AudioTabController.pttEnabled
-            audioPttLeftControllerToggle.checked = AudioTabController.pttLeftControllerEnabled
-            audioPttRightControllerToggle.checked = AudioTabController.pttRightControllerEnabled
             audioPttShowNotificationToggle.checked = AudioTabController.pttShowNotification
             audioPttReverseToggle.checked = AudioTabController.micReversePtt
         }
@@ -239,17 +195,8 @@ MyStackViewPage {
             onMicReversePttChanged: {
                 audioPttReverseToggle.checked = AudioTabController.micReversePtt
             }
-            onPttEnabledChanged: {
-                audioPttEnabledToggle.checked = AudioTabController.pttEnabled
-            }
             onPttShowNotificationChanged: {
                 audioPttShowNotificationToggle.checked = AudioTabController.pttShowNotification
-            }
-            onPttLeftControllerEnabledChanged: {
-                audioPttLeftControllerToggle.checked = AudioTabController.pttLeftControllerEnabled
-            }
-            onPttRightControllerEnabledChanged: {
-                audioPttRightControllerToggle.checked = AudioTabController.pttRightControllerEnabled
             }
             onPttProfilesUpdated: {
                 reloadPttProfiles()
