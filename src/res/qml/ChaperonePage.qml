@@ -237,11 +237,10 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
-                id: chaperoneVisibilityMinus
                 text: "-"
                 Layout.preferredWidth: 40
                 onClicked: {
-                    chaperoneVisibilitySlider.value -= 0.1
+                    chaperoneVisibilitySlider.value -= 0.05
                 }
             }
 
@@ -262,11 +261,10 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
-                id: chaperoneVisibilityPlus
                 text: "+"
                 Layout.preferredWidth: 40
                 onClicked: {
-                    chaperoneVisibilitySlider.value += 0.1
+                    chaperoneVisibilitySlider.value += 0.05
                 }
             }
 
@@ -303,6 +301,7 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
+                id: chaperoneFadeDistanceMinus
                 text: "-"
                 Layout.preferredWidth: 40
                 onClicked: {
@@ -327,6 +326,7 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
+                id: chaperoneFadeDistancePlus
                 text: "+"
                 Layout.preferredWidth: 40
                 onClicked: {
@@ -457,16 +457,16 @@ MyStackViewPage {
                 onCheckedChanged: {
                     ChaperoneTabController.setDisableChaperone(this.checked, false)
                     if(this.checked){
-                        chaperoneVisibilityMinus.enabled = false;
-                        chaperoneVisibilityPlus.enabled = false;
-                        chaperoneVisibilitySlider.enabled = false;
-                        chaperoneVisibilityText.enabled = false;
+                        chaperoneFadeDistanceMinus.enabled = false;
+                        chaperoneFadeDistancePlus.enabled = false;
+                        chaperoneFadeDistanceSlider.enabled = false;
+                        chaperoneFadeDistanceText.enabled = false;
 
                     }else{
-                        chaperoneVisibilityMinus.enabled = true;
-                        chaperoneVisibilityPlus.enabled = true;
-                        chaperoneVisibilitySlider.enabled = true;
-                        chaperoneVisibilityText.enabled = true;
+                        chaperoneFadeDistanceMinus.enabled = true;
+                        chaperoneFadeDistancePlus.enabled = true;
+                        chaperoneFadeDistanceSlider.enabled = true;
+                        chaperoneFadeDistanceText.enabled = true;
                     }
                 }
             }
@@ -537,16 +537,16 @@ MyStackViewPage {
             chaperoneForceBoundsToggle.checked = ChaperoneTabController.forceBounds
             chaperoneDisableChaperone.checked = ChaperoneTabController.disableChaperone
             if(chaperoneDisableChaperone.checked){
-                chaperoneVisibilityMinus.enabled = false;
-                chaperoneVisibilityPlus.enabled = false;
-                chaperoneVisibilitySlider.enabled = false;
-                chaperoneVisibilityText.enabled = false;
+                chaperoneFadeDistanceMinus.enabled = false;
+                chaperoneFadeDistancePlus.enabled = false;
+                chaperoneFadeDistanceSlider.enabled = false;
+                chaperoneFadeDistanceText.enabled = false;
 
             }else{
-                chaperoneVisibilityMinus.enabled = true;
-                chaperoneVisibilityPlus.enabled = true;
-                chaperoneVisibilitySlider.enabled = true;
-                chaperoneVisibilityText.enabled = true;
+                chaperoneFadeDistanceMinus.enabled = true;
+                chaperoneFadeDistancePlus.enabled = true;
+                chaperoneFadeDistanceSlider.enabled = true;
+                chaperoneFadeDistanceText.enabled = true;
             }
             reloadChaperoneProfiles()
         }
