@@ -329,7 +329,9 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         vr::VROverlay()->SetOverlayInputMethod(
             m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse );
         vr::VROverlay()->SetOverlayFlag(
-            m_ulOverlayHandle, vr::VROverlayFlags_SendVRScrollEvents, true );
+            m_ulOverlayHandle,
+            vr::VROverlayFlags_SendVRSmoothScrollEvents,
+            true );
         QString thumbIconPath
             = QStandardPaths::locate( QStandardPaths::AppDataLocation,
                                       QStringLiteral( "res/thumbicon.png" ) );
@@ -610,7 +612,7 @@ void OverlayController::mainEventLoop()
         }
         break;
 
-        case vr::VREvent_Scroll:
+        case vr::VREvent_ScrollSmooth:
         {
             // Wheel speed is defined as 1/8 of a degree
             QWheelEvent wheelEvent(
