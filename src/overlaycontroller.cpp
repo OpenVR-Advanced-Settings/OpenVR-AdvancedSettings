@@ -332,9 +332,9 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             m_ulOverlayHandle,
             vr::VROverlayFlags_SendVRSmoothScrollEvents,
             true );
-        QString thumbIconPath
-            = QStandardPaths::locate( QStandardPaths::AppDataLocation,
-                                      QStringLiteral( "res/thumbicon.png" ) );
+        QString thumbIconPath = QStandardPaths::locate(
+            QStandardPaths::AppDataLocation,
+            QStringLiteral( "res/img/icons/thumbicon.png" ) );
         if ( QFile::exists( thumbIconPath ) )
         {
             vr::VROverlay()->SetOverlayFromFile(

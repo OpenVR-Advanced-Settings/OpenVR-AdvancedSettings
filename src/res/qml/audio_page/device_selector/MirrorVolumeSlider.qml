@@ -62,7 +62,7 @@ ColumnLayout {
             Layout.leftMargin: 12
             checkable: true
             contentItem: Image {
-                source: parent.checked ? "../speaker_off.svg" : "../speaker_on.svg"
+                source: parent.checked ? "qrc:/speaker/off" : "qrc:/speaker/on"
                 sourceSize.width: 32
                 sourceSize.height: 32
                 anchors.fill: parent

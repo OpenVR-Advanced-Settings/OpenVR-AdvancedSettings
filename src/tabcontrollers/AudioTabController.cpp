@@ -72,7 +72,8 @@ void AudioTabController::initStage2( OverlayController* var_parent,
     {
         QString notifIconPath = QStandardPaths::locate(
             QStandardPaths::AppDataLocation,
-            QStringLiteral( "/res/qml/ptt_notification.png" ) );
+            QStringLiteral(
+                "/res/img/audio/microphone/ptt_notification.png" ) );
         if ( QFile::exists( notifIconPath ) )
         {
             vr::VROverlay()->SetOverlayFromFile(

@@ -31,7 +31,7 @@ CheckBox {
             height: 28
 			x: (parent.width - width) / 2
 			y: (parent.height - height) / 2
-            source: "qrc:/common/box-checkmark"
+            source: "qrc:/common/box_checkmark"
 			sourceSize.width: width
 			sourceSize.height: height
 			visible: parent.parent.checked

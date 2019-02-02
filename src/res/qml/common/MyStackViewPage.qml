@@ -26,7 +26,7 @@ Rectangle {
                 enabled: headerShowBackButton
                 opacity: headerShowBackButton ? 1.0 : 0.0
                 contentItem: Image {
-                    source: "qrc:/common/back-arrow"
+                    source: "qrc:/common/backarrow"
                     sourceSize.width: 50
                     sourceSize.height: 50
                     anchors.fill: parent

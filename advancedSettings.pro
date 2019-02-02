@@ -118,19 +118,15 @@ unix:DESTDIR = bin/linux/AdvancedSettings
 
 DISTFILES += \
     src/res/sounds/alarm01.wav \
-    src/res/qml/ptt_notification.png \
-    src/res/battery_0.png \
-    src/res/battery_1.png \
-    src/res/battery_2.png \
-    src/res/battery_3.png \
-    src/res/battery_4.png \
-    src/res/battery_5.png \
-    src/res/thumbicon.png \
-    src/res/qml/mic_off.svg \
-    src/res/qml/mic_on.svg \
-    src/res/qml/ptt_notification.svg \
-    src/res/qml/speaker_off.svg \
-    src/res/qml/speaker_on.svg \
+    src/res/img/audio/microphone/ptt_notification.png \
+    src/res/img/audio/microphone/ptt_notification.svg \
+    src/res/img/battery/battery_0.png \
+    src/res/img/battery/battery_1.png \
+    src/res/img/battery/battery_2.png \
+    src/res/img/battery/battery_3.png \
+    src/res/img/battery/battery_4.png \
+    src/res/img/battery/battery_5.png \
+    src/res/img/icons/thumbicon.png \
     src/res/qml/qmldir \
     src/res/qml/AccessibilityPage.qml \
     src/res/qml/audio_page/* \
