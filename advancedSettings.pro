@@ -135,7 +135,7 @@ DISTFILES += \
     src/res/qml/speaker_on.svg \
     src/res/qml/qmldir \
     src/res/qml/AccessibilityPage.qml \
-    src/res/qml/AudioPage.qml \
+    src/res/qml/audio_page/* \
     src/res/qml/ChaperonePage.qml \
     src/res/qml/ChaperoneWarningsPage.qml \
     src/res/qml/FixFloorPage.qml \
@@ -163,4 +163,9 @@ DISTFILES += \
     src/res/qml/LineSeparator.qml \
     src/res/qml/utilities_page/keyboard_utils/* \
     src/res/qml/utilities_page/desktop_size/* \
-    src/res/qml/utilities_page/alarm_clock/*
+    src/res/qml/utilities_page/alarm_clock/* \
+    src/res/qml/audio_page/dialog_boxes/* \
+    src/res/qml/audio_page/device_selector/* \
+    src/res/qml/audio_page/proximity/* \
+    src/res/qml/audio_page/push_to_talk/* \
+    src/res/qml/audio_page/profiles/* \
