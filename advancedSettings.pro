@@ -126,8 +126,6 @@ DISTFILES += \
     src/res/battery_4.png \
     src/res/battery_5.png \
     src/res/thumbicon.png \
-    src/res/qml/backarrow.svg \
-    src/res/qml/check.svg \
     src/res/qml/mic_off.svg \
     src/res/qml/mic_on.svg \
     src/res/qml/ptt_notification.svg \
@@ -170,3 +168,5 @@ DISTFILES += \
     src/res/qml/audio_page/push_to_talk/* \
     src/res/qml/audio_page/profiles/* \
     src/res/qml/common/* \
+
+RESOURCES += src/res/resources.qrc

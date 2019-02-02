@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/common">
+    <file alias="back-arrow">img/common/backarrow.svg</file>
+    <file alias="box-checkmark">img/common/check.svg</file>
+</qresource>
+</RCC>
