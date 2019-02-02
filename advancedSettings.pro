@@ -169,3 +169,4 @@ DISTFILES += \
     src/res/qml/audio_page/proximity/* \
     src/res/qml/audio_page/push_to_talk/* \
     src/res/qml/audio_page/profiles/* \
+    src/res/qml/common/* \

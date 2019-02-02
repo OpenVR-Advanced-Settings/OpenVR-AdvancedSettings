@@ -6,7 +6,7 @@ import "media_keys"
 import "alarm_clock"
 import "desktop_size"
 import "keyboard_utils"
-import ".."
+import "../common"
 
 MyStackViewPage {
     headerText: "Utilities"
