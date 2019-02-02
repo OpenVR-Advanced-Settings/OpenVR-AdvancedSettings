@@ -1,0 +1,62 @@
+#pragma once
+
+#include <openvr.h>
+//#include <cmath>
+
+namespace utils
+{
+inline vr::HmdQuaternion_t quaternionFromHmdMatrix34( vr::HmdMatrix34_t matrix )
+{
+    vr::HmdQuaternion_t q;
+
+    q.w = sqrt(
+              fmax( 0, 1 + matrix.m[0][0] + matrix.m[1][1] + matrix.m[2][2] ) )
+          / 2;
+    q.x = sqrt(
+              fmax( 0, 1 + matrix.m[0][0] - matrix.m[1][1] - matrix.m[2][2] ) )
+          / 2;
+    q.y = sqrt(
+              fmax( 0, 1 - matrix.m[0][0] + matrix.m[1][1] - matrix.m[2][2] ) )
+          / 2;
+    q.z = sqrt(
+              fmax( 0, 1 - matrix.m[0][0] - matrix.m[1][1] + matrix.m[2][2] ) )
+          / 2;
+    q.x = copysign( q.x, matrix.m[2][1] - matrix.m[1][2] );
+    q.y = copysign( q.y, matrix.m[0][2] - matrix.m[2][0] );
+    q.z = copysign( q.z, matrix.m[1][0] - matrix.m[0][1] );
+    return q;
+}
+
+inline vr::HmdQuaternion_t quaternionMultiply( const vr::HmdQuaternion_t& lhs,
+                                               const vr::HmdQuaternion_t& rhs )
+{
+    return { ( lhs.w * rhs.w ) - ( lhs.x * rhs.x ) - ( lhs.y * rhs.y )
+                 - ( lhs.z * rhs.z ),
+             ( lhs.w * rhs.x ) + ( lhs.x * rhs.w ) + ( lhs.y * rhs.z )
+                 - ( lhs.z * rhs.y ),
+             ( lhs.w * rhs.y ) + ( lhs.y * rhs.w ) + ( lhs.z * rhs.x )
+                 - ( lhs.x * rhs.z ),
+             ( lhs.w * rhs.z ) + ( lhs.z * rhs.w ) + ( lhs.x * rhs.y )
+                 - ( lhs.y * rhs.x ) };
+}
+
+inline vr::HmdQuaternion_t
+    quaternionConjugate( const vr::HmdQuaternion_t& quat )
+{
+    return {
+        quat.w,
+        -quat.x,
+        -quat.y,
+        -quat.z,
+    };
+}
+
+inline double quaternionGetYaw( const vr::HmdQuaternion_t& quat )
+{
+    double yawResult
+        = atan2( 2.0 * ( quat.y * quat.w + quat.x * quat.z ),
+                 ( 2.0 * ( quat.w * quat.w + quat.x * quat.x ) ) - 1.0 );
+    return yawResult;
+}
+
+} // namespace utils

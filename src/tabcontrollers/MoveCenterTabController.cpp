@@ -2,6 +2,7 @@
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
 #include "../utils/Matrix.h"
+#include "../utils/quaternion.h"
 
 void rotateCoordinates( double coordinates[3], double angle )
 {
@@ -895,7 +896,7 @@ void MoveCenterTabController::eventLoopTick(
         utils::matMul33( hmdMatrixAbsolute, hmdMatrixRotMat, hmdMatrix );
 
         // Convert pose matrix to quaternion
-        m_hmdQuaternion = utils::getQuaternion( hmdMatrixAbsolute );
+        m_hmdQuaternion = utils::quaternionFromHmdMatrix34( hmdMatrixAbsolute );
 
         // Get rotation change of hmd
         // Checking for invalid quaternion using < because == isn't guaranteed
@@ -909,19 +910,12 @@ void MoveCenterTabController::eventLoopTick(
         {
             // Construct a quaternion representing difference between old
             // hmd pose and new hmd pose.
-            vr::HmdQuaternion_t hmdDiffQuaternion = utils::multiplyQuaternion(
+            vr::HmdQuaternion_t hmdDiffQuaternion = utils::quaternionMultiply(
                 m_hmdQuaternion,
                 utils::quaternionConjugate( m_lastHmdQuaternion ) );
 
             // Calculate yaw from quaternion.
-            double hmdYawDiff = atan2(
-                2.0
-                    * ( hmdDiffQuaternion.y * hmdDiffQuaternion.w
-                        + hmdDiffQuaternion.x * hmdDiffQuaternion.z ),
-                -1.0
-                    + 2.0
-                          * ( hmdDiffQuaternion.w * hmdDiffQuaternion.w
-                              + hmdDiffQuaternion.x * hmdDiffQuaternion.x ) );
+            double hmdYawDiff = utils::quaternionGetYaw( hmdDiffQuaternion );
 
             // Apply yaw difference to m_hmdYawTotal.
             m_hmdYawTotal += hmdYawDiff;
@@ -1076,7 +1070,8 @@ void MoveCenterTabController::eventLoopTick(
             utils::matMul33( handMatrixAbsolute, handMatrixRotMat, handMatrix );
 
             // Convert pose matrix to quaternion
-            m_handQuaternion = utils::getQuaternion( handMatrixAbsolute );
+            m_handQuaternion
+                = utils::quaternionFromHmdMatrix34( handMatrixAbsolute );
 
             if ( m_lastRotateHand == m_activeTurnHand )
             {
@@ -1094,22 +1089,14 @@ void MoveCenterTabController::eventLoopTick(
                     // Construct a quaternion representing difference
                     // between old hand and new hand.
                     vr::HmdQuaternion_t handDiffQuaternion
-                        = utils::multiplyQuaternion(
+                        = utils::quaternionMultiply(
                             m_handQuaternion,
                             utils::quaternionConjugate(
                                 m_lastHandQuaternion ) );
 
                     // Calculate yaw from quaternion.
-                    double handYawDiff = atan2(
-                        2.0
-                            * ( handDiffQuaternion.y * handDiffQuaternion.w
-                                + handDiffQuaternion.x * handDiffQuaternion.z ),
-                        -1.0
-                            + 2.0
-                                  * ( handDiffQuaternion.w
-                                          * handDiffQuaternion.w
-                                      + handDiffQuaternion.x
-                                            * handDiffQuaternion.x ) );
+                    double handYawDiff
+                        = utils::quaternionGetYaw( handDiffQuaternion );
 
                     int newRotationAngleDeg = static_cast<int>(
                         round( handYawDiff * k_radiansToCentidegrees )
