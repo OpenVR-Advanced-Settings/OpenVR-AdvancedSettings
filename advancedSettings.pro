@@ -120,31 +120,14 @@ DISTFILES += \
     src/res/sounds/alarm01.wav \
     src/res/img/audio/microphone/ptt_notification.png \
     src/res/img/audio/microphone/ptt_notification.svg \
-    src/res/img/battery/battery_0.png \
-    src/res/img/battery/battery_1.png \
-    src/res/img/battery/battery_2.png \
-    src/res/img/battery/battery_3.png \
-    src/res/img/battery/battery_4.png \
-    src/res/img/battery/battery_5.png \
-    src/res/img/icons/thumbicon.png \
+    src/res/img/battery/* \
+    src/res/img/icons/* \
     src/res/qml/qmldir \
     src/res/qml/AccessibilityPage.qml \
     src/res/qml/audio_page/* \
     src/res/qml/ChaperonePage.qml \
     src/res/qml/ChaperoneWarningsPage.qml \
     src/res/qml/FixFloorPage.qml \
-    src/res/qml/mainwidget.qml \
-    src/res/qml/MyComboBox.qml \
-    src/res/qml/MyDialogOkCancelPopup.qml \
-    src/res/qml/MyDialogOkPopup.qml \
-    src/res/qml/MyPushButton.qml \
-    src/res/qml/MyPushButton2.qml \
-    src/res/qml/MyResources.qml \
-    src/res/qml/MySlider.qml \
-    src/res/qml/MyStackViewPage.qml \
-    src/res/qml/MyText.qml \
-    src/res/qml/MyTextField.qml \
-    src/res/qml/MyToggleButton.qml \
     src/res/qml/PlayspacePage.qml \
     src/res/qml/PttControllerConfigDialog.qml \
     src/res/qml/RevivePage.qml \
@@ -154,7 +137,6 @@ DISTFILES += \
     src/res/qml/SteamVRPage.qml \
     src/res/qml/utilities_page/* \
     src/res/qml/utilities_page/media_keys/* \
-    src/res/qml/LineSeparator.qml \
     src/res/qml/utilities_page/keyboard_utils/* \
     src/res/qml/utilities_page/desktop_size/* \
     src/res/qml/utilities_page/alarm_clock/* \
