@@ -859,9 +859,243 @@ void MoveCenterTabController::optionalOverrideRightHandRoomTurn(
 
 // END of turn bindings.
 
+void MoveCenterTabController::updateHmdRotationCounter(
+    vr::TrackedDevicePose_t hmdPose,
+    double angle )
+{
+    // If hmd tracking is bad, set m_lastHmdQuaternion invalid
+    if ( !hmdPose.bPoseIsValid
+         || hmdPose.eTrackingResult != vr::TrackingResult_Running_OK )
+    {
+        m_lastHmdQuaternion.w = k_quaternionInvalidValue;
+        return;
+    }
+
+    // Get hmd pose matrix (in rotated coordinates)
+    vr::HmdMatrix34_t hmdMatrix = hmdPose.mDeviceToAbsoluteTracking;
+
+    // Set up (un)rotation matrix
+    vr::HmdMatrix34_t hmdMatrixRotMat;
+    vr::HmdMatrix34_t hmdMatrixAbsolute;
+    utils::initRotationMatrix(
+        hmdMatrixRotMat, 1, static_cast<float>( angle ) );
+
+    // Get hmdMatrixAbsolute in un-rotated coordinates.
+    utils::matMul33( hmdMatrixAbsolute, hmdMatrixRotMat, hmdMatrix );
+
+    // Convert pose matrix to quaternion
+    m_hmdQuaternion = utils::quaternionFromHmdMatrix34( hmdMatrixAbsolute );
+
+    // Get rotation change of hmd
+    // Checking for invalid quaternion using < because == isn't guaranteed
+    // for doubles comparison.
+    if ( m_lastHmdQuaternion.w < k_quaternionUnderIsInvalidValueThreshold )
+    {
+        m_lastHmdQuaternion = m_hmdQuaternion;
+        return;
+    }
+    // Construct a quaternion representing difference between old
+    // hmd pose and new hmd pose.
+    vr::HmdQuaternion_t hmdDiffQuaternion = utils::quaternionMultiply(
+        m_hmdQuaternion, utils::quaternionConjugate( m_lastHmdQuaternion ) );
+
+    // Calculate yaw from quaternion.
+    double hmdYawDiff = utils::quaternionGetYaw( hmdDiffQuaternion );
+
+    // Apply yaw difference to m_hmdYawTotal.
+    m_hmdYawTotal += hmdYawDiff;
+    m_lastHmdQuaternion = m_hmdQuaternion;
+}
+
+void MoveCenterTabController::updateHandDrag(
+    vr::TrackedDevicePose_t* devicePoses,
+    double angle )
+{
+    auto moveHandId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
+        m_activeDragHand );
+
+    if ( m_activeDragHand == vr::TrackedControllerRole_Invalid
+         || moveHandId == vr::k_unTrackedDeviceIndexInvalid
+         || moveHandId >= vr::k_unMaxTrackedDeviceCount )
+    {
+        if ( m_lastMoveHand != vr::TrackedControllerRole_Invalid )
+        {
+            emit offsetXChanged( m_offsetX );
+            emit offsetYChanged( m_offsetY );
+            emit offsetZChanged( m_offsetZ );
+        }
+        m_lastMoveHand = m_activeDragHand;
+        return;
+    }
+
+    vr::TrackedDevicePose_t* movePose = devicePoses + moveHandId;
+    if ( !movePose->bPoseIsValid || !movePose->bDeviceIsConnected
+         || movePose->eTrackingResult != vr::TrackingResult_Running_OK )
+    {
+        m_lastMoveHand = m_activeDragHand;
+        return;
+    }
+
+    double relativeControllerPosition[]
+        = { movePose->mDeviceToAbsoluteTracking.m[0][3],
+            movePose->mDeviceToAbsoluteTracking.m[1][3],
+            movePose->mDeviceToAbsoluteTracking.m[2][3] };
+
+    rotateCoordinates( relativeControllerPosition, -angle );
+    float absoluteControllerPosition[] = {
+        static_cast<float>( relativeControllerPosition[0] ) + m_offsetX,
+        static_cast<float>( relativeControllerPosition[1] ) + m_offsetY,
+        static_cast<float>( relativeControllerPosition[2] ) + m_offsetZ,
+    };
+
+    if ( m_lastMoveHand == m_activeDragHand )
+    {
+        double diff[3] = {
+            absoluteControllerPosition[0] - m_lastControllerPosition[0],
+            absoluteControllerPosition[1] - m_lastControllerPosition[1],
+            absoluteControllerPosition[2] - m_lastControllerPosition[2],
+        };
+
+        // offset is un-rotated coordinates
+
+        // prevents UI from updating if axis movement is locked
+        if ( !m_lockXToggle )
+        {
+            m_offsetX += diff[0];
+        }
+        if ( !m_lockYToggle )
+        {
+            m_offsetY += diff[1];
+        }
+        if ( !m_lockZToggle )
+        {
+            m_offsetZ += diff[2];
+        }
+
+        rotateCoordinates( diff, angle );
+
+        // Done calculating rotation so we down-cast double to float for
+        // openvr format
+        float diffFloat[3] = { static_cast<float>( diff[0] ),
+                               static_cast<float>( diff[1] ),
+                               static_cast<float>( diff[2] ) };
+        // If locked removes movement
+        if ( m_lockXToggle )
+        {
+            diffFloat[0] = 0;
+        }
+        if ( m_lockYToggle )
+        {
+            diffFloat[1] = 0;
+        }
+        if ( m_lockZToggle )
+        {
+            diffFloat[2] = 0;
+        }
+
+        // Check if diffFloat is anything before comitting.
+        if ( diffFloat[0] != 0 || diffFloat[1] != 0 || diffFloat[2] != 0 )
+        {
+            parent->AddOffsetToUniverseCenter(
+                vr::TrackingUniverseOrigin( m_trackingUniverse ),
+                diffFloat,
+                m_adjustChaperone );
+        }
+    }
+    m_lastControllerPosition[0] = absoluteControllerPosition[0];
+    m_lastControllerPosition[1] = absoluteControllerPosition[1];
+    m_lastControllerPosition[2] = absoluteControllerPosition[2];
+    m_lastMoveHand = m_activeDragHand;
+}
+
+void MoveCenterTabController::updateHandTurn(
+    vr::TrackedDevicePose_t* devicePoses,
+    double angle )
+{
+    auto rotateHandId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
+        m_activeTurnHand );
+
+    if ( m_activeTurnHand == vr::TrackedControllerRole_Invalid
+         || rotateHandId == vr::k_unTrackedDeviceIndexInvalid
+         || rotateHandId >= vr::k_unMaxTrackedDeviceCount )
+    {
+        if ( m_lastRotateHand != vr::TrackedControllerRole_Invalid )
+        {
+            m_lastHandQuaternion.w = k_quaternionInvalidValue;
+        }
+        m_lastRotateHand = m_activeTurnHand;
+        return;
+    }
+    vr::TrackedDevicePose_t* rotatePose = devicePoses + rotateHandId;
+    if ( !rotatePose->bPoseIsValid || !rotatePose->bDeviceIsConnected
+         || rotatePose->eTrackingResult != vr::TrackingResult_Running_OK )
+    {
+        m_lastRotateHand = m_activeTurnHand;
+        return;
+    }
+    // Get hand's rotation.
+    // handMatrix is in rotated coordinates.
+    vr::HmdMatrix34_t handMatrix = rotatePose->mDeviceToAbsoluteTracking;
+
+    // We need un-rotated coordinates for valid comparison between
+    // handQuaternion and lastHandQuaternion. Set up (un)rotation
+    // matrix.
+    vr::HmdMatrix34_t handMatrixRotMat;
+    vr::HmdMatrix34_t handMatrixAbsolute;
+    utils::initRotationMatrix(
+        handMatrixRotMat, 1, static_cast<float>( angle ) );
+
+    // Get handMatrixAbsolute in un-rotated coordinates.
+    utils::matMul33( handMatrixAbsolute, handMatrixRotMat, handMatrix );
+
+    // Convert pose matrix to quaternion
+    m_handQuaternion = utils::quaternionFromHmdMatrix34( handMatrixAbsolute );
+
+    if ( m_lastRotateHand == m_activeTurnHand )
+    {
+        // Get rotation change of hand.
+        // Checking for invalid quaternion using < because == isn't
+        // guaranteed for doubles comparison.
+        if ( m_lastHandQuaternion.w < k_quaternionUnderIsInvalidValueThreshold )
+        {
+            m_lastHandQuaternion = m_handQuaternion;
+        }
+
+        else
+        {
+            // Construct a quaternion representing difference
+            // between old hand and new hand.
+            vr::HmdQuaternion_t handDiffQuaternion = utils::quaternionMultiply(
+                m_handQuaternion,
+                utils::quaternionConjugate( m_lastHandQuaternion ) );
+
+            // Calculate yaw from quaternion.
+            double handYawDiff = utils::quaternionGetYaw( handDiffQuaternion );
+
+            int newRotationAngleDeg = static_cast<int>(
+                round( handYawDiff * k_radiansToCentidegrees ) + m_rotation );
+
+            // Keep angle within -18000 ~ 18000 centidegrees
+            if ( newRotationAngleDeg > 18000 )
+            {
+                newRotationAngleDeg -= 36000;
+            }
+            else if ( newRotationAngleDeg < -18000 )
+            {
+                newRotationAngleDeg += 36000;
+            }
+
+            setRotation( newRotationAngleDeg );
+        }
+    }
+    m_lastHandQuaternion = m_handQuaternion;
+    m_lastRotateHand = m_activeTurnHand;
+}
+
 void MoveCenterTabController::eventLoopTick(
     vr::ETrackingUniverseOrigin universe,
     vr::TrackedDevicePose_t* devicePoses )
+
 {
     if ( settingsUpdateCounter >= k_moveCenterSettingsUpdateCounter )
     {
@@ -876,248 +1110,22 @@ void MoveCenterTabController::eventLoopTick(
         settingsUpdateCounter++;
     }
 
+    // get current space rotation in radians
     double angle = m_rotation * k_centidegreesToRadians;
 
-    // START of hmd rotation stats tracking:
-    // Check if hmd is tracking ok and do everything
-    if ( devicePoses[0].bPoseIsValid
-         && devicePoses[0].eTrackingResult == vr::TrackingResult_Running_OK )
+    if ( m_hmdRotationStatsUpdateCounter >= k_hmdRotationCounterUpdateRate )
     {
-        // Get hmd pose matrix (in rotated coordinates)
-        vr::HmdMatrix34_t hmdMatrix = devicePoses[0].mDeviceToAbsoluteTracking;
-
-        // Set up (un)rotation matrix
-        vr::HmdMatrix34_t hmdMatrixRotMat;
-        vr::HmdMatrix34_t hmdMatrixAbsolute;
-        utils::initRotationMatrix(
-            hmdMatrixRotMat, 1, static_cast<float>( angle ) );
-
-        // Get hmdMatrixAbsolute in un-rotated coordinates.
-        utils::matMul33( hmdMatrixAbsolute, hmdMatrixRotMat, hmdMatrix );
-
-        // Convert pose matrix to quaternion
-        m_hmdQuaternion = utils::quaternionFromHmdMatrix34( hmdMatrixAbsolute );
-
-        // Get rotation change of hmd
-        // Checking for invalid quaternion using < because == isn't guaranteed
-        // for doubles comparison.
-        if ( m_lastHmdQuaternion.w < k_quaternionUnderIsInvalidValueThreshold )
-        {
-            m_lastHmdQuaternion = m_hmdQuaternion;
-        }
-
-        else
-        {
-            // Construct a quaternion representing difference between old
-            // hmd pose and new hmd pose.
-            vr::HmdQuaternion_t hmdDiffQuaternion = utils::quaternionMultiply(
-                m_hmdQuaternion,
-                utils::quaternionConjugate( m_lastHmdQuaternion ) );
-
-            // Calculate yaw from quaternion.
-            double hmdYawDiff = utils::quaternionGetYaw( hmdDiffQuaternion );
-
-            // Apply yaw difference to m_hmdYawTotal.
-            m_hmdYawTotal += hmdYawDiff;
-            m_lastHmdQuaternion = m_hmdQuaternion;
-        }
-
-        // end check if hmdpose is ok
+        // device pose index 0 is always the hmd
+        updateHmdRotationCounter( devicePoses[0], angle );
+        m_hmdRotationStatsUpdateCounter = 0;
     }
     else
     {
-        m_lastHmdQuaternion.w = k_quaternionInvalidValue;
-    } // END of hmd rotation stats tracking
-
-    auto moveHandId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
-        m_activeDragHand );
-    auto rotateHandId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
-        m_activeTurnHand );
-
-    // START of hand move
-    if ( m_activeDragHand == vr::TrackedControllerRole_Invalid
-         || moveHandId == vr::k_unTrackedDeviceIndexInvalid
-         || moveHandId >= vr::k_unMaxTrackedDeviceCount )
-    {
-        if ( m_lastMoveHand != vr::TrackedControllerRole_Invalid )
-        {
-            emit offsetXChanged( m_offsetX );
-            emit offsetYChanged( m_offsetY );
-            emit offsetZChanged( m_offsetZ );
-        }
-        m_lastMoveHand = m_activeDragHand;
+        m_hmdRotationStatsUpdateCounter++;
     }
-    else
-    {
-        vr::TrackedDevicePose_t* movePose = devicePoses + moveHandId;
-        if ( !movePose->bPoseIsValid || !movePose->bDeviceIsConnected
-             || movePose->eTrackingResult != vr::TrackingResult_Running_OK )
-        {
-            m_lastMoveHand = m_activeDragHand;
-        }
-        else
-        {
-            double relativeControllerPosition[]
-                = { movePose->mDeviceToAbsoluteTracking.m[0][3],
-                    movePose->mDeviceToAbsoluteTracking.m[1][3],
-                    movePose->mDeviceToAbsoluteTracking.m[2][3] };
 
-            rotateCoordinates( relativeControllerPosition, -angle );
-            float absoluteControllerPosition[] = {
-                static_cast<float>( relativeControllerPosition[0] ) + m_offsetX,
-                static_cast<float>( relativeControllerPosition[1] ) + m_offsetY,
-                static_cast<float>( relativeControllerPosition[2] ) + m_offsetZ,
-            };
+    updateHandDrag( devicePoses, angle );
 
-            if ( m_lastMoveHand == m_activeDragHand )
-            {
-                double diff[3] = {
-                    absoluteControllerPosition[0] - m_lastControllerPosition[0],
-                    absoluteControllerPosition[1] - m_lastControllerPosition[1],
-                    absoluteControllerPosition[2] - m_lastControllerPosition[2],
-                };
-
-                // offset is un-rotated coordinates
-
-                // prevents UI from updating if axis movement is locked
-                if ( !m_lockXToggle )
-                {
-                    m_offsetX += diff[0];
-                }
-                if ( !m_lockYToggle )
-                {
-                    m_offsetY += diff[1];
-                }
-                if ( !m_lockZToggle )
-                {
-                    m_offsetZ += diff[2];
-                }
-
-                rotateCoordinates( diff, angle );
-
-                // Done calculating rotation so we down-cast double to float for
-                // openvr format
-                float diffFloat[3] = { static_cast<float>( diff[0] ),
-                                       static_cast<float>( diff[1] ),
-                                       static_cast<float>( diff[2] ) };
-                // If locked removes movement
-                if ( m_lockXToggle )
-                {
-                    diffFloat[0] = 0;
-                }
-                if ( m_lockYToggle )
-                {
-                    diffFloat[1] = 0;
-                }
-                if ( m_lockZToggle )
-                {
-                    diffFloat[2] = 0;
-                }
-
-                // Check if diffFloat is anything before comitting.
-                if ( diffFloat[0] != 0 || diffFloat[1] != 0
-                     || diffFloat[2] != 0 )
-                {
-                    parent->AddOffsetToUniverseCenter(
-                        vr::TrackingUniverseOrigin( m_trackingUniverse ),
-                        diffFloat,
-                        m_adjustChaperone );
-                }
-            }
-            m_lastControllerPosition[0] = absoluteControllerPosition[0];
-            m_lastControllerPosition[1] = absoluteControllerPosition[1];
-            m_lastControllerPosition[2] = absoluteControllerPosition[2];
-            m_lastMoveHand = m_activeDragHand;
-        }
-    } // END of hand move
-
-    // START of hand rotation
-
-    if ( m_activeTurnHand == vr::TrackedControllerRole_Invalid
-         || rotateHandId == vr::k_unTrackedDeviceIndexInvalid
-         || rotateHandId >= vr::k_unMaxTrackedDeviceCount )
-    {
-        if ( m_lastRotateHand != vr::TrackedControllerRole_Invalid )
-        {
-            m_lastHandQuaternion.w = k_quaternionInvalidValue;
-        }
-        m_lastRotateHand = m_activeTurnHand;
-    }
-    else
-    {
-        vr::TrackedDevicePose_t* rotatePose = devicePoses + rotateHandId;
-        if ( !rotatePose->bPoseIsValid || !rotatePose->bDeviceIsConnected
-             || rotatePose->eTrackingResult != vr::TrackingResult_Running_OK )
-        {
-            m_lastRotateHand = m_activeTurnHand;
-        }
-        else
-        {
-            // Get hand's rotation.
-            // handMatrix is in rotated coordinates.
-            vr::HmdMatrix34_t handMatrix
-                = rotatePose->mDeviceToAbsoluteTracking;
-
-            // We need un-rotated coordinates for valid comparison between
-            // handQuaternion and lastHandQuaternion. Set up (un)rotation
-            // matrix.
-            vr::HmdMatrix34_t handMatrixRotMat;
-            vr::HmdMatrix34_t handMatrixAbsolute;
-            utils::initRotationMatrix(
-                handMatrixRotMat, 1, static_cast<float>( angle ) );
-
-            // Get handMatrixAbsolute in un-rotated coordinates.
-            utils::matMul33( handMatrixAbsolute, handMatrixRotMat, handMatrix );
-
-            // Convert pose matrix to quaternion
-            m_handQuaternion
-                = utils::quaternionFromHmdMatrix34( handMatrixAbsolute );
-
-            if ( m_lastRotateHand == m_activeTurnHand )
-            {
-                // Get rotation change of hand.
-                // Checking for invalid quaternion using < because == isn't
-                // guaranteed for doubles comparison.
-                if ( m_lastHandQuaternion.w
-                     < k_quaternionUnderIsInvalidValueThreshold )
-                {
-                    m_lastHandQuaternion = m_handQuaternion;
-                }
-
-                else
-                {
-                    // Construct a quaternion representing difference
-                    // between old hand and new hand.
-                    vr::HmdQuaternion_t handDiffQuaternion
-                        = utils::quaternionMultiply(
-                            m_handQuaternion,
-                            utils::quaternionConjugate(
-                                m_lastHandQuaternion ) );
-
-                    // Calculate yaw from quaternion.
-                    double handYawDiff
-                        = utils::quaternionGetYaw( handDiffQuaternion );
-
-                    int newRotationAngleDeg = static_cast<int>(
-                        round( handYawDiff * k_radiansToCentidegrees )
-                        + m_rotation );
-
-                    // Keep angle within -18000 ~ 18000 centidegrees
-                    if ( newRotationAngleDeg > 18000 )
-                    {
-                        newRotationAngleDeg -= 36000;
-                    }
-                    else if ( newRotationAngleDeg < -18000 )
-                    {
-                        newRotationAngleDeg += 36000;
-                    }
-
-                    setRotation( newRotationAngleDeg );
-                }
-            }
-            m_lastHandQuaternion = m_handQuaternion;
-            m_lastRotateHand = m_activeTurnHand;
-        }
-    } // END of hand rotation
+    updateHandTurn( devicePoses, angle );
 }
 } // namespace advsettings

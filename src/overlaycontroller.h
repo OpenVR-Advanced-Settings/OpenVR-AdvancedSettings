@@ -61,6 +61,7 @@ constexpr int k_utilitiesSettingsUpdateCounter = 19;
 // k_nonVsyncTickRate determines number of ms we wait to force the next event
 // loop tick when vsync is too late due to dropped frames.
 constexpr int k_nonVsyncTickRate = 20;
+constexpr int k_hmdRotationCounterUpdateRate = 7;
 
 class OverlayController : public QObject
 {

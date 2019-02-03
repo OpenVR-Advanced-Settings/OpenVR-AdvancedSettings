@@ -96,6 +96,11 @@ private:
     bool m_overrideLeftHandTurnPressed = false;
     bool m_overrideRightHandTurnPressed = false;
     unsigned settingsUpdateCounter = 0;
+    int m_hmdRotationStatsUpdateCounter = 0;
+    void updateHmdRotationCounter( vr::TrackedDevicePose_t hmdPose,
+                                   double angle );
+    void updateHandDrag( vr::TrackedDevicePose_t* devicePoses, double angle );
+    void updateHandTurn( vr::TrackedDevicePose_t* devicePoses, double angle );
 
 public:
     void initStage1();
