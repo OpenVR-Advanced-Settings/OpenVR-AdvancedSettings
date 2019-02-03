@@ -66,7 +66,6 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/ReviveTabController.cpp \
     src/tabcontrollers/UtilitiesTabController.cpp \
     src/tabcontrollers/PttController.cpp \
-    src/tabcontrollers/AccessibilityTabController.cpp \
     src/utils/ChaperoneUtils.cpp \
     src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
     src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp \
@@ -85,7 +84,6 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/UtilitiesTabController.h \
     src/tabcontrollers/AudioManager.h \
     src/tabcontrollers/PttController.h \
-    src/tabcontrollers/AccessibilityTabController.h \
     src/tabcontrollers/KeyboardInput.h \
     src/utils/Matrix.h \
     src/utils/ChaperoneUtils.h \
@@ -123,7 +121,6 @@ DISTFILES += \
     src/res/img/battery/* \
     src/res/img/icons/* \
     src/res/qml/qmldir \
-    src/res/qml/AccessibilityPage.qml \
     src/res/qml/audio_page/* \
     src/res/qml/ChaperonePage.qml \
     src/res/qml/ChaperoneWarningsPage.qml \

@@ -65,11 +65,6 @@ Rectangle {
         visible: false
     }
 
-    property AccessibilityPage accessibilityPage: AccessibilityPage {
-        stackView: mainView
-        visible: false
-    }
-
     StackView {
         id: mainView
         anchors.fill: parent
