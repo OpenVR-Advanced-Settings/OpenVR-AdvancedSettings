@@ -37,7 +37,6 @@
 #include "tabcontrollers/SettingsTabController.h"
 #include "tabcontrollers/ReviveTabController.h"
 #include "tabcontrollers/UtilitiesTabController.h"
-#include "tabcontrollers/AccessibilityTabController.h"
 
 #include "ivrinput/ivrinput.h"
 
@@ -50,7 +49,6 @@ namespace advsettings
 // Actual rates of updates are counter * vsync (~11ms)
 // Values chosen based on update speed priority
 // Avoid setting values to the same numbers.
-constexpr int k_accessibilitySettingsUpdateCounter = 151;
 constexpr int k_audioSettingsUpdateCounter = 89;
 constexpr int k_chaperoneSettingsUpdateCounter = 101;
 constexpr int k_moveCenterSettingsUpdateCounter = 149;
@@ -121,7 +119,6 @@ public: // I know it's an ugly hack to make them public to enable external
     SettingsTabController m_settingsTabController;
     ReviveTabController m_reviveTabController;
     UtilitiesTabController m_utilitiesTabController;
-    AccessibilityTabController m_accessibilityTabController;
 
 private:
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
