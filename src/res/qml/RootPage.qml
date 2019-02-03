@@ -3,6 +3,7 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import matzman666.advsettings 1.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
+import "common"
 import "utilities_page"
 import "audio_page"
 
@@ -343,7 +344,7 @@ MyStackViewPage {
                            Layout.leftMargin: 12
                            checkable: true
                            contentItem: Image {
-                               source: parent.checked ? "audio_page/mic_off.svg" : "audio_page/mic_on.svg"
+                               source: parent.checked ? "qrc:/microphone/off" : "qrc:/microphone/on"
                                sourceSize.width: 32
                                sourceSize.height: 32
                                anchors.fill: parent

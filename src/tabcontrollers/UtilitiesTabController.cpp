@@ -274,7 +274,7 @@ void UtilitiesTabController::modAlarmTimeMinute( int value, bool notify )
 
 QString getBatteryIconPath( int batteryState )
 {
-    QString batteryPrefix = "/res/battery_";
+    QString batteryPrefix = "/res/img/battery/battery_";
     return QStandardPaths::locate(
         QStandardPaths::AppDataLocation,
         batteryPrefix + QString::number( batteryState ) + ".png" );

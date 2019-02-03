@@ -2,7 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import matzman666.advsettings 1.0
-import "../.." //common imports
+import "../../common"
 import "."
 
 ColumnLayout {
@@ -62,7 +62,7 @@ ColumnLayout {
             Layout.leftMargin: 12
             checkable: true
             contentItem: Image {
-                source: parent.checked ? "../speaker_off.svg" : "../speaker_on.svg"
+                source: parent.checked ? "qrc:/speaker/off" : "qrc:/speaker/on"
                 sourceSize.width: 32
                 sourceSize.height: 32
                 anchors.fill: parent

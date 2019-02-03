@@ -1,7 +1,8 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
-
+// Needed for MyResources in the default folder.
+import ".."
 
 CheckBox {
     checkState: Qt.Checked
@@ -30,7 +31,7 @@ CheckBox {
             height: 28
 			x: (parent.width - width) / 2
 			y: (parent.height - height) / 2
-            source: "check.svg"
+            source: "qrc:/common/box_checkmark"
 			sourceSize.width: width
 			sourceSize.height: height
 			visible: parent.parent.checked

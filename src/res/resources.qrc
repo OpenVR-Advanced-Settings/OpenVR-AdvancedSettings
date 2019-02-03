@@ -1,0 +1,20 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/common">
+    <file alias="backarrow">img/common/backarrow.svg</file>
+    <file alias="box_checkmark">img/common/check.svg</file>
+</qresource>
+<qresource prefix="/microphone">
+    <file alias="on">img/audio/microphone/mic_on.svg</file>
+    <file alias="off">img/audio/microphone/mic_off.svg</file>
+</qresource>
+<qresource prefix="/speaker">
+    <file alias="on">img/audio/speaker/speaker_on.svg</file>
+    <file alias="off">img/audio/speaker/speaker_off.svg</file>
+</qresource>
+<qresource prefix="/media_keys">
+    <file alias="play_pause">img/audio/media_keys/outline_play_pause_white_24dp.svg</file>
+    <file alias="next">img/audio/media_keys/outline_skip_next_white_24dp.svg</file>
+    <file alias="previous">img/audio/media_keys/outline_skip_previous_white_24dp.svg</file>
+    <file alias="stop">img/audio/media_keys/outline_stop_white_24dp.svg</file>
+</qresource>
+</RCC>

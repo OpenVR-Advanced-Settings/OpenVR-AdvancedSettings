@@ -2,8 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import matzman666.advsettings 1.0
-// Necessary for the project specific Components.
-import "../.."
+import "../../common"
 
 GroupBox {
     id: mediaKeysGroupBox
@@ -26,10 +25,10 @@ GroupBox {
         }
 
         RowLayout {
-            property string playPauseButtonPath: "outline_play_pause_white_24dp.svg"
-            property string stopButtonPath: "outline_stop_white_24dp.svg"
-            property string previousButtonPath: "outline_skip_previous_white_24dp.svg"
-            property string nextButtonPath: "outline_skip_next_white_24dp.svg"
+            property string playPauseButtonPath: "qrc:/media_keys/play_pause"
+            property string stopButtonPath: "qrc:/media_keys/stop"
+            property string previousButtonPath: "qrc:/media_keys/previous"
+            property string nextButtonPath: "qrc:/media_keys/next"
 
             MediaButton {
                 id: previousSongButton
