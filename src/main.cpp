@@ -425,7 +425,7 @@ int main( int argc, char* argv[] )
 
         QString path = QStandardPaths::locate(
             QStandardPaths::AppDataLocation,
-            QStringLiteral( "res/qml/mainwidget.qml" ) );
+            QStringLiteral( "res/qml/common/mainwidget.qml" ) );
 
         QQmlComponent component( &qmlEngine, QUrl::fromLocalFile( path ) );
         auto errors = component.errors();

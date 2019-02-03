@@ -2,6 +2,8 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.2
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
+// Needed for MyResources in the default folder.
+import ".."
 
 Rectangle {
     color: "#1b2939"
@@ -24,7 +26,7 @@ Rectangle {
                 enabled: headerShowBackButton
                 opacity: headerShowBackButton ? 1.0 : 0.0
                 contentItem: Image {
-                    source: "backarrow.svg"
+                    source: "qrc:/common/backarrow"
                     sourceSize.width: 50
                     sourceSize.height: 50
                     anchors.fill: parent
