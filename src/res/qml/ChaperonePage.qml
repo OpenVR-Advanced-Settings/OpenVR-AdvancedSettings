@@ -252,7 +252,7 @@ MyStackViewPage {
                 value: 0.6
                 Layout.fillWidth: true
                 onPositionChanged: {
-                    var val = this.position * 100
+                    var val = (this.position * 100)/2 + 50
                     chaperoneVisibilityText.text = Math.round(val) + "%"
                 }
                 onValueChanged: {
@@ -522,6 +522,10 @@ MyStackViewPage {
 
         Component.onCompleted: {
             chaperoneVisibilitySlider.value = ChaperoneTabController.boundsVisibility
+            if(chaperoneVisibilitySlider.value < 0.5){
+                chaperoneVisibilitySlider.value = 0.5
+            }
+
             var d = ChaperoneTabController.fadeDistance.toFixed(1)
             if (d <= chaperoneFadeDistanceSlider.to) {
                 chaperoneFadeDistanceSlider.value = d

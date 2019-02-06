@@ -39,6 +39,7 @@ void ChaperoneTabController::initStage1()
         = settings->value( "chaperoneVelocityModifier", 0.3f ).toFloat();
     m_chaperoneVelocityModifierCurrent = 1.0f;
 	m_disableChaperone = settings->value("disableChaperone", false).toBool();
+	m_fadeDistanceRemembered = settings->value( "fadeDistanceRemembered", 0.5f ).toFloat();
     settings->endGroup();
 	initHaptics();
     reloadChaperoneProfiles();
@@ -737,7 +738,12 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
 {
     if ( m_visibility != value )
     {
-        m_visibility = value;
+		if (value <= 0.5) {
+			m_visibility = 0.5;
+		}
+		else {
+			m_visibility = value;
+		}
         vr::VRSettings()->SetInt32( vr::k_pch_CollisionBounds_Section,
                                     vr::k_pch_CollisionBounds_ColorGammaA_Int32,
                                     255 * m_visibility );
@@ -1290,6 +1296,7 @@ void ChaperoneTabController::setDisableChaperone(bool value, bool notify) {
 		}
 		auto settings = OverlayController::appSettings();
 		settings->beginGroup("chaperoneSettings");
+		settings->setValue("fadeDistanceRemembered", m_fadeDistanceRemembered);
 		settings->setValue("disableChaperone",
 				m_disableChaperone);
 		settings->endGroup();
