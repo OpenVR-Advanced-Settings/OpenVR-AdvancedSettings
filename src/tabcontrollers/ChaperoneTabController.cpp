@@ -2,6 +2,7 @@
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
 #include <cmath>
+#include "../ivrinput/ivrinput.h"
 
 // application namespace
 namespace advsettings
@@ -362,7 +363,6 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
                                         &hmdState,
                                         sizeof( vr::VRControllerState_t ) );
 
-	LOG(WARNING) << "distance is: " << distance;
     // Switch to Beginner Mode
     if ( m_enableChaperoneSwitchToBeginner )
     {
@@ -443,7 +443,6 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
 
         if ( distance <= activationDistance && m_isHMDActive)
         {
-			LOG(WARNING) << "In haptics";
             if ( !m_chaperoneHapticFeedbackActive )
             {
                 if ( m_chaperoneHapticFeedbackThread.joinable() )
@@ -468,12 +467,12 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
                             if ( leftIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
-								vr::VRInput()->TriggerHapticVibrationAction(m_leftHandle, 0.0f, 0.2f, 80.0f, 0.75f, m_leftHandHandle);
+								vr::VRInput()->TriggerHapticVibrationAction(m_leftActionHandle, 0.0f, 0.2f, 80.0f, 0.75f, m_leftInputHandle);
                             }
                             if ( rightIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
-								vr::VRInput()->TriggerHapticVibrationAction(m_rightHandle, 0.0f, 0.2f, 80.0f, 0.75f, m_rightHandHandle);
+								vr::VRInput()->TriggerHapticVibrationAction(m_rightActionHandle, 0.0f, 0.2f, 80.0f, 0.75f, m_rightInputHandle);
                             }
                             std::this_thread::sleep_for(
                                 std::chrono::milliseconds( 5 ) );
@@ -586,7 +585,6 @@ void ChaperoneTabController::eventLoopTick(
 		m_isHMDActive = false;
         std::lock_guard<std::recursive_mutex> lock(
             parent->chaperoneUtils().mutex() );
-		//LOG(INFO) << "in loop";
         auto minDistance = NAN;
         auto& poseHmd = devicePoses[vr::k_unTrackedDeviceIndex_Hmd];
 
@@ -595,6 +593,7 @@ void ChaperoneTabController::eventLoopTick(
 		if (vr::VRSystem()->GetTrackedDeviceActivityLevel(vr::k_unTrackedDeviceIndex_Hmd) == vr::k_EDeviceActivityLevel_UserInteraction) {
 			m_isHMDActive = true;
 		}
+		//LOG(INFO) << "HMD bpose is: " << poseHmd.bPoseIsValid << " DeviceConnected?: " << poseHmd.bDeviceIsConnected << " trackign state: " << poseHmd.eTrackingResult;
         if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK )
         {
@@ -613,7 +612,9 @@ void ChaperoneTabController::eventLoopTick(
             vr::TrackedControllerRole_LeftHand );
         if ( leftIndex != vr::k_unTrackedDeviceIndexInvalid )
         {
+
             auto& poseLeft = devicePoses[leftIndex];
+			//LOG(INFO) << "left bpose is: " << poseLeft.bPoseIsValid << " DeviceConnected?: " << poseLeft.bDeviceIsConnected << " trackign state: " << poseLeft.eTrackingResult;
             if ( poseLeft.bPoseIsValid && poseLeft.bDeviceIsConnected
                  && poseLeft.eTrackingResult == vr::TrackingResult_Running_OK )
             {
@@ -636,6 +637,7 @@ void ChaperoneTabController::eventLoopTick(
         if ( rightIndex != vr::k_unTrackedDeviceIndexInvalid )
         {
             auto& poseRight = devicePoses[rightIndex];
+			//LOG(INFO) << "right bpose is: " << poseRight.bPoseIsValid << " DeviceConnected?: " << poseRight.bDeviceIsConnected << " trackign state: " << poseRight.eTrackingResult;
             if ( poseRight.bPoseIsValid && poseRight.bDeviceIsConnected
                  && poseRight.eTrackingResult == vr::TrackingResult_Running_OK )
             {
@@ -652,13 +654,15 @@ void ChaperoneTabController::eventLoopTick(
                 }
             }
         }
-        //if ( !std::isnan( minDistance ) )
-		//TODO check against value
-		if(true)
+		LOG(INFO) << "Distance is:" << minDistance;
+        if( !std::isnan( minDistance ) )
         {
-			//LOG(INFO) << "chaperone warnings";
             handleChaperoneWarnings( minDistance );
-        }
+		}
+		else {
+			LOG(WARNING) << "Reloading Chaperone Data";
+			parent->chaperoneUtils().loadChaperoneData();
+		}
     }
 
     if ( settingsUpdateCounter >= 50 )
@@ -962,23 +966,23 @@ Q_INVOKABLE QString
 
 void ChaperoneTabController::initHaptics() {
 	//TODO cleanup? and better error messages
-	auto vrInputError = vr::VRInput()->GetInputSourceHandle(k_inputSourceLeft, &m_leftHandHandle);
+	auto vrInputError = vr::VRInput()->GetInputSourceHandle(input::input_strings::k_inputSourceLeft, &m_leftInputHandle);
 	
 	if (vrInputError != vr::VRInputError_None) {
 		LOG(WARNING) << "get input handle Left Failed";
 		m_isHapticGood = false;
 	}
-	vrInputError = vr::VRInput()->GetInputSourceHandle(k_inputSourceRight, &m_rightHandHandle);
+	vrInputError = vr::VRInput()->GetInputSourceHandle(input::input_strings::k_inputSourceRight, &m_rightInputHandle);
 	if (vrInputError != vr::VRInputError_None) {
 		LOG(WARNING) << "intput handle right fail";
 		m_isHapticGood = false;
 	}
-	vrInputError = vr::VRInput()->GetActionHandle(k_actionHapticsLeft, &m_leftHandle);
+	vrInputError = vr::VRInput()->GetActionHandle(input::input_strings::k_actionHapticsLeft, &m_leftActionHandle);
 	if (vrInputError != vr::VRInputError_None) {
 		LOG(WARNING) << "action handle left fail";
 		m_isHapticGood = false;
 	}
-	vrInputError = vr::VRInput()->GetActionHandle(k_actionHapticsRight, &m_rightHandle);
+	vrInputError = vr::VRInput()->GetActionHandle(input::input_strings::k_actionHapticsRight, &m_rightActionHandle);
 	if (vrInputError != vr::VRInputError_None) {
 		LOG(WARNING) << "action handle right fail";
 		m_isHapticGood = false;

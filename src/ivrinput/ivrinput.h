@@ -94,6 +94,9 @@ namespace input_strings
 
     constexpr auto k_setMain = "/actions/main";
 
+	constexpr auto k_inputSourceLeft = "/user/hand/left";
+	constexpr auto k_inputSourceRight = "/user/hand/right";
+
 } // namespace input_strings
 
 } // namespace input

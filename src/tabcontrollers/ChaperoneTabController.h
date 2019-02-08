@@ -175,17 +175,17 @@ private:
 	bool m_isHapticGood = true;
 	bool m_isHMDActive = false;
 
-	vr::VRActionHandle_t m_rightHandle;
-	vr::VRActionHandle_t m_leftHandle;
-	vr::VRInputValueHandle_t m_leftHandHandle;
-	vr::VRInputValueHandle_t m_rightHandHandle;
+	vr::VRActionHandle_t m_rightActionHandle;
+	vr::VRActionHandle_t m_leftActionHandle;
+	vr::VRInputValueHandle_t m_leftInputHandle;
+	vr::VRInputValueHandle_t m_rightInputHandle;
 
 	//ACTION HANDLES IN invrinput.h
-	const char* k_actionHapticsLeft = "/actions/main/out/HapticsLeft";
-	const char* k_actionHapticsRight = "/actions/main/out/HapticsRight";
+	//const char* k_actionHapticsLeft = "/actions/main/out/HapticsLeft";
+	//const char* k_actionHapticsRight = "/actions/main/out/HapticsRight";
 
-	const char* k_inputSourceLeft = "/user/hand/left";
-	const char* k_inputSourceRight = "/user/hand/right";
+	//const char* k_inputSourceLeft = "/user/hand/left";
+	//const char* k_inputSourceRight = "/user/hand/right";
 
 	void ChaperoneTabController::initHaptics();
 
