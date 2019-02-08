@@ -177,15 +177,12 @@ private:
 
 	vr::VRActionHandle_t m_rightActionHandle;
 	vr::VRActionHandle_t m_leftActionHandle;
+	vr::VRActionHandle_t m_proxSensor;
 	vr::VRInputValueHandle_t m_leftInputHandle;
 	vr::VRInputValueHandle_t m_rightInputHandle;
 
-	//ACTION HANDLES IN invrinput.h
-	//const char* k_actionHapticsLeft = "/actions/main/out/HapticsLeft";
-	//const char* k_actionHapticsRight = "/actions/main/out/HapticsRight";
+	bool ChaperoneTabController::getProxData();
 
-	//const char* k_inputSourceLeft = "/user/hand/left";
-	//const char* k_inputSourceRight = "/user/hand/right";
 
 	void ChaperoneTabController::initHaptics();
 

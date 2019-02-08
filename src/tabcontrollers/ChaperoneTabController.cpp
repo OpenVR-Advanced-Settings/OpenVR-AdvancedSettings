@@ -363,6 +363,10 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
                                         &hmdState,
                                         sizeof( vr::VRControllerState_t ) );
 
+
+	if (getProxData()) {
+		LOG(WARNING) << "PROX SENSOR IS ON BITCHES";
+	}
     // Switch to Beginner Mode
     if ( m_enableChaperoneSwitchToBeginner )
     {
@@ -531,7 +535,6 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
     // Show Dashboard
     if ( m_enableChaperoneShowDashboard )
     {
-		//LOG(WARNING) << "In dash";
         float activationDistance = m_chaperoneShowDashboardDistance
                                    * m_chaperoneVelocityModifierCurrent;
         if ( distance <= activationDistance && !m_chaperoneShowDashboardActive )
@@ -567,8 +570,6 @@ void ChaperoneTabController::eventLoopTick(
             m_chaperoneVelocityModifierCurrent += mod;
         }
     }
-    // LOG(INFO) << "m_chaperoneVelocityModifierCurrent: " <<
-    // m_chaperoneVelocityModifierCurrent;
     float newFadeDistance = m_fadeDistance * m_chaperoneVelocityModifierCurrent;
     if ( m_fadeDistanceModified != newFadeDistance )
     {
@@ -593,7 +594,6 @@ void ChaperoneTabController::eventLoopTick(
 		if (vr::VRSystem()->GetTrackedDeviceActivityLevel(vr::k_unTrackedDeviceIndex_Hmd) == vr::k_EDeviceActivityLevel_UserInteraction) {
 			m_isHMDActive = true;
 		}
-		//LOG(INFO) << "HMD bpose is: " << poseHmd.bPoseIsValid << " DeviceConnected?: " << poseHmd.bDeviceIsConnected << " trackign state: " << poseHmd.eTrackingResult;
         if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK )
         {
@@ -614,7 +614,6 @@ void ChaperoneTabController::eventLoopTick(
         {
 
             auto& poseLeft = devicePoses[leftIndex];
-			//LOG(INFO) << "left bpose is: " << poseLeft.bPoseIsValid << " DeviceConnected?: " << poseLeft.bDeviceIsConnected << " trackign state: " << poseLeft.eTrackingResult;
             if ( poseLeft.bPoseIsValid && poseLeft.bDeviceIsConnected
                  && poseLeft.eTrackingResult == vr::TrackingResult_Running_OK )
             {
@@ -637,7 +636,6 @@ void ChaperoneTabController::eventLoopTick(
         if ( rightIndex != vr::k_unTrackedDeviceIndexInvalid )
         {
             auto& poseRight = devicePoses[rightIndex];
-			//LOG(INFO) << "right bpose is: " << poseRight.bPoseIsValid << " DeviceConnected?: " << poseRight.bDeviceIsConnected << " trackign state: " << poseRight.eTrackingResult;
             if ( poseRight.bPoseIsValid && poseRight.bDeviceIsConnected
                  && poseRight.eTrackingResult == vr::TrackingResult_Running_OK )
             {
@@ -654,7 +652,6 @@ void ChaperoneTabController::eventLoopTick(
                 }
             }
         }
-		LOG(INFO) << "Distance is:" << minDistance;
         if( !std::isnan( minDistance ) )
         {
             handleChaperoneWarnings( minDistance );
@@ -965,32 +962,57 @@ Q_INVOKABLE QString
 }
 
 void ChaperoneTabController::initHaptics() {
-	//TODO cleanup? and better error messages
+	//No built in enum name, possibly implement locally in future
 	auto vrInputError = vr::VRInput()->GetInputSourceHandle(input::input_strings::k_inputSourceLeft, &m_leftInputHandle);
 	
 	if (vrInputError != vr::VRInputError_None) {
-		LOG(WARNING) << "get input handle Left Failed";
+		LOG(ERROR) << "get input handle left failed error code: " << vrInputError;
 		m_isHapticGood = false;
 	}
 	vrInputError = vr::VRInput()->GetInputSourceHandle(input::input_strings::k_inputSourceRight, &m_rightInputHandle);
 	if (vrInputError != vr::VRInputError_None) {
-		LOG(WARNING) << "intput handle right fail";
+		LOG(ERROR) << "get input handle right failed error code: " << vrInputError;
 		m_isHapticGood = false;
 	}
 	vrInputError = vr::VRInput()->GetActionHandle(input::input_strings::k_actionHapticsLeft, &m_leftActionHandle);
 	if (vrInputError != vr::VRInputError_None) {
-		LOG(WARNING) << "action handle left fail";
+		LOG(ERROR) << "get left action handle failed error code: " << vrInputError;
 		m_isHapticGood = false;
 	}
 	vrInputError = vr::VRInput()->GetActionHandle(input::input_strings::k_actionHapticsRight, &m_rightActionHandle);
 	if (vrInputError != vr::VRInputError_None) {
-		LOG(WARNING) << "action handle right fail";
+		LOG(ERROR) << "get right action handle failed error code: " << vrInputError;
+		m_isHapticGood = false;
+	}
+	//Prox sensor init
+	vrInputError = vr::VRInput()->GetActionHandle(input::input_strings::k_actionProxSensor, &m_proxSensor);
+	if (vrInputError != vr::VRInputError_None) {
+		LOG(ERROR) << "Prox Sensor action handle failed error code: " << vrInputError;
 		m_isHapticGood = false;
 	}
 }
 
+bool ChaperoneTabController::getProxData()
+{
+	vr::InputDigitalActionData_t handleData = {};
 
-//TODO save?
+	auto error = vr::VRInput()->GetDigitalActionData(
+		m_proxSensor,
+		&handleData,
+		sizeof(handleData),
+		vr::k_ulInvalidInputValueHandle);
+
+	if (error != vr::EVRInputError::VRInputError_None)
+	{
+		LOG(ERROR) << "Error getting IVRInput Digital Action Data for prox sesnor "
+			<< ". SteamVR Error: " << error;
+	}
+
+	return handleData.bState;
+}
+
+
+
 void ChaperoneTabController::setForceBounds( bool value, bool notify )
 {
     if ( m_forceBounds != value )
@@ -1287,7 +1309,6 @@ void ChaperoneTabController::setChaperoneVelocityModifier( float value,
     }
 }
 
-//TODO verify
 void ChaperoneTabController::setDisableChaperone(bool value, bool notify) {
 	if (m_disableChaperone != value) {
 		m_disableChaperone = value;

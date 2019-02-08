@@ -131,7 +131,8 @@ SteamIVRInput::SteamIVRInput()
                         ActionType::Digital ),
       m_stopTrack( input_strings::k_actionStopTrack, ActionType::Digital ),
 	  m_leftHaptic( input_strings::k_actionHapticsLeft, ActionType::Haptic),
-	  m_rightHaptic(input_strings::k_actionHapticsRight, ActionType::Haptic)
+	  m_rightHaptic(input_strings::k_actionHapticsRight, ActionType::Haptic),
+	 m_proxSensor(input_strings::k_actionProxSensor, ActionType::Digital)
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
     m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;

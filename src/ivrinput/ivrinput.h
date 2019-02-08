@@ -72,6 +72,9 @@ private:
     Action m_pausePlayTrack;
 	Action m_stopTrack;
 
+	//HMD bindings
+	Action m_proxSensor;
+
 	//haptic bindings
 	Action m_leftHaptic;
 	Action m_rightHaptic;
@@ -91,6 +94,8 @@ namespace input_strings
 
 	constexpr auto k_actionHapticsLeft = "/actions/main/out/HapticsLeft";
 	constexpr auto k_actionHapticsRight = "/actions/main/out/HapticsRight";
+
+	constexpr auto k_actionProxSensor = "/actions/main/in/ProxSensor";
 
     constexpr auto k_setMain = "/actions/main";
 
