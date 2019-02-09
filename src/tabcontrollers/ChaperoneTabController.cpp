@@ -467,7 +467,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
                                       vr::TrackedControllerRole_RightHand );
                         while ( _this->m_chaperoneHapticFeedbackActive )
                         {
-							//AS it stands both controllers will vibrate regardless of which is closer to wall
+							//AS it stands both controllers will vibrate regardless of which is closer to boundary
                             if ( leftIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
@@ -1001,7 +1001,7 @@ bool ChaperoneTabController::getProxData()
 		&handleData,
 		sizeof(handleData),
 		vr::k_ulInvalidInputValueHandle);
-
+	LOG(INFO) << "PROX SENSOR IS: " << handleData.bState;
 	if (error != vr::EVRInputError::VRInputError_None)
 	{
 		LOG(ERROR) << "Error getting IVRInput Digital Action Data for prox sesnor "
