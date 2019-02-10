@@ -50,7 +50,7 @@ MyStackViewPage {
                    MyPushButton {
                        id: playSpaceButton
                        activationSoundEnabled: false
-                       text: "Room Settings"
+                       text: "Offsets"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -59,9 +59,20 @@ MyStackViewPage {
                    }
 
                    MyPushButton {
+                       id: motionButton
+                       activationSoundEnabled: false
+                       text: "Motion"
+                       Layout.fillWidth: true
+                       onClicked: {
+                           MyResources.playFocusChangedSound()
+                           mainView.push(motionPage)
+                       }
+                   }
+
+                   MyPushButton {
                        id: fixFloorButton
                        activationSoundEnabled: false
-                       text: "Room Fix"
+                       text: "Space Fix"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()

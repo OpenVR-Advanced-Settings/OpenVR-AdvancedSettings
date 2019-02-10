@@ -505,22 +505,22 @@ void OverlayController::processInputBindings()
     // reorder these. Override actions must always come after normal because
     // active priority is set based on which action is "newest"
     // normal actions:
-    m_moveCenterTabController.leftHandRoomDrag( m_actions.leftHandRoomDrag() );
-    m_moveCenterTabController.rightHandRoomDrag(
-        m_actions.rightHandRoomDrag() );
-    m_moveCenterTabController.leftHandRoomTurn( m_actions.leftHandRoomTurn() );
-    m_moveCenterTabController.rightHandRoomTurn(
-        m_actions.rightHandRoomTurn() );
+    m_moveCenterTabController.leftHandSpaceDrag( m_actions.leftHandSpaceDrag() );
+    m_moveCenterTabController.rightHandSpaceDrag(
+        m_actions.rightHandSpaceDrag() );
+    m_moveCenterTabController.leftHandSpaceTurn( m_actions.leftHandSpaceTurn() );
+    m_moveCenterTabController.rightHandSpaceTurn(
+        m_actions.rightHandSpaceTurn() );
 
     // override actions:
-    m_moveCenterTabController.optionalOverrideLeftHandRoomDrag(
-        m_actions.optionalOverrideLeftHandRoomDrag() );
-    m_moveCenterTabController.optionalOverrideRightHandRoomDrag(
-        m_actions.optionalOverrideRightHandRoomDrag() );
-    m_moveCenterTabController.optionalOverrideLeftHandRoomTurn(
-        m_actions.optionalOverrideLeftHandRoomTurn() );
-    m_moveCenterTabController.optionalOverrideRightHandRoomTurn(
-        m_actions.optionalOverrideRightHandRoomTurn() );
+    m_moveCenterTabController.optionalOverrideLeftHandSpaceDrag(
+        m_actions.optionalOverrideLeftHandSpaceDrag() );
+    m_moveCenterTabController.optionalOverrideRightHandSpaceDrag(
+        m_actions.optionalOverrideRightHandSpaceDrag() );
+    m_moveCenterTabController.optionalOverrideLeftHandSpaceTurn(
+        m_actions.optionalOverrideLeftHandSpaceTurn() );
+    m_moveCenterTabController.optionalOverrideRightHandSpaceTurn(
+        m_actions.optionalOverrideRightHandSpaceTurn() );
 }
 
 // vsync implementation:

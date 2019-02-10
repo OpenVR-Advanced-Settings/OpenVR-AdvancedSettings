@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.0
 import ".."
 import "../utilities_page"
 import "../audio_page"
+import "../motion_page"
 
 Rectangle {
     id: root
@@ -31,6 +32,11 @@ Rectangle {
     }
 
     property PlayspacePage playspacePage: PlayspacePage {
+        stackView: mainView
+        visible: false
+    }
+
+    property MotionPage motionPage: MotionPage {
         stackView: mainView
         visible: false
     }

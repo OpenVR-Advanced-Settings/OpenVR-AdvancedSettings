@@ -6,7 +6,7 @@ import "common"
 
 
 MyStackViewPage {
-    headerText: "Room Settings"
+    headerText: "Space Settings"
 
     content: ColumnLayout {
         spacing: 18
@@ -17,7 +17,7 @@ MyStackViewPage {
                 Layout.preferredWidth: 230
             }
             MyText {
-                id: roomModeText
+                id: spaceModeText
                 font.bold: true
                 text: "Standing"
             }
@@ -28,7 +28,7 @@ MyStackViewPage {
 
             label: MyText {
                 leftPadding: 10
-                text: "Move Room"
+                text: "Move Space"
                 bottomPadding: -10
             }
             background: Rectangle {
@@ -60,7 +60,7 @@ MyStackViewPage {
                     }
 
                     MyPushButton2 {
-                        id: roomMoveXMinusButton
+                        id: spaceMoveXMinusButton
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
@@ -69,7 +69,7 @@ MyStackViewPage {
                     }
 
 					MyTextField {
-                        id: roomMoveXText
+                        id: spaceMoveXText
                         text: "0.00"
 						keyBoardUID: 101
                         Layout.preferredWidth: 140
@@ -88,7 +88,7 @@ MyStackViewPage {
                     }
 
                     MyPushButton2 {
-                        id: roomMoveXPlusButton
+                        id: spaceMoveXPlusButton
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
@@ -126,7 +126,7 @@ MyStackViewPage {
                     }
 
                     MyTextField {
-                        id: roomMoveYText
+                        id: spaceMoveYText
                         text: "0.00"
                         keyBoardUID: 102
                         Layout.preferredWidth: 140
@@ -180,7 +180,7 @@ MyStackViewPage {
                     }
 
                     MyTextField {
-                        id: roomMoveZText
+                        id: spaceMoveZText
                         text: "0.00"
                         keyBoardUID: 103
                         Layout.preferredWidth: 140
@@ -223,7 +223,7 @@ MyStackViewPage {
 
             label: MyText {
                 leftPadding: 10
-                text: "Rotate Room"
+                text: "Rotate Space"
                 bottomPadding: -10
             }
             background: Rectangle {
@@ -245,7 +245,7 @@ MyStackViewPage {
                 ColumnLayout {
                     RowLayout {
                         MyPushButton2 {
-                            id: roomRotationMinusButton
+                            id: spaceRotationMinusButton
                             Layout.preferredWidth: 40
                             text: "-"
                             onClicked: {
@@ -258,7 +258,7 @@ MyStackViewPage {
                         }
 
                         MySlider {
-                            id: roomRotationSlider
+                            id: spaceRotationSlider
                             from: -180
                             to: 180
                             stepSize: 0.01
@@ -269,13 +269,13 @@ MyStackViewPage {
                                 MoveCenterTabController.tempRotation = Math.round(val * 100)
                             }
                             onValueChanged: {
-                                MoveCenterTabController.tempRotation = Math.round(roomRotationSlider.value * 100)
-                                //roomRotationText.text = Math.round(roomRotationSlider.value) + "°"
+                                MoveCenterTabController.tempRotation = Math.round(spaceRotationSlider.value * 100)
+                                //spaceRotationText.text = Math.round(spaceRotationSlider.value) + "°"
                             }
                         }
 
                         MyPushButton2 {
-                            id: roomRotationPlusButton
+                            id: spaceRotationPlusButton
                             Layout.preferredWidth: 40
                             text: "+"
                             onClicked: {
@@ -288,7 +288,7 @@ MyStackViewPage {
                         }
 
                         MyTextField {
-                            id: roomRotationText
+                            id: spaceRotationText
                             text: "0°"
                             keyBoardUID: 104
                             Layout.preferredWidth: 150
@@ -306,7 +306,7 @@ MyStackViewPage {
                             }
                         }
                         MyPushButton {
-                            id: roomRotationApplyButton
+                            id: spaceRotationApplyButton
                             Layout.preferredWidth: 145
                             text:"Apply"
                             onClicked: {
@@ -316,15 +316,15 @@ MyStackViewPage {
                     }
 
                     MyToggleButton {
-                        id: roomRotateHandToggle
-                        text: "Enable Room-Turn Binding"
+                        id: spaceRotateHandToggle
+                        text: "Enable Space-Turn Binding"
                         onCheckedChanged: {
                             MoveCenterTabController.rotateHand = this.checked
                         }
                     }
 
                     MyText {
-                        text: "Note: TurnSignal will ignore turning during Room-Turn rotation."
+                        text: "Note: TurnSignal will ignore turning during Space-Turn rotation."
                         font.pointSize: 15.0
                     }
                 }
@@ -336,7 +336,7 @@ MyStackViewPage {
 
             label: MyText {
                 leftPadding: 10
-                text: "Room Drag Binding"
+                text: "Space Drag Binding"
                 bottomPadding: -10
             }
             background: Rectangle {
@@ -372,7 +372,7 @@ MyStackViewPage {
                 Layout.fillWidth: true
 
                 MyPushButton {
-                    id: roomResetButton
+                    id: spaceResetButton
                     Layout.preferredWidth: 250
                     text: "Reset"
                     onClicked: {
@@ -381,7 +381,7 @@ MyStackViewPage {
                 }
 
                 MyToggleButton {
-                    id: roomAdjustChaperoneToggle
+                    id: spaceAdjustChaperoneToggle
                     text: "Adjust Chaperone"
                     onCheckedChanged: {
                         MoveCenterTabController.adjustChaperone = this.checked
@@ -396,12 +396,12 @@ MyStackViewPage {
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
 
         Component.onCompleted: {
-            roomAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
-            roomRotateHandToggle.checked = MoveCenterTabController.rotateHand
-            roomMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
-            roomMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
-            roomMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
-            roomRotationSlider.value = MoveCenterTabController.rotation
+            spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
+            spaceRotateHandToggle.checked = MoveCenterTabController.rotateHand
+            spaceMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
+            spaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
+            spaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
+            spaceRotationSlider.value = MoveCenterTabController.rotation
             moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight
             moveShortcutLeft.checked = MoveCenterTabController.moveShortcutLeft
 			lockXToggle.checked = MoveCenterTabController.lockXToggle
@@ -409,45 +409,45 @@ MyStackViewPage {
 			lockZToggle.checked = MoveCenterTabController.lockZToggle
 			
             if (MoveCenterTabController.trackingUniverse === 0) {
-                roomModeText.text = "Sitting"
-                roomRotationPlusButton.enabled = false
-                roomRotationMinusButton.enabled = false
-                roomRotationSlider.enabled = false
-                roomRotationText.text = "-"
+                spaceModeText.text = "Sitting"
+                spaceRotationPlusButton.enabled = false
+                spaceRotationMinusButton.enabled = false
+                spaceRotationSlider.enabled = false
+                spaceRotationText.text = "-"
             } else if (MoveCenterTabController.trackingUniverse === 1) {
-                roomModeText.text = "Standing"
-                roomRotationPlusButton.enabled = true
-                roomRotationMinusButton.enabled = true
-                roomRotationSlider.enabled = true
-                roomRotationText.text = "0°"
+                spaceModeText.text = "Standing"
+                spaceRotationPlusButton.enabled = true
+                spaceRotationMinusButton.enabled = true
+                spaceRotationSlider.enabled = true
+                spaceRotationText.text = "0°"
             } else {
-                roomModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
+                spaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
             }
         }
 
         Connections {
             target: MoveCenterTabController
             onOffsetXChanged: {
-                roomMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
+                spaceMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
             }
             onOffsetYChanged: {
-                roomMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
+                spaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
             }
             onOffsetZChanged: {
-                roomMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
+                spaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
             }
             onRotationChanged: {
-                roomRotationSlider.value = ( MoveCenterTabController.rotation / 100 )
+                spaceRotationSlider.value = ( MoveCenterTabController.rotation / 100 )
             }
             onTempRotationChanged: {
-                roomRotationSlider.value = ( MoveCenterTabController.tempRotation / 100 )
-                roomRotationText.text = ( MoveCenterTabController.tempRotation / 100 ) + "°"
+                spaceRotationSlider.value = ( MoveCenterTabController.tempRotation / 100 )
+                spaceRotationText.text = ( MoveCenterTabController.tempRotation / 100 ) + "°"
             }
             onAdjustChaperoneChanged: {
-                roomAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
+                spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
             }
             onRotateHandChanged: {
-                roomRotateHandToggle.checked = MoveCenterTabController.rotateHand
+                spaceRotateHandToggle.checked = MoveCenterTabController.rotateHand
             }
             onMoveShortcutRightChanged: {
                 moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight
@@ -466,19 +466,19 @@ MyStackViewPage {
 			}
             onTrackingUniverseChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {
-                    roomModeText.text = "Sitting"
-                    roomRotationPlusButton.enabled = false
-                    roomRotationMinusButton.enabled = false
-                    roomRotationSlider.enabled = false
-                    roomRotationText.text = "-"
+                    spaceModeText.text = "Sitting"
+                    spaceRotationPlusButton.enabled = false
+                    spaceRotationMinusButton.enabled = false
+                    spaceRotationSlider.enabled = false
+                    spaceRotationText.text = "-"
                 } else if (MoveCenterTabController.trackingUniverse === 1) {
-                    roomModeText.text = "Standing"
-                    roomRotationPlusButton.enabled = true
-                    roomRotationMinusButton.enabled = true
-                    roomRotationSlider.enabled = true
-                    roomRotationText.text = "0°"
+                    spaceModeText.text = "Standing"
+                    spaceRotationPlusButton.enabled = true
+                    spaceRotationMinusButton.enabled = true
+                    spaceRotationSlider.enabled = true
+                    spaceRotationText.text = "0°"
                 } else {
-                    roomModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
+                    spaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
                 }
             }
         }

@@ -130,25 +130,25 @@ SteamIVRInput::SteamIVRInput()
       m_pausePlayTrack( input_strings::k_actionPausePlayTrack,
                         ActionType::Digital ),
       m_stopTrack( input_strings::k_actionStopTrack, ActionType::Digital ),
-      m_leftHandRoomTurn( input_strings::k_actionLeftHandRoomTurn,
+      m_leftHandSpaceTurn( input_strings::k_actionLeftHandSpaceTurn,
                           ActionType::Digital ),
-      m_rightHandRoomTurn( input_strings::k_actionRightHandRoomTurn,
+      m_rightHandSpaceTurn( input_strings::k_actionRightHandSpaceTurn,
                            ActionType::Digital ),
-      m_leftHandRoomDrag( input_strings::k_actionLeftHandRoomDrag,
+      m_leftHandSpaceDrag( input_strings::k_actionLeftHandSpaceDrag,
                           ActionType::Digital ),
-      m_rightHandRoomDrag( input_strings::k_actionRightHandRoomDrag,
+      m_rightHandSpaceDrag( input_strings::k_actionRightHandSpaceDrag,
                            ActionType::Digital ),
-      m_optionalOverrideLeftHandRoomTurn(
-          input_strings::k_actionOptionalOverrideLeftHandRoomTurn,
+      m_optionalOverrideLeftHandSpaceTurn(
+          input_strings::k_actionOptionalOverrideLeftHandSpaceTurn,
           ActionType::Digital ),
-      m_optionalOverrideRightHandRoomTurn(
-          input_strings::k_actionOptionalOverrideRightHandRoomTurn,
+      m_optionalOverrideRightHandSpaceTurn(
+          input_strings::k_actionOptionalOverrideRightHandSpaceTurn,
           ActionType::Digital ),
-      m_optionalOverrideLeftHandRoomDrag(
-          input_strings::k_actionOptionalOverrideLeftHandRoomDrag,
+      m_optionalOverrideLeftHandSpaceDrag(
+          input_strings::k_actionOptionalOverrideLeftHandSpaceDrag,
           ActionType::Digital ),
-      m_optionalOverrideRightHandRoomDrag(
-          input_strings::k_actionOptionalOverrideRightHandRoomDrag,
+      m_optionalOverrideRightHandSpaceDrag(
+          input_strings::k_actionOptionalOverrideRightHandSpaceDrag,
           ActionType::Digital )
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
@@ -199,47 +199,47 @@ bool SteamIVRInput::stopSong()
     return isDigitalActionActivatedOnce( m_stopTrack );
 }
 
-bool SteamIVRInput::leftHandRoomTurn()
+bool SteamIVRInput::leftHandSpaceTurn()
 {
-    return isDigitalActionActivatedConstant( m_leftHandRoomTurn );
+    return isDigitalActionActivatedConstant( m_leftHandSpaceTurn );
 }
 
-bool SteamIVRInput::rightHandRoomTurn()
+bool SteamIVRInput::rightHandSpaceTurn()
 {
-    return isDigitalActionActivatedConstant( m_rightHandRoomTurn );
+    return isDigitalActionActivatedConstant( m_rightHandSpaceTurn );
 }
 
-bool SteamIVRInput::leftHandRoomDrag()
+bool SteamIVRInput::leftHandSpaceDrag()
 {
-    return isDigitalActionActivatedConstant( m_leftHandRoomDrag );
+    return isDigitalActionActivatedConstant( m_leftHandSpaceDrag );
 }
 
-bool SteamIVRInput::rightHandRoomDrag()
+bool SteamIVRInput::rightHandSpaceDrag()
 {
-    return isDigitalActionActivatedConstant( m_rightHandRoomDrag );
+    return isDigitalActionActivatedConstant( m_rightHandSpaceDrag );
 }
-bool SteamIVRInput::optionalOverrideLeftHandRoomTurn()
+bool SteamIVRInput::optionalOverrideLeftHandSpaceTurn()
 {
     return isDigitalActionActivatedConstant(
-        m_optionalOverrideLeftHandRoomTurn );
+        m_optionalOverrideLeftHandSpaceTurn );
 }
 
-bool SteamIVRInput::optionalOverrideRightHandRoomTurn()
+bool SteamIVRInput::optionalOverrideRightHandSpaceTurn()
 {
     return isDigitalActionActivatedConstant(
-        m_optionalOverrideRightHandRoomTurn );
+        m_optionalOverrideRightHandSpaceTurn );
 }
 
-bool SteamIVRInput::optionalOverrideLeftHandRoomDrag()
+bool SteamIVRInput::optionalOverrideLeftHandSpaceDrag()
 {
     return isDigitalActionActivatedConstant(
-        m_optionalOverrideLeftHandRoomDrag );
+        m_optionalOverrideLeftHandSpaceDrag );
 }
 
-bool SteamIVRInput::optionalOverrideRightHandRoomDrag()
+bool SteamIVRInput::optionalOverrideRightHandSpaceDrag()
 {
     return isDigitalActionActivatedConstant(
-        m_optionalOverrideRightHandRoomDrag );
+        m_optionalOverrideRightHandSpaceDrag );
 }
 
 /*!

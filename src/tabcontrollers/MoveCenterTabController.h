@@ -39,6 +39,14 @@ class MoveCenterTabController : public QObject
                     setMoveShortcutRight NOTIFY moveShortcutRightChanged )
     Q_PROPERTY( bool moveShortcutLeft READ moveShortcutLeft WRITE
                     setMoveShortcutLeft NOTIFY moveShortcutLeftChanged )
+    Q_PROPERTY( bool turnBindLeft READ turnBindLeft WRITE setTurnBindLeft NOTIFY
+                    turnBindLeftChanged )
+    Q_PROPERTY( bool turnBindRight READ turnBindRight WRITE setTurnBindRight
+                    NOTIFY turnBindRightChanged )
+    Q_PROPERTY( unsigned dragComfortFactor READ dragComfortFactor WRITE
+                    setDragComfortFactor NOTIFY dragComfortFactorChanged )
+    Q_PROPERTY( unsigned turnComfortFactor READ turnComfortFactor WRITE
+                    setTurnComfortFactor NOTIFY turnComfortFactorChanged )
     Q_PROPERTY( bool lockXToggle READ lockXToggle WRITE setLockX NOTIFY
                     requireLockXChanged )
     Q_PROPERTY( bool lockYToggle READ lockYToggle WRITE setLockY NOTIFY
@@ -66,10 +74,13 @@ private:
     float m_lastControllerPosition[3];
     bool m_settingsRightHandDragEnabled = false;
     bool m_settingsLeftHandDragEnabled = false;
+    bool m_settingsLeftHandTurnEnabled = false;
+    bool m_settingsRightHandTurnEnabled = false;
+    unsigned m_dragComfortFactor = 0;
+    unsigned m_turnComfortFactor = 0;
     bool m_lockXToggle = false;
     bool m_lockYToggle = false;
     bool m_lockZToggle = false;
-    std::chrono::system_clock::time_point lastMoveButtonClick[2];
     // Set lastHandQuaternion.w to -1000.0 when last hand is invalid.
     vr::HmdQuaternion_t m_lastHandQuaternion
         = { k_quaternionInvalidValue, 0.0, 0.0, 0.0 };
@@ -97,6 +108,8 @@ private:
     bool m_overrideRightHandTurnPressed = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
+    unsigned m_dragComfortFrameSkipCounter = 0;
+    unsigned m_turnComfortFrameSkipCounter = 0;
     void updateHmdRotationCounter( vr::TrackedDevicePose_t hmdPose,
                                    double angle );
     void updateHandDrag( vr::TrackedDevicePose_t* devicePoses, double angle );
@@ -118,6 +131,10 @@ public:
     bool rotateHand() const;
     bool moveShortcutRight() const;
     bool moveShortcutLeft() const;
+    bool turnBindRight() const;
+    bool turnBindLeft() const;
+    unsigned dragComfortFactor() const;
+    unsigned turnComfortFactor() const;
     bool lockXToggle() const;
     bool lockYToggle() const;
     bool lockZToggle() const;
@@ -125,14 +142,14 @@ public:
     void resetHmdYawTotal();
 
     // actions:
-    void leftHandRoomDrag( bool leftHandDragActive );
-    void rightHandRoomDrag( bool rightHandDragActive );
-    void optionalOverrideLeftHandRoomDrag( bool overrideLeftHandDragActive );
-    void optionalOverrideRightHandRoomDrag( bool overrideRightHandDragActive );
-    void leftHandRoomTurn( bool leftHandTurnActive );
-    void rightHandRoomTurn( bool rightHandTurnActive );
-    void optionalOverrideLeftHandRoomTurn( bool overrideLeftHandTurnActive );
-    void optionalOverrideRightHandRoomTurn( bool overrideRightHandTurnActive );
+    void leftHandSpaceDrag( bool leftHandDragActive );
+    void rightHandSpaceDrag( bool rightHandDragActive );
+    void optionalOverrideLeftHandSpaceDrag( bool overrideLeftHandDragActive );
+    void optionalOverrideRightHandSpaceDrag( bool overrideRightHandDragActive );
+    void leftHandSpaceTurn( bool leftHandTurnActive );
+    void rightHandSpaceTurn( bool rightHandTurnActive );
+    void optionalOverrideLeftHandSpaceTurn( bool overrideLeftHandTurnActive );
+    void optionalOverrideRightHandSpaceTurn( bool overrideRightHandTurnActive );
 
 public slots:
     int trackingUniverse() const;
@@ -152,6 +169,10 @@ public slots:
 
     void setMoveShortcutRight( bool value, bool notify = true );
     void setMoveShortcutLeft( bool value, bool notify = true );
+    void setTurnBindRight( bool value, bool notify = true );
+    void setTurnBindLeft( bool value, bool notify = true );
+    void setDragComfortFactor( unsigned value, bool notify = true );
+    void setTurnComfortFactor( unsigned value, bool notify = true );
 
     void modOffsetX( float value, bool notify = true );
     void modOffsetY( float value, bool notify = true );
@@ -175,6 +196,10 @@ signals:
     void rotateHandChanged( bool value );
     void moveShortcutRightChanged( bool value );
     void moveShortcutLeftChanged( bool value );
+    void turnBindRightChanged( bool value );
+    void turnBindLeftChanged( bool value );
+    void dragComfortFactorChanged( unsigned value );
+    void turnComfortFactorChanged( unsigned value );
     void requireLockXChanged( bool value );
     void requireLockYChanged( bool value );
     void requireLockZChanged( bool value );

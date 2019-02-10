@@ -52,6 +52,26 @@ void MoveCenterTabController::initStage1()
     {
         m_settingsLeftHandDragEnabled = value.toBool();
     }
+    value = settings->value( "turnBindLeft", m_settingsLeftHandTurnEnabled );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_settingsLeftHandTurnEnabled = value.toBool();
+    }
+    value = settings->value( "turnBindRight", m_settingsRightHandTurnEnabled );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_settingsRightHandTurnEnabled = value.toBool();
+    }
+    value = settings->value( "dragComfortFactor", m_dragComfortFactor );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_dragComfortFactor = value.toUInt();
+    }
+    value = settings->value( "turnComfortFactor", m_turnComfortFactor );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_turnComfortFactor = value.toUInt();
+    }
     value = settings->value( "lockXToggle", m_lockXToggle );
     if ( value.isValid() && !value.isNull() )
     {
@@ -68,7 +88,6 @@ void MoveCenterTabController::initStage1()
         m_lockZToggle = value.toBool();
     }
     settings->endGroup();
-    lastMoveButtonClick[0] = lastMoveButtonClick[1] = clock::now();
 }
 
 void MoveCenterTabController::initStage2( OverlayController* var_parent,
@@ -345,6 +364,84 @@ void MoveCenterTabController::setMoveShortcutLeft( bool value, bool notify )
     }
 }
 
+bool MoveCenterTabController::turnBindLeft() const
+{
+    return m_settingsLeftHandTurnEnabled;
+}
+
+void MoveCenterTabController::setTurnBindLeft( bool value, bool notify )
+{
+    m_settingsLeftHandTurnEnabled = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "turnBindLeft", m_settingsLeftHandTurnEnabled );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit turnBindLeftChanged( m_settingsLeftHandTurnEnabled );
+    }
+}
+
+bool MoveCenterTabController::turnBindRight() const
+{
+    return m_settingsRightHandTurnEnabled;
+}
+
+void MoveCenterTabController::setTurnBindRight( bool value, bool notify )
+{
+    m_settingsRightHandTurnEnabled = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "turnBindRight", m_settingsRightHandTurnEnabled );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit turnBindRightChanged( m_settingsRightHandTurnEnabled );
+    }
+}
+
+unsigned MoveCenterTabController::dragComfortFactor() const
+{
+    return m_dragComfortFactor;
+}
+
+void MoveCenterTabController::setDragComfortFactor( unsigned value,
+                                                    bool notify )
+{
+    m_dragComfortFactor = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "dragComfortFactor", m_dragComfortFactor );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit dragComfortFactorChanged( m_dragComfortFactor );
+    }
+}
+
+unsigned MoveCenterTabController::turnComfortFactor() const
+{
+    return m_turnComfortFactor;
+}
+
+void MoveCenterTabController::setTurnComfortFactor( unsigned value,
+                                                    bool notify )
+{
+    m_turnComfortFactor = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "turnComfortFactor", m_turnComfortFactor );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit turnComfortFactorChanged( m_turnComfortFactor );
+    }
+}
+
 bool MoveCenterTabController::lockXToggle() const
 {
     return m_lockXToggle;
@@ -513,7 +610,7 @@ void MoveCenterTabController::resetHmdYawTotal()
 
 // START of drag bindings:
 
-void MoveCenterTabController::leftHandRoomDrag( bool leftHandDragActive )
+void MoveCenterTabController::leftHandSpaceDrag( bool leftHandDragActive )
 {
     if ( !m_settingsLeftHandDragEnabled )
     {
@@ -556,7 +653,7 @@ void MoveCenterTabController::leftHandRoomDrag( bool leftHandDragActive )
     m_leftHandDragPressed = leftHandDragActive;
 }
 
-void MoveCenterTabController::rightHandRoomDrag( bool rightHandDragActive )
+void MoveCenterTabController::rightHandSpaceDrag( bool rightHandDragActive )
 {
     if ( !m_settingsRightHandDragEnabled )
     {
@@ -599,7 +696,7 @@ void MoveCenterTabController::rightHandRoomDrag( bool rightHandDragActive )
     m_rightHandDragPressed = rightHandDragActive;
 }
 
-void MoveCenterTabController::optionalOverrideLeftHandRoomDrag(
+void MoveCenterTabController::optionalOverrideLeftHandSpaceDrag(
     bool overrideLeftHandDragActive )
 {
     if ( !m_settingsLeftHandDragEnabled )
@@ -641,7 +738,7 @@ void MoveCenterTabController::optionalOverrideLeftHandRoomDrag(
     m_overrideLeftHandDragPressed = overrideLeftHandDragActive;
 }
 
-void MoveCenterTabController::optionalOverrideRightHandRoomDrag(
+void MoveCenterTabController::optionalOverrideRightHandSpaceDrag(
     bool overrideRightHandDragActive )
 {
     if ( !m_settingsRightHandDragEnabled )
@@ -687,9 +784,9 @@ void MoveCenterTabController::optionalOverrideRightHandRoomDrag(
 
 // START of turn bindgins
 
-void MoveCenterTabController::leftHandRoomTurn( bool leftHandTurnActive )
+void MoveCenterTabController::leftHandSpaceTurn( bool leftHandTurnActive )
 {
-    if ( !m_settingsHandTurningEnabled )
+    if ( !m_settingsLeftHandTurnEnabled )
     {
         return;
     }
@@ -730,9 +827,9 @@ void MoveCenterTabController::leftHandRoomTurn( bool leftHandTurnActive )
     m_leftHandTurnPressed = leftHandTurnActive;
 }
 
-void MoveCenterTabController::rightHandRoomTurn( bool rightHandTurnActive )
+void MoveCenterTabController::rightHandSpaceTurn( bool rightHandTurnActive )
 {
-    if ( !m_settingsHandTurningEnabled )
+    if ( !m_settingsRightHandTurnEnabled )
     {
         return;
     }
@@ -773,10 +870,10 @@ void MoveCenterTabController::rightHandRoomTurn( bool rightHandTurnActive )
     m_rightHandTurnPressed = rightHandTurnActive;
 }
 
-void MoveCenterTabController::optionalOverrideLeftHandRoomTurn(
+void MoveCenterTabController::optionalOverrideLeftHandSpaceTurn(
     bool overrideLeftHandTurnActive )
 {
-    if ( !m_settingsHandTurningEnabled )
+    if ( !m_settingsLeftHandTurnEnabled )
     {
         return;
     }
@@ -815,10 +912,10 @@ void MoveCenterTabController::optionalOverrideLeftHandRoomTurn(
     m_overrideLeftHandTurnPressed = overrideLeftHandTurnActive;
 }
 
-void MoveCenterTabController::optionalOverrideRightHandRoomTurn(
+void MoveCenterTabController::optionalOverrideRightHandSpaceTurn(
     bool overrideRightHandTurnActive )
 {
-    if ( !m_settingsHandTurningEnabled )
+    if ( !m_settingsRightHandTurnEnabled )
     {
         return;
     }
@@ -1113,6 +1210,8 @@ void MoveCenterTabController::eventLoopTick(
     // get current space rotation in radians
     double angle = m_rotation * k_centidegreesToRadians;
 
+    // hmd rotations stats counting doesn't need to be smooth, so we skip some
+    // frames for performance
     if ( m_hmdRotationStatsUpdateCounter >= k_hmdRotationCounterUpdateRate )
     {
         // device pose index 0 is always the hmd
@@ -1124,8 +1223,32 @@ void MoveCenterTabController::eventLoopTick(
         m_hmdRotationStatsUpdateCounter++;
     }
 
-    updateHandDrag( devicePoses, angle );
+    // Smooth drag motion can cause sim-sickness so we check if the user wants
+    // to skip frames to reduce vection. We use the factor squared because of
+    // logarithmic human perception.
+    if ( m_dragComfortFrameSkipCounter
+         >= ( m_dragComfortFactor * m_dragComfortFactor ) )
+    {
+        updateHandDrag( devicePoses, angle );
+        m_dragComfortFrameSkipCounter = 0;
+    }
+    else
+    {
+        m_dragComfortFrameSkipCounter++;
+    }
 
-    updateHandTurn( devicePoses, angle );
+    // Smooth turn motion can cause sim-sickness so we check if the user wants
+    // to skip frames to reduce vection. We use the factor squared because of
+    // logarithmic human perception.
+    if ( m_turnComfortFrameSkipCounter
+         >= ( m_turnComfortFactor * m_turnComfortFactor ) )
+    {
+        updateHandTurn( devicePoses, angle );
+        m_turnComfortFrameSkipCounter = 0;
+    }
+    else
+    {
+        m_turnComfortFrameSkipCounter++;
+    }
 }
 } // namespace advsettings
