@@ -22,7 +22,6 @@
  >   * [Audio Page](#audio_page)
  >   * [Revive Page](#revive_page)
  >   * [Utilities Page](#utilities_page)
- >   * [Accessibility Page](#accessibility_page)
  >   * [Statistics Page](#statistics_page)
  >   * [Settings Page](#settings_page)
  > * [How To Compile](#how_to_compile)
@@ -260,12 +259,6 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 - **Steam Desktop Overlay Width:** Allows to increase the size of the Steam desktop overlay. Useful for multi-monitor setups.
 
 - **Media Control Keys:** Allows controlling a media player through the media keys. This is the same as having a keyboard with media keys and then pressing them. Should support most common media players.
-<a name="accessibility_page"></a>
-## - Accessibility Page:
-
-![Accessibility Page](docs/screenshots/AccessibilityPage.png)
-
-- **Adjust Player Height:** Offsets the player height to allows short or wheelchair-bound players to fully interact with height-limited applications by both boosting their height and being able to touch the in-game floor when necessary by pressing a configurable motion controller button.
 
 <a name="statistics_page"></a>
 ## - Statistics Page:
