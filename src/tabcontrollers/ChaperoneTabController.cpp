@@ -363,9 +363,6 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
                                         &hmdState,
                                         sizeof( vr::VRControllerState_t ) );
 
-
-	if (getProxData()) {
-		LOG(WARNING) << "PROX SENSOR IS ON BITCHES";
 	}
     // Switch to Beginner Mode
     if ( m_enableChaperoneSwitchToBeginner )
@@ -961,6 +958,7 @@ Q_INVOKABLE QString
     }
 }
 
+//TODO move to overlayController.cpp/IVRINPUT.cpp
 void ChaperoneTabController::initHaptics() {
 	//No built in enum name, possibly implement locally in future
 	auto vrInputError = vr::VRInput()->GetInputSourceHandle(input::input_strings::k_inputSourceLeft, &m_leftInputHandle);
@@ -1001,7 +999,7 @@ bool ChaperoneTabController::getProxData()
 		&handleData,
 		sizeof(handleData),
 		vr::k_ulInvalidInputValueHandle);
-	LOG(INFO) << "PROX SENSOR IS: " << handleData.bState;
+	//LOG(INFO) << "PROX SENSOR IS: " << handleData.bState;
 	if (error != vr::EVRInputError::VRInputError_None)
 	{
 		LOG(ERROR) << "Error getting IVRInput Digital Action Data for prox sesnor "

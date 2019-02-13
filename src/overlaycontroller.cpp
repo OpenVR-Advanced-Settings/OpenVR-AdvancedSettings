@@ -499,6 +499,7 @@ void OverlayController::processInputBindings()
     {
         m_utilitiesTabController.sendMediaStopSong();
     }
+	LOG(INFO)<< "PROX SENSOR IS: " << m_actions.proxIsActive();
 }
 
 void OverlayController::OnTimeoutPumpEvents()

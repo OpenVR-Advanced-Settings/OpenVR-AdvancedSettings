@@ -182,6 +182,11 @@ bool SteamIVRInput::stopSong()
     return isDigitalActionActivatedOnce( m_stopTrack );
 }
 
+bool SteamIVRInput::proxIsActive() {
+	return isDigitalActionActivatedConstant(m_proxSensor);
+
+}
+
 /*!
 Returns the action handle of the Left Haptic Action
 */

@@ -40,6 +40,7 @@ public:
     bool previousSong();
     bool pausePlaySong();
     bool stopSong();
+	bool proxIsActive();
 	vr::VRActionHandle_t getLeftHaptichandle();
 	vr::VRActionHandle_t getRightHaptichandle();
 
