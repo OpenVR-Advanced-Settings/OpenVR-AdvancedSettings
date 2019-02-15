@@ -464,14 +464,7 @@ QPoint OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
     return QPoint( mouse.x, y );
 }
 
-/*!
-Checks if an action has been activated and dispatches the related action if it
-has been.
-
-This function should probably be split into several functions that are specific
-to a binding type as the amount of actions grows.
-*/
-void OverlayController::processInputBindings()
+void OverlayController::processMediaKeyBindings()
 {
     if ( m_actions.nextSong() )
     {
@@ -489,6 +482,10 @@ void OverlayController::processInputBindings()
     {
         m_utilitiesTabController.sendMediaStopSong();
     }
+}
+
+void OverlayController::processRoomBindings()
+{
     // Execution order for moveCenterTabController actions is important. Don't
     // reorder these. Override actions must always come after normal because
     // active priority is set based on which action is "newest"
@@ -509,6 +506,39 @@ void OverlayController::processInputBindings()
         m_actions.optionalOverrideLeftHandRoomTurn() );
     m_moveCenterTabController.optionalOverrideRightHandRoomTurn(
         m_actions.optionalOverrideRightHandRoomTurn() );
+}
+
+void OverlayController::processPushToTalkBindings()
+{
+    const auto pushToTalkCannotChange = !m_audioTabController.pttChangeValid();
+    if ( pushToTalkCannotChange )
+    {
+        return;
+    }
+
+    const auto pushToTalkButtonActivated = m_actions.pushToTalk();
+    const auto pushToTalkCurrentlyActive = m_audioTabController.pttActive();
+    if ( pushToTalkButtonActivated && !pushToTalkCurrentlyActive )
+    {
+        m_audioTabController.startPtt();
+    }
+    else if ( !pushToTalkButtonActivated && pushToTalkCurrentlyActive )
+    {
+        m_audioTabController.stopPtt();
+    }
+}
+
+/*!
+Checks if an action has been activated and dispatches the related action if it
+has been.
+*/
+void OverlayController::processInputBindings()
+{
+    processMediaKeyBindings();
+
+    processRoomBindings();
+
+    processPushToTalkBindings();
 }
 
 // vsync implementation:
