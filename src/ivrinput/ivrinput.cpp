@@ -149,7 +149,8 @@ SteamIVRInput::SteamIVRInput()
           ActionType::Digital ),
       m_optionalOverrideRightHandRoomDrag(
           input_strings::k_actionOptionalOverrideRightHandRoomDrag,
-          ActionType::Digital )
+          ActionType::Digital ),
+      m_pushToTalk( input_strings::k_actionPushToTalk, ActionType::Digital )
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
     m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;
@@ -240,6 +241,11 @@ bool SteamIVRInput::optionalOverrideRightHandRoomDrag()
 {
     return isDigitalActionActivatedConstant(
         m_optionalOverrideRightHandRoomDrag );
+}
+
+bool SteamIVRInput::pushToTalk()
+{
+    return isDigitalActionActivatedConstant( m_pushToTalk );
 }
 
 /*!

@@ -36,10 +36,12 @@ public:
     SteamIVRInput();
 
     void UpdateStates();
+
     bool nextSong();
     bool previousSong();
     bool pausePlaySong();
     bool stopSong();
+
     bool leftHandRoomTurn();
     bool rightHandRoomTurn();
     bool leftHandRoomDrag();
@@ -48,6 +50,8 @@ public:
     bool optionalOverrideRightHandRoomTurn();
     bool optionalOverrideLeftHandRoomDrag();
     bool optionalOverrideRightHandRoomDrag();
+
+    bool pushToTalk();
 
     // Destructor. There are no terminating calls for the IVRInput API, so it
     // is left blank.
@@ -87,6 +91,9 @@ private:
     Action m_optionalOverrideRightHandRoomTurn;
     Action m_optionalOverrideLeftHandRoomDrag;
     Action m_optionalOverrideRightHandRoomDrag;
+
+    // Push To Talk
+    Action m_pushToTalk;
 };
 
 /*!
@@ -117,6 +124,8 @@ namespace input_strings
         = "/actions/main/in/OptionalOverrideLeftHandRoomDrag";
     constexpr auto k_actionOptionalOverrideRightHandRoomDrag
         = "/actions/main/in/OptionalOverrideRightHandRoomDrag";
+
+    constexpr auto k_actionPushToTalk = "/actions/main/in/PushToTalk";
 
     constexpr auto k_setMain = "/actions/main";
 

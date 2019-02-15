@@ -65,6 +65,11 @@
       "name": "/actions/main/in/OptionalOverrideRightHandRoomDrag",
       "requirement": "optional",
       "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/PushToTalk",
+      "requirement": "optional",
+      "type": "boolean"
     }
   ],
   "action_sets": [
@@ -90,7 +95,9 @@
         "/actions/main/in/OptionalOverrideLeftHandRoomTurn" : "Optional Override Left Hand Room Turn",
         "/actions/main/in/OptionalOverrideRightHandRoomTurn" : "Optional Override Right Hand Room Turn",
         "/actions/main/in/OptionalOverrideLeftHandRoomDrag" : "Optional Override Left Hand Room Drag",
-        "/actions/main/in/OptionalOverrideRightHandRoomDrag" : "Optional Override Right Hand Room Drag"
+        "/actions/main/in/OptionalOverrideRightHandRoomDrag" : "Optional Override Right Hand Room Drag",
+
+        "/actions/main/in/PushToTalk" : "Push To Talk"
     }
   ]
 }
