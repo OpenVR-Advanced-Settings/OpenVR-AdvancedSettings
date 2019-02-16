@@ -14,7 +14,6 @@ ColumnLayout {
 
         MyToggleButton {
             id: audioPttEnabledToggle
-            //Layout.preferredWidth: 260
             Layout.fillWidth: true
             text: "Push-to-Talk:"
             onClicked: {
