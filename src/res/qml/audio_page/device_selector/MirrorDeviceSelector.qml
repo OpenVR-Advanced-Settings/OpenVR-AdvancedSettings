@@ -45,7 +45,7 @@ RowLayout {
             setShownAudioDevice(index)
         }
         onPlaybackDeviceListChanged: {
-            audioPlaybackNameCombo.devices = getAudioDeviceList()
+            audioMirrorNameCombo.devices = getAudioDeviceList()
             setShownAudioDevice(AudioTabController.playbackDeviceIndex)
         }
     }
