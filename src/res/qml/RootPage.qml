@@ -351,39 +351,6 @@ MyStackViewPage {
                                AudioTabController.pttEnabled = checked
                            }
                        }
-                       RowLayout {
-                           spacing: 18
-
-                           MyComboBox {
-                               Layout.leftMargin: 78
-                               id: summaryPttProfileComboBox
-                               Layout.maximumWidth: 378
-                               Layout.minimumWidth: 378
-                               Layout.preferredWidth: 378
-                               Layout.fillWidth: true
-                               model: [""]
-                               onCurrentIndexChanged: {
-                                   if (currentIndex > 0) {
-                                       summaryPttProfileApplyButton.enabled = true
-                                   } else {
-                                       summaryPttProfileApplyButton.enabled = false
-                                   }
-                               }
-                           }
-
-                           MyPushButton {
-                               id: summaryPttProfileApplyButton
-                               enabled: false
-                               Layout.preferredWidth: 150
-                               text: "Apply"
-                               onClicked: {
-                                   if (summaryPttProfileComboBox.currentIndex > 0) {
-                                       AudioTabController.applyPttProfile(summaryPttProfileComboBox.currentIndex - 1)
-                                       summaryPttProfileComboBox.currentIndex = 0
-                                   }
-                               }
-                           }
-                       }
                    }
 
                    Item {
@@ -406,7 +373,6 @@ MyStackViewPage {
    Component.onCompleted: {
        reloadChaperoneProfiles()
        reloadSteamVRProfiles()
-       reloadPttProfiles()
 
        summaryVersionText.text = applicationVersion
 
@@ -443,9 +409,6 @@ MyStackViewPage {
 
    Connections {
        target: AudioTabController
-       onPttProfilesUpdated: {
-           reloadPttProfiles()
-       }
        onMicVolumeChanged: {
            summaryMicVolumeSlider.value = AudioTabController.micVolume
        }
@@ -528,15 +491,5 @@ MyStackViewPage {
        }
        summarySteamVRProfileComboBox.currentIndex = 0
        summarySteamVRProfileComboBox.model = profiles
-    }
-
-    function reloadPttProfiles() {
-        var profiles = [""]
-        var profileCount = AudioTabController.getPttProfileCount()
-        for (var i = 0; i < profileCount; i++) {
-            profiles.push(AudioTabController.getPttProfileName(i))
-        }
-        summaryPttProfileComboBox.currentIndex = 0
-        summaryPttProfileComboBox.model = profiles
     }
 }

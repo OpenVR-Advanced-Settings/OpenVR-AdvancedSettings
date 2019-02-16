@@ -143,7 +143,7 @@ These version are not stable and this should be considered for advanced users on
 - **Supersampling Profile**: Allows to apply supersampling profiles. Profiles can be created on the SteamVR page
 - **Chaperone Profile**: Allows to apply chaperone profiles. Profiles can be created on the Chaperone page
 - **Microphone**: Allows to set the microphone volume and to mute/unmute it.
-- **Push-to-Talk**: Enable/disable push-to-talk and allows to apply push-to-talk profiles. Profiles can be created on the Audio page.
+- **Push-to-Talk**: Enable/disable push-to-talk.
 
 <a name="steamvr_page"></a>
 ## - SteamVR Page:
