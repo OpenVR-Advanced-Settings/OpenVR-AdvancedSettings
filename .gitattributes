@@ -89,6 +89,8 @@
 
 #Qt Specific
 *.qml text
+*.pri text
+*.pro text
 
 #Linux Shell Scripts
 #Windows Subsystem for Linux will not run CLRF files.
