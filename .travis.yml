@@ -27,5 +27,6 @@ install:
 
 script:
   - mkdir build && cd build
+  - qmake --version
   - qmake .. -spec $QMAKE_SPEC
   - make
