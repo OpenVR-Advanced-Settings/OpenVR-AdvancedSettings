@@ -6,12 +6,6 @@ import "../../common"
 
 ColumnLayout {
     RowLayout {
-        Layout.fillWidth: true
-        PttControllerConfigDialog {
-            id: pttControllerConfigDialog
-            pttControllerConfigClass: AudioTabController
-        }
-
         MyToggleButton {
             id: audioPttEnabledToggle
             Layout.fillWidth: true
