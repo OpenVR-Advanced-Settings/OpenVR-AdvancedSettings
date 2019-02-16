@@ -1,9 +1,3 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2015-06-10T16:57:45
-#
-#-------------------------------------------------
-
 QT       += core gui qml quick multimedia widgets
 CONFIG   += c++1z
 
