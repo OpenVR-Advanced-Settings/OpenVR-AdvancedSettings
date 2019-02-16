@@ -214,12 +214,9 @@ Allows to temporarily move and rotate the center of the playspace. This allows t
 - **Mirror Device**: Allows to select the mirror device, set its volume and to mute/unmute it.
 - **Microphone**: Allows to select the microphone device, set its volume and to mute/unmute it.
 - **Proximity Sensor Mutes/Unmutes Microphone**: Allows the proximity sensor to mute the microphone when the user is not wearing the HMD, and to unmute it when the user is wearing the HMD.
-- **Push-to-Talk**: Enable/disable push-to-talk. When push-to-talk is activated the microphone gets muted unless one of the configured buttons is pressed on one of the configured controllers.
-- **Left Controller**: Configure the left controller for push-to-talk.
-- **Right Controller**: Configure the right controller for push-to-talk.
-- **Show Notification**: Shows a notification icon in the headset when push-to-talk is enabled a configured button is pressed.
+- **Push-to-Talk**: Enable/disable push-to-talk. When push-to-talk is activated the microphone gets muted unless the Push To Talk action is activated.
+- **Show Notification**: Shows a notification icon in the headset when the Push To Talk action is activated.
 - **Push-to-Mute**: Inverse push-to-talk. The Microphone is unmuted by default and muted when any of the configured buttons is pressed.
-- **PTT Profile**: Allows you to apply/define/delete push-to-talk profiles that save buttons, controller and notification settings.
 - **Audio Profile**: Allows you to apply/define/delete audio profiles that save playback devices, mute state, and volume.
 
 <a name="revive_page"></a>
