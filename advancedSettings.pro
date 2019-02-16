@@ -15,45 +15,26 @@ lessThan(QT_MINOR_VERSION, 6): error("requires Qt 5.6 or higher")
 TARGET = AdvancedSettings
 TEMPLATE = app
 
-*msvc* {
-    #Removing -W3 from both FLAGS is necessary, otherwise compiler will give
-    #D9025: overriding '/W4' with '/W3'
-    QMAKE_CFLAGS_WARN_ON -= -W3
-    QMAKE_CXXFLAGS_WARN_ON -= -W3
-    #C4127 is a warning in qvarlengtharray.h that can not be turned off
-    #on the current version of MSVC.
-    QMAKE_CXXFLAGS += /W4 /wd4127
-    # The codecvt header being used in AudioManagerWindows.cpp is deprecated by the standard,
-    # but no suitable replacement has been standardized yet. It is possible to use the Windows
-    # specific MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h>
-    DEFINES += _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-    !*clang-msvc {
-        #win32-clang-msvc is unable to correctly build the first time
-        #with warnings as errors on. There seems to be an issue with the moc_predefs.h
-        #file not being built correctly when /WX is on. Until the issue is fixed, 
-        #win32-clang-msvc is built without /WX.
-        QMAKE_CXXFLAGS += /WX
-    }
+include_dir = $$PWD/build_scripts/qt/
+
+win32-msvc {
+    include($$include_dir/compilers/msvc.pri)
 }
 
 win32-clang-msvc{
-    #clang-msvc does not enable the c++17 flag with qmake's c++1z flag.
-    QMAKE_CXXFLAGS += /std:c++17
+    include($$include_dir/compilers/clang-msvc.pri)
 }
 
 *g++* {
-    #g++-7 is needed for C++17 features. travis does not supply this by default.
-    QMAKE_CXX = g++-7
-    QMAKE_CXXFLAGS += -Werror
+    include($$include_dir/compilers/gcc.pri)
 }
 
 #Look for anything clang that is not clang-msvc, since it does not
 #allow all the same switches as regular clang.
 *clang|*clang-g++|*clang-libc++ {
-    QMAKE_CXXFLAGS += -Werror
-    #All includes from the third-party directory will not warn.
-    QMAKE_CXXFLAGS += --system-header-prefix=third-party
+    include($$include_dir/compilers/clang.pri)
 }
+
 SOURCES += src/main.cpp\
     src/overlaycontroller.cpp \
     src/tabcontrollers/AudioTabController.cpp \
