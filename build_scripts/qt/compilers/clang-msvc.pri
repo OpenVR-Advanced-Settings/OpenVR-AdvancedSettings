@@ -12,6 +12,8 @@ include(clang-gcc-common-switches.pri)
 
 QMAKE_CXXFLAGS += -Wmost
 
+QMAKE_CXXFLAGS += -Weffc++
+
 #QMAKE_CXXFLAGS += -Wconversion
 #QMAKE_CXXFLAGS += -Wdouble-promotion
 #QMAKE_CXXFLAGS +=  -Wsign-conversion
