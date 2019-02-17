@@ -8,7 +8,7 @@ include(common-msvc.pri)
 #clang-msvc does not enable the c++17 flag with qmake's c++1z flag.
 QMAKE_CXXFLAGS += /std:c++17
 
-QMAKE_CXXFLAGS += -Wextra
+QMAKE_CXXFLAGS += -Wextra -Wmost
 
 QMAKE_CXXFLAGS += -Wshadow
 
@@ -16,4 +16,9 @@ QMAKE_CXXFLAGS += -Wold-style-cast
 
 QMAKE_CXXFLAGS += -Wnon-virtual-dtor
 
-QMAKE_CXXFLAGS += -Wpedantic
+#QMAKE_CXXFLAGS += -Wpedantic
+
+QMAKE_CXXFLAGS += -Wcast-align -Wunused -Woverloaded-virtual -Wformat=2
+#QMAKE_CXXFLAGS += -Wconversion
+#QMAKE_CXXFLAGS += -Wdouble-promotion
+#QMAKE_CXXFLAGS +=  -Wsign-conversion
