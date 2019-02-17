@@ -9,3 +9,6 @@ QMAKE_CXXFLAGS += /W4 /wd4127
 # but no suitable replacement has been standardized yet. It is possible to use the Windows
 # specific MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h>
 DEFINES += _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+
+# Enables Whole Program Optimization
+QMAKE_CXXFLAGS += /Gw
