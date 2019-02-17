@@ -53,7 +53,7 @@ private:
 
 public:
     void initStage1();
-    void initStage2( OverlayController* parent, QQuickWindow* widget );
+    void initStage2( OverlayController* var_parent, QQuickWindow* var_widget );
 
     void eventLoopTick();
 
