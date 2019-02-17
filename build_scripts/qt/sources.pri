@@ -43,18 +43,19 @@ win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
         src/tabcontrollers/keyboardinput/KeyboardInputWindows.cpp
     HEADERS += src/tabcontrollers/audiomanager/AudioManagerWindows.h \
-                src/tabcontrollers/audiomanager/IPolicyConfig.h \
         src/tabcontrollers/keyboardinput/KeyboardInputWindows.h
 }
 
 win32-msvc {
     INCLUDEPATH += third-party/openvr/headers \
-                            third-party/easylogging++
+                    third-party/easylogging++ \
+                    third-party/policyconfig
 }
 
 win32-clang-msvc {
     QMAKE_CXXFLAGS += /imsvc "$$PWD/../../third-party/openvr/headers"
     QMAKE_CXXFLAGS += /imsvc "$$PWD/../../third-party/easylogging++"
+    QMAKE_CXXFLAGS += /imsvc "$$PWD/../../third-party/policyconfig"
 }
 
 # Anything g++ or clang
