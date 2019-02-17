@@ -7,3 +7,5 @@ include(common-msvc.pri)
 
 #clang-msvc does not enable the c++17 flag with qmake's c++1z flag.
 QMAKE_CXXFLAGS += /std:c++17
+
+QMAKE_CXXFLAGS += -Xclang -Wshadow

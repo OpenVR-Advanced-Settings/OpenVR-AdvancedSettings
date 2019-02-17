@@ -64,8 +64,8 @@ void UtilitiesTabController::initStage1()
 void UtilitiesTabController::initStage2( OverlayController* var_parent,
                                          QQuickWindow* var_widget )
 {
-    this->parent = var_parent;
-    this->widget = var_widget;
+    this->m_parent = var_parent;
+    this->m_widget = var_widget;
 }
 
 void UtilitiesTabController::sendKeyboardInput( QString input )
@@ -467,7 +467,7 @@ void UtilitiesTabController::eventLoopTick()
                         }
                         */
                         auto nError = vrnotification->CreateNotification(
-                            parent->overlayHandle(),
+                            m_parent->overlayHandle(),
                             666,
                             vr::EVRNotificationType_Transient,
                             alarmMessageBuffer,
