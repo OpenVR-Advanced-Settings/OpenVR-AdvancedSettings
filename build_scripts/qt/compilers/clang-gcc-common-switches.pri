@@ -7,5 +7,3 @@ QMAKE_CXXFLAGS += -Wold-style-cast
 QMAKE_CXXFLAGS += -Wnon-virtual-dtor
 
 QMAKE_CXXFLAGS += -Wcast-align -Wunused -Woverloaded-virtual -Wformat=2
-
-QMAKE_CXXFLAGS += -Weffc++
