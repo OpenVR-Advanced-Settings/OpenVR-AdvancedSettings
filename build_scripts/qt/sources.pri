@@ -63,6 +63,9 @@ win32-clang-msvc {
     QMAKE_CXXFLAGS += -isystem ../third-party/openvr/headers
     QMAKE_CXXFLAGS += -isystem ../third-party/easylogging++
 }
-
-# easylogging++ used to be a header only lib. Now requires easylogging++.cc
-SOURCES += third-party/easylogging++/easylogging++.cc
+!*gcc* {
+    # easylogging++ used to be a header only lib. Now requires easylogging++.cc
+    SOURCES += third-party/easylogging++/easylogging++.cc
+} else {
+    QMAKE_CXXFLAGS += -i ../third-party/easylogging++
+}
