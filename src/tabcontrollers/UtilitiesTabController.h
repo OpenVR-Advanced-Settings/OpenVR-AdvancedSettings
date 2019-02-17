@@ -33,8 +33,8 @@ class UtilitiesTabController : public QObject
             setSteamDesktopOverlayWidth NOTIFY steamDesktopOverlayWidthChanged )
 
 private:
-    OverlayController* parent;
-    QQuickWindow* widget;
+    OverlayController* m_parent;
+    QQuickWindow* m_widget;
 
     unsigned settingsUpdateCounter = 0;
 
