@@ -15,3 +15,5 @@ QMAKE_CXXFLAGS += -Wshadow
 QMAKE_CXXFLAGS += -Wold-style-cast
 
 QMAKE_CXXFLAGS += -Wnon-virtual-dtor
+
+QMAKE_CXXFLAGS += -Wpedantic
