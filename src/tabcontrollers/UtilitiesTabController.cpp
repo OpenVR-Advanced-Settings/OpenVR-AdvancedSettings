@@ -422,8 +422,9 @@ void UtilitiesTabController::eventLoopTick()
                     vr::VRNotificationId notificationId;
                     vr::EVRInitError eError;
                     vr::IVRNotifications* vrnotification
-                        = ( vr::IVRNotifications* ) vr::VR_GetGenericInterface(
-                            vr::IVRNotifications_Version, &eError );
+                        = static_cast<vr::IVRNotifications*>(
+                            vr::VR_GetGenericInterface(
+                                vr::IVRNotifications_Version, &eError ) );
                     if ( eError != vr::VRInitError_None )
                     {
                         LOG( ERROR )

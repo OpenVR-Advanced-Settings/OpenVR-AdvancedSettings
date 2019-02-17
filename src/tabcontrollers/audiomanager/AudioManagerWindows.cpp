@@ -13,7 +13,7 @@ AudioManagerWindows::~AudioManagerWindows()
 {
     std::lock_guard<std::recursive_mutex> lock( _mutex );
     audioDeviceEnumerator->UnregisterEndpointNotificationCallback(
-        ( IMMNotificationClient* ) this );
+        static_cast<IMMNotificationClient*>( this ) );
     if ( mirrorAudioEndpointVolume )
     {
         mirrorAudioEndpointVolume->Release();
@@ -61,7 +61,7 @@ void AudioManagerWindows::init( AudioTabController* var_controller )
     }
     this->controller = var_controller;
     audioDeviceEnumerator->RegisterEndpointNotificationCallback(
-        ( IMMNotificationClient* ) this );
+        static_cast<IMMNotificationClient*>( this ) );
     policyConfig = getPolicyConfig();
     if ( !policyConfig )
     {
@@ -373,7 +373,7 @@ IMMDeviceEnumerator* AudioManagerWindows::getAudioDeviceEnumerator()
                            NULL,
                            CLSCTX_ALL,
                            __uuidof( IMMDeviceEnumerator ),
-                           ( void** ) &pEnumerator )
+                           reinterpret_cast<void**>( &pEnumerator ) )
          < 0 )
     {
         return nullptr;
@@ -385,18 +385,19 @@ IPolicyConfig* AudioManagerWindows::getPolicyConfig()
 {
     IPolicyConfig* var_policyConfig = nullptr;
     // for Win 10
-    auto hr = CoCreateInstance( __uuidof( CPolicyConfigClient ),
-                                NULL,
-                                CLSCTX_INPROC,
-                                IID_IPolicyConfig2,
-                                ( LPVOID* ) &var_policyConfig );
+    auto hr
+        = CoCreateInstance( __uuidof( CPolicyConfigClient ),
+                            NULL,
+                            CLSCTX_INPROC,
+                            IID_IPolicyConfig2,
+                            reinterpret_cast<LPVOID*>( &var_policyConfig ) );
     if ( hr != S_OK )
     {
         hr = CoCreateInstance( __uuidof( CPolicyConfigClient ),
                                NULL,
                                CLSCTX_INPROC,
                                IID_IPolicyConfig1,
-                               ( LPVOID* ) &var_policyConfig );
+                               reinterpret_cast<LPVOID*>( &var_policyConfig ) );
     }
     // for Win Vista, 7, 8, 8.1
     if ( hr != S_OK )
@@ -405,7 +406,7 @@ IPolicyConfig* AudioManagerWindows::getPolicyConfig()
                                NULL,
                                CLSCTX_INPROC,
                                IID_IPolicyConfig0,
-                               ( LPVOID* ) &var_policyConfig );
+                               reinterpret_cast<LPVOID*>( &var_policyConfig ) );
     }
     if ( hr != S_OK )
     {
@@ -471,7 +472,7 @@ IAudioEndpointVolume*
     if ( device->Activate( __uuidof( IAudioEndpointVolume ),
                            CLSCTX_INPROC_SERVER,
                            NULL,
-                           ( void** ) &pEndpointVolume )
+                           reinterpret_cast<void**>( &pEndpointVolume ) )
          < 0 )
     {
         return nullptr;
@@ -536,12 +537,12 @@ HRESULT AudioManagerWindows::QueryInterface( REFIID riid, void** ppvObject )
     if ( IID_IUnknown == riid )
     {
         AddRef();
-        *ppvObject = ( IUnknown* ) this;
+        *ppvObject = static_cast<IUnknown*>( this );
     }
     else if ( __uuidof( IMMNotificationClient ) == riid )
     {
         AddRef();
-        *ppvObject = ( IMMNotificationClient* ) this;
+        *ppvObject = static_cast<IMMNotificationClient*>( this );
     }
     else
     {

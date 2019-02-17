@@ -43,7 +43,8 @@ void PttController::setPttControllerConfig( unsigned controller,
         uint64_t buttonMask = 0;
         for ( auto b : buttons )
         {
-            buttonMask |= vr::ButtonMaskFromId( ( vr::EVRButtonId ) b.toInt() );
+            buttonMask |= vr::ButtonMaskFromId(
+                ( static_cast<vr::EVRButtonId>( b.toInt() ) ) );
         }
         m_pttControllerConfigs[controller].digitalButtons = buttons;
         m_pttControllerConfigs[controller].digitalButtonMask = buttonMask;
@@ -78,7 +79,8 @@ void PttController::reloadPttProfiles()
         uint64_t buttonMask = 0;
         for ( auto b : entry.controllerConfigs[0].digitalButtons )
         {
-            buttonMask |= vr::ButtonMaskFromId( ( vr::EVRButtonId ) b.toInt() );
+            buttonMask |= vr::ButtonMaskFromId(
+                static_cast<vr::EVRButtonId>( b.toInt() ) );
         }
         entry.controllerConfigs[0].digitalButtonMask = buttonMask;
         entry.controllerConfigs[0].triggerMode
@@ -92,7 +94,8 @@ void PttController::reloadPttProfiles()
         buttonMask = 0;
         for ( auto b : entry.controllerConfigs[1].digitalButtons )
         {
-            buttonMask |= vr::ButtonMaskFromId( ( vr::EVRButtonId ) b.toInt() );
+            buttonMask |= vr::ButtonMaskFromId(
+                static_cast<vr::EVRButtonId>( b.toInt() ) );
         }
         entry.controllerConfigs[1].digitalButtonMask = buttonMask;
         entry.controllerConfigs[1].triggerMode
@@ -165,7 +168,8 @@ void PttController::reloadPttConfig()
     uint64_t buttonMask = 0;
     for ( auto b : m_pttControllerConfigs[0].digitalButtons )
     {
-        buttonMask |= vr::ButtonMaskFromId( ( vr::EVRButtonId ) b.toInt() );
+        buttonMask |= vr::ButtonMaskFromId(
+            static_cast<vr::EVRButtonId>( b.toInt() ) );
     }
     m_pttControllerConfigs[0].digitalButtonMask = buttonMask;
     m_pttControllerConfigs[0].triggerMode
@@ -179,7 +183,8 @@ void PttController::reloadPttConfig()
     buttonMask = 0;
     for ( auto b : m_pttControllerConfigs[0].digitalButtons )
     {
-        buttonMask |= vr::ButtonMaskFromId( ( vr::EVRButtonId ) b.toInt() );
+        buttonMask |= vr::ButtonMaskFromId(
+            static_cast<vr::EVRButtonId>( b.toInt() ) );
     }
     m_pttControllerConfigs[1].digitalButtonMask = buttonMask;
     m_pttControllerConfigs[1].triggerMode
@@ -388,7 +393,7 @@ unsigned PttController::pttTouchpadArea( unsigned controller )
 
 unsigned PttController::getPttProfileCount()
 {
-    return ( unsigned ) pttProfiles.size();
+    return static_cast<unsigned int>( pttProfiles.size() );
 }
 
 QString PttController::getPttProfileName( unsigned index )

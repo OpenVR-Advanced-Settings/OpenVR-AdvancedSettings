@@ -928,7 +928,7 @@ float ChaperoneTabController::chaperoneVelocityModifier() const
 
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount()
 {
-    return ( unsigned ) chaperoneProfiles.size();
+    return static_cast<unsigned int>( chaperoneProfiles.size() );
 }
 
 Q_INVOKABLE QString
@@ -1244,7 +1244,7 @@ void ChaperoneTabController::flipOrientation()
 {
     parent->m_moveCenterTabController.reset();
     parent->RotateUniverseCenter( vr::TrackingUniverseStanding,
-                                  ( float ) M_PI );
+                                  static_cast<float>( M_PI ) );
 }
 
 void ChaperoneTabController::reloadFromDisk()

@@ -77,7 +77,8 @@ void ChaperoneUtils::loadChaperoneData()
         std::unique_ptr<vr::HmdQuad_t> quadsBuffer(
             new vr::HmdQuad_t[_quadsCount] );
         vr::HmdQuad_t* quadsBufferPtr = quadsBuffer.get();
-        _corners.reset( ( vr::HmdVector3_t* ) new vr::HmdQuad_t[_quadsCount] );
+        _corners.reset( reinterpret_cast<vr::HmdVector3_t*>(
+            new vr::HmdQuad_t[_quadsCount] ) );
         vr::HmdVector3_t* _cornersPtr = _corners.get();
         vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo( quadsBufferPtr,
                                                             &_quadsCount );

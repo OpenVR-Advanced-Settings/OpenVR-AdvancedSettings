@@ -133,10 +133,10 @@ unsigned StatisticsTabController::timedOut() const
 
 float StatisticsTabController::totalReprojectedRatio() const
 {
-    float totalFrames = ( float ) ( m_cumStats.m_nNumFramePresents
-                                    - m_totalRatioPresentedOffset );
-    float reprojectedFrames = ( float ) ( m_cumStats.m_nNumReprojectedFrames
-                                          - m_totalRatioReprojectedOffset );
+    float totalFrames = static_cast<float>(
+        ( m_cumStats.m_nNumFramePresents - m_totalRatioPresentedOffset ) );
+    float reprojectedFrames = static_cast<float>( (
+        m_cumStats.m_nNumReprojectedFrames - m_totalRatioReprojectedOffset ) );
     if ( totalFrames != 0.0f )
     {
         return reprojectedFrames / totalFrames;

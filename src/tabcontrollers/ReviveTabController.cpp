@@ -1015,17 +1015,17 @@ void ReviveTabController::setPiGender( int value, bool notify )
     {
         m_piGender = value;
         vr::EVRSettingsError vrSettingsError;
-        char* txt;
+        const char* txt;
         switch ( value )
         {
         case 1:
-            txt = ( char* ) "Male";
+            txt = static_cast<const char*>( "Male" );
             break;
         case 2:
-            txt = ( char* ) "Female";
+            txt = static_cast<const char*>( "Female" );
             break;
         default:
-            txt = ( char* ) "Unknown";
+            txt = static_cast<const char*>( "Unknown" );
             break;
         }
         vr::VRSettings()->SetString(
@@ -1255,7 +1255,7 @@ void ReviveTabController::saveControllerProfiles()
 
 Q_INVOKABLE unsigned ReviveTabController::getControllerProfileCount()
 {
-    return ( unsigned ) controllerProfiles.size();
+    return static_cast<unsigned int>( controllerProfiles.size() );
 }
 
 Q_INVOKABLE QString
