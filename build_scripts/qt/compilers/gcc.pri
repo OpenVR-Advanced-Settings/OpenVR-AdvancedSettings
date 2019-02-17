@@ -6,3 +6,5 @@ QMAKE_CXXFLAGS += -Werror
 QMAKE_CXXFLAGS += -Wshadow
 
 QMAKE_CXXFLAGS += -Wold-style-cast
+
+QMAKE_CXXFLAGS += -Wnon-virtual-dtor

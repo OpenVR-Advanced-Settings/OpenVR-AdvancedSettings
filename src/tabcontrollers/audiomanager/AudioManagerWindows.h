@@ -5,7 +5,7 @@
 #include <mmdeviceapi.h>
 #include <functiondiscoverykeys_devpkey.h>
 #include <endpointvolume.h>
-#include "IPolicyConfig.h"
+#include <IPolicyConfig.h>
 #include <mutex>
 
 // application namespace
