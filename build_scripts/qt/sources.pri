@@ -46,13 +46,23 @@ win32 {
                 src/tabcontrollers/audiomanager/IPolicyConfig.h \
         src/tabcontrollers/keyboardinput/KeyboardInputWindows.h
 }
-*msvc* {
+
+win32-msvc {
     INCLUDEPATH += third-party/openvr/headers \
                             third-party/easylogging++
-    #easylogging++ used to be a header only lib. Now requires easylogging++.cc
-    SOURCES += third-party/easylogging++/easylogging++.cc
-} else {
+}
+
+win32-clang-msvc {
+    QMAKE_CXXFLAGS += /imsvc "$$PWD/../../third-party/openvr/headers"
+    QMAKE_CXXFLAGS += /imsvc "$$PWD/../../third-party/easylogging++"
+}
+
+# Anything g++ or clang
+# In order to suppress warnings in third party headers
+*clang|*clang-g++|*clang-libc++|*g++* {
     QMAKE_CXXFLAGS += -isystem ../third-party/openvr/headers
     QMAKE_CXXFLAGS += -isystem ../third-party/easylogging++
-    SOURCES += third-party/easylogging++/easylogging++.cc
 }
+
+# easylogging++ used to be a header only lib. Now requires easylogging++.cc
+SOURCES += third-party/easylogging++/easylogging++.cc
