@@ -1789,26 +1789,26 @@ void TypedConfigurations::insertFile(Level level, const std::string& fullFilenam
   if (filePath.size() < resolvedFilename.size()) {
     base::utils::File::createPath(filePath);
   }
-  auto create = [&](Level level) {
+  auto create = [&](Level level_var) {
     base::LogStreamsReferenceMap::iterator filestreamIter = m_logStreamsReference->find(resolvedFilename);
     base::type::fstream_t* fs = nullptr;
     if (filestreamIter == m_logStreamsReference->end()) {
       // We need a completely new stream, nothing to share with
       fs = base::utils::File::newFileStream(resolvedFilename);
-      m_filenameMap.insert(std::make_pair(level, resolvedFilename));
-      m_fileStreamMap.insert(std::make_pair(level, base::FileStreamPtr(fs)));
-      m_logStreamsReference->insert(std::make_pair(resolvedFilename, base::FileStreamPtr(m_fileStreamMap.at(level))));
+      m_filenameMap.insert(std::make_pair(level_var, resolvedFilename));
+      m_fileStreamMap.insert(std::make_pair(level_var, base::FileStreamPtr(fs)));
+      m_logStreamsReference->insert(std::make_pair(resolvedFilename, base::FileStreamPtr(m_fileStreamMap.at(level_var))));
     } else {
       // Woops! we have an existing one, share it!
-      m_filenameMap.insert(std::make_pair(level, filestreamIter->first));
-      m_fileStreamMap.insert(std::make_pair(level, base::FileStreamPtr(filestreamIter->second)));
+      m_filenameMap.insert(std::make_pair(level_var, filestreamIter->first));
+      m_fileStreamMap.insert(std::make_pair(level_var, base::FileStreamPtr(filestreamIter->second)));
       fs = filestreamIter->second.get();
     }
     if (fs == nullptr) {
       // We display bad file error from newFileStream()
       ELPP_INTERNAL_ERROR("Setting [TO_FILE] of ["
-                          << LevelHelper::convertToString(level) << "] to FALSE", false);
-      setValue(level, false, &m_toFileMap);
+                          << LevelHelper::convertToString(level_var) << "] to FALSE", false);
+      setValue(level_var, false, &m_toFileMap);
     }
   };
   // If we dont have file conf for any level, create it for Level::Global first
