@@ -52,7 +52,7 @@ private:
     OverlayController* parent;
     QQuickWindow* widget;
 
-    int m_trackingUniverse = ( int ) vr::TrackingUniverseStanding;
+    int m_trackingUniverse = static_cast<int>( vr::TrackingUniverseStanding );
     float m_offsetX = 0.0f;
     float m_offsetY = 0.0f;
     float m_offsetZ = 0.0f;

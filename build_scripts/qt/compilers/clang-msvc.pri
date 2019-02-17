@@ -9,3 +9,5 @@ include(common-msvc.pri)
 QMAKE_CXXFLAGS += /std:c++17
 
 QMAKE_CXXFLAGS += -Xclang -Wshadow
+
+QMAKE_CXXFLAGS += -Wold-style-cast

@@ -361,7 +361,8 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         m_pRenderControl->initialize( m_pOpenGLContext.get() );
 
         vr::HmdVector2_t vecWindowSize
-            = { ( float ) quickItem->width(), ( float ) quickItem->height() };
+            = { static_cast<float>( quickItem->width() ),
+                static_cast<float>( quickItem->height() ) };
         vr::VROverlay()->SetOverlayMouseScale( m_ulOverlayHandle,
                                                &vecWindowSize );
 
@@ -425,11 +426,13 @@ void OverlayController::renderOverlay()
 #if defined _WIN64 || defined _LP64
             // To avoid any compiler warning because of cast to a larger pointer
             // type (warning C4312 on VC)
-            vr::Texture_t texture = { ( void* ) ( ( uint64_t ) unTexture ),
-                                      vr::TextureType_OpenGL,
-                                      vr::ColorSpace_Auto };
+            vr::Texture_t texture
+                = { reinterpret_cast<void*>(
+                        ( static_cast<uint64_t>( unTexture ) ) ),
+                    vr::TextureType_OpenGL,
+                    vr::ColorSpace_Auto };
 #else
-            vr::Texture_t texture = { ( void* ) unTexture,
+            vr::Texture_t texture = { reinterpret_cast<void*>( unTexture ),
                                       vr::TextureType_OpenGL,
                                       vr::ColorSpace_Auto };
 #endif

@@ -4,3 +4,5 @@ QMAKE_CXX = g++-7
 QMAKE_CXXFLAGS += -Werror
 
 QMAKE_CXXFLAGS += -Wshadow
+
+QMAKE_CXXFLAGS += -Wold-style-cast

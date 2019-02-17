@@ -3,3 +3,5 @@ QMAKE_CXXFLAGS += -Werror
 QMAKE_CXXFLAGS += --system-header-prefix=third-party
 
 QMAKE_CXXFLAGS += -Wshadow
+
+QMAKE_CXXFLAGS += -Wold-style-cast
