@@ -56,7 +56,7 @@ void SteamVRTabController::eventLoopTick()
                     << "\" setting: "
                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                            vrSettingsError );
-                if ( m_superSampling != 1.0 )
+                if ( m_superSampling != 1.0f )
                 {
                     LOG( DEBUG )
                         << "OpenVR returns an error and we have a custom "

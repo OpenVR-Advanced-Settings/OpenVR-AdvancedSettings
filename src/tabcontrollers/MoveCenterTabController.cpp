@@ -167,10 +167,12 @@ void MoveCenterTabController::setRotation( int value, bool notify )
             = devicePosesForRot[0].mDeviceToAbsoluteTracking;
 
         // Set up xyz coordinate values from pose matrix.
-        double oldHmdXyz[3]
-            = { oldHmdPos.m[0][3], oldHmdPos.m[1][3], oldHmdPos.m[2][3] };
-        double newHmdXyz[3]
-            = { oldHmdPos.m[0][3], oldHmdPos.m[1][3], oldHmdPos.m[2][3] };
+        double oldHmdXyz[3] = { static_cast<double>( oldHmdPos.m[0][3] ),
+                                static_cast<double>( oldHmdPos.m[1][3] ),
+                                static_cast<double>( oldHmdPos.m[2][3] ) };
+        double newHmdXyz[3] = { static_cast<double>( oldHmdPos.m[0][3] ),
+                                static_cast<double>( oldHmdPos.m[1][3] ),
+                                static_cast<double>( oldHmdPos.m[2][3] ) };
 
         // Convert oldHmdXyz into un-rotated coordinates.
         double oldAngle = -m_rotation * k_centidegreesToRadians;
@@ -261,9 +263,9 @@ void MoveCenterTabController::setAdjustChaperone( bool value, bool notify )
         {
             double angle = m_rotation * k_centidegreesToRadians;
             double offsetdir = m_adjustChaperone ? -1.0 : 1.0;
-            double offset[3] = { offsetdir * m_offsetX,
-                                 offsetdir * m_offsetY,
-                                 offsetdir * m_offsetZ };
+            double offset[3] = { offsetdir * static_cast<double>( m_offsetX ),
+                                 offsetdir * static_cast<double>( m_offsetY ),
+                                 offsetdir * static_cast<double>( m_offsetZ ) };
             rotateCoordinates( offset, angle );
 
             // We're done with calculations so down-cast to float for
@@ -407,7 +409,7 @@ void MoveCenterTabController::modOffsetX( float value, bool notify )
     if ( !m_lockXToggle )
     {
         double angle = m_rotation * k_centidegreesToRadians;
-        double offset[3] = { value, 0, 0 };
+        double offset[3] = { static_cast<double>( value ), 0, 0 };
         rotateCoordinates( offset, angle );
         float offsetFloat[3] = { static_cast<float>( offset[0] ),
                                  static_cast<float>( offset[1] ),
@@ -446,7 +448,7 @@ void MoveCenterTabController::modOffsetZ( float value, bool notify )
     if ( !m_lockZToggle )
     {
         double angle = m_rotation * k_centidegreesToRadians;
-        double offset[3] = { 0, 0, value };
+        double offset[3] = { 0, 0, static_cast<double>( value ) };
         rotateCoordinates( offset, angle );
         float offsetFloat[3] = { static_cast<float>( offset[0] ),
                                  static_cast<float>( offset[1] ),
@@ -964,9 +966,12 @@ void MoveCenterTabController::eventLoopTick(
         else
         {
             double relativeControllerPosition[]
-                = { movePose->mDeviceToAbsoluteTracking.m[0][3],
-                    movePose->mDeviceToAbsoluteTracking.m[1][3],
-                    movePose->mDeviceToAbsoluteTracking.m[2][3] };
+                = { static_cast<double>(
+                        movePose->mDeviceToAbsoluteTracking.m[0][3] ),
+                    static_cast<double>(
+                        movePose->mDeviceToAbsoluteTracking.m[1][3] ),
+                    static_cast<double>(
+                        movePose->mDeviceToAbsoluteTracking.m[2][3] ) };
 
             rotateCoordinates( relativeControllerPosition, -angle );
             float absoluteControllerPosition[] = {
@@ -978,9 +983,12 @@ void MoveCenterTabController::eventLoopTick(
             if ( m_lastMoveHand == m_activeDragHand )
             {
                 double diff[3] = {
-                    absoluteControllerPosition[0] - m_lastControllerPosition[0],
-                    absoluteControllerPosition[1] - m_lastControllerPosition[1],
-                    absoluteControllerPosition[2] - m_lastControllerPosition[2],
+                    static_cast<double>( absoluteControllerPosition[0]
+                                         - m_lastControllerPosition[0] ),
+                    static_cast<double>( absoluteControllerPosition[1]
+                                         - m_lastControllerPosition[1] ),
+                    static_cast<double>( absoluteControllerPosition[2]
+                                         - m_lastControllerPosition[2] ),
                 };
 
                 // offset is un-rotated coordinates

@@ -564,7 +564,7 @@ void ChaperoneTabController::eventLoopTick(
     {
         float mod = m_chaperoneVelocityModifier
                     * std::max( { leftSpeed, rightSpeed, hmdSpeed } );
-        if ( mod > 0.02 )
+        if ( mod > 0.02f )
         {
             m_chaperoneVelocityModifierCurrent += mod;
         }

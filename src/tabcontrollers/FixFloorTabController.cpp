@@ -135,15 +135,17 @@ void FixFloorTabController::eventLoopTick(
             {
                 if ( std::abs( tempRoll ) <= M_PI_2 )
                 {
-                    floorOffsetY = tempOffsetY - controllerUpOffsetCorrection;
+                    floorOffsetY = static_cast<float>( tempOffsetY )
+                                   - controllerUpOffsetCorrection;
                 }
                 else
                 {
-                    floorOffsetY = tempOffsetY - controllerDownOffsetCorrection;
+                    floorOffsetY = static_cast<float>( tempOffsetY )
+                                   - controllerDownOffsetCorrection;
                 }
 
-                floorOffsetX = tempOffsetX;
-                floorOffsetZ = tempOffsetZ;
+                floorOffsetX = static_cast<float>( tempOffsetX );
+                floorOffsetZ = static_cast<float>( tempOffsetZ );
 
                 LOG( INFO )
                     << "Fix Floor and adjust room center: Floor Offset = ["
