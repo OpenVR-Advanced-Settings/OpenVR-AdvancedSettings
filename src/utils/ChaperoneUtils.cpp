@@ -29,10 +29,14 @@ float ChaperoneUtils::_getDistanceToChaperone(
         { // projected point outside of segment
             float d_x = r0.v[0] - x.v[0];
             float d_z = r0.v[2] - x.v[2];
-            float d1 = sqrt( static_cast<float>( d_x * d_x + d_z * d_z ) );
+            // Crazy casts because clang sees the sqrt call as wanting a double.
+            float d1 = static_cast<float>(
+                sqrt( static_cast<double>( d_x * d_x + d_z * d_z ) ) );
             d_x = r1.v[0] - x.v[0];
             d_z = r1.v[2] - x.v[2];
-            float d2 = sqrt( static_cast<float>( d_x * d_x + d_z * d_z ) );
+            // Crazy casts because clang sees the sqrt call as wanting a double.
+            float d2 = static_cast<float>(
+                sqrt( static_cast<double>( d_x * d_x + d_z * d_z ) ) );
             if ( d1 < d2 )
             {
                 d = d1;
@@ -52,7 +56,9 @@ float ChaperoneUtils::_getDistanceToChaperone(
             x1_z = r0.v[2] + r * u_z;
             float d_x = x1_x - x.v[0];
             float d_z = x1_z - x.v[2];
-            d = sqrt( static_cast<float>( d_x * d_x + d_z * d_z ) );
+            // Crazy casts because clang sees the sqrt call as wanting a double.
+            d = static_cast<float>(
+                sqrt( static_cast<double>( d_x * d_x + d_z * d_z ) ) );
         }
         if ( std::isnan( distance ) || d < distance )
         {
