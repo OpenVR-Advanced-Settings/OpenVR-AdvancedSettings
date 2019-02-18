@@ -535,7 +535,7 @@ void UtilitiesTabController::eventLoopTick()
                             vr::ETrackedDeviceProperty::
                                 Prop_DeviceBatteryPercentage_Float );
                     int batteryState = static_cast<int>(
-                        ceil( static_cast<float>( battery * 5 ) ) );
+                        ceil( static_cast<double>( battery * 5 ) ) );
 
                     if ( batteryState != m_batteryState[i] )
                     {
