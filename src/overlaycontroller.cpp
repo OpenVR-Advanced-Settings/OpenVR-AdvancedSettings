@@ -1076,7 +1076,7 @@ void OverlayController::playAlarm01Sound( bool loop )
 
 void OverlayController::setAlarm01SoundVolume( float vol )
 {
-    m_alarm01SoundEffect.setVolume( vol );
+    m_alarm01SoundEffect.setVolume( static_cast<double>( vol ) );
 }
 
 void OverlayController::cancelAlarm01Sound()

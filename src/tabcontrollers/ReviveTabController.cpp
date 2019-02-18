@@ -44,7 +44,7 @@ void ReviveTabController::initStage1( bool forceRevivePage )
         }
         else
         {
-            if ( valuef == 0.0 )
+            if ( valuef == 0.0f )
             {
                 m_pixelsPerDisplayPixelOverrideEnabled = false;
                 m_pixelsPerDisplayPixelOverride = 1.0;
@@ -321,7 +321,7 @@ void ReviveTabController::eventLoopTick()
                                                   &vrSettingsError );
                 if ( vrSettingsError == vr::VRSettingsError_None )
                 {
-                    if ( valuef == 0.0 )
+                    if ( valuef == 0.0f )
                     {
                         setPixelsPerDisplayPixelOverrideEnabled( false );
                     }

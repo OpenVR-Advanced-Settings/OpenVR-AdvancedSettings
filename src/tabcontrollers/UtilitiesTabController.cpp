@@ -583,7 +583,7 @@ void UtilitiesTabController::setSteamDesktopOverlayWidth( float width,
                                                           bool notify,
                                                           bool notifyOpenVr )
 {
-    if ( std::abs( m_steamDesktopOverlayWidth - width ) > 0.01 )
+    if ( std::abs( m_steamDesktopOverlayWidth - width ) > 0.01f )
     {
         m_steamDesktopOverlayWidth = width;
         if ( notifyOpenVr )

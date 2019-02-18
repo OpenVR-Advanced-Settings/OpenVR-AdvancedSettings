@@ -54,7 +54,7 @@ void StatisticsTabController::eventLoopTick(
                     + std::pow( m[2][3] - lastHmdPos[2], 2 ) );
                 if ( delta >= 0.01f )
                 {
-                    m_hmdDistanceMoved += delta;
+                    m_hmdDistanceMoved += static_cast<double>( delta );
                 }
             }
             lastHmdPos[0] = m[0][3];
@@ -164,7 +164,7 @@ void StatisticsTabController::statsRotationResetClicked()
 
 void StatisticsTabController::statsLeftControllerSpeedResetClicked()
 {
-    if ( m_leftControllerMaxSpeed != 0.0 )
+    if ( m_leftControllerMaxSpeed != 0.0f )
     {
         m_leftControllerMaxSpeed = 0.0;
     }
@@ -172,7 +172,7 @@ void StatisticsTabController::statsLeftControllerSpeedResetClicked()
 
 void StatisticsTabController::statsRightControllerSpeedResetClicked()
 {
-    if ( m_rightControllerMaxSpeed != 0.0 )
+    if ( m_rightControllerMaxSpeed != 0.0f )
     {
         m_rightControllerMaxSpeed = 0.0;
     }
