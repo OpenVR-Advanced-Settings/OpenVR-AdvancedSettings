@@ -230,8 +230,8 @@ void MoveCenterTabController::setRotation( int value, bool notify )
             vr::EChaperoneConfigFile_Live );
 
         // Update UI offsets.
-        m_offsetX += hmdRotDiff[0];
-        m_offsetZ += hmdRotDiff[2];
+        m_offsetX += static_cast<float>( hmdRotDiff[0] );
+        m_offsetZ += static_cast<float>( hmdRotDiff[2] );
         if ( notify )
         {
             emit offsetXChanged( m_offsetX );
@@ -996,15 +996,15 @@ void MoveCenterTabController::eventLoopTick(
                 // prevents UI from updating if axis movement is locked
                 if ( !m_lockXToggle )
                 {
-                    m_offsetX += diff[0];
+                    m_offsetX += static_cast<float>( diff[0] );
                 }
                 if ( !m_lockYToggle )
                 {
-                    m_offsetY += diff[1];
+                    m_offsetY += static_cast<float>( diff[1] );
                 }
                 if ( !m_lockZToggle )
                 {
-                    m_offsetZ += diff[2];
+                    m_offsetZ += static_cast<float>( diff[2] );
                 }
 
                 rotateCoordinates( diff, angle );
