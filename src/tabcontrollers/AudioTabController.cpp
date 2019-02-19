@@ -750,7 +750,7 @@ void AudioTabController::reloadAudioProfiles()
     {
         settings->setArrayIndex( i );
         audioProfiles.emplace_back();
-        auto& entry = audioProfiles[i];
+        auto& entry = audioProfiles[static_cast<size_t>( i )];
         entry.profileName
             = settings->value( "profileName" ).toString().toStdString();
         entry.playbackName
@@ -1044,7 +1044,7 @@ void AudioTabController::applyDefaultProfile()
         if ( profile.defaultProfile )
         {
             applyAudioProfile( i );
-            m_defaultProfileIndex = i;
+            m_defaultProfileIndex = static_cast<int>( i );
             break;
         }
     }

@@ -70,7 +70,7 @@ void ChaperoneTabController::reloadChaperoneProfiles()
     {
         settings->setArrayIndex( i );
         chaperoneProfiles.emplace_back();
-        auto& entry = chaperoneProfiles[i];
+        auto& entry = chaperoneProfiles[static_cast<size_t>( i )];
         entry.profileName
             = settings->value( "profileName" ).toString().toStdString();
         entry.includesChaperoneGeometry
@@ -229,7 +229,7 @@ void ChaperoneTabController::saveChaperoneProfiles()
     unsigned i = 0;
     for ( auto& p : chaperoneProfiles )
     {
-        settings->setArrayIndex( i );
+        settings->setArrayIndex( static_cast<int>( i ) );
         settings->setValue( "profileName",
                             QString::fromStdString( p.profileName ) );
         settings->setValue( "includesChaperoneGeometry",

@@ -1207,7 +1207,7 @@ void ReviveTabController::reloadControllerProfiles()
     {
         settings->setArrayIndex( i );
         controllerProfiles.emplace_back();
-        auto& entry = controllerProfiles[i];
+        auto& entry = controllerProfiles[static_cast<size_t>( i )];
         entry.profileName
             = settings->value( "profileName" ).toString().toStdString();
         entry.gripButtonMode = settings->value( "gripButtonMode", 0 ).toInt();
@@ -1234,7 +1234,7 @@ void ReviveTabController::saveControllerProfiles()
     unsigned i = 0;
     for ( auto& p : controllerProfiles )
     {
-        settings->setArrayIndex( i );
+        settings->setArrayIndex( static_cast<int>( i ) );
         settings->setValue( "profileName",
                             QString::fromStdString( p.profileName ) );
         settings->setValue( "gripButtonMode", p.gripButtonMode );
