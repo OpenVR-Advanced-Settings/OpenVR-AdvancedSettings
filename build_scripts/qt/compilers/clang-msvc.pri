@@ -12,7 +12,7 @@ include(clang-gcc-common-switches.pri)
 
 QMAKE_CXXFLAGS += -Wmost
 
-QMAKE_CXXFLAGS += -Weffc++
+QMAKE_CXXFLAGS += -Weffc++ -Wmissing-variable-declarations
 
 #clang-msvc spams warnings on -Wconversion and -Wsign-conversion
 # from the moc .cpp files including Qt stuff.
