@@ -65,7 +65,7 @@ void PttController::reloadPttProfiles()
     {
         settings->setArrayIndex( i );
         pttProfiles.emplace_back();
-        auto& entry = pttProfiles[i];
+        auto& entry = pttProfiles[static_cast<size_t>( i )];
         entry.profileName
             = settings->value( "profileName" ).toString().toStdString();
         entry.showNotification
@@ -117,7 +117,7 @@ void PttController::savePttProfiles()
     unsigned i = 0;
     for ( auto& p : pttProfiles )
     {
-        settings->setArrayIndex( i );
+        settings->setArrayIndex( static_cast<int>( i ) );
         settings->setValue( "profileName",
                             QString::fromStdString( p.profileName ) );
         settings->setValue( "showNotification", p.showNotification );
@@ -359,7 +359,8 @@ unsigned long PttController::pttDigitalButtonMask( unsigned controller )
 {
     if ( controller < 2 )
     {
-        return m_pttControllerConfigs[controller].digitalButtonMask;
+        return static_cast<unsigned long>(
+            m_pttControllerConfigs[controller].digitalButtonMask );
     }
     return 0;
 }

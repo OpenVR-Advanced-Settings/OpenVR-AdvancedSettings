@@ -15,4 +15,4 @@ QMAKE_CXXFLAGS += -Wmost
 QMAKE_CXXFLAGS += -Weffc++
 
 #QMAKE_CXXFLAGS += -Wconversion
-#QMAKE_CXXFLAGS +=  -Wsign-conversion
+QMAKE_CXXFLAGS +=  -Wsign-conversion
