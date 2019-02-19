@@ -351,13 +351,18 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             QOpenGLFramebufferObject::CombinedDepthStencil );
         fboFormat.setTextureTarget( GL_TEXTURE_2D );
         m_pFbo.reset( new QOpenGLFramebufferObject(
-            quickItem->width(), quickItem->height(), fboFormat ) );
+            static_cast<int>( quickItem->width() ),
+            static_cast<int>( quickItem->height() ),
+            fboFormat ) );
 
         m_pRenderControl.reset( new QQuickRenderControl() );
         m_pWindow.reset( new QQuickWindow( m_pRenderControl.get() ) );
         m_pWindow->setRenderTarget( m_pFbo.get() );
         quickItem->setParentItem( m_pWindow->contentItem() );
-        m_pWindow->setGeometry( 0, 0, quickItem->width(), quickItem->height() );
+        m_pWindow->setGeometry( 0,
+                                0,
+                                static_cast<int>( quickItem->width() ),
+                                static_cast<int>( quickItem->height() ) );
         m_pRenderControl->initialize( m_pOpenGLContext.get() );
 
         vr::HmdVector2_t vecWindowSize
@@ -464,7 +469,7 @@ QPoint OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
     float h = static_cast<float>( m_pWindow->height() );
     y = h - y;
 #endif
-    return QPoint( mouse.x, y );
+    return QPoint( static_cast<int>( mouse.x ), static_cast<int>( y ) );
 }
 
 void OverlayController::processMediaKeyBindings()
@@ -640,8 +645,10 @@ void OverlayController::mainEventLoop()
                 m_ptLastMouse,
                 m_pWindow->mapToGlobal( m_ptLastMouse ),
                 QPoint(),
-                QPoint( vrEvent.data.scroll.xdelta * 360.0f * 8.0f,
-                        vrEvent.data.scroll.ydelta * 360.0f * 8.0f ),
+                QPoint( static_cast<int>( vrEvent.data.scroll.xdelta * 360.0f
+                                          * 8.0f ),
+                        static_cast<int>( vrEvent.data.scroll.ydelta * 360.0f
+                                          * 8.0f ) ),
                 0,
                 Qt::Vertical,
                 m_lastMouseButtons,
@@ -688,7 +695,8 @@ void OverlayController::mainEventLoop()
             char keyboardBuffer[1024];
             vr::VROverlay()->GetKeyboardText( keyboardBuffer, 1024 );
             emit keyBoardInputSignal( QString( keyboardBuffer ),
-                                      vrEvent.data.keyboard.uUserValue );
+                                      static_cast<unsigned long>(
+                                          vrEvent.data.keyboard.uUserValue ) );
         }
         break;
 
