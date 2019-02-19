@@ -93,7 +93,7 @@ void StatisticsTabController::eventLoopTick(
 
 float StatisticsTabController::hmdDistanceMoved() const
 {
-    return m_hmdDistanceMoved;
+    return static_cast<float>( m_hmdDistanceMoved );
 }
 
 float StatisticsTabController::hmdRotations() const

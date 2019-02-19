@@ -733,9 +733,10 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
     if ( m_visibility != value )
     {
         m_visibility = value;
-        vr::VRSettings()->SetInt32( vr::k_pch_CollisionBounds_Section,
-                                    vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-                                    255 * m_visibility );
+        vr::VRSettings()->SetInt32(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_ColorGammaA_Int32,
+            static_cast<int32_t>( 255 * m_visibility ) );
         vr::VRSettings()->Sync();
         if ( notify )
         {
