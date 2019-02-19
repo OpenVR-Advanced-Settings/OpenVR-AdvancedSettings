@@ -12,7 +12,7 @@
 // application namespace
 namespace advsettings
 {
-const char* steamDesktopOverlaykey = "valve.steam.desktop";
+constexpr auto steamDesktopOverlaykey = "valve.steam.desktop";
 
 void UtilitiesTabController::initStage1()
 {
