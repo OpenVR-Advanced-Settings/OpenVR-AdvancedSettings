@@ -9,3 +9,5 @@ QMAKE_CXXFLAGS += -Werror
 
 # GCC only switches
 QMAKE_CXXFLAGS += -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wrestrict -Wnull-dereference
+
+QMAKE_CXXFLAGS += -Wconversion
