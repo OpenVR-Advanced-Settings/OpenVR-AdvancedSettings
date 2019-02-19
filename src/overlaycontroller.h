@@ -165,7 +165,7 @@ public:
     bool isDesktopMode()
     {
         return m_desktopMode;
-    };
+    }
 
     utils::ChaperoneUtils& chaperoneUtils() noexcept
     {

@@ -11,7 +11,7 @@ class AudioTabController;
 class AudioManager
 {
 public:
-    virtual ~AudioManager(){};
+    virtual ~AudioManager() {}
 
     virtual void init( AudioTabController* controller ) = 0;
 

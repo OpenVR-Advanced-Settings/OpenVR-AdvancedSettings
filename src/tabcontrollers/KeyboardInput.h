@@ -11,7 +11,7 @@ class AudioTabController;
 class KeyboardInput
 {
 public:
-    virtual ~KeyboardInput(){};
+    virtual ~KeyboardInput() {}
 
     virtual void sendKeyboardInput( QString input ) = 0;
     virtual void sendKeyboardEnter() = 0;
