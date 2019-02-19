@@ -594,7 +594,7 @@ void OverlayController::mainEventLoop()
                                         m_pWindow->mapToGlobal( ptNewMouse ),
                                         Qt::NoButton,
                                         m_lastMouseButtons,
-                                        0 );
+                                        nullptr );
                 m_ptLastMouse = ptNewMouse;
                 QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
                 OnRenderRequest();
@@ -615,7 +615,7 @@ void OverlayController::mainEventLoop()
                                     m_pWindow->mapToGlobal( ptNewMouse ),
                                     button,
                                     m_lastMouseButtons,
-                                    0 );
+                                    nullptr );
             QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
         }
         break;
@@ -633,7 +633,7 @@ void OverlayController::mainEventLoop()
                                     m_pWindow->mapToGlobal( ptNewMouse ),
                                     button,
                                     m_lastMouseButtons,
-                                    0 );
+                                    nullptr );
             QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
         }
         break;
@@ -652,7 +652,7 @@ void OverlayController::mainEventLoop()
                 0,
                 Qt::Vertical,
                 m_lastMouseButtons,
-                0 );
+                nullptr );
             QCoreApplication::sendEvent( m_pWindow.get(), &wheelEvent );
         }
         break;
