@@ -5,25 +5,25 @@
 // application namespace
 namespace advsettings
 {
-const char* appkey_overlay = "revive.dashboard.overlay";
-const char* section_revive = "revive";
-const char* key_pixelsPerDisplayPixel = "pixelsPerDisplayPixel";
-const char* key_toggleGrip = "ToggleGrip";
-const char* key_triggerAsGrip = "TriggerAsGrip";
-const char* key_toggleDelay = "ToggleDelay";
-const char* key_thumbDeadzone = "ThumbDeadzone";
-const char* key_thumbSensitivity = "ThumbSensitivity";
-const char* key_touchPitch = "TouchPitch";
-const char* key_touchYaw = "TouchYaw";
-const char* key_touchRoll = "TouchRoll";
-const char* key_touchX = "TouchX";
-const char* key_touchY = "TouchY";
-const char* key_touchZ = "TouchZ";
-const char* key_playerHeight = "PlayerHeight";
-const char* key_eyeHeight = "EyeHeight";
-const char* key_piUser = "User";
-const char* key_piName = "Name";
-const char* key_piGender = "Gender";
+constexpr auto appkey_overlay = "revive.dashboard.overlay";
+constexpr auto section_revive = "revive";
+constexpr auto key_pixelsPerDisplayPixel = "pixelsPerDisplayPixel";
+constexpr auto key_toggleGrip = "ToggleGrip";
+constexpr auto key_triggerAsGrip = "TriggerAsGrip";
+constexpr auto key_toggleDelay = "ToggleDelay";
+constexpr auto key_thumbDeadzone = "ThumbDeadzone";
+constexpr auto key_thumbSensitivity = "ThumbSensitivity";
+constexpr auto key_touchPitch = "TouchPitch";
+constexpr auto key_touchYaw = "TouchYaw";
+constexpr auto key_touchRoll = "TouchRoll";
+constexpr auto key_touchX = "TouchX";
+constexpr auto key_touchY = "TouchY";
+constexpr auto key_touchZ = "TouchZ";
+constexpr auto key_playerHeight = "PlayerHeight";
+constexpr auto key_eyeHeight = "EyeHeight";
+constexpr auto key_piUser = "User";
+constexpr auto key_piName = "Name";
+constexpr auto key_piGender = "Gender";
 
 void ReviveTabController::initStage1( bool forceRevivePage )
 {
