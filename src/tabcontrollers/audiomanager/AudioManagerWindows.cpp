@@ -370,7 +370,7 @@ IMMDeviceEnumerator* AudioManagerWindows::getAudioDeviceEnumerator()
 {
     IMMDeviceEnumerator* pEnumerator;
     if ( CoCreateInstance( __uuidof( MMDeviceEnumerator ),
-                           NULL,
+                           nullptr,
                            CLSCTX_ALL,
                            __uuidof( IMMDeviceEnumerator ),
                            reinterpret_cast<void**>( &pEnumerator ) )
@@ -387,14 +387,14 @@ IPolicyConfig* AudioManagerWindows::getPolicyConfig()
     // for Win 10
     auto hr
         = CoCreateInstance( __uuidof( CPolicyConfigClient ),
-                            NULL,
+                            nullptr,
                             CLSCTX_INPROC,
                             IID_IPolicyConfig2,
                             reinterpret_cast<LPVOID*>( &var_policyConfig ) );
     if ( hr != S_OK )
     {
         hr = CoCreateInstance( __uuidof( CPolicyConfigClient ),
-                               NULL,
+                               nullptr,
                                CLSCTX_INPROC,
                                IID_IPolicyConfig1,
                                reinterpret_cast<LPVOID*>( &var_policyConfig ) );
@@ -403,7 +403,7 @@ IPolicyConfig* AudioManagerWindows::getPolicyConfig()
     if ( hr != S_OK )
     {
         hr = CoCreateInstance( __uuidof( CPolicyConfigClient ),
-                               NULL,
+                               nullptr,
                                CLSCTX_INPROC,
                                IID_IPolicyConfig0,
                                reinterpret_cast<LPVOID*>( &var_policyConfig ) );
@@ -471,7 +471,7 @@ IAudioEndpointVolume*
     IAudioEndpointVolume* pEndpointVolume;
     if ( device->Activate( __uuidof( IAudioEndpointVolume ),
                            CLSCTX_INPROC_SERVER,
-                           NULL,
+                           nullptr,
                            reinterpret_cast<void**>( &pEndpointVolume ) )
          < 0 )
     {
@@ -546,7 +546,7 @@ HRESULT AudioManagerWindows::QueryInterface( REFIID riid, void** ppvObject )
     }
     else
     {
-        *ppvObject = NULL;
+        *ppvObject = nullptr;
         return E_NOINTERFACE;
     }
     return S_OK;

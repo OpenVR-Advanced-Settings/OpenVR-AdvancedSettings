@@ -13,4 +13,4 @@ QMAKE_CXXFLAGS += -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wrestric
 # Sign conversion warns on auto generated Qt MOC files.
 QMAKE_CXXFLAGS += -Wconversion -Wno-sign-conversion
 
-QMAKE_CXXFLAGS += -Wextra-semi
+QMAKE_CXXFLAGS += -Wextra-semi -Wzero-as-null-pointer-constant
