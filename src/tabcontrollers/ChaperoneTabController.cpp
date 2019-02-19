@@ -654,10 +654,10 @@ void ChaperoneTabController::eventLoopTick(
         if ( parent->isDashboardVisible() )
         {
             vr::EVRSettingsError vrSettingsError;
-            float vis = vr::VRSettings()->GetInt32(
+            float vis = static_cast<float>( vr::VRSettings()->GetInt32(
                 vr::k_pch_CollisionBounds_Section,
                 vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-                &vrSettingsError );
+                &vrSettingsError ) );
             if ( vrSettingsError != vr::VRSettingsError_None )
             {
                 LOG( WARNING )

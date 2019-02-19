@@ -48,10 +48,10 @@ void StatisticsTabController::eventLoopTick(
             }
             else
             {
-                float delta = std::sqrt(
+                float delta = static_cast<float>( std::sqrt(
                     std::pow( m[0][3] - lastHmdPos[0],
                               2 ) /*+ std::pow(m[1][3] - lastHmdPos[1], 2)*/
-                    + std::pow( m[2][3] - lastHmdPos[2], 2 ) );
+                    + std::pow( m[2][3] - lastHmdPos[2], 2 ) ) );
                 if ( delta >= 0.01f )
                 {
                     m_hmdDistanceMoved += static_cast<double>( delta );
