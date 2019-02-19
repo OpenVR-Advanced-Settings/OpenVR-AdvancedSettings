@@ -71,10 +71,10 @@ protected:
 protected:
     void checkPttStatus();
     virtual QString getSettingsName() = 0;
-    virtual void onPttStart(){};
-    virtual void onPttStop(){};
-    virtual void onPttEnabled(){};
-    virtual void onPttDisabled(){};
+    virtual void onPttStart() {}
+    virtual void onPttStop() {}
+    virtual void onPttEnabled() {}
+    virtual void onPttDisabled() {}
 
     virtual vr::VROverlayHandle_t getNotificationOverlayHandle()
     {

@@ -33,7 +33,7 @@ void fillKiStruct( INPUT& ip, WORD scanCode, bool keyup )
     ip.ki.wScan = 0;
     ip.ki.dwExtraInfo = 0;
     ip.ki.time = 0;
-};
+}
 
 /*!
 Calls SendInput on an INPUT struct and has associated error handling.

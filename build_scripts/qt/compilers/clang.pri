@@ -10,3 +10,5 @@ QMAKE_CXXFLAGS += --system-header-prefix=third-party
 
 # Sign conversion warns on auto generated Qt MOC files.
 QMAKE_CXXFLAGS += -Weffc++ -Wconversion -Wno-sign-conversion
+
+QMAKE_CXXFLAGS += -Wextra-semi
