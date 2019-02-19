@@ -14,5 +14,5 @@ QMAKE_CXXFLAGS += -Wmost
 
 QMAKE_CXXFLAGS += -Weffc++
 
-#QMAKE_CXXFLAGS += -Wconversion
-QMAKE_CXXFLAGS +=  -Wsign-conversion
+#clang-msvc spams warnings on -Wconversion and -Wsign-conversion
+# from the moc .cpp files including Qt stuff.
