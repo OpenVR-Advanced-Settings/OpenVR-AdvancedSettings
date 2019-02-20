@@ -126,7 +126,6 @@ DISTFILES += \
     src/res/qml/ChaperoneWarningsPage.qml \
     src/res/qml/FixFloorPage.qml \
     src/res/qml/PlayspacePage.qml \
-    src/res/qml/PttControllerConfigDialog.qml \
     src/res/qml/RevivePage.qml \
     src/res/qml/RootPage.qml \
     src/res/qml/SettingsPage.qml \

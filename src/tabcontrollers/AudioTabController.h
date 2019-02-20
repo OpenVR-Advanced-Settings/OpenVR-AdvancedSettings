@@ -87,7 +87,7 @@ private:
     void onPttStop() override;
     void onPttEnabled() override;
     void onPttDisabled() override;
-    bool pttChangeValid() override;
+
     virtual vr::VROverlayHandle_t getNotificationOverlayHandle() override
     {
         return m_ulNotificationOverlayHandle;
@@ -113,6 +113,8 @@ public:
     void saveAudioSettings();
 
     void eventLoopTick();
+
+    bool pttChangeValid() override;
 
     int playbackDeviceIndex() const;
 
