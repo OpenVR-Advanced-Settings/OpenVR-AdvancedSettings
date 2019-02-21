@@ -1190,7 +1190,7 @@ std::string DateTime::timevalToString(struct timeval tval, const char* format,
   buildTimeInfo(&tval, &timeInfo);
   const int kBuffSize = 30;
   char buff_[kBuffSize] = "";
-  parseFormat(buff_, kBuffSize, format, &timeInfo, static_cast<unsigned long>(tval.tv_usec) / ssPrec->m_offset,
+  parseFormat(buff_, kBuffSize, format, &timeInfo, static_cast<size_t>(static_cast<unsigned long>(tval.tv_usec) / ssPrec->m_offset),
               ssPrec);
   return std::string(buff_);
 }
