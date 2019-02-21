@@ -431,11 +431,10 @@ void OverlayController::renderOverlay()
 #if defined _WIN64 || defined _LP64
             // To avoid any compiler warning because of cast to a larger pointer
             // type (warning C4312 on VC)
-            vr::Texture_t texture
-                = { reinterpret_cast<void*>(
-                        ( static_cast<uint64_t>( unTexture ) ) ),
-                    vr::TextureType_OpenGL,
-                    vr::ColorSpace_Auto };
+            vr::Texture_t texture = { reinterpret_cast<void*>(
+                                          static_cast<uint64_t>( unTexture ) ),
+                                      vr::TextureType_OpenGL,
+                                      vr::ColorSpace_Auto };
 #else
             vr::Texture_t texture = { reinterpret_cast<void*>( unTexture ),
                                       vr::TextureType_OpenGL,
