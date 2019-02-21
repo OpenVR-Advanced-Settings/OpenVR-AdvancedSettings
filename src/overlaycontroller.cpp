@@ -644,10 +644,10 @@ void OverlayController::mainEventLoop()
                 m_ptLastMouse,
                 m_pWindow->mapToGlobal( m_ptLastMouse ),
                 QPoint(),
-                QPoint( static_cast<int>( vrEvent.data.scroll.xdelta * 360.0f
-                                          * 8.0f ),
-                        static_cast<int>( vrEvent.data.scroll.ydelta * 360.0f
-                                          * 8.0f ) ),
+                QPoint( static_cast<int>( vrEvent.data.scroll.xdelta
+                                          * ( 360.0f * 8.0f ) ),
+                        static_cast<int>( vrEvent.data.scroll.ydelta
+                                          * ( 360.0f * 8.0f ) ) ),
                 0,
                 Qt::Vertical,
                 m_lastMouseButtons,
