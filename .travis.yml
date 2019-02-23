@@ -12,10 +12,17 @@ matrix:
         - g++-7
     env:
     - QMAKE_SPEC=linux-g++
+    compiler: gcc
 
   - os: linux
     env:
     - QMAKE_SPEC=linux-clang
+    compiler: clang
+
+  - os: linux
+    env:
+    - USE_TIDY=TRUE
+    compiler: clang
 
 before_install:
   - python ./build_scripts/run-clang-format.py ./src -r --color always  
@@ -24,9 +31,7 @@ install:
   - sudo add-apt-repository ppa:kubuntu-ppa/backports -y
   - sudo apt-get update -qq
   - sudo apt-get install build-essential qtbase5-dev qttools5-dev qtdeclarative5-dev qtmultimedia5-dev qt5-default qttools5-dev-tools
+  - sudo apt-get install bear clang-tidy
 
 script:
-  - mkdir build && cd build
-  - qmake --version
-  - qmake .. -spec $QMAKE_SPEC
-  - make
+  - ./build_scripts/linux/build_linux.sh
