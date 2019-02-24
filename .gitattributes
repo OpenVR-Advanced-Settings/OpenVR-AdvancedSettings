@@ -94,4 +94,4 @@
 
 #Linux Shell Scripts
 #Windows Subsystem for Linux will not run CLRF files.
-*.sh text eof=lf
+*.sh text eol=lf
