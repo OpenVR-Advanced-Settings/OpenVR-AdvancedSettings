@@ -291,10 +291,7 @@ Full build instructions can be found [here](docs/building_for_windows.md).
 <a name="building_on_linux"></a>
 ## Building on Linux
 
-If you want to run Advanced Settings on linux you can build it yourself using `qmake` and `make` or using Qt Creator, you'll have to copy the `res` folder from the `src` folder into folder that contains the binary
-and copy `third-party/openvr/lib/linux64/libopenvr_api.so` into your systems library path.
-
-If you want to contribute changes running `clang-format` is necessary. More details are in the [CONTRIBUTING.md](docs/CONTRIBUTING.md) file.
+Full build instructions can be found [here](docs/building_for_linux.md).
 
 <a name="notes"></a>
 # Notes:
