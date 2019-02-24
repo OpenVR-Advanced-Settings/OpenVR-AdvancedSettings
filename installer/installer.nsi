@@ -114,7 +114,7 @@ Section "Install" SecInstall
     ;Any action manifests
     File "${BASEDIR}\*.json"
     ;And their defaults
-    File "${BASEDIR}\default_action_manifests\*.json"
+    File /r "${BASEDIR}\default_action_manifests"
     
 	File "${THIRDDIR}\openvr\bin\win64\*.dll"
 	File "${BASEDIR}\*.dll"
