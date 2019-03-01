@@ -671,9 +671,11 @@ void OverlayController::mainEventLoop()
             m_chaperoneTabController.shutdown();
             Shutdown();
             QApplication::exit();
-            return;
+
+            LOG( INFO ) << "All systems exited.";
+            exit( EXIT_SUCCESS );
+            // Does not fallthrough
         }
-        break;
 
         case vr::VREvent_DashboardActivated:
         {
