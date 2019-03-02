@@ -31,6 +31,7 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/KeyboardInput.h \
     src/utils/Matrix.h \
     src/utils/ChaperoneUtils.h \
+    src/utils/quaternion.h \
     src/tabcontrollers/audiomanager/AudioManagerDummy.h \
     src/tabcontrollers/keyboardinput/KeyboardInputDummy.h \
     src/overlaycontroller/openvr_init.h \
