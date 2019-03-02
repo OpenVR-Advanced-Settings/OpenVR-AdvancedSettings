@@ -78,7 +78,8 @@ void StatisticsTabController::eventLoopTick(
     }
 
     // HMD Rotation //
-    double spaceHmdYawTotal = parent->m_moveCenterTabController.getHmdYawTotal();
+    double spaceHmdYawTotal
+        = parent->m_moveCenterTabController.getHmdYawTotal();
     m_hmdRotation = static_cast<float>( spaceHmdYawTotal / ( 2.0 * M_PI ) );
 
     if ( lastPosTimer <= 0 )
