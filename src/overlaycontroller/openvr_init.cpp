@@ -7,10 +7,20 @@
 
 namespace openvr_init
 {
-void initializeProperly()
+void initializeProperly( const OpenVrInitializationType initType )
 {
+    auto initializationType = vr::EVRApplicationType::VRApplication_Other;
+    if ( initType == OpenVrInitializationType::Overlay )
+    {
+        initializationType = vr::EVRApplicationType::VRApplication_Overlay;
+    }
+    else if ( initType == OpenVrInitializationType::Utility )
+    {
+        initializationType = vr::EVRApplicationType::VRApplication_Utility;
+    }
+
     auto initError = vr::VRInitError_None;
-    vr::VR_Init( &initError, vr::VRApplication_Overlay );
+    vr::VR_Init( &initError, initializationType );
     if ( initError != vr::VRInitError_None )
     {
         if ( initError == vr::VRInitError_Init_HmdNotFound
@@ -20,10 +30,11 @@ void initializeProperly()
                                    "OpenVR Advanced Settings Overlay",
                                    "Could not find HMD!" );
         }
-        throw std::runtime_error(
-            std::string( "Failed to initialize OpenVR: " )
-            + std::string(
-                  vr::VR_GetVRInitErrorAsEnglishDescription( initError ) ) );
+        LOG( ERROR ) << "Failed to initialize OpenVR: "
+                            + std::string(
+                                  vr::VR_GetVRInitErrorAsEnglishDescription(
+                                      initError ) );
+        exit( EXIT_FAILURE );
     }
     else
     {
@@ -31,9 +42,9 @@ void initializeProperly()
     }
 }
 
-OpenVR_Init::OpenVR_Init()
+OpenVR_Init::OpenVR_Init( const OpenVrInitializationType initType )
 {
-    initializeProperly();
+    initializeProperly( initType );
 
     // The function call and error message was the same for all version checks.
     // Specific error messages are unlikely to be necessary since both the type

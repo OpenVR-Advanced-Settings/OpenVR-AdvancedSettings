@@ -10,6 +10,7 @@
 #include <openvr.h>
 #include <iostream>
 #include <easylogging++.h>
+#include "../overlaycontroller/openvr_init.h"
 
 enum ReturnErrorCode
 {
@@ -294,42 +295,32 @@ void reinstallApplicationManifest( const QString manifestPath )
 [[noreturn]] void handleManifests( const bool installManifest,
                                    const bool removeManifest )
 {
-    int exit_code = ReturnErrorCode::SUCCESS;
-    auto openvr_init_status = vr::VRInitError_None;
-    vr::VR_Init( &openvr_init_status, vr::VRApplication_Utility );
-    if ( openvr_init_status == vr::VRInitError_None )
-    {
-        try
-        {
-            const auto manifestPath = QDir::cleanPath(
-                QDir( QCoreApplication::applicationDirPath() )
-                    .absoluteFilePath( kVRManifestName ) );
+    openvr_init::OpenVR_Init openvr_init(
+        openvr_init::OpenVrInitializationType::Utility );
 
-            if ( installManifest )
-            {
-                reinstallApplicationManifest( manifestPath );
-                enableApplicationAutostart();
-                LOG( INFO ) << "Manifest reinstalled.";
-            }
-            else if ( removeManifest )
-            {
-                removeApplicationManifest( manifestPath );
-                LOG( INFO ) << "Manifest removed.";
-            }
-        }
-        catch ( std::exception& e )
+    int exit_code = ReturnErrorCode::SUCCESS;
+    try
+    {
+        const auto manifestPath
+            = QDir::cleanPath( QDir( QCoreApplication::applicationDirPath() )
+                                   .absoluteFilePath( kVRManifestName ) );
+
+        if ( installManifest )
         {
-            exit_code = ReturnErrorCode::GENERAL_FAILURE;
-            LOG( ERROR ) << e.what();
+            reinstallApplicationManifest( manifestPath );
+            enableApplicationAutostart();
+            LOG( INFO ) << "Manifest reinstalled.";
+        }
+        else if ( removeManifest )
+        {
+            removeApplicationManifest( manifestPath );
+            LOG( INFO ) << "Manifest removed.";
         }
     }
-    else
+    catch ( std::exception& e )
     {
-        exit_code = ReturnErrorCode::OPENVR_INIT_ERROR;
-        LOG( ERROR ) << std::string(
-            "Failed to initialize OpenVR: "
-            + std::string( vr::VR_GetVRInitErrorAsEnglishDescription(
-                  openvr_init_status ) ) );
+        exit_code = ReturnErrorCode::GENERAL_FAILURE;
+        LOG( ERROR ) << e.what();
     }
 
     vr::VR_Shutdown();

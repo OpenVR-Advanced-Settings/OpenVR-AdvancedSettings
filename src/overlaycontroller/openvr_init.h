@@ -2,6 +2,12 @@
 
 namespace openvr_init
 {
+enum class OpenVrInitializationType
+{
+    Overlay,
+    Utility,
+};
+
 /*!
 Initializes OpenVR and checks validity of interface versions. Shuts down OpenVR
 when destroyed.
@@ -17,7 +23,7 @@ implementation.
 class OpenVR_Init
 {
 public:
-    OpenVR_Init();
+    OpenVR_Init( const OpenVrInitializationType initType );
     ~OpenVR_Init();
 
     // As per the Rule of Five, the following constructors and assignments can
