@@ -956,6 +956,59 @@ void MoveCenterTabController::optionalOverrideRightHandSpaceTurn(
 
 // END of turn bindings.
 
+// START of other bindings.
+
+void MoveCenterTabController::swapSpaceDragToLeftHandOverride(
+    bool swapDragToLeftHand )
+{
+    // temp set to false
+    swapDragToLeftHand = false;
+    // TODO STUFF
+}
+
+void MoveCenterTabController::swapSpaceDragToRightHandOverride(
+    bool swapDragToRightHand )
+{
+    // temp set to false
+    swapDragToRightHand = false;
+    // TODO STUFF
+}
+
+void MoveCenterTabController::gravityToggle( bool gravityToggleJustPressed )
+{
+    // temp set to false
+    gravityToggleJustPressed = false;
+    // TODO STUFF
+}
+
+void MoveCenterTabController::heightToggle( bool heightToggleJustPressed )
+{
+    // temp set to false
+    heightToggleJustPressed = false;
+    // TODO STUFF
+}
+
+void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
+{
+    // temp set to false
+    resetOffsetsJustPressed = false;
+    // TODO STUFF
+}
+
+void MoveCenterTabController::snapTurnLeft( bool snapTurnLeftJustPressed )
+{
+    // temp set to false
+    snapTurnLeftJustPressed = false;
+    // TODO STUFF
+}
+
+void MoveCenterTabController::snapTurnRight( bool snapTurnRightJustPressed )
+{
+    // temp set to false
+    snapTurnRightJustPressed = false;
+    // TODO STUFF
+}
+
 void MoveCenterTabController::updateHmdRotationCounter(
     vr::TrackedDevicePose_t hmdPose,
     double angle )

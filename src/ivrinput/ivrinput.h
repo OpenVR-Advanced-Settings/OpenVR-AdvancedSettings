@@ -48,6 +48,13 @@ public:
     bool optionalOverrideRightHandSpaceTurn();
     bool optionalOverrideLeftHandSpaceDrag();
     bool optionalOverrideRightHandSpaceDrag();
+    bool swapSpaceDragToLeftHandOverride();
+    bool swapSpaceDragToRightHandOverride();
+    bool gravityToggle();
+    bool heightToggle();
+    bool resetOffsets();
+    bool snapTurnLeft();
+    bool snapTurnRight();
 
     // Destructor. There are no terminating calls for the IVRInput API, so it
     // is left blank.
@@ -87,6 +94,13 @@ private:
     Action m_optionalOverrideRightHandSpaceTurn;
     Action m_optionalOverrideLeftHandSpaceDrag;
     Action m_optionalOverrideRightHandSpaceDrag;
+    Action m_swapSpaceDragToLeftHandOverride;
+    Action m_swapSpaceDragToRightHandOverride;
+    Action m_gravityToggle;
+    Action m_heightToggle;
+    Action m_resetOffsets;
+    Action m_snapTurnLeft;
+    Action m_snapTurnRight;
 };
 
 /*!
@@ -117,6 +131,15 @@ namespace input_strings
         = "/actions/main/in/OptionalOverrideLeftHandSpaceDrag";
     constexpr auto k_actionOptionalOverrideRightHandSpaceDrag
         = "/actions/main/in/OptionalOverrideRightHandSpaceDrag";
+    constexpr auto k_actionSwapSpaceDragToLeftHandOverride
+        = "/actions/main/in/SwapSpaceDragToLeftHandOverride";
+    constexpr auto k_actionSwapSpaceDragToRightHandOverride
+        = "/actions/main/in/SwapSpaceDragToRightHandOverride";
+    constexpr auto k_actionGravityToggle = "/actions/main/in/GravityToggle";
+    constexpr auto k_actionHeightToggle = "/actions/main/in/HeightToggle";
+    constexpr auto k_actionResetOffsets = "/actions/main/in/ResetOffsets";
+    constexpr auto k_actionSnapTurnLeft = "/actions/main/in/SnapTurnLeft";
+    constexpr auto k_actionSnapTurnRight = "/actions/main/in/SnapTurnRight";
 
     constexpr auto k_setMain = "/actions/main";
 

@@ -65,6 +65,41 @@
       "name": "/actions/main/in/OptionalOverrideRightHandSpaceDrag",
       "requirement": "optional",
       "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/SwapSpaceDragToLeftHandOverride",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/SwapSpaceDragToRightHandOverride",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/GravityToggle",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/HeightToggle",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/ResetOffsets",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/SnapTurnLeft",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/SnapTurnRight",
+      "requirement": "optional",
+      "type": "boolean"
     }
   ],
   "action_sets": [
@@ -87,10 +122,17 @@
         "/actions/main/in/RightHandSpaceTurn" : "Right Hand Space Turn",
         "/actions/main/in/LeftHandSpaceDrag" : "Left Hand Space Drag",
         "/actions/main/in/RightHandSpaceDrag" : "Right Hand Space Drag",
-        "/actions/main/in/OptionalOverrideLeftHandSpaceTurn" : "Optional Override Left Hand Space Turn",
-        "/actions/main/in/OptionalOverrideRightHandSpaceTurn" : "Optional Override Right Hand Space Turn",
-        "/actions/main/in/OptionalOverrideLeftHandSpaceDrag" : "Optional Override Left Hand Space Drag",
-        "/actions/main/in/OptionalOverrideRightHandSpaceDrag" : "Optional Override Right Hand Space Drag"
+        "/actions/main/in/OptionalOverrideLeftHandSpaceTurn" : "(Optional Override) Left Hand Space Turn",
+        "/actions/main/in/OptionalOverrideRightHandSpaceTurn" : "(Optional Override) Right Hand Space Turn",
+        "/actions/main/in/OptionalOverrideLeftHandSpaceDrag" : "(Optional Override) Left Hand Space Drag",
+        "/actions/main/in/OptionalOverrideRightHandSpaceDrag" : "(Optional Override) Right Hand Space Drag",
+        "/actions/main/in/SwapSpaceDragToLeftHandOverride" : "Swap Active Space Drag to Left Hand (Override)",
+        "/actions/main/in/SwapSpaceDragToRightHandOverride" : "Swap Active Space Drag to Right Hand (Override)",
+        "/actions/main/in/GravityToggle" : "Gravity Toggle",
+        "/actions/main/in/HeightToggle" : "Height Toggle",
+        "/actions/main/in/ResetOffsets" : "Reset Offsets",
+        "/actions/main/in/SnapTurnLeft" : "Snap-Turn Left",
+        "/actions/main/in/SnapTurnRight" : "Snap-Turn Right"
     }
   ]
 }

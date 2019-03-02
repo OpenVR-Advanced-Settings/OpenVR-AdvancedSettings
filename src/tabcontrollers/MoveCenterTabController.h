@@ -150,6 +150,13 @@ public:
     void rightHandSpaceTurn( bool rightHandTurnActive );
     void optionalOverrideLeftHandSpaceTurn( bool overrideLeftHandTurnActive );
     void optionalOverrideRightHandSpaceTurn( bool overrideRightHandTurnActive );
+    void swapSpaceDragToLeftHandOverride( bool swapDragToLeftHandActive );
+    void swapSpaceDragToRightHandOverride( bool swapDragToRightHandActive );
+    void gravityToggle( bool gravityToggleJustPressed );
+    void heightToggle( bool heightToggleJustPressed );
+    void resetOffsets( bool resetOffsetsJustPressed );
+    void snapTurnLeft( bool snapTurnLeftJustPressed );
+    void snapTurnRight( bool snapTurnRightJustPressed );
 
 public slots:
     int trackingUniverse() const;

@@ -131,13 +131,13 @@ SteamIVRInput::SteamIVRInput()
                         ActionType::Digital ),
       m_stopTrack( input_strings::k_actionStopTrack, ActionType::Digital ),
       m_leftHandSpaceTurn( input_strings::k_actionLeftHandSpaceTurn,
-                          ActionType::Digital ),
+                           ActionType::Digital ),
       m_rightHandSpaceTurn( input_strings::k_actionRightHandSpaceTurn,
-                           ActionType::Digital ),
+                            ActionType::Digital ),
       m_leftHandSpaceDrag( input_strings::k_actionLeftHandSpaceDrag,
-                          ActionType::Digital ),
-      m_rightHandSpaceDrag( input_strings::k_actionRightHandSpaceDrag,
                            ActionType::Digital ),
+      m_rightHandSpaceDrag( input_strings::k_actionRightHandSpaceDrag,
+                            ActionType::Digital ),
       m_optionalOverrideLeftHandSpaceTurn(
           input_strings::k_actionOptionalOverrideLeftHandSpaceTurn,
           ActionType::Digital ),
@@ -149,7 +149,23 @@ SteamIVRInput::SteamIVRInput()
           ActionType::Digital ),
       m_optionalOverrideRightHandSpaceDrag(
           input_strings::k_actionOptionalOverrideRightHandSpaceDrag,
-          ActionType::Digital )
+          ActionType::Digital ),
+      m_swapSpaceDragToLeftHandOverride(
+          input_strings::k_actionSwapSpaceDragToLeftHandOverride,
+          ActionType::Digital ),
+      m_swapSpaceDragToRightHandOverride(
+          input_strings::k_actionSwapSpaceDragToRightHandOverride,
+          ActionType::Digital ),
+      m_gravityToggle( input_strings::k_actionGravityToggle,
+                       ActionType::Digital ),
+      m_heightToggle( input_strings::k_actionHeightToggle,
+                      ActionType::Digital ),
+      m_resetOffsets( input_strings::k_actionResetOffsets,
+                      ActionType::Digital ),
+      m_snapTurnLeft( input_strings::k_actionSnapTurnLeft,
+                      ActionType::Digital ),
+      m_snapTurnRight( input_strings::k_actionSnapTurnRight,
+                       ActionType::Digital )
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
     m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;
@@ -240,6 +256,43 @@ bool SteamIVRInput::optionalOverrideRightHandSpaceDrag()
 {
     return isDigitalActionActivatedConstant(
         m_optionalOverrideRightHandSpaceDrag );
+}
+
+bool SteamIVRInput::swapSpaceDragToLeftHandOverride()
+{
+    return isDigitalActionActivatedConstant(
+        m_swapSpaceDragToLeftHandOverride );
+}
+
+bool SteamIVRInput::swapSpaceDragToRightHandOverride()
+{
+    return isDigitalActionActivatedConstant(
+        m_swapSpaceDragToRightHandOverride );
+}
+
+bool SteamIVRInput::gravityToggle()
+{
+    return isDigitalActionActivatedOnce( m_gravityToggle );
+}
+
+bool SteamIVRInput::heightToggle()
+{
+    return isDigitalActionActivatedOnce( m_heightToggle );
+}
+
+bool SteamIVRInput::resetOffsets()
+{
+    return isDigitalActionActivatedOnce( m_resetOffsets );
+}
+
+bool SteamIVRInput::snapTurnLeft()
+{
+    return isDigitalActionActivatedOnce( m_snapTurnLeft );
+}
+
+bool SteamIVRInput::snapTurnRight()
+{
+    return isDigitalActionActivatedOnce( m_snapTurnRight );
 }
 
 /*!

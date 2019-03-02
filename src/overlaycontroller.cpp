@@ -493,12 +493,19 @@ void OverlayController::processInputBindings()
     // reorder these. Override actions must always come after normal because
     // active priority is set based on which action is "newest"
     // normal actions:
-    m_moveCenterTabController.leftHandSpaceDrag( m_actions.leftHandSpaceDrag() );
+    m_moveCenterTabController.leftHandSpaceDrag(
+        m_actions.leftHandSpaceDrag() );
     m_moveCenterTabController.rightHandSpaceDrag(
         m_actions.rightHandSpaceDrag() );
-    m_moveCenterTabController.leftHandSpaceTurn( m_actions.leftHandSpaceTurn() );
+    m_moveCenterTabController.leftHandSpaceTurn(
+        m_actions.leftHandSpaceTurn() );
     m_moveCenterTabController.rightHandSpaceTurn(
         m_actions.rightHandSpaceTurn() );
+    m_moveCenterTabController.gravityToggle( m_actions.gravityToggle() );
+    m_moveCenterTabController.heightToggle( m_actions.heightToggle() );
+    m_moveCenterTabController.resetOffsets( m_actions.resetOffsets() );
+    m_moveCenterTabController.snapTurnLeft( m_actions.snapTurnLeft() );
+    m_moveCenterTabController.snapTurnRight( m_actions.snapTurnRight() );
 
     // override actions:
     m_moveCenterTabController.optionalOverrideLeftHandSpaceDrag(
@@ -509,6 +516,10 @@ void OverlayController::processInputBindings()
         m_actions.optionalOverrideLeftHandSpaceTurn() );
     m_moveCenterTabController.optionalOverrideRightHandSpaceTurn(
         m_actions.optionalOverrideRightHandSpaceTurn() );
+    m_moveCenterTabController.swapSpaceDragToLeftHandOverride(
+        m_actions.swapSpaceDragToLeftHandOverride() );
+    m_moveCenterTabController.swapSpaceDragToRightHandOverride(
+        m_actions.swapSpaceDragToRightHandOverride() );
 }
 
 // vsync implementation:
