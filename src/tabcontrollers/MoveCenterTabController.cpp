@@ -963,51 +963,72 @@ void MoveCenterTabController::optionalOverrideRightHandSpaceTurn(
 void MoveCenterTabController::swapSpaceDragToLeftHandOverride(
     bool swapDragToLeftHand )
 {
-    // temp set to false
-    swapDragToLeftHand = false;
+    // temp stuff for compliner warnings
+    if ( !swapDragToLeftHand )
+    {
+        return;
+    }
     // TODO STUFF
 }
 
 void MoveCenterTabController::swapSpaceDragToRightHandOverride(
     bool swapDragToRightHand )
 {
-    // temp set to false
-    swapDragToRightHand = false;
+    // temp stuff for compliner warnings
+    if ( !swapDragToRightHand )
+    {
+        return;
+    }
     // TODO STUFF
 }
 
 void MoveCenterTabController::gravityToggle( bool gravityToggleJustPressed )
 {
-    // temp set to false
-    gravityToggleJustPressed = false;
+    // temp stuff for compliner warnings
+    if ( !gravityToggleJustPressed )
+    {
+        return;
+    }
     // TODO STUFF
 }
 
 void MoveCenterTabController::heightToggle( bool heightToggleJustPressed )
 {
-    // temp set to false
-    heightToggleJustPressed = false;
+    // temp stuff for compliner warnings
+    if ( !heightToggleJustPressed )
+    {
+        return;
+    }
     // TODO STUFF
 }
 
 void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
 {
-    // temp set to false
-    resetOffsetsJustPressed = false;
+    // temp stuff for compliner warnings
+    if ( !resetOffsetsJustPressed )
+    {
+        return;
+    }
     // TODO STUFF
 }
 
 void MoveCenterTabController::snapTurnLeft( bool snapTurnLeftJustPressed )
 {
-    // temp set to false
-    snapTurnLeftJustPressed = false;
+    // temp stuff for compliner warnings
+    if ( !snapTurnLeftJustPressed )
+    {
+        return;
+    }
     // TODO STUFF
 }
 
 void MoveCenterTabController::snapTurnRight( bool snapTurnRightJustPressed )
 {
-    // temp set to false
-    snapTurnRightJustPressed = false;
+    // temp stuff for compliner warnings
+    if ( !snapTurnRightJustPressed )
+    {
+        return;
+    }
     // TODO STUFF
 }
 
