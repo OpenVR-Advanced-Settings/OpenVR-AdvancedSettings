@@ -1,1 +1,1 @@
-start AdvancedSettings.exe -desktop -nosound
+start AdvancedSettings.exe --desktop-mode --force-no-sound

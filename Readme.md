@@ -100,15 +100,15 @@ The following actions currently exist:
 
 The application (`AdvancedSettings.exe`) can be run with the following optional arguments:
 
-`"-desktop"`: Creates a settings window on the desktop, but not in VR. Running `startdesktopmode.bat` in the install directory has the same effect.
+`"--desktop-mode"`: Creates a settings window on the desktop, but not in VR. Running `startdesktopmode.bat` in the install directory has the same effect.
 
-`"-nosound"`: Forces sound effects off.
+`"--force-no-sound"`: Forces sound effects off.
 
-`"-nomanifest"`: Forces not using a `.vrmanifest`.
+`"--force-no-manifest"`: Forces not using a `.vrmanifest`.
 
-`"-installmanifest"`: Force installs the `.vrmanifest` and adds the application to autostart. If you're having issues with autostart not working try running the program once with this set. The program will exit early when this flag is set.
+`"--force-install-manifest"`: Force installs the `.vrmanifest` and adds the application to autostart. If you're having issues with autostart not working try running the program once with this set. The program will exit early when this flag is set.
 
-`"-removemanifest"`: Force uninstalls the `.vrmanifest`. This should be done every time the application is uninstalled. On Windows it is automatically done by the uninstaller. The program will exit early when this flag is set.
+`"--force-remove-manifest"`: Force uninstalls the `.vrmanifest`. This should be done every time the application is uninstalled. On Windows it is automatically done by the uninstaller. The program will exit early when this flag is set.
 
 In addition, the application can receive the command line arguments from the [Easylogging++ library](https://github.com/zuhd-org/easyloggingpp#application-arguments).
 
