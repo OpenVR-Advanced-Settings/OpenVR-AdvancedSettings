@@ -6,52 +6,39 @@ int main( int argc, char* argv[] )
 {
     setUpLogging( argc, argv );
 
-    const bool desktopMode = argument::CheckCommandLineArgument(
-        argc, argv, argument::kDesktopMode );
-    const bool noSound
-        = argument::CheckCommandLineArgument( argc, argv, argument::kNoSound );
-    const bool noManifest = argument::CheckCommandLineArgument(
-        argc, argv, argument::kNoManifest );
-    const bool installManifest = argument::CheckCommandLineArgument(
-        argc, argv, argument::kInstallManifest );
-    const bool removeManifest = argument::CheckCommandLineArgument(
-        argc, argv, argument::kRemoveManifest );
+    // QCoreApplication (QApplication inherits it.) can parse the args from
+    // argc and argv. We don't use this since it's relatively slow and we
+    // need the args before the main Qt stuff happens. If the arg parsing
+    // needs of the program grow it could be useful to utilize the Qt arg
+    // parsing.
+    MyQApplication mainEventLoop( argc, argv );
+    mainEventLoop.setOrganizationName(
+        advsettings::OverlayController::applicationOrganizationName );
+    mainEventLoop.setApplicationName(
+        advsettings::OverlayController::applicationName );
+    mainEventLoop.setApplicationDisplayName(
+        advsettings::OverlayController::applicationDisplayName );
+    mainEventLoop.setApplicationVersion(
+        advsettings::OverlayController::applicationVersionString );
 
-    // If a command line arg is set, make sure the logs reflect that.
-    LOG_IF( desktopMode, INFO ) << "Desktop mode enabled.";
-    LOG_IF( noSound, INFO ) << "Sound effects disabled.";
-    LOG_IF( noManifest, INFO ) << "vrmanifest disabled.";
-    LOG_IF( installManifest, INFO ) << "Install manifest enabled.";
-    LOG_IF( removeManifest, INFO ) << "Remove manifest enabled.";
+    qInstallMessageHandler( mainQtMessageHandler );
+
+    const auto commandLineArgs
+        = argument::returnCommandLineParser( mainEventLoop );
 
     // It is important that either install_manifest or remove_manifest are true,
     // otherwise the handleManifests function will not behave properly.
-    if ( installManifest || removeManifest )
+    if ( commandLineArgs.forceInstallManifest
+         || commandLineArgs.forceRemoveManifest )
     {
         // The function does not return, it exits inside the function
         // with an appropriate exit code.
-        manifest::handleManifests( installManifest, removeManifest );
+        manifest::handleManifests( commandLineArgs.forceInstallManifest,
+                                   commandLineArgs.forceRemoveManifest );
     }
 
     try
     {
-        // QCoreApplication (QApplication inherits it.) can parse the args from
-        // argc and argv. We don't use this since it's relatively slow and we
-        // need the args before the main Qt stuff happens. If the arg parsing
-        // needs of the program grow it could be useful to utilize the Qt arg
-        // parsing.
-        MyQApplication mainEventLoop( argc, argv );
-        mainEventLoop.setOrganizationName(
-            advsettings::OverlayController::applicationOrganizationName );
-        mainEventLoop.setApplicationName(
-            advsettings::OverlayController::applicationName );
-        mainEventLoop.setApplicationDisplayName(
-            advsettings::OverlayController::applicationDisplayName );
-        mainEventLoop.setApplicationVersion(
-            advsettings::OverlayController::applicationVersionString );
-
-        qInstallMessageHandler( mainQtMessageHandler );
-
         // QSettings contains a platform independant way of storing settings in
         // an .ini file.
         QSettings appSettings( QSettings::IniFormat,
@@ -67,8 +54,9 @@ int main( int argc, char* argv[] )
 
         // The OverlayController handles the majority of the application specfic
         // things. It contains all the other tabs.
-        advsettings::OverlayController controller(
-            desktopMode, noSound, qmlEngine );
+        advsettings::OverlayController controller( commandLineArgs.desktopMode,
+                                                   commandLineArgs.forceNoSound,
+                                                   qmlEngine );
 
         QString path = QStandardPaths::locate(
             QStandardPaths::AppDataLocation,
@@ -88,7 +76,7 @@ int main( int argc, char* argv[] )
             advsettings::OverlayController::applicationKey );
 
         // Attempts to install the application manifest on all "regular" starts.
-        if ( !desktopMode && !noManifest )
+        if ( !commandLineArgs.desktopMode && !commandLineArgs.forceNoManifest )
         {
             try
             {
@@ -104,7 +92,7 @@ int main( int argc, char* argv[] )
         }
 
         // Creates an identical settings menu on the desktop as well as in VR.
-        if ( desktopMode )
+        if ( commandLineArgs.desktopMode )
         {
             auto m_pWindow = new QQuickWindow();
             qobject_cast<QQuickItem*>( quickObj )
