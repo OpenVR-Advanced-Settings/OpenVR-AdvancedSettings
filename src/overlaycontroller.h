@@ -106,11 +106,6 @@ private:
     uint64_t m_lastFrame = 0;
     int m_vsyncTooLateCounter = 0;
 
-    // OpenVR_Init must be declared before any other class that uses OpenVR
-    // function calls since objects are initialized in order of declaration in
-    // the class.
-    openvr_init::OpenVR_Init m_openVrInit;
-
     input::SteamIVRInput m_actions;
 
 public: // I know it's an ugly hack to make them public to enable external
