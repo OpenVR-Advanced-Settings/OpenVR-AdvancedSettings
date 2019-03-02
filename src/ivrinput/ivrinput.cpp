@@ -201,6 +201,15 @@ Returns the action handle of the Right Haptic Action
 vr::VRActionHandle_t SteamIVRInput::getRightHaptichandle() {
 	return m_rightHaptic.handle();
 }
+//TODO
+vr::VRInputHandle_t SteamIVRInput::getRightInputhandle() {
+	auto vrInputError = vr::VRInput()->GetInputSourceHandle(input::input_strings::k_inputSourceRight, &m_rightInputHandle);
+	if (vrInputError != vr::VRInputError_None) {
+		LOG(ERROR) << "get input handle right failed error code: " << vrInputError;
+		m_isHapticGood = false;
+	}
+}
+
 
 /*!
 Updates the active action set(s).
@@ -221,5 +230,6 @@ void SteamIVRInput::UpdateStates()
             << error;
     }
 }
+
 
 } // namespace input

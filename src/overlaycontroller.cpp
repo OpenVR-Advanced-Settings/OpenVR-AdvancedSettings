@@ -133,6 +133,11 @@ OverlayController::OverlayController( bool desktopMode,
     m_utilitiesTabController.initStage1();
     m_accessibilityTabController.initStage1();
 
+	//init action handles
+
+	m_chaperoneTabController.setLeftHapticActionHandle(m_actions.getLeftHaptichandle());
+	m_chaperoneTabController.setRightHapticActionHandle(m_actions.getRightHaptichandle());
+
 
     // Set qml context
     qmlEngine.rootContext()->setContextProperty( "applicationVersion",

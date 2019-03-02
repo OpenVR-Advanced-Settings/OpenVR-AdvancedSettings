@@ -363,7 +363,6 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
                                         &hmdState,
                                         sizeof( vr::VRControllerState_t ) );
 
-	}
     // Switch to Beginner Mode
     if ( m_enableChaperoneSwitchToBeginner )
     {
@@ -1719,6 +1718,20 @@ void ChaperoneTabController::reset()
 
     vr::VRSettings()->Sync();
     settingsUpdateCounter = 999; // Easiest way to get default values
+}
+
+
+void ChaperoneTabController::setRightHapticActionHandle(vr::VRActionHandle_t handle) {
+	m_rightActionHandle = handle;
+}
+void ChaperoneTabController::setLeftHapticActionHandle(vr::VRActionHandle_t handle) {
+	m_leftActionHandle = handle;
+}
+void ChaperoneTabController::setRightInputHandle(vr::VRInputValueHandle_t handle) {
+	m_rightInputHandle = handle;
+}
+void ChaperoneTabController::setLeftInputHandle(vr::VRInputValueHandle_t handle) {
+	m_leftInputHandle = handle;
 }
 
 void ChaperoneTabController::shutdown()

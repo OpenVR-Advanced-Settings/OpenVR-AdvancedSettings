@@ -208,6 +208,11 @@ public:
     bool forceBounds() const;
 	bool disableChaperone() const;
 
+	void setRightHapticActionHandle(vr::VRActionHandle_t handle);
+	void setLeftHapticActionHandle(vr::VRActionHandle_t handle);
+	void setRightInputHandle(vr::VRInputValueHandle_t handle);
+	void setLeftInputHandle(vr::VRInputValueHandle_t handle);
+
     bool isChaperoneSwitchToBeginnerEnabled() const;
     float chaperoneSwitchToBeginnerDistance() const;
 
