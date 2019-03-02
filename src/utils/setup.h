@@ -18,33 +18,163 @@ enum ReturnErrorCode
     OPENVR_INIT_ERROR = -2,
 };
 
-namespace argument
+struct CommandLineOptions
 {
-// Checks whether a specific string was passed as a launch argument.
-bool CheckCommandLineArgument( int argc,
-                               char* argv[],
-                               const std::string parameter )
+    const bool desktopMode = false;
+    const bool forceNoSound = false;
+    const bool forceNoManifest = false;
+    const bool forceInstallManifest = false;
+    const bool forceRemoveManifest = false;
+};
+
+// Manages the programs control flow and main settings.
+class MyQApplication : public QApplication
 {
-    // The old way was one giant loop that tested every single parameter.
-    // Having an individual loop for all args most likely has a very small
-    // performance penalty compared to the original solution, but the gains in
-    // readability and ease of extension of not having a hundred line+ for loop
-    // are worth it.
-    for ( int i = 0; i < argc; i++ )
+public:
+    using QApplication::QApplication;
+
+    // Intercept event calls and log them on exceptions.
+    // From the official docs
+    // https://doc.qt.io/qt-5/qcoreapplication.html#notify:
+    // "Future direction:
+    // This function will not be called for objects that live outside the main
+    // thread in Qt 6. Applications that need that functionality should find
+    // other solutions for their event inspection needs in the meantime. The
+    // change may be extended to the main thread, causing this function to be
+    // deprecated."
+    // Should look into replacements for this function if Qt 6 ever rolls
+    // around. There are multiple suggestions for other solutions in the
+    // provided link.
+    virtual bool notify( QObject* receiver, QEvent* event ) override
     {
-        if ( std::string( argv[i] ) == parameter )
+        try
         {
-            return true;
+            return QApplication::notify( receiver, event );
         }
+        catch ( std::exception& e )
+        {
+            LOG( ERROR ) << "Exception thrown from an event handler: "
+                         << e.what();
+        }
+        return false;
     }
-    return false;
+};
+
+// The default Qt message handler prints to stdout on X11 and to the debugger on
+// Windows. That is borderline useless for us, therefore we create our own
+// message handler.
+void mainQtMessageHandler( QtMsgType type,
+                           const QMessageLogContext& context,
+                           const QString& msg )
+{
+    QByteArray localMsg = msg.toLocal8Bit();
+    switch ( type )
+    {
+    case QtDebugMsg:
+        LOG( DEBUG ) << localMsg.constData() << " (" << context.file << ":"
+                     << context.line << ")";
+        break;
+    case QtInfoMsg:
+        LOG( INFO ) << localMsg.constData() << " (" << context.file << ":"
+                    << context.line << ")";
+        break;
+    case QtWarningMsg:
+        LOG( WARNING ) << localMsg.constData() << " (" << context.file << ":"
+                       << context.line << ")";
+        break;
+    case QtCriticalMsg:
+        LOG( ERROR ) << localMsg.constData() << " (" << context.file << ":"
+                     << context.line << ")";
+        break;
+    case QtFatalMsg:
+        LOG( FATAL ) << localMsg.constData() << " (" << context.file << ":"
+                     << context.line << ")";
+        break;
+    }
 }
 
-constexpr auto kDesktopMode = "-desktop";
-constexpr auto kNoSound = "-nosound";
-constexpr auto kNoManifest = "-nomanifest";
-constexpr auto kInstallManifest = "-installmanifest";
-constexpr auto kRemoveManifest = "-removemanifest";
+namespace argument
+{
+constexpr auto k_desktopMode = "desktop-mode";
+constexpr auto k_desktopModeDescription
+    = "Shows the options panel on the desktop instead of in VR.";
+
+constexpr auto k_forceNoSound = "force-no-sound";
+constexpr auto k_forceNoSoundDescription
+    = "Forces sounds off for the application.";
+
+constexpr auto k_forceNoManifest = "force-no-manifest";
+constexpr auto k_forceNoManifestDescription
+    = "Runs the application without installing the applications manifest.";
+
+constexpr auto k_forceInstallManifest = "force-install-manifest";
+constexpr auto k_forceInstallManifestDescription
+    = "Forces installing the applications manifest into SteamVR. Application "
+      "will exit early.";
+
+constexpr auto k_forceRemoveManifest = "force-remove-anifest";
+constexpr auto k_forceRemoveManifestDescription
+    = "Forces removing the applications manifest. Application will exit early.";
+
+CommandLineOptions returnCommandLineParser( const MyQApplication& application )
+{
+    QCommandLineParser parser;
+
+    parser.setApplicationDescription(
+        "Advanced Settings overlay for SteamVR." );
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    QCommandLineOption desktopMode( k_desktopMode, k_desktopModeDescription );
+    parser.addOption( desktopMode );
+
+    QCommandLineOption forceNoSound( k_forceNoSound,
+                                     k_forceNoSoundDescription );
+    parser.addOption( forceNoSound );
+
+    QCommandLineOption forceNoManifest( k_forceNoManifest,
+                                        k_forceNoManifestDescription );
+    parser.addOption( forceNoManifest );
+
+    QCommandLineOption forceInstallManifest(
+        k_forceInstallManifest, k_forceInstallManifestDescription );
+    parser.addOption( forceInstallManifest );
+
+    QCommandLineOption forceRemoveManifest( k_forceRemoveManifest,
+                                            k_forceRemoveManifestDescription );
+    parser.addOption( forceRemoveManifest );
+
+    parser.process( application );
+
+    const bool desktopModeEnabled = parser.isSet( desktopMode );
+    LOG_IF( desktopModeEnabled, INFO ) << "Desktop mode enabled.";
+
+    const bool forceNoSoundEnabled = parser.isSet( forceNoSound );
+    LOG_IF( forceNoSoundEnabled, INFO ) << "Sound effects disabled.";
+
+    const bool forceNoManifestEnabled = parser.isSet( forceNoManifest );
+    LOG_IF( forceNoManifestEnabled, INFO )
+        << "Running without applications manifest.";
+
+    const bool forceInstallManifestEnabled
+        = parser.isSet( forceInstallManifest );
+    LOG_IF( forceInstallManifestEnabled, INFO )
+        << "Forcing install of applications manifest.";
+
+    const bool forceRemoveManifestEnabled = parser.isSet( forceRemoveManifest );
+    LOG_IF( forceRemoveManifestEnabled, INFO )
+        << "Forcing removal of applications manifest.";
+
+    const CommandLineOptions commandLineArgs{ desktopModeEnabled,
+                                              forceNoSoundEnabled,
+                                              forceNoManifestEnabled,
+                                              forceInstallManifestEnabled,
+                                              forceRemoveManifestEnabled };
+
+    LOG( INFO ) << "Command line arguments processed.";
+
+    return commandLineArgs;
+}
 } // namespace argument
 
 namespace manifest
@@ -274,70 +404,4 @@ void setUpLogging( int argc, char* argv[] )
     LOG( INFO ) << "Log Config: "
                 << QDir::toNativeSeparators( logconfigfile ).toStdString();
     LOG( INFO ) << "Log File: " << logFilePath;
-}
-
-// Manages the programs control flow and main settings.
-class MyQApplication : public QApplication
-{
-public:
-    using QApplication::QApplication;
-
-    // Intercept event calls and log them on exceptions.
-    // From the official docs
-    // https://doc.qt.io/qt-5/qcoreapplication.html#notify:
-    // "Future direction:
-    // This function will not be called for objects that live outside the main
-    // thread in Qt 6. Applications that need that functionality should find
-    // other solutions for their event inspection needs in the meantime. The
-    // change may be extended to the main thread, causing this function to be
-    // deprecated."
-    // Should look into replacements for this function if Qt 6 ever rolls
-    // around. There are multiple suggestions for other solutions in the
-    // provided link.
-    virtual bool notify( QObject* receiver, QEvent* event ) override
-    {
-        try
-        {
-            return QApplication::notify( receiver, event );
-        }
-        catch ( std::exception& e )
-        {
-            LOG( ERROR ) << "Exception thrown from an event handler: "
-                         << e.what();
-        }
-        return false;
-    }
-};
-
-// The default Qt message handler prints to stdout on X11 and to the debugger on
-// Windows. That is borderline useless for us, therefore we create our own
-// message handler.
-void mainQtMessageHandler( QtMsgType type,
-                           const QMessageLogContext& context,
-                           const QString& msg )
-{
-    QByteArray localMsg = msg.toLocal8Bit();
-    switch ( type )
-    {
-    case QtDebugMsg:
-        LOG( DEBUG ) << localMsg.constData() << " (" << context.file << ":"
-                     << context.line << ")";
-        break;
-    case QtInfoMsg:
-        LOG( INFO ) << localMsg.constData() << " (" << context.file << ":"
-                    << context.line << ")";
-        break;
-    case QtWarningMsg:
-        LOG( WARNING ) << localMsg.constData() << " (" << context.file << ":"
-                       << context.line << ")";
-        break;
-    case QtCriticalMsg:
-        LOG( ERROR ) << localMsg.constData() << " (" << context.file << ":"
-                     << context.line << ")";
-        break;
-    case QtFatalMsg:
-        LOG( FATAL ) << localMsg.constData() << " (" << context.file << ":"
-                     << context.line << ")";
-        break;
-    }
 }
