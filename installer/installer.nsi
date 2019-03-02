@@ -128,7 +128,7 @@ Section "Install" SecInstall
 	ExecWait '"$INSTDIR\vcredist_x64.exe" /install /quiet'
 
 	; Install the vrmanifest
-	nsExec::ExecToLog '"$INSTDIR\AdvancedSettings.exe" -installmanifest'
+	nsExec::ExecToLog '"$INSTDIR\AdvancedSettings.exe" --force-install-manifest'
   
 	;Store installation folder
 	WriteRegStr HKLM "Software\OpenVR-AdvancedSettings" "" $INSTDIR
@@ -153,7 +153,7 @@ Section "Uninstall"
 	!insertmacro TerminateOverlay
 
 	; Remove the vrmanifest
-	nsExec::ExecToLog '"$INSTDIR\AdvancedSettings.exe" -removemanifest'
+	nsExec::ExecToLog '"$INSTDIR\AdvancedSettings.exe" --force-remove-manifest'
 
 	; Delete installed files
 	!include uninstallFiles.list

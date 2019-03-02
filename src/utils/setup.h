@@ -112,7 +112,7 @@ constexpr auto k_forceInstallManifestDescription
     = "Forces installing the applications manifest into SteamVR. Application "
       "will exit early.";
 
-constexpr auto k_forceRemoveManifest = "force-remove-anifest";
+constexpr auto k_forceRemoveManifest = "force-remove-manifest";
 constexpr auto k_forceRemoveManifestDescription
     = "Forces removing the applications manifest. Application will exit early.";
 
@@ -287,10 +287,10 @@ void reinstallApplicationManifest( const QString manifestPath )
 // The .vrmanifest is used by SteamVR however the exact functiontionality is not
 // documented in the official documentation.
 // The manifest is installed upon using the NSIS installer for windows (this
-// program is called with "-installmanifest" by the installer) and every time
-// the program is launched without both "-desktop" and "-nomanifest".
-// The OpenVR initialization is necessary for both removing and installing
-// manifests.
+// program is called with "--force-install-manifest" by the installer) and every
+// time the program is launched without both "--desktop-mode" and
+// "--force-no-manifest". The OpenVR initialization is necessary for both
+// removing and installing manifests.
 [[noreturn]] void handleManifests( const bool installManifest,
                                    const bool removeManifest )
 {
