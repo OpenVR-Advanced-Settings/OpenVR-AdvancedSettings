@@ -38,7 +38,8 @@ HEADERS += src/overlaycontroller.h \
     src/ivrinput/ivrinput_action.h \
     src/ivrinput/ivrinput_manifest.h \
     src/ivrinput/ivrinput_action_set.h \
-    src/ivrinput/ivrinput.h
+    src/ivrinput/ivrinput.h \
+    src/utils/setup.h
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
