@@ -5,25 +5,25 @@
 // application namespace
 namespace advsettings
 {
-const char* appkey_overlay = "revive.dashboard.overlay";
-const char* section_revive = "revive";
-const char* key_pixelsPerDisplayPixel = "pixelsPerDisplayPixel";
-const char* key_toggleGrip = "ToggleGrip";
-const char* key_triggerAsGrip = "TriggerAsGrip";
-const char* key_toggleDelay = "ToggleDelay";
-const char* key_thumbDeadzone = "ThumbDeadzone";
-const char* key_thumbSensitivity = "ThumbSensitivity";
-const char* key_touchPitch = "TouchPitch";
-const char* key_touchYaw = "TouchYaw";
-const char* key_touchRoll = "TouchRoll";
-const char* key_touchX = "TouchX";
-const char* key_touchY = "TouchY";
-const char* key_touchZ = "TouchZ";
-const char* key_playerHeight = "PlayerHeight";
-const char* key_eyeHeight = "EyeHeight";
-const char* key_piUser = "User";
-const char* key_piName = "Name";
-const char* key_piGender = "Gender";
+constexpr auto appkey_overlay = "revive.dashboard.overlay";
+constexpr auto section_revive = "revive";
+constexpr auto key_pixelsPerDisplayPixel = "pixelsPerDisplayPixel";
+constexpr auto key_toggleGrip = "ToggleGrip";
+constexpr auto key_triggerAsGrip = "TriggerAsGrip";
+constexpr auto key_toggleDelay = "ToggleDelay";
+constexpr auto key_thumbDeadzone = "ThumbDeadzone";
+constexpr auto key_thumbSensitivity = "ThumbSensitivity";
+constexpr auto key_touchPitch = "TouchPitch";
+constexpr auto key_touchYaw = "TouchYaw";
+constexpr auto key_touchRoll = "TouchRoll";
+constexpr auto key_touchX = "TouchX";
+constexpr auto key_touchY = "TouchY";
+constexpr auto key_touchZ = "TouchZ";
+constexpr auto key_playerHeight = "PlayerHeight";
+constexpr auto key_eyeHeight = "EyeHeight";
+constexpr auto key_piUser = "User";
+constexpr auto key_piName = "Name";
+constexpr auto key_piGender = "Gender";
 
 void ReviveTabController::initStage1( bool forceRevivePage )
 {
@@ -44,7 +44,7 @@ void ReviveTabController::initStage1( bool forceRevivePage )
         }
         else
         {
-            if ( valuef == 0.0 )
+            if ( valuef == 0.0f )
             {
                 m_pixelsPerDisplayPixelOverrideEnabled = false;
                 m_pixelsPerDisplayPixelOverride = 1.0;
@@ -321,7 +321,7 @@ void ReviveTabController::eventLoopTick()
                                                   &vrSettingsError );
                 if ( vrSettingsError == vr::VRSettingsError_None )
                 {
-                    if ( valuef == 0.0 )
+                    if ( valuef == 0.0f )
                     {
                         setPixelsPerDisplayPixelOverrideEnabled( false );
                     }
@@ -1015,17 +1015,17 @@ void ReviveTabController::setPiGender( int value, bool notify )
     {
         m_piGender = value;
         vr::EVRSettingsError vrSettingsError;
-        char* txt;
+        const char* txt;
         switch ( value )
         {
         case 1:
-            txt = ( char* ) "Male";
+            txt = static_cast<const char*>( "Male" );
             break;
         case 2:
-            txt = ( char* ) "Female";
+            txt = static_cast<const char*>( "Female" );
             break;
         default:
-            txt = ( char* ) "Unknown";
+            txt = static_cast<const char*>( "Unknown" );
             break;
         }
         vr::VRSettings()->SetString(
@@ -1207,7 +1207,7 @@ void ReviveTabController::reloadControllerProfiles()
     {
         settings->setArrayIndex( i );
         controllerProfiles.emplace_back();
-        auto& entry = controllerProfiles[i];
+        auto& entry = controllerProfiles[static_cast<size_t>( i )];
         entry.profileName
             = settings->value( "profileName" ).toString().toStdString();
         entry.gripButtonMode = settings->value( "gripButtonMode", 0 ).toInt();
@@ -1234,7 +1234,7 @@ void ReviveTabController::saveControllerProfiles()
     unsigned i = 0;
     for ( auto& p : controllerProfiles )
     {
-        settings->setArrayIndex( i );
+        settings->setArrayIndex( static_cast<int>( i ) );
         settings->setValue( "profileName",
                             QString::fromStdString( p.profileName ) );
         settings->setValue( "gripButtonMode", p.gripButtonMode );
@@ -1255,7 +1255,7 @@ void ReviveTabController::saveControllerProfiles()
 
 Q_INVOKABLE unsigned ReviveTabController::getControllerProfileCount()
 {
-    return ( unsigned ) controllerProfiles.size();
+    return static_cast<unsigned int>( controllerProfiles.size() );
 }
 
 Q_INVOKABLE QString

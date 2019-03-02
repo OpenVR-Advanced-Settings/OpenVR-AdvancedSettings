@@ -351,17 +351,23 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             QOpenGLFramebufferObject::CombinedDepthStencil );
         fboFormat.setTextureTarget( GL_TEXTURE_2D );
         m_pFbo.reset( new QOpenGLFramebufferObject(
-            quickItem->width(), quickItem->height(), fboFormat ) );
+            static_cast<int>( quickItem->width() ),
+            static_cast<int>( quickItem->height() ),
+            fboFormat ) );
 
         m_pRenderControl.reset( new QQuickRenderControl() );
         m_pWindow.reset( new QQuickWindow( m_pRenderControl.get() ) );
         m_pWindow->setRenderTarget( m_pFbo.get() );
         quickItem->setParentItem( m_pWindow->contentItem() );
-        m_pWindow->setGeometry( 0, 0, quickItem->width(), quickItem->height() );
+        m_pWindow->setGeometry( 0,
+                                0,
+                                static_cast<int>( quickItem->width() ),
+                                static_cast<int>( quickItem->height() ) );
         m_pRenderControl->initialize( m_pOpenGLContext.get() );
 
         vr::HmdVector2_t vecWindowSize
-            = { ( float ) quickItem->width(), ( float ) quickItem->height() };
+            = { static_cast<float>( quickItem->width() ),
+                static_cast<float>( quickItem->height() ) };
         vr::VROverlay()->SetOverlayMouseScale( m_ulOverlayHandle,
                                                &vecWindowSize );
 
@@ -425,11 +431,12 @@ void OverlayController::renderOverlay()
 #if defined _WIN64 || defined _LP64
             // To avoid any compiler warning because of cast to a larger pointer
             // type (warning C4312 on VC)
-            vr::Texture_t texture = { ( void* ) ( ( uint64_t ) unTexture ),
+            vr::Texture_t texture = { reinterpret_cast<void*>(
+                                          static_cast<uint64_t>( unTexture ) ),
                                       vr::TextureType_OpenGL,
                                       vr::ColorSpace_Auto };
 #else
-            vr::Texture_t texture = { ( void* ) unTexture,
+            vr::Texture_t texture = { reinterpret_cast<void*>( unTexture ),
                                       vr::TextureType_OpenGL,
                                       vr::ColorSpace_Auto };
 #endif
@@ -458,20 +465,13 @@ QPoint OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
 {
     float y = mouse.y;
 #ifdef __linux__
-    float h = ( float ) m_pWindow->height();
+    float h = static_cast<float>( m_pWindow->height() );
     y = h - y;
 #endif
-    return QPoint( mouse.x, y );
+    return QPoint( static_cast<int>( mouse.x ), static_cast<int>( y ) );
 }
 
-/*!
-Checks if an action has been activated and dispatches the related action if it
-has been.
-
-This function should probably be split into several functions that are specific
-to a binding type as the amount of actions grows.
-*/
-void OverlayController::processInputBindings()
+void OverlayController::processMediaKeyBindings()
 {
     if ( m_actions.nextSong() )
     {
@@ -489,6 +489,10 @@ void OverlayController::processInputBindings()
     {
         m_utilitiesTabController.sendMediaStopSong();
     }
+}
+
+void OverlayController::processRoomBindings()
+{
     // Execution order for moveCenterTabController actions is important. Don't
     // reorder these. Override actions must always come after normal because
     // active priority is set based on which action is "newest"
@@ -520,6 +524,39 @@ void OverlayController::processInputBindings()
         m_actions.swapSpaceDragToLeftHandOverride() );
     m_moveCenterTabController.swapSpaceDragToRightHandOverride(
         m_actions.swapSpaceDragToRightHandOverride() );
+}
+
+void OverlayController::processPushToTalkBindings()
+{
+    const auto pushToTalkCannotChange = !m_audioTabController.pttChangeValid();
+    if ( pushToTalkCannotChange )
+    {
+        return;
+    }
+
+    const auto pushToTalkButtonActivated = m_actions.pushToTalk();
+    const auto pushToTalkCurrentlyActive = m_audioTabController.pttActive();
+    if ( pushToTalkButtonActivated && !pushToTalkCurrentlyActive )
+    {
+        m_audioTabController.startPtt();
+    }
+    else if ( !pushToTalkButtonActivated && pushToTalkCurrentlyActive )
+    {
+        m_audioTabController.stopPtt();
+    }
+}
+
+/*!
+Checks if an action has been activated and dispatches the related action if it
+has been.
+*/
+void OverlayController::processInputBindings()
+{
+    processMediaKeyBindings();
+
+    processRoomBindings();
+
+    processPushToTalkBindings();
 }
 
 // vsync implementation:
@@ -578,7 +615,7 @@ void OverlayController::mainEventLoop()
                                         m_pWindow->mapToGlobal( ptNewMouse ),
                                         Qt::NoButton,
                                         m_lastMouseButtons,
-                                        0 );
+                                        nullptr );
                 m_ptLastMouse = ptNewMouse;
                 QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
                 OnRenderRequest();
@@ -599,7 +636,7 @@ void OverlayController::mainEventLoop()
                                     m_pWindow->mapToGlobal( ptNewMouse ),
                                     button,
                                     m_lastMouseButtons,
-                                    0 );
+                                    nullptr );
             QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
         }
         break;
@@ -617,7 +654,7 @@ void OverlayController::mainEventLoop()
                                     m_pWindow->mapToGlobal( ptNewMouse ),
                                     button,
                                     m_lastMouseButtons,
-                                    0 );
+                                    nullptr );
             QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
         }
         break;
@@ -629,12 +666,14 @@ void OverlayController::mainEventLoop()
                 m_ptLastMouse,
                 m_pWindow->mapToGlobal( m_ptLastMouse ),
                 QPoint(),
-                QPoint( vrEvent.data.scroll.xdelta * 360.0f * 8.0f,
-                        vrEvent.data.scroll.ydelta * 360.0f * 8.0f ),
+                QPoint( static_cast<int>( vrEvent.data.scroll.xdelta
+                                          * ( 360.0f * 8.0f ) ),
+                        static_cast<int>( vrEvent.data.scroll.ydelta
+                                          * ( 360.0f * 8.0f ) ) ),
                 0,
                 Qt::Vertical,
                 m_lastMouseButtons,
-                0 );
+                nullptr );
             QCoreApplication::sendEvent( m_pWindow.get(), &wheelEvent );
         }
         break;
@@ -654,9 +693,11 @@ void OverlayController::mainEventLoop()
             m_chaperoneTabController.shutdown();
             Shutdown();
             QApplication::exit();
-            return;
+
+            LOG( INFO ) << "All systems exited.";
+            exit( EXIT_SUCCESS );
+            // Does not fallthrough
         }
-        break;
 
         case vr::VREvent_DashboardActivated:
         {
@@ -677,7 +718,8 @@ void OverlayController::mainEventLoop()
             char keyboardBuffer[1024];
             vr::VROverlay()->GetKeyboardText( keyboardBuffer, 1024 );
             emit keyBoardInputSignal( QString( keyboardBuffer ),
-                                      vrEvent.data.keyboard.uUserValue );
+                                      static_cast<unsigned long>(
+                                          vrEvent.data.keyboard.uUserValue ) );
         }
         break;
 
@@ -1065,7 +1107,7 @@ void OverlayController::playAlarm01Sound( bool loop )
 
 void OverlayController::setAlarm01SoundVolume( float vol )
 {
-    m_alarm01SoundEffect.setVolume( vol );
+    m_alarm01SoundEffect.setVolume( static_cast<double>( vol ) );
 }
 
 void OverlayController::cancelAlarm01Sound()

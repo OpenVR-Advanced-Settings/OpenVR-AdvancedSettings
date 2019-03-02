@@ -14,7 +14,7 @@
 //  http://muflihun.com
 //
 
-#include "easylogging++.h"
+#include <easylogging++.h>
 
 #if defined(AUTO_INITIALIZE_EASYLOGGINGPP)
 INITIALIZE_EASYLOGGINGPP
@@ -1190,7 +1190,7 @@ std::string DateTime::timevalToString(struct timeval tval, const char* format,
   buildTimeInfo(&tval, &timeInfo);
   const int kBuffSize = 30;
   char buff_[kBuffSize] = "";
-  parseFormat(buff_, kBuffSize, format, &timeInfo, static_cast<std::size_t>(tval.tv_usec / ssPrec->m_offset),
+  parseFormat(buff_, kBuffSize, format, &timeInfo, static_cast<size_t>(static_cast<unsigned long>(tval.tv_usec) / ssPrec->m_offset),
               ssPrec);
   return std::string(buff_);
 }
@@ -1199,10 +1199,10 @@ base::type::string_t DateTime::formatTime(unsigned long long time, base::Timesta
   base::type::EnumType start = static_cast<base::type::EnumType>(timestampUnit);
   const base::type::char_t* unit = base::consts::kTimeFormats[start].unit;
   for (base::type::EnumType i = start; i < base::consts::kTimeFormatsCount - 1; ++i) {
-    if (time <= base::consts::kTimeFormats[i].value) {
+    if (static_cast<double>(time) <= base::consts::kTimeFormats[i].value) {
       break;
     }
-    if (base::consts::kTimeFormats[i].value == 1000.0f && time / 1000.0f < 1.9f) {
+    if (base::consts::kTimeFormats[i].value == 1000.0 && static_cast<float>(time) / 1000.0f < 1.9f) {
       break;
     }
     time /= static_cast<decltype(time)>(base::consts::kTimeFormats[i].value);
@@ -1264,7 +1264,7 @@ char* DateTime::parseFormat(char* buf, std::size_t bufSz, const char* format, co
         --format;
         break;
       case 'd':  // Day
-        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_mday, 2, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_mday), 2, buf, bufLim);
         continue;
       case 'a':  // Day of week (short)
         buf = base::utils::Str::addToBuff(base::consts::kDaysAbbrev[tInfo->tm_wday], buf, bufLim);
@@ -1273,7 +1273,7 @@ char* DateTime::parseFormat(char* buf, std::size_t bufSz, const char* format, co
         buf = base::utils::Str::addToBuff(base::consts::kDays[tInfo->tm_wday], buf, bufLim);
         continue;
       case 'M':  // month
-        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_mon + 1, 2, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_mon + 1), 2, buf, bufLim);
         continue;
       case 'b':  // month (short)
         buf = base::utils::Str::addToBuff(base::consts::kMonthsAbbrev[tInfo->tm_mon], buf, bufLim);
@@ -1282,22 +1282,22 @@ char* DateTime::parseFormat(char* buf, std::size_t bufSz, const char* format, co
         buf = base::utils::Str::addToBuff(base::consts::kMonths[tInfo->tm_mon], buf, bufLim);
         continue;
       case 'y':  // year (two digits)
-        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_year + base::consts::kYearBase, 2, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_year + base::consts::kYearBase), 2, buf, bufLim);
         continue;
       case 'Y':  // year (four digits)
-        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_year + base::consts::kYearBase, 4, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_year + base::consts::kYearBase), 4, buf, bufLim);
         continue;
       case 'h':  // hour (12-hour)
         buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_hour % 12, 2, buf, bufLim);
         continue;
       case 'H':  // hour (24-hour)
-        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_hour, 2, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_hour), 2, buf, bufLim);
         continue;
       case 'm':  // minute
-        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_min, 2, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_min), 2, buf, bufLim);
         continue;
       case 's':  // second
-        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_sec, 2, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_sec), 2, buf, bufLim);
         continue;
       case 'z':  // subsecond part
       case 'g':
@@ -1553,7 +1553,7 @@ void LogFormat::updateDateFormat(std::size_t index, base::type::string_t& currFo
       }
       ss << static_cast<char>(*ptr);
     }
-    currFormat.erase(index, count);
+    currFormat.erase(index, static_cast<size_t>(count));
     m_dateTimeFormat = ss.str();
   } else {
     // No format provided, use default
@@ -1737,7 +1737,7 @@ unsigned long TypedConfigurations::getULong(std::string confVal) {
     ELPP_ASSERT(valid, "Configuration value not a valid integer [" << confVal << "]");
     return 0;
   }
-  return atol(confVal.c_str());
+  return static_cast<unsigned long>(atol(confVal.c_str()));
 }
 
 std::string TypedConfigurations::resolveFilename(const std::string& filename) {
@@ -1765,7 +1765,7 @@ std::string TypedConfigurations::resolveFilename(const std::string& filename) {
           }
           ss << *ptr;
         }
-        resultingFilename.erase(dateIndex + dateTimeFormatSpecifierStr.size(), count);
+        resultingFilename.erase(dateIndex + dateTimeFormatSpecifierStr.size(), static_cast<size_t>(count));
         fmt = ss.str();
       } else {
         fmt = std::string(base::consts::kDefaultDateTimeFormatInFilename);
@@ -1789,26 +1789,26 @@ void TypedConfigurations::insertFile(Level level, const std::string& fullFilenam
   if (filePath.size() < resolvedFilename.size()) {
     base::utils::File::createPath(filePath);
   }
-  auto create = [&](Level level) {
+  auto create = [&](Level level_var) {
     base::LogStreamsReferenceMap::iterator filestreamIter = m_logStreamsReference->find(resolvedFilename);
     base::type::fstream_t* fs = nullptr;
     if (filestreamIter == m_logStreamsReference->end()) {
       // We need a completely new stream, nothing to share with
       fs = base::utils::File::newFileStream(resolvedFilename);
-      m_filenameMap.insert(std::make_pair(level, resolvedFilename));
-      m_fileStreamMap.insert(std::make_pair(level, base::FileStreamPtr(fs)));
-      m_logStreamsReference->insert(std::make_pair(resolvedFilename, base::FileStreamPtr(m_fileStreamMap.at(level))));
+      m_filenameMap.insert(std::make_pair(level_var, resolvedFilename));
+      m_fileStreamMap.insert(std::make_pair(level_var, base::FileStreamPtr(fs)));
+      m_logStreamsReference->insert(std::make_pair(resolvedFilename, base::FileStreamPtr(m_fileStreamMap.at(level_var))));
     } else {
       // Woops! we have an existing one, share it!
-      m_filenameMap.insert(std::make_pair(level, filestreamIter->first));
-      m_fileStreamMap.insert(std::make_pair(level, base::FileStreamPtr(filestreamIter->second)));
+      m_filenameMap.insert(std::make_pair(level_var, filestreamIter->first));
+      m_fileStreamMap.insert(std::make_pair(level_var, base::FileStreamPtr(filestreamIter->second)));
       fs = filestreamIter->second.get();
     }
     if (fs == nullptr) {
       // We display bad file error from newFileStream()
       ELPP_INTERNAL_ERROR("Setting [TO_FILE] of ["
-                          << LevelHelper::convertToString(level) << "] to FALSE", false);
-      setValue(level, false, &m_toFileMap);
+                          << LevelHelper::convertToString(level_var) << "] to FALSE", false);
+      setValue(level_var, false, &m_toFileMap);
     }
   };
   // If we dont have file conf for any level, create it for Level::Global first
@@ -2219,7 +2219,7 @@ void DefaultLogDispatchCallback::dispatch(base::type::string_t&& logLine) {
       base::type::fstream_t* fs = m_data->logMessage()->logger()->m_typedConfigurations->fileStream(
                                     m_data->logMessage()->level());
       if (fs != nullptr) {
-        fs->write(logLine.c_str(), logLine.size());
+        fs->write(logLine.c_str(), static_cast<std::streamsize>(logLine.size()));
         if (fs->fail()) {
           ELPP_INTERNAL_ERROR("Unable to write log to file ["
                               << m_data->logMessage()->logger()->m_typedConfigurations->filename(m_data->logMessage()->level()) << "].\n"
@@ -2541,7 +2541,7 @@ Writer& Writer::construct(int count, const char* loggerIds, ...) {
     va_list loggersList;
     va_start(loggersList, loggerIds);
     const char* id = loggerIds;
-    m_loggerIds.reserve(count);
+    m_loggerIds.reserve(static_cast<size_t>(count));
     for (int i = 0; i < count; ++i) {
       m_loggerIds.push_back(std::string(id));
       id = va_arg(loggersList, const char*);

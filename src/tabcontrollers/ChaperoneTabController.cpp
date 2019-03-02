@@ -70,7 +70,7 @@ void ChaperoneTabController::reloadChaperoneProfiles()
     {
         settings->setArrayIndex( i );
         chaperoneProfiles.emplace_back();
-        auto& entry = chaperoneProfiles[i];
+        auto& entry = chaperoneProfiles[static_cast<size_t>( i )];
         entry.profileName
             = settings->value( "profileName" ).toString().toStdString();
         entry.includesChaperoneGeometry
@@ -229,7 +229,7 @@ void ChaperoneTabController::saveChaperoneProfiles()
     unsigned i = 0;
     for ( auto& p : chaperoneProfiles )
     {
-        settings->setArrayIndex( i );
+        settings->setArrayIndex( static_cast<int>( i ) );
         settings->setValue( "profileName",
                             QString::fromStdString( p.profileName ) );
         settings->setValue( "includesChaperoneGeometry",
@@ -564,7 +564,7 @@ void ChaperoneTabController::eventLoopTick(
     {
         float mod = m_chaperoneVelocityModifier
                     * std::max( { leftSpeed, rightSpeed, hmdSpeed } );
-        if ( mod > 0.02 )
+        if ( mod > 0.02f )
         {
             m_chaperoneVelocityModifierCurrent += mod;
         }
@@ -654,10 +654,10 @@ void ChaperoneTabController::eventLoopTick(
         if ( parent->isDashboardVisible() )
         {
             vr::EVRSettingsError vrSettingsError;
-            float vis = vr::VRSettings()->GetInt32(
+            float vis = static_cast<float>( vr::VRSettings()->GetInt32(
                 vr::k_pch_CollisionBounds_Section,
                 vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-                &vrSettingsError );
+                &vrSettingsError ) );
             if ( vrSettingsError != vr::VRSettingsError_None )
             {
                 LOG( WARNING )
@@ -733,9 +733,10 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
     if ( m_visibility != value )
     {
         m_visibility = value;
-        vr::VRSettings()->SetInt32( vr::k_pch_CollisionBounds_Section,
-                                    vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-                                    255 * m_visibility );
+        vr::VRSettings()->SetInt32(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_ColorGammaA_Int32,
+            static_cast<int32_t>( 255 * m_visibility ) );
         vr::VRSettings()->Sync();
         if ( notify )
         {
@@ -928,7 +929,7 @@ float ChaperoneTabController::chaperoneVelocityModifier() const
 
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount()
 {
-    return ( unsigned ) chaperoneProfiles.size();
+    return static_cast<unsigned int>( chaperoneProfiles.size() );
 }
 
 Q_INVOKABLE QString
@@ -1244,7 +1245,7 @@ void ChaperoneTabController::flipOrientation()
 {
     parent->m_moveCenterTabController.reset();
     parent->RotateUniverseCenter( vr::TrackingUniverseStanding,
-                                  ( float ) M_PI );
+                                  static_cast<float>( M_PI ) );
 }
 
 void ChaperoneTabController::reloadFromDisk()

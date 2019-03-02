@@ -12,7 +12,7 @@
 // application namespace
 namespace advsettings
 {
-const char* steamDesktopOverlaykey = "valve.steam.desktop";
+constexpr auto steamDesktopOverlaykey = "valve.steam.desktop";
 
 void UtilitiesTabController::initStage1()
 {
@@ -64,8 +64,8 @@ void UtilitiesTabController::initStage1()
 void UtilitiesTabController::initStage2( OverlayController* var_parent,
                                          QQuickWindow* var_widget )
 {
-    this->parent = var_parent;
-    this->widget = var_widget;
+    this->m_parent = var_parent;
+    this->m_widget = var_widget;
 }
 
 void UtilitiesTabController::sendKeyboardInput( QString input )
@@ -422,8 +422,9 @@ void UtilitiesTabController::eventLoopTick()
                     vr::VRNotificationId notificationId;
                     vr::EVRInitError eError;
                     vr::IVRNotifications* vrnotification
-                        = ( vr::IVRNotifications* ) vr::VR_GetGenericInterface(
-                            vr::IVRNotifications_Version, &eError );
+                        = static_cast<vr::IVRNotifications*>(
+                            vr::VR_GetGenericInterface(
+                                vr::IVRNotifications_Version, &eError ) );
                     if ( eError != vr::VRInitError_None )
                     {
                         LOG( ERROR )
@@ -467,7 +468,7 @@ void UtilitiesTabController::eventLoopTick()
                         }
                         */
                         auto nError = vrnotification->CreateNotification(
-                            parent->overlayHandle(),
+                            m_parent->overlayHandle(),
                             666,
                             vr::EVRNotificationType_Transient,
                             alarmMessageBuffer,
@@ -533,7 +534,8 @@ void UtilitiesTabController::eventLoopTick()
                             i,
                             vr::ETrackedDeviceProperty::
                                 Prop_DeviceBatteryPercentage_Float );
-                    int batteryState = ceil( battery * 5 );
+                    int batteryState = static_cast<int>(
+                        ceil( static_cast<double>( battery * 5 ) ) );
 
                     if ( batteryState != m_batteryState[i] )
                     {
@@ -582,7 +584,7 @@ void UtilitiesTabController::setSteamDesktopOverlayWidth( float width,
                                                           bool notify,
                                                           bool notifyOpenVr )
 {
-    if ( std::abs( m_steamDesktopOverlayWidth - width ) > 0.01 )
+    if ( std::abs( m_steamDesktopOverlayWidth - width ) > 0.01f )
     {
         m_steamDesktopOverlayWidth = width;
         if ( notifyOpenVr )

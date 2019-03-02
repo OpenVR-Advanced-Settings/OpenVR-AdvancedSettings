@@ -71,14 +71,11 @@ protected:
 protected:
     void checkPttStatus();
     virtual QString getSettingsName() = 0;
-    virtual void onPttStart(){};
-    virtual void onPttStop(){};
-    virtual void onPttEnabled(){};
-    virtual void onPttDisabled(){};
-    virtual bool pttChangeValid()
-    {
-        return true;
-    }
+    virtual void onPttStart() {}
+    virtual void onPttStop() {}
+    virtual void onPttEnabled() {}
+    virtual void onPttDisabled() {}
+
     virtual vr::VROverlayHandle_t getNotificationOverlayHandle()
     {
         return vr::k_ulOverlayHandleInvalid;
@@ -99,6 +96,11 @@ public:
     void reloadPttConfig();
     void savePttProfiles();
     void savePttConfig();
+
+    virtual bool pttChangeValid()
+    {
+        return true;
+    }
 
     Q_INVOKABLE QVariantList pttDigitalButtons( unsigned controller );
     Q_INVOKABLE unsigned long pttDigitalButtonMask( unsigned controller );

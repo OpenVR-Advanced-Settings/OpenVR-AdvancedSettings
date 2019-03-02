@@ -143,7 +143,7 @@ These version are not stable and this should be considered for advanced users on
 - **Supersampling Profile**: Allows to apply supersampling profiles. Profiles can be created on the SteamVR page
 - **Chaperone Profile**: Allows to apply chaperone profiles. Profiles can be created on the Chaperone page
 - **Microphone**: Allows to set the microphone volume and to mute/unmute it.
-- **Push-to-Talk**: Enable/disable push-to-talk and allows to apply push-to-talk profiles. Profiles can be created on the Audio page.
+- **Push-to-Talk**: Enable/disable push-to-talk.
 
 <a name="steamvr_page"></a>
 ## - SteamVR Page:
@@ -214,12 +214,9 @@ Allows to temporarily move and rotate the center of the playspace. This allows t
 - **Mirror Device**: Allows to select the mirror device, set its volume and to mute/unmute it.
 - **Microphone**: Allows to select the microphone device, set its volume and to mute/unmute it.
 - **Proximity Sensor Mutes/Unmutes Microphone**: Allows the proximity sensor to mute the microphone when the user is not wearing the HMD, and to unmute it when the user is wearing the HMD.
-- **Push-to-Talk**: Enable/disable push-to-talk. When push-to-talk is activated the microphone gets muted unless one of the configured buttons is pressed on one of the configured controllers.
-- **Left Controller**: Configure the left controller for push-to-talk.
-- **Right Controller**: Configure the right controller for push-to-talk.
-- **Show Notification**: Shows a notification icon in the headset when push-to-talk is enabled a configured button is pressed.
+- **Push-to-Talk**: Enable/disable push-to-talk. When push-to-talk is activated the microphone gets muted unless the Push To Talk action is activated.
+- **Show Notification**: Shows a notification icon in the headset when the Push To Talk action is activated.
 - **Push-to-Mute**: Inverse push-to-talk. The Microphone is unmuted by default and muted when any of the configured buttons is pressed.
-- **PTT Profile**: Allows you to apply/define/delete push-to-talk profiles that save buttons, controller and notification settings.
 - **Audio Profile**: Allows you to apply/define/delete audio profiles that save playback devices, mute state, and volume.
 
 <a name="revive_page"></a>
@@ -294,10 +291,7 @@ Full build instructions can be found [here](docs/building_for_windows.md).
 <a name="building_on_linux"></a>
 ## Building on Linux
 
-If you want to run Advanced Settings on linux you can build it yourself using `qmake` and `make` or using Qt Creator, you'll have to copy the `res` folder from the `src` folder into folder that contains the binary
-and copy `third-party/openvr/lib/linux64/libopenvr_api.so` into your systems library path.
-
-If you want to contribute changes running `clang-format` is necessary. More details are in the [CONTRIBUTING.md](docs/CONTRIBUTING.md) file.
+Full build instructions can be found [here](docs/building_for_linux.md).
 
 <a name="notes"></a>
 # Notes:

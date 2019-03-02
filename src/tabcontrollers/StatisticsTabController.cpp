@@ -48,13 +48,13 @@ void StatisticsTabController::eventLoopTick(
             }
             else
             {
-                auto delta = std::sqrt(
+                float delta = static_cast<float>( std::sqrt(
                     std::pow( m[0][3] - lastHmdPos[0],
                               2 ) /*+ std::pow(m[1][3] - lastHmdPos[1], 2)*/
-                    + std::pow( m[2][3] - lastHmdPos[2], 2 ) );
+                    + std::pow( m[2][3] - lastHmdPos[2], 2 ) ) );
                 if ( delta >= 0.01f )
                 {
-                    m_hmdDistanceMoved += delta;
+                    m_hmdDistanceMoved += static_cast<double>( delta );
                 }
             }
             lastHmdPos[0] = m[0][3];
@@ -93,7 +93,7 @@ void StatisticsTabController::eventLoopTick(
 
 float StatisticsTabController::hmdDistanceMoved() const
 {
-    return m_hmdDistanceMoved;
+    return static_cast<float>( m_hmdDistanceMoved );
 }
 
 float StatisticsTabController::hmdRotations() const
@@ -133,10 +133,10 @@ unsigned StatisticsTabController::timedOut() const
 
 float StatisticsTabController::totalReprojectedRatio() const
 {
-    float totalFrames = ( float ) ( m_cumStats.m_nNumFramePresents
-                                    - m_totalRatioPresentedOffset );
-    float reprojectedFrames = ( float ) ( m_cumStats.m_nNumReprojectedFrames
-                                          - m_totalRatioReprojectedOffset );
+    float totalFrames = static_cast<float>(
+        ( m_cumStats.m_nNumFramePresents - m_totalRatioPresentedOffset ) );
+    float reprojectedFrames = static_cast<float>( (
+        m_cumStats.m_nNumReprojectedFrames - m_totalRatioReprojectedOffset ) );
     if ( totalFrames != 0.0f )
     {
         return reprojectedFrames / totalFrames;
@@ -164,7 +164,7 @@ void StatisticsTabController::statsRotationResetClicked()
 
 void StatisticsTabController::statsLeftControllerSpeedResetClicked()
 {
-    if ( m_leftControllerMaxSpeed != 0.0 )
+    if ( m_leftControllerMaxSpeed != 0.0f )
     {
         m_leftControllerMaxSpeed = 0.0;
     }
@@ -172,7 +172,7 @@ void StatisticsTabController::statsLeftControllerSpeedResetClicked()
 
 void StatisticsTabController::statsRightControllerSpeedResetClicked()
 {
-    if ( m_rightControllerMaxSpeed != 0.0 )
+    if ( m_rightControllerMaxSpeed != 0.0f )
     {
         m_rightControllerMaxSpeed = 0.0;
     }

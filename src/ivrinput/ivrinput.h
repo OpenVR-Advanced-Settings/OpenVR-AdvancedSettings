@@ -36,6 +36,7 @@ public:
     SteamIVRInput();
 
     void UpdateStates();
+
     bool nextSong();
     bool previousSong();
     bool pausePlaySong();
@@ -55,6 +56,8 @@ public:
     bool resetOffsets();
     bool snapTurnLeft();
     bool snapTurnRight();
+
+    bool pushToTalk();
 
     // Destructor. There are no terminating calls for the IVRInput API, so it
     // is left blank.
@@ -101,6 +104,9 @@ private:
     Action m_resetOffsets;
     Action m_snapTurnLeft;
     Action m_snapTurnRight;
+
+    // Push To Talk
+    Action m_pushToTalk;
 };
 
 /*!
@@ -140,6 +146,8 @@ namespace input_strings
     constexpr auto k_actionResetOffsets = "/actions/main/in/ResetOffsets";
     constexpr auto k_actionSnapTurnLeft = "/actions/main/in/SnapTurnLeft";
     constexpr auto k_actionSnapTurnRight = "/actions/main/in/SnapTurnRight";
+
+    constexpr auto k_actionPushToTalk = "/actions/main/in/PushToTalk";
 
     constexpr auto k_setMain = "/actions/main";
 

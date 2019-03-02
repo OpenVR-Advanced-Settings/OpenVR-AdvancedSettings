@@ -43,7 +43,8 @@ void PttController::setPttControllerConfig( unsigned controller,
         uint64_t buttonMask = 0;
         for ( auto b : buttons )
         {
-            buttonMask |= vr::ButtonMaskFromId( ( vr::EVRButtonId ) b.toInt() );
+            buttonMask |= vr::ButtonMaskFromId(
+                ( static_cast<vr::EVRButtonId>( b.toInt() ) ) );
         }
         m_pttControllerConfigs[controller].digitalButtons = buttons;
         m_pttControllerConfigs[controller].digitalButtonMask = buttonMask;
@@ -64,7 +65,7 @@ void PttController::reloadPttProfiles()
     {
         settings->setArrayIndex( i );
         pttProfiles.emplace_back();
-        auto& entry = pttProfiles[i];
+        auto& entry = pttProfiles[static_cast<size_t>( i )];
         entry.profileName
             = settings->value( "profileName" ).toString().toStdString();
         entry.showNotification
@@ -78,7 +79,8 @@ void PttController::reloadPttProfiles()
         uint64_t buttonMask = 0;
         for ( auto b : entry.controllerConfigs[0].digitalButtons )
         {
-            buttonMask |= vr::ButtonMaskFromId( ( vr::EVRButtonId ) b.toInt() );
+            buttonMask |= vr::ButtonMaskFromId(
+                static_cast<vr::EVRButtonId>( b.toInt() ) );
         }
         entry.controllerConfigs[0].digitalButtonMask = buttonMask;
         entry.controllerConfigs[0].triggerMode
@@ -92,7 +94,8 @@ void PttController::reloadPttProfiles()
         buttonMask = 0;
         for ( auto b : entry.controllerConfigs[1].digitalButtons )
         {
-            buttonMask |= vr::ButtonMaskFromId( ( vr::EVRButtonId ) b.toInt() );
+            buttonMask |= vr::ButtonMaskFromId(
+                static_cast<vr::EVRButtonId>( b.toInt() ) );
         }
         entry.controllerConfigs[1].digitalButtonMask = buttonMask;
         entry.controllerConfigs[1].triggerMode
@@ -114,7 +117,7 @@ void PttController::savePttProfiles()
     unsigned i = 0;
     for ( auto& p : pttProfiles )
     {
-        settings->setArrayIndex( i );
+        settings->setArrayIndex( static_cast<int>( i ) );
         settings->setValue( "profileName",
                             QString::fromStdString( p.profileName ) );
         settings->setValue( "showNotification", p.showNotification );
@@ -165,7 +168,8 @@ void PttController::reloadPttConfig()
     uint64_t buttonMask = 0;
     for ( auto b : m_pttControllerConfigs[0].digitalButtons )
     {
-        buttonMask |= vr::ButtonMaskFromId( ( vr::EVRButtonId ) b.toInt() );
+        buttonMask |= vr::ButtonMaskFromId(
+            static_cast<vr::EVRButtonId>( b.toInt() ) );
     }
     m_pttControllerConfigs[0].digitalButtonMask = buttonMask;
     m_pttControllerConfigs[0].triggerMode
@@ -179,7 +183,8 @@ void PttController::reloadPttConfig()
     buttonMask = 0;
     for ( auto b : m_pttControllerConfigs[0].digitalButtons )
     {
-        buttonMask |= vr::ButtonMaskFromId( ( vr::EVRButtonId ) b.toInt() );
+        buttonMask |= vr::ButtonMaskFromId(
+            static_cast<vr::EVRButtonId>( b.toInt() ) );
     }
     m_pttControllerConfigs[1].digitalButtonMask = buttonMask;
     m_pttControllerConfigs[1].triggerMode
@@ -222,118 +227,8 @@ void PttController::savePttConfig()
 
 void PttController::checkPttStatus()
 {
-    static auto handleControllerState
-        = []( const vr::VRControllerState_t& state,
-              PttControllerConfig* config ) -> bool {
-        if ( state.ulButtonPressed & config->digitalButtonMask )
-        {
-            return true;
-        }
-        if ( config->triggerMode )
-        {
-            if ( state.ulButtonPressed
-                 & vr::ButtonMaskFromId( vr::k_EButton_SteamVR_Trigger ) )
-            {
-                return true;
-            }
-        }
-        if ( config->touchpadMode )
-        {
-            if ( ( ( config->touchpadMode & 1 )
-                   && ( state.ulButtonTouched
-                        & vr::ButtonMaskFromId(
-                              vr::k_EButton_SteamVR_Touchpad ) ) )
-                 || ( ( config->touchpadMode & 2 )
-                      && ( state.ulButtonPressed
-                           & vr::ButtonMaskFromId(
-                                 vr::k_EButton_SteamVR_Touchpad ) ) ) )
-            {
-                if ( config->touchpadAreas
-                     == ( PAD_AREA_LEFT + PAD_AREA_TOP + PAD_AREA_RIGHT
-                          + PAD_AREA_BOTTOM ) )
-                {
-                    return true;
-                }
-                else
-                {
-                    float x = state.rAxis[0].x;
-                    float y = state.rAxis[0].y;
-                    if ( std::abs( x ) >= 0.2 || std::abs( y ) >= 0.2 )
-                    { // deadzone in the middle
-                        if ( x < 0 && std::abs( y ) < -x
-                             && ( config->touchpadAreas & PAD_AREA_LEFT ) )
-                        {
-                            return true;
-                        }
-                        else if ( y > 0 && std::abs( x ) < y
-                                  && ( config->touchpadAreas & PAD_AREA_TOP ) )
-                        {
-                            return true;
-                        }
-                        else if ( x > 0 && std::abs( y ) < x
-                                  && ( config->touchpadAreas
-                                       & PAD_AREA_RIGHT ) )
-                        {
-                            return true;
-                        }
-                        else if ( y < 0 && std::abs( x ) < -y
-                                  && ( config->touchpadAreas
-                                       & PAD_AREA_BOTTOM ) )
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    };
-    if ( m_pttEnabled )
-    {
-        bool newState = false;
-        if ( m_pttLeftControllerEnabled )
-        {
-            auto leftId
-                = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
-                    vr::TrackedControllerRole_LeftHand );
-            if ( leftId != vr::k_unTrackedDeviceIndexInvalid )
-            {
-                vr::VRControllerState_t state;
-                if ( vr::VRSystem()->GetControllerState(
-                         leftId, &state, sizeof( vr::VRControllerState_t ) ) )
-                {
-                    // logControllerState(state, "Left ");
-                    newState |= handleControllerState( state,
-                                                       m_pttControllerConfigs );
-                }
-            }
-        }
-        if ( m_pttRightControllerEnabled )
-        {
-            auto rightId
-                = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
-                    vr::TrackedControllerRole_RightHand );
-            if ( rightId != vr::k_unTrackedDeviceIndexInvalid )
-            {
-                vr::VRControllerState_t state;
-                if ( vr::VRSystem()->GetControllerState(
-                         rightId, &state, sizeof( vr::VRControllerState_t ) ) )
-                {
-                    // logControllerState(state, "Right ");
-                    newState |= handleControllerState(
-                        state, m_pttControllerConfigs + 1 );
-                }
-            }
-        }
-        if ( newState && !m_pttActive && pttChangeValid() )
-        {
-            startPtt();
-        }
-        else if ( !newState && m_pttActive && pttChangeValid() )
-        {
-            stopPtt();
-        }
-    }
+    // PTT Controls are now handled in the overlaycontroller using public
+    // functions.
 }
 
 void PttController::startPtt()
@@ -464,7 +359,8 @@ unsigned long PttController::pttDigitalButtonMask( unsigned controller )
 {
     if ( controller < 2 )
     {
-        return m_pttControllerConfigs[controller].digitalButtonMask;
+        return static_cast<unsigned long>(
+            m_pttControllerConfigs[controller].digitalButtonMask );
     }
     return 0;
 }
@@ -498,7 +394,7 @@ unsigned PttController::pttTouchpadArea( unsigned controller )
 
 unsigned PttController::getPttProfileCount()
 {
-    return ( unsigned ) pttProfiles.size();
+    return static_cast<unsigned int>( pttProfiles.size() );
 }
 
 QString PttController::getPttProfileName( unsigned index )

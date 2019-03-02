@@ -165,7 +165,8 @@ SteamIVRInput::SteamIVRInput()
       m_snapTurnLeft( input_strings::k_actionSnapTurnLeft,
                       ActionType::Digital ),
       m_snapTurnRight( input_strings::k_actionSnapTurnRight,
-                       ActionType::Digital )
+                       ActionType::Digital ),
+      m_pushToTalk( input_strings::k_actionPushToTalk, ActionType::Digital )
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
     m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;
@@ -293,6 +294,11 @@ bool SteamIVRInput::snapTurnLeft()
 bool SteamIVRInput::snapTurnRight()
 {
     return isDigitalActionActivatedOnce( m_snapTurnRight );
+}
+
+bool SteamIVRInput::pushToTalk()
+{
+    return isDigitalActionActivatedConstant( m_pushToTalk );
 }
 
 /*!

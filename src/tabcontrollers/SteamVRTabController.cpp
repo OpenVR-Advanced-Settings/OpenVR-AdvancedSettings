@@ -56,7 +56,7 @@ void SteamVRTabController::eventLoopTick()
                     << "\" setting: "
                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                            vrSettingsError );
-                if ( m_superSampling != 1.0 )
+                if ( m_superSampling != 1.0f )
                 {
                     LOG( DEBUG )
                         << "OpenVR returns an error and we have a custom "
@@ -204,7 +204,7 @@ void SteamVRTabController::reloadSteamVRProfiles()
     {
         settings->setArrayIndex( i );
         steamvrProfiles.emplace_back();
-        auto& entry = steamvrProfiles[i];
+        auto& entry = steamvrProfiles[static_cast<size_t>( i )];
         entry.profileName
             = settings->value( "profileName" ).toString().toStdString();
         entry.includesSupersampling
@@ -243,7 +243,7 @@ void SteamVRTabController::saveSteamVRProfiles()
     unsigned i = 0;
     for ( auto& p : steamvrProfiles )
     {
-        settings->setArrayIndex( i );
+        settings->setArrayIndex( static_cast<int>( i ) );
         settings->setValue( "profileName",
                             QString::fromStdString( p.profileName ) );
         settings->setValue( "includesSupersampling", p.includesSupersampling );

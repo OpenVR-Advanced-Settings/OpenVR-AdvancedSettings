@@ -89,7 +89,7 @@ private:
     bool m_dashboardVisible = false;
 
     QPoint m_ptLastMouse;
-    Qt::MouseButtons m_lastMouseButtons = 0;
+    Qt::MouseButtons m_lastMouseButtons = nullptr;
 
     bool m_desktopMode;
     bool m_noSound;
@@ -128,6 +128,9 @@ public: // I know it's an ugly hack to make them public to enable external
 private:
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
     void processInputBindings();
+    void processMediaKeyBindings();
+    void processRoomBindings();
+    void processPushToTalkBindings();
 
 public:
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
@@ -167,7 +170,7 @@ public:
     bool isDesktopMode()
     {
         return m_desktopMode;
-    };
+    }
 
     utils::ChaperoneUtils& chaperoneUtils() noexcept
     {

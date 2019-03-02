@@ -100,6 +100,11 @@
       "name": "/actions/main/in/SnapTurnRight",
       "requirement": "optional",
       "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/PushToTalk",
+      "requirement": "optional",
+      "type": "boolean"
     }
   ],
   "action_sets": [
@@ -132,7 +137,9 @@
         "/actions/main/in/HeightToggle" : "Height Toggle",
         "/actions/main/in/ResetOffsets" : "Reset Offsets",
         "/actions/main/in/SnapTurnLeft" : "Snap-Turn Left",
-        "/actions/main/in/SnapTurnRight" : "Snap-Turn Right"
+        "/actions/main/in/SnapTurnRight" : "Snap-Turn Right",
+
+        "/actions/main/in/PushToTalk" : "Push To Talk"
     }
   ]
 }
