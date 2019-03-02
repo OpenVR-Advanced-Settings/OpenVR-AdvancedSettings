@@ -2,8 +2,6 @@
 
 namespace openvr_init
 {
-[[noreturn]] void openBindingsMenu();
-
 /*!
 Initializes OpenVR and checks validity of interface versions. Shuts down OpenVR
 when destroyed.

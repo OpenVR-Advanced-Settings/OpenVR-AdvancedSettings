@@ -81,13 +81,7 @@ To upgrade an existing installation first stop SteamVR and delete the old applic
 <a name="bindings"></a>
 ## Bindings
 
-Advanced Settings supports the OpenVR IVRInput API. In order to make the bindings interface visible, change the `matzman666.AdvancedSettings.vrappconfig` in `C:\Program Files (x86)\Steam\config\vrappconfig` to have a `last_launch_time` close to the current date (in [Unix time](https://en.wikipedia.org/wiki/Unix_time)). If in doubt, try using the value from [this](https://time.is/Unix_time_now) site. Running the application normally will now make it show up in the bindings interface.
-
-Alternatively, if the above doesn't work, run the `bindingsinterface.bat` file from the install directory. After you're done configuring your bindings, close SteamVR and start it up again. You are now using your new bindings. Advanced Settings will not show up in the bindings menu unless you're actively running the application with `bindingsinterface.bat`. Advanced Settings will not work normally while running with `bindingsinterface.bat`.
-
-The above two solutions are workarounds to a bug in the OpenVR API.
-
-After doing one of the above workarounds, when SteamVR starts click the menu -> Settings -> Controller Binding. You can also visit [this](127.0.0.1:8998/dashboard/controllerbinding.html) site in your internet browser. It's the same as the built in SteamVR bindings menu. SteamVR must be running for it to work.
+After SteamVR beta 1.3.1 the bindings for Advanced Settings will show up in the bindings menu.
 
 By default no buttons are bound.
 
@@ -115,8 +109,6 @@ The application (`AdvancedSettings.exe`) can be run with the following optional 
 `"-installmanifest"`: Force installs the `.vrmanifest` and adds the application to autostart. If you're having issues with autostart not working try running the program once with this set. The program will exit early when this flag is set.
 
 `"-removemanifest"`: Force uninstalls the `.vrmanifest`. This should be done every time the application is uninstalled. On Windows it is automatically done by the uninstaller. The program will exit early when this flag is set.
-
-`"-bindingsinterface"`: Makes Advanced Settings show up in the SteamVR bindings interface. This is necessary for binding keys to actions. This is the same as running `bindingsinterface.bat` from the executable directory. The program will not exit when this is set. No normal functionality is available except using the bindings interface. Bindings set with this active will be available when this isn't active.
 
 In addition, the application can receive the command line arguments from the [Easylogging++ library](https://github.com/zuhd-org/easyloggingpp#application-arguments).
 

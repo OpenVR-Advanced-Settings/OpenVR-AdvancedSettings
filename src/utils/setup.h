@@ -45,7 +45,6 @@ constexpr auto kNoSound = "-nosound";
 constexpr auto kNoManifest = "-nomanifest";
 constexpr auto kInstallManifest = "-installmanifest";
 constexpr auto kRemoveManifest = "-removemanifest";
-constexpr auto kEnableBindingsInterface = "-bindingsinterface";
 } // namespace argument
 
 namespace manifest
