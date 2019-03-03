@@ -6,7 +6,7 @@ import "common"
 
 
 MyStackViewPage {
-    headerText: "Room Fix"
+    headerText: "Space Fix"
 
     content: ColumnLayout {
         spacing: 18
@@ -57,7 +57,7 @@ MyStackViewPage {
 		MyPushButton {
             id: recenterButton
             Layout.fillWidth: true
-            text: "Recenter Room"
+            text: "Recenter Space"
             Layout.preferredHeight: 100
             onClicked: {
                 FixFloorTabController.recenterClicked()
@@ -75,9 +75,9 @@ MyStackViewPage {
         }
 
         MyPushButton {
-            id: zeroRoomButton
+            id: zeroSpaceButton
             Layout.fillWidth: true
-            text: "Apply Room Settings Offsets as Center"
+            text: "Apply Space Settings Offsets as Center"
             Layout.preferredHeight: 100
             onClicked: {
                 MoveCenterTabController.zeroOffsets()

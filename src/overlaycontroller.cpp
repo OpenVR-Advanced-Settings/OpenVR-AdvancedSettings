@@ -497,22 +497,33 @@ void OverlayController::processRoomBindings()
     // reorder these. Override actions must always come after normal because
     // active priority is set based on which action is "newest"
     // normal actions:
-    m_moveCenterTabController.leftHandRoomDrag( m_actions.leftHandRoomDrag() );
-    m_moveCenterTabController.rightHandRoomDrag(
-        m_actions.rightHandRoomDrag() );
-    m_moveCenterTabController.leftHandRoomTurn( m_actions.leftHandRoomTurn() );
-    m_moveCenterTabController.rightHandRoomTurn(
-        m_actions.rightHandRoomTurn() );
+    m_moveCenterTabController.leftHandSpaceDrag(
+        m_actions.leftHandSpaceDrag() );
+    m_moveCenterTabController.rightHandSpaceDrag(
+        m_actions.rightHandSpaceDrag() );
+    m_moveCenterTabController.leftHandSpaceTurn(
+        m_actions.leftHandSpaceTurn() );
+    m_moveCenterTabController.rightHandSpaceTurn(
+        m_actions.rightHandSpaceTurn() );
+    m_moveCenterTabController.gravityToggle( m_actions.gravityToggle() );
+    m_moveCenterTabController.heightToggle( m_actions.heightToggle() );
+    m_moveCenterTabController.resetOffsets( m_actions.resetOffsets() );
+    m_moveCenterTabController.snapTurnLeft( m_actions.snapTurnLeft() );
+    m_moveCenterTabController.snapTurnRight( m_actions.snapTurnRight() );
 
     // override actions:
-    m_moveCenterTabController.optionalOverrideLeftHandRoomDrag(
-        m_actions.optionalOverrideLeftHandRoomDrag() );
-    m_moveCenterTabController.optionalOverrideRightHandRoomDrag(
-        m_actions.optionalOverrideRightHandRoomDrag() );
-    m_moveCenterTabController.optionalOverrideLeftHandRoomTurn(
-        m_actions.optionalOverrideLeftHandRoomTurn() );
-    m_moveCenterTabController.optionalOverrideRightHandRoomTurn(
-        m_actions.optionalOverrideRightHandRoomTurn() );
+    m_moveCenterTabController.optionalOverrideLeftHandSpaceDrag(
+        m_actions.optionalOverrideLeftHandSpaceDrag() );
+    m_moveCenterTabController.optionalOverrideRightHandSpaceDrag(
+        m_actions.optionalOverrideRightHandSpaceDrag() );
+    m_moveCenterTabController.optionalOverrideLeftHandSpaceTurn(
+        m_actions.optionalOverrideLeftHandSpaceTurn() );
+    m_moveCenterTabController.optionalOverrideRightHandSpaceTurn(
+        m_actions.optionalOverrideRightHandSpaceTurn() );
+    m_moveCenterTabController.swapSpaceDragToLeftHandOverride(
+        m_actions.swapSpaceDragToLeftHandOverride() );
+    m_moveCenterTabController.swapSpaceDragToRightHandOverride(
+        m_actions.swapSpaceDragToRightHandOverride() );
 }
 
 void OverlayController::processPushToTalkBindings()
@@ -565,7 +576,18 @@ void OverlayController::OnTimeoutPumpEvents()
 
         // wait for the next frame after executing our main event loop once.
         m_lastFrame = m_currentFrame;
+        m_vsyncTooLateCounter = 0;
     }
+    else if ( m_vsyncTooLateCounter >= k_nonVsyncTickRate )
+    {
+        mainEventLoop();
+        // m_lastFrame = m_currentFrame + 1 skips the next vsync frame in case
+        // it was just about to trigger, to prevent double updates faster than
+        // 11ms.
+        m_lastFrame = m_currentFrame + 1;
+        m_vsyncTooLateCounter = 0;
+    }
+    m_vsyncTooLateCounter++;
 }
 
 void OverlayController::mainEventLoop()

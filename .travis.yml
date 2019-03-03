@@ -25,6 +25,10 @@ matrix:
     compiler: clang
 
 before_install:
+  - chmod +x ./build_scripts/linux/build_linux.sh
+  - chmod +x ./build_scripts/linux/format.sh
+  - chmod +x ./build_scripts/linux/run-clang-tidy.sh
+  - chmod +x ./build_scripts/linux/verify_formatting.sh
   - python ./build_scripts/run-clang-format.py ./src -r --color always  
 
 install:
