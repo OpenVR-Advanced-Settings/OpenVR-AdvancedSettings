@@ -3,9 +3,9 @@
 #include <openvr.h>
 //#include <cmath>
 
-namespace utils
+namespace quaternion
 {
-inline vr::HmdQuaternion_t quaternionFromHmdMatrix34( vr::HmdMatrix34_t matrix )
+inline vr::HmdQuaternion_t fromHmdMatrix34( vr::HmdMatrix34_t matrix )
 {
     vr::HmdQuaternion_t q;
 
@@ -34,8 +34,8 @@ inline vr::HmdQuaternion_t quaternionFromHmdMatrix34( vr::HmdMatrix34_t matrix )
     return q;
 }
 
-inline vr::HmdQuaternion_t quaternionMultiply( const vr::HmdQuaternion_t& lhs,
-                                               const vr::HmdQuaternion_t& rhs )
+inline vr::HmdQuaternion_t multiply( const vr::HmdQuaternion_t& lhs,
+                                     const vr::HmdQuaternion_t& rhs )
 {
     return { ( lhs.w * rhs.w ) - ( lhs.x * rhs.x ) - ( lhs.y * rhs.y )
                  - ( lhs.z * rhs.z ),
@@ -47,8 +47,7 @@ inline vr::HmdQuaternion_t quaternionMultiply( const vr::HmdQuaternion_t& lhs,
                  - ( lhs.y * rhs.x ) };
 }
 
-inline vr::HmdQuaternion_t
-    quaternionConjugate( const vr::HmdQuaternion_t& quat )
+inline vr::HmdQuaternion_t conjugate( const vr::HmdQuaternion_t& quat )
 {
     return {
         quat.w,
@@ -58,7 +57,7 @@ inline vr::HmdQuaternion_t
     };
 }
 
-inline double quaternionGetYaw( const vr::HmdQuaternion_t& quat )
+inline double getYaw( const vr::HmdQuaternion_t& quat )
 {
     double yawResult
         = atan2( 2.0 * ( quat.y * quat.w + quat.x * quat.z ),
@@ -66,4 +65,4 @@ inline double quaternionGetYaw( const vr::HmdQuaternion_t& quat )
     return yawResult;
 }
 
-} // namespace utils
+} // namespace quaternion
