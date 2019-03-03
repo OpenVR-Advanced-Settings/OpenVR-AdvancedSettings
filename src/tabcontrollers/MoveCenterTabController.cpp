@@ -635,8 +635,18 @@ void MoveCenterTabController::leftHandSpaceDrag( bool leftHandDragActive )
             {
                 m_activeDragHand = vr::TrackedControllerRole_RightHand;
             }
+            // otherwise check right hand for activated swap drag
+            if ( m_swapDragToRightHandActivated )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_RightHand;
+            }
             // override of left hand still active?
             else if ( m_overrideLeftHandDragPressed )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // swap activation of left hand still active?
+            else if ( m_swapDragToLeftHandActivated )
             {
                 m_activeDragHand = vr::TrackedControllerRole_LeftHand;
             }
@@ -645,7 +655,7 @@ void MoveCenterTabController::leftHandSpaceDrag( bool leftHandDragActive )
             {
                 m_activeDragHand = vr::TrackedControllerRole_RightHand;
             }
-            // nothing else is pressed, deactivate move
+            // nothing else is pressed, deactivate drag
             else
             {
                 m_activeDragHand = vr::TrackedControllerRole_Invalid;
@@ -678,8 +688,18 @@ void MoveCenterTabController::rightHandSpaceDrag( bool rightHandDragActive )
             {
                 m_activeDragHand = vr::TrackedControllerRole_LeftHand;
             }
+            // otherwise check left hand for activated swap drag
+            if ( m_swapDragToLeftHandActivated )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_LeftHand;
+            }
             // override of right hand still active?
             else if ( m_overrideRightHandDragPressed )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_RightHand;
+            }
+            // swap activation of right hand still active?
+            else if ( m_swapDragToRightHandActivated )
             {
                 m_activeDragHand = vr::TrackedControllerRole_RightHand;
             }
@@ -688,7 +708,7 @@ void MoveCenterTabController::rightHandSpaceDrag( bool rightHandDragActive )
             {
                 m_activeDragHand = vr::TrackedControllerRole_LeftHand;
             }
-            // nothing else is pressed, deactivate move
+            // nothing else is pressed, deactivate drag
             else
             {
                 m_activeDragHand = vr::TrackedControllerRole_Invalid;
@@ -721,17 +741,27 @@ void MoveCenterTabController::optionalOverrideLeftHandSpaceDrag(
         {
             m_activeDragHand = vr::TrackedControllerRole_RightHand;
         }
+        // otherwise check right hand for activated swap drag
+        if ( m_swapDragToRightHandActivated )
+        {
+            m_activeDragHand = vr::TrackedControllerRole_RightHand;
+        }
         // otherwise check normal action
         else if ( m_rightHandDragPressed )
         {
             m_activeDragHand = vr::TrackedControllerRole_RightHand;
+        }
+        // swap activation of left hand still active?
+        else if ( m_swapDragToLeftHandActivated )
+        {
+            m_activeDragHand = vr::TrackedControllerRole_LeftHand;
         }
         // check if we should fall back to non-override left hand
         else if ( m_leftHandDragPressed )
         {
             m_activeDragHand = vr::TrackedControllerRole_LeftHand;
         }
-        // nothing else is pressed, deactivate move
+        // nothing else is pressed, deactivate drag
         else
         {
             m_activeDragHand = vr::TrackedControllerRole_Invalid;
@@ -763,23 +793,191 @@ void MoveCenterTabController::optionalOverrideRightHandSpaceDrag(
         {
             m_activeDragHand = vr::TrackedControllerRole_LeftHand;
         }
+        // otherwise check left hand for activated swap drag
+        if ( m_swapDragToLeftHandActivated )
+        {
+            m_activeDragHand = vr::TrackedControllerRole_LeftHand;
+        }
         // otherwise check normal action
         else if ( m_leftHandDragPressed )
         {
             m_activeDragHand = vr::TrackedControllerRole_LeftHand;
         }
-        // check if we should fall back to non-override left hand
+        // swap activation of right hand still active?
+        else if ( m_swapDragToRightHandActivated )
+        {
+            m_activeDragHand = vr::TrackedControllerRole_RightHand;
+        }
+        // check if we should fall back to non-override right hand
         else if ( m_rightHandDragPressed )
         {
             m_activeDragHand = vr::TrackedControllerRole_RightHand;
         }
-        // nothing else is pressed, deactivate move
+        // nothing else is pressed, deactivate drag
         else
         {
             m_activeDragHand = vr::TrackedControllerRole_Invalid;
         }
     }
     m_overrideRightHandDragPressed = overrideRightHandDragActive;
+}
+
+void MoveCenterTabController::swapSpaceDragToLeftHandOverride(
+    bool swapDragToLeftHand )
+{
+    if ( !m_settingsLeftHandDragEnabled )
+    {
+        return;
+    }
+    // detect new press
+    if ( swapDragToLeftHand && !m_swapDragToLeftHandPressed )
+    {
+        // check for active right hand drag to swap from
+        if ( m_activeDragHand == vr::TrackedControllerRole_RightHand )
+        {
+            m_activeDragHand = vr::TrackedControllerRole_LeftHand;
+            // stop any active rotate because we're in override mode
+            m_activeTurnHand = vr::TrackedControllerRole_Invalid;
+            // set this hand's swap action to successfully activated for
+            // tracking if we should pass the drag back if another hand is
+            // released
+            m_swapDragToLeftHandActivated = true;
+        }
+    }
+    // detect new release
+    else if ( !swapDragToLeftHand && m_swapDragToLeftHandPressed )
+    {
+        // check if the left hand swap had even activated
+        if ( m_swapDragToLeftHandActivated
+             && m_activeDragHand == vr::TrackedControllerRole_LeftHand )
+        {
+            // check if we should pass back to other hand
+            // give priority to override action
+            if ( m_overrideRightHandDragPressed )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_RightHand;
+            }
+            // otherwise check if other hand's swap drag was active
+            else if ( m_swapDragToRightHandActivated )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_RightHand;
+            }
+            // otherwise check if we retain left hand via its override
+            // action
+            else if ( m_overrideLeftHandDragPressed )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // otherwise check normal action on right hand
+            else if ( m_rightHandDragPressed )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_RightHand;
+            }
+            // otherwise check if we retain left hand via its normal action
+            else if ( m_leftHandDragPressed )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // nothing else is pressed, deactivate drag.
+            else
+            {
+                m_activeDragHand = vr::TrackedControllerRole_Invalid;
+            }
+        }
+    }
+    m_swapDragToLeftHandPressed = swapDragToLeftHand;
+    // we only set activated flag when the swap was successfull, but we always
+    // deactivate when swap action isn't pressed.
+    if ( !swapDragToLeftHand )
+    {
+        m_swapDragToLeftHandActivated = false;
+    }
+    // deactivate turning even when not detecting a new press as long as a swap
+    // is successfully activated now
+    if ( m_swapDragToLeftHandActivated )
+    {
+        m_activeTurnHand = vr::TrackedControllerRole_Invalid;
+    }
+}
+
+void MoveCenterTabController::swapSpaceDragToRightHandOverride(
+    bool swapDragToRightHand )
+{
+    if ( !m_settingsRightHandDragEnabled )
+    {
+        return;
+    }
+    // detect new press
+    if ( swapDragToRightHand && !m_swapDragToRightHandPressed )
+    {
+        // check for active left hand drag to swap from
+        if ( m_activeDragHand == vr::TrackedControllerRole_LeftHand )
+        {
+            m_activeDragHand = vr::TrackedControllerRole_RightHand;
+            // stop any active rotate because we're in override mode
+            m_activeTurnHand = vr::TrackedControllerRole_Invalid;
+            // set this hand's swap action to successfully activated for
+            // tracking if we should pass the drag back if another hand is
+            // released
+            m_swapDragToRightHandActivated = true;
+        }
+    }
+    // detect new release
+    else if ( !swapDragToRightHand && m_swapDragToRightHandPressed )
+    {
+        // check if the right hand swap had even activated
+        if ( m_swapDragToRightHandActivated
+             && m_activeDragHand == vr::TrackedControllerRole_RightHand )
+        {
+            // check if we should pass back to other hand
+            // give priority to override action
+            if ( m_overrideLeftHandDragPressed )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // otherwise check if other hand's swap drag was active
+            else if ( m_swapDragToLeftHandActivated )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // otherwise check if we retain right hand via its override
+            // action
+            else if ( m_overrideRightHandDragPressed )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_RightHand;
+            }
+            // otherwise check normal action on left hand
+            else if ( m_leftHandDragPressed )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_LeftHand;
+            }
+            // otherwise check if we retain right hand via its normal action
+            else if ( m_rightHandDragPressed )
+            {
+                m_activeDragHand = vr::TrackedControllerRole_RightHand;
+            }
+            // nothing else is pressed, deactivate drag.
+            else
+            {
+                m_activeDragHand = vr::TrackedControllerRole_Invalid;
+            }
+        }
+    }
+
+    m_swapDragToRightHandPressed = swapDragToRightHand;
+
+    // we only set activated flag when the swap was successfull, but we always
+    // deactivate when swap action isn't pressed.
+    if ( !swapDragToRightHand )
+    {
+        m_swapDragToRightHandActivated = false;
+    }
+    // deactivate turning even when not detecting a new press as long as a swap
+    // is successfully activated now
+    if ( m_swapDragToRightHandActivated )
+    {
+        m_activeTurnHand = vr::TrackedControllerRole_Invalid;
+    }
 }
 
 // END of drag bindings
@@ -942,7 +1140,7 @@ void MoveCenterTabController::optionalOverrideRightHandSpaceTurn(
         {
             m_activeTurnHand = vr::TrackedControllerRole_LeftHand;
         }
-        // check if we should fall back to non-override left hand
+        // check if we should fall back to non-override right hand
         else if ( m_rightHandTurnPressed )
         {
             m_activeTurnHand = vr::TrackedControllerRole_RightHand;
@@ -959,28 +1157,6 @@ void MoveCenterTabController::optionalOverrideRightHandSpaceTurn(
 // END of turn bindings.
 
 // START of other bindings.
-
-void MoveCenterTabController::swapSpaceDragToLeftHandOverride(
-    bool swapDragToLeftHand )
-{
-    // temp stuff for compliner warnings
-    if ( !swapDragToLeftHand )
-    {
-        return;
-    }
-    // TODO STUFF
-}
-
-void MoveCenterTabController::swapSpaceDragToRightHandOverride(
-    bool swapDragToRightHand )
-{
-    // temp stuff for compliner warnings
-    if ( !swapDragToRightHand )
-    {
-        return;
-    }
-    // TODO STUFF
-}
 
 void MoveCenterTabController::gravityToggle( bool gravityToggleJustPressed )
 {
@@ -1055,6 +1231,8 @@ void MoveCenterTabController::snapTurnRight( bool snapTurnRightJustPressed )
 
     setRotation( newRotationAngleDeg );
 }
+
+// END of other bindings
 
 void MoveCenterTabController::updateHmdRotationCounter(
     vr::TrackedDevicePose_t hmdPose,

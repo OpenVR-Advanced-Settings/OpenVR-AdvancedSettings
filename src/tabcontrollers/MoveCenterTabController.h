@@ -106,6 +106,10 @@ private:
     bool m_rightHandTurnPressed = false;
     bool m_overrideLeftHandTurnPressed = false;
     bool m_overrideRightHandTurnPressed = false;
+    bool m_swapDragToLeftHandPressed = false;
+    bool m_swapDragToRightHandPressed = false;
+    bool m_swapDragToLeftHandActivated = false;
+    bool m_swapDragToRightHandActivated = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
