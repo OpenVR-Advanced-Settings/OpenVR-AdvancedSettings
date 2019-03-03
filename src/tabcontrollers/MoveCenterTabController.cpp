@@ -1004,32 +1004,56 @@ void MoveCenterTabController::heightToggle( bool heightToggleJustPressed )
 
 void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
 {
-    // temp stuff for compliner warnings
-    if ( !resetOffsetsJustPressed )
+    if ( resetOffsetsJustPressed )
     {
-        return;
+        reset();
     }
-    // TODO STUFF
 }
 
 void MoveCenterTabController::snapTurnLeft( bool snapTurnLeftJustPressed )
 {
-    // temp stuff for compliner warnings
     if ( !snapTurnLeftJustPressed )
     {
         return;
     }
-    // TODO STUFF
+
+    // TODO add interface to configure snap angle.
+    // temporarily hard coded to 45 degrees
+    int newRotationAngleDeg = m_rotation - 4500;
+    // Keep angle within -18000 ~ 18000 centidegrees
+    if ( newRotationAngleDeg > 18000 )
+    {
+        newRotationAngleDeg -= 36000;
+    }
+    else if ( newRotationAngleDeg < -18000 )
+    {
+        newRotationAngleDeg += 36000;
+    }
+
+    setRotation( newRotationAngleDeg );
 }
 
 void MoveCenterTabController::snapTurnRight( bool snapTurnRightJustPressed )
 {
-    // temp stuff for compliner warnings
     if ( !snapTurnRightJustPressed )
     {
         return;
     }
-    // TODO STUFF
+
+    // TODO add interface to configure snap angle.
+    // temporarily hard coded to 45 degrees
+    int newRotationAngleDeg = m_rotation + 4500;
+    // Keep angle within -18000 ~ 18000 centidegrees
+    if ( newRotationAngleDeg > 18000 )
+    {
+        newRotationAngleDeg -= 36000;
+    }
+    else if ( newRotationAngleDeg < -18000 )
+    {
+        newRotationAngleDeg += 36000;
+    }
+
+    setRotation( newRotationAngleDeg );
 }
 
 void MoveCenterTabController::updateHmdRotationCounter(
