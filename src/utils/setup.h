@@ -295,7 +295,7 @@ void reinstallApplicationManifest( const QString manifestPath )
 [[noreturn]] void handleManifests( const bool installManifest,
                                    const bool removeManifest )
 {
-    openvr_init::OpenVR_Init openvr_init(
+    openvr_init::initializeOpenVR(
         openvr_init::OpenVrInitializationType::Utility );
 
     int exit_code = ReturnErrorCode::SUCCESS;

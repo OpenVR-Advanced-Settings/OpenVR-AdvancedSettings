@@ -42,7 +42,7 @@ void initializeProperly( const OpenVrInitializationType initType )
     }
 }
 
-OpenVR_Init::OpenVR_Init( const OpenVrInitializationType initType )
+void initializeOpenVR( const OpenVrInitializationType initType )
 {
     initializeProperly( initType );
 
@@ -99,8 +99,4 @@ OpenVR_Init::OpenVR_Init( const OpenVrInitializationType initType )
     }
 }
 
-OpenVR_Init::~OpenVR_Init()
-{
-    vr::VR_Shutdown();
-}
 } // namespace openvr_init
