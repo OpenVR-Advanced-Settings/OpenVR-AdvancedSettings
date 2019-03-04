@@ -33,7 +33,7 @@ class UtilitiesTabController : public QObject
             setSteamDesktopOverlayWidth NOTIFY steamDesktopOverlayWidthChanged )
 
 private:
-    void setUpDesktopOverlay();
+    void setUpDesktopOverlay( float desktopWidthInMeters );
 
     OverlayController* m_parent;
     QQuickWindow* m_widget;
