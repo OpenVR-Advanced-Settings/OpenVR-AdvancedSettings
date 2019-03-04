@@ -37,7 +37,7 @@ int main( int argc, char* argv[] )
                                    commandLineArgs.forceRemoveManifest );
     }
 
-    openvr_init::OpenVR_Init openvr_init(
+    openvr_init::initializeOpenVR(
         openvr_init::OpenVrInitializationType::Overlay );
 
     try
