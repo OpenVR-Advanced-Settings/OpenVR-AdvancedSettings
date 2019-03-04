@@ -31,34 +31,8 @@ void UtilitiesTabController::initStage1()
     m_alarmEnabled = qAlarmEnabled.toBool();
     m_alarmIsModal = qAlarmIsModal.toBool();
     m_alarmTime = QTime( qAlarmHour.toInt(), qAlarmMinute.toInt() );
-    vr::VROverlayHandle_t pOverlayHandle;
-    auto error = vr::VROverlay()->FindOverlay( steamDesktopOverlaykey,
-                                               &pOverlayHandle );
-    if ( error != vr::VROverlayError_None )
-    {
-        m_steamDesktopOverlayAvailable = false;
-        LOG( INFO ) << "Could not find overlay \"" << steamDesktopOverlaykey
-                    << "\": "
-                    << vr::VROverlay()->GetOverlayErrorNameFromEnum( error );
-    }
-    else
-    {
-        m_steamDesktopOverlayAvailable = true;
-        float width;
-        error = vr::VROverlay()->GetOverlayWidthInMeters( pOverlayHandle,
-                                                          &width );
-        if ( error != vr::VROverlayError_None )
-        {
-            LOG( ERROR ) << "Could not read overlay width of \""
-                         << steamDesktopOverlaykey << "\": "
-                         << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                                error );
-        }
-        else
-        {
-            m_steamDesktopOverlayWidth = width;
-        }
-    }
+
+    setUpDesktopOverlay();
 }
 
 void UtilitiesTabController::initStage2( OverlayController* var_parent,
@@ -568,6 +542,34 @@ void UtilitiesTabController::eventLoopTick()
     {
         settingsUpdateCounter++;
     }
+}
+
+void UtilitiesTabController::setUpDesktopOverlay()
+{
+    vr::VROverlayHandle_t pOverlayHandle = 0;
+    auto error = vr::VROverlay()->FindOverlay( steamDesktopOverlaykey,
+                                               &pOverlayHandle );
+    if ( error != vr::VROverlayError_None )
+    {
+        m_steamDesktopOverlayAvailable = false;
+        LOG( INFO ) << "Could not find overlay \"" << steamDesktopOverlaykey
+                    << "\": "
+                    << vr::VROverlay()->GetOverlayErrorNameFromEnum( error );
+        return;
+    }
+    m_steamDesktopOverlayAvailable = true;
+
+    float width;
+    error = vr::VROverlay()->GetOverlayWidthInMeters( pOverlayHandle, &width );
+    if ( error != vr::VROverlayError_None )
+    {
+        LOG( ERROR ) << "Could not read overlay width of \""
+                     << steamDesktopOverlaykey << "\": "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum( error );
+        return;
+    }
+
+    m_steamDesktopOverlayWidth = width;
 }
 
 bool UtilitiesTabController::steamDesktopOverlayAvailable() const
