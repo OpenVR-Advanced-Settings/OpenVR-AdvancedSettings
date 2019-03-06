@@ -15,6 +15,7 @@ constexpr double k_centidegreesToRadians = M_PI / 18000.0;
 constexpr double k_radiansToCentidegrees = 18000.0 / M_PI;
 constexpr double k_quaternionInvalidValue = -1000.0;
 constexpr double k_quaternionUnderIsInvalidValueThreshold = -900.0;
+constexpr double k_terminalVelocity_mps = 50.0;
 
 class OverlayController;
 
@@ -110,14 +111,22 @@ private:
     bool m_swapDragToRightHandPressed = false;
     bool m_swapDragToLeftHandActivated = false;
     bool m_swapDragToRightHandActivated = false;
+    bool m_gravityActive = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
     unsigned m_turnComfortFrameSkipCounter = 0;
+    double m_velocity[3] = { 0.0, 0.0, 0.0 };
+    std::chrono::steady_clock::time_point m_lastUpdateTimePoint;
+
     void updateHmdRotationCounter( vr::TrackedDevicePose_t hmdPose,
                                    double angle );
-    void updateHandDrag( vr::TrackedDevicePose_t* devicePoses, double angle );
+    void updateHandDrag( vr::TrackedDevicePose_t* devicePoses,
+                         double secondsSinceLastTick,
+                         double angle );
     void updateHandTurn( vr::TrackedDevicePose_t* devicePoses, double angle );
+    void updateGravity( double secondsSinceLastTick, double angle );
+    void clampVelocity( double velocity[3] );
 
 public:
     void initStage1();
