@@ -1248,6 +1248,57 @@ void MoveCenterTabController::snapTurnRight( bool snapTurnRightJustPressed )
     setRotation( newRotationAngleDeg );
 }
 
+void MoveCenterTabController::xAxisLockToggle( bool xAxisLockToggleJustPressed )
+{
+    if ( !xAxisLockToggleJustPressed )
+    {
+        return;
+    }
+
+    if ( !m_lockXToggle )
+    {
+        setLockX( true );
+    }
+    else
+    {
+        setLockX( false );
+    }
+}
+
+void MoveCenterTabController::yAxisLockToggle( bool yAxisLockToggleJustPressed )
+{
+    if ( !yAxisLockToggleJustPressed )
+    {
+        return;
+    }
+
+    if ( !m_lockYToggle )
+    {
+        setLockY( true );
+    }
+    else
+    {
+        setLockY( false );
+    }
+}
+
+void MoveCenterTabController::zAxisLockToggle( bool zAxisLockToggleJustPressed )
+{
+    if ( !zAxisLockToggleJustPressed )
+    {
+        return;
+    }
+
+    if ( !m_lockZToggle )
+    {
+        setLockZ( true );
+    }
+    else
+    {
+        setLockZ( false );
+    }
+}
+
 // END of other bindings
 
 void MoveCenterTabController::updateHmdRotationCounter(

@@ -166,6 +166,12 @@ SteamIVRInput::SteamIVRInput()
                       ActionType::Digital ),
       m_snapTurnRight( input_strings::k_actionSnapTurnRight,
                        ActionType::Digital ),
+      m_xAxisLockToggle( input_strings::k_actionXAxisLockToggle,
+                         ActionType::Digital ),
+      m_yAxisLockToggle( input_strings::k_actionYAxisLockToggle,
+                         ActionType::Digital ),
+      m_zAxisLockToggle( input_strings::k_actionZAxisLockToggle,
+                         ActionType::Digital ),
       m_pushToTalk( input_strings::k_actionPushToTalk, ActionType::Digital )
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
@@ -294,6 +300,21 @@ bool SteamIVRInput::snapTurnLeft()
 bool SteamIVRInput::snapTurnRight()
 {
     return isDigitalActionActivatedOnce( m_snapTurnRight );
+}
+
+bool SteamIVRInput::xAxisLockToggle()
+{
+    return isDigitalActionActivatedOnce( m_xAxisLockToggle );
+}
+
+bool SteamIVRInput::yAxisLockToggle()
+{
+    return isDigitalActionActivatedOnce( m_yAxisLockToggle );
+}
+
+bool SteamIVRInput::zAxisLockToggle()
+{
+    return isDigitalActionActivatedOnce( m_zAxisLockToggle );
 }
 
 bool SteamIVRInput::pushToTalk()

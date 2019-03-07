@@ -510,6 +510,9 @@ void OverlayController::processRoomBindings()
     m_moveCenterTabController.resetOffsets( m_actions.resetOffsets() );
     m_moveCenterTabController.snapTurnLeft( m_actions.snapTurnLeft() );
     m_moveCenterTabController.snapTurnRight( m_actions.snapTurnRight() );
+    m_moveCenterTabController.xAxisLockToggle( m_actions.xAxisLockToggle() );
+    m_moveCenterTabController.yAxisLockToggle( m_actions.yAxisLockToggle() );
+    m_moveCenterTabController.zAxisLockToggle( m_actions.zAxisLockToggle() );
 
     // override actions:
     m_moveCenterTabController.optionalOverrideLeftHandSpaceDrag(

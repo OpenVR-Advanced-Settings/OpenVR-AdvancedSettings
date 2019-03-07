@@ -170,6 +170,9 @@ public:
     void resetOffsets( bool resetOffsetsJustPressed );
     void snapTurnLeft( bool snapTurnLeftJustPressed );
     void snapTurnRight( bool snapTurnRightJustPressed );
+    void xAxisLockToggle( bool xAxisLockToggleJustPressed );
+    void yAxisLockToggle( bool yAxisLockToggleJustPressed );
+    void zAxisLockToggle( bool zAxisLockToggleJustPressed );
 
 public slots:
     int trackingUniverse() const;

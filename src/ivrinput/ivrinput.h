@@ -56,6 +56,9 @@ public:
     bool resetOffsets();
     bool snapTurnLeft();
     bool snapTurnRight();
+    bool xAxisLockToggle();
+    bool yAxisLockToggle();
+    bool zAxisLockToggle();
 
     bool pushToTalk();
 
@@ -104,6 +107,9 @@ private:
     Action m_resetOffsets;
     Action m_snapTurnLeft;
     Action m_snapTurnRight;
+    Action m_xAxisLockToggle;
+    Action m_yAxisLockToggle;
+    Action m_zAxisLockToggle;
 
     // Push To Talk
     Action m_pushToTalk;
@@ -146,6 +152,9 @@ namespace input_strings
     constexpr auto k_actionResetOffsets = "/actions/main/in/ResetOffsets";
     constexpr auto k_actionSnapTurnLeft = "/actions/main/in/SnapTurnLeft";
     constexpr auto k_actionSnapTurnRight = "/actions/main/in/SnapTurnRight";
+    constexpr auto k_actionXAxisLockToggle = "/actions/main/in/XAxisLockToggle";
+    constexpr auto k_actionYAxisLockToggle = "/actions/main/in/YAxisLockToggle";
+    constexpr auto k_actionZAxisLockToggle = "/actions/main/in/ZAxisLockToggle";
 
     constexpr auto k_actionPushToTalk = "/actions/main/in/PushToTalk";
 
