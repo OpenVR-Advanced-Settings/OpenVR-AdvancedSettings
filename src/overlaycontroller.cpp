@@ -135,8 +135,11 @@ OverlayController::OverlayController( bool desktopMode,
 
 	//init action handles
 
-	m_chaperoneTabController.setLeftHapticActionHandle(m_actions.getLeftHaptichandle());
-	m_chaperoneTabController.setRightHapticActionHandle(m_actions.getRightHaptichandle());
+	m_chaperoneTabController.setLeftHapticActionHandle(m_actions.leftHapticHandle());
+	m_chaperoneTabController.setRightHapticActionHandle(m_actions.rightHapticHandle());
+	m_chaperoneTabController.setLeftInputHandle(m_actions.leftInputHandle());
+	m_chaperoneTabController.setRighInputHandle(m_actions.rightInputHandle());
+
 
 
     // Set qml context

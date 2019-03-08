@@ -177,14 +177,14 @@ private:
 
 	vr::VRActionHandle_t m_rightActionHandle;
 	vr::VRActionHandle_t m_leftActionHandle;
-	vr::VRActionHandle_t m_proxSensor;
+	//vr::VRActionHandle_t m_proxSensor;
 	vr::VRInputValueHandle_t m_leftInputHandle;
 	vr::VRInputValueHandle_t m_rightInputHandle;
 
-	bool ChaperoneTabController::getProxData();
+	//bool ChaperoneTabController::getProxData();
 
 
-	void ChaperoneTabController::initHaptics();
+	//void ChaperoneTabController::initHaptics();
 
     std::vector<ChaperoneProfile> chaperoneProfiles;
 

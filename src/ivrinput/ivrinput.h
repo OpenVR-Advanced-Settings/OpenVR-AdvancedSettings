@@ -4,7 +4,7 @@
 #include "ivrinput_action.h"
 #include "ivrinput_manifest.h"
 #include "ivrinput_action_set.h"
-//#include "ivrinput_input.h"
+#include "ivrinput_input_source.h"
 
 namespace input
 {
@@ -42,8 +42,11 @@ public:
     bool pausePlaySong();
     bool stopSong();
 	bool proxIsActive();
-	vr::VRActionHandle_t getLeftHaptichandle();
-	vr::VRActionHandle_t getRightHaptichandle();
+	vr::VRActionHandle_t getLeftHapticActionhandle();
+	vr::VRActionHandle_t getRightHapticActionhandle();
+
+	vr::VRInputValueHandle_t getRightInputhandle();
+	vr::VRInputValueHandle_t getLeftInputhandle();
 
     // Destructor. There are no terminating calls for the IVRInput API, so it
     // is left blank.
@@ -80,6 +83,9 @@ private:
 	//haptic bindings
 	Action m_leftHaptic;
 	Action m_rightHaptic;
+
+	InputSource m_rightHand;
+	InputSource m_leftHande;
 };
 
 /*!
@@ -87,7 +93,7 @@ The IVRInput system is _very_ finnicky about strings matching and if they don't
 match there are usually no errors logged reflecting that. constexpr auto strings
 should be used to refer to all action manifest strings.
 */
-namespace input_strings
+namespace action_keys
 {
     constexpr auto k_actionNextTrack = "/actions/main/in/NextTrack";
     constexpr auto k_actionPreviousTrack = "/actions/main/in/PreviousTrack";
@@ -99,11 +105,23 @@ namespace input_strings
 
 	constexpr auto k_actionProxSensor = "/actions/main/in/ProxSensor";
 
-    constexpr auto k_setMain = "/actions/main";
-
-	constexpr auto k_inputSourceLeft = "/user/hand/left";
-	constexpr auto k_inputSourceRight = "/user/hand/right";
 
 } // namespace input_strings
+/*!
+Keys to get input source handles (things like hmd controllers etc.)
+*/
+namespace input_keys
+{
+	constexpr auto k_inputSourceLeft = "/user/hand/left";
+	constexpr auto k_inputSourceRight = "/user/hand/right";
+}// namespace input_strings
+
+/*!
+Keys for different action sets
+*/
+namespace action_sets 
+{
+	constexpr auto k_setMain = "/actions/main";
+}// namespace action_sets
 
 } // namespace input

@@ -42,7 +42,7 @@ void ChaperoneTabController::initStage1()
 	m_disableChaperone = settings->value("disableChaperone", false).toBool();
 	m_fadeDistanceRemembered = settings->value( "fadeDistanceRemembered", 0.5f ).toFloat();
     settings->endGroup();
-	initHaptics();
+	//initHaptics();
     reloadChaperoneProfiles();
     eventLoopTick( nullptr, 0.0f, 0.0f, 0.0f );
 }
@@ -958,7 +958,7 @@ Q_INVOKABLE QString
 }
 
 //TODO move to overlayController.cpp/IVRINPUT.cpp
-void ChaperoneTabController::initHaptics() {
+/*void ChaperoneTabController::initHaptics() {
 	//No built in enum name, possibly implement locally in future
 	auto vrInputError = vr::VRInput()->GetInputSourceHandle(input::input_strings::k_inputSourceLeft, &m_leftInputHandle);
 	
@@ -987,8 +987,9 @@ void ChaperoneTabController::initHaptics() {
 		LOG(ERROR) << "Prox Sensor action handle failed error code: " << vrInputError;
 		m_isHapticGood = false;
 	}
-}
+}*/
 
+/*
 bool ChaperoneTabController::getProxData()
 {
 	vr::InputDigitalActionData_t handleData = {};
@@ -1007,6 +1008,7 @@ bool ChaperoneTabController::getProxData()
 
 	return handleData.bState;
 }
+*/
 
 
 

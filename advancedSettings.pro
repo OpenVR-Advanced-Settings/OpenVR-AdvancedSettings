@@ -83,6 +83,7 @@ HEADERS += src/overlaycontroller.h \
     src/ivrinput/ivrinput_action.h \
     src/ivrinput/ivrinput_manifest.h \
     src/ivrinput/ivrinput_action_set.h \
+	src/ivrinput/ivrinput_input_source.h \
     src/ivrinput/ivrinput.h
 
 win32 {
