@@ -123,7 +123,7 @@ Wrong action names may not result in direct error messages, but just features
 mystically not working.
 */
 SteamIVRInput::SteamIVRInput()
-	: m_manifest(), m_mainSet(action_keys::k_setMain),
+	: m_manifest(), m_mainSet(action_sets::k_setMain),
 	m_nextTrack(action_keys::k_actionNextTrack, ActionType::Digital),
 	m_previousTrack(action_keys::k_actionPreviousTrack,
 		ActionType::Digital),
@@ -132,8 +132,8 @@ SteamIVRInput::SteamIVRInput()
 	m_stopTrack(action_keys::k_actionStopTrack, ActionType::Digital),
 	m_leftHaptic(action_keys::k_actionHapticsLeft, ActionType::Haptic),
 	m_rightHaptic(action_keys::k_actionHapticsRight, ActionType::Haptic),
-	m_rightInputHandle(input_keys::k_inputSourceRight),
-	m_leftInputHandle(input_keys::k_inputSourceLeft)
+	m_rightHand(input_keys::k_inputSourceRight),
+	m_leftHand(input_keys::k_inputSourceLeft)
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
     m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;
@@ -198,12 +198,18 @@ Returns the action handle of the Right Haptic Action
 vr::VRActionHandle_t SteamIVRInput::rightHapticActionHandle() {
 	return m_rightHaptic.handle();
 }
-//TODO
-vr::VRInputHandle_t SteamIVRInput::rightInputHandle() {
+
+/*!
+Returns the input handle of the Right hand
+*/
+vr::VRInputValueHandle_t SteamIVRInput::rightInputHandle() {
 	return m_rightHand.handle();
 }
 
-vr::VRInputHandle_t SteamIVRInput::leftInputHandle() {
+/*!
+Returns the input handle of the Left hand
+*/
+vr::VRInputValueHandle_t SteamIVRInput::leftInputHandle() {
 	return m_leftHand.handle();
 }
 

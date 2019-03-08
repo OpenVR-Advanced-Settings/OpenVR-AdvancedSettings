@@ -42,11 +42,11 @@ public:
     bool pausePlaySong();
     bool stopSong();
 	bool proxIsActive();
-	vr::VRActionHandle_t getLeftHapticActionhandle();
-	vr::VRActionHandle_t getRightHapticActionhandle();
+	vr::VRActionHandle_t leftHapticActionHandle();
+	vr::VRActionHandle_t rightHapticActionHandle();
 
-	vr::VRInputValueHandle_t getRightInputhandle();
-	vr::VRInputValueHandle_t getLeftInputhandle();
+	vr::VRInputValueHandle_t rightInputHandle();
+	vr::VRInputValueHandle_t leftInputHandle();
 
     // Destructor. There are no terminating calls for the IVRInput API, so it
     // is left blank.
@@ -78,14 +78,15 @@ private:
 	Action m_stopTrack;
 
 	//HMD bindings
-	Action m_proxSensor;
+	//Action m_proxSensor;
 
 	//haptic bindings
 	Action m_leftHaptic;
 	Action m_rightHaptic;
 
+	//input sources
 	InputSource m_rightHand;
-	InputSource m_leftHande;
+	InputSource m_leftHand;
 };
 
 /*!

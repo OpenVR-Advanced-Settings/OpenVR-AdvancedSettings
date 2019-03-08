@@ -135,10 +135,10 @@ OverlayController::OverlayController( bool desktopMode,
 
 	//init action handles
 
-	m_chaperoneTabController.setLeftHapticActionHandle(m_actions.leftHapticHandle());
-	m_chaperoneTabController.setRightHapticActionHandle(m_actions.rightHapticHandle());
+	m_chaperoneTabController.setLeftHapticActionHandle(m_actions.leftHapticActionHandle());
+	m_chaperoneTabController.setRightHapticActionHandle(m_actions.rightHapticActionHandle());
 	m_chaperoneTabController.setLeftInputHandle(m_actions.leftInputHandle());
-	m_chaperoneTabController.setRighInputHandle(m_actions.rightInputHandle());
+	m_chaperoneTabController.setRightInputHandle(m_actions.rightInputHandle());
 
 
 
@@ -507,7 +507,7 @@ void OverlayController::processInputBindings()
     {
         m_utilitiesTabController.sendMediaStopSong();
     }
-	LOG(INFO)<< "PROX SENSOR IS: " << m_actions.proxIsActive();
+	//LOG(INFO)<< "PROX SENSOR IS: " << m_actions.proxIsActive();
 }
 
 void OverlayController::OnTimeoutPumpEvents()

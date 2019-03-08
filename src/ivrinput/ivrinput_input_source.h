@@ -20,7 +20,6 @@ public:
             LOG( ERROR ) << "Error getting input handle for '" << inputSourceName
                          << "'. OpenVR Input Error: " << error;
         }
-		auto vrInputError = vr::VRInput()->GetInputSourceHandle(input::input_strings::k_inputSourceRight, &m_rightInputHandle);
 
     }
     /*!
@@ -38,7 +37,7 @@ public:
         return m_name;
     }
 private:
-    vr::VRActionHandle_t m_handle = 0;
+    vr::VRInputValueHandle_t m_handle = 0;
     const std::string m_name;
 };
 
