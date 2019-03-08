@@ -78,7 +78,8 @@ class ChaperoneTabController : public QObject
                     setPlaySpaceMarker NOTIFY playSpaceMarkerChanged )
     Q_PROPERTY( bool forceBounds READ forceBounds WRITE setForceBounds NOTIFY
                     forceBoundsChanged )
-	Q_PROPERTY( bool disableChaperone READ disableChaperone WRITE setDisableChaperone NOTIFY disableChaperoneChanged)
+    Q_PROPERTY( bool disableChaperone READ disableChaperone WRITE
+                    setDisableChaperone NOTIFY disableChaperoneChanged )
 
     Q_PROPERTY( bool chaperoneSwitchToBeginnerEnabled READ
                     isChaperoneSwitchToBeginnerEnabled WRITE
@@ -143,8 +144,8 @@ private:
     bool m_centerMarker = false;
     bool m_playSpaceMarker = false;
     bool m_forceBounds = false;
-	bool m_disableChaperone = false;
-	float m_fadeDistanceRemembered = 0.0f;
+    bool m_disableChaperone = false;
+    float m_fadeDistanceRemembered = 0.0f;
 
     bool m_enableChaperoneSwitchToBeginner = false;
     float m_chaperoneSwitchToBeginnerDistance = 0.5f;
@@ -172,19 +173,13 @@ private:
 
     unsigned settingsUpdateCounter = 0;
 
-	bool m_isHapticGood = true;
-	bool m_isHMDActive = false;
+    bool m_isHapticGood = true;
+    bool m_isHMDActive = false;
 
-	vr::VRActionHandle_t m_rightActionHandle;
-	vr::VRActionHandle_t m_leftActionHandle;
-	//vr::VRActionHandle_t m_proxSensor;
-	vr::VRInputValueHandle_t m_leftInputHandle;
-	vr::VRInputValueHandle_t m_rightInputHandle;
-
-	//bool ChaperoneTabController::getProxData();
-
-
-	//void ChaperoneTabController::initHaptics();
+    vr::VRActionHandle_t m_rightActionHandle;
+    vr::VRActionHandle_t m_leftActionHandle;
+    vr::VRInputValueHandle_t m_leftInputHandle;
+    vr::VRInputValueHandle_t m_rightInputHandle;
 
     std::vector<ChaperoneProfile> chaperoneProfiles;
 
@@ -206,12 +201,12 @@ public:
     bool centerMarker() const;
     bool playSpaceMarker() const;
     bool forceBounds() const;
-	bool disableChaperone() const;
+    bool disableChaperone() const;
 
-	void setRightHapticActionHandle(vr::VRActionHandle_t handle);
-	void setLeftHapticActionHandle(vr::VRActionHandle_t handle);
-	void setRightInputHandle(vr::VRInputValueHandle_t handle);
-	void setLeftInputHandle(vr::VRInputValueHandle_t handle);
+    void setRightHapticActionHandle( vr::VRActionHandle_t handle );
+    void setLeftHapticActionHandle( vr::VRActionHandle_t handle );
+    void setRightInputHandle( vr::VRInputValueHandle_t handle );
+    void setLeftInputHandle( vr::VRInputValueHandle_t handle );
 
     bool isChaperoneSwitchToBeginnerEnabled() const;
     float chaperoneSwitchToBeginnerDistance() const;
@@ -246,7 +241,7 @@ public slots:
     void setCenterMarker( bool value, bool notify = true );
     void setPlaySpaceMarker( bool value, bool notify = true );
     void setForceBounds( bool value, bool notify = true );
-	void setDisableChaperone(bool value, bool notify = true);
+    void setDisableChaperone( bool value, bool notify = true );
 
     void setChaperoneSwitchToBeginnerEnabled( bool value, bool notify = true );
     void setChaperoneSwitchToBeginnerDistance( float value,
@@ -294,7 +289,7 @@ signals:
     void centerMarkerChanged( bool value );
     void playSpaceMarkerChanged( bool value );
     void forceBoundsChanged( bool value );
-	void disableChaperoneChanged(bool value);
+    void disableChaperoneChanged( bool value );
 
     void chaperoneSwitchToBeginnerEnabledChanged( bool value );
     void chaperoneSwitchToBeginnerDistanceChanged( float value );

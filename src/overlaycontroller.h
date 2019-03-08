@@ -165,8 +165,6 @@ public:
     bool pollNextEvent( vr::VROverlayHandle_t ulOverlayHandle,
                         vr::VREvent_t* pEvent );
 
-
-
 public slots:
     void renderOverlay();
     void OnRenderRequest();

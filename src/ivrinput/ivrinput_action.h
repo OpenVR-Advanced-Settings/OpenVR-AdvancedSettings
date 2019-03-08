@@ -14,7 +14,7 @@ enum class ActionType
     Undefined,
     Digital,
     Analog,
-	Haptic,
+    Haptic,
 };
 
 /*!

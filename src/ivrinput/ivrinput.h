@@ -41,12 +41,12 @@ public:
     bool previousSong();
     bool pausePlaySong();
     bool stopSong();
-	bool proxIsActive();
-	vr::VRActionHandle_t leftHapticActionHandle();
-	vr::VRActionHandle_t rightHapticActionHandle();
+    bool proxIsActive();
+    vr::VRActionHandle_t leftHapticActionHandle();
+    vr::VRActionHandle_t rightHapticActionHandle();
 
-	vr::VRInputValueHandle_t rightInputHandle();
-	vr::VRInputValueHandle_t leftInputHandle();
+    vr::VRInputValueHandle_t rightInputHandle();
+    vr::VRInputValueHandle_t leftInputHandle();
 
     // Destructor. There are no terminating calls for the IVRInput API, so it
     // is left blank.
@@ -75,18 +75,15 @@ private:
     Action m_nextTrack;
     Action m_previousTrack;
     Action m_pausePlayTrack;
-	Action m_stopTrack;
+    Action m_stopTrack;
 
-	//HMD bindings
-	//Action m_proxSensor;
+    // haptic bindings
+    Action m_leftHaptic;
+    Action m_rightHaptic;
 
-	//haptic bindings
-	Action m_leftHaptic;
-	Action m_rightHaptic;
-
-	//input sources
-	InputSource m_rightHand;
-	InputSource m_leftHand;
+    // input sources
+    InputSource m_rightHand;
+    InputSource m_leftHand;
 };
 
 /*!
@@ -101,28 +98,27 @@ namespace action_keys
     constexpr auto k_actionPausePlayTrack = "/actions/main/in/PausePlayTrack";
     constexpr auto k_actionStopTrack = "/actions/main/in/StopTrack";
 
-	constexpr auto k_actionHapticsLeft = "/actions/main/out/HapticsLeft";
-	constexpr auto k_actionHapticsRight = "/actions/main/out/HapticsRight";
+    constexpr auto k_actionHapticsLeft = "/actions/main/out/HapticsLeft";
+    constexpr auto k_actionHapticsRight = "/actions/main/out/HapticsRight";
 
-	constexpr auto k_actionProxSensor = "/actions/main/in/ProxSensor";
+    constexpr auto k_actionProxSensor = "/actions/main/in/ProxSensor";
 
-
-} // namespace input_strings
+} // namespace action_keys
 /*!
 Keys to get input source handles (things like hmd controllers etc.)
 */
 namespace input_keys
 {
-	constexpr auto k_inputSourceLeft = "/user/hand/left";
-	constexpr auto k_inputSourceRight = "/user/hand/right";
-}// namespace input_strings
+    constexpr auto k_inputSourceLeft = "/user/hand/left";
+    constexpr auto k_inputSourceRight = "/user/hand/right";
+} // namespace input_keys
 
 /*!
 Keys for different action sets
 */
-namespace action_sets 
+namespace action_sets
 {
-	constexpr auto k_setMain = "/actions/main";
-}// namespace action_sets
+    constexpr auto k_setMain = "/actions/main";
+} // namespace action_sets
 
 } // namespace input

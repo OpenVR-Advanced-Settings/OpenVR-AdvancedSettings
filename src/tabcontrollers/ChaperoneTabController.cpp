@@ -39,10 +39,11 @@ void ChaperoneTabController::initStage1()
     m_chaperoneVelocityModifier
         = settings->value( "chaperoneVelocityModifier", 0.3f ).toFloat();
     m_chaperoneVelocityModifierCurrent = 1.0f;
-	m_disableChaperone = settings->value("disableChaperone", false).toBool();
-	m_fadeDistanceRemembered = settings->value( "fadeDistanceRemembered", 0.5f ).toFloat();
+    m_disableChaperone = settings->value( "disableChaperone", false ).toBool();
+    m_fadeDistanceRemembered
+        = settings->value( "fadeDistanceRemembered", 0.5f ).toFloat();
     settings->endGroup();
-	//initHaptics();
+    // initHaptics();
     reloadChaperoneProfiles();
     eventLoopTick( nullptr, 0.0f, 0.0f, 0.0f );
 }
@@ -356,7 +357,7 @@ void ChaperoneTabController::saveChaperoneProfiles()
     settings->endGroup();
 }
 
-void ChaperoneTabController::handleChaperoneWarnings( float distance)
+void ChaperoneTabController::handleChaperoneWarnings( float distance )
 {
     vr::VRControllerState_t hmdState;
     vr::VRSystem()->GetControllerState( vr::k_unTrackedDeviceIndex_Hmd,
@@ -408,8 +409,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
                 }
             }
         }
-        else if ( ( distance > activationDistance
-                    || !m_isHMDActive)
+        else if ( ( distance > activationDistance || !m_isHMDActive )
                   && m_chaperoneSwitchToBeginnerActive )
         {
             vr::EVRSettingsError vrSettingsError;
@@ -435,13 +435,12 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
 
     // Haptic Feedback
 
-
-    if ( m_enableChaperoneHapticFeedback)
+    if ( m_enableChaperoneHapticFeedback )
     {
         float activationDistance = m_chaperoneHapticFeedbackDistance
                                    * m_chaperoneVelocityModifierCurrent;
 
-        if ( distance <= activationDistance && m_isHMDActive)
+        if ( distance <= activationDistance && m_isHMDActive )
         {
             if ( !m_chaperoneHapticFeedbackActive )
             {
@@ -463,16 +462,29 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
                                       vr::TrackedControllerRole_RightHand );
                         while ( _this->m_chaperoneHapticFeedbackActive )
                         {
-							//AS it stands both controllers will vibrate regardless of which is closer to boundary
+                            // AS it stands both controllers will vibrate
+                            // regardless of which is closer to boundary
                             if ( leftIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
-								vr::VRInput()->TriggerHapticVibrationAction(m_leftActionHandle, 0.0f, 0.2f, 80.0f, 0.75f, m_leftInputHandle);
+                                vr::VRInput()->TriggerHapticVibrationAction(
+                                    m_leftActionHandle,
+                                    0.0f,
+                                    0.2f,
+                                    80.0f,
+                                    0.75f,
+                                    m_leftInputHandle );
                             }
                             if ( rightIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
-								vr::VRInput()->TriggerHapticVibrationAction(m_rightActionHandle, 0.0f, 0.2f, 80.0f, 0.75f, m_rightInputHandle);
+                                vr::VRInput()->TriggerHapticVibrationAction(
+                                    m_rightActionHandle,
+                                    0.0f,
+                                    0.2f,
+                                    80.0f,
+                                    0.75f,
+                                    m_rightInputHandle );
                             }
                             std::this_thread::sleep_for(
                                 std::chrono::milliseconds( 5 ) );
@@ -481,8 +493,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
                     this );
             }
         }
-        else if ( ( distance > activationDistance
-                    || !m_isHMDActive )
+        else if ( ( distance > activationDistance || !m_isHMDActive )
                   && m_chaperoneHapticFeedbackActive )
         {
             m_chaperoneHapticFeedbackActive = false;
@@ -492,12 +503,11 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
     // Alarm Sound
     if ( m_enableChaperoneAlarmSound )
     {
-		//LOG(WARNING) << "In alarm";
+        // LOG(WARNING) << "In alarm";
         float activationDistance = m_chaperoneAlarmSoundDistance
                                    * m_chaperoneVelocityModifierCurrent;
-        
-		if ( distance <= activationDistance
-             && m_isHMDActive )
+
+        if ( distance <= activationDistance && m_isHMDActive )
         {
             if ( !m_chaperoneAlarmSoundActive )
             {
@@ -519,8 +529,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance)
                 parent->setAlarm01SoundVolume( 1.0f );
             }
         }
-        else if ( ( distance > activationDistance
-                    || !m_isHMDActive )
+        else if ( ( distance > activationDistance || !m_isHMDActive )
                   && m_chaperoneAlarmSoundActive )
         {
             parent->cancelAlarm01Sound();
@@ -579,28 +588,31 @@ void ChaperoneTabController::eventLoopTick(
 
     if ( devicePoses )
     {
-		m_isHMDActive = false;
+        m_isHMDActive = false;
         std::lock_guard<std::recursive_mutex> lock(
             parent->chaperoneUtils().mutex() );
         auto minDistance = NAN;
         auto& poseHmd = devicePoses[vr::k_unTrackedDeviceIndex_Hmd];
 
-		//m_isHMDActive is true when prox sensor OR HMD is moving (~10 seconds to update from OVR)
-		// THIS IS A WORK-AROUND Until proper binding support/calls are made availble for prox sensor
-		if (vr::VRSystem()->GetTrackedDeviceActivityLevel(vr::k_unTrackedDeviceIndex_Hmd) == vr::k_EDeviceActivityLevel_UserInteraction) {
-			m_isHMDActive = true;
-		}
+        // m_isHMDActive is true when prox sensor OR HMD is moving (~10 seconds
+        // to update from OVR)
+        // THIS IS A WORK-AROUND Until proper binding support/calls are made
+        // availble for prox sensor
+        if ( vr::VRSystem()->GetTrackedDeviceActivityLevel(
+                 vr::k_unTrackedDeviceIndex_Hmd )
+             == vr::k_EDeviceActivityLevel_UserInteraction )
+        {
+            m_isHMDActive = true;
+        }
         if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK )
         {
-			
             auto distanceHmd = parent->chaperoneUtils().getDistanceToChaperone(
                 { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
                   poseHmd.mDeviceToAbsoluteTracking.m[1][3],
                   poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
             if ( !std::isnan( distanceHmd ) )
             {
-
                 minDistance = distanceHmd;
             }
         }
@@ -608,7 +620,6 @@ void ChaperoneTabController::eventLoopTick(
             vr::TrackedControllerRole_LeftHand );
         if ( leftIndex != vr::k_unTrackedDeviceIndexInvalid )
         {
-
             auto& poseLeft = devicePoses[leftIndex];
             if ( poseLeft.bPoseIsValid && poseLeft.bDeviceIsConnected
                  && poseLeft.eTrackingResult == vr::TrackingResult_Running_OK )
@@ -648,14 +659,15 @@ void ChaperoneTabController::eventLoopTick(
                 }
             }
         }
-        if( !std::isnan( minDistance ) )
+        if ( !std::isnan( minDistance ) )
         {
             handleChaperoneWarnings( minDistance );
-		}
-		else {
-			LOG(WARNING) << "Reloading Chaperone Data";
-			parent->chaperoneUtils().loadChaperoneData();
-		}
+        }
+        else
+        {
+            LOG( WARNING ) << "Reloading Chaperone Data";
+            parent->chaperoneUtils().loadChaperoneData();
+        }
     }
 
     if ( settingsUpdateCounter >= 50 )
@@ -735,12 +747,14 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
 {
     if ( m_visibility != value )
     {
-		if (value <= 0.5) {
-			m_visibility = 0.5;
-		}
-		else {
-			m_visibility = value;
-		}
+        if ( value <= 0.5 )
+        {
+            m_visibility = 0.5;
+        }
+        else
+        {
+            m_visibility = value;
+        }
         vr::VRSettings()->SetInt32( vr::k_pch_CollisionBounds_Section,
                                     vr::k_pch_CollisionBounds_ColorGammaA_Int32,
                                     255 * m_visibility );
@@ -911,7 +925,7 @@ bool ChaperoneTabController::isChaperoneAlarmSoundAdjustVolume() const
 
 bool ChaperoneTabController::disableChaperone() const
 {
-	return m_disableChaperone;
+    return m_disableChaperone;
 }
 
 float ChaperoneTabController::chaperoneAlarmSoundDistance() const
@@ -956,61 +970,6 @@ Q_INVOKABLE QString
         return QString::fromStdString( chaperoneProfiles[index].profileName );
     }
 }
-
-//TODO move to overlayController.cpp/IVRINPUT.cpp
-/*void ChaperoneTabController::initHaptics() {
-	//No built in enum name, possibly implement locally in future
-	auto vrInputError = vr::VRInput()->GetInputSourceHandle(input::input_strings::k_inputSourceLeft, &m_leftInputHandle);
-	
-	if (vrInputError != vr::VRInputError_None) {
-		LOG(ERROR) << "get input handle left failed error code: " << vrInputError;
-		m_isHapticGood = false;
-	}
-	vrInputError = vr::VRInput()->GetInputSourceHandle(input::input_strings::k_inputSourceRight, &m_rightInputHandle);
-	if (vrInputError != vr::VRInputError_None) {
-		LOG(ERROR) << "get input handle right failed error code: " << vrInputError;
-		m_isHapticGood = false;
-	}
-	vrInputError = vr::VRInput()->GetActionHandle(input::input_strings::k_actionHapticsLeft, &m_leftActionHandle);
-	if (vrInputError != vr::VRInputError_None) {
-		LOG(ERROR) << "get left action handle failed error code: " << vrInputError;
-		m_isHapticGood = false;
-	}
-	vrInputError = vr::VRInput()->GetActionHandle(input::input_strings::k_actionHapticsRight, &m_rightActionHandle);
-	if (vrInputError != vr::VRInputError_None) {
-		LOG(ERROR) << "get right action handle failed error code: " << vrInputError;
-		m_isHapticGood = false;
-	}
-	//Prox sensor init
-	vrInputError = vr::VRInput()->GetActionHandle(input::input_strings::k_actionProxSensor, &m_proxSensor);
-	if (vrInputError != vr::VRInputError_None) {
-		LOG(ERROR) << "Prox Sensor action handle failed error code: " << vrInputError;
-		m_isHapticGood = false;
-	}
-}*/
-
-/*
-bool ChaperoneTabController::getProxData()
-{
-	vr::InputDigitalActionData_t handleData = {};
-
-	auto error = vr::VRInput()->GetDigitalActionData(
-		m_proxSensor,
-		&handleData,
-		sizeof(handleData),
-		vr::k_ulInvalidInputValueHandle);
-	//LOG(INFO) << "PROX SENSOR IS: " << handleData.bState;
-	if (error != vr::EVRInputError::VRInputError_None)
-	{
-		LOG(ERROR) << "Error getting IVRInput Digital Action Data for prox sesnor "
-			<< ". SteamVR Error: " << error;
-	}
-
-	return handleData.bState;
-}
-*/
-
-
 
 void ChaperoneTabController::setForceBounds( bool value, bool notify )
 {
@@ -1308,30 +1267,32 @@ void ChaperoneTabController::setChaperoneVelocityModifier( float value,
     }
 }
 
-void ChaperoneTabController::setDisableChaperone(bool value, bool notify) {
-	if (m_disableChaperone != value) {
-		m_disableChaperone = value;
-		if (m_disableChaperone) {
-			m_fadeDistanceRemembered = m_fadeDistance;
-			setFadeDistance(0.0f, true);
-		}
-		else {
-			setFadeDistance(m_fadeDistanceRemembered, true);
-		}
-		auto settings = OverlayController::appSettings();
-		settings->beginGroup("chaperoneSettings");
-		settings->setValue("fadeDistanceRemembered", m_fadeDistanceRemembered);
-		settings->setValue("disableChaperone",
-				m_disableChaperone);
-		settings->endGroup();
-		settings->sync();
-		if (notify)
-		{
-			emit disableChaperoneChanged(
-				m_disableChaperone);
-		}
-
-	}
+void ChaperoneTabController::setDisableChaperone( bool value, bool notify )
+{
+    if ( m_disableChaperone != value )
+    {
+        m_disableChaperone = value;
+        if ( m_disableChaperone )
+        {
+            m_fadeDistanceRemembered = m_fadeDistance;
+            setFadeDistance( 0.0f, true );
+        }
+        else
+        {
+            setFadeDistance( m_fadeDistanceRemembered, true );
+        }
+        auto settings = OverlayController::appSettings();
+        settings->beginGroup( "chaperoneSettings" );
+        settings->setValue( "fadeDistanceRemembered",
+                            m_fadeDistanceRemembered );
+        settings->setValue( "disableChaperone", m_disableChaperone );
+        settings->endGroup();
+        settings->sync();
+        if ( notify )
+        {
+            emit disableChaperoneChanged( m_disableChaperone );
+        }
+    }
 }
 
 void ChaperoneTabController::flipOrientation()
@@ -1722,18 +1683,25 @@ void ChaperoneTabController::reset()
     settingsUpdateCounter = 999; // Easiest way to get default values
 }
 
-
-void ChaperoneTabController::setRightHapticActionHandle(vr::VRActionHandle_t handle) {
-	m_rightActionHandle = handle;
+void ChaperoneTabController::setRightHapticActionHandle(
+    vr::VRActionHandle_t handle )
+{
+    m_rightActionHandle = handle;
 }
-void ChaperoneTabController::setLeftHapticActionHandle(vr::VRActionHandle_t handle) {
-	m_leftActionHandle = handle;
+void ChaperoneTabController::setLeftHapticActionHandle(
+    vr::VRActionHandle_t handle )
+{
+    m_leftActionHandle = handle;
 }
-void ChaperoneTabController::setRightInputHandle(vr::VRInputValueHandle_t handle) {
-	m_rightInputHandle = handle;
+void ChaperoneTabController::setRightInputHandle(
+    vr::VRInputValueHandle_t handle )
+{
+    m_rightInputHandle = handle;
 }
-void ChaperoneTabController::setLeftInputHandle(vr::VRInputValueHandle_t handle) {
-	m_leftInputHandle = handle;
+void ChaperoneTabController::setLeftInputHandle(
+    vr::VRInputValueHandle_t handle )
+{
+    m_leftInputHandle = handle;
 }
 
 void ChaperoneTabController::shutdown()

@@ -119,7 +119,6 @@ OverlayController::OverlayController( bool desktopMode,
         throw std::runtime_error( std::string( "No Overlay interface" ) );
     }
 
-
     // Init controllers
     m_steamVRTabController.initStage1();
     m_chaperoneTabController.initStage1();
@@ -133,14 +132,15 @@ OverlayController::OverlayController( bool desktopMode,
     m_utilitiesTabController.initStage1();
     m_accessibilityTabController.initStage1();
 
-	//init action handles
+    // init action handles
 
-	m_chaperoneTabController.setLeftHapticActionHandle(m_actions.leftHapticActionHandle());
-	m_chaperoneTabController.setRightHapticActionHandle(m_actions.rightHapticActionHandle());
-	m_chaperoneTabController.setLeftInputHandle(m_actions.leftInputHandle());
-	m_chaperoneTabController.setRightInputHandle(m_actions.rightInputHandle());
-
-
+    m_chaperoneTabController.setLeftHapticActionHandle(
+        m_actions.leftHapticActionHandle() );
+    m_chaperoneTabController.setRightHapticActionHandle(
+        m_actions.rightHapticActionHandle() );
+    m_chaperoneTabController.setLeftInputHandle( m_actions.leftInputHandle() );
+    m_chaperoneTabController.setRightInputHandle(
+        m_actions.rightInputHandle() );
 
     // Set qml context
     qmlEngine.rootContext()->setContextProperty( "applicationVersion",
@@ -507,7 +507,6 @@ void OverlayController::processInputBindings()
     {
         m_utilitiesTabController.sendMediaStopSong();
     }
-	//LOG(INFO)<< "PROX SENSOR IS: " << m_actions.proxIsActive();
 }
 
 void OverlayController::OnTimeoutPumpEvents()
