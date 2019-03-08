@@ -607,7 +607,7 @@ void MoveCenterTabController::resetHmdYawTotal()
     m_hmdYawTotal = 0.0;
 }
 
-void MoveCenterTabController::clampVelocity( double velocity[3] )
+void MoveCenterTabController::clampVelocity( double* velocity )
 {
     for ( int i = 0; i < 3; i++ )
     {

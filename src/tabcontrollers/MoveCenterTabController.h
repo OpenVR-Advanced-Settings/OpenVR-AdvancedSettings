@@ -126,7 +126,7 @@ private:
                          double angle );
     void updateHandTurn( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateGravity( double secondsSinceLastTick, double angle );
-    void clampVelocity( double velocity[3] );
+    void clampVelocity( double* velocity );
 
 public:
     void initStage1();
