@@ -1587,7 +1587,7 @@ void MoveCenterTabController::updateGravity( double secondsSinceLastTick,
              >= 0 )
         {
             // get ratio of how much from y velocity applied to overcome y
-            // offset and get down to ground.
+            // offset and get down to ground
             double ratioVelocityScaledByTouchdown
                 = 1
                   - ( ( static_cast<double>( m_offsetY )
