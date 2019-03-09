@@ -21,10 +21,6 @@ void rotateCoordinates( double coordinates[3], double angle )
 // application namespace
 namespace advsettings
 {
-using std::chrono::duration_cast;
-using std::chrono::milliseconds;
-typedef std::chrono::system_clock clock;
-
 void MoveCenterTabController::initStage1()
 {
     setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
@@ -88,6 +84,7 @@ void MoveCenterTabController::initStage1()
         m_lockZToggle = value.toBool();
     }
     settings->endGroup();
+    m_lastUpdateTimePoint = std::chrono::steady_clock::now();
 }
 
 void MoveCenterTabController::initStage2( OverlayController* var_parent,
@@ -608,6 +605,18 @@ double MoveCenterTabController::getHmdYawTotal()
 void MoveCenterTabController::resetHmdYawTotal()
 {
     m_hmdYawTotal = 0.0;
+}
+
+void MoveCenterTabController::clampVelocity( double* velocity )
+{
+    for ( int i = 0; i < 3; i++ )
+    {
+        // too fast! clamp to terminal velocity while preserving +/- sign
+        if ( std::abs( velocity[i] ) >= k_terminalVelocity_mps )
+        {
+            velocity[i] = copysign( k_terminalVelocity_mps, velocity[i] );
+        }
+    }
 }
 
 // START of drag bindings:
@@ -1160,12 +1169,19 @@ void MoveCenterTabController::optionalOverrideRightHandSpaceTurn(
 
 void MoveCenterTabController::gravityToggle( bool gravityToggleJustPressed )
 {
-    // temp stuff for compliner warnings
     if ( !gravityToggleJustPressed )
     {
         return;
     }
-    // TODO STUFF
+
+    if ( !m_gravityActive )
+    {
+        m_gravityActive = true;
+    }
+    else
+    {
+        m_gravityActive = false;
+    }
 }
 
 void MoveCenterTabController::heightToggle( bool heightToggleJustPressed )
@@ -1232,6 +1248,57 @@ void MoveCenterTabController::snapTurnRight( bool snapTurnRightJustPressed )
     setRotation( newRotationAngleDeg );
 }
 
+void MoveCenterTabController::xAxisLockToggle( bool xAxisLockToggleJustPressed )
+{
+    if ( !xAxisLockToggleJustPressed )
+    {
+        return;
+    }
+
+    if ( !m_lockXToggle )
+    {
+        setLockX( true );
+    }
+    else
+    {
+        setLockX( false );
+    }
+}
+
+void MoveCenterTabController::yAxisLockToggle( bool yAxisLockToggleJustPressed )
+{
+    if ( !yAxisLockToggleJustPressed )
+    {
+        return;
+    }
+
+    if ( !m_lockYToggle )
+    {
+        setLockY( true );
+    }
+    else
+    {
+        setLockY( false );
+    }
+}
+
+void MoveCenterTabController::zAxisLockToggle( bool zAxisLockToggleJustPressed )
+{
+    if ( !zAxisLockToggleJustPressed )
+    {
+        return;
+    }
+
+    if ( !m_lockZToggle )
+    {
+        setLockZ( true );
+    }
+    else
+    {
+        setLockZ( false );
+    }
+}
+
 // END of other bindings
 
 void MoveCenterTabController::updateHmdRotationCounter(
@@ -1284,6 +1351,7 @@ void MoveCenterTabController::updateHmdRotationCounter(
 
 void MoveCenterTabController::updateHandDrag(
     vr::TrackedDevicePose_t* devicePoses,
+    double secondsSinceLastTick,
     double angle )
 {
     auto moveHandId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
@@ -1350,6 +1418,10 @@ void MoveCenterTabController::updateHandDrag(
         {
             m_offsetZ += static_cast<float>( diff[2] );
         }
+
+        m_velocity[0] = diff[0] / secondsSinceLastTick;
+        m_velocity[1] = diff[1] / secondsSinceLastTick;
+        m_velocity[2] = diff[2] / secondsSinceLastTick;
 
         rotateCoordinates( diff, angle );
 
@@ -1471,6 +1543,145 @@ void MoveCenterTabController::updateHandTurn(
     m_lastRotateHand = m_activeTurnHand;
 }
 
+void MoveCenterTabController::updateGravity( double secondsSinceLastTick,
+                                             double angle )
+{
+    // prevent velocity underflow
+    if ( std::isnan( m_velocity[0] ) )
+    {
+        m_velocity[0] = 0.0;
+    }
+    if ( std::isnan( m_velocity[1] ) )
+    {
+        m_velocity[1] = 0.0;
+    }
+    if ( std::isnan( m_velocity[2] ) )
+    {
+        m_velocity[2] = 0.0;
+    }
+
+    // clamp to terminal velocity
+    clampVelocity( m_velocity );
+
+    // make axis lock checkboxes lock velocity on that axis
+    if ( m_lockXToggle )
+    {
+        m_velocity[0] = 0.0;
+    }
+    if ( m_lockYToggle )
+    {
+        m_velocity[1] = 0.0;
+    }
+    if ( m_lockZToggle )
+    {
+        m_velocity[2] = 0.0;
+    }
+
+    // are we falling?
+    // note: up is negative y
+    if ( m_offsetY < 0 )
+    {
+        // check if we're about to land
+        if ( m_offsetY
+                 + static_cast<float>( m_velocity[1] * secondsSinceLastTick )
+             >= 0 )
+        {
+            // get ratio of how much from y velocity applied to overcome y
+            // offset and get down to ground
+            double ratioVelocityScaledByTouchdown
+                = 1
+                  - ( ( static_cast<double>( m_offsetY )
+                        + ( m_velocity[1] * secondsSinceLastTick ) )
+                      / ( m_velocity[1] * secondsSinceLastTick ) );
+            // apply that ratio to X and Z velocties
+            m_velocity[0] *= ratioVelocityScaledByTouchdown;
+            m_velocity[2] *= ratioVelocityScaledByTouchdown;
+
+            // get our final offset for touchdown in unrotated coordinates
+            double touchdownDiffForUnrotation[3]
+                = { ( m_velocity[0] * secondsSinceLastTick ),
+                    static_cast<double>( 0 - m_offsetY ),
+                    ( m_velocity[2] * secondsSinceLastTick ) };
+            rotateCoordinates( touchdownDiffForUnrotation, angle );
+
+            // done with rotation so down-cast to float for openvr format
+            float unrotatedTouchdownDiffFloat[3]
+                = { static_cast<float>( touchdownDiffForUnrotation[0] ),
+                    0 - m_offsetY,
+                    static_cast<float>( touchdownDiffForUnrotation[2] ) };
+
+            parent->AddOffsetToUniverseCenter(
+                vr::TrackingUniverseOrigin( m_trackingUniverse ),
+                unrotatedTouchdownDiffFloat,
+                m_adjustChaperone );
+
+            // update ui values
+            m_offsetX
+                += static_cast<float>( m_velocity[0] * secondsSinceLastTick );
+            m_offsetY = 0.0f;
+            m_offsetZ
+                += static_cast<float>( m_velocity[2] * secondsSinceLastTick );
+            emit offsetXChanged( m_offsetX );
+            emit offsetYChanged( m_offsetY );
+            emit offsetZChanged( m_offsetZ );
+        }
+
+        // otherwise we're still falling
+        else
+        {
+            // apply offset from velocity
+            double velocityOffsetForUnrotation[3]
+                = { m_velocity[0] * secondsSinceLastTick,
+                    m_velocity[1] * secondsSinceLastTick,
+                    m_velocity[2] * secondsSinceLastTick };
+            rotateCoordinates( velocityOffsetForUnrotation, angle );
+            // done with rotation so down-cast to float for openvr format
+            float unrotatedVelocityOffsetFloat[3]
+                = { static_cast<float>( velocityOffsetForUnrotation[0] ),
+                    static_cast<float>( velocityOffsetForUnrotation[1] ),
+                    static_cast<float>( velocityOffsetForUnrotation[2] ) };
+            parent->AddOffsetToUniverseCenter(
+                vr::TrackingUniverseOrigin( m_trackingUniverse ),
+                unrotatedVelocityOffsetFloat,
+                m_adjustChaperone );
+
+            // update ui values
+            m_offsetX
+                += static_cast<float>( m_velocity[0] * secondsSinceLastTick );
+            m_offsetY
+                += static_cast<float>( m_velocity[1] * secondsSinceLastTick );
+            m_offsetZ
+                += static_cast<float>( m_velocity[2] * secondsSinceLastTick );
+            emit offsetXChanged( m_offsetX );
+            emit offsetYChanged( m_offsetY );
+            emit offsetZChanged( m_offsetZ );
+
+            // accelerate downward velocity for the next update
+            // note: downward is positive y
+            m_velocity[1] = m_velocity[1] + ( 9.8 * secondsSinceLastTick );
+            return;
+        }
+    }
+    // check if we're underground and force us to ground level.
+    // note: downward is positive y
+    if ( m_offsetY > 0 )
+    {
+        parent->AddOffsetToUniverseCenter(
+            vr::TrackingUniverseOrigin( m_trackingUniverse ),
+            1,
+            0 - m_offsetY,
+            m_adjustChaperone );
+
+        // update ui values
+        m_offsetY = 0.0f;
+        emit offsetYChanged( m_offsetY );
+    }
+    // Touchdown! We've landed, velocity set to 0.
+    m_velocity[0] = 0.0;
+    m_velocity[1] = 0.0;
+    m_velocity[2] = 0.0;
+}
+
 void MoveCenterTabController::eventLoopTick(
     vr::ETrackingUniverseOrigin universe,
     vr::TrackedDevicePose_t* devicePoses )
@@ -1505,13 +1716,19 @@ void MoveCenterTabController::eventLoopTick(
         m_hmdRotationStatsUpdateCounter++;
     }
 
-    // Smooth drag motion can cause sim-sickness so we check if the user wants
-    // to skip frames to reduce vection. We use the factor squared because of
-    // logarithmic human perception.
+    // secondsSinceLastTick will usually have a value around 0.011
+    double secondsSinceLastTick
+        = std::chrono::duration<double>( std::chrono::steady_clock::now()
+                                         - m_lastUpdateTimePoint )
+              .count();
+
+    // Smooth drag motion can cause sim-sickness so we check if the user
+    // wants to skip frames to reduce vection. We use the factor squared
+    // because of logarithmic human perception.
     if ( m_dragComfortFrameSkipCounter
          >= ( m_dragComfortFactor * m_dragComfortFactor ) )
     {
-        updateHandDrag( devicePoses, angle );
+        updateHandDrag( devicePoses, secondsSinceLastTick, angle );
         m_dragComfortFrameSkipCounter = 0;
     }
     else
@@ -1532,5 +1749,12 @@ void MoveCenterTabController::eventLoopTick(
     {
         m_turnComfortFrameSkipCounter++;
     }
+
+    if ( m_gravityActive
+         && m_activeDragHand == vr::TrackedControllerRole_Invalid )
+    {
+        updateGravity( secondsSinceLastTick, angle );
+    }
+    m_lastUpdateTimePoint = std::chrono::steady_clock::now();
 }
 } // namespace advsettings

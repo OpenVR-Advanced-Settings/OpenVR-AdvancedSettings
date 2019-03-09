@@ -102,6 +102,21 @@
       "type": "boolean"
     },
     {
+      "name": "/actions/main/in/XAxisLockToggle",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/YAxisLockToggle",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/ZAxisLockToggle",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
       "name": "/actions/main/in/PushToTalk",
       "requirement": "optional",
       "type": "boolean"
@@ -138,6 +153,9 @@
         "/actions/main/in/ResetOffsets" : "Reset Offsets",
         "/actions/main/in/SnapTurnLeft" : "Snap-Turn Left",
         "/actions/main/in/SnapTurnRight" : "Snap-Turn Right",
+        "/actions/main/in/XAxisLockToggle" : "X-Axis Lock Toggle",
+        "/actions/main/in/YAxisLockToggle" : "Y-Axis Lock Toggle",
+        "/actions/main/in/ZAxisLockToggle" : "Z-Axis Lock Toggle",
 
         "/actions/main/in/PushToTalk" : "Push To Talk"
     }
