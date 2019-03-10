@@ -10,7 +10,6 @@
  >   * [Standalone](#standalone)
  >   * [Bindings](#bindings)
  >   * [Command Line Arguments](#command_line_arguments)
- >   * [Logging Config](#logging_config)
  >   * [Preview Builds](#preview_builds)
  > * [Documentation](#documentation)
  >   * [Top Page](#top_page)
@@ -81,13 +80,7 @@ To upgrade an existing installation first stop SteamVR and delete the old applic
 <a name="bindings"></a>
 ## Bindings
 
-Advanced Settings supports the OpenVR IVRInput API. In order to make the bindings interface visible, change the `matzman666.AdvancedSettings.vrappconfig` in `C:\Program Files (x86)\Steam\config\vrappconfig` to have a `last_launch_time` close to the current date (in [Unix time](https://en.wikipedia.org/wiki/Unix_time)). If in doubt, try using the value from [this](https://time.is/Unix_time_now) site. Running the application normally will now make it show up in the bindings interface.
-
-Alternatively, if the above doesn't work, run the `bindingsinterface.bat` file from the install directory. After you're done configuring your bindings, close SteamVR and start it up again. You are now using your new bindings. Advanced Settings will not show up in the bindings menu unless you're actively running the application with `bindingsinterface.bat`. Advanced Settings will not work normally while running with `bindingsinterface.bat`.
-
-The above two solutions are workarounds to a bug in the OpenVR API.
-
-After doing one of the above workarounds, when SteamVR starts click the menu -> Settings -> Controller Binding. You can also visit [this](127.0.0.1:8998/dashboard/controllerbinding.html) site in your internet browser. It's the same as the built in SteamVR bindings menu. SteamVR must be running for it to work.
+After SteamVR beta 1.3.1 the bindings for Advanced Settings will show up in the bindings menu.
 
 By default no buttons are bound.
 
@@ -106,29 +99,20 @@ The following actions currently exist:
 
 The application (`AdvancedSettings.exe`) can be run with the following optional arguments:
 
-`"-desktop"`: Creates a settings window on the desktop, but not in VR. Running `startdesktopmode.bat` in the install directory has the same effect.
+`"--desktop-mode"`: Creates a settings window on the desktop, but not in VR. Running `startdesktopmode.bat` in the install directory has the same effect.
 
-`"-nosound"`: Forces sound effects off.
+`"--force-no-sound"`: Forces sound effects off.
 
-`"-nomanifest"`: Forces not using a `.vrmanifest`.
+`"--force-no-manifest"`: Forces not using a `.vrmanifest`.
 
-`"-installmanifest"`: Force installs the `.vrmanifest` and adds the application to autostart. If you're having issues with autostart not working try running the program once with this set. The program will exit early when this flag is set.
+`"--force-install-manifest"`: Force installs the `.vrmanifest` and adds the application to autostart. If you're having issues with autostart not working try running the program once with this set. The program will exit early when this flag is set.
 
-`"-removemanifest"`: Force uninstalls the `.vrmanifest`. This should be done every time the application is uninstalled. On Windows it is automatically done by the uninstaller. The program will exit early when this flag is set.
-
-`"-bindingsinterface"`: Makes Advanced Settings show up in the SteamVR bindings interface. This is necessary for binding keys to actions. This is the same as running `bindingsinterface.bat` from the executable directory. The program will not exit when this is set. No normal functionality is available except using the bindings interface. Bindings set with this active will be available when this isn't active.
-
-In addition, the application can receive the command line arguments from the [Easylogging++ library](https://github.com/zuhd-org/easyloggingpp#application-arguments).
-
-<a name="logging_config"></a>
-## Logging Config
-
-The logging output of the [Easylogging++ library](https://github.com/zuhd-org/easyloggingpp#application-arguments) can be customized by placing a file called `logging.conf` in the directory of the binary. This should be considered for advanced users only and it is not recommended.
+`"--force-remove-manifest"`: Force uninstalls the `.vrmanifest`. This should be done every time the application is uninstalled. On Windows it is automatically done by the uninstaller. The program will exit early when this flag is set.
 
 <a name="preview_builds"></a>
 ## Preview builds
 
-If you want to try latest and greatest unreleased features, you can download latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master). The Linux CI does not provide binary artifacts.
+If you want to try latest and greatest unreleased features, you can download the latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master). The Linux CI does not provide binary artifacts.
 
 These version are not stable and this should be considered for advanced users only.
 
