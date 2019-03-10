@@ -38,7 +38,7 @@
 #include "tabcontrollers/ReviveTabController.h"
 #include "tabcontrollers/UtilitiesTabController.h"
 
-#include "ivrinput/ivrinput.h"
+#include "openvr/ivrinput.h"
 
 // application namespace
 namespace advsettings

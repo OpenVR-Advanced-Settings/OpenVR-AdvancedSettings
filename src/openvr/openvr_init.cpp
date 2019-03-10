@@ -3,7 +3,7 @@
 #include <QMessageBox>
 #include "openvr_init.h"
 #include <easylogging++.h>
-#include "../ivrinput/ivrinput_manifest.h"
+#include "../openvr/ivrinput_manifest.h"
 
 namespace openvr_init
 {
