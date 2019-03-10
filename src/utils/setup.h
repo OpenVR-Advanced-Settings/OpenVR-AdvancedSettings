@@ -10,7 +10,7 @@
 #include <openvr.h>
 #include <iostream>
 #include <easylogging++.h>
-#include "../overlaycontroller/openvr_init.h"
+#include "../openvr/openvr_init.h"
 
 enum ReturnErrorCode
 {

@@ -24,7 +24,7 @@
 #include <memory>
 #include <easylogging++.h>
 
-#include "overlaycontroller/openvr_init.h"
+#include "openvr/openvr_init.h"
 
 #include "utils/ChaperoneUtils.h"
 
