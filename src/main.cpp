@@ -6,11 +6,6 @@ int main( int argc, char* argv[] )
 {
     setUpLogging( argc, argv );
 
-    // QCoreApplication (QApplication inherits it.) can parse the args from
-    // argc and argv. We don't use this since it's relatively slow and we
-    // need the args before the main Qt stuff happens. If the arg parsing
-    // needs of the program grow it could be useful to utilize the Qt arg
-    // parsing.
     MyQApplication mainEventLoop( argc, argv );
     mainEventLoop.setOrganizationName(
         advsettings::OverlayController::applicationOrganizationName );
@@ -31,8 +26,6 @@ int main( int argc, char* argv[] )
     if ( commandLineArgs.forceInstallManifest
          || commandLineArgs.forceRemoveManifest )
     {
-        // The function does not return, it exits inside the function
-        // with an appropriate exit code.
         manifest::handleManifests( commandLineArgs.forceInstallManifest,
                                    commandLineArgs.forceRemoveManifest );
     }
@@ -42,8 +35,6 @@ int main( int argc, char* argv[] )
 
     try
     {
-        // QSettings contains a platform independant way of storing settings in
-        // an .ini file.
         QSettings appSettings( QSettings::IniFormat,
                                QSettings::UserScope,
                                mainEventLoop.organizationName(),
@@ -52,11 +43,8 @@ int main( int argc, char* argv[] )
         LOG( INFO ) << "Settings File: "
                     << appSettings.fileName().toStdString();
 
-        // The QML Engine is necessary for instantiating QML files.
         QQmlEngine qmlEngine;
 
-        // The OverlayController handles the majority of the application specfic
-        // things. It contains all the other tabs.
         advsettings::OverlayController controller( commandLineArgs.desktopMode,
                                                    commandLineArgs.forceNoSound,
                                                    qmlEngine );
@@ -94,7 +82,6 @@ int main( int argc, char* argv[] )
             }
         }
 
-        // Creates an identical settings menu on the desktop as well as in VR.
         if ( commandLineArgs.desktopMode )
         {
             auto m_pWindow = new QQuickWindow();
