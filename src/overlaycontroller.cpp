@@ -33,10 +33,6 @@ OverlayController::OverlayController( bool desktopMode,
                                       QQmlEngine& qmlEngine )
     : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ), m_actions()
 {
-    // Despite arguably being OpenVR init code, the call is still here because
-    // the TabController uses this directly. Offering it through OpenVR_Init
-    // might be an option, but it might scope creep OpenVR_Init which currently
-    // doesn't contain any member variables.
     m_runtimePathUrl = QUrl::fromLocalFile( vr::VR_RuntimePath() );
     LOG( INFO ) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
