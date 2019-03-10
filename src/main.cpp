@@ -4,7 +4,7 @@ INITIALIZE_EASYLOGGINGPP
 
 int main( int argc, char* argv[] )
 {
-    setUpLogging( argc, argv );
+    setUpLogging();
 
     MyQApplication mainEventLoop( argc, argv );
     mainEventLoop.setOrganizationName(
