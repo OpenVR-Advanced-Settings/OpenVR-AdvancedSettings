@@ -328,9 +328,7 @@ void reinstallApplicationManifest( const QString manifestPath )
 }
 } // namespace manifest
 
-// Sets up the logging library and outputs startup logging data.
-// argc and argv are necessary for the START_EASYLOGGINGPP() call.
-void setUpLogging( int argc, char* argv[] )
+void setUpLogging()
 {
     constexpr auto logConfigDefault
         = "* GLOBAL:\n"
@@ -345,29 +343,14 @@ void setUpLogging( int argc, char* argv[] )
           "* DEBUG:\n"
           "	ENABLED = false\n";
 
-    // This allows easylogging++ to parse command line arguments.
-    // For a full list go here
-    // https://github.com/zuhd-org/easyloggingpp#application-arguments
-    // The parsed args are mostly setting the verbosity level or setting the
-    // conf file.
-    START_EASYLOGGINGPP( argc, argv );
+    const int dummyArgc = 0;
+    const char** dummyArgv = {};
+    START_EASYLOGGINGPP( dummyArgc, dummyArgv );
 
     el::Loggers::addFlag( el::LoggingFlag::DisableApplicationAbortOnFatalLog );
 
-    // If there is a default logging config file present, use that. If not, use
-    // the default settings.
-    constexpr auto logConfigFileName = "logging.conf";
-    const auto logconfigfile
-        = QFileInfo( logConfigFileName ).absoluteFilePath();
     el::Configurations conf;
-    if ( QFile::exists( logconfigfile ) )
-    {
-        conf.parseFromFile( logconfigfile.toStdString() );
-    }
-    else
-    {
-        conf.parseFromText( logConfigDefault );
-    }
+    conf.parseFromText( logConfigDefault );
 
     // This places the log file in
     // Roaming/AppData/matzman666/OpenVRAdvancedSettings/AdvancedSettings.log.
@@ -392,7 +375,5 @@ void setUpLogging( int argc, char* argv[] )
     LOG( INFO ) << "Application started (Version "
                 << advsettings::OverlayController::applicationVersionString
                 << ")";
-    LOG( INFO ) << "Log Config: "
-                << QDir::toNativeSeparators( logconfigfile ).toStdString();
     LOG( INFO ) << "Log File: " << logFilePath;
 }
