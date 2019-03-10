@@ -117,16 +117,20 @@ private:
     unsigned m_dragComfortFrameSkipCounter = 0;
     unsigned m_turnComfortFrameSkipCounter = 0;
     double m_velocity[3] = { 0.0, 0.0, 0.0 };
-    std::chrono::steady_clock::time_point m_lastUpdateTimePoint;
+    std::chrono::steady_clock::time_point m_lastGravityUpdateTimePoint;
+    std::chrono::steady_clock::time_point m_lastDragUpdateTimePoint;
+    vr::HmdQuad_t* m_collisionBoundsForReset;
+    uint32_t m_collisionBoundsCountForReset = 0;
+    vr::HmdMatrix34_t m_universeCenterForReset;
 
     void updateHmdRotationCounter( vr::TrackedDevicePose_t hmdPose,
                                    double angle );
-    void updateHandDrag( vr::TrackedDevicePose_t* devicePoses,
-                         double secondsSinceLastTick,
-                         double angle );
+    void updateHandDrag( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateHandTurn( vr::TrackedDevicePose_t* devicePoses, double angle );
-    void updateGravity( double secondsSinceLastTick, double angle );
+    void updateGravity( double angle );
     void clampVelocity( double* velocity );
+    void updateChaperoneResetData();
+    void applyChaperoneResetData();
 
 public:
     void initStage1();
