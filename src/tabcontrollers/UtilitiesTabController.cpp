@@ -553,9 +553,9 @@ bool steamDesktopOverlayExists()
                                                &pOverlayHandle );
     if ( error != vr::VROverlayError_None )
     {
-        LOG( INFO ) << "Could not find overlay \"" << steamDesktopOverlaykey
-                    << "\": "
-                    << vr::VROverlay()->GetOverlayErrorNameFromEnum( error );
+        LOG( DEBUG ) << "Could not find overlay \"" << steamDesktopOverlaykey
+                     << "\": "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum( error );
         return false;
     }
     return true;
