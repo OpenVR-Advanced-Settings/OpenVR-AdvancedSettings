@@ -330,27 +330,32 @@ void reinstallApplicationManifest( const QString manifestPath )
 
 void setUpLogging()
 {
-    constexpr auto logConfigDefault
-        = "* GLOBAL:\n"
-          "	FORMAT = \"[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg\"\n"
-          "	FILENAME = \"AdvancedSettings.log\"\n"
-          "	ENABLED = true\n"
-          "	TO_FILE = true\n"
-          "	TO_STANDARD_OUTPUT = true\n"
-          "	MAX_LOG_FILE_SIZE = 2097152 ## 2MB\n"
-          "* TRACE:\n"
-          "	ENABLED = false\n"
-          "* DEBUG:\n"
-          "	ENABLED = false\n";
-
-    const int dummyArgc = 0;
-    const char** dummyArgv = {};
-    START_EASYLOGGINGPP( dummyArgc, dummyArgv );
-
     el::Loggers::addFlag( el::LoggingFlag::DisableApplicationAbortOnFatalLog );
 
     el::Configurations conf;
-    conf.parseFromText( logConfigDefault );
+    conf.setToDefault();
+
+    using el::ConfigurationType;
+    using el::Level;
+
+    conf.set( Level::Global,
+              ConfigurationType::Format,
+              "[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg" );
+    conf.set(
+        Level::Global, ConfigurationType::Filename, "AdvancedSettings.log" );
+
+    constexpr auto confEnabled = "true";
+    conf.set( Level::Global, ConfigurationType::Enabled, confEnabled );
+    conf.set( Level::Global, ConfigurationType::ToFile, confEnabled );
+    conf.set( Level::Global, ConfigurationType::ToStandardOutput, confEnabled );
+
+    constexpr auto TwoMegabytesInBytes = "2097152";
+    conf.set(
+        Level::Global, ConfigurationType::MaxLogFileSize, TwoMegabytesInBytes );
+
+    constexpr auto confDisabled = "false";
+    conf.set( Level::Trace, ConfigurationType::Enabled, confDisabled );
+    conf.set( Level::Debug, ConfigurationType::Enabled, confDisabled );
 
     // This places the log file in
     // Roaming/AppData/matzman666/OpenVRAdvancedSettings/AdvancedSettings.log.
