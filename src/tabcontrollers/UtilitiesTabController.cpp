@@ -546,36 +546,48 @@ void UtilitiesTabController::eventLoopTick()
     }
 }
 
-void UtilitiesTabController::setUpDesktopOverlay( float desktopWidthInMeters )
+bool steamDesktopOverlayExists()
 {
     vr::VROverlayHandle_t pOverlayHandle = 0;
     auto error = vr::VROverlay()->FindOverlay( steamDesktopOverlaykey,
                                                &pOverlayHandle );
     if ( error != vr::VROverlayError_None )
     {
-        m_steamDesktopOverlayAvailable = false;
         LOG( INFO ) << "Could not find overlay \"" << steamDesktopOverlaykey
                     << "\": "
                     << vr::VROverlay()->GetOverlayErrorNameFromEnum( error );
+        return false;
+    }
+    return true;
+}
 
-        std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
+void UtilitiesTabController::setUpDesktopOverlay( float desktopWidthInMeters )
+{
+    auto setOverlayVariablesSuccess = [this, desktopWidthInMeters]() {
+        m_steamDesktopOverlayAvailable = true;
+        setSteamDesktopOverlayWidth( desktopWidthInMeters, true, true );
+        LOG( INFO ) << "Found overlay \"" << steamDesktopOverlaykey << "\".";
+    };
 
-        error = vr::VROverlay()->FindOverlay( steamDesktopOverlaykey,
-                                              &pOverlayHandle );
-        if ( error != vr::VROverlayError_None )
+    if ( steamDesktopOverlayExists() )
+    {
+        setOverlayVariablesSuccess();
+        return;
+    }
+
+    constexpr auto timeBetweenAdditionalAttempts = std::chrono::seconds( 1 );
+    constexpr auto maxAttempts = 7;
+    for ( int attempts = 0; attempts < maxAttempts; ++attempts )
+    {
+        std::this_thread::sleep_for( timeBetweenAdditionalAttempts );
+        if ( steamDesktopOverlayExists() )
         {
-            LOG( INFO ) << "Could not find overlay \"" << steamDesktopOverlaykey
-                        << "\" after waiting: "
-                        << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                               error );
+            setOverlayVariablesSuccess();
             return;
         }
-        LOG( INFO ) << "Found overlay \"" << steamDesktopOverlaykey
-                    << "\" after waiting.";
     }
-    m_steamDesktopOverlayAvailable = true;
-
-    setSteamDesktopOverlayWidth( desktopWidthInMeters, true, true );
+    LOG( INFO ) << "Could not find overlay \"" << steamDesktopOverlaykey
+                << "\" after " << maxAttempts << " extra attempts.";
 }
 
 bool UtilitiesTabController::steamDesktopOverlayAvailable() const
