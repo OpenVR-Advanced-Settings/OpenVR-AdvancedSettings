@@ -10,7 +10,6 @@
  >   * [Standalone](#standalone)
  >   * [Bindings](#bindings)
  >   * [Command Line Arguments](#command_line_arguments)
- >   * [Logging Config](#logging_config)
  >   * [Preview Builds](#preview_builds)
  > * [Documentation](#documentation)
  >   * [Top Page](#top_page)
@@ -110,17 +109,10 @@ The application (`AdvancedSettings.exe`) can be run with the following optional 
 
 `"--force-remove-manifest"`: Force uninstalls the `.vrmanifest`. This should be done every time the application is uninstalled. On Windows it is automatically done by the uninstaller. The program will exit early when this flag is set.
 
-In addition, the application can receive the command line arguments from the [Easylogging++ library](https://github.com/zuhd-org/easyloggingpp#application-arguments).
-
-<a name="logging_config"></a>
-## Logging Config
-
-The logging output of the [Easylogging++ library](https://github.com/zuhd-org/easyloggingpp#application-arguments) can be customized by placing a file called `logging.conf` in the directory of the binary. This should be considered for advanced users only and it is not recommended.
-
 <a name="preview_builds"></a>
 ## Preview builds
 
-If you want to try latest and greatest unreleased features, you can download latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master). The Linux CI does not provide binary artifacts.
+If you want to try latest and greatest unreleased features, you can download the latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master). The Linux CI does not provide binary artifacts.
 
 These version are not stable and this should be considered for advanced users only.
 
