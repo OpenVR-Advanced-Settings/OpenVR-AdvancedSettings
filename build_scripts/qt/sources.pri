@@ -14,7 +14,8 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
     src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp \
     src/openvr/openvr_init.cpp \
-    src/openvr/ivrinput.cpp
+    src/openvr/ivrinput.cpp \
+    src/utils/setup.cpp
 
 HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/AudioTabController.h \
