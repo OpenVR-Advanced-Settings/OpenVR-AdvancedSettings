@@ -259,8 +259,8 @@ QString getBatteryIconPath( int batteryState )
 vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index )
 {
     vr::VROverlayHandle_t handle = vr::k_ulOverlayHandleInvalid;
-    std::string batteryKey = std::string( application_strings::applicationKey ) + ".battery."
-                             + std::to_string( index );
+    std::string batteryKey = std::string( application_strings::applicationKey )
+                             + ".battery." + std::to_string( index );
     vr::VROverlayError overlayError = vr::VROverlay()->CreateOverlay(
         batteryKey.c_str(), batteryKey.c_str(), &handle );
     if ( overlayError == vr::VROverlayError_None )
