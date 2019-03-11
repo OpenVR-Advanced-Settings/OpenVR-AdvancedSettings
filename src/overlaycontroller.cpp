@@ -138,7 +138,7 @@ OverlayController::OverlayController( bool desktopMode,
     // rewriting all QML to not be singletons, which should probably be done
     // whenever possible.
     static OverlayController* const objectAddress = this;
-    constexpr auto qmlSingletonImportName = "matzman666.advsettings";
+    constexpr auto qmlSingletonImportName = "ovras.advsettings";
     qmlRegisterSingletonType<OverlayController>(
         qmlSingletonImportName,
         1,

@@ -1,6 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
-import matzman666.advsettings 1.0
+import ovras.advsettings 1.0
 
 TextField {
 	property int keyBoardUID: 0
