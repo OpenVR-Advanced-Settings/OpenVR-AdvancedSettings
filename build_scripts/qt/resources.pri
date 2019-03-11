@@ -40,3 +40,5 @@ DISTFILES += \
     src/res/qml/audio_page/push_to_talk/* \
     src/res/qml/audio_page/profiles/* \
     src/res/qml/common/* \
+
+RC_FILE = src/res/icon.rc
