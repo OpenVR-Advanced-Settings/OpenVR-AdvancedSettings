@@ -272,18 +272,13 @@ void setUpLogging()
     conf.set( Level::Trace, ConfigurationType::Enabled, confDisabled );
     conf.set( Level::Debug, ConfigurationType::Enabled, confDisabled );
 
-    // This places the log file in
-    // Roaming/AppData/matzman666/OpenVRAdvancedSettings/AdvancedSettings.log.
-    // The log file placement has been broken since at least git tag "v2.7".
-    // It was being placed in the working dir of the executable.
-    // The change hasn't been documented anywhere, so it is likely that it was
-    // unintentional. This fixes the probable regression until a new path is
-    // decided on.
-    constexpr auto appDataFolders = "/matzman666/OpenVRAdvancedSettings";
-    const QString logFilePath = QDir( QStandardPaths::writableLocation(
-                                          QStandardPaths::AppDataLocation )
-                                      + appDataFolders )
-                                    .absoluteFilePath( "AdvancedSettings.log" );
+    const auto appDataLocation
+        = std::string( "/" ) + application_strings::applicationOrganizationName
+          + "/" + application_strings::applicationName;
+    const auto logFilePath = QDir( QStandardPaths::writableLocation(
+                                       QStandardPaths::AppDataLocation )
+                                   + appDataLocation.c_str() )
+                                 .absoluteFilePath( "AdvancedSettings.log" );
     conf.set( el::Level::Global,
               el::ConfigurationType::Filename,
               QDir::toNativeSeparators( logFilePath ).toStdString() );
