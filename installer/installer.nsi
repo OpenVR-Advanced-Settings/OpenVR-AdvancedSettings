@@ -13,6 +13,10 @@
         !define PROJECTDIR "..\"
         !define VERSION_STRING "2-8-0-dev"
 
+        
+    ;Installer icon
+    !define MUI_ICON "${PROJECTDIR}\src/res/img/icons/advicon256px.ico"
+    
 	;Name and file
 	Name "OpenVR Advanced Settings"
         OutFile "AdvancedSettings-${VERSION_STRING}-Installer.exe"
