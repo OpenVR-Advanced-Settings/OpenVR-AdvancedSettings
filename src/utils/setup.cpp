@@ -102,7 +102,7 @@ namespace manifest
 void enableApplicationAutostart()
 {
     const auto app_error = vr::VRApplications()->SetApplicationAutoLaunch(
-        advsettings::OverlayController::applicationKey, true );
+        application_strings::applicationKey, true );
     if ( app_error != vr::VRApplicationError_None )
     {
         throw std::runtime_error(
@@ -119,7 +119,7 @@ void enableApplicationAutostart()
 void installApplicationManifest( const QString manifestPath )
 {
     if ( vr::VRApplications()->IsApplicationInstalled(
-             advsettings::OverlayController::applicationKey ) )
+             application_strings::applicationKey ) )
     {
         // We don't want to disrupt applications that are already installed.
         return;
@@ -148,7 +148,7 @@ void removeApplicationManifest( const QString manifestPath )
     }
 
     if ( vr::VRApplications()->IsApplicationInstalled(
-             advsettings::OverlayController::applicationKey ) )
+             application_strings::applicationKey ) )
     {
         vr::VRApplications()->RemoveApplicationManifest(
             QDir::toNativeSeparators( manifestPath ).toStdString().c_str() );
@@ -166,14 +166,14 @@ void reinstallApplicationManifest( const QString manifestPath )
     }
 
     if ( vr::VRApplications()->IsApplicationInstalled(
-             advsettings::OverlayController::applicationKey ) )
+             application_strings::applicationKey ) )
     {
         // String size was arbitrarily chosen by original author.
         constexpr auto kStringSize = 1024;
         char oldApplicationWorkingDir[kStringSize] = { 0 };
         auto app_error = vr::VRApplicationError_None;
         vr::VRApplications()->GetApplicationPropertyString(
-            advsettings::OverlayController::applicationKey,
+            application_strings::applicationKey,
             vr::VRApplicationProperty_WorkingDirectory_String,
             oldApplicationWorkingDir,
             kStringSize,
@@ -293,7 +293,6 @@ void setUpLogging()
     el::Loggers::reconfigureAllLoggers( conf );
 
     LOG( INFO ) << "Application started (Version "
-                << advsettings::OverlayController::applicationVersionString
-                << ")";
+                << application_strings::applicationVersionString << ")";
     LOG( INFO ) << "Log File: " << logFilePath;
 }

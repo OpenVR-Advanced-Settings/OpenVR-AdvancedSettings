@@ -64,7 +64,7 @@ void AudioTabController::initStage2( OverlayController* var_parent,
     this->widget = var_widget;
 
     std::string notifKey
-        = std::string( OverlayController::applicationKey ) + ".pptnotification";
+        = std::string( application_strings::applicationKey ) + ".pptnotification";
 
     vr::VROverlayError overlayError = vr::VROverlay()->CreateOverlay(
         notifKey.c_str(), notifKey.c_str(), &m_ulNotificationOverlayHandle );

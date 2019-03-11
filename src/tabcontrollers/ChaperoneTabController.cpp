@@ -540,8 +540,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
         {
             if ( !vr::VROverlay()->IsDashboardVisible() )
             {
-                vr::VROverlay()->ShowDashboard(
-                    OverlayController::applicationKey );
+                vr::VROverlay()->ShowDashboard( application_strings::applicationKey );
             }
             m_chaperoneShowDashboardActive = true;
         }

@@ -40,6 +40,15 @@
 
 #include "openvr/ivrinput.h"
 
+namespace application_strings
+{
+constexpr auto applicationOrganizationName = "matzman666";
+constexpr auto applicationName = "OpenVRAdvancedSettings";
+constexpr const char* applicationKey = "matzman666.AdvancedSettings";
+constexpr const char* applicationDisplayName = "Advanced Settings";
+constexpr const char* applicationVersionString = "v2.8.0-dev";
+} // namespace application_strings
+
 // application namespace
 namespace advsettings
 {
@@ -65,13 +74,6 @@ class OverlayController : public QObject
 {
     Q_OBJECT
     Q_PROPERTY( bool m_desktopMode READ isDesktopMode )
-
-public:
-    static constexpr auto applicationOrganizationName = "matzman666";
-    static constexpr auto applicationName = "OpenVRAdvancedSettings";
-    static constexpr const char* applicationKey = "matzman666.AdvancedSettings";
-    static constexpr const char* applicationDisplayName = "Advanced Settings";
-    static constexpr const char* applicationVersionString = "v2.8.0-dev";
 
 private:
     vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;

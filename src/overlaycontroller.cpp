@@ -24,8 +24,6 @@
 // application namespace
 namespace advsettings
 {
-constexpr const char* OverlayController::applicationVersionString;
-
 QSettings* OverlayController::_appSettings = nullptr;
 
 OverlayController::OverlayController( bool desktopMode,
@@ -1035,7 +1033,7 @@ void OverlayController::RotateCollisionBounds( float angle, bool commit )
 
 QString OverlayController::getVersionString()
 {
-    return QString( applicationVersionString );
+    return QString( application_strings::applicationVersionString );
 }
 
 QUrl OverlayController::getVRRuntimePathUrl()
