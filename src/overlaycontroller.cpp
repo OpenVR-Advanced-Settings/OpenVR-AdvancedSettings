@@ -138,8 +138,9 @@ OverlayController::OverlayController( bool desktopMode,
     // rewriting all QML to not be singletons, which should probably be done
     // whenever possible.
     static OverlayController* const objectAddress = this;
+    constexpr auto qmlSingletonImportName = "matzman666.advsettings";
     qmlRegisterSingletonType<OverlayController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "OverlayController",
@@ -153,7 +154,7 @@ OverlayController::OverlayController( bool desktopMode,
     // remaining function calls, or if it's just a copy paste accident that
     // happens to work.
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "SteamVRTabController",
@@ -163,7 +164,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "ChaperoneTabController",
@@ -173,7 +174,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "MoveCenterTabController",
@@ -183,7 +184,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "FixFloorTabController",
@@ -193,7 +194,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "AudioTabController",
@@ -203,7 +204,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "StatisticsTabController",
@@ -213,7 +214,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "SettingsTabController",
@@ -223,7 +224,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "ReviveTabController",
@@ -233,7 +234,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "UtilitiesTabController",
