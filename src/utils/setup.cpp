@@ -274,7 +274,7 @@ void setUpLogging()
 
     const auto appDataLocation
         = std::string( "/" ) + application_strings::applicationOrganizationName
-          + "/" + application_strings::applicationName;
+          + "/";
     const auto logFilePath = QDir( QStandardPaths::writableLocation(
                                        QStandardPaths::AppDataLocation )
                                    + appDataLocation.c_str() )

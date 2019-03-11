@@ -42,7 +42,7 @@
 
 namespace application_strings
 {
-constexpr auto applicationOrganizationName = "matzman666";
+constexpr auto applicationOrganizationName = "AdvancedSettings-Team";
 constexpr auto applicationName = "OpenVRAdvancedSettings";
 constexpr const char* applicationKey = "matzman666.AdvancedSettings";
 constexpr const char* applicationDisplayName = "Advanced Settings";

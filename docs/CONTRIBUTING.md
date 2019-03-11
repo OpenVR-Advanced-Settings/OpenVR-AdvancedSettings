@@ -21,7 +21,7 @@ For bug reports include what you expect to happen, what happened, version number
 
 For improvement requests include what you're expecting to do, why you want the feature this way, the problem that you're solving and any other information that you find relevant.
 
-Include logs if possible. Logs can be found in `%APPDATA%\matzman666\OpenVRAdvancedSettings\AdvancedSettings.log` on Windows.
+Include logs if possible. Logs can be found in `%APPDATA%\AdvancedSettings-Team\AdvancedSettings.log` on Windows.
 
 <a name="patch"></a>
 ## You want to submit changes
