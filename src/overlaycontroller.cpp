@@ -24,8 +24,6 @@
 // application namespace
 namespace advsettings
 {
-constexpr const char* OverlayController::applicationVersionString;
-
 QSettings* OverlayController::_appSettings = nullptr;
 
 OverlayController::OverlayController( bool desktopMode,
@@ -138,8 +136,9 @@ OverlayController::OverlayController( bool desktopMode,
     // rewriting all QML to not be singletons, which should probably be done
     // whenever possible.
     static OverlayController* const objectAddress = this;
+    constexpr auto qmlSingletonImportName = "ovras.advsettings";
     qmlRegisterSingletonType<OverlayController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "OverlayController",
@@ -153,7 +152,7 @@ OverlayController::OverlayController( bool desktopMode,
     // remaining function calls, or if it's just a copy paste accident that
     // happens to work.
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "SteamVRTabController",
@@ -163,7 +162,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "ChaperoneTabController",
@@ -173,7 +172,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "MoveCenterTabController",
@@ -183,7 +182,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "FixFloorTabController",
@@ -193,7 +192,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "AudioTabController",
@@ -203,7 +202,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "StatisticsTabController",
@@ -213,7 +212,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "SettingsTabController",
@@ -223,7 +222,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "ReviveTabController",
@@ -233,7 +232,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "UtilitiesTabController",
@@ -1034,7 +1033,7 @@ void OverlayController::RotateCollisionBounds( float angle, bool commit )
 
 QString OverlayController::getVersionString()
 {
-    return QString( applicationVersionString );
+    return QString( application_strings::applicationVersionString );
 }
 
 QUrl OverlayController::getVRRuntimePathUrl()
