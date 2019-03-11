@@ -8,13 +8,12 @@ int main( int argc, char* argv[] )
 
     MyQApplication mainEventLoop( argc, argv );
     mainEventLoop.setOrganizationName(
-        advsettings::OverlayController::applicationOrganizationName );
-    mainEventLoop.setApplicationName(
-        advsettings::OverlayController::applicationName );
+        application_strings::applicationOrganizationName );
+    mainEventLoop.setApplicationName( application_strings::applicationName );
     mainEventLoop.setApplicationDisplayName(
-        advsettings::OverlayController::applicationDisplayName );
+        application_strings::applicationDisplayName );
     mainEventLoop.setApplicationVersion(
-        advsettings::OverlayController::applicationVersionString );
+        application_strings::applicationVersionString );
 
     qInstallMessageHandler( mainQtMessageHandler );
 
@@ -61,10 +60,9 @@ int main( int argc, char* argv[] )
                          << std::endl;
         }
         auto quickObj = component.create();
-        controller.SetWidget(
-            qobject_cast<QQuickItem*>( quickObj ),
-            advsettings::OverlayController::applicationDisplayName,
-            advsettings::OverlayController::applicationKey );
+        controller.SetWidget( qobject_cast<QQuickItem*>( quickObj ),
+                              application_strings::applicationDisplayName,
+                              application_strings::applicationKey );
 
         // Attempts to install the application manifest on all "regular" starts.
         if ( !commandLineArgs.desktopMode && !commandLineArgs.forceNoManifest )

@@ -102,7 +102,7 @@ namespace manifest
 void enableApplicationAutostart()
 {
     const auto app_error = vr::VRApplications()->SetApplicationAutoLaunch(
-        advsettings::OverlayController::applicationKey, true );
+        application_strings::applicationKey, true );
     if ( app_error != vr::VRApplicationError_None )
     {
         throw std::runtime_error(
@@ -119,7 +119,7 @@ void enableApplicationAutostart()
 void installApplicationManifest( const QString manifestPath )
 {
     if ( vr::VRApplications()->IsApplicationInstalled(
-             advsettings::OverlayController::applicationKey ) )
+             application_strings::applicationKey ) )
     {
         // We don't want to disrupt applications that are already installed.
         return;
@@ -148,7 +148,7 @@ void removeApplicationManifest( const QString manifestPath )
     }
 
     if ( vr::VRApplications()->IsApplicationInstalled(
-             advsettings::OverlayController::applicationKey ) )
+             application_strings::applicationKey ) )
     {
         vr::VRApplications()->RemoveApplicationManifest(
             QDir::toNativeSeparators( manifestPath ).toStdString().c_str() );
@@ -166,14 +166,14 @@ void reinstallApplicationManifest( const QString manifestPath )
     }
 
     if ( vr::VRApplications()->IsApplicationInstalled(
-             advsettings::OverlayController::applicationKey ) )
+             application_strings::applicationKey ) )
     {
         // String size was arbitrarily chosen by original author.
         constexpr auto kStringSize = 1024;
         char oldApplicationWorkingDir[kStringSize] = { 0 };
         auto app_error = vr::VRApplicationError_None;
         vr::VRApplications()->GetApplicationPropertyString(
-            advsettings::OverlayController::applicationKey,
+            application_strings::applicationKey,
             vr::VRApplicationProperty_WorkingDirectory_String,
             oldApplicationWorkingDir,
             kStringSize,
@@ -256,8 +256,8 @@ void setUpLogging()
     conf.set( Level::Global,
               ConfigurationType::Format,
               "[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg" );
-    conf.set(
-        Level::Global, ConfigurationType::Filename, "AdvancedSettings.log" );
+    constexpr auto logFileName = "AdvancedSettings.log";
+    conf.set( Level::Global, ConfigurationType::Filename, logFileName );
 
     constexpr auto confEnabled = "true";
     conf.set( Level::Global, ConfigurationType::Enabled, confEnabled );
@@ -272,18 +272,13 @@ void setUpLogging()
     conf.set( Level::Trace, ConfigurationType::Enabled, confDisabled );
     conf.set( Level::Debug, ConfigurationType::Enabled, confDisabled );
 
-    // This places the log file in
-    // Roaming/AppData/matzman666/OpenVRAdvancedSettings/AdvancedSettings.log.
-    // The log file placement has been broken since at least git tag "v2.7".
-    // It was being placed in the working dir of the executable.
-    // The change hasn't been documented anywhere, so it is likely that it was
-    // unintentional. This fixes the probable regression until a new path is
-    // decided on.
-    constexpr auto appDataFolders = "/matzman666/OpenVRAdvancedSettings";
-    const QString logFilePath = QDir( QStandardPaths::writableLocation(
-                                          QStandardPaths::AppDataLocation )
-                                      + appDataFolders )
-                                    .absoluteFilePath( "AdvancedSettings.log" );
+    const auto appDataLocation
+        = std::string( "/" ) + application_strings::applicationOrganizationName
+          + "/";
+    const auto logFilePath = QDir( QStandardPaths::writableLocation(
+                                       QStandardPaths::AppDataLocation )
+                                   + appDataLocation.c_str() )
+                                 .absoluteFilePath( logFileName );
     conf.set( el::Level::Global,
               el::ConfigurationType::Filename,
               QDir::toNativeSeparators( logFilePath ).toStdString() );
@@ -293,7 +288,6 @@ void setUpLogging()
     el::Loggers::reconfigureAllLoggers( conf );
 
     LOG( INFO ) << "Application started (Version "
-                << advsettings::OverlayController::applicationVersionString
-                << ")";
+                << application_strings::applicationVersionString << ")";
     LOG( INFO ) << "Log File: " << logFilePath;
 }
