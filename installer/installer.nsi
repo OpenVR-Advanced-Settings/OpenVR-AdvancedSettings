@@ -15,7 +15,7 @@
 
         
     ;Installer icon
-    !define MUI_ICON "${PROJECTDIR}\src/res/img/icons/advicon256px.ico"
+    !define MUI_ICON "${PROJECTDIR}\src\res\img\icons\advicon256px.ico"
     
 	;Name and file
 	Name "OpenVR Advanced Settings"
