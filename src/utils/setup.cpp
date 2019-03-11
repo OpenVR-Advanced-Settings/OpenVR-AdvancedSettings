@@ -256,8 +256,8 @@ void setUpLogging()
     conf.set( Level::Global,
               ConfigurationType::Format,
               "[%level] %datetime{%Y-%M-%d %H:%m:%s}: %msg" );
-    conf.set(
-        Level::Global, ConfigurationType::Filename, "AdvancedSettings.log" );
+    constexpr auto logFileName = "AdvancedSettings.log";
+    conf.set( Level::Global, ConfigurationType::Filename, logFileName );
 
     constexpr auto confEnabled = "true";
     conf.set( Level::Global, ConfigurationType::Enabled, confEnabled );
@@ -278,7 +278,7 @@ void setUpLogging()
     const auto logFilePath = QDir( QStandardPaths::writableLocation(
                                        QStandardPaths::AppDataLocation )
                                    + appDataLocation.c_str() )
-                                 .absoluteFilePath( "AdvancedSettings.log" );
+                                 .absoluteFilePath( logFileName );
     conf.set( el::Level::Global,
               el::ConfigurationType::Filename,
               QDir::toNativeSeparators( logFilePath ).toStdString() );
