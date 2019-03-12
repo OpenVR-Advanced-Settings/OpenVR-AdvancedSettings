@@ -90,11 +90,7 @@ void FixFloorTabController::eventLoopTick(
                 tempOffsetX = static_cast<double>( m[0][3] );
                 tempOffsetY = static_cast<double>( m[1][3] );
                 tempOffsetZ = static_cast<double>( m[2][3] );
-                // for (int i = 0; i < 3; i++) {
-                //	for (int j = 0; j < 4; j++) {
-                //		LOG(INFO) << i << ", " << j << ", is" << m[i][j];
-                //	}
-                //}
+
 
                 /*
                 | Intrinsic y-x'-z" rotation matrix:
