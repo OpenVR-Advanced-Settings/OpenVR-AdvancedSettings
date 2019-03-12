@@ -63,12 +63,12 @@ public:
 
     bool pushToTalk();
 
-	bool proxIsActive();
-	vr::VRActionHandle_t leftHapticActionHandle();
-	vr::VRActionHandle_t rightHapticActionHandle();
+    bool proxIsActive();
+    vr::VRActionHandle_t leftHapticActionHandle();
+    vr::VRActionHandle_t rightHapticActionHandle();
 
-	vr::VRInputValueHandle_t rightInputHandle();
-	vr::VRInputValueHandle_t leftInputHandle();
+    vr::VRInputValueHandle_t rightInputHandle();
+    vr::VRInputValueHandle_t leftInputHandle();
 
     // Destructor. There are no terminating calls for the IVRInput API, so it
     // is left blank.
@@ -122,13 +122,13 @@ private:
     // Push To Talk
     Action m_pushToTalk;
 
-	// haptic bindings
-	Action m_leftHaptic;
-	Action m_rightHaptic;
+    // haptic bindings
+    Action m_leftHaptic;
+    Action m_rightHaptic;
 
-	// input sources
-	InputSource m_rightHand;
-	InputSource m_leftHand;
+    // input sources
+    InputSource m_rightHand;
+    InputSource m_leftHand;
 };
 
 /*!
@@ -174,29 +174,28 @@ namespace action_keys
 
     constexpr auto k_actionPushToTalk = "/actions/main/in/PushToTalk";
 
-	constexpr auto k_actionHapticsLeft = "/actions/main/out/HapticsLeft";
-	constexpr auto k_actionHapticsRight = "/actions/main/out/HapticsRight";
+    constexpr auto k_actionHapticsLeft = "/actions/main/out/HapticsLeft";
+    constexpr auto k_actionHapticsRight = "/actions/main/out/HapticsRight";
 
-	constexpr auto k_actionProxSensor = "/actions/main/in/ProxSensor";
+    constexpr auto k_actionProxSensor = "/actions/main/in/ProxSensor";
 
 } // namespace action_keys
 
-
-  /*!
-  Keys to get input source handles (things like hmd controllers etc.)
-  */
+/*!
+Keys to get input source handles (things like hmd controllers etc.)
+*/
 namespace input_keys
 {
-	constexpr auto k_inputSourceLeft = "/user/hand/left";
-	constexpr auto k_inputSourceRight = "/user/hand/right";
+    constexpr auto k_inputSourceLeft = "/user/hand/left";
+    constexpr auto k_inputSourceRight = "/user/hand/right";
 } // namespace input_keys
 
-  /*!
-  Keys for different action sets
-  */
+/*!
+Keys for different action sets
+*/
 namespace action_sets
 {
-	constexpr auto k_setMain = "/actions/main";
+    constexpr auto k_setMain = "/actions/main";
 } // namespace action_sets
 
 } // namespace input
