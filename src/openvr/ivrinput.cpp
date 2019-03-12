@@ -130,10 +130,6 @@ SteamIVRInput::SteamIVRInput()
       m_pausePlayTrack( action_keys::k_actionPausePlayTrack,
                         ActionType::Digital ),
       m_stopTrack( action_keys::k_actionStopTrack, ActionType::Digital ),
-      m_leftHaptic( action_keys::k_actionHapticsLeft, ActionType::Haptic ),
-      m_rightHaptic( action_keys::k_actionHapticsRight, ActionType::Haptic ),
-      m_rightHand( input_keys::k_inputSourceRight ),
-      m_leftHand( input_keys::k_inputSourceLeft ),
       m_leftHandSpaceTurn( action_keys::k_actionLeftHandSpaceTurn,
                            ActionType::Digital ),
       m_rightHandSpaceTurn( action_keys::k_actionRightHandSpaceTurn,
@@ -173,7 +169,11 @@ SteamIVRInput::SteamIVRInput()
                          ActionType::Digital ),
       m_zAxisLockToggle( action_keys::k_actionZAxisLockToggle,
                          ActionType::Digital ),
-      m_pushToTalk( action_keys::k_actionPushToTalk, ActionType::Digital )
+      m_pushToTalk( action_keys::k_actionPushToTalk, ActionType::Digital ),
+      m_leftHaptic( action_keys::k_actionHapticsLeft, ActionType::Haptic ),
+      m_rightHaptic( action_keys::k_actionHapticsRight, ActionType::Haptic ),
+      m_leftHand( input_keys::k_inputSourceLeft ),
+      m_rightHand( input_keys::k_inputSourceRight )
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
     m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;

@@ -127,8 +127,8 @@ private:
     Action m_rightHaptic;
 
     // input sources
-    InputSource m_rightHand;
     InputSource m_leftHand;
+    InputSource m_rightHand;
 };
 
 /*!

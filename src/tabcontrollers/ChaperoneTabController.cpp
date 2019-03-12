@@ -752,9 +752,9 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
 {
     if ( m_visibility != value )
     {
-        if ( value <= 0.5 )
+        if ( value <= 0.5f )
         {
-            m_visibility = 0.5;
+            m_visibility = 0.5f;
         }
         else
         {
