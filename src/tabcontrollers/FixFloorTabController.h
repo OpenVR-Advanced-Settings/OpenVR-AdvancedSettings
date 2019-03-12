@@ -25,6 +25,8 @@ private:
         = 0.062f; // Controller touchpad facing upwards
     float controllerDownOffsetCorrection
         = 0.006f; // Controller touchpad facing downwards
+    float knucklesUpOffsetCorrection = 0.0285f; // touchpad facing up PRELIM
+    float knucklesDownOffsetCorrection = 0.031f; // touchpad facing down PRELIM
 
     int state
         = 0; // 0 .. idle, 1 .. floor fix in progress, 2 .. recenter in progress
@@ -41,6 +43,15 @@ private:
     QString statusMessage = "";
     float statusMessageTimeout = 0.0f;
     bool m_canUndo = false;
+
+    enum ControllerType : int
+    {
+        Controller_Unknown = 0,
+        Controller_Wand = 1,
+        Controller_Knuckles = 2,
+    };
+
+    int getControllerType( vr::TrackedDeviceIndex_t controllerRole );
 
 public:
     void initStage1();
