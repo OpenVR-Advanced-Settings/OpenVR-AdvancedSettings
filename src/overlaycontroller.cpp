@@ -24,20 +24,13 @@
 // application namespace
 namespace advsettings
 {
-constexpr const char* OverlayController::applicationVersionString;
-
 QSettings* OverlayController::_appSettings = nullptr;
 
 OverlayController::OverlayController( bool desktopMode,
                                       bool noSound,
                                       QQmlEngine& qmlEngine )
-    : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ),
-      m_openVrInit(), m_actions()
+    : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ), m_actions()
 {
-    // Despite arguably being OpenVR init code, the call is still here because
-    // the TabController uses this directly. Offering it through OpenVR_Init
-    // might be an option, but it might scope creep OpenVR_Init which currently
-    // doesn't contain any member variables.
     m_runtimePathUrl = QUrl::fromLocalFile( vr::VR_RuntimePath() );
     LOG( INFO ) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
@@ -130,7 +123,6 @@ OverlayController::OverlayController( bool desktopMode,
     m_reviveTabController.initStage1(
         m_settingsTabController.forceRevivePage() );
     m_utilitiesTabController.initStage1();
-    m_accessibilityTabController.initStage1();
 
     // init action handles
 
@@ -155,8 +147,9 @@ OverlayController::OverlayController( bool desktopMode,
     // rewriting all QML to not be singletons, which should probably be done
     // whenever possible.
     static OverlayController* const objectAddress = this;
+    constexpr auto qmlSingletonImportName = "ovras.advsettings";
     qmlRegisterSingletonType<OverlayController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "OverlayController",
@@ -170,7 +163,7 @@ OverlayController::OverlayController( bool desktopMode,
     // remaining function calls, or if it's just a copy paste accident that
     // happens to work.
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "SteamVRTabController",
@@ -180,7 +173,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "ChaperoneTabController",
@@ -190,7 +183,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "MoveCenterTabController",
@@ -200,7 +193,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "FixFloorTabController",
@@ -210,7 +203,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "AudioTabController",
@@ -220,7 +213,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "StatisticsTabController",
@@ -230,7 +223,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "SettingsTabController",
@@ -240,7 +233,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "ReviveTabController",
@@ -250,22 +243,12 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "UtilitiesTabController",
         []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_utilitiesTabController );
-            QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
-            return obj;
-        } );
-    qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
-        1,
-        0,
-        "AccessibilityTabController",
-        []( QQmlEngine*, QJSEngine* ) {
-            QObject* obj = &( objectAddress->m_accessibilityTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -340,10 +323,12 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         vr::VROverlay()->SetOverlayInputMethod(
             m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse );
         vr::VROverlay()->SetOverlayFlag(
-            m_ulOverlayHandle, vr::VROverlayFlags_SendVRScrollEvents, true );
-        QString thumbIconPath
-            = QStandardPaths::locate( QStandardPaths::AppDataLocation,
-                                      QStringLiteral( "res/thumbicon.png" ) );
+            m_ulOverlayHandle,
+            vr::VROverlayFlags_SendVRSmoothScrollEvents,
+            true );
+        QString thumbIconPath = QStandardPaths::locate(
+            QStandardPaths::AppDataLocation,
+            QStringLiteral( "res/img/icons/thumbicon.png" ) );
         if ( QFile::exists( thumbIconPath ) )
         {
             vr::VROverlay()->SetOverlayFromFile(
@@ -371,17 +356,23 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             QOpenGLFramebufferObject::CombinedDepthStencil );
         fboFormat.setTextureTarget( GL_TEXTURE_2D );
         m_pFbo.reset( new QOpenGLFramebufferObject(
-            quickItem->width(), quickItem->height(), fboFormat ) );
+            static_cast<int>( quickItem->width() ),
+            static_cast<int>( quickItem->height() ),
+            fboFormat ) );
 
         m_pRenderControl.reset( new QQuickRenderControl() );
         m_pWindow.reset( new QQuickWindow( m_pRenderControl.get() ) );
         m_pWindow->setRenderTarget( m_pFbo.get() );
         quickItem->setParentItem( m_pWindow->contentItem() );
-        m_pWindow->setGeometry( 0, 0, quickItem->width(), quickItem->height() );
+        m_pWindow->setGeometry( 0,
+                                0,
+                                static_cast<int>( quickItem->width() ),
+                                static_cast<int>( quickItem->height() ) );
         m_pRenderControl->initialize( m_pOpenGLContext.get() );
 
         vr::HmdVector2_t vecWindowSize
-            = { ( float ) quickItem->width(), ( float ) quickItem->height() };
+            = { static_cast<float>( quickItem->width() ),
+                static_cast<float>( quickItem->height() ) };
         vr::VROverlay()->SetOverlayMouseScale( m_ulOverlayHandle,
                                                &vecWindowSize );
 
@@ -400,7 +391,10 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
              SIGNAL( timeout() ),
              this,
              SLOT( OnTimeoutPumpEvents() ) );
-    m_pPumpEventsTimer->setInterval( 20 );
+
+    // Every 1ms we check if the current frame has advanced (for vysnc)
+    m_pPumpEventsTimer->setInterval( 1 );
+
     m_pPumpEventsTimer->start();
 
     m_steamVRTabController.initStage2( this, m_pWindow.get() );
@@ -412,7 +406,6 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     m_settingsTabController.initStage2( this, m_pWindow.get() );
     m_reviveTabController.initStage2( this, m_pWindow.get() );
     m_utilitiesTabController.initStage2( this, m_pWindow.get() );
-    m_accessibilityTabController.initStage2( this, m_pWindow.get() );
 }
 
 void OverlayController::OnRenderRequest()
@@ -443,11 +436,12 @@ void OverlayController::renderOverlay()
 #if defined _WIN64 || defined _LP64
             // To avoid any compiler warning because of cast to a larger pointer
             // type (warning C4312 on VC)
-            vr::Texture_t texture = { ( void* ) ( ( uint64_t ) unTexture ),
+            vr::Texture_t texture = { reinterpret_cast<void*>(
+                                          static_cast<uint64_t>( unTexture ) ),
                                       vr::TextureType_OpenGL,
                                       vr::ColorSpace_Auto };
 #else
-            vr::Texture_t texture = { ( void* ) unTexture,
+            vr::Texture_t texture = { reinterpret_cast<void*>( unTexture ),
                                       vr::TextureType_OpenGL,
                                       vr::ColorSpace_Auto };
 #endif
@@ -476,20 +470,13 @@ QPoint OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
 {
     float y = mouse.y;
 #ifdef __linux__
-    float h = ( float ) m_pWindow->height();
+    float h = static_cast<float>( m_pWindow->height() );
     y = h - y;
 #endif
-    return QPoint( mouse.x, y );
+    return QPoint( static_cast<int>( mouse.x ), static_cast<int>( y ) );
 }
 
-/*!
-Checks if an action has been activated and dispatches the related action if it
-has been.
-
-This function should probably be split into several functions that are specific
-to a binding type as the amount of actions grows.
-*/
-void OverlayController::processInputBindings()
+void OverlayController::processMediaKeyBindings()
 {
     if ( m_actions.nextSong() )
     {
@@ -509,7 +496,109 @@ void OverlayController::processInputBindings()
     }
 }
 
+void OverlayController::processRoomBindings()
+{
+    // Execution order for moveCenterTabController actions is important. Don't
+    // reorder these. Override actions must always come after normal because
+    // active priority is set based on which action is "newest"
+    // normal actions:
+    m_moveCenterTabController.leftHandSpaceDrag(
+        m_actions.leftHandSpaceDrag() );
+    m_moveCenterTabController.rightHandSpaceDrag(
+        m_actions.rightHandSpaceDrag() );
+    m_moveCenterTabController.leftHandSpaceTurn(
+        m_actions.leftHandSpaceTurn() );
+    m_moveCenterTabController.rightHandSpaceTurn(
+        m_actions.rightHandSpaceTurn() );
+    m_moveCenterTabController.gravityToggle( m_actions.gravityToggle() );
+    m_moveCenterTabController.heightToggle( m_actions.heightToggle() );
+    m_moveCenterTabController.resetOffsets( m_actions.resetOffsets() );
+    m_moveCenterTabController.snapTurnLeft( m_actions.snapTurnLeft() );
+    m_moveCenterTabController.snapTurnRight( m_actions.snapTurnRight() );
+    m_moveCenterTabController.xAxisLockToggle( m_actions.xAxisLockToggle() );
+    m_moveCenterTabController.yAxisLockToggle( m_actions.yAxisLockToggle() );
+    m_moveCenterTabController.zAxisLockToggle( m_actions.zAxisLockToggle() );
+
+    // override actions:
+    m_moveCenterTabController.optionalOverrideLeftHandSpaceDrag(
+        m_actions.optionalOverrideLeftHandSpaceDrag() );
+    m_moveCenterTabController.optionalOverrideRightHandSpaceDrag(
+        m_actions.optionalOverrideRightHandSpaceDrag() );
+    m_moveCenterTabController.optionalOverrideLeftHandSpaceTurn(
+        m_actions.optionalOverrideLeftHandSpaceTurn() );
+    m_moveCenterTabController.optionalOverrideRightHandSpaceTurn(
+        m_actions.optionalOverrideRightHandSpaceTurn() );
+    m_moveCenterTabController.swapSpaceDragToLeftHandOverride(
+        m_actions.swapSpaceDragToLeftHandOverride() );
+    m_moveCenterTabController.swapSpaceDragToRightHandOverride(
+        m_actions.swapSpaceDragToRightHandOverride() );
+}
+
+void OverlayController::processPushToTalkBindings()
+{
+    const auto pushToTalkCannotChange = !m_audioTabController.pttChangeValid();
+    if ( pushToTalkCannotChange )
+    {
+        return;
+    }
+
+    const auto pushToTalkButtonActivated = m_actions.pushToTalk();
+    const auto pushToTalkCurrentlyActive = m_audioTabController.pttActive();
+    if ( pushToTalkButtonActivated && !pushToTalkCurrentlyActive )
+    {
+        m_audioTabController.startPtt();
+    }
+    else if ( !pushToTalkButtonActivated && pushToTalkCurrentlyActive )
+    {
+        m_audioTabController.stopPtt();
+    }
+}
+
+/*!
+Checks if an action has been activated and dispatches the related action if it
+has been.
+*/
+void OverlayController::processInputBindings()
+{
+    processMediaKeyBindings();
+
+    processRoomBindings();
+
+    processPushToTalkBindings();
+}
+
+// vsync implementation:
+// (this function triggers every 1ms)
 void OverlayController::OnTimeoutPumpEvents()
+{
+    // get the current frame number from the VRSystem frame counter
+    vr::VRSystem()->GetTimeSinceLastVsync( nullptr, &m_currentFrame );
+
+    // Check if we are in the next frame yet
+    if ( m_currentFrame > m_lastFrame )
+    {
+        // If the frame has advanced since last check, it's time for our main
+        // event loop. (this function should trigger about every 11ms assuming
+        // 90fps compositor)
+        mainEventLoop();
+
+        // wait for the next frame after executing our main event loop once.
+        m_lastFrame = m_currentFrame;
+        m_vsyncTooLateCounter = 0;
+    }
+    else if ( m_vsyncTooLateCounter >= k_nonVsyncTickRate )
+    {
+        mainEventLoop();
+        // m_lastFrame = m_currentFrame + 1 skips the next vsync frame in case
+        // it was just about to trigger, to prevent double updates faster than
+        // 11ms.
+        m_lastFrame = m_currentFrame + 1;
+        m_vsyncTooLateCounter = 0;
+    }
+    m_vsyncTooLateCounter++;
+}
+
+void OverlayController::mainEventLoop()
 {
     if ( !vr::VRSystem() )
         return;
@@ -534,7 +623,7 @@ void OverlayController::OnTimeoutPumpEvents()
                                         m_pWindow->mapToGlobal( ptNewMouse ),
                                         Qt::NoButton,
                                         m_lastMouseButtons,
-                                        0 );
+                                        nullptr );
                 m_ptLastMouse = ptNewMouse;
                 QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
                 OnRenderRequest();
@@ -555,7 +644,7 @@ void OverlayController::OnTimeoutPumpEvents()
                                     m_pWindow->mapToGlobal( ptNewMouse ),
                                     button,
                                     m_lastMouseButtons,
-                                    0 );
+                                    nullptr );
             QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
         }
         break;
@@ -573,24 +662,26 @@ void OverlayController::OnTimeoutPumpEvents()
                                     m_pWindow->mapToGlobal( ptNewMouse ),
                                     button,
                                     m_lastMouseButtons,
-                                    0 );
+                                    nullptr );
             QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
         }
         break;
 
-        case vr::VREvent_Scroll:
+        case vr::VREvent_ScrollSmooth:
         {
             // Wheel speed is defined as 1/8 of a degree
             QWheelEvent wheelEvent(
                 m_ptLastMouse,
                 m_pWindow->mapToGlobal( m_ptLastMouse ),
                 QPoint(),
-                QPoint( vrEvent.data.scroll.xdelta * 360.0f * 8.0f,
-                        vrEvent.data.scroll.ydelta * 360.0f * 8.0f ),
+                QPoint( static_cast<int>( vrEvent.data.scroll.xdelta
+                                          * ( 360.0f * 8.0f ) ),
+                        static_cast<int>( vrEvent.data.scroll.ydelta
+                                          * ( 360.0f * 8.0f ) ) ),
                 0,
                 Qt::Vertical,
                 m_lastMouseButtons,
-                0 );
+                nullptr );
             QCoreApplication::sendEvent( m_pWindow.get(), &wheelEvent );
         }
         break;
@@ -604,15 +695,17 @@ void OverlayController::OnTimeoutPumpEvents()
         case vr::VREvent_Quit:
         {
             LOG( INFO ) << "Received quit request.";
-            vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some time
-                                                       // just in case
+            vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some
+                                                       // time just in case
             m_moveCenterTabController.reset();
             m_chaperoneTabController.shutdown();
             Shutdown();
             QApplication::exit();
-            return;
+
+            LOG( INFO ) << "All systems exited.";
+            exit( EXIT_SUCCESS );
+            // Does not fallthrough
         }
-        break;
 
         case vr::VREvent_DashboardActivated:
         {
@@ -633,16 +726,16 @@ void OverlayController::OnTimeoutPumpEvents()
             char keyboardBuffer[1024];
             vr::VROverlay()->GetKeyboardText( keyboardBuffer, 1024 );
             emit keyBoardInputSignal( QString( keyboardBuffer ),
-                                      vrEvent.data.keyboard.uUserValue );
+                                      static_cast<unsigned long>(
+                                          vrEvent.data.keyboard.uUserValue ) );
         }
         break;
 
-        // Multiple ChaperoneUniverseHasChanged are often emitted at the same
-        // time (some with a little bit of delay) There is no sure way to
-        // recognize redundant events, we can only exclude redundant events
-        // during the same call of OnTimeoutPumpEvents()
-        // INFO Removed logging on play space mover for possible crashing
-        // issues.
+        // Multiple ChaperoneUniverseHasChanged are often emitted at the
+        // same time (some with a little bit of delay) There is no sure way
+        // to recognize redundant events, we can only exclude redundant
+        // events during the same call of OnTimeoutPumpEvents() INFO Removed
+        // logging on play space mover for possible crashing issues.
         case vr::VREvent_ChaperoneUniverseHasChanged:
         case vr::VREvent_ChaperoneDataHasChanged:
         {
@@ -650,8 +743,8 @@ void OverlayController::OnTimeoutPumpEvents()
             {
                 // LOG(INFO) << "Re-loading chaperone data ...";
                 m_chaperoneUtils.loadChaperoneData();
-                // LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() << "
-                // chaperone quads."; if
+                // LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() <<
+                // " chaperone quads."; if
                 // (m_chaperoneUtils.isChaperoneWellFormed()) { LOG(INFO) <<
                 // "Chaperone data seems to be well-formed.";
                 //} else {
@@ -705,21 +798,18 @@ void OverlayController::OnTimeoutPumpEvents()
         hmdSpeed
             = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
     }
-
+    m_moveCenterTabController.eventLoopTick(
+        vr::VRCompositor()->GetTrackingSpace(), devicePoses );
+    m_utilitiesTabController.eventLoopTick();
     m_fixFloorTabController.eventLoopTick( devicePoses );
     m_statisticsTabController.eventLoopTick(
         devicePoses, leftSpeed, rightSpeed );
-    m_moveCenterTabController.eventLoopTick(
-        vr::VRCompositor()->GetTrackingSpace(), devicePoses );
     m_steamVRTabController.eventLoopTick();
     m_chaperoneTabController.eventLoopTick(
         devicePoses, leftSpeed, rightSpeed, hmdSpeed );
     m_settingsTabController.eventLoopTick();
     m_reviveTabController.eventLoopTick();
     m_audioTabController.eventLoopTick();
-    m_utilitiesTabController.eventLoopTick();
-    m_accessibilityTabController.eventLoopTick(
-        vr::VRCompositor()->GetTrackingSpace() );
 
     if ( m_ulOverlayThumbnailHandle != vr::k_ulOverlayHandleInvalid )
     {
@@ -954,7 +1044,7 @@ void OverlayController::RotateCollisionBounds( float angle, bool commit )
 
 QString OverlayController::getVersionString()
 {
-    return QString( applicationVersionString );
+    return QString( application_strings::applicationVersionString );
 }
 
 QUrl OverlayController::getVRRuntimePathUrl()
@@ -1025,7 +1115,7 @@ void OverlayController::playAlarm01Sound( bool loop )
 
 void OverlayController::setAlarm01SoundVolume( float vol )
 {
-    m_alarm01SoundEffect.setVolume( vol );
+    m_alarm01SoundEffect.setVolume( static_cast<double>( vol ) );
 }
 
 void OverlayController::cancelAlarm01Sound()

@@ -33,8 +33,10 @@ class UtilitiesTabController : public QObject
             setSteamDesktopOverlayWidth NOTIFY steamDesktopOverlayWidthChanged )
 
 private:
-    OverlayController* parent;
-    QQuickWindow* widget;
+    void setUpDesktopOverlay( float desktopWidthInMeters );
+
+    OverlayController* m_parent;
+    QQuickWindow* m_widget;
 
     unsigned settingsUpdateCounter = 0;
 
@@ -53,7 +55,7 @@ private:
 
 public:
     void initStage1();
-    void initStage2( OverlayController* parent, QQuickWindow* widget );
+    void initStage2( OverlayController* var_parent, QQuickWindow* var_widget );
 
     void eventLoopTick();
 
@@ -69,6 +71,7 @@ public slots:
     void sendKeyboardInput( QString input );
     void sendKeyboardEnter();
     void sendKeyboardAltTab();
+    void sendKeyboardAltEnter();
     void sendKeyboardBackspace( const int count );
     void sendMediaNextSong();
     void sendMediaPreviousSong();

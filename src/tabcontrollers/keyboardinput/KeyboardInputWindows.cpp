@@ -33,7 +33,7 @@ void fillKiStruct( INPUT& ip, WORD scanCode, bool keyup )
     ip.ki.wScan = 0;
     ip.ki.dwExtraInfo = 0;
     ip.ki.time = 0;
-};
+}
 
 /*!
 Calls SendInput on an INPUT struct and has associated error handling.
@@ -234,16 +234,42 @@ a music player.
 */
 void KeyboardInputWindows::sendKeyboardAltTab()
 {
-    // VK_MENU is Alt.
-    const auto pressAlt = createInputStruct( VK_MENU, KeyStatus::Down );
-    const auto pressTab = createInputStruct( VK_TAB, KeyStatus::Down );
-    const auto releaseAlt = createInputStruct( VK_MENU, KeyStatus::Up );
-    const auto releaseTab = createInputStruct( VK_TAB, KeyStatus::Up );
+    constexpr auto altKey = VK_MENU;
+    constexpr auto tabKey = VK_TAB;
+
+    const auto pressAlt = createInputStruct( altKey, KeyStatus::Down );
+    const auto pressTab = createInputStruct( tabKey, KeyStatus::Down );
+    const auto releaseAlt = createInputStruct( altKey, KeyStatus::Up );
+    const auto releaseTab = createInputStruct( tabKey, KeyStatus::Up );
 
     constexpr auto numberOfActions = 4;
 
     INPUT actions[numberOfActions]
         = { pressAlt, pressTab, releaseAlt, releaseTab };
+
+    sendKeyboardInputRaw( numberOfActions, actions );
+}
+
+/*!
+Sends an Alt + Tab combination to Windows.
+
+Used for toggling full screen on games and various applications that appear on
+the desktop.
+*/
+void KeyboardInputWindows::sendKeyboardAltEnter()
+{
+    constexpr auto altKey = VK_MENU;
+    constexpr auto enterKey = VK_RETURN;
+
+    const auto pressAlt = createInputStruct( altKey, KeyStatus::Down );
+    const auto pressEnter = createInputStruct( enterKey, KeyStatus::Down );
+    const auto releaseAlt = createInputStruct( altKey, KeyStatus::Up );
+    const auto releaseEnter = createInputStruct( enterKey, KeyStatus::Up );
+
+    constexpr auto numberOfActions = 4;
+
+    INPUT actions[numberOfActions]
+        = { pressAlt, pressEnter, releaseAlt, releaseEnter };
 
     sendKeyboardInputRaw( numberOfActions, actions );
 }

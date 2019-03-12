@@ -14,7 +14,7 @@
 For compiling:
 
 1. [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/) (tested on 2017 Community)
-2. [Qt Framework](https://www.qt.io/download) version later than 5.6 (tested on 5.10 and 5.11)
+2. [Qt Framework](https://www.qt.io/download) version later than 5.6 (Requires at least 5.6. 5.12 is recommended)
 3. [Python 3](https://www.python.org/downloads/) (must be in `PATH` environment variable)
 
 For pushing changes to the repo:

@@ -63,8 +63,8 @@ void AudioTabController::initStage2( OverlayController* var_parent,
     this->parent = var_parent;
     this->widget = var_widget;
 
-    std::string notifKey
-        = std::string( OverlayController::applicationKey ) + ".pptnotification";
+    std::string notifKey = std::string( application_strings::applicationKey )
+                           + ".pptnotification";
 
     vr::VROverlayError overlayError = vr::VROverlay()->CreateOverlay(
         notifKey.c_str(), notifKey.c_str(), &m_ulNotificationOverlayHandle );
@@ -72,7 +72,8 @@ void AudioTabController::initStage2( OverlayController* var_parent,
     {
         QString notifIconPath = QStandardPaths::locate(
             QStandardPaths::AppDataLocation,
-            QStringLiteral( "/res/qml/ptt_notification.png" ) );
+            QStringLiteral(
+                "/res/img/audio/microphone/ptt_notification.png" ) );
         if ( QFile::exists( notifIconPath ) )
         {
             vr::VROverlay()->SetOverlayFromFile(
@@ -168,7 +169,8 @@ void AudioTabController::eventLoopTick()
     {
         return;
     }
-    if ( settingsUpdateCounter >= 50 )
+
+    if ( settingsUpdateCounter >= k_audioSettingsUpdateCounter )
     {
         if ( m_micProximitySensorCanMute )
         {
@@ -748,7 +750,7 @@ void AudioTabController::reloadAudioProfiles()
     {
         settings->setArrayIndex( i );
         audioProfiles.emplace_back();
-        auto& entry = audioProfiles[i];
+        auto& entry = audioProfiles[static_cast<size_t>( i )];
         entry.profileName
             = settings->value( "profileName" ).toString().toStdString();
         entry.playbackName
@@ -1042,7 +1044,7 @@ void AudioTabController::applyDefaultProfile()
         if ( profile.defaultProfile )
         {
             applyAudioProfile( i );
-            m_defaultProfileIndex = i;
+            m_defaultProfileIndex = static_cast<int>( i );
             break;
         }
     }

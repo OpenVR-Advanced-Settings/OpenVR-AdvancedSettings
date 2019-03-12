@@ -1,12 +1,12 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
-import matzman666.advsettings 1.0
-
+import ovras.advsettings 1.0
+import "common"
 
 
 MyStackViewPage {
-    headerText: "Playspace Fix"
+    headerText: "Space Fix"
 
     content: ColumnLayout {
         spacing: 18
@@ -57,7 +57,7 @@ MyStackViewPage {
 		MyPushButton {
             id: recenterButton
             Layout.fillWidth: true
-            text: "Recenter Playspace"
+            text: "Recenter Space"
             Layout.preferredHeight: 100
             onClicked: {
                 FixFloorTabController.recenterClicked()
@@ -71,6 +71,16 @@ MyStackViewPage {
             text: "Undo Fix"
             onClicked: {
                 FixFloorTabController.undoFixFloorClicked()
+            }
+        }
+
+        MyPushButton {
+            id: zeroSpaceButton
+            Layout.fillWidth: true
+            text: "Apply Space Settings Offsets as Center"
+            Layout.preferredHeight: 100
+            onClicked: {
+                MoveCenterTabController.zeroOffsets()
             }
         }
 

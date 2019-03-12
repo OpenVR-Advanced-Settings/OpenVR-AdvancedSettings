@@ -1,8 +1,11 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
-import matzman666.advsettings 1.0
+import ovras.advsettings 1.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
+import "common"
+import "utilities_page"
+import "audio_page"
 
 MyStackViewPage {
     id: rootPage
@@ -47,7 +50,7 @@ MyStackViewPage {
                    MyPushButton {
                        id: playSpaceButton
                        activationSoundEnabled: false
-                       text: "Play Space"
+                       text: "Offsets"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -56,9 +59,20 @@ MyStackViewPage {
                    }
 
                    MyPushButton {
+                       id: motionButton
+                       activationSoundEnabled: false
+                       text: "Motion"
+                       Layout.fillWidth: true
+                       onClicked: {
+                           MyResources.playFocusChangedSound()
+                           mainView.push(motionPage)
+                       }
+                   }
+
+                   MyPushButton {
                        id: fixFloorButton
                        activationSoundEnabled: false
-                       text: "Playspace Fix"
+                       text: "Space Fix"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -97,17 +111,6 @@ MyStackViewPage {
                        onClicked: {
                            MyResources.playFocusChangedSound()
                            mainView.push(utilitiesPage)
-                       }
-                   }
-
-                   MyPushButton {
-                       id: accessibilityButton
-                       activationSoundEnabled: false
-                       text: "Accessibility"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(accessibilityPage)
                        }
                    }
 
@@ -341,7 +344,7 @@ MyStackViewPage {
                            Layout.leftMargin: 12
                            checkable: true
                            contentItem: Image {
-                               source: parent.checked ? "mic_off.svg" : "mic_on.svg"
+                               source: parent.checked ? "qrc:/microphone/off" : "qrc:/microphone/on"
                                sourceSize.width: 32
                                sourceSize.height: 32
                                anchors.fill: parent
@@ -357,39 +360,6 @@ MyStackViewPage {
                            text: "Push-to-Talk"
                            onClicked: {
                                AudioTabController.pttEnabled = checked
-                           }
-                       }
-                       RowLayout {
-                           spacing: 18
-
-                           MyComboBox {
-                               Layout.leftMargin: 78
-                               id: summaryPttProfileComboBox
-                               Layout.maximumWidth: 378
-                               Layout.minimumWidth: 378
-                               Layout.preferredWidth: 378
-                               Layout.fillWidth: true
-                               model: [""]
-                               onCurrentIndexChanged: {
-                                   if (currentIndex > 0) {
-                                       summaryPttProfileApplyButton.enabled = true
-                                   } else {
-                                       summaryPttProfileApplyButton.enabled = false
-                                   }
-                               }
-                           }
-
-                           MyPushButton {
-                               id: summaryPttProfileApplyButton
-                               enabled: false
-                               Layout.preferredWidth: 150
-                               text: "Apply"
-                               onClicked: {
-                                   if (summaryPttProfileComboBox.currentIndex > 0) {
-                                       AudioTabController.applyPttProfile(summaryPttProfileComboBox.currentIndex - 1)
-                                       summaryPttProfileComboBox.currentIndex = 0
-                                   }
-                               }
                            }
                        }
                    }
@@ -414,8 +384,10 @@ MyStackViewPage {
    Component.onCompleted: {
        reloadChaperoneProfiles()
        reloadSteamVRProfiles()
-       reloadPttProfiles()
+
        summaryVersionText.text = applicationVersion
+
+
        if (MoveCenterTabController.trackingUniverse === 0) {
            summaryPlaySpaceModeText.text = "Sitting"
        } else if (MoveCenterTabController.trackingUniverse === 1) {
@@ -448,9 +420,6 @@ MyStackViewPage {
 
    Connections {
        target: AudioTabController
-       onPttProfilesUpdated: {
-           reloadPttProfiles()
-       }
        onMicVolumeChanged: {
            summaryMicVolumeSlider.value = AudioTabController.micVolume
        }
@@ -485,9 +454,9 @@ MyStackViewPage {
    function updateStatistics() {
        var rotations = StatisticsTabController.hmdRotations
        if (rotations > 0) {
-           summaryHmdRotationsText.text = rotations.toFixed(1) + " CCW"
+           summaryHmdRotationsText.text = rotations.toFixed(2) + " CCW"
        } else {
-           summaryHmdRotationsText.text = -rotations.toFixed(1) + " CW"
+           summaryHmdRotationsText.text = -rotations.toFixed(2) + " CW"
        }
        summaryDroppedFramesText.text = StatisticsTabController.droppedFrames
        summaryReprojectedFramesText.text = StatisticsTabController.reprojectedFrames
@@ -533,15 +502,5 @@ MyStackViewPage {
        }
        summarySteamVRProfileComboBox.currentIndex = 0
        summarySteamVRProfileComboBox.model = profiles
-    }
-
-    function reloadPttProfiles() {
-        var profiles = [""]
-        var profileCount = AudioTabController.getPttProfileCount()
-        for (var i = 0; i < profileCount; i++) {
-            profiles.push(AudioTabController.getPttProfileName(i))
-        }
-        summaryPttProfileComboBox.currentIndex = 0
-        summaryPttProfileComboBox.model = profiles
     }
 }

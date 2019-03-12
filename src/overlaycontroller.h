@@ -24,7 +24,7 @@
 #include <memory>
 #include <easylogging++.h>
 
-#include "overlaycontroller/openvr_init.h"
+#include "openvr/openvr_init.h"
 
 #include "utils/ChaperoneUtils.h"
 
@@ -37,24 +37,43 @@
 #include "tabcontrollers/SettingsTabController.h"
 #include "tabcontrollers/ReviveTabController.h"
 #include "tabcontrollers/UtilitiesTabController.h"
-#include "tabcontrollers/AccessibilityTabController.h"
 
-#include "ivrinput/ivrinput.h"
+#include "openvr/ivrinput.h"
+
+namespace application_strings
+{
+constexpr auto applicationOrganizationName = "AdvancedSettings-Team";
+constexpr auto applicationName = "OpenVRAdvancedSettings";
+constexpr const char* applicationKey = "OVRAS-Team.AdvancedSettings";
+constexpr const char* applicationDisplayName = "Advanced Settings";
+constexpr const char* applicationVersionString = "v2.8.0-dev";
+} // namespace application_strings
 
 // application namespace
 namespace advsettings
 {
+// These counters set timing for refreshing settings changes in tab ui
+// SettingsUpdateCounter values are set as prime numbers to reduce overlap
+// of simultaneous settings updates.
+// Actual rates of updates are counter * vsync (~11ms)
+// Values chosen based on update speed priority
+// Avoid setting values to the same numbers.
+constexpr int k_audioSettingsUpdateCounter = 89;
+constexpr int k_chaperoneSettingsUpdateCounter = 101;
+constexpr int k_moveCenterSettingsUpdateCounter = 149;
+constexpr int k_reviveSettingsUpdateCounter = 139;
+constexpr int k_settingsTabSettingsUpdateCounter = 157;
+constexpr int k_steamVrSettingsUpdateCounter = 97;
+constexpr int k_utilitiesSettingsUpdateCounter = 19;
+// k_nonVsyncTickRate determines number of ms we wait to force the next event
+// loop tick when vsync is too late due to dropped frames.
+constexpr int k_nonVsyncTickRate = 20;
+constexpr int k_hmdRotationCounterUpdateRate = 7;
+
 class OverlayController : public QObject
 {
     Q_OBJECT
     Q_PROPERTY( bool m_desktopMode READ isDesktopMode )
-
-public:
-    static constexpr auto applicationOrganizationName = "matzman666";
-    static constexpr auto applicationName = "OpenVRAdvancedSettings";
-    static constexpr const char* applicationKey = "matzman666.AdvancedSettings";
-    static constexpr const char* applicationDisplayName = "Advanced Settings";
-    static constexpr const char* applicationVersionString = "v2.8.0-dev";
 
 private:
     vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
@@ -72,7 +91,7 @@ private:
     bool m_dashboardVisible = false;
 
     QPoint m_ptLastMouse;
-    Qt::MouseButtons m_lastMouseButtons = 0;
+    Qt::MouseButtons m_lastMouseButtons = nullptr;
 
     bool m_desktopMode;
     bool m_noSound;
@@ -85,10 +104,9 @@ private:
     QSoundEffect m_focusChangedSoundEffect;
     QSoundEffect m_alarm01SoundEffect;
 
-    // OpenVR_Init must be declared before any other class that uses OpenVR
-    // function calls since objects are initialized in order of declaration in
-    // the class.
-    openvr_init::OpenVR_Init m_openVrInit;
+    uint64_t m_currentFrame = 0;
+    uint64_t m_lastFrame = 0;
+    int m_vsyncTooLateCounter = 0;
 
     input::SteamIVRInput m_actions;
 
@@ -103,11 +121,13 @@ public: // I know it's an ugly hack to make them public to enable external
     SettingsTabController m_settingsTabController;
     ReviveTabController m_reviveTabController;
     UtilitiesTabController m_utilitiesTabController;
-    AccessibilityTabController m_accessibilityTabController;
 
 private:
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
     void processInputBindings();
+    void processMediaKeyBindings();
+    void processRoomBindings();
+    void processPushToTalkBindings();
 
 public:
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
@@ -147,7 +167,7 @@ public:
     bool isDesktopMode()
     {
         return m_desktopMode;
-    };
+    }
 
     utils::ChaperoneUtils& chaperoneUtils() noexcept
     {
@@ -164,6 +184,7 @@ public:
 
     bool pollNextEvent( vr::VROverlayHandle_t ulOverlayHandle,
                         vr::VREvent_t* pEvent );
+    void mainEventLoop();
 
 public slots:
     void renderOverlay();

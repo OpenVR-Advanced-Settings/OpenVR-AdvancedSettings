@@ -22,82 +22,88 @@ void SteamVRTabController::initStage2( OverlayController* var_parent,
 
 void SteamVRTabController::eventLoopTick()
 {
-    if ( settingsUpdateCounter >= 50 )
+    if ( settingsUpdateCounter >= k_steamVrSettingsUpdateCounter )
     {
-        vr::EVRSettingsError vrSettingsError;
-        // checks supersampling override and resynchs if necessry
-        // also prints error if can't find.
-        auto sso = vr::VRSettings()->GetBool(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
+        if ( parent->isDashboardVisible() )
         {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_SupersampleManualOverride_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setAllowSupersampleOverride( sso );
-        // checks supersampling and re-synchs if necessary
-        auto ss = vr::VRSettings()->GetFloat(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_SupersampleScale_Float,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_SupersampleScale_Float
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-            if ( m_superSampling != 1.0 )
+            vr::EVRSettingsError vrSettingsError;
+            // checks supersampling override and resynchs if necessry
+            // also prints error if can't find.
+            auto sso = vr::VRSettings()->GetBool(
+                vr::k_pch_SteamVR_Section,
+                vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
+                &vrSettingsError );
+            if ( vrSettingsError != vr::VRSettingsError_None )
             {
-                LOG( DEBUG ) << "OpenVR returns an error and we have a custom "
-                                "supersampling value: "
-                             << m_superSampling;
-                setSuperSampling( 1.0 );
+                LOG( WARNING )
+                    << "Could not read \""
+                    << vr::k_pch_SteamVR_SupersampleManualOverride_Bool
+                    << "\" setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
             }
-        }
-        else if ( m_superSampling != ss )
-        {
-            LOG( DEBUG ) << "OpenVR reports a changed supersampling value: "
-                         << m_superSampling << " => " << ss;
-            setSuperSampling( ss );
-        }
-        // checks if Supersampling filter is on and changes if it has been
-        // changed elsewhere
-        auto sf = vr::VRSettings()->GetBool(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setAllowSupersampleFiltering( sf );
+            setAllowSupersampleOverride( sso );
+            // checks supersampling and re-synchs if necessary
+            auto ss = vr::VRSettings()->GetFloat(
+                vr::k_pch_SteamVR_Section,
+                vr::k_pch_SteamVR_SupersampleScale_Float,
+                &vrSettingsError );
+            if ( vrSettingsError != vr::VRSettingsError_None )
+            {
+                LOG( WARNING )
+                    << "Could not read \""
+                    << vr::k_pch_SteamVR_SupersampleScale_Float
+                    << "\" setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
+                if ( m_superSampling != 1.0f )
+                {
+                    LOG( DEBUG )
+                        << "OpenVR returns an error and we have a custom "
+                           "supersampling value: "
+                        << m_superSampling;
+                    setSuperSampling( 1.0 );
+                }
+            }
+            else if ( m_superSampling != ss )
+            {
+                LOG( DEBUG ) << "OpenVR reports a changed supersampling value: "
+                             << m_superSampling << " => " << ss;
+                setSuperSampling( ss );
+            }
+            // checks if Supersampling filter is on and changes if it has been
+            // changed elsewhere
+            auto sf = vr::VRSettings()->GetBool(
+                vr::k_pch_SteamVR_Section,
+                vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
+                &vrSettingsError );
+            if ( vrSettingsError != vr::VRSettingsError_None )
+            {
+                LOG( WARNING )
+                    << "Could not read \""
+                    << vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool
+                    << "\" setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
+            }
+            setAllowSupersampleFiltering( sf );
 
-        // Checks if Motion smoothing setting can be read and synchs adv
-        // settings to steamvr/openvr
-        auto ms
-            = vr::VRSettings()->GetBool( vr::k_pch_SteamVR_Section,
-                                         vr::k_pch_SteamVR_MotionSmoothing_Bool,
-                                         &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_MotionSmoothing_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
+            // Checks if Motion smoothing setting can be read and synchs adv
+            // settings to steamvr/openvr
+            auto ms = vr::VRSettings()->GetBool(
+                vr::k_pch_SteamVR_Section,
+                vr::k_pch_SteamVR_MotionSmoothing_Bool,
+                &vrSettingsError );
+            if ( vrSettingsError != vr::VRSettingsError_None )
+            {
+                LOG( WARNING )
+                    << "Could not read \""
+                    << vr::k_pch_SteamVR_MotionSmoothing_Bool << "\" setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
+            }
+            setMotionSmoothing( ms );
         }
-        setMotionSmoothing( ms );
-
         settingsUpdateCounter = 0;
     }
     else
@@ -198,7 +204,7 @@ void SteamVRTabController::reloadSteamVRProfiles()
     {
         settings->setArrayIndex( i );
         steamvrProfiles.emplace_back();
-        auto& entry = steamvrProfiles[i];
+        auto& entry = steamvrProfiles[static_cast<size_t>( i )];
         entry.profileName
             = settings->value( "profileName" ).toString().toStdString();
         entry.includesSupersampling
@@ -237,7 +243,7 @@ void SteamVRTabController::saveSteamVRProfiles()
     unsigned i = 0;
     for ( auto& p : steamvrProfiles )
     {
-        settings->setArrayIndex( i );
+        settings->setArrayIndex( static_cast<int>( i ) );
         settings->setValue( "profileName",
                             QString::fromStdString( p.profileName ) );
         settings->setValue( "includesSupersampling", p.includesSupersampling );

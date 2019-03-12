@@ -2,7 +2,6 @@
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
 #include <cmath>
-#include "../ivrinput/ivrinput.h"
 
 // application namespace
 namespace advsettings
@@ -74,7 +73,7 @@ void ChaperoneTabController::reloadChaperoneProfiles()
     {
         settings->setArrayIndex( i );
         chaperoneProfiles.emplace_back();
-        auto& entry = chaperoneProfiles[i];
+        auto& entry = chaperoneProfiles[static_cast<size_t>( i )];
         entry.profileName
             = settings->value( "profileName" ).toString().toStdString();
         entry.includesChaperoneGeometry
@@ -233,7 +232,7 @@ void ChaperoneTabController::saveChaperoneProfiles()
     unsigned i = 0;
     for ( auto& p : chaperoneProfiles )
     {
-        settings->setArrayIndex( i );
+        settings->setArrayIndex( static_cast<int>( i ) );
         settings->setValue( "profileName",
                             QString::fromStdString( p.profileName ) );
         settings->setValue( "includesChaperoneGeometry",
@@ -547,7 +546,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
             if ( !vr::VROverlay()->IsDashboardVisible() )
             {
                 vr::VROverlay()->ShowDashboard(
-                    OverlayController::applicationKey );
+                    application_strings::applicationKey );
             }
             m_chaperoneShowDashboardActive = true;
         }
@@ -570,7 +569,7 @@ void ChaperoneTabController::eventLoopTick(
     {
         float mod = m_chaperoneVelocityModifier
                     * std::max( { leftSpeed, rightSpeed, hmdSpeed } );
-        if ( mod > 0.02 )
+        if ( mod > 0.02f )
         {
             m_chaperoneVelocityModifierCurrent += mod;
         }
@@ -670,66 +669,72 @@ void ChaperoneTabController::eventLoopTick(
         }
     }
 
-    if ( settingsUpdateCounter >= 50 )
+    if ( settingsUpdateCounter >= k_chaperoneSettingsUpdateCounter )
     {
-        vr::EVRSettingsError vrSettingsError;
-        float vis = vr::VRSettings()->GetInt32(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
+        if ( parent->isDashboardVisible() )
         {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_CollisionBounds_ColorGammaA_Int32
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setBoundsVisibility( vis / 255.0f );
-        if ( m_chaperoneVelocityModifierCurrent == 1.0f )
-        {
-            auto fd = vr::VRSettings()->GetFloat(
+            vr::EVRSettingsError vrSettingsError;
+            float vis = static_cast<float>( vr::VRSettings()->GetInt32(
                 vr::k_pch_CollisionBounds_Section,
-                vr::k_pch_CollisionBounds_FadeDistance_Float,
+                vr::k_pch_CollisionBounds_ColorGammaA_Int32,
+                &vrSettingsError ) );
+            if ( vrSettingsError != vr::VRSettingsError_None )
+            {
+                LOG( WARNING )
+                    << "Could not read \""
+                    << vr::k_pch_CollisionBounds_ColorGammaA_Int32
+                    << "\" setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
+            }
+            setBoundsVisibility( vis / 255.0f );
+            if ( m_chaperoneVelocityModifierCurrent == 1.0f )
+            {
+                auto fd = vr::VRSettings()->GetFloat(
+                    vr::k_pch_CollisionBounds_Section,
+                    vr::k_pch_CollisionBounds_FadeDistance_Float,
+                    &vrSettingsError );
+                if ( vrSettingsError != vr::VRSettingsError_None )
+                {
+                    LOG( WARNING )
+                        << "Could not read \""
+                        << vr::k_pch_CollisionBounds_FadeDistance_Float
+                        << "\" setting: "
+                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                               vrSettingsError );
+                }
+                setFadeDistance( fd );
+            }
+            auto cm = vr::VRSettings()->GetBool(
+                vr::k_pch_CollisionBounds_Section,
+                vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
                 &vrSettingsError );
             if ( vrSettingsError != vr::VRSettingsError_None )
             {
                 LOG( WARNING )
                     << "Could not read \""
-                    << vr::k_pch_CollisionBounds_FadeDistance_Float
+                    << vr::k_pch_CollisionBounds_CenterMarkerOn_Bool
                     << "\" setting: "
                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                            vrSettingsError );
             }
-            setFadeDistance( fd );
+            setCenterMarker( cm );
+            auto ps = vr::VRSettings()->GetBool(
+                vr::k_pch_CollisionBounds_Section,
+                vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
+                &vrSettingsError );
+            if ( vrSettingsError != vr::VRSettingsError_None )
+            {
+                LOG( WARNING )
+                    << "Could not read \""
+                    << vr::k_pch_CollisionBounds_PlaySpaceOn_Bool
+                    << "\" setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
+            }
+            setPlaySpaceMarker( ps );
+            updateHeight( getBoundsMaxY() );
         }
-        auto cm = vr::VRSettings()->GetBool(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_CollisionBounds_CenterMarkerOn_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setCenterMarker( cm );
-        auto ps = vr::VRSettings()->GetBool(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_CollisionBounds_PlaySpaceOn_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setPlaySpaceMarker( ps );
-        updateHeight( getBoundsMaxY() );
         settingsUpdateCounter = 0;
     }
     else
@@ -757,7 +762,8 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
         }
         vr::VRSettings()->SetInt32( vr::k_pch_CollisionBounds_Section,
                                     vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-                                    255 * m_visibility );
+			static_cast<int32_t>(255 * m_visibility) );
+
         vr::VRSettings()->Sync();
         if ( notify )
         {
@@ -955,7 +961,7 @@ float ChaperoneTabController::chaperoneVelocityModifier() const
 
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount()
 {
-    return ( unsigned ) chaperoneProfiles.size();
+    return static_cast<unsigned int>( chaperoneProfiles.size() );
 }
 
 Q_INVOKABLE QString
@@ -1297,8 +1303,9 @@ void ChaperoneTabController::setDisableChaperone( bool value, bool notify )
 
 void ChaperoneTabController::flipOrientation()
 {
+    parent->m_moveCenterTabController.reset();
     parent->RotateUniverseCenter( vr::TrackingUniverseStanding,
-                                  ( float ) M_PI );
+                                  static_cast<float>( M_PI ) );
 }
 
 void ChaperoneTabController::reloadFromDisk()

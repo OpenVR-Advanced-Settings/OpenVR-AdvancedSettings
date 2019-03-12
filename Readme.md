@@ -1,5 +1,6 @@
-![language](https://img.shields.io/badge/Language-C%2B%2B11%2C%20QML-green.svg) ![dependencies](https://img.shields.io/badge/Dependencies-OpenVR%2C%20Qt5-green.svg)
+![language](https://img.shields.io/badge/Language-C%2B%2B17%2C%20QML-green.svg) ![dependencies](https://img.shields.io/badge/Dependencies-OpenVR%2C%20Qt5%2C%20Python3-green.svg)
 ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg) 
+
 [![Build status](https://ci.appveyor.com/api/projects/status/8oivf5xws6vsq2x3/branch/master?svg=true)](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master)
 [![Build Status](https://travis-ci.org/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings.svg?branch=master)](https://travis-ci.org/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings)
 
@@ -9,7 +10,6 @@
  >   * [Standalone](#standalone)
  >   * [Bindings](#bindings)
  >   * [Command Line Arguments](#command_line_arguments)
- >   * [Logging Config](#logging_config)
  >   * [Preview Builds](#preview_builds)
  > * [Documentation](#documentation)
  >   * [Top Page](#top_page)
@@ -21,14 +21,12 @@
  >   * [Audio Page](#audio_page)
  >   * [Revive Page](#revive_page)
  >   * [Utilities Page](#utilities_page)
- >   * [Accessibility Page](#accessibility_page)
  >   * [Statistics Page](#statistics_page)
  >   * [Settings Page](#settings_page)
  > * [How To Compile](#how_to_compile)
  >   * [Building on Windows](#building_on_windows)
  >   * [Building on Linux](#building_on_linux)
  > * [Notes](#notes)
- > * [Known Bugs](#known_bugs)
  > * [License](#license)
 
 <a name="top"></a>
@@ -42,7 +40,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 # Features
 
 - Set supersampling values.
-- Enable/disable asynchronous and interleaved reprojection.
+- Enable/disable motion smoothing and advanced supersample filtering.
 - Save supersampling and reprojection settings into profiles.
 - Change several chaperone settings not accessible via SteamVR settings (to e.g. make it completely invisible).
 - Chaperone Proximity Warning: Several warning methods can be configured.
@@ -54,7 +52,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 - Mute/unmute and set volume of audio mirror device.
 - Mute/unmute and set volume of microphone device.
 - Implements push-to-talk and allows to configure push-to-talk profiles.
-- Desktop mode shows a window on the desktop instead of a vr overlay.
+- Desktop mode shows a window on the desktop instead of a VR overlay.
 - Revive settings support (Requires [Revive 1.0.4+](https://github.com/LibreVR/Revive) for full functionality).
 - VR Keyboard Input Utilities
 - Simple Alarm Clock
@@ -68,13 +66,12 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 
 Download the newest installer from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and execute it.
 
-If you have an older standalone version installed, delete the old application folder first.
+If you have an older standalone version installed, the installer will automatically uninstall the old version and install the new version.
 
 <a name="standalone"></a>
 ## Standalone
-I am not currently providing standalone Archives if you want a standalone version you can:
 
-Download the newest standalone archive from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases)and unpack the archive.
+Download the newest standalone archive from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and unpack the archive.
 
 To install for the first time simply start AdvancedSettings.exe once while SteamVR is running. It will register with SteamVR and automatically starts whenever SteamVR starts (Can be disabled in the settings).
 
@@ -83,13 +80,7 @@ To upgrade an existing installation first stop SteamVR and delete the old applic
 <a name="bindings"></a>
 ## Bindings
 
-Advanced Settings supports the OpenVR IVRInput API. In order to make the bindings interface visible, change the `matzman666.AdvancedSettings.vrappconfig` in `C:\Program Files (x86)\Steam\config\vrappconfig` to have a `last_launch_time` close to the current date (in [Unix time](https://en.wikipedia.org/wiki/Unix_time)). If in doubt, try using the value from [this](https://time.is/Unix_time_now) site. Running the application normally will now make it show up in the bindings interface.
-
-Alternatively, if the above doesn't work, run the `bindingsinterface.bat` file from the install directory. After you're done configuring your bindings, close SteamVR and start it up again. You are now using your new bindings. Advanced Settings will not show up in the bindings menu unless you're actively running the application with `bindingsinterface.bat`. Advanced Settings will not work normally while running with `bindingsinterface.bat`.
-
-The above two solutions are workarounds to a bug in the OpenVR API.
-
-After doing one of the above workarounds, when SteamVR starts click the menu -> Settings -> Controller Binding. You can also visit [this](127.0.0.1:8998/dashboard/controllerbinding.html) site in your internet browser. It's the same as the built in SteamVR bindings menu. SteamVR must be running for it to work.
+After SteamVR beta 1.3.1 the bindings for Advanced Settings will show up in the bindings menu.
 
 By default no buttons are bound.
 
@@ -108,29 +99,22 @@ The following actions currently exist:
 
 The application (`AdvancedSettings.exe`) can be run with the following optional arguments:
 
-`"-desktop"`: Creates a settings window on the desktop as well as in VR. Running `startdesktopmode.bat` in the install directory has the same effect.
+`"--desktop-mode"`: Creates a settings window on the desktop, but not in VR. Running `startdesktopmode.bat` in the install directory has the same effect.
 
-`"-nosound"`: Forces sound effects off.
+`"--force-no-sound"`: Forces sound effects off.
 
-`"-nomanifest"`: Forces not using a `.vrmanifest`.
+`"--force-no-manifest"`: Forces not using a `.vrmanifest`.
 
-`"-installmanifest"`: Force installs the `.vrmanifest` and adds the application to autostart. If you're having issues with autostart not working try running the program once with this set. The program will exit early when this flag is set.
+`"--force-install-manifest"`: Force installs the `.vrmanifest` and adds the application to autostart. If you're having issues with autostart not working try running the program once with this set. The program will exit early when this flag is set.
 
-`"-removemanifest"`: Force uninstalls the `.vrmanifest`. This should be done every time the application is uninstalled. On Windows it is automatically done by the uninstaller. The program will exit early when this flag is set.
-
-`"-bindingsinterface"`: Makes Advanced Settings show up in the SteamVR bindings interface. This is necessary for binding keys to actions. This is the same as running `bindingsinterface.bat` from the executable directory.
-
-In addition, the application can receive the command line arguments from the [Easylogging++ library](https://github.com/zuhd-org/easyloggingpp#application-arguments).
-
-<a name="logging_config"></a>
-## Logging Config
-
-The logging output of the [Easylogging++ library](https://github.com/zuhd-org/easyloggingpp#application-arguments) can be customized by placing a file called `logging.conf` in the directory of the binary. This should be considered for advanced users only and it is not recommended.
+`"--force-remove-manifest"`: Force uninstalls the `.vrmanifest`. This should be done every time the application is uninstalled. On Windows it is automatically done by the uninstaller. The program will exit early when this flag is set.
 
 <a name="preview_builds"></a>
 ## Preview builds
 
-If you want to try latest and greatest unreleased features, you can download latest changes in the alpha branches of the repository.
+If you want to try latest and greatest unreleased features, you can download the latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master). The Linux CI does not provide binary artifacts.
+
+These version are not stable and this should be considered for advanced users only.
 
 <a name="documentation"></a>
 # Documentation
@@ -143,7 +127,7 @@ If you want to try latest and greatest unreleased features, you can download lat
 - **Supersampling Profile**: Allows to apply supersampling profiles. Profiles can be created on the SteamVR page
 - **Chaperone Profile**: Allows to apply chaperone profiles. Profiles can be created on the Chaperone page
 - **Microphone**: Allows to set the microphone volume and to mute/unmute it.
-- **Push-to-Talk**: Enable/disable push-to-talk and allows to apply push-to-talk profiles. Profiles can be created on the Audio page.
+- **Push-to-Talk**: Enable/disable push-to-talk.
 
 <a name="steamvr_page"></a>
 ## - SteamVR Page:
@@ -214,18 +198,17 @@ Allows to temporarily move and rotate the center of the playspace. This allows t
 - **Mirror Device**: Allows to select the mirror device, set its volume and to mute/unmute it.
 - **Microphone**: Allows to select the microphone device, set its volume and to mute/unmute it.
 - **Proximity Sensor Mutes/Unmutes Microphone**: Allows the proximity sensor to mute the microphone when the user is not wearing the HMD, and to unmute it when the user is wearing the HMD.
-- **Push-to-Talk**: Enable/disable push-to-talk. When push-to-talk is activated the microphone gets muted unless one of the configured buttons is pressed on one of the configured controllers.
-- **Left Controller**: Configure the left controller for push-to-talk.
-- **Right Controller**: Configure the right controller for push-to-talk.
-- **Show Notification**: Shows a notification icon in the headset when push-to-talk is enabled a configured button is pressed.
+- **Push-to-Talk**: Enable/disable push-to-talk. When push-to-talk is activated the microphone gets muted unless the Push To Talk action is activated.
+- **Show Notification**: Shows a notification icon in the headset when the Push To Talk action is activated.
 - **Push-to-Mute**: Inverse push-to-talk. The Microphone is unmuted by default and muted when any of the configured buttons is pressed.
-- **PTT Profile**: Allows you to apply/define/delete push-to-talk profiles that save buttons, controller and notification settings.
 - **Audio Profile**: Allows you to apply/define/delete audio profiles that save playback devices, mute state, and volume.
 
 <a name="revive_page"></a>
 ## - Revive Page:
 
 ![Revive Page](docs/screenshots/RevivePage.png)
+
+**The Revive page is not currently being maintained. Features may not be stable, performant or actually work.**
 
 The Revive page is only visible when the [Revive overlay](https://github.com/LibreVR/Revive) is installed. In case an installed Revive overlay is not correctly detected you can force the Revive page in the settings.
 
@@ -257,12 +240,6 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 - **Steam Desktop Overlay Width:** Allows to increase the size of the Steam desktop overlay. Useful for multi-monitor setups.
 
 - **Media Control Keys:** Allows controlling a media player through the media keys. This is the same as having a keyboard with media keys and then pressing them. Should support most common media players.
-<a name="accessibility_page"></a>
-## - Accessibility Page:
-
-![Accessibility Page](docs/screenshots/AccessibilityPage.png)
-
-- **Adjust Player Height:** Offsets the player height to allows short or wheelchair-bound players to fully interact with height-limited applications by both boosting their height and being able to touch the in-game floor when necessary by pressing a configurable motion controller button.
 
 <a name="statistics_page"></a>
 ## - Statistics Page:
@@ -298,10 +275,7 @@ Full build instructions can be found [here](docs/building_for_windows.md).
 <a name="building_on_linux"></a>
 ## Building on Linux
 
-If you want to run Advanced Settings on linux you can build it yourself using `qmake` and `make` or using Qt Creator, you'll have to copy the `res` folder from the `src` folder into folder that contains the binary
-and copy `third-party/openvr/lib/linux64/libopenvr_api.so` into your systems library path.
-
-If you want to contribute changes running `clang-format` is necessary. More details are in the [CONTRIBUTING.md](docs/CONTRIBUTING.md) file.
+Full build instructions can be found [here](docs/building_for_linux.md).
 
 <a name="notes"></a>
 # Notes:
@@ -311,11 +285,6 @@ If you want to contribute changes running `clang-format` is necessary. More deta
 - Application autostart can also be configured in the SteamVR menu (SteamVR->Settings->Applications->"Advanced Settings").
 
 - You can modify the shutdown wait time when restarting SteamVR by opening restartvrserver.bat and changing the number behind "timeout /t" (unit is seconds).
-
-<a name="known_bugs"></a>
-# Known Bugs
-
-- None yet.
 
 <a name="license"></a>
 # License

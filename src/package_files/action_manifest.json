@@ -39,7 +39,6 @@
       "requirement": "optional",
       "type": "boolean"
     },
-
 	{
 	  "name": "/actions/main/out/HapticsLeft",
 	  "type": "vibration"
@@ -47,7 +46,102 @@
 	{
 	  "name": "/actions/main/out/HapticsRight",
 	  "type": "vibration"
-	}
+	},
+    {
+      "name": "/actions/main/in/LeftHandSpaceTurn",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/RightHandSpaceTurn",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/LeftHandSpaceDrag",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/RightHandSpaceDrag",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/OptionalOverrideLeftHandSpaceTurn",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/OptionalOverrideRightHandSpaceTurn",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/OptionalOverrideLeftHandSpaceDrag",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/OptionalOverrideRightHandSpaceDrag",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/SwapSpaceDragToLeftHandOverride",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/SwapSpaceDragToRightHandOverride",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/GravityToggle",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/HeightToggle",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/ResetOffsets",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/SnapTurnLeft",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/SnapTurnRight",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/XAxisLockToggle",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/YAxisLockToggle",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/ZAxisLockToggle",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/main/in/PushToTalk",
+      "requirement": "optional",
+      "type": "boolean"
+    }
   ],
   "action_sets": [
     {
@@ -57,7 +151,7 @@
   ],
   "localization" : [
    {
-       "language_tag": "en_us",
+       "language_tag": "en_US",
 
         "/actions/main" : "Advanced Settings Actions",
 
@@ -66,7 +160,27 @@
         "/actions/main/in/PausePlayTrack" : "Pause/Play Track",
         "/actions/main/in/StopTrack" : "Stop Track",
 		"/actions/main/out/HapticsLeft" : "Haptics Left",
-		"/actions/main/out/HapticsRight" : " Haptics Right"
+		"/actions/main/out/HapticsRight" : " Haptics Right",
+        "/actions/main/in/LeftHandSpaceTurn" : "Left Hand Space Turn",
+        "/actions/main/in/RightHandSpaceTurn" : "Right Hand Space Turn",
+        "/actions/main/in/LeftHandSpaceDrag" : "Left Hand Space Drag",
+        "/actions/main/in/RightHandSpaceDrag" : "Right Hand Space Drag",
+        "/actions/main/in/OptionalOverrideLeftHandSpaceTurn" : "(Optional Override) Left Hand Space Turn",
+        "/actions/main/in/OptionalOverrideRightHandSpaceTurn" : "(Optional Override) Right Hand Space Turn",
+        "/actions/main/in/OptionalOverrideLeftHandSpaceDrag" : "(Optional Override) Left Hand Space Drag",
+        "/actions/main/in/OptionalOverrideRightHandSpaceDrag" : "(Optional Override) Right Hand Space Drag",
+        "/actions/main/in/SwapSpaceDragToLeftHandOverride" : "Swap Active Space Drag to Left Hand (Override)",
+        "/actions/main/in/SwapSpaceDragToRightHandOverride" : "Swap Active Space Drag to Right Hand (Override)",
+        "/actions/main/in/GravityToggle" : "Gravity Toggle",
+        "/actions/main/in/HeightToggle" : "Height Toggle",
+        "/actions/main/in/ResetOffsets" : "Reset Offsets",
+        "/actions/main/in/SnapTurnLeft" : "Snap-Turn Left",
+        "/actions/main/in/SnapTurnRight" : "Snap-Turn Right",
+        "/actions/main/in/XAxisLockToggle" : "X-Axis Lock Toggle",
+        "/actions/main/in/YAxisLockToggle" : "Y-Axis Lock Toggle",
+        "/actions/main/in/ZAxisLockToggle" : "Z-Axis Lock Toggle",
+
+        "/actions/main/in/PushToTalk" : "Push To Talk"
     }
   ]
 }

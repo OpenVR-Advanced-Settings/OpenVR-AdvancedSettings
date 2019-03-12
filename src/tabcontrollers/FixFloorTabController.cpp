@@ -86,9 +86,9 @@ void FixFloorTabController::eventLoopTick(
 
                 auto& m = devicePoses[referenceController]
                               .mDeviceToAbsoluteTracking.m;
-                tempOffsetX = ( double ) m[0][3];
-                tempOffsetY = ( double ) m[1][3];
-                tempOffsetZ = ( double ) m[2][3];
+                tempOffsetX = static_cast<double>( m[0][3] );
+                tempOffsetY = static_cast<double>( m[1][3] );
+                tempOffsetZ = static_cast<double>( m[2][3] );
                 /*
                 | Intrinsic y-x'-z" rotation matrix:
                 | cr*cy+sp*sr*sy | cr*sp*sy-cy*sr | cp*sy |
@@ -99,7 +99,8 @@ void FixFloorTabController::eventLoopTick(
                 pitch = -asin(-sp) [pi/2, -pi/2]
                 roll = atan2(cp*sr, cp*cr) [pi, -pi], CW
                 */
-                tempRoll = std::atan2( ( double ) m[1][0], ( double ) m[1][1] );
+                tempRoll = std::atan2( static_cast<double>( m[1][0] ),
+                                       static_cast<double>( m[1][1] ) );
                 measurementCount = 1;
             }
         }
@@ -109,9 +110,9 @@ void FixFloorTabController::eventLoopTick(
             auto& m
                 = devicePoses[referenceController].mDeviceToAbsoluteTracking.m;
 
-            double rollDiff
-                = std::atan2( ( double ) m[1][0], ( double ) m[1][1] )
-                  - tempRoll;
+            double rollDiff = std::atan2( static_cast<double>( m[1][0] ),
+                                          static_cast<double>( m[1][1] ) )
+                              - tempRoll;
             if ( rollDiff > M_PI )
             {
                 rollDiff -= 2.0 * M_PI;
@@ -120,7 +121,7 @@ void FixFloorTabController::eventLoopTick(
             {
                 rollDiff += 2.0 * M_PI;
             }
-            tempRoll += rollDiff / ( double ) measurementCount;
+            tempRoll += rollDiff / static_cast<double>( measurementCount );
             if ( tempRoll > M_PI )
             {
                 tempRoll -= 2.0 * M_PI;
@@ -134,18 +135,20 @@ void FixFloorTabController::eventLoopTick(
             {
                 if ( std::abs( tempRoll ) <= M_PI_2 )
                 {
-                    floorOffsetY = tempOffsetY - controllerUpOffsetCorrection;
+                    floorOffsetY = static_cast<float>( tempOffsetY )
+                                   - controllerUpOffsetCorrection;
                 }
                 else
                 {
-                    floorOffsetY = tempOffsetY - controllerDownOffsetCorrection;
+                    floorOffsetY = static_cast<float>( tempOffsetY )
+                                   - controllerDownOffsetCorrection;
                 }
 
-                floorOffsetX = tempOffsetX;
-                floorOffsetZ = tempOffsetZ;
+                floorOffsetX = static_cast<float>( tempOffsetX );
+                floorOffsetZ = static_cast<float>( tempOffsetZ );
 
                 LOG( INFO )
-                    << "Fix Floor and adjust playspace center: Floor Offset = ["
+                    << "Fix Floor and adjust space center: Floor Offset = ["
                     << floorOffsetX << ", " << floorOffsetY << ", "
                     << floorOffsetZ << "]";
                 float offset[3] = { 0, 0, 0 };

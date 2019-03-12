@@ -8,7 +8,7 @@ namespace advsettings
 void SettingsTabController::initStage1()
 {
     m_autoStartEnabled = vr::VRApplications()->GetApplicationAutoLaunch(
-        OverlayController::applicationKey );
+        application_strings::applicationKey );
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "applicationSettings" );
     auto value = settings->value( "forceRevivePage", m_forceRevivePage );
@@ -28,10 +28,13 @@ void SettingsTabController::initStage2( OverlayController* var_parent,
 
 void SettingsTabController::eventLoopTick()
 {
-    if ( settingsUpdateCounter >= 50 )
+    if ( settingsUpdateCounter >= k_settingsTabSettingsUpdateCounter )
     {
-        setAutoStartEnabled( vr::VRApplications()->GetApplicationAutoLaunch(
-            OverlayController::applicationKey ) );
+        if ( parent->isDashboardVisible() )
+        {
+            setAutoStartEnabled( vr::VRApplications()->GetApplicationAutoLaunch(
+                application_strings::applicationKey ) );
+        }
         settingsUpdateCounter = 0;
     }
     else
@@ -51,7 +54,7 @@ void SettingsTabController::setAutoStartEnabled( bool value, bool notify )
     {
         m_autoStartEnabled = value;
         auto apperror = vr::VRApplications()->SetApplicationAutoLaunch(
-            OverlayController::applicationKey, m_autoStartEnabled );
+            application_strings::applicationKey, m_autoStartEnabled );
         if ( apperror != vr::VRApplicationError_None )
         {
             LOG( ERROR ) << "Could not set auto start: "
