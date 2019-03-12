@@ -1,7 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
-import matzman666.advsettings 1.0
+import ovras.advsettings 1.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 import "common"
 import "utilities_page"
@@ -50,7 +50,7 @@ MyStackViewPage {
                    MyPushButton {
                        id: playSpaceButton
                        activationSoundEnabled: false
-                       text: "Room Settings"
+                       text: "Offsets"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -59,9 +59,20 @@ MyStackViewPage {
                    }
 
                    MyPushButton {
+                       id: motionButton
+                       activationSoundEnabled: false
+                       text: "Motion"
+                       Layout.fillWidth: true
+                       onClicked: {
+                           MyResources.playFocusChangedSound()
+                           mainView.push(motionPage)
+                       }
+                   }
+
+                   MyPushButton {
                        id: fixFloorButton
                        activationSoundEnabled: false
-                       text: "Room Fix"
+                       text: "Space Fix"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()

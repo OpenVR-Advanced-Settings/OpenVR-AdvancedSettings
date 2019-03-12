@@ -18,6 +18,12 @@ DISTFILES += \
     src/res/qml/ChaperoneWarningsPage.qml \
     src/res/qml/FixFloorPage.qml \
     src/res/qml/PlayspacePage.qml \
+    src/res/qml/motion_page/* \
+    src/res/qml/motion_page/gravity/* \
+    src/res/qml/motion_page/height_toggle/* \
+    src/res/qml/motion_page/snap_turn/* \
+    src/res/qml/motion_page/universe_drag/* \
+    src/res/qml/motion_page/universe_turn/* \
     src/res/qml/RevivePage.qml \
     src/res/qml/RootPage.qml \
     src/res/qml/SettingsPage.qml \
@@ -34,3 +40,5 @@ DISTFILES += \
     src/res/qml/audio_page/push_to_talk/* \
     src/res/qml/audio_page/profiles/* \
     src/res/qml/common/* \
+
+RC_FILE = src/res/icon.rc

@@ -41,15 +41,24 @@ public:
     bool previousSong();
     bool pausePlaySong();
     bool stopSong();
-
-    bool leftHandRoomTurn();
-    bool rightHandRoomTurn();
-    bool leftHandRoomDrag();
-    bool rightHandRoomDrag();
-    bool optionalOverrideLeftHandRoomTurn();
-    bool optionalOverrideRightHandRoomTurn();
-    bool optionalOverrideLeftHandRoomDrag();
-    bool optionalOverrideRightHandRoomDrag();
+    bool leftHandSpaceTurn();
+    bool rightHandSpaceTurn();
+    bool leftHandSpaceDrag();
+    bool rightHandSpaceDrag();
+    bool optionalOverrideLeftHandSpaceTurn();
+    bool optionalOverrideRightHandSpaceTurn();
+    bool optionalOverrideLeftHandSpaceDrag();
+    bool optionalOverrideRightHandSpaceDrag();
+    bool swapSpaceDragToLeftHandOverride();
+    bool swapSpaceDragToRightHandOverride();
+    bool gravityToggle();
+    bool heightToggle();
+    bool resetOffsets();
+    bool snapTurnLeft();
+    bool snapTurnRight();
+    bool xAxisLockToggle();
+    bool yAxisLockToggle();
+    bool zAxisLockToggle();
 
     bool pushToTalk();
 
@@ -82,15 +91,25 @@ private:
     Action m_pausePlayTrack;
     Action m_stopTrack;
 
-    // Room bindings
-    Action m_leftHandRoomTurn;
-    Action m_rightHandRoomTurn;
-    Action m_leftHandRoomDrag;
-    Action m_rightHandRoomDrag;
-    Action m_optionalOverrideLeftHandRoomTurn;
-    Action m_optionalOverrideRightHandRoomTurn;
-    Action m_optionalOverrideLeftHandRoomDrag;
-    Action m_optionalOverrideRightHandRoomDrag;
+    // Space bindings
+    Action m_leftHandSpaceTurn;
+    Action m_rightHandSpaceTurn;
+    Action m_leftHandSpaceDrag;
+    Action m_rightHandSpaceDrag;
+    Action m_optionalOverrideLeftHandSpaceTurn;
+    Action m_optionalOverrideRightHandSpaceTurn;
+    Action m_optionalOverrideLeftHandSpaceDrag;
+    Action m_optionalOverrideRightHandSpaceDrag;
+    Action m_swapSpaceDragToLeftHandOverride;
+    Action m_swapSpaceDragToRightHandOverride;
+    Action m_gravityToggle;
+    Action m_heightToggle;
+    Action m_resetOffsets;
+    Action m_snapTurnLeft;
+    Action m_snapTurnRight;
+    Action m_xAxisLockToggle;
+    Action m_yAxisLockToggle;
+    Action m_zAxisLockToggle;
 
     // Push To Talk
     Action m_pushToTalk;
@@ -108,22 +127,34 @@ namespace input_strings
     constexpr auto k_actionPausePlayTrack = "/actions/main/in/PausePlayTrack";
     constexpr auto k_actionStopTrack = "/actions/main/in/StopTrack";
 
-    constexpr auto k_actionLeftHandRoomTurn
-        = "/actions/main/in/LeftHandRoomTurn";
-    constexpr auto k_actionRightHandRoomTurn
-        = "/actions/main/in/RightHandRoomTurn";
-    constexpr auto k_actionLeftHandRoomDrag
-        = "/actions/main/in/LeftHandRoomDrag";
-    constexpr auto k_actionRightHandRoomDrag
-        = "/actions/main/in/RightHandRoomDrag";
-    constexpr auto k_actionOptionalOverrideLeftHandRoomTurn
-        = "/actions/main/in/OptionalOverrideLeftHandRoomTurn";
-    constexpr auto k_actionOptionalOverrideRightHandRoomTurn
-        = "/actions/main/in/OptionalOverrideRightHandRoomTurn";
-    constexpr auto k_actionOptionalOverrideLeftHandRoomDrag
-        = "/actions/main/in/OptionalOverrideLeftHandRoomDrag";
-    constexpr auto k_actionOptionalOverrideRightHandRoomDrag
-        = "/actions/main/in/OptionalOverrideRightHandRoomDrag";
+    constexpr auto k_actionLeftHandSpaceTurn
+        = "/actions/main/in/LeftHandSpaceTurn";
+    constexpr auto k_actionRightHandSpaceTurn
+        = "/actions/main/in/RightHandSpaceTurn";
+    constexpr auto k_actionLeftHandSpaceDrag
+        = "/actions/main/in/LeftHandSpaceDrag";
+    constexpr auto k_actionRightHandSpaceDrag
+        = "/actions/main/in/RightHandSpaceDrag";
+    constexpr auto k_actionOptionalOverrideLeftHandSpaceTurn
+        = "/actions/main/in/OptionalOverrideLeftHandSpaceTurn";
+    constexpr auto k_actionOptionalOverrideRightHandSpaceTurn
+        = "/actions/main/in/OptionalOverrideRightHandSpaceTurn";
+    constexpr auto k_actionOptionalOverrideLeftHandSpaceDrag
+        = "/actions/main/in/OptionalOverrideLeftHandSpaceDrag";
+    constexpr auto k_actionOptionalOverrideRightHandSpaceDrag
+        = "/actions/main/in/OptionalOverrideRightHandSpaceDrag";
+    constexpr auto k_actionSwapSpaceDragToLeftHandOverride
+        = "/actions/main/in/SwapSpaceDragToLeftHandOverride";
+    constexpr auto k_actionSwapSpaceDragToRightHandOverride
+        = "/actions/main/in/SwapSpaceDragToRightHandOverride";
+    constexpr auto k_actionGravityToggle = "/actions/main/in/GravityToggle";
+    constexpr auto k_actionHeightToggle = "/actions/main/in/HeightToggle";
+    constexpr auto k_actionResetOffsets = "/actions/main/in/ResetOffsets";
+    constexpr auto k_actionSnapTurnLeft = "/actions/main/in/SnapTurnLeft";
+    constexpr auto k_actionSnapTurnRight = "/actions/main/in/SnapTurnRight";
+    constexpr auto k_actionXAxisLockToggle = "/actions/main/in/XAxisLockToggle";
+    constexpr auto k_actionYAxisLockToggle = "/actions/main/in/YAxisLockToggle";
+    constexpr auto k_actionZAxisLockToggle = "/actions/main/in/ZAxisLockToggle";
 
     constexpr auto k_actionPushToTalk = "/actions/main/in/PushToTalk";
 

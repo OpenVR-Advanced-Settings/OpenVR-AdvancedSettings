@@ -13,6 +13,10 @@
         !define PROJECTDIR "..\"
         !define VERSION_STRING "2-8-0-dev"
 
+        
+    ;Installer icon
+    !define MUI_ICON "${PROJECTDIR}\src\res\img\icons\advicon256px.ico"
+    
 	;Name and file
 	Name "OpenVR Advanced Settings"
         OutFile "AdvancedSettings-${VERSION_STRING}-Installer.exe"
@@ -114,7 +118,7 @@ Section "Install" SecInstall
     ;Any action manifests
     File "${BASEDIR}\*.json"
     ;And their defaults
-    File "${BASEDIR}\default_action_manifests\*.json"
+    File /r "${BASEDIR}\default_action_manifests"
     
 	File "${THIRDDIR}\openvr\bin\win64\*.dll"
 	File "${BASEDIR}\*.dll"
@@ -128,7 +132,7 @@ Section "Install" SecInstall
 	ExecWait '"$INSTDIR\vcredist_x64.exe" /install /quiet'
 
 	; Install the vrmanifest
-	nsExec::ExecToLog '"$INSTDIR\AdvancedSettings.exe" -installmanifest'
+	nsExec::ExecToLog '"$INSTDIR\AdvancedSettings.exe" --force-install-manifest'
   
 	;Store installation folder
 	WriteRegStr HKLM "Software\OpenVR-AdvancedSettings" "" $INSTDIR
@@ -153,7 +157,7 @@ Section "Uninstall"
 	!insertmacro TerminateOverlay
 
 	; Remove the vrmanifest
-	nsExec::ExecToLog '"$INSTDIR\AdvancedSettings.exe" -removemanifest'
+	nsExec::ExecToLog '"$INSTDIR\AdvancedSettings.exe" --force-remove-manifest'
 
 	; Delete installed files
 	!include uninstallFiles.list

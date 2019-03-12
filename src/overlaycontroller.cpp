@@ -24,20 +24,13 @@
 // application namespace
 namespace advsettings
 {
-constexpr const char* OverlayController::applicationVersionString;
-
 QSettings* OverlayController::_appSettings = nullptr;
 
 OverlayController::OverlayController( bool desktopMode,
                                       bool noSound,
                                       QQmlEngine& qmlEngine )
-    : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ),
-      m_openVrInit(), m_actions()
+    : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ), m_actions()
 {
-    // Despite arguably being OpenVR init code, the call is still here because
-    // the TabController uses this directly. Offering it through OpenVR_Init
-    // might be an option, but it might scope creep OpenVR_Init which currently
-    // doesn't contain any member variables.
     m_runtimePathUrl = QUrl::fromLocalFile( vr::VR_RuntimePath() );
     LOG( INFO ) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
@@ -143,8 +136,9 @@ OverlayController::OverlayController( bool desktopMode,
     // rewriting all QML to not be singletons, which should probably be done
     // whenever possible.
     static OverlayController* const objectAddress = this;
+    constexpr auto qmlSingletonImportName = "ovras.advsettings";
     qmlRegisterSingletonType<OverlayController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "OverlayController",
@@ -158,7 +152,7 @@ OverlayController::OverlayController( bool desktopMode,
     // remaining function calls, or if it's just a copy paste accident that
     // happens to work.
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "SteamVRTabController",
@@ -168,7 +162,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "ChaperoneTabController",
@@ -178,7 +172,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "MoveCenterTabController",
@@ -188,7 +182,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "FixFloorTabController",
@@ -198,7 +192,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "AudioTabController",
@@ -208,7 +202,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "StatisticsTabController",
@@ -218,7 +212,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "SettingsTabController",
@@ -228,7 +222,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "ReviveTabController",
@@ -238,7 +232,7 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
     qmlRegisterSingletonType<SteamVRTabController>(
-        "matzman666.advsettings",
+        qmlSingletonImportName,
         1,
         0,
         "UtilitiesTabController",
@@ -497,22 +491,36 @@ void OverlayController::processRoomBindings()
     // reorder these. Override actions must always come after normal because
     // active priority is set based on which action is "newest"
     // normal actions:
-    m_moveCenterTabController.leftHandRoomDrag( m_actions.leftHandRoomDrag() );
-    m_moveCenterTabController.rightHandRoomDrag(
-        m_actions.rightHandRoomDrag() );
-    m_moveCenterTabController.leftHandRoomTurn( m_actions.leftHandRoomTurn() );
-    m_moveCenterTabController.rightHandRoomTurn(
-        m_actions.rightHandRoomTurn() );
+    m_moveCenterTabController.leftHandSpaceDrag(
+        m_actions.leftHandSpaceDrag() );
+    m_moveCenterTabController.rightHandSpaceDrag(
+        m_actions.rightHandSpaceDrag() );
+    m_moveCenterTabController.leftHandSpaceTurn(
+        m_actions.leftHandSpaceTurn() );
+    m_moveCenterTabController.rightHandSpaceTurn(
+        m_actions.rightHandSpaceTurn() );
+    m_moveCenterTabController.gravityToggle( m_actions.gravityToggle() );
+    m_moveCenterTabController.heightToggle( m_actions.heightToggle() );
+    m_moveCenterTabController.resetOffsets( m_actions.resetOffsets() );
+    m_moveCenterTabController.snapTurnLeft( m_actions.snapTurnLeft() );
+    m_moveCenterTabController.snapTurnRight( m_actions.snapTurnRight() );
+    m_moveCenterTabController.xAxisLockToggle( m_actions.xAxisLockToggle() );
+    m_moveCenterTabController.yAxisLockToggle( m_actions.yAxisLockToggle() );
+    m_moveCenterTabController.zAxisLockToggle( m_actions.zAxisLockToggle() );
 
     // override actions:
-    m_moveCenterTabController.optionalOverrideLeftHandRoomDrag(
-        m_actions.optionalOverrideLeftHandRoomDrag() );
-    m_moveCenterTabController.optionalOverrideRightHandRoomDrag(
-        m_actions.optionalOverrideRightHandRoomDrag() );
-    m_moveCenterTabController.optionalOverrideLeftHandRoomTurn(
-        m_actions.optionalOverrideLeftHandRoomTurn() );
-    m_moveCenterTabController.optionalOverrideRightHandRoomTurn(
-        m_actions.optionalOverrideRightHandRoomTurn() );
+    m_moveCenterTabController.optionalOverrideLeftHandSpaceDrag(
+        m_actions.optionalOverrideLeftHandSpaceDrag() );
+    m_moveCenterTabController.optionalOverrideRightHandSpaceDrag(
+        m_actions.optionalOverrideRightHandSpaceDrag() );
+    m_moveCenterTabController.optionalOverrideLeftHandSpaceTurn(
+        m_actions.optionalOverrideLeftHandSpaceTurn() );
+    m_moveCenterTabController.optionalOverrideRightHandSpaceTurn(
+        m_actions.optionalOverrideRightHandSpaceTurn() );
+    m_moveCenterTabController.swapSpaceDragToLeftHandOverride(
+        m_actions.swapSpaceDragToLeftHandOverride() );
+    m_moveCenterTabController.swapSpaceDragToRightHandOverride(
+        m_actions.swapSpaceDragToRightHandOverride() );
 }
 
 void OverlayController::processPushToTalkBindings()
@@ -565,7 +573,18 @@ void OverlayController::OnTimeoutPumpEvents()
 
         // wait for the next frame after executing our main event loop once.
         m_lastFrame = m_currentFrame;
+        m_vsyncTooLateCounter = 0;
     }
+    else if ( m_vsyncTooLateCounter >= k_nonVsyncTickRate )
+    {
+        mainEventLoop();
+        // m_lastFrame = m_currentFrame + 1 skips the next vsync frame in case
+        // it was just about to trigger, to prevent double updates faster than
+        // 11ms.
+        m_lastFrame = m_currentFrame + 1;
+        m_vsyncTooLateCounter = 0;
+    }
+    m_vsyncTooLateCounter++;
 }
 
 void OverlayController::mainEventLoop()
@@ -671,9 +690,11 @@ void OverlayController::mainEventLoop()
             m_chaperoneTabController.shutdown();
             Shutdown();
             QApplication::exit();
-            return;
+
+            LOG( INFO ) << "All systems exited.";
+            exit( EXIT_SUCCESS );
+            // Does not fallthrough
         }
-        break;
 
         case vr::VREvent_DashboardActivated:
         {
@@ -1012,7 +1033,7 @@ void OverlayController::RotateCollisionBounds( float angle, bool commit )
 
 QString OverlayController::getVersionString()
 {
-    return QString( applicationVersionString );
+    return QString( application_strings::applicationVersionString );
 }
 
 QUrl OverlayController::getVRRuntimePathUrl()

@@ -13,8 +13,9 @@ SOURCES += src/main.cpp\
     src/utils/ChaperoneUtils.cpp \
     src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
     src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp \
-    src/overlaycontroller/openvr_init.cpp \
-    src/ivrinput/ivrinput.cpp
+    src/openvr/openvr_init.cpp \
+    src/openvr/ivrinput.cpp \
+    src/utils/setup.cpp
 
 HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/AudioTabController.h \
@@ -31,13 +32,15 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/KeyboardInput.h \
     src/utils/Matrix.h \
     src/utils/ChaperoneUtils.h \
+    src/quaternion/quaternion.h \
     src/tabcontrollers/audiomanager/AudioManagerDummy.h \
     src/tabcontrollers/keyboardinput/KeyboardInputDummy.h \
-    src/overlaycontroller/openvr_init.h \
-    src/ivrinput/ivrinput_action.h \
-    src/ivrinput/ivrinput_manifest.h \
-    src/ivrinput/ivrinput_action_set.h \
-    src/ivrinput/ivrinput.h
+    src/openvr/openvr_init.h \
+    src/openvr/ivrinput_action.h \
+    src/openvr/ivrinput_manifest.h \
+    src/openvr/ivrinput_action_set.h \
+    src/openvr/ivrinput.h \
+    src/utils/setup.h
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \

@@ -200,7 +200,7 @@ void FixFloorTabController::eventLoopTick(
                 floorOffsetZ = static_cast<float>( tempOffsetZ );
 
                 LOG( INFO )
-                    << "Fix Floor and adjust room center: Floor Offset = ["
+                    << "Fix Floor and adjust space center: Floor Offset = ["
                     << floorOffsetX << ", " << floorOffsetY << ", "
                     << floorOffsetZ << "]";
                 float offset[3] = { 0, 0, 0 };

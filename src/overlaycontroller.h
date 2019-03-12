@@ -24,7 +24,7 @@
 #include <memory>
 #include <easylogging++.h>
 
-#include "overlaycontroller/openvr_init.h"
+#include "openvr/openvr_init.h"
 
 #include "utils/ChaperoneUtils.h"
 
@@ -38,7 +38,16 @@
 #include "tabcontrollers/ReviveTabController.h"
 #include "tabcontrollers/UtilitiesTabController.h"
 
-#include "ivrinput/ivrinput.h"
+#include "openvr/ivrinput.h"
+
+namespace application_strings
+{
+constexpr auto applicationOrganizationName = "AdvancedSettings-Team";
+constexpr auto applicationName = "OpenVRAdvancedSettings";
+constexpr const char* applicationKey = "OVRAS-Team.AdvancedSettings";
+constexpr const char* applicationDisplayName = "Advanced Settings";
+constexpr const char* applicationVersionString = "v2.8.0-dev";
+} // namespace application_strings
 
 // application namespace
 namespace advsettings
@@ -56,18 +65,15 @@ constexpr int k_reviveSettingsUpdateCounter = 139;
 constexpr int k_settingsTabSettingsUpdateCounter = 157;
 constexpr int k_steamVrSettingsUpdateCounter = 97;
 constexpr int k_utilitiesSettingsUpdateCounter = 19;
+// k_nonVsyncTickRate determines number of ms we wait to force the next event
+// loop tick when vsync is too late due to dropped frames.
+constexpr int k_nonVsyncTickRate = 20;
+constexpr int k_hmdRotationCounterUpdateRate = 7;
 
 class OverlayController : public QObject
 {
     Q_OBJECT
     Q_PROPERTY( bool m_desktopMode READ isDesktopMode )
-
-public:
-    static constexpr auto applicationOrganizationName = "matzman666";
-    static constexpr auto applicationName = "OpenVRAdvancedSettings";
-    static constexpr const char* applicationKey = "matzman666.AdvancedSettings";
-    static constexpr const char* applicationDisplayName = "Advanced Settings";
-    static constexpr const char* applicationVersionString = "v2.8.0-dev";
 
 private:
     vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
@@ -100,11 +106,7 @@ private:
 
     uint64_t m_currentFrame = 0;
     uint64_t m_lastFrame = 0;
-
-    // OpenVR_Init must be declared before any other class that uses OpenVR
-    // function calls since objects are initialized in order of declaration in
-    // the class.
-    openvr_init::OpenVR_Init m_openVrInit;
+    int m_vsyncTooLateCounter = 0;
 
     input::SteamIVRInput m_actions;
 

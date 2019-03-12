@@ -1,7 +1,7 @@
 {
 	"source" : "builtin",
 	"applications": [{
-		"app_key": "matzman666.AdvancedSettings",
+		"app_key": "OVRAS-Team.AdvancedSettings",
 		"launch_type": "binary",
 		"binary_path_windows": "AdvancedSettings.exe",
 		"is_dashboard_overlay": true,
