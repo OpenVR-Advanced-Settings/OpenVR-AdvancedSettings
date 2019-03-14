@@ -463,6 +463,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                         {
                             // AS it stands both controllers will vibrate
                             // regardless of which is closer to boundary
+                            // haptic Frequency is 0-320Hz
                             if ( leftIndex
                                  != vr::k_unTrackedDeviceIndexInvalid )
                             {
@@ -470,8 +471,8 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                                     m_leftActionHandle,
                                     0.0f,
                                     0.2f,
-                                    80.0f,
-                                    0.75f,
+                                    120.0f,
+                                    0.5f,
                                     m_leftInputHandle );
                             }
                             if ( rightIndex
@@ -481,8 +482,8 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                                     m_rightActionHandle,
                                     0.0f,
                                     0.2f,
-                                    80.0f,
-                                    0.75f,
+                                    120.0f,
+                                    0.5f,
                                     m_rightInputHandle );
                             }
                             std::this_thread::sleep_for(
