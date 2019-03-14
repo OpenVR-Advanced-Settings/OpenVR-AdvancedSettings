@@ -359,7 +359,7 @@ MyStackViewPage {
                            id: summaryPttToggle
                            text: "Push-to-Talk"
                            onClicked: {
-                               AudioTabController.pttEnabled = checked
+                                AudioTabController.setPttEnabled(checked, true)
                            }
                        }
                    }

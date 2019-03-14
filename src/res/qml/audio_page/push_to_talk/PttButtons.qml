@@ -11,7 +11,7 @@ ColumnLayout {
             Layout.fillWidth: true
             text: "Push-to-Talk:"
             onClicked: {
-                AudioTabController.pttEnabled = checked
+                AudioTabController.setPttEnabled(checked, true)
             }
         }
         MyToggleButton {

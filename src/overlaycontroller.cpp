@@ -526,7 +526,8 @@ void OverlayController::processRoomBindings()
 void OverlayController::processPushToTalkBindings()
 {
     const auto pushToTalkCannotChange = !m_audioTabController.pttChangeValid();
-    if ( pushToTalkCannotChange )
+    const auto pushToTalkEnabled = m_audioTabController.pttEnabled();
+    if ( pushToTalkCannotChange || !pushToTalkEnabled )
     {
         return;
     }
