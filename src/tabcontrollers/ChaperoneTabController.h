@@ -176,6 +176,8 @@ private:
     bool m_isHapticGood = true;
     bool m_isHMDActive = false;
 
+    int m_updateTicksChaperoneReload = 0;
+
     vr::VRActionHandle_t m_rightActionHandle;
     vr::VRActionHandle_t m_leftActionHandle;
     vr::VRInputValueHandle_t m_leftInputHandle;

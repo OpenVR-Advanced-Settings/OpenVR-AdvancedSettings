@@ -664,8 +664,14 @@ void ChaperoneTabController::eventLoopTick(
         }
         else
         {
-            LOG( WARNING ) << "Reloading Chaperone Data";
-            parent->chaperoneUtils().loadChaperoneData();
+            // attempts to reload chaperone data once per ~5 seconds.
+            m_updateTicksChaperoneReload++;
+            if ( m_updateTicksChaperoneReload >= 500 )
+            {
+                m_updateTicksChaperoneReload = 0;
+                LOG( WARNING ) << "Attempting to Reloading Chaperone Data";
+                parent->chaperoneUtils().loadChaperoneData();
+            }
         }
     }
 
