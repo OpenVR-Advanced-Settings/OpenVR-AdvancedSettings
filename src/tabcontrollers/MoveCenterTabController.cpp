@@ -18,6 +18,20 @@ void rotateCoordinates( double coordinates[3], double angle )
     coordinates[2] = newZ;
 }
 
+void rotateFloatCoordinates( float coordinates[3], float angle )
+{
+    if ( angle == 0 )
+    {
+        return;
+    }
+    float s = sin( angle );
+    float c = cos( angle );
+    float newX = coordinates[0] * c - coordinates[2] * s;
+    float newZ = coordinates[0] * s + coordinates[2] * c;
+    coordinates[0] = newX;
+    coordinates[2] = newZ;
+}
+
 // application namespace
 namespace advsettings
 {
@@ -169,11 +183,6 @@ void MoveCenterTabController::setRotation( int value, bool notify )
     {
         double angle = ( value - m_rotation ) * k_centidegreesToRadians;
 
-        // Revert now because we don't commit in RotateUniverseCenter and
-        // AddOffsetToUniverseCenter. We do this so rotation and offset can
-        // happen in one go, avoiding positional judder.
-        vr::VRChaperoneSetup()->RevertWorkingCopy();
-
         // Get hmd pose matrix.
         vr::TrackedDevicePose_t
             devicePosesForRot[vr::k_unMaxTrackedDeviceCount];
@@ -205,48 +214,11 @@ void MoveCenterTabController::setRotation( int value, bool notify )
         double hmdRotDiff[3]
             = { oldHmdXyz[0] - newHmdXyz[0], 0, oldHmdXyz[2] - newHmdXyz[2] };
 
-        // Rotate the tracking univese center without committing.
-        parent->RotateUniverseCenter(
-            vr::TrackingUniverseOrigin( m_trackingUniverse ),
-            static_cast<float>( angle ),
-            m_adjustChaperone,
-            false );
-
         m_rotation = value;
         if ( notify )
         {
             emit rotationChanged( m_rotation );
         }
-
-        // Get rotated offset to apply to universe center.
-        // We use rotated coordinates here because we have already applied
-        // RotateUniverseCenter. This will be the final offset ready to apply,
-        // so it must match the current universe axis rotation.
-        double finalAngle = m_rotation * k_centidegreesToRadians;
-        double finalHmdRotDiff[3] = { hmdRotDiff[0], 0, hmdRotDiff[2] };
-        rotateCoordinates( finalHmdRotDiff, finalAngle );
-
-        // We're done with calculations now so we can down-cast the double
-        // values to float for compatilibilty with openvr format
-        float finalHmdRotDiffFloat[3]
-            = { static_cast<float>( finalHmdRotDiff[0] ),
-                static_cast<float>( finalHmdRotDiff[1] ),
-                static_cast<float>( finalHmdRotDiff[2] ) };
-
-        // Apply the offset (in rotated coordinates) without commit.
-        // We still can't commit yet because it would call
-        // vr::VRChaperoneSetup()->RevertWorkingCopy() and we'd lose our
-        // uncommitted RotateUniverseCenter.
-        parent->AddOffsetToUniverseCenter(
-            vr::TrackingUniverseOrigin( m_trackingUniverse ),
-            finalHmdRotDiffFloat,
-            m_adjustChaperone,
-            false );
-
-        // Commit here because we didn't in RotateUniverseCenter and
-        // AddOffsetToUniverseCenter to combine into one go.
-        vr::VRChaperoneSetup()->CommitWorkingCopy(
-            vr::EChaperoneConfigFile_Live );
 
         // Update UI offsets.
         m_offsetX += static_cast<float>( hmdRotDiff[0] );
@@ -278,24 +250,6 @@ void MoveCenterTabController::setAdjustChaperone( bool value, bool notify )
     if ( m_adjustChaperone != value )
     {
         m_adjustChaperone = value;
-        if ( m_trackingUniverse == vr::TrackingUniverseStanding )
-        {
-            double angle = m_rotation * k_centidegreesToRadians;
-            double offsetdir = m_adjustChaperone ? -1.0 : 1.0;
-            double offset[3] = { offsetdir * static_cast<double>( m_offsetX ),
-                                 offsetdir * static_cast<double>( m_offsetY ),
-                                 offsetdir * static_cast<double>( m_offsetZ ) };
-            rotateCoordinates( offset, angle );
-
-            // We're done with calculations so down-cast to float for
-            // compatibility with openvr format
-
-            float offsetFloat[3] = { static_cast<float>( offset[0] ),
-                                     static_cast<float>( offset[1] ),
-                                     static_cast<float>( offset[2] ) };
-
-            parent->AddOffsetToCollisionBounds( offsetFloat );
-        }
         auto settings = OverlayController::appSettings();
         settings->beginGroup( "playspaceSettings" );
         settings->setValue( "adjustChaperone", m_adjustChaperone );
@@ -505,16 +459,6 @@ void MoveCenterTabController::modOffsetX( float value, bool notify )
     // TODO ? possible issue with locking position this way
     if ( !m_lockXToggle )
     {
-        double angle = m_rotation * k_centidegreesToRadians;
-        double offset[3] = { static_cast<double>( value ), 0, 0 };
-        rotateCoordinates( offset, angle );
-        float offsetFloat[3] = { static_cast<float>( offset[0] ),
-                                 static_cast<float>( offset[1] ),
-                                 static_cast<float>( offset[2] ) };
-        parent->AddOffsetToUniverseCenter(
-            vr::TrackingUniverseOrigin( m_trackingUniverse ),
-            offsetFloat,
-            m_adjustChaperone );
         m_offsetX += value;
         if ( notify )
         {
@@ -527,11 +471,6 @@ void MoveCenterTabController::modOffsetY( float value, bool notify )
 {
     if ( !m_lockYToggle )
     {
-        parent->AddOffsetToUniverseCenter(
-            vr::TrackingUniverseOrigin( m_trackingUniverse ),
-            1,
-            value,
-            m_adjustChaperone );
         m_offsetY += value;
         if ( notify )
         {
@@ -544,16 +483,6 @@ void MoveCenterTabController::modOffsetZ( float value, bool notify )
 {
     if ( !m_lockZToggle )
     {
-        double angle = m_rotation * k_centidegreesToRadians;
-        double offset[3] = { 0, 0, static_cast<double>( value ) };
-        rotateCoordinates( offset, angle );
-        float offsetFloat[3] = { static_cast<float>( offset[0] ),
-                                 static_cast<float>( offset[1] ),
-                                 static_cast<float>( offset[2] ) };
-        parent->AddOffsetToUniverseCenter(
-            vr::TrackingUniverseOrigin( m_trackingUniverse ),
-            offsetFloat,
-            m_adjustChaperone );
         m_offsetZ += value;
         if ( notify )
         {
@@ -565,6 +494,10 @@ void MoveCenterTabController::modOffsetZ( float value, bool notify )
 void MoveCenterTabController::reset()
 {
     applyChaperoneResetData();
+    m_oldOffsetX = 0.0f;
+    m_oldOffsetY = 0.0f;
+    m_oldOffsetZ = 0.0f;
+    m_oldRotation = 0;
     m_offsetX = 0.0f;
     m_offsetY = 0.0f;
     m_offsetZ = 0.0f;
@@ -577,6 +510,10 @@ void MoveCenterTabController::reset()
 
 void MoveCenterTabController::zeroOffsets()
 {
+    m_oldOffsetX = 0.0f;
+    m_oldOffsetY = 0.0f;
+    m_oldOffsetZ = 0.0f;
+    m_oldRotation = 0;
     m_offsetX = 0.0f;
     m_offsetY = 0.0f;
     m_offsetZ = 0.0f;
@@ -617,11 +554,34 @@ void MoveCenterTabController::updateChaperoneResetData()
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
                                                            &currentQuadCount );
     m_collisionBoundsForReset = new vr::HmdQuad_t[currentQuadCount];
+    m_collisionBoundsForOffset = new vr::HmdQuad_t[currentQuadCount];
     m_collisionBoundsCountForReset = currentQuadCount;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
         m_collisionBoundsForReset, &currentQuadCount );
+    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
+        m_collisionBoundsForOffset, &currentQuadCount );
     vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
         &m_universeCenterForReset );
+    vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+        &m_universeCenterForOffset );
+    float universeCenterForOffsetYaw = std::atan2(
+        m_universeCenterForOffset.m[0][2], m_universeCenterForOffset.m[2][2] );
+
+    // we want to store m_collisionBoundsCountForOffset as spacially relative to
+    // m_universeCenterForOffset, so:
+
+    // for every quad in the chaperone bounds...
+    for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset; quad++ )
+    {
+        // at every corner in that quad...
+        for ( unsigned corner = 0; corner < 4; corner++ )
+        {
+            // unrotate by universe center's yaw
+            rotateFloatCoordinates(
+                m_collisionBoundsForOffset[quad].vCorners[corner].v,
+                -universeCenterForOffsetYaw );
+        }
+    }
 }
 
 void MoveCenterTabController::applyChaperoneResetData()
@@ -1317,6 +1277,17 @@ void MoveCenterTabController::zAxisLockToggle( bool zAxisLockToggleJustPressed )
 
 // END of other bindings
 
+void MoveCenterTabController::saveUncommittedChaperone()
+{
+    if ( !m_chaperoneCommitted )
+    {
+        vr::VRChaperoneSetup()->CommitWorkingCopy(
+            vr::EChaperoneConfigFile_Live );
+        vr::VRChaperoneSetup()->HideWorkingSetPreview();
+        m_chaperoneCommitted = true;
+    }
+}
+
 void MoveCenterTabController::updateHmdRotationCounter(
     vr::TrackedDevicePose_t hmdPose,
     double angle )
@@ -1425,7 +1396,7 @@ void MoveCenterTabController::updateHandDrag(
 
         // offset is un-rotated coordinates
 
-        // prevents UI from updating if axis movement is locked
+        // prevents updating if axis movement is locked
         if ( !m_lockXToggle )
         {
             m_offsetX += static_cast<float>( diff[0] );
@@ -1447,36 +1418,6 @@ void MoveCenterTabController::updateHandDrag(
         m_velocity[0] = diff[0] / secondsSinceLastDragUpdate;
         m_velocity[1] = diff[1] / secondsSinceLastDragUpdate;
         m_velocity[2] = diff[2] / secondsSinceLastDragUpdate;
-
-        rotateCoordinates( diff, angle );
-
-        // Done calculating rotation so we down-cast double to float for
-        // openvr format
-        float diffFloat[3] = { static_cast<float>( diff[0] ),
-                               static_cast<float>( diff[1] ),
-                               static_cast<float>( diff[2] ) };
-        // If locked removes movement
-        if ( m_lockXToggle )
-        {
-            diffFloat[0] = 0;
-        }
-        if ( m_lockYToggle )
-        {
-            diffFloat[1] = 0;
-        }
-        if ( m_lockZToggle )
-        {
-            diffFloat[2] = 0;
-        }
-
-        // Check if diffFloat is anything before comitting.
-        if ( diffFloat[0] != 0 || diffFloat[1] != 0 || diffFloat[2] != 0 )
-        {
-            parent->AddOffsetToUniverseCenter(
-                vr::TrackingUniverseOrigin( m_trackingUniverse ),
-                diffFloat,
-                m_adjustChaperone );
-        }
     }
     m_lastControllerPosition[0] = absoluteControllerPosition[0];
     m_lastControllerPosition[1] = absoluteControllerPosition[1];
@@ -1568,7 +1509,7 @@ void MoveCenterTabController::updateHandTurn(
     m_lastRotateHand = m_activeTurnHand;
 }
 
-void MoveCenterTabController::updateGravity( double angle )
+void MoveCenterTabController::updateGravity()
 {
     // prevent velocity underflow
     if ( std::isnan( m_velocity[0] ) )
@@ -1627,25 +1568,7 @@ void MoveCenterTabController::updateGravity( double angle )
             m_velocity[0] *= ratioVelocityScaledByTouchdown;
             m_velocity[2] *= ratioVelocityScaledByTouchdown;
 
-            // get our final offset for touchdown in unrotated coordinates
-            double touchdownDiffForUnrotation[3]
-                = { ( m_velocity[0] * secondsSinceLastGravityUpdate ),
-                    static_cast<double>( 0 - m_offsetY ),
-                    ( m_velocity[2] * secondsSinceLastGravityUpdate ) };
-            rotateCoordinates( touchdownDiffForUnrotation, angle );
-
-            // done with rotation so down-cast to float for openvr format
-            float unrotatedTouchdownDiffFloat[3]
-                = { static_cast<float>( touchdownDiffForUnrotation[0] ),
-                    0 - m_offsetY,
-                    static_cast<float>( touchdownDiffForUnrotation[2] ) };
-
-            parent->AddOffsetToUniverseCenter(
-                vr::TrackingUniverseOrigin( m_trackingUniverse ),
-                unrotatedTouchdownDiffFloat,
-                m_adjustChaperone );
-
-            // update ui values
+            // update offsets
             m_offsetX += static_cast<float>( m_velocity[0]
                                              * secondsSinceLastGravityUpdate );
             m_offsetY = 0.0f;
@@ -1660,22 +1583,6 @@ void MoveCenterTabController::updateGravity( double angle )
         else
         {
             // apply offset from velocity
-            double velocityOffsetForUnrotation[3]
-                = { m_velocity[0] * secondsSinceLastGravityUpdate,
-                    m_velocity[1] * secondsSinceLastGravityUpdate,
-                    m_velocity[2] * secondsSinceLastGravityUpdate };
-            rotateCoordinates( velocityOffsetForUnrotation, angle );
-            // done with rotation so down-cast to float for openvr format
-            float unrotatedVelocityOffsetFloat[3]
-                = { static_cast<float>( velocityOffsetForUnrotation[0] ),
-                    static_cast<float>( velocityOffsetForUnrotation[1] ),
-                    static_cast<float>( velocityOffsetForUnrotation[2] ) };
-            parent->AddOffsetToUniverseCenter(
-                vr::TrackingUniverseOrigin( m_trackingUniverse ),
-                unrotatedVelocityOffsetFloat,
-                m_adjustChaperone );
-
-            // update ui values
             m_offsetX += static_cast<float>( m_velocity[0]
                                              * secondsSinceLastGravityUpdate );
             m_offsetY += static_cast<float>( m_velocity[1]
@@ -1697,13 +1604,6 @@ void MoveCenterTabController::updateGravity( double angle )
     // note: downward is positive y
     if ( m_offsetY > 0 )
     {
-        parent->AddOffsetToUniverseCenter(
-            vr::TrackingUniverseOrigin( m_trackingUniverse ),
-            1,
-            0 - m_offsetY,
-            m_adjustChaperone );
-
-        // update ui values
         m_offsetY = 0.0f;
         emit offsetYChanged( m_offsetY );
     }
@@ -1711,6 +1611,143 @@ void MoveCenterTabController::updateGravity( double angle )
     m_velocity[0] = 0.0;
     m_velocity[1] = 0.0;
     m_velocity[2] = 0.0;
+}
+
+void MoveCenterTabController::updateSpace()
+{
+    // If all offsets and rotation are still the same...
+    if ( m_offsetX == m_oldOffsetX && m_offsetY == m_oldOffsetY
+         && m_offsetZ == m_oldOffsetZ && m_rotation == m_oldRotation )
+    {
+        // ... wait for the comfort mode delay and commit chaperone
+        if ( m_dragComfortFactor >= m_turnComfortFactor )
+        {
+            if ( m_dragComfortFrameSkipCounter
+                 >= ( m_dragComfortFactor * m_dragComfortFactor ) )
+            {
+                saveUncommittedChaperone();
+            }
+        }
+        else if ( m_turnComfortFrameSkipCounter
+                  >= ( m_turnComfortFactor * m_turnComfortFactor ) )
+        {
+            saveUncommittedChaperone();
+        }
+        return;
+    }
+
+    vr::HmdMatrix34_t offsetUniverseCenter;
+
+    // set offsetUniverseCenter to the current angle
+    vr::HmdMatrix34_t rotationMatrix;
+    utils::initRotationMatrix(
+        rotationMatrix,
+        1,
+        static_cast<float>( m_rotation * k_centidegreesToRadians ) );
+    utils::matMul33(
+        offsetUniverseCenter, rotationMatrix, m_universeCenterForReset );
+    // fill in matrix coordinates for basis universe zero point
+    offsetUniverseCenter.m[0][3] = m_universeCenterForReset.m[0][3];
+    offsetUniverseCenter.m[1][3] = m_universeCenterForReset.m[1][3];
+    offsetUniverseCenter.m[2][3] = m_universeCenterForReset.m[2][3];
+
+    // move offsetUniverseCenter to the current offsets
+    offsetUniverseCenter.m[0][3]
+        += m_universeCenterForReset.m[0][0] * m_offsetX;
+    offsetUniverseCenter.m[1][3]
+        += m_universeCenterForReset.m[1][0] * m_offsetX;
+    offsetUniverseCenter.m[2][3]
+        += m_universeCenterForReset.m[2][0] * m_offsetX;
+
+    offsetUniverseCenter.m[0][3]
+        += m_universeCenterForReset.m[0][1] * m_offsetY;
+    offsetUniverseCenter.m[1][3]
+        += m_universeCenterForReset.m[1][1] * m_offsetY;
+    offsetUniverseCenter.m[2][3]
+        += m_universeCenterForReset.m[2][1] * m_offsetY;
+
+    offsetUniverseCenter.m[0][3]
+        += m_universeCenterForReset.m[0][2] * m_offsetZ;
+    offsetUniverseCenter.m[1][3]
+        += m_universeCenterForReset.m[1][2] * m_offsetZ;
+    offsetUniverseCenter.m[2][3]
+        += m_universeCenterForReset.m[2][2] * m_offsetZ;
+
+    if ( m_adjustChaperone )
+    {
+        // make a copy of our bounds for modification
+
+        vr::HmdQuad_t* updatedBounds
+            = new vr::HmdQuad_t[m_collisionBoundsCountForReset];
+
+        // for every quad in the chaperone bounds...
+        for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset; quad++ )
+        {
+            // at every corner in that quad...
+            for ( unsigned corner = 0; corner < 4; corner++ )
+            {
+                // copy the xyz coordinates
+                updatedBounds[quad].vCorners[corner].v[0]
+                    = m_collisionBoundsForOffset[quad].vCorners[corner].v[0];
+
+                updatedBounds[quad].vCorners[corner].v[1]
+                    = m_collisionBoundsForOffset[quad].vCorners[corner].v[1];
+
+                updatedBounds[quad].vCorners[corner].v[2]
+                    = m_collisionBoundsForOffset[quad].vCorners[corner].v[2];
+            }
+        }
+
+        // reorient chaperone bounds relative to new universe center
+
+        float offsetUniverseCenterYaw = std::atan2(
+            offsetUniverseCenter.m[0][2], offsetUniverseCenter.m[2][2] );
+
+        // for every quad in the chaperone bounds...
+        for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset; quad++ )
+        {
+            // at every corner in that quad...
+            for ( unsigned corner = 0; corner < 4; corner++ )
+            {
+                // cancel universe center's xyz offsets to each corner's
+                // position and shift over by original center position so that
+                // we are mirroring the offset as reflected about the original
+                // origin
+                updatedBounds[quad].vCorners[corner].v[0]
+                    -= offsetUniverseCenter.m[0][3]
+                       - m_universeCenterForReset.m[0][3];
+                // but don't touch y=0 values to keep floor corners rooted down
+                if ( updatedBounds[quad].vCorners[corner].v[1] != 0 )
+                {
+                    updatedBounds[quad].vCorners[corner].v[1]
+                        -= offsetUniverseCenter.m[1][3]
+                           - m_universeCenterForReset.m[1][3];
+                }
+                updatedBounds[quad].vCorners[corner].v[2]
+                    -= offsetUniverseCenter.m[2][3]
+                       - m_universeCenterForReset.m[2][3];
+
+                // rotate by universe center's yaw
+                rotateFloatCoordinates( updatedBounds[quad].vCorners[corner].v,
+                                        offsetUniverseCenterYaw );
+            }
+        }
+
+        // update chaperone working set preview (this does not commit)
+
+        vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
+            updatedBounds, m_collisionBoundsCountForReset );
+        delete[] updatedBounds;
+    }
+    vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
+        &offsetUniverseCenter );
+    vr::VRChaperoneSetup()->ShowWorkingSetPreview();
+    m_chaperoneCommitted = false;
+
+    m_oldOffsetX = m_offsetX;
+    m_oldOffsetY = m_offsetY;
+    m_oldOffsetZ = m_offsetZ;
+    m_oldRotation = m_rotation;
 }
 
 void MoveCenterTabController::eventLoopTick(
@@ -1779,8 +1816,10 @@ void MoveCenterTabController::eventLoopTick(
     if ( m_gravityActive
          && m_activeDragHand == vr::TrackedControllerRole_Invalid )
     {
-        updateGravity( angle );
+        updateGravity();
         m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
     }
+
+    updateSpace();
 }
 } // namespace advsettings

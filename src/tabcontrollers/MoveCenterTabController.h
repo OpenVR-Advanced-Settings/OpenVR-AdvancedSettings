@@ -65,7 +65,11 @@ private:
     float m_offsetX = 0.0f;
     float m_offsetY = 0.0f;
     float m_offsetZ = 0.0f;
+    float m_oldOffsetX = 0.0f;
+    float m_oldOffsetY = 0.0f;
+    float m_oldOffsetZ = 0.0f;
     int m_rotation = 0;
+    int m_oldRotation = 0;
     int m_tempRotation = 0;
     bool m_adjustChaperone = true;
     bool m_settingsHandTurningEnabled = false;
@@ -112,6 +116,7 @@ private:
     bool m_swapDragToLeftHandActivated = false;
     bool m_swapDragToRightHandActivated = false;
     bool m_gravityActive = false;
+    bool m_chaperoneCommitted = true;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
@@ -122,15 +127,19 @@ private:
     vr::HmdQuad_t* m_collisionBoundsForReset;
     uint32_t m_collisionBoundsCountForReset = 0;
     vr::HmdMatrix34_t m_universeCenterForReset;
+    vr::HmdQuad_t* m_collisionBoundsForOffset;
+    vr::HmdMatrix34_t m_universeCenterForOffset;
 
     void updateHmdRotationCounter( vr::TrackedDevicePose_t hmdPose,
                                    double angle );
     void updateHandDrag( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateHandTurn( vr::TrackedDevicePose_t* devicePoses, double angle );
-    void updateGravity( double angle );
+    void updateGravity();
+    void updateSpace();
     void clampVelocity( double* velocity );
     void updateChaperoneResetData();
     void applyChaperoneResetData();
+    void saveUncommittedChaperone();
 
 public:
     void initStage1();
