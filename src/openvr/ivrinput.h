@@ -4,6 +4,7 @@
 #include "ivrinput_action.h"
 #include "ivrinput_manifest.h"
 #include "ivrinput_action_set.h"
+#include "ivrinput_input_source.h"
 
 namespace input
 {
@@ -62,6 +63,13 @@ public:
 
     bool pushToTalk();
 
+    bool proxIsActive();
+    vr::VRActionHandle_t leftHapticActionHandle();
+    vr::VRActionHandle_t rightHapticActionHandle();
+
+    vr::VRInputValueHandle_t rightInputHandle();
+    vr::VRInputValueHandle_t leftInputHandle();
+
     // Destructor. There are no terminating calls for the IVRInput API, so it
     // is left blank.
     ~SteamIVRInput() {}
@@ -113,6 +121,14 @@ private:
 
     // Push To Talk
     Action m_pushToTalk;
+
+    // haptic bindings
+    Action m_leftHaptic;
+    Action m_rightHaptic;
+
+    // input sources
+    InputSource m_leftHand;
+    InputSource m_rightHand;
 };
 
 /*!
@@ -120,7 +136,7 @@ The IVRInput system is _very_ finnicky about strings matching and if they don't
 match there are usually no errors logged reflecting that. constexpr auto strings
 should be used to refer to all action manifest strings.
 */
-namespace input_strings
+namespace action_keys
 {
     constexpr auto k_actionNextTrack = "/actions/main/in/NextTrack";
     constexpr auto k_actionPreviousTrack = "/actions/main/in/PreviousTrack";
@@ -158,8 +174,28 @@ namespace input_strings
 
     constexpr auto k_actionPushToTalk = "/actions/main/in/PushToTalk";
 
-    constexpr auto k_setMain = "/actions/main";
+    constexpr auto k_actionHapticsLeft = "/actions/main/out/HapticsLeft";
+    constexpr auto k_actionHapticsRight = "/actions/main/out/HapticsRight";
 
-} // namespace input_strings
+    constexpr auto k_actionProxSensor = "/actions/main/in/ProxSensor";
+
+} // namespace action_keys
+
+/*!
+Keys to get input source handles (things like hmd controllers etc.)
+*/
+namespace input_keys
+{
+    constexpr auto k_inputSourceLeft = "/user/hand/left";
+    constexpr auto k_inputSourceRight = "/user/hand/right";
+} // namespace input_keys
+
+/*!
+Keys for different action sets
+*/
+namespace action_sets
+{
+    constexpr auto k_setMain = "/actions/main";
+} // namespace action_sets
 
 } // namespace input
