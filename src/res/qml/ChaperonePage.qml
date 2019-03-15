@@ -241,19 +241,19 @@ MyStackViewPage {
                 text: "-"
                 Layout.preferredWidth: 40
                 onClicked: {
-                    chaperoneVisibilitySlider.value -= 0.1
+                    chaperoneVisibilitySlider.value -= 0.05
                 }
             }
 
             MySlider {
                 id: chaperoneVisibilitySlider
-                from: 0.0
+                from: 0.5
                 to: 1.0
                 stepSize: 0.01
                 value: 0.6
                 Layout.fillWidth: true
                 onPositionChanged: {
-                    var val = this.position * 100
+                    var val = (this.position * 100)/2 + 50
                     chaperoneVisibilityText.text = Math.round(val) + "%"
                 }
                 onValueChanged: {
@@ -265,14 +265,14 @@ MyStackViewPage {
                 text: "+"
                 Layout.preferredWidth: 40
                 onClicked: {
-                    chaperoneVisibilitySlider.value += 0.1
+                    chaperoneVisibilitySlider.value += 0.05
                 }
             }
 
 
             MyTextField {
                 id: chaperoneVisibilityText
-                text: "0.00"
+                text: "50.00"
                 keyBoardUID: 301
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
@@ -280,8 +280,8 @@ MyStackViewPage {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.0) {
-                            val = 0.0
+                        if (val < 50.0) {
+                            val = 50.0
                         } else if (val > 100.0) {
                             val = 100.0
                         }
@@ -302,6 +302,7 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
+                id: chaperoneFadeDistanceMinus
                 text: "-"
                 Layout.preferredWidth: 40
                 onClicked: {
@@ -326,6 +327,7 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
+                id: chaperoneFadeDistancePlus
                 text: "+"
                 Layout.preferredWidth: 40
                 onClicked: {
@@ -450,17 +452,37 @@ MyStackViewPage {
                     ChaperoneTabController.setForceBounds(this.checked, false)
                 }
             }
+            MyToggleButton {
+                id: chaperoneDisableChaperone
+                text: "Disable Chaperone"
+                onCheckedChanged: {
+                    ChaperoneTabController.setDisableChaperone(this.checked, false)
+                    if(this.checked){
+                        chaperoneFadeDistanceMinus.enabled = false;
+                        chaperoneFadeDistancePlus.enabled = false;
+                        chaperoneFadeDistanceSlider.enabled = false;
+                        chaperoneFadeDistanceText.enabled = false;
+
+                    }else{
+                        chaperoneFadeDistanceMinus.enabled = true;
+                        chaperoneFadeDistancePlus.enabled = true;
+                        chaperoneFadeDistanceSlider.enabled = true;
+                        chaperoneFadeDistanceText.enabled = true;
+                    }
+                }
+            }
 
             Item { Layout.fillWidth: true }
+        }
 
-            MyPushButton {
-                id: chaperoneWarningsConfigButton
-                text: "Proximity Warning Settings"
-                Layout.preferredWidth: 350
-                onClicked: {
-                    MyResources.playFocusChangedSound()
-                    mainView.push(chaperoneWarningsPage)
-                }
+
+        MyPushButton {
+            id: chaperoneWarningsConfigButton
+            text: "Proximity Warning Settings"
+            Layout.preferredWidth: 350
+            onClicked: {
+                MyResources.playFocusChangedSound()
+                mainView.push(chaperoneWarningsPage)
             }
         }
 
@@ -501,6 +523,10 @@ MyStackViewPage {
 
         Component.onCompleted: {
             chaperoneVisibilitySlider.value = ChaperoneTabController.boundsVisibility
+            if(chaperoneVisibilitySlider.value < 0.5){
+                chaperoneVisibilitySlider.value = 0.5
+            }
+
             var d = ChaperoneTabController.fadeDistance.toFixed(1)
             if (d <= chaperoneFadeDistanceSlider.to) {
                 chaperoneFadeDistanceSlider.value = d
@@ -514,6 +540,19 @@ MyStackViewPage {
             chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarker
             chaperonePlaySpaceToggle.checked = ChaperoneTabController.playSpaceMarker
             chaperoneForceBoundsToggle.checked = ChaperoneTabController.forceBounds
+            chaperoneDisableChaperone.checked = ChaperoneTabController.disableChaperone
+            if(chaperoneDisableChaperone.checked){
+                chaperoneFadeDistanceMinus.enabled = false;
+                chaperoneFadeDistancePlus.enabled = false;
+                chaperoneFadeDistanceSlider.enabled = false;
+                chaperoneFadeDistanceText.enabled = false;
+
+            }else{
+                chaperoneFadeDistanceMinus.enabled = true;
+                chaperoneFadeDistancePlus.enabled = true;
+                chaperoneFadeDistanceSlider.enabled = true;
+                chaperoneFadeDistanceText.enabled = true;
+            }
             reloadChaperoneProfiles()
         }
 

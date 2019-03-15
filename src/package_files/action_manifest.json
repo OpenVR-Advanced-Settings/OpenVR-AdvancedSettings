@@ -3,6 +3,14 @@
    {
       "controller_type": "vive_controller",
       "binding_url": "default_action_manifests/vive_defaults.json"
+   },
+   {
+    "controller_type" : "generic",
+	    "binding_url" : "default_action_manifests/generic_hmd_defaults.json"
+   },
+      {
+    "controller_type" : "vive",
+	    "binding_url" : "default_action_manifests/vive_hmd_defaults.json"
    }
   ], 
   "actions": [
@@ -26,6 +34,19 @@
       "requirement": "optional",
       "type": "boolean"
     },
+	{
+      "name": "/actions/main/in/ProxSensor",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+	{
+	  "name": "/actions/main/out/HapticsLeft",
+	  "type": "vibration"
+	},
+	{
+	  "name": "/actions/main/out/HapticsRight",
+	  "type": "vibration"
+	},
     {
       "name": "/actions/main/in/LeftHandSpaceTurn",
       "requirement": "optional",
@@ -46,7 +67,7 @@
       "requirement": "optional",
       "type": "boolean"
     },
-        {
+    {
       "name": "/actions/main/in/OptionalOverrideLeftHandSpaceTurn",
       "requirement": "optional",
       "type": "boolean"
@@ -138,6 +159,8 @@
         "/actions/main/in/PreviousTrack" : "Play Previous Track",
         "/actions/main/in/PausePlayTrack" : "Pause/Play Track",
         "/actions/main/in/StopTrack" : "Stop Track",
+		"/actions/main/out/HapticsLeft" : "Haptics Left",
+		"/actions/main/out/HapticsRight" : " Haptics Right",
         "/actions/main/in/LeftHandSpaceTurn" : "Left Hand Space Turn",
         "/actions/main/in/RightHandSpaceTurn" : "Right Hand Space Turn",
         "/actions/main/in/LeftHandSpaceDrag" : "Left Hand Space Drag",
