@@ -83,6 +83,11 @@ void MoveCenterTabController::initStage1()
     {
         m_turnComfortFactor = value.toUInt();
     }
+    value = settings->value( "heightToggleOffset", m_heightToggleOffset );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_heightToggleOffset = value.toFloat();
+    }
     value = settings->value( "lockXToggle", m_lockXToggle );
     if ( value.isValid() && !value.isNull() )
     {
@@ -398,6 +403,62 @@ void MoveCenterTabController::setTurnComfortFactor( unsigned value,
     }
 }
 
+bool MoveCenterTabController::heightToggle() const
+{
+    return m_heightToggle;
+}
+
+void MoveCenterTabController::setHeightToggle( bool value, bool notify )
+{
+    // detect new activate
+    if ( !m_heightToggle && value )
+    {
+        // Don't move bump around on y axis if gravity is active
+        if ( !m_gravityActive )
+        {
+            m_offsetY += m_heightToggleOffset;
+            emit offsetYChanged( m_offsetY );
+        }
+        m_gravityFloor = m_heightToggleOffset;
+    }
+    // detect new deactivate
+    else if ( m_heightToggle && !value )
+    {
+        // Don't move bump around on y axis if gravity is active
+        if ( !m_gravityActive )
+        {
+            m_offsetY -= m_heightToggleOffset;
+            emit offsetYChanged( m_offsetY );
+        }
+        m_gravityFloor = 0.0f;
+    }
+
+    m_heightToggle = value;
+    if ( notify )
+    {
+        emit heightToggleChanged( m_heightToggle );
+    }
+}
+
+float MoveCenterTabController::heightToggleOffset() const
+{
+    return m_heightToggleOffset;
+}
+
+void MoveCenterTabController::setHeightToggleOffset( float value, bool notify )
+{
+    m_heightToggleOffset = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "heightToggleOffset", m_heightToggleOffset );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit heightToggleOffsetChanged( m_heightToggleOffset );
+    }
+}
+
 bool MoveCenterTabController::lockXToggle() const
 {
     return m_lockXToggle;
@@ -494,6 +555,8 @@ void MoveCenterTabController::modOffsetZ( float value, bool notify )
 
 void MoveCenterTabController::reset()
 {
+    m_heightToggle = false;
+    emit heightToggleChanged( m_heightToggle );
     applyChaperoneResetData();
     m_oldOffsetX = 0.0f;
     m_oldOffsetY = 0.0f;
@@ -1156,7 +1219,8 @@ void MoveCenterTabController::optionalOverrideRightHandSpaceTurn(
 
 // START of other bindings.
 
-void MoveCenterTabController::gravityToggle( bool gravityToggleJustPressed )
+void MoveCenterTabController::gravityToggleAction(
+    bool gravityToggleJustPressed )
 {
     if ( !gravityToggleJustPressed )
     {
@@ -1174,14 +1238,21 @@ void MoveCenterTabController::gravityToggle( bool gravityToggleJustPressed )
     }
 }
 
-void MoveCenterTabController::heightToggle( bool heightToggleJustPressed )
+void MoveCenterTabController::heightToggleAction( bool heightToggleJustPressed )
 {
-    // temp stuff for compliner warnings
     if ( !heightToggleJustPressed )
     {
         return;
     }
-    // TODO STUFF
+
+    if ( !m_heightToggle )
+    {
+        setHeightToggle( true );
+    }
+    else
+    {
+        setHeightToggle( false );
+    }
 }
 
 void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
@@ -1563,19 +1634,19 @@ void MoveCenterTabController::updateGravity()
 
     // are we falling?
     // note: up is negative y
-    if ( m_offsetY < 0 )
+    if ( m_offsetY < m_gravityFloor )
     {
         // check if we're about to land
         if ( m_offsetY
                  + static_cast<float>( m_velocity[1]
                                        * secondsSinceLastGravityUpdate )
-             >= 0 )
+             >= m_gravityFloor )
         {
             // get ratio of how much from y velocity applied to overcome y
             // offset and get down to ground.
             double ratioVelocityScaledByTouchdown
                 = 1
-                  - ( ( static_cast<double>( m_offsetY )
+                  - ( ( static_cast<double>( m_offsetY - m_gravityFloor )
                         + ( m_velocity[1] * secondsSinceLastGravityUpdate ) )
                       / ( m_velocity[1] * secondsSinceLastGravityUpdate ) );
             // apply that ratio to X and Z velocties
@@ -1585,7 +1656,7 @@ void MoveCenterTabController::updateGravity()
             // update offsets
             m_offsetX += static_cast<float>( m_velocity[0]
                                              * secondsSinceLastGravityUpdate );
-            m_offsetY = 0.0f;
+            m_offsetY = m_gravityFloor;
             m_offsetZ += static_cast<float>( m_velocity[2]
                                              * secondsSinceLastGravityUpdate );
             emit offsetXChanged( m_offsetX );
@@ -1616,9 +1687,9 @@ void MoveCenterTabController::updateGravity()
     }
     // check if we're underground and force us to ground level.
     // note: downward is positive y
-    if ( m_offsetY > 0 )
+    if ( m_offsetY > m_gravityFloor )
     {
-        m_offsetY = 0.0f;
+        m_offsetY = m_gravityFloor;
         emit offsetYChanged( m_offsetY );
     }
     // Touchdown! We've landed, velocity set to 0.

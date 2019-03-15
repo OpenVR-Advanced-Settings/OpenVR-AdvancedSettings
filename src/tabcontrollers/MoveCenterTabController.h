@@ -48,6 +48,10 @@ class MoveCenterTabController : public QObject
                     setDragComfortFactor NOTIFY dragComfortFactorChanged )
     Q_PROPERTY( unsigned turnComfortFactor READ turnComfortFactor WRITE
                     setTurnComfortFactor NOTIFY turnComfortFactorChanged )
+    Q_PROPERTY( bool heightToggle READ heightToggle WRITE setHeightToggle NOTIFY
+                    heightToggleChanged )
+    Q_PROPERTY( float heightToggleOffset READ heightToggleOffset WRITE
+                    setHeightToggleOffset NOTIFY heightToggleOffsetChanged )
     Q_PROPERTY( bool lockXToggle READ lockXToggle WRITE setLockX NOTIFY
                     requireLockXChanged )
     Q_PROPERTY( bool lockYToggle READ lockYToggle WRITE setLockY NOTIFY
@@ -83,6 +87,9 @@ private:
     bool m_settingsRightHandTurnEnabled = false;
     unsigned m_dragComfortFactor = 0;
     unsigned m_turnComfortFactor = 0;
+    bool m_heightToggle = false;
+    float m_heightToggleOffset = -1.0f;
+    float m_gravityFloor = 0.0f;
     bool m_lockXToggle = false;
     bool m_lockYToggle = false;
     bool m_lockZToggle = false;
@@ -161,6 +168,8 @@ public:
     bool turnBindLeft() const;
     unsigned dragComfortFactor() const;
     unsigned turnComfortFactor() const;
+    bool heightToggle() const;
+    float heightToggleOffset() const;
     bool lockXToggle() const;
     bool lockYToggle() const;
     bool lockZToggle() const;
@@ -178,8 +187,8 @@ public:
     void optionalOverrideRightHandSpaceTurn( bool overrideRightHandTurnActive );
     void swapSpaceDragToLeftHandOverride( bool swapDragToLeftHandActive );
     void swapSpaceDragToRightHandOverride( bool swapDragToRightHandActive );
-    void gravityToggle( bool gravityToggleJustPressed );
-    void heightToggle( bool heightToggleJustPressed );
+    void gravityToggleAction( bool gravityToggleJustPressed );
+    void heightToggleAction( bool heightToggleJustPressed );
     void resetOffsets( bool resetOffsetsJustPressed );
     void snapTurnLeft( bool snapTurnLeftJustPressed );
     void snapTurnRight( bool snapTurnRightJustPressed );
@@ -209,6 +218,8 @@ public slots:
     void setTurnBindLeft( bool value, bool notify = true );
     void setDragComfortFactor( unsigned value, bool notify = true );
     void setTurnComfortFactor( unsigned value, bool notify = true );
+    void setHeightToggle( bool value, bool notify = true );
+    void setHeightToggleOffset( float value, bool notify = true );
 
     void modOffsetX( float value, bool notify = true );
     void modOffsetY( float value, bool notify = true );
@@ -236,6 +247,8 @@ signals:
     void turnBindLeftChanged( bool value );
     void dragComfortFactorChanged( unsigned value );
     void turnComfortFactorChanged( unsigned value );
+    void heightToggleChanged( bool value );
+    void heightToggleOffsetChanged( float value );
     void requireLockXChanged( bool value );
     void requireLockYChanged( bool value );
     void requireLockZChanged( bool value );

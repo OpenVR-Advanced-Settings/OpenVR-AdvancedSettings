@@ -5,6 +5,7 @@ import ovras.advsettings 1.0
 import "../common"
 import "universe_drag"
 import "universe_turn"
+import "height_toggle"
 
 MyStackViewPage {
     headerText: "Motion Settings"
@@ -15,6 +16,8 @@ MyStackViewPage {
         UniverseDragGroupBox { id: universeDragGroupBox }
 
         UniverseTurnGroupBox { id: universeTurnGroupBox }
+
+        HeightToggleGroupBox { id: heightToggleGroupBox }
 
         Item {
             Layout.fillHeight: true
