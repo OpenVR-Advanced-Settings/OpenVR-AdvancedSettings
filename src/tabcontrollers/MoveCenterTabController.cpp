@@ -24,8 +24,9 @@ void rotateFloatCoordinates( float coordinates[3], float angle )
     {
         return;
     }
-    float s = sin( angle );
-    float c = cos( angle );
+    // crazy casts for compiler warnings
+    float s = static_cast<float>( sin( static_cast<double>( angle ) ) );
+    float c = static_cast<float>( cos( static_cast<double>( angle ) ) );
     float newX = coordinates[0] * c - coordinates[2] * s;
     float newZ = coordinates[0] * s + coordinates[2] * c;
     coordinates[0] = newX;
