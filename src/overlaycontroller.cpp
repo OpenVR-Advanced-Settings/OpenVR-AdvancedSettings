@@ -688,6 +688,8 @@ void OverlayController::mainEventLoop()
             vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some
                                                        // time just in case
             m_moveCenterTabController.reset();
+			//Un-mute mic before Exiting VR, as it is set at system level Not Vr level.
+			m_audioTabController.setMicMuted(false, false);
             m_chaperoneTabController.shutdown();
             Shutdown();
             QApplication::exit();
