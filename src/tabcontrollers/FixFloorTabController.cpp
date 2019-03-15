@@ -74,6 +74,7 @@ void FixFloorTabController::eventLoopTick(
             {
                 // The controller with the lowest y-pos is the floor fix
                 // reference
+
                 if ( leftPose->mDeviceToAbsoluteTracking.m[1][3]
                      < rightPose->mDeviceToAbsoluteTracking.m[1][3] )
                 {
@@ -89,6 +90,7 @@ void FixFloorTabController::eventLoopTick(
                 tempOffsetX = static_cast<double>( m[0][3] );
                 tempOffsetY = static_cast<double>( m[1][3] );
                 tempOffsetZ = static_cast<double>( m[2][3] );
+
                 /*
                 | Intrinsic y-x'-z" rotation matrix:
                 | cr*cy+sp*sr*sy | cr*sp*sy-cy*sr | cp*sy |
@@ -133,15 +135,60 @@ void FixFloorTabController::eventLoopTick(
 
             if ( measurementCount >= 25 )
             {
+                int type = 0;
                 if ( std::abs( tempRoll ) <= M_PI_2 )
                 {
-                    floorOffsetY = static_cast<float>( tempOffsetY )
-                                   - controllerUpOffsetCorrection;
+                    type = getControllerType( referenceController );
+                    if ( type == Controller_Wand )
+                    {
+                        floorOffsetY = static_cast<float>( tempOffsetY )
+                                       - controllerUpOffsetCorrection;
+                    }
+                    else if ( type == Controller_Knuckles )
+                    {
+                        // Production
+
+                        floorOffsetY = static_cast<float>( tempOffsetY )
+                                       - knucklesUpOffsetCorrection;
+
+                        // Generate Offset
+                        // Comment out production and un-comment this.
+                        // Only if Floor is known to be good (zero with wand)
+
+                        /*
+                        floorOffsetY = static_cast<float>(tempOffsetY);
+                        LOG(INFO) << "Offset For Knuckles up is: " <<
+                        floorOffsetY;
+                        */
+                    }
+                    floorOffsetY = static_cast<float>( tempOffsetY );
                 }
                 else
                 {
-                    floorOffsetY = static_cast<float>( tempOffsetY )
-                                   - controllerDownOffsetCorrection;
+                    type = getControllerType( referenceController );
+                    if ( type == Controller_Wand )
+                    {
+                        floorOffsetY = static_cast<float>( tempOffsetY )
+                                       - controllerDownOffsetCorrection;
+                    }
+                    else if ( type == Controller_Knuckles )
+                    {
+                        // Production
+
+                        floorOffsetY = static_cast<float>( tempOffsetY )
+                                       - knucklesDownOffsetCorrection;
+
+                        // Generate Offset
+                        // Comment out production and un-comment this.
+                        // Only if Floor is known to be good (zero with wand)
+
+                        /*
+                        floorOffsetY = static_cast<float>(tempOffsetY);
+                        LOG(INFO) << "Offset For Knuckles up is: " <<
+                        floorOffsetY;
+                        */
+                    }
+                    floorOffsetY = static_cast<float>( tempOffsetY );
                 }
 
                 floorOffsetX = static_cast<float>( tempOffsetX );
@@ -170,6 +217,47 @@ void FixFloorTabController::eventLoopTick(
             }
         }
     }
+}
+
+int FixFloorTabController::getControllerType(
+    vr::TrackedDeviceIndex_t controllerRole )
+{
+    int maxLength = 64;
+    /*
+    vr::k_unMaxPropertyStringSize is Theoretical Max Size, however it is
+    1024*32, and its pretty unrealistic to expect a controller name to be that
+    big. We are just going to set 64 as an arbitrary size, and print error to
+    log if too small
+    */
+    char* controllerTypeString = new char[maxLength];
+    vr::ETrackedPropertyError error;
+    auto stringLength = vr::VRSystem()->GetStringTrackedDeviceProperty(
+        controllerRole,
+        vr::Prop_ControllerType_String,
+        controllerTypeString,
+        maxLength,
+        &error );
+    if ( error != vr::TrackedProp_Success )
+    {
+        LOG( ERROR ) << "Error With Controller Type: "
+                     << vr::VRSystem()->GetPropErrorNameFromEnum( error );
+    }
+    else if ( stringLength == 0 )
+    {
+        LOG( ERROR ) << "Device Index not valid";
+    }
+    else if ( strcmp( controllerTypeString, "knuckles" ) == 0 )
+    {
+        delete[] controllerTypeString;
+        return Controller_Knuckles;
+    }
+    else if ( strcmp( controllerTypeString, "vive_controller" ) == 0 )
+    {
+        delete[] controllerTypeString;
+        return Controller_Wand;
+    }
+    delete[] controllerTypeString;
+    return Controller_Unknown;
 }
 
 QString FixFloorTabController::currentStatusMessage()
