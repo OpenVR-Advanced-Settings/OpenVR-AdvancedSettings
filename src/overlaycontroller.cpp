@@ -526,7 +526,8 @@ void OverlayController::processRoomBindings()
 void OverlayController::processPushToTalkBindings()
 {
     const auto pushToTalkCannotChange = !m_audioTabController.pttChangeValid();
-    if ( pushToTalkCannotChange )
+    const auto pushToTalkEnabled = m_audioTabController.pttEnabled();
+    if ( pushToTalkCannotChange || !pushToTalkEnabled )
     {
         return;
     }
@@ -687,6 +688,9 @@ void OverlayController::mainEventLoop()
             vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some
                                                        // time just in case
             m_moveCenterTabController.reset();
+            // Un-mute mic before Exiting VR, as it is set at system level Not
+            // Vr level.
+            m_audioTabController.setMicMuted( false, false );
             m_chaperoneTabController.shutdown();
             Shutdown();
             QApplication::exit();
