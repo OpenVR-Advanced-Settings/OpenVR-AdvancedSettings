@@ -776,7 +776,6 @@ void ChaperoneTabController::setHeight( float value, bool notify )
 {
     if ( m_height != value )
     {
-        // parent->m_moveCenterTabController.reset();
         m_height = value;
         vr::VRChaperoneSetup()->RevertWorkingCopy();
         unsigned collisionBoundsCount = 0;
@@ -800,7 +799,6 @@ void ChaperoneTabController::setHeight( float value, bool notify )
             vr::VRChaperoneSetup()->CommitWorkingCopy(
                 vr::EChaperoneConfigFile_Live );
             delete[] collisionBounds;
-            // parent->m_moveCenterTabController.zeroOffsets();
         }
         if ( notify )
         {
