@@ -117,6 +117,7 @@ private:
     bool m_swapDragToRightHandActivated = false;
     bool m_gravityActive = false;
     bool m_chaperoneCommitted = true;
+    bool m_pendingZeroOffsets = true;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
@@ -128,7 +129,6 @@ private:
     uint32_t m_collisionBoundsCountForReset = 0;
     vr::HmdMatrix34_t m_universeCenterForReset;
     vr::HmdQuad_t* m_collisionBoundsForOffset;
-    vr::HmdMatrix34_t m_universeCenterForOffset;
 
     void updateHmdRotationCounter( vr::TrackedDevicePose_t hmdPose,
                                    double angle );

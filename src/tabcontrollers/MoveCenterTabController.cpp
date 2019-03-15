@@ -99,9 +99,9 @@ void MoveCenterTabController::initStage1()
         m_lockZToggle = value.toBool();
     }
     settings->endGroup();
-    updateChaperoneResetData();
     m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
     m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
+    zeroOffsets();
 }
 
 void MoveCenterTabController::initStage2( OverlayController* var_parent,
@@ -511,19 +511,28 @@ void MoveCenterTabController::reset()
 
 void MoveCenterTabController::zeroOffsets()
 {
-    m_oldOffsetX = 0.0f;
-    m_oldOffsetY = 0.0f;
-    m_oldOffsetZ = 0.0f;
-    m_oldRotation = 0;
-    m_offsetX = 0.0f;
-    m_offsetY = 0.0f;
-    m_offsetZ = 0.0f;
-    m_rotation = 0;
-    emit offsetXChanged( m_offsetX );
-    emit offsetYChanged( m_offsetY );
-    emit offsetZChanged( m_offsetZ );
-    emit rotationChanged( m_rotation );
-    updateChaperoneResetData();
+    if ( vr::VRChaperone()->GetCalibrationState()
+         == vr::ChaperoneCalibrationState_OK )
+    {
+        m_oldOffsetX = 0.0f;
+        m_oldOffsetY = 0.0f;
+        m_oldOffsetZ = 0.0f;
+        m_oldRotation = 0;
+        m_offsetX = 0.0f;
+        m_offsetY = 0.0f;
+        m_offsetZ = 0.0f;
+        m_rotation = 0;
+        emit offsetXChanged( m_offsetX );
+        emit offsetYChanged( m_offsetY );
+        emit offsetZChanged( m_offsetZ );
+        emit rotationChanged( m_rotation );
+        updateChaperoneResetData();
+        m_pendingZeroOffsets = false;
+    }
+    else
+    {
+        m_pendingZeroOffsets = true;
+    }
 }
 
 double MoveCenterTabController::getHmdYawTotal()
@@ -559,17 +568,13 @@ void MoveCenterTabController::updateChaperoneResetData()
     m_collisionBoundsCountForReset = currentQuadCount;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
         m_collisionBoundsForReset, &currentQuadCount );
-    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
-        m_collisionBoundsForOffset, &currentQuadCount );
     vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
         &m_universeCenterForReset );
-    vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-        &m_universeCenterForOffset );
-    float universeCenterForOffsetYaw = std::atan2(
-        m_universeCenterForOffset.m[0][2], m_universeCenterForOffset.m[2][2] );
+    float universeCenterForResetYaw = std::atan2(
+        m_universeCenterForReset.m[0][2], m_universeCenterForReset.m[2][2] );
 
-    // we want to store m_collisionBoundsCountForOffset as spacially relative to
-    // m_universeCenterForOffset, so:
+    // we want to store m_collisionBoundsForOffset as spacially relative to
+    // m_universeCenterForReset, so:
 
     // for every quad in the chaperone bounds...
     for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset; quad++ )
@@ -577,10 +582,18 @@ void MoveCenterTabController::updateChaperoneResetData()
         // at every corner in that quad...
         for ( unsigned corner = 0; corner < 4; corner++ )
         {
+            // copy from m_collisionBoundsForReset
+            m_collisionBoundsForOffset[quad].vCorners[corner].v[0]
+                = m_collisionBoundsForReset[quad].vCorners[corner].v[0];
+            m_collisionBoundsForOffset[quad].vCorners[corner].v[1]
+                = m_collisionBoundsForReset[quad].vCorners[corner].v[1];
+            m_collisionBoundsForOffset[quad].vCorners[corner].v[2]
+                = m_collisionBoundsForReset[quad].vCorners[corner].v[2];
+
             // unrotate by universe center's yaw
             rotateFloatCoordinates(
                 m_collisionBoundsForOffset[quad].vCorners[corner].v,
-                -universeCenterForOffsetYaw );
+                -universeCenterForResetYaw );
         }
     }
 }
@@ -1676,7 +1689,11 @@ void MoveCenterTabController::updateSpace()
 
     if ( m_adjustChaperone )
     {
-        // make a copy of our bounds for modification
+        // make a copy of our bounds and
+        // reorient relative to new universe center
+
+        float offsetUniverseCenterYaw = std::atan2(
+            offsetUniverseCenter.m[0][2], offsetUniverseCenter.m[2][2] );
 
         vr::HmdQuad_t* updatedBounds
             = new vr::HmdQuad_t[m_collisionBoundsCountForReset];
@@ -1687,7 +1704,7 @@ void MoveCenterTabController::updateSpace()
             // at every corner in that quad...
             for ( unsigned corner = 0; corner < 4; corner++ )
             {
-                // copy the xyz coordinates
+                // copy the corner's xyz coordinates
                 updatedBounds[quad].vCorners[corner].v[0]
                     = m_collisionBoundsForOffset[quad].vCorners[corner].v[0];
 
@@ -1696,20 +1713,7 @@ void MoveCenterTabController::updateSpace()
 
                 updatedBounds[quad].vCorners[corner].v[2]
                     = m_collisionBoundsForOffset[quad].vCorners[corner].v[2];
-            }
-        }
 
-        // reorient chaperone bounds relative to new universe center
-
-        float offsetUniverseCenterYaw = std::atan2(
-            offsetUniverseCenter.m[0][2], offsetUniverseCenter.m[2][2] );
-
-        // for every quad in the chaperone bounds...
-        for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset; quad++ )
-        {
-            // at every corner in that quad...
-            for ( unsigned corner = 0; corner < 4; corner++ )
-            {
                 // cancel universe center's xyz offsets to each corner's
                 // position and shift over by original center position so that
                 // we are mirroring the offset as reflected about the original
@@ -1735,7 +1739,6 @@ void MoveCenterTabController::updateSpace()
         }
 
         // update chaperone working set preview (this does not commit)
-
         vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
             updatedBounds, m_collisionBoundsCountForReset );
         delete[] updatedBounds;
@@ -1769,58 +1772,68 @@ void MoveCenterTabController::eventLoopTick(
         settingsUpdateCounter++;
     }
 
-    // get current space rotation in radians
-    double angle = m_rotation * k_centidegreesToRadians;
-
-    // hmd rotations stats counting doesn't need to be smooth, so we skip some
-    // frames for performance
-    if ( m_hmdRotationStatsUpdateCounter >= k_hmdRotationCounterUpdateRate )
+    // If we're trying to redifine the origin point, but can't becaues of bad
+    // chaperone calibration, we keep trying and hold off on motion features
+    // until we get ChaperoneCalibrationState_OK
+    if ( m_pendingZeroOffsets )
     {
-        // device pose index 0 is always the hmd
-        updateHmdRotationCounter( devicePoses[0], angle );
-        m_hmdRotationStatsUpdateCounter = 0;
+        zeroOffsets();
     }
     else
     {
-        m_hmdRotationStatsUpdateCounter++;
-    }
+        // get current space rotation in radians
+        double angle = m_rotation * k_centidegreesToRadians;
 
-    // Smooth turn motion can cause sim-sickness so we check if the user wants
-    // to skip frames to reduce vection. We use the factor squared because of
-    // logarithmic human perception.
-    if ( m_turnComfortFrameSkipCounter
-         >= ( m_turnComfortFactor * m_turnComfortFactor ) )
-    {
-        updateHandTurn( devicePoses, angle );
-        m_turnComfortFrameSkipCounter = 0;
-    }
-    else
-    {
-        m_turnComfortFrameSkipCounter++;
-    }
+        // hmd rotations stats counting doesn't need to be smooth, so we skip
+        // some frames for performance
+        if ( m_hmdRotationStatsUpdateCounter >= k_hmdRotationCounterUpdateRate )
+        {
+            // device pose index 0 is always the hmd
+            updateHmdRotationCounter( devicePoses[0], angle );
+            m_hmdRotationStatsUpdateCounter = 0;
+        }
+        else
+        {
+            m_hmdRotationStatsUpdateCounter++;
+        }
 
-    // Smooth drag motion can cause sim-sickness so we check if the user
-    // wants to skip frames to reduce vection. We use the factor squared
-    // because of logarithmic human perception.
-    if ( m_dragComfortFrameSkipCounter
-         >= ( m_dragComfortFactor * m_dragComfortFactor ) )
-    {
-        updateHandDrag( devicePoses, angle );
-        m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
-        m_dragComfortFrameSkipCounter = 0;
-    }
-    else
-    {
-        m_dragComfortFrameSkipCounter++;
-    }
+        // Smooth turn motion can cause sim-sickness so we check if the user
+        // wants to skip frames to reduce vection. We use the factor squared
+        // because of logarithmic human perception.
+        if ( m_turnComfortFrameSkipCounter
+             >= ( m_turnComfortFactor * m_turnComfortFactor ) )
+        {
+            updateHandTurn( devicePoses, angle );
+            m_turnComfortFrameSkipCounter = 0;
+        }
+        else
+        {
+            m_turnComfortFrameSkipCounter++;
+        }
 
-    if ( m_gravityActive
-         && m_activeDragHand == vr::TrackedControllerRole_Invalid )
-    {
-        updateGravity();
-        m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
-    }
+        // Smooth drag motion can cause sim-sickness so we check if the user
+        // wants to skip frames to reduce vection. We use the factor squared
+        // because of logarithmic human perception.
+        if ( m_dragComfortFrameSkipCounter
+             >= ( m_dragComfortFactor * m_dragComfortFactor ) )
+        {
+            updateHandDrag( devicePoses, angle );
+            m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
+            m_dragComfortFrameSkipCounter = 0;
+        }
+        else
+        {
+            m_dragComfortFrameSkipCounter++;
+        }
 
-    updateSpace();
+        if ( m_gravityActive
+             && m_activeDragHand == vr::TrackedControllerRole_Invalid )
+        {
+            updateGravity();
+            m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
+        }
+
+        updateSpace();
+    }
 }
 } // namespace advsettings
