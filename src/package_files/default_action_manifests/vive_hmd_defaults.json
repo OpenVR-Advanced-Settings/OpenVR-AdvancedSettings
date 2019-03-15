@@ -1,0 +1,23 @@
+{
+   "alias_info" : {},
+   "bindings" : {
+      "/actions/default" : {
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/main/in/ProxSensor"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/head/proximity"
+            }
+         ]
+      }
+   },
+   "controller_type" : "vive",
+   "description" : "Default config for vive HMD for Prox sensor.",
+   "name" : "Default configuration for vive HMD's",
+   "options" : {},
+   "simulated_actions" : []
+}
