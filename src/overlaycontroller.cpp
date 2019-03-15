@@ -510,8 +510,8 @@ void OverlayController::processRoomBindings()
         m_actions.leftHandSpaceTurn() );
     m_moveCenterTabController.rightHandSpaceTurn(
         m_actions.rightHandSpaceTurn() );
-    m_moveCenterTabController.gravityToggle( m_actions.gravityToggle() );
-    m_moveCenterTabController.heightToggle( m_actions.heightToggle() );
+    m_moveCenterTabController.gravityToggleAction( m_actions.gravityToggle() );
+    m_moveCenterTabController.heightToggleAction( m_actions.heightToggle() );
     m_moveCenterTabController.resetOffsets( m_actions.resetOffsets() );
     m_moveCenterTabController.snapTurnLeft( m_actions.snapTurnLeft() );
     m_moveCenterTabController.snapTurnRight( m_actions.snapTurnRight() );

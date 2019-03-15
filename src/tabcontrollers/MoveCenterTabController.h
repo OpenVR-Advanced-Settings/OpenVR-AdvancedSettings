@@ -48,6 +48,10 @@ class MoveCenterTabController : public QObject
                     setDragComfortFactor NOTIFY dragComfortFactorChanged )
     Q_PROPERTY( unsigned turnComfortFactor READ turnComfortFactor WRITE
                     setTurnComfortFactor NOTIFY turnComfortFactorChanged )
+    Q_PROPERTY( bool heightToggle READ heightToggle WRITE setHeightToggle NOTIFY
+                    heightToggleChanged )
+    Q_PROPERTY( float heightToggleOffset READ heightToggleOffset WRITE
+                    setHeightToggleOffset NOTIFY heightToggleOffsetChanged )
     Q_PROPERTY( bool lockXToggle READ lockXToggle WRITE setLockX NOTIFY
                     requireLockXChanged )
     Q_PROPERTY( bool lockYToggle READ lockYToggle WRITE setLockY NOTIFY
@@ -65,7 +69,11 @@ private:
     float m_offsetX = 0.0f;
     float m_offsetY = 0.0f;
     float m_offsetZ = 0.0f;
+    float m_oldOffsetX = 0.0f;
+    float m_oldOffsetY = 0.0f;
+    float m_oldOffsetZ = 0.0f;
     int m_rotation = 0;
+    int m_oldRotation = 0;
     int m_tempRotation = 0;
     bool m_adjustChaperone = true;
     bool m_settingsHandTurningEnabled = false;
@@ -79,6 +87,9 @@ private:
     bool m_settingsRightHandTurnEnabled = false;
     unsigned m_dragComfortFactor = 0;
     unsigned m_turnComfortFactor = 0;
+    bool m_heightToggle = false;
+    float m_heightToggleOffset = -1.0f;
+    float m_gravityFloor = 0.0f;
     bool m_lockXToggle = false;
     bool m_lockYToggle = false;
     bool m_lockZToggle = false;
@@ -112,21 +123,30 @@ private:
     bool m_swapDragToLeftHandActivated = false;
     bool m_swapDragToRightHandActivated = false;
     bool m_gravityActive = false;
+    bool m_chaperoneCommitted = true;
+    bool m_pendingZeroOffsets = true;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
     unsigned m_turnComfortFrameSkipCounter = 0;
     double m_velocity[3] = { 0.0, 0.0, 0.0 };
-    std::chrono::steady_clock::time_point m_lastUpdateTimePoint;
+    std::chrono::steady_clock::time_point m_lastGravityUpdateTimePoint;
+    std::chrono::steady_clock::time_point m_lastDragUpdateTimePoint;
+    vr::HmdQuad_t* m_collisionBoundsForReset;
+    uint32_t m_collisionBoundsCountForReset = 0;
+    vr::HmdMatrix34_t m_universeCenterForReset;
+    vr::HmdQuad_t* m_collisionBoundsForOffset;
 
     void updateHmdRotationCounter( vr::TrackedDevicePose_t hmdPose,
                                    double angle );
-    void updateHandDrag( vr::TrackedDevicePose_t* devicePoses,
-                         double secondsSinceLastTick,
-                         double angle );
+    void updateHandDrag( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateHandTurn( vr::TrackedDevicePose_t* devicePoses, double angle );
-    void updateGravity( double secondsSinceLastTick, double angle );
+    void updateGravity();
+    void updateSpace();
     void clampVelocity( double* velocity );
+    void updateChaperoneResetData();
+    void applyChaperoneResetData();
+    void saveUncommittedChaperone();
 
 public:
     void initStage1();
@@ -148,6 +168,8 @@ public:
     bool turnBindLeft() const;
     unsigned dragComfortFactor() const;
     unsigned turnComfortFactor() const;
+    bool heightToggle() const;
+    float heightToggleOffset() const;
     bool lockXToggle() const;
     bool lockYToggle() const;
     bool lockZToggle() const;
@@ -165,8 +187,8 @@ public:
     void optionalOverrideRightHandSpaceTurn( bool overrideRightHandTurnActive );
     void swapSpaceDragToLeftHandOverride( bool swapDragToLeftHandActive );
     void swapSpaceDragToRightHandOverride( bool swapDragToRightHandActive );
-    void gravityToggle( bool gravityToggleJustPressed );
-    void heightToggle( bool heightToggleJustPressed );
+    void gravityToggleAction( bool gravityToggleJustPressed );
+    void heightToggleAction( bool heightToggleJustPressed );
     void resetOffsets( bool resetOffsetsJustPressed );
     void snapTurnLeft( bool snapTurnLeftJustPressed );
     void snapTurnRight( bool snapTurnRightJustPressed );
@@ -196,6 +218,8 @@ public slots:
     void setTurnBindLeft( bool value, bool notify = true );
     void setDragComfortFactor( unsigned value, bool notify = true );
     void setTurnComfortFactor( unsigned value, bool notify = true );
+    void setHeightToggle( bool value, bool notify = true );
+    void setHeightToggleOffset( float value, bool notify = true );
 
     void modOffsetX( float value, bool notify = true );
     void modOffsetY( float value, bool notify = true );
@@ -223,6 +247,8 @@ signals:
     void turnBindLeftChanged( bool value );
     void dragComfortFactorChanged( unsigned value );
     void turnComfortFactorChanged( unsigned value );
+    void heightToggleChanged( bool value );
+    void heightToggleOffsetChanged( float value );
     void requireLockXChanged( bool value );
     void requireLockYChanged( bool value );
     void requireLockZChanged( bool value );

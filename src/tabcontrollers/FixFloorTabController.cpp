@@ -205,6 +205,7 @@ void FixFloorTabController::eventLoopTick(
                     offset[0] = floorOffsetX;
                     offset[2] = floorOffsetZ;
                 }
+                parent->m_moveCenterTabController.reset();
                 parent->AddOffsetToUniverseCenter(
                     vr::TrackingUniverseStanding, offset, true );
                 statusMessage
@@ -214,6 +215,7 @@ void FixFloorTabController::eventLoopTick(
                 emit measureEndSignal();
                 setCanUndo( true );
                 state = 0;
+                parent->m_moveCenterTabController.zeroOffsets();
             }
         }
     }
@@ -309,6 +311,7 @@ void FixFloorTabController::recenterClicked()
 
 void FixFloorTabController::undoFixFloorClicked()
 {
+    parent->m_moveCenterTabController.reset();
     parent->AddOffsetToUniverseCenter(
         vr::TrackingUniverseStanding, 0, -floorOffsetX, false );
     parent->AddOffsetToUniverseCenter(
@@ -322,6 +325,7 @@ void FixFloorTabController::undoFixFloorClicked()
     statusMessageTimeout = 1.0;
     emit statusMessageSignal();
     setCanUndo( false );
+    parent->m_moveCenterTabController.zeroOffsets();
 }
 
 } // namespace advsettings

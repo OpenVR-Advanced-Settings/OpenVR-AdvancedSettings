@@ -837,7 +837,7 @@ void ChaperoneTabController::setHeight( float value, bool notify )
         }
         if ( notify )
         {
-            emit heightChanged( m_fadeDistance );
+            emit heightChanged( m_height );
         }
     }
 }
@@ -849,7 +849,7 @@ void ChaperoneTabController::updateHeight( float value, bool notify )
         m_height = value;
         if ( notify )
         {
-            emit heightChanged( m_fadeDistance );
+            emit heightChanged( m_height );
         }
     }
 }
@@ -1314,12 +1314,15 @@ void ChaperoneTabController::flipOrientation()
     parent->m_moveCenterTabController.reset();
     parent->RotateUniverseCenter( vr::TrackingUniverseStanding,
                                   static_cast<float>( M_PI ) );
+    parent->m_moveCenterTabController.zeroOffsets();
 }
 
 void ChaperoneTabController::reloadFromDisk()
 {
+    parent->m_moveCenterTabController.reset();
     vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
     vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live );
+    parent->m_moveCenterTabController.zeroOffsets();
 }
 
 void ChaperoneTabController::addChaperoneProfile(
@@ -1501,6 +1504,7 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
         auto& profile = chaperoneProfiles[index];
         if ( profile.includesChaperoneGeometry )
         {
+            parent->m_moveCenterTabController.reset();
             vr::VRChaperoneSetup()->RevertWorkingCopy();
             vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
                 profile.chaperoneGeometryQuads.get(),
@@ -1511,6 +1515,7 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
                 profile.playSpaceAreaX, profile.playSpaceAreaZ );
             vr::VRChaperoneSetup()->CommitWorkingCopy(
                 vr::EChaperoneConfigFile_Live );
+            parent->m_moveCenterTabController.zeroOffsets();
         }
         if ( profile.includesVisibility )
         {
