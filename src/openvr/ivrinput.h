@@ -94,37 +94,37 @@ private:
     vr::VRActiveActionSet_t m_activeActionSet = {};
 
     // Music player bindings
-    Action m_nextTrack;
-    Action m_previousTrack;
-    Action m_pausePlayTrack;
-    Action m_stopTrack;
+    DigitalAction m_nextTrack;
+    DigitalAction m_previousTrack;
+    DigitalAction m_pausePlayTrack;
+    DigitalAction m_stopTrack;
 
     // Space bindings
-    Action m_leftHandSpaceTurn;
-    Action m_rightHandSpaceTurn;
-    Action m_leftHandSpaceDrag;
-    Action m_rightHandSpaceDrag;
-    Action m_optionalOverrideLeftHandSpaceTurn;
-    Action m_optionalOverrideRightHandSpaceTurn;
-    Action m_optionalOverrideLeftHandSpaceDrag;
-    Action m_optionalOverrideRightHandSpaceDrag;
-    Action m_swapSpaceDragToLeftHandOverride;
-    Action m_swapSpaceDragToRightHandOverride;
-    Action m_gravityToggle;
-    Action m_heightToggle;
-    Action m_resetOffsets;
-    Action m_snapTurnLeft;
-    Action m_snapTurnRight;
-    Action m_xAxisLockToggle;
-    Action m_yAxisLockToggle;
-    Action m_zAxisLockToggle;
+    DigitalAction m_leftHandSpaceTurn;
+    DigitalAction m_rightHandSpaceTurn;
+    DigitalAction m_leftHandSpaceDrag;
+    DigitalAction m_rightHandSpaceDrag;
+    DigitalAction m_optionalOverrideLeftHandSpaceTurn;
+    DigitalAction m_optionalOverrideRightHandSpaceTurn;
+    DigitalAction m_optionalOverrideLeftHandSpaceDrag;
+    DigitalAction m_optionalOverrideRightHandSpaceDrag;
+    DigitalAction m_swapSpaceDragToLeftHandOverride;
+    DigitalAction m_swapSpaceDragToRightHandOverride;
+    DigitalAction m_gravityToggle;
+    DigitalAction m_heightToggle;
+    DigitalAction m_resetOffsets;
+    DigitalAction m_snapTurnLeft;
+    DigitalAction m_snapTurnRight;
+    DigitalAction m_xAxisLockToggle;
+    DigitalAction m_yAxisLockToggle;
+    DigitalAction m_zAxisLockToggle;
 
     // Push To Talk
-    Action m_pushToTalk;
+    DigitalAction m_pushToTalk;
 
     // haptic bindings
-    Action m_leftHaptic;
-    Action m_rightHaptic;
+    DigitalAction m_leftHaptic;
+    DigitalAction m_rightHaptic;
 
     // input sources
     InputSource m_leftHand;

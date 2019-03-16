@@ -1,4 +1,5 @@
 #include "ivrinput.h"
+#include "ivrinput_action.h"
 #include <openvr.h>
 #include <iostream>
 #include <QStandardPaths>
@@ -17,20 +18,8 @@ it isn't the struct will still need to be created somewhere, and with move
 semantics it almost doesn't matter if the struct is created in the calling
 function and passed as reference, or created in this function.
 */
-vr::InputDigitalActionData_t getDigitalActionData( Action& action )
+vr::InputDigitalActionData_t getDigitalActionData( DigitalAction& action )
 {
-    if ( action.type() != ActionType::Digital )
-    {
-        LOG( ERROR )
-            << "Action was passed to IVRInput getDigitalActionData without "
-               "being a digital type. Action: "
-            << action.name();
-
-        throw std::runtime_error(
-            "Action was passed to IVRInput getDigitalActionData without being "
-            "a digital type. See log for details." );
-    }
-
     vr::InputDigitalActionData_t handleData = {};
 
     const auto error = vr::VRInput()->GetDigitalActionData(
@@ -59,20 +48,8 @@ it isn't the struct will still need to be created somewhere, and with move
 semantics it almost doesn't matter if the struct is created in the calling
 function and passed as reference, or created in this function.
 */
-vr::InputAnalogActionData_t getAnalogActionData( Action& action )
+vr::InputAnalogActionData_t getAnalogActionData( AnalogAction& action )
 {
-    if ( action.type() != ActionType::Analog )
-    {
-        LOG( ERROR )
-            << "Action was passed to IVRInput getAnalogActionData without "
-               "being an analog type. Action: "
-            << action.name();
-
-        throw std::runtime_error(
-            "Action was passed to IVRInput getAnalogActionData without being "
-            "an analog type. See log for details." );
-    }
-
     vr::InputAnalogActionData_t handleData = {};
 
     const auto error
@@ -96,7 +73,7 @@ This will only return true the first time the button is released. It is
 necessary to release the button and the push it again in order for this function
 to return true again.
 */
-bool isDigitalActionActivatedOnce( Action& action )
+bool isDigitalActionActivatedOnce( DigitalAction& action )
 {
     const auto handleData = getDigitalActionData( action );
 
@@ -107,7 +84,7 @@ bool isDigitalActionActivatedOnce( Action& action )
 Gets the action state of an Action.
 This will continually return true while the button is held down.
 */
-bool isDigitalActionActivatedConstant( Action& action )
+bool isDigitalActionActivatedConstant( DigitalAction& action )
 {
     const auto handleData = getDigitalActionData( action );
 
@@ -124,54 +101,37 @@ mystically not working.
 */
 SteamIVRInput::SteamIVRInput()
     : m_manifest(), m_mainSet( action_sets::k_setMain ),
-      m_nextTrack( action_keys::k_actionNextTrack, ActionType::Digital ),
-      m_previousTrack( action_keys::k_actionPreviousTrack,
-                       ActionType::Digital ),
-      m_pausePlayTrack( action_keys::k_actionPausePlayTrack,
-                        ActionType::Digital ),
-      m_stopTrack( action_keys::k_actionStopTrack, ActionType::Digital ),
-      m_leftHandSpaceTurn( action_keys::k_actionLeftHandSpaceTurn,
-                           ActionType::Digital ),
-      m_rightHandSpaceTurn( action_keys::k_actionRightHandSpaceTurn,
-                            ActionType::Digital ),
-      m_leftHandSpaceDrag( action_keys::k_actionLeftHandSpaceDrag,
-                           ActionType::Digital ),
-      m_rightHandSpaceDrag( action_keys::k_actionRightHandSpaceDrag,
-                            ActionType::Digital ),
+      m_nextTrack( action_keys::k_actionNextTrack ),
+      m_previousTrack( action_keys::k_actionPreviousTrack ),
+      m_pausePlayTrack( action_keys::k_actionPausePlayTrack ),
+      m_stopTrack( action_keys::k_actionStopTrack ),
+      m_leftHandSpaceTurn( action_keys::k_actionLeftHandSpaceTurn ),
+      m_rightHandSpaceTurn( action_keys::k_actionRightHandSpaceTurn ),
+      m_leftHandSpaceDrag( action_keys::k_actionLeftHandSpaceDrag ),
+      m_rightHandSpaceDrag( action_keys::k_actionRightHandSpaceDrag ),
       m_optionalOverrideLeftHandSpaceTurn(
-          action_keys::k_actionOptionalOverrideLeftHandSpaceTurn,
-          ActionType::Digital ),
+          action_keys::k_actionOptionalOverrideLeftHandSpaceTurn ),
       m_optionalOverrideRightHandSpaceTurn(
-          action_keys::k_actionOptionalOverrideRightHandSpaceTurn,
-          ActionType::Digital ),
+          action_keys::k_actionOptionalOverrideRightHandSpaceTurn ),
       m_optionalOverrideLeftHandSpaceDrag(
-          action_keys::k_actionOptionalOverrideLeftHandSpaceDrag,
-          ActionType::Digital ),
+          action_keys::k_actionOptionalOverrideLeftHandSpaceDrag ),
       m_optionalOverrideRightHandSpaceDrag(
-          action_keys::k_actionOptionalOverrideRightHandSpaceDrag,
-          ActionType::Digital ),
+          action_keys::k_actionOptionalOverrideRightHandSpaceDrag ),
       m_swapSpaceDragToLeftHandOverride(
-          action_keys::k_actionSwapSpaceDragToLeftHandOverride,
-          ActionType::Digital ),
+          action_keys::k_actionSwapSpaceDragToLeftHandOverride ),
       m_swapSpaceDragToRightHandOverride(
-          action_keys::k_actionSwapSpaceDragToRightHandOverride,
-          ActionType::Digital ),
-      m_gravityToggle( action_keys::k_actionGravityToggle,
-                       ActionType::Digital ),
-      m_heightToggle( action_keys::k_actionHeightToggle, ActionType::Digital ),
-      m_resetOffsets( action_keys::k_actionResetOffsets, ActionType::Digital ),
-      m_snapTurnLeft( action_keys::k_actionSnapTurnLeft, ActionType::Digital ),
-      m_snapTurnRight( action_keys::k_actionSnapTurnRight,
-                       ActionType::Digital ),
-      m_xAxisLockToggle( action_keys::k_actionXAxisLockToggle,
-                         ActionType::Digital ),
-      m_yAxisLockToggle( action_keys::k_actionYAxisLockToggle,
-                         ActionType::Digital ),
-      m_zAxisLockToggle( action_keys::k_actionZAxisLockToggle,
-                         ActionType::Digital ),
-      m_pushToTalk( action_keys::k_actionPushToTalk, ActionType::Digital ),
-      m_leftHaptic( action_keys::k_actionHapticsLeft, ActionType::Haptic ),
-      m_rightHaptic( action_keys::k_actionHapticsRight, ActionType::Haptic ),
+          action_keys::k_actionSwapSpaceDragToRightHandOverride ),
+      m_gravityToggle( action_keys::k_actionGravityToggle ),
+      m_heightToggle( action_keys::k_actionHeightToggle ),
+      m_resetOffsets( action_keys::k_actionResetOffsets ),
+      m_snapTurnLeft( action_keys::k_actionSnapTurnLeft ),
+      m_snapTurnRight( action_keys::k_actionSnapTurnRight ),
+      m_xAxisLockToggle( action_keys::k_actionXAxisLockToggle ),
+      m_yAxisLockToggle( action_keys::k_actionYAxisLockToggle ),
+      m_zAxisLockToggle( action_keys::k_actionZAxisLockToggle ),
+      m_pushToTalk( action_keys::k_actionPushToTalk ),
+      m_leftHaptic( action_keys::k_actionHapticsLeft ),
+      m_rightHaptic( action_keys::k_actionHapticsRight ),
       m_leftHand( input_keys::k_inputSourceLeft ),
       m_rightHand( input_keys::k_inputSourceRight )
 {
