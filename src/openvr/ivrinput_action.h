@@ -24,8 +24,7 @@ with a name similar to that of the one in the actions manifest.
 class Action
 {
 public:
-    Action( const char* const actionName, const ActionType type )
-        : m_name( actionName ), m_type( type )
+    Action( const char* const actionName ) : m_name( actionName )
     {
         auto error = vr::VRInput()->GetActionHandle( actionName, &m_handle );
 
@@ -49,19 +48,22 @@ public:
     {
         return m_name;
     }
-    /*!
-    The type of the action. Used for runtime checking that the wrong functions
-    aren't called.
-    */
-    ActionType type() const noexcept
-    {
-        return m_type;
-    }
 
 private:
     vr::VRActionHandle_t m_handle = 0;
     const std::string m_name;
-    const ActionType m_type = ActionType::Undefined;
+};
+
+class DigitalAction : public Action
+{
+public:
+    DigitalAction( const char* const actionName ) : Action( actionName ) {}
+};
+
+class AnalogAction : public Action
+{
+public:
+    AnalogAction( const char* const actionName ) : Action( actionName ) {}
 };
 
 } // namespace input
