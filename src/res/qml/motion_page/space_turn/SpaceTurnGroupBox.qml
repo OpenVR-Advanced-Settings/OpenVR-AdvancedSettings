@@ -5,12 +5,12 @@ import ovras.advsettings 1.0
 import "../../common"
 
 GroupBox {
-    id: universeTurnGroupBox
+    id: spaceTurnGroupBox
     Layout.fillWidth: true
 
     label: MyText {
         leftPadding: 10
-        text: "Universe Turn"
+        text: "Space Turn"
         bottomPadding: -10
     }
     background: Rectangle {

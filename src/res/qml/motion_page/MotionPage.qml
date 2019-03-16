@@ -3,8 +3,8 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../common"
-import "universe_drag"
-import "universe_turn"
+import "space_drag"
+import "space_turn"
 import "height_toggle"
 
 MyStackViewPage {
@@ -13,9 +13,9 @@ MyStackViewPage {
     content: ColumnLayout {
         spacing: 18
 
-        UniverseDragGroupBox { id: universeDragGroupBox }
+        SpaceDragGroupBox { id: spaceDragGroupBox }
 
-        UniverseTurnGroupBox { id: universeTurnGroupBox }
+        SpaceTurnGroupBox { id: spaceTurnGroupBox }
 
         HeightToggleGroupBox { id: heightToggleGroupBox }
 
