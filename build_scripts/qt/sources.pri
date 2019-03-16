@@ -39,7 +39,7 @@ HEADERS += src/overlaycontroller.h \
     src/openvr/ivrinput_action.h \
     src/openvr/ivrinput_manifest.h \
     src/openvr/ivrinput_action_set.h \
-	src/openvr/ivrinput_input_source.h \
+    src/openvr/ivrinput_input_source.h \
     src/openvr/ivrinput.h \
     src/utils/setup.h
 
