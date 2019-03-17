@@ -48,12 +48,12 @@ int main( int argc, char* argv[] )
                                                    commandLineArgs.forceNoSound,
                                                    qmlEngine );
 
-        const auto path
-            = paths::binaryDirectoryFindFile( "res/qml/common/mainwidget.qml" );
+        constexpr auto widgetPath = "res/qml/common/mainwidget.qml";
+        const auto path = paths::binaryDirectoryFindFile( widgetPath );
 
         if ( !path.has_value() )
         {
-            LOG( ERROR ) << "Unable to find file '" << *path << "'.";
+            LOG( ERROR ) << "Unable to find file '" << widgetPath << "'.";
             throw std::runtime_error(
                 "Unable to find critical file. See log for more information." );
         }
