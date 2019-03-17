@@ -2,6 +2,7 @@
 #include <QStandardPaths>
 #include <openvr.h>
 #include <easylogging++.h>
+#include "../utils/paths.h"
 
 namespace input
 {
@@ -14,16 +15,23 @@ class Manifest
 public:
     Manifest()
     {
-        QString actionManifestPath = QStandardPaths::locate(
-            QStandardPaths::AppDataLocation,
-            QStringLiteral( "action_manifest.json" ) );
+        const auto actionManifestPath
+            = paths::binaryDirectoryFindFile( "action_manifest.json" );
 
-        auto error = vr::VRInput()->SetActionManifestPath(
-            actionManifestPath.toStdString().c_str() );
+        if ( !actionManifestPath.has_value() )
+        {
+            LOG( ERROR ) << "Could not find action manifest. Action manifests "
+                            "not initialized.";
+            return;
+        }
+
+        const auto validManifestPath = actionManifestPath->c_str();
+
+        auto error = vr::VRInput()->SetActionManifestPath( validManifestPath );
         if ( error != vr::EVRInputError::VRInputError_None )
         {
             LOG( ERROR ) << "Error setting action manifest path: "
-                         << actionManifestPath << ". OpenVR Error: " << error;
+                         << validManifestPath << ". OpenVR Error: " << error;
         }
     }
 
