@@ -35,7 +35,7 @@ optional<string> binaryDirectoryFindFile( const string fileName )
     return path.toStdString();
 }
 
-optional<string> binaryDirectoryFindDirectory( string directoryName )
+optional<string> binaryDirectoryFindDirectory( const string directoryName )
 {
     const auto path
         = QStandardPaths::locate( QStandardPaths::AppDataLocation,

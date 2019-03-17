@@ -250,10 +250,22 @@ void UtilitiesTabController::modAlarmTimeMinute( int value, bool notify )
 
 QString getBatteryIconPath( int batteryState )
 {
-    QString batteryPrefix = "/res/img/battery/battery_";
-    return QStandardPaths::locate(
-        QStandardPaths::AppDataLocation,
-        batteryPrefix + QString::number( batteryState ) + ".png" );
+    constexpr auto batteryPrefix = "/res/img/battery/battery_";
+
+    const auto batteryFullPath
+        = ( batteryPrefix + QString::number( batteryState ) + ".png" )
+              .toStdString();
+
+    const auto batteryPath = paths::binaryDirectoryFindFile( batteryFullPath );
+
+    if ( !batteryPath.has_value() )
+    {
+        LOG( ERROR ) << "Unable to find battery image number '" << batteryState
+                     << "'.";
+        return "";
+    }
+
+    return QString::fromStdString( *batteryPath );
 }
 
 vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index )

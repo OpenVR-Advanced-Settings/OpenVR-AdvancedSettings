@@ -70,15 +70,14 @@ void AudioTabController::initStage2( OverlayController* var_parent,
         notifKey.c_str(), notifKey.c_str(), &m_ulNotificationOverlayHandle );
     if ( overlayError == vr::VROverlayError_None )
     {
-        QString notifIconPath = QStandardPaths::locate(
-            QStandardPaths::AppDataLocation,
-            QStringLiteral(
-                "/res/img/audio/microphone/ptt_notification.png" ) );
-        if ( QFile::exists( notifIconPath ) )
+        constexpr auto notificationIconFilename
+            = "/res/img/audio/microphone/ptt_notification.png";
+        const auto notifIconPath
+            = paths::binaryDirectoryFindFile( notificationIconFilename );
+        if ( notifIconPath.has_value() )
         {
-            vr::VROverlay()->SetOverlayFromFile(
-                m_ulNotificationOverlayHandle,
-                notifIconPath.toStdString().c_str() );
+            vr::VROverlay()->SetOverlayFromFile( m_ulNotificationOverlayHandle,
+                                                 notifIconPath->c_str() );
             vr::VROverlay()->SetOverlayWidthInMeters(
                 m_ulNotificationOverlayHandle, 0.02f );
             vr::HmdMatrix34_t notificationTransform
@@ -93,7 +92,7 @@ void AudioTabController::initStage2( OverlayController* var_parent,
         else
         {
             LOG( ERROR ) << "Could not find notification icon \""
-                         << notifIconPath << "\"";
+                         << notificationIconFilename << "\"";
         }
     }
     else
