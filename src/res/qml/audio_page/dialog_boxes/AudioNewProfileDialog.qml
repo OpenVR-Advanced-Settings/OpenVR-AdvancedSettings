@@ -9,6 +9,8 @@ MyDialogOkCancelPopup {
     dialogTitle: "Create New Audio Profile"
     dialogWidth: 600
     dialogHeight: 300
+    y: -300
+    x: 100
     dialogContentItem: ColumnLayout {
         RowLayout {
             Layout.topMargin: 16
