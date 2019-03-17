@@ -78,10 +78,18 @@ int main( int argc, char* argv[] )
         {
             try
             {
-                const auto manifestPath = QDir::cleanPath(
-                    QDir( QCoreApplication::applicationDirPath() )
-                        .absoluteFilePath( manifest::kVRManifestName ) );
-                manifest::installApplicationManifest( manifestPath );
+                const auto manifestPath = paths::binaryDirectoryFindFile(
+                    manifest::kVRManifestName );
+                if ( !manifestPath.has_value() )
+                {
+                    throw std::runtime_error(
+                        "Could not find applications manifest." );
+                }
+                else
+                {
+                    manifest::installApplicationManifest(
+                        QString::fromStdString( *manifestPath ) );
+                }
             }
             catch ( std::exception& e )
             {
