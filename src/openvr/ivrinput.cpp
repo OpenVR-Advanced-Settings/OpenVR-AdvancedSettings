@@ -122,6 +122,7 @@ SteamIVRInput::SteamIVRInput()
       m_swapSpaceDragToRightHandOverride(
           action_keys::k_actionSwapSpaceDragToRightHandOverride ),
       m_gravityToggle( action_keys::k_actionGravityToggle ),
+      m_gravityReverse( action_keys::k_actionGravityReverse ),
       m_heightToggle( action_keys::k_actionHeightToggle ),
       m_resetOffsets( action_keys::k_actionResetOffsets ),
       m_snapTurnLeft( action_keys::k_actionSnapTurnLeft ),
@@ -241,6 +242,11 @@ bool SteamIVRInput::swapSpaceDragToRightHandOverride()
 bool SteamIVRInput::gravityToggle()
 {
     return isDigitalActionActivatedOnce( m_gravityToggle );
+}
+
+bool SteamIVRInput::gravityReverse()
+{
+    return isDigitalActionActivatedConstant( m_gravityReverse );
 }
 
 bool SteamIVRInput::heightToggle()

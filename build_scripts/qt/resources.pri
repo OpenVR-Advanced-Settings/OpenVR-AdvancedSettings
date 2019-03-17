@@ -22,8 +22,8 @@ DISTFILES += \
     src/res/qml/motion_page/gravity/* \
     src/res/qml/motion_page/height_toggle/* \
     src/res/qml/motion_page/snap_turn/* \
-    src/res/qml/motion_page/universe_drag/* \
-    src/res/qml/motion_page/universe_turn/* \
+    src/res/qml/motion_page/space_drag/* \
+    src/res/qml/motion_page/space_turn/* \
     src/res/qml/RevivePage.qml \
     src/res/qml/RootPage.qml \
     src/res/qml/SettingsPage.qml \

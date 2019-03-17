@@ -5,12 +5,12 @@ import ovras.advsettings 1.0
 import "../../common"
 
 GroupBox {
-    id: universeDragGroupBox
+    id: spaceDragGroupBox
     Layout.fillWidth: true
 
     label: MyText {
         leftPadding: 10
-        text: "Universe Drag"
+        text: "Space Drag"
         bottomPadding: -10
     }
     background: Rectangle {

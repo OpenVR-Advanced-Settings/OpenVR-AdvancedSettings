@@ -126,7 +126,7 @@ private:
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
     void processInputBindings();
     void processMediaKeyBindings();
-    void processRoomBindings();
+    void processMotionBindings();
     void processPushToTalkBindings();
 
 public:
