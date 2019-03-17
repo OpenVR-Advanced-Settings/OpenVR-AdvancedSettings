@@ -95,3 +95,4 @@
 #Linux Shell Scripts
 #Windows Subsystem for Linux will not run CLRF files.
 *.sh text eol=lf
+*.vrmanifest text
