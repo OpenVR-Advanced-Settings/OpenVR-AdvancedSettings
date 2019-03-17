@@ -26,7 +26,7 @@ optional<string> binaryDirectoryFindFile( const string fileName )
 
     if ( path == "" )
     {
-        LOG( ERROR ) << "Could not find file '" << fileName
+        LOG( ERROR ) << "Could not find file '" << fileName.c_str()
                      << "' in binary directory.";
         return std::nullopt;
     }
