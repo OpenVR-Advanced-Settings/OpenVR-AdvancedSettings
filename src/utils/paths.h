@@ -12,6 +12,5 @@ optional<string> binaryDirectoryFindFile( string fileName );
 optional<string> binaryDirectoryFindDirectory( string directoryName );
 
 optional<string> settingsDirectory();
-optional<string> settingsDirectoryFindFile( string fileName );
 
 } // namespace paths
