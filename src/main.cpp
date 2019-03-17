@@ -48,11 +48,20 @@ int main( int argc, char* argv[] )
                                                    commandLineArgs.forceNoSound,
                                                    qmlEngine );
 
-        QString path = QStandardPaths::locate(
-            QStandardPaths::AppDataLocation,
-            QStringLiteral( "res/qml/common/mainwidget.qml" ) );
+        const auto path
+            = paths::binaryDirectoryFindFile( "res/qml/common/mainwidget.qml" );
 
-        QQmlComponent component( &qmlEngine, QUrl::fromLocalFile( path ) );
+        if ( !path.has_value() )
+        {
+            LOG( ERROR ) << "Unable to find file '" << *path << "'.";
+            throw std::runtime_error(
+                "Unable to find critical file. See log for more information." );
+        }
+
+        const auto url
+            = QUrl::fromLocalFile( QString::fromStdString( ( *path ) ) );
+
+        QQmlComponent component( &qmlEngine, url );
         auto errors = component.errors();
         for ( auto& e : errors )
         {

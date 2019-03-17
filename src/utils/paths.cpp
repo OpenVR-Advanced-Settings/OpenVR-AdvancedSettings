@@ -21,8 +21,10 @@ optional<string> binaryDirectory()
 
 optional<string> binaryDirectoryFindFile( const string fileName )
 {
-    const auto path = QStandardPaths::locate(
-        QStandardPaths::AppDataLocation, QString::fromStdString( fileName ) );
+    const auto path
+        = QStandardPaths::locate( QStandardPaths::AppDataLocation,
+                                  QString::fromStdString( fileName ),
+                                  QStandardPaths::LocateFile );
     if ( path == "" )
     {
         LOG( ERROR ) << "Could not find file '" << fileName.c_str()
@@ -33,36 +35,20 @@ optional<string> binaryDirectoryFindFile( const string fileName )
     return path.toStdString();
 }
 
-optional<string> qmlDirectory()
+optional<string> binaryDirectoryFindDirectory( string directoryName )
 {
     const auto path
-        = QStandardPaths::locate( QStandardPaths::AppDataLocation, "res/qml/" );
+        = QStandardPaths::locate( QStandardPaths::AppDataLocation,
+                                  QString::fromStdString( directoryName ),
+                                  QStandardPaths::LocateDirectory );
     if ( path == "" )
     {
-        LOG( ERROR ) << "Unable to find QML directory.";
+        LOG( ERROR ) << "Could not find directory '" << directoryName.c_str()
+                     << "' in binary directory.";
         return std::nullopt;
     }
 
     return path.toStdString();
-}
-
-optional<string> qmlDirectoryFindFile( string fileName )
-{
-    const auto qmlPath = qmlDirectory();
-    if ( !qmlPath.has_value() )
-    {
-        return std::nullopt;
-    }
-
-    const auto path = ( *qmlPath ) + fileName;
-    QFileInfo filePath( QString::fromStdString( path ) );
-    if ( !filePath.exists() )
-    {
-        LOG( ERROR ) << "File: '" << path << "' not found.";
-        return std::nullopt;
-    }
-
-    return std::move( path );
 }
 
 } // namespace paths
