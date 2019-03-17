@@ -65,20 +65,19 @@ OverlayController::OverlayController( bool desktopMode,
                      << focusChangedSoundFile;
     }
 
-    QString alarm01SoundFile
-        = QStandardPaths::locate( QStandardPaths::AppDataLocation,
-                                  QStringLiteral( "res/sounds/alarm01.wav" ) );
-    QFileInfo alarm01SoundFileInfo( alarm01SoundFile );
-    if ( alarm01SoundFileInfo.exists() && alarm01SoundFileInfo.isFile() )
+    constexpr auto alarmFileName = "res/sounds/alarm01.wav";
+    const auto alarm01SoundFile
+        = paths::binaryDirectoryFindFile( alarmFileName );
+
+    if ( alarm01SoundFile.has_value() )
     {
-        m_alarm01SoundEffect.setSource(
-            QUrl::fromLocalFile( alarm01SoundFile ) );
+        m_alarm01SoundEffect.setSource( QUrl::fromLocalFile(
+            QString::fromStdString( ( *alarm01SoundFile ) ) ) );
         m_alarm01SoundEffect.setVolume( 1.0 );
     }
     else
     {
-        LOG( ERROR ) << "Could not find alarm01 sound file "
-                     << alarm01SoundFile;
+        LOG( ERROR ) << "Could not find alarm01 sound file " << alarmFileName;
     }
 
     QSurfaceFormat format;
@@ -326,19 +325,19 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             m_ulOverlayHandle,
             vr::VROverlayFlags_SendVRSmoothScrollEvents,
             true );
-        QString thumbIconPath = QStandardPaths::locate(
-            QStandardPaths::AppDataLocation,
-            QStringLiteral( "res/img/icons/thumbicon.png" ) );
-        if ( QFile::exists( thumbIconPath ) )
+
+        constexpr auto thumbiconFilename = "res/img/icons/thumbicon.png";
+        const auto thumbIconPath
+            = paths::binaryDirectoryFindFile( thumbiconFilename );
+        if ( thumbIconPath.has_value() )
         {
-            vr::VROverlay()->SetOverlayFromFile(
-                m_ulOverlayThumbnailHandle,
-                thumbIconPath.toStdString().c_str() );
+            vr::VROverlay()->SetOverlayFromFile( m_ulOverlayThumbnailHandle,
+                                                 thumbIconPath->c_str() );
         }
         else
         {
-            LOG( ERROR ) << "Could not find thumbnail icon \"" << thumbIconPath
-                         << "\"";
+            LOG( ERROR ) << "Could not find thumbnail icon \""
+                         << thumbiconFilename << "\"";
         }
 
         // Too many render calls in too short time overwhelm Qt and an assertion
