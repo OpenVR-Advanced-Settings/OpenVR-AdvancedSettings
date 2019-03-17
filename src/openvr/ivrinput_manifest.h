@@ -1,5 +1,4 @@
 #pragma once
-#include <QStandardPaths>
 #include <openvr.h>
 #include <easylogging++.h>
 #include "../utils/paths.h"

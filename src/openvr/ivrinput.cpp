@@ -2,7 +2,6 @@
 #include "ivrinput_action.h"
 #include <openvr.h>
 #include <iostream>
-#include <QStandardPaths>
 #include <easylogging++.h>
 
 namespace input
