@@ -1,5 +1,6 @@
 #include "paths.h"
 #include <QStandardPaths>
+#include <QCoreApplication>
 #include <QString>
 #include <QFileInfo>
 #include <easylogging++.h>
@@ -8,8 +9,8 @@ namespace paths
 {
 optional<string> binaryDirectory()
 {
-    const auto path
-        = QStandardPaths::writableLocation( QStandardPaths::AppDataLocation );
+    const auto path = QCoreApplication::applicationDirPath();
+
     if ( path == "" )
     {
         LOG( ERROR ) << "Could not find binary directory.";
@@ -21,34 +22,25 @@ optional<string> binaryDirectory()
 
 optional<string> binaryDirectoryFindFile( const string fileName )
 {
-    const auto path
-        = QStandardPaths::locate( QStandardPaths::AppDataLocation,
-                                  QString::fromStdString( fileName ),
-                                  QStandardPaths::LocateFile );
-    if ( path == "" )
+    const auto path = binaryDirectory();
+
+    if ( !path )
+    {
+        return std::nullopt;
+    }
+
+    const auto filePath = QString::fromStdString( *path ) + "/"
+                          + QString::fromStdString( fileName );
+    QFileInfo file( filePath );
+
+    if ( !file.exists() )
     {
         LOG( ERROR ) << "Could not find file '" << fileName.c_str()
                      << "' in binary directory.";
         return std::nullopt;
     }
 
-    return path.toStdString();
-}
-
-optional<string> binaryDirectoryFindDirectory( const string directoryName )
-{
-    const auto path
-        = QStandardPaths::locate( QStandardPaths::AppDataLocation,
-                                  QString::fromStdString( directoryName ),
-                                  QStandardPaths::LocateDirectory );
-    if ( path == "" )
-    {
-        LOG( ERROR ) << "Could not find directory '" << directoryName.c_str()
-                     << "' in binary directory.";
-        return std::nullopt;
-    }
-
-    return path.toStdString();
+    return filePath.toStdString();
 }
 
 optional<string> settingsDirectory()
