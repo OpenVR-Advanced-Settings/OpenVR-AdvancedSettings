@@ -36,7 +36,7 @@ If an environment variable isn't set a default value will be provided. The defau
 
 With the programs above installed and environment variables set, go into the root folder of the repository and run `./build_scripts/linux/build_linux.sh`.
 
-You'll have to copy the `res` directory into ~/.local/share/AdvancedSettings-Team/OpenVRAdvancedSettings/, and add `third-party/openvr/lib/linux64/libopenvr_api.so` to your systems library path.
+If you copy the `third-party/openvr/lib/linux64/libopenvr_api.so` file into `/lib` you can run the `AdvancedSettings` file without anything else. Otherwise you'll need to run the `run-with-library.sh` file.
 
 ## Contributing
 
