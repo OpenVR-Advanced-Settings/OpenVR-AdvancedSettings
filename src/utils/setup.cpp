@@ -275,10 +275,10 @@ void setUpLogging()
     const auto appDataLocation
         = std::string( "/" ) + application_strings::applicationOrganizationName
           + "/";
-    const auto logFilePath = QDir( QStandardPaths::writableLocation(
-                                       QStandardPaths::AppDataLocation )
-                                   + appDataLocation.c_str() )
-                                 .absoluteFilePath( logFileName );
+    const auto logFilePath
+        = QDir( QString::fromStdString( *paths::settingsDirectory() )
+                + appDataLocation.c_str() )
+              .absoluteFilePath( logFileName );
     conf.set( el::Level::Global,
               el::ConfigurationType::Filename,
               QDir::toNativeSeparators( logFilePath ).toStdString() );
