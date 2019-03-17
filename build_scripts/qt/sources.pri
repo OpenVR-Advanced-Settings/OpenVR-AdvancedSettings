@@ -15,7 +15,8 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp \
     src/openvr/openvr_init.cpp \
     src/openvr/ivrinput.cpp \
-    src/utils/setup.cpp
+    src/utils/setup.cpp \
+    src/utils/paths.cpp
 
 HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/AudioTabController.h \
@@ -41,7 +42,8 @@ HEADERS += src/overlaycontroller.h \
     src/openvr/ivrinput_action_set.h \
     src/openvr/ivrinput_input_source.h \
     src/openvr/ivrinput.h \
-    src/utils/setup.h
+    src/utils/setup.h \
+    src/utils/paths.h
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
