@@ -88,6 +88,21 @@ void MoveCenterTabController::initStage1()
     {
         m_heightToggleOffset = value.toFloat();
     }
+    value = settings->value( "gravityStrength", m_gravityStrength );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_gravityStrength = value.toFloat();
+    }
+    value = settings->value( "flingStrength", m_flingStrength );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_flingStrength = value.toFloat();
+    }
+    value = settings->value( "momentumSave", m_momentumSave );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_momentumSave = value.toBool();
+    }
     value = settings->value( "lockXToggle", m_lockXToggle );
     if ( value.isValid() && !value.isNull() )
     {
@@ -459,6 +474,97 @@ void MoveCenterTabController::setHeightToggleOffset( float value, bool notify )
     }
 }
 
+float MoveCenterTabController::gravityStrength() const
+{
+    return m_gravityStrength;
+}
+
+void MoveCenterTabController::setGravityStrength( float value, bool notify )
+{
+    m_gravityStrength = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "gravityStrength", m_gravityStrength );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit gravityStrengthChanged( m_gravityStrength );
+    }
+}
+
+float MoveCenterTabController::flingStrength() const
+{
+    return m_flingStrength;
+}
+
+void MoveCenterTabController::setFlingStrength( float value, bool notify )
+{
+    m_flingStrength = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "flingStrength", m_flingStrength );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit flingStrengthChanged( m_flingStrength );
+    }
+}
+
+bool MoveCenterTabController::gravityActive() const
+{
+    return m_gravityActive;
+}
+
+void MoveCenterTabController::setGravityActive( bool value, bool notify )
+{
+    // skip if there's no change
+    if ( m_gravityActive == value )
+    {
+        return;
+    }
+
+    // detect new activate
+    if ( !m_gravityActive && value )
+    {
+        // zero out velocity if we aren't saving previous momentum
+        if ( !m_momentumSave )
+        {
+            m_velocity[0] = 0.0;
+            m_velocity[1] = 0.0;
+            m_velocity[2] = 0.0;
+        }
+        // make sure our time slice calculation doesn't use a slice from the
+        // previous activation of gravity
+        m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
+    }
+    m_gravityActive = value;
+    if ( notify )
+    {
+        emit gravityActiveChanged( m_gravityActive );
+    }
+}
+
+bool MoveCenterTabController::momentumSave() const
+{
+    return m_momentumSave;
+}
+
+void MoveCenterTabController::setMomentumSave( bool value, bool notify )
+{
+    m_momentumSave = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "momentumSave", m_momentumSave );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit momentumSaveChanged( m_momentumSave );
+    }
+}
+
 bool MoveCenterTabController::lockXToggle() const
 {
     return m_lockXToggle;
@@ -518,7 +624,6 @@ void MoveCenterTabController::setLockZ( bool value, bool notify )
 
 void MoveCenterTabController::modOffsetX( float value, bool notify )
 {
-    // TODO ? possible issue with locking position this way
     if ( !m_lockXToggle )
     {
         m_offsetX += value;
@@ -1229,13 +1334,23 @@ void MoveCenterTabController::gravityToggleAction(
 
     if ( !m_gravityActive )
     {
-        m_gravityActive = true;
-        m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
+        setGravityActive( true );
     }
     else
     {
-        m_gravityActive = false;
+        setGravityActive( false );
     }
+}
+
+void MoveCenterTabController::gravityReverseAction( bool gravityReverseHeld )
+{
+    // detect new press or new release
+    if ( ( gravityReverseHeld && !m_gravityReversed )
+         || ( !gravityReverseHeld && m_gravityReversed ) )
+    {
+        setGravityStrength( m_gravityStrength * -1.0f );
+    }
+    m_gravityReversed = gravityReverseHeld;
 }
 
 void MoveCenterTabController::heightToggleAction( bool heightToggleJustPressed )
@@ -1500,9 +1615,12 @@ void MoveCenterTabController::updateHandDrag(
                                              - m_lastDragUpdateTimePoint )
                   .count();
 
-        m_velocity[0] = diff[0] / secondsSinceLastDragUpdate;
-        m_velocity[1] = diff[1] / secondsSinceLastDragUpdate;
-        m_velocity[2] = diff[2] / secondsSinceLastDragUpdate;
+        m_velocity[0] = ( diff[0] / secondsSinceLastDragUpdate )
+                        * static_cast<double>( m_flingStrength );
+        m_velocity[1] = ( diff[1] / secondsSinceLastDragUpdate )
+                        * static_cast<double>( m_flingStrength );
+        m_velocity[2] = ( diff[2] / secondsSinceLastDragUpdate )
+                        * static_cast<double>( m_flingStrength );
     }
     m_lastControllerPosition[0] = absoluteControllerPosition[0];
     m_lastControllerPosition[1] = absoluteControllerPosition[1];
@@ -1634,13 +1752,16 @@ void MoveCenterTabController::updateGravity()
 
     // are we falling?
     // note: up is negative y
-    if ( m_offsetY < m_gravityFloor )
+    // note: set to always fall if gravity reversed (strength < 0)
+    if ( ( m_offsetY < m_gravityFloor ) || ( m_gravityStrength < 0 ) )
     {
         // check if we're about to land
-        if ( m_offsetY
-                 + static_cast<float>( m_velocity[1]
-                                       * secondsSinceLastGravityUpdate )
-             >= m_gravityFloor )
+        // note: we don't land if gravity is reversed (strength < 0)
+        if ( ( m_offsetY
+                   + static_cast<float>( m_velocity[1]
+                                         * secondsSinceLastGravityUpdate )
+               >= m_gravityFloor )
+             && m_gravityStrength >= 0 )
         {
             // get ratio of how much from y velocity applied to overcome y
             // offset and get down to ground.
@@ -1680,8 +1801,9 @@ void MoveCenterTabController::updateGravity()
 
             // accelerate downward velocity for the next update
             // note: downward is positive y
-            m_velocity[1]
-                = m_velocity[1] + ( 9.8 * secondsSinceLastGravityUpdate );
+            m_velocity[1] = m_velocity[1]
+                            + ( static_cast<double>( m_gravityStrength )
+                                * secondsSinceLastGravityUpdate );
             return;
         }
     }
@@ -1868,42 +1990,60 @@ void MoveCenterTabController::eventLoopTick(
             m_hmdRotationStatsUpdateCounter++;
         }
 
-        // Smooth turn motion can cause sim-sickness so we check if the user
-        // wants to skip frames to reduce vection. We use the factor squared
-        // because of logarithmic human perception.
-        if ( m_turnComfortFrameSkipCounter
-             >= ( m_turnComfortFactor * m_turnComfortFactor ) )
+        // only update dynamic motion if the dash is closed
+        if ( !parent->isDashboardVisible() )
         {
-            updateHandTurn( devicePoses, angle );
-            m_turnComfortFrameSkipCounter = 0;
+            // detect new dash closed
+            if ( m_dashWasOpenPreviousFrame )
+            {
+                // reset velocity time points on dash closed so we don't factor
+                // in the time motion was paused during the open dash
+                m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
+                m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
+            }
+
+            // Smooth turn motion can cause sim-sickness so we check if the user
+            // wants to skip frames to reduce vection. We use the factor squared
+            // because of logarithmic human perception.
+            if ( m_turnComfortFrameSkipCounter
+                 >= ( m_turnComfortFactor * m_turnComfortFactor ) )
+            {
+                updateHandTurn( devicePoses, angle );
+                m_turnComfortFrameSkipCounter = 0;
+            }
+            else
+            {
+                m_turnComfortFrameSkipCounter++;
+            }
+
+            // Smooth drag motion can cause sim-sickness so we check if the user
+            // wants to skip frames to reduce vection. We use the factor squared
+            // because of logarithmic human perception.
+            if ( m_dragComfortFrameSkipCounter
+                 >= ( m_dragComfortFactor * m_dragComfortFactor ) )
+            {
+                updateHandDrag( devicePoses, angle );
+                m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
+                m_dragComfortFrameSkipCounter = 0;
+            }
+            else
+            {
+                m_dragComfortFrameSkipCounter++;
+            }
+
+            if ( m_gravityActive
+                 && m_activeDragHand == vr::TrackedControllerRole_Invalid )
+            {
+                updateGravity();
+                m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
+            }
+            m_dashWasOpenPreviousFrame = false;
         }
         else
         {
-            m_turnComfortFrameSkipCounter++;
+            // dash is open this frame
+            m_dashWasOpenPreviousFrame = true;
         }
-
-        // Smooth drag motion can cause sim-sickness so we check if the user
-        // wants to skip frames to reduce vection. We use the factor squared
-        // because of logarithmic human perception.
-        if ( m_dragComfortFrameSkipCounter
-             >= ( m_dragComfortFactor * m_dragComfortFactor ) )
-        {
-            updateHandDrag( devicePoses, angle );
-            m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
-            m_dragComfortFrameSkipCounter = 0;
-        }
-        else
-        {
-            m_dragComfortFrameSkipCounter++;
-        }
-
-        if ( m_gravityActive
-             && m_activeDragHand == vr::TrackedControllerRole_Invalid )
-        {
-            updateGravity();
-            m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
-        }
-
         updateSpace();
     }
 }

@@ -6,6 +6,7 @@ import "../common"
 import "space_drag"
 import "space_turn"
 import "height_toggle"
+import "gravity"
 
 MyStackViewPage {
     headerText: "Motion Settings"
@@ -18,6 +19,8 @@ MyStackViewPage {
         SpaceTurnGroupBox { id: spaceTurnGroupBox }
 
         HeightToggleGroupBox { id: heightToggleGroupBox }
+
+        GravityGroupBox { id: gravityGroupBox }
 
         Item {
             Layout.fillHeight: true

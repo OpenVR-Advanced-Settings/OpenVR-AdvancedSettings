@@ -496,7 +496,7 @@ void OverlayController::processMediaKeyBindings()
     }
 }
 
-void OverlayController::processRoomBindings()
+void OverlayController::processMotionBindings()
 {
     // Execution order for moveCenterTabController actions is important. Don't
     // reorder these. Override actions must always come after normal because
@@ -511,6 +511,8 @@ void OverlayController::processRoomBindings()
     m_moveCenterTabController.rightHandSpaceTurn(
         m_actions.rightHandSpaceTurn() );
     m_moveCenterTabController.gravityToggleAction( m_actions.gravityToggle() );
+    m_moveCenterTabController.gravityReverseAction(
+        m_actions.gravityReverse() );
     m_moveCenterTabController.heightToggleAction( m_actions.heightToggle() );
     m_moveCenterTabController.resetOffsets( m_actions.resetOffsets() );
     m_moveCenterTabController.snapTurnLeft( m_actions.snapTurnLeft() );
@@ -563,7 +565,7 @@ void OverlayController::processInputBindings()
 {
     processMediaKeyBindings();
 
-    processRoomBindings();
+    processMotionBindings();
 
     processPushToTalkBindings();
 }

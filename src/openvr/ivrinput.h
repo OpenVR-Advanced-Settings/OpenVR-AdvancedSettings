@@ -53,6 +53,7 @@ public:
     bool swapSpaceDragToLeftHandOverride();
     bool swapSpaceDragToRightHandOverride();
     bool gravityToggle();
+    bool gravityReverse();
     bool heightToggle();
     bool resetOffsets();
     bool snapTurnLeft();
@@ -111,6 +112,7 @@ private:
     DigitalAction m_swapSpaceDragToLeftHandOverride;
     DigitalAction m_swapSpaceDragToRightHandOverride;
     DigitalAction m_gravityToggle;
+    DigitalAction m_gravityReverse;
     DigitalAction m_heightToggle;
     DigitalAction m_resetOffsets;
     DigitalAction m_snapTurnLeft;
@@ -164,6 +166,7 @@ namespace action_keys
     constexpr auto k_actionSwapSpaceDragToRightHandOverride
         = "/actions/main/in/SwapSpaceDragToRightHandOverride";
     constexpr auto k_actionGravityToggle = "/actions/main/in/GravityToggle";
+    constexpr auto k_actionGravityReverse = "/actions/main/in/GravityReverse";
     constexpr auto k_actionHeightToggle = "/actions/main/in/HeightToggle";
     constexpr auto k_actionResetOffsets = "/actions/main/in/ResetOffsets";
     constexpr auto k_actionSnapTurnLeft = "/actions/main/in/SnapTurnLeft";
