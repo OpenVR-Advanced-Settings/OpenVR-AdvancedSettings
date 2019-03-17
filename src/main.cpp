@@ -87,8 +87,7 @@ int main( int argc, char* argv[] )
                 }
                 else
                 {
-                    manifest::installApplicationManifest(
-                        QString::fromStdString( *manifestPath ) );
+                    manifest::installApplicationManifest( *manifestPath );
                 }
             }
             catch ( std::exception& e )

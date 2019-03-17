@@ -98,9 +98,9 @@ namespace manifest
 constexpr auto kVRManifestName = "manifest.vrmanifest";
 
 void enableApplicationAutostart();
-void installApplicationManifest( const QString manifestPath );
-void removeApplicationManifest( const QString manifestPath );
-void reinstallApplicationManifest( const QString manifestPath );
+void installApplicationManifest( const std::string manifestPath );
+void removeApplicationManifest( const std::string manifestPath );
+void reinstallApplicationManifest( const std::string manifestPath );
 [[noreturn]] void handleManifests( const bool installManifest,
                                    const bool removeManifest );
 

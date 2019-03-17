@@ -116,17 +116,10 @@ void enableApplicationAutostart()
 // Installs the application manifest. If a manifest with the same application
 // key is already installed, nothing will happen.
 // OpenVR must be initialized before calling this function.
-void installApplicationManifest( const QString manifestPath )
+void installApplicationManifest( const std::string manifestPath )
 {
-    if ( vr::VRApplications()->IsApplicationInstalled(
-             application_strings::applicationKey ) )
-    {
-        // We don't want to disrupt applications that are already installed.
-        return;
-    }
-
-    const auto app_error = vr::VRApplications()->AddApplicationManifest(
-        QDir::toNativeSeparators( manifestPath ).toStdString().c_str() );
+    const auto app_error
+        = vr::VRApplications()->AddApplicationManifest( manifestPath.c_str() );
     if ( app_error != vr::VRApplicationError_None )
     {
         throw std::runtime_error(
@@ -138,33 +131,18 @@ void installApplicationManifest( const QString manifestPath )
 }
 
 // Removes the application manifest.
-void removeApplicationManifest( const QString manifestPath )
+void removeApplicationManifest( const std::string manifestPath )
 {
-    if ( !QFile::exists( manifestPath ) )
-    {
-        throw std::runtime_error(
-            std::string( "Could not find application manifest: " )
-            + manifestPath.toStdString() );
-    }
-
     if ( vr::VRApplications()->IsApplicationInstalled(
              application_strings::applicationKey ) )
     {
-        vr::VRApplications()->RemoveApplicationManifest(
-            QDir::toNativeSeparators( manifestPath ).toStdString().c_str() );
+        vr::VRApplications()->RemoveApplicationManifest( manifestPath.c_str() );
     }
 }
 
 // Removes and then installs the application manifest.
-void reinstallApplicationManifest( const QString manifestPath )
+void reinstallApplicationManifest( const std::string manifestPath )
 {
-    if ( !QFile::exists( manifestPath ) )
-    {
-        throw std::runtime_error(
-            std::string( "Could not find application manifest: " )
-            + manifestPath.toStdString() );
-    }
-
     if ( vr::VRApplications()->IsApplicationInstalled(
              application_strings::applicationKey ) )
     {
@@ -217,18 +195,22 @@ void reinstallApplicationManifest( const QString manifestPath )
     try
     {
         const auto manifestPath
-            = QDir::cleanPath( QDir( QCoreApplication::applicationDirPath() )
-                                   .absoluteFilePath( kVRManifestName ) );
+            = paths::binaryDirectoryFindFile( manifest::kVRManifestName );
+
+        if ( !manifestPath.has_value() )
+        {
+            throw std::runtime_error( "Could not find application manifest." );
+        }
 
         if ( installManifest )
         {
-            reinstallApplicationManifest( manifestPath );
+            reinstallApplicationManifest( *manifestPath );
             enableApplicationAutostart();
             LOG( INFO ) << "Manifest reinstalled.";
         }
         else if ( removeManifest )
         {
-            removeApplicationManifest( manifestPath );
+            removeApplicationManifest( *manifestPath );
             LOG( INFO ) << "Manifest removed.";
         }
     }
