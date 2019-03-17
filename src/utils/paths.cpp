@@ -51,4 +51,17 @@ optional<string> binaryDirectoryFindDirectory( const string directoryName )
     return path.toStdString();
 }
 
+optional<string> settingsDirectory()
+{
+    const auto path
+        = QStandardPaths::writableLocation( QStandardPaths::AppDataLocation );
+    if ( path == "" )
+    {
+        LOG( ERROR ) << "Could not find settings directory.";
+        return std::nullopt;
+    }
+
+    return path.toStdString();
+}
+
 } // namespace paths
