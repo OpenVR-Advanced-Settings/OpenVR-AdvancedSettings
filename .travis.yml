@@ -15,11 +15,23 @@ matrix:
     compiler: gcc
 
   - os: linux
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-7
     env:
     - QMAKE_SPEC=linux-clang
     compiler: clang
 
   - os: linux
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-7
     env:
     - USE_TIDY=TRUE
     compiler: clang
