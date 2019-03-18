@@ -133,7 +133,8 @@ SteamIVRInput::SteamIVRInput()
       m_pushToTalk( action_keys::pushToTalk ),
       m_leftHaptic( action_keys::hapticsLeft ),
       m_rightHaptic( action_keys::hapticsRight ),
-      m_leftHand( input_keys::leftHand ), m_rightHand( input_keys::rightHand )
+      m_leftHand( input_keys::leftHand ), m_rightHand( input_keys::rightHand ),
+      m_sets( { m_mainSet.activeActionSet() } )
 {
 }
 /*!
@@ -325,13 +326,8 @@ update state.
 */
 void SteamIVRInput::UpdateStates()
 {
-    constexpr auto numberOfSets = 1;
-
-    std::array<vr::VRActiveActionSet_t, numberOfSets> sets
-        = { m_mainSet.activeActionSet() };
-
     const auto error = vr::VRInput()->UpdateActionState(
-        sets.data(), sizeof( sets ), numberOfSets );
+        m_sets.data(), sizeof( m_sets ), action_sets::numberOfSets );
 
     if ( error != vr::EVRInputError::VRInputError_None )
     {

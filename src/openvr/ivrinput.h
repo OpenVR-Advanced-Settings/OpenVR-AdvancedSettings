@@ -5,6 +5,7 @@
 #include "ivrinput_manifest.h"
 #include "ivrinput_action_set.h"
 #include "ivrinput_input_source.h"
+#include <array>
 
 namespace input
 {
@@ -69,8 +70,12 @@ Keys for different action sets
 */
 namespace action_sets
 {
+    constexpr auto numberOfSets = 1;
     constexpr auto main = "/actions/main";
 } // namespace action_sets
+
+using ActiveActionSets
+    = std::array<vr::VRActiveActionSet_t, action_sets::numberOfSets>;
 
 /*!
 Responsible for controller input.
@@ -194,6 +199,9 @@ private:
     // input sources
     InputSource m_leftHand;
     InputSource m_rightHand;
+
+    // Initialize the set of actions after everything else.
+    ActiveActionSets m_sets;
 };
 
 } // namespace input
