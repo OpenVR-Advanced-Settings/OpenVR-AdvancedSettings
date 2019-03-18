@@ -9,6 +9,70 @@
 namespace input
 {
 /*!
+The IVRInput system is _very_ finnicky about strings matching and if they don't
+match there are usually no errors logged reflecting that. constexpr auto strings
+should be used to refer to all action manifest strings.
+*/
+namespace action_keys
+{
+    constexpr auto nextTrack = "/actions/main/in/NextTrack";
+    constexpr auto previousTrack = "/actions/main/in/PreviousTrack";
+    constexpr auto pausePlayTrack = "/actions/main/in/PausePlayTrack";
+    constexpr auto stopTrack = "/actions/main/in/StopTrack";
+
+    constexpr auto leftHandSpaceTurn = "/actions/main/in/LeftHandSpaceTurn";
+    constexpr auto rightHandSpaceTurn = "/actions/main/in/RightHandSpaceTurn";
+    constexpr auto leftHandSpaceDrag = "/actions/main/in/LeftHandSpaceDrag";
+    constexpr auto rightHandSpaceDrag = "/actions/main/in/RightHandSpaceDrag";
+    constexpr auto optionalOverrideLeftHandSpaceTurn
+        = "/actions/main/in/OptionalOverrideLeftHandSpaceTurn";
+    constexpr auto optionalOverrideRightHandSpaceTurn
+        = "/actions/main/in/OptionalOverrideRightHandSpaceTurn";
+    constexpr auto optionalOverrideLeftHandSpaceDrag
+        = "/actions/main/in/OptionalOverrideLeftHandSpaceDrag";
+    constexpr auto optionalOverrideRightHandSpaceDrag
+        = "/actions/main/in/OptionalOverrideRightHandSpaceDrag";
+    constexpr auto swapSpaceDragToLeftHandOverride
+        = "/actions/main/in/SwapSpaceDragToLeftHandOverride";
+    constexpr auto swapSpaceDragToRightHandOverride
+        = "/actions/main/in/SwapSpaceDragToRightHandOverride";
+    constexpr auto gravityToggle = "/actions/main/in/GravityToggle";
+    constexpr auto gravityReverse = "/actions/main/in/GravityReverse";
+    constexpr auto heightToggle = "/actions/main/in/HeightToggle";
+    constexpr auto resetOffsets = "/actions/main/in/ResetOffsets";
+    constexpr auto snapTurnLeft = "/actions/main/in/SnapTurnLeft";
+    constexpr auto snapTurnRight = "/actions/main/in/SnapTurnRight";
+    constexpr auto xAxisLockToggle = "/actions/main/in/XAxisLockToggle";
+    constexpr auto yAxisLockToggle = "/actions/main/in/YAxisLockToggle";
+    constexpr auto zAxisLockToggle = "/actions/main/in/ZAxisLockToggle";
+
+    constexpr auto pushToTalk = "/actions/main/in/PushToTalk";
+
+    constexpr auto hapticsLeft = "/actions/main/out/HapticsLeft";
+    constexpr auto hapticsRight = "/actions/main/out/HapticsRight";
+
+    constexpr auto proxSensor = "/actions/main/in/ProxSensor";
+
+} // namespace action_keys
+
+/*!
+Keys to get input source handles (things like hmd controllers etc.)
+*/
+namespace input_keys
+{
+    constexpr auto leftHand = "/user/hand/left";
+    constexpr auto rightHand = "/user/hand/right";
+} // namespace input_keys
+
+/*!
+Keys for different action sets
+*/
+namespace action_sets
+{
+    constexpr auto main = "/actions/main";
+} // namespace action_sets
+
+/*!
 Responsible for controller input.
 
 UpdateStates should be called every frame.
@@ -131,69 +195,5 @@ private:
     InputSource m_leftHand;
     InputSource m_rightHand;
 };
-
-/*!
-The IVRInput system is _very_ finnicky about strings matching and if they don't
-match there are usually no errors logged reflecting that. constexpr auto strings
-should be used to refer to all action manifest strings.
-*/
-namespace action_keys
-{
-    constexpr auto nextTrack = "/actions/main/in/NextTrack";
-    constexpr auto previousTrack = "/actions/main/in/PreviousTrack";
-    constexpr auto pausePlayTrack = "/actions/main/in/PausePlayTrack";
-    constexpr auto stopTrack = "/actions/main/in/StopTrack";
-
-    constexpr auto leftHandSpaceTurn = "/actions/main/in/LeftHandSpaceTurn";
-    constexpr auto rightHandSpaceTurn = "/actions/main/in/RightHandSpaceTurn";
-    constexpr auto leftHandSpaceDrag = "/actions/main/in/LeftHandSpaceDrag";
-    constexpr auto rightHandSpaceDrag = "/actions/main/in/RightHandSpaceDrag";
-    constexpr auto optionalOverrideLeftHandSpaceTurn
-        = "/actions/main/in/OptionalOverrideLeftHandSpaceTurn";
-    constexpr auto optionalOverrideRightHandSpaceTurn
-        = "/actions/main/in/OptionalOverrideRightHandSpaceTurn";
-    constexpr auto optionalOverrideLeftHandSpaceDrag
-        = "/actions/main/in/OptionalOverrideLeftHandSpaceDrag";
-    constexpr auto optionalOverrideRightHandSpaceDrag
-        = "/actions/main/in/OptionalOverrideRightHandSpaceDrag";
-    constexpr auto swapSpaceDragToLeftHandOverride
-        = "/actions/main/in/SwapSpaceDragToLeftHandOverride";
-    constexpr auto swapSpaceDragToRightHandOverride
-        = "/actions/main/in/SwapSpaceDragToRightHandOverride";
-    constexpr auto gravityToggle = "/actions/main/in/GravityToggle";
-    constexpr auto gravityReverse = "/actions/main/in/GravityReverse";
-    constexpr auto heightToggle = "/actions/main/in/HeightToggle";
-    constexpr auto resetOffsets = "/actions/main/in/ResetOffsets";
-    constexpr auto snapTurnLeft = "/actions/main/in/SnapTurnLeft";
-    constexpr auto snapTurnRight = "/actions/main/in/SnapTurnRight";
-    constexpr auto xAxisLockToggle = "/actions/main/in/XAxisLockToggle";
-    constexpr auto yAxisLockToggle = "/actions/main/in/YAxisLockToggle";
-    constexpr auto zAxisLockToggle = "/actions/main/in/ZAxisLockToggle";
-
-    constexpr auto pushToTalk = "/actions/main/in/PushToTalk";
-
-    constexpr auto hapticsLeft = "/actions/main/out/HapticsLeft";
-    constexpr auto hapticsRight = "/actions/main/out/HapticsRight";
-
-    constexpr auto proxSensor = "/actions/main/in/ProxSensor";
-
-} // namespace action_keys
-
-/*!
-Keys to get input source handles (things like hmd controllers etc.)
-*/
-namespace input_keys
-{
-    constexpr auto leftHand = "/user/hand/left";
-    constexpr auto rightHand = "/user/hand/right";
-} // namespace input_keys
-
-/*!
-Keys for different action sets
-*/
-namespace action_sets
-{
-    constexpr auto main = "/actions/main";
-} // namespace action_sets
 
 } // namespace input
