@@ -20,13 +20,6 @@ public:
         }
     }
     /*!
-    The actions manfiest name of the set. Used for error reporting.
-    */
-    std::string name()
-    {
-        return m_name;
-    }
-    /*!
     An API internal handle that identifies a set.
     */
     vr::VRActionSetHandle_t handle()
