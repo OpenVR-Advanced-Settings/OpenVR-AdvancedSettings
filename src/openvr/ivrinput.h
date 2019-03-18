@@ -16,10 +16,10 @@ should be used to refer to all action manifest strings.
 */
 namespace action_keys
 {
-    constexpr auto nextTrack = "/actions/main/in/NextTrack";
-    constexpr auto previousTrack = "/actions/main/in/PreviousTrack";
-    constexpr auto pausePlayTrack = "/actions/main/in/PausePlayTrack";
-    constexpr auto stopTrack = "/actions/main/in/StopTrack";
+    constexpr auto nextTrack = "/actions/music/in/NextTrack";
+    constexpr auto previousTrack = "/actions/music/in/PreviousTrack";
+    constexpr auto pausePlayTrack = "/actions/music/in/PausePlayTrack";
+    constexpr auto stopTrack = "/actions/music/in/StopTrack";
 
     constexpr auto leftHandSpaceTurn = "/actions/main/in/LeftHandSpaceTurn";
     constexpr auto rightHandSpaceTurn = "/actions/main/in/RightHandSpaceTurn";
@@ -70,8 +70,9 @@ Keys for different action sets
 */
 namespace action_sets
 {
-    constexpr auto numberOfSets = 1;
+    constexpr auto numberOfSets = 2;
     constexpr auto main = "/actions/main";
+    constexpr auto music = "/actions/music";
 } // namespace action_sets
 
 using ActiveActionSets
@@ -161,6 +162,7 @@ private:
     Manifest m_manifest;
 
     ActionSet m_mainSet;
+    ActionSet m_music;
 
     // Music player bindings
     DigitalAction m_nextTrack;
