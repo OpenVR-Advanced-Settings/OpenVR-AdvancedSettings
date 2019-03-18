@@ -10,26 +10,28 @@ Represents an action set from the action manifest.
 class ActionSet
 {
 public:
-    ActionSet( const char* setName ) : m_name( setName )
+    ActionSet( const char* setName )
     {
-        auto error = vr::VRInput()->GetActionSetHandle( setName, &m_handle );
+        vr::VRActionSetHandle_t handle = 0;
+        auto error = vr::VRInput()->GetActionSetHandle( setName, &handle );
         if ( error != vr::EVRInputError::VRInputError_None )
         {
             LOG( ERROR ) << "Error getting handle for '" << setName
                          << "'. OpenVR Error: " << error;
         }
+
+        m_activeActionSet.ulActionSet = handle;
+        m_activeActionSet.ulRestrictedToDevice
+            = vr::k_ulInvalidInputValueHandle;
+        m_activeActionSet.nPriority = 0;
     }
-    /*!
-    An API internal handle that identifies a set.
-    */
-    vr::VRActionSetHandle_t handle()
+    vr::VRActiveActionSet_t activeActionSet()
     {
-        return m_handle;
+        return m_activeActionSet;
     }
 
 private:
-    const std::string m_name;
-    vr::VRActionSetHandle_t m_handle = 0;
+    vr::VRActiveActionSet_t m_activeActionSet = {};
 };
 
 } // namespace input

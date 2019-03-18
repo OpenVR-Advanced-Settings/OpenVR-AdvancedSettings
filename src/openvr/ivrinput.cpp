@@ -2,6 +2,7 @@
 #include "ivrinput_action.h"
 #include <openvr.h>
 #include <iostream>
+#include <array>
 #include <easylogging++.h>
 
 namespace input
@@ -134,9 +135,6 @@ SteamIVRInput::SteamIVRInput()
       m_rightHaptic( action_keys::hapticsRight ),
       m_leftHand( input_keys::leftHand ), m_rightHand( input_keys::rightHand )
 {
-    m_activeActionSet.ulActionSet = m_mainSet.handle();
-    m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;
-    m_activeActionSet.nPriority = 0;
 }
 /*!
 Returns true if the next media track should be played.
@@ -329,8 +327,11 @@ void SteamIVRInput::UpdateStates()
 {
     constexpr auto numberOfSets = 1;
 
+    std::array<vr::VRActiveActionSet_t, numberOfSets> sets
+        = { m_mainSet.activeActionSet() };
+
     const auto error = vr::VRInput()->UpdateActionState(
-        &m_activeActionSet, sizeof( m_activeActionSet ), numberOfSets );
+        sets.data(), sizeof( sets ), numberOfSets );
 
     if ( error != vr::EVRInputError::VRInputError_None )
     {

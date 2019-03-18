@@ -92,7 +92,6 @@ private:
     Manifest m_manifest;
 
     ActionSet m_mainSet;
-    vr::VRActiveActionSet_t m_activeActionSet = {};
 
     // Music player bindings
     DigitalAction m_nextTrack;
