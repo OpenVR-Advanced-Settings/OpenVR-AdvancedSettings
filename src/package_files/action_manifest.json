@@ -103,6 +103,11 @@
       "type": "boolean"
     },
     {
+      "name": "/actions/main/in/GravityReverse",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
       "name": "/actions/main/in/HeightToggle",
       "requirement": "optional",
       "type": "boolean"
@@ -172,6 +177,7 @@
         "/actions/main/in/SwapSpaceDragToLeftHandOverride" : "Swap Active Space Drag to Left Hand (Override)",
         "/actions/main/in/SwapSpaceDragToRightHandOverride" : "Swap Active Space Drag to Right Hand (Override)",
         "/actions/main/in/GravityToggle" : "Gravity Toggle",
+        "/actions/main/in/GravityReverse" : "Gravity Reverse",
         "/actions/main/in/HeightToggle" : "Height Toggle",
         "/actions/main/in/ResetOffsets" : "Reset Offsets",
         "/actions/main/in/SnapTurnLeft" : "Snap-Turn Left",

@@ -52,6 +52,14 @@ class MoveCenterTabController : public QObject
                     heightToggleChanged )
     Q_PROPERTY( float heightToggleOffset READ heightToggleOffset WRITE
                     setHeightToggleOffset NOTIFY heightToggleOffsetChanged )
+    Q_PROPERTY( float gravityStrength READ gravityStrength WRITE
+                    setGravityStrength NOTIFY gravityStrengthChanged )
+    Q_PROPERTY( float flingStrength READ flingStrength WRITE setFlingStrength
+                    NOTIFY flingStrengthChanged )
+    Q_PROPERTY( bool gravityActive READ gravityActive WRITE setGravityActive
+                    NOTIFY gravityActiveChanged )
+    Q_PROPERTY( bool momentumSave READ momentumSave WRITE setMomentumSave NOTIFY
+                    momentumSaveChanged )
     Q_PROPERTY( bool lockXToggle READ lockXToggle WRITE setLockX NOTIFY
                     requireLockXChanged )
     Q_PROPERTY( bool lockYToggle READ lockYToggle WRITE setLockY NOTIFY
@@ -90,6 +98,9 @@ private:
     bool m_heightToggle = false;
     float m_heightToggleOffset = -1.0f;
     float m_gravityFloor = 0.0f;
+    float m_gravityStrength = 9.8f;
+    float m_flingStrength = 1.0f;
+    bool m_momentumSave = false;
     bool m_lockXToggle = false;
     bool m_lockYToggle = false;
     bool m_lockZToggle = false;
@@ -123,8 +134,10 @@ private:
     bool m_swapDragToLeftHandActivated = false;
     bool m_swapDragToRightHandActivated = false;
     bool m_gravityActive = false;
+    bool m_gravityReversed = false;
     bool m_chaperoneCommitted = true;
     bool m_pendingZeroOffsets = true;
+    bool m_dashWasOpenPreviousFrame = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
@@ -170,6 +183,10 @@ public:
     unsigned turnComfortFactor() const;
     bool heightToggle() const;
     float heightToggleOffset() const;
+    float gravityStrength() const;
+    float flingStrength() const;
+    bool gravityActive() const;
+    bool momentumSave() const;
     bool lockXToggle() const;
     bool lockYToggle() const;
     bool lockZToggle() const;
@@ -188,6 +205,7 @@ public:
     void swapSpaceDragToLeftHandOverride( bool swapDragToLeftHandActive );
     void swapSpaceDragToRightHandOverride( bool swapDragToRightHandActive );
     void gravityToggleAction( bool gravityToggleJustPressed );
+    void gravityReverseAction( bool gravityReverseHeld );
     void heightToggleAction( bool heightToggleJustPressed );
     void resetOffsets( bool resetOffsetsJustPressed );
     void snapTurnLeft( bool snapTurnLeftJustPressed );
@@ -220,6 +238,10 @@ public slots:
     void setTurnComfortFactor( unsigned value, bool notify = true );
     void setHeightToggle( bool value, bool notify = true );
     void setHeightToggleOffset( float value, bool notify = true );
+    void setGravityStrength( float value, bool notify = true );
+    void setFlingStrength( float value, bool notify = true );
+    void setGravityActive( bool value, bool notify = true );
+    void setMomentumSave( bool value, bool notify = true );
 
     void modOffsetX( float value, bool notify = true );
     void modOffsetY( float value, bool notify = true );
@@ -249,6 +271,10 @@ signals:
     void turnComfortFactorChanged( unsigned value );
     void heightToggleChanged( bool value );
     void heightToggleOffsetChanged( float value );
+    void gravityStrengthChanged( float value );
+    void flingStrengthChanged( float value );
+    void gravityActiveChanged( bool value );
+    void momentumSaveChanged( bool value );
     void requireLockXChanged( bool value );
     void requireLockYChanged( bool value );
     void requireLockZChanged( bool value );
