@@ -140,47 +140,43 @@ should be used to refer to all action manifest strings.
 */
 namespace action_keys
 {
-    constexpr auto k_actionNextTrack = "/actions/main/in/NextTrack";
-    constexpr auto k_actionPreviousTrack = "/actions/main/in/PreviousTrack";
-    constexpr auto k_actionPausePlayTrack = "/actions/main/in/PausePlayTrack";
-    constexpr auto k_actionStopTrack = "/actions/main/in/StopTrack";
+    constexpr auto nextTrack = "/actions/main/in/NextTrack";
+    constexpr auto previousTrack = "/actions/main/in/PreviousTrack";
+    constexpr auto pausePlayTrack = "/actions/main/in/PausePlayTrack";
+    constexpr auto stopTrack = "/actions/main/in/StopTrack";
 
-    constexpr auto k_actionLeftHandSpaceTurn
-        = "/actions/main/in/LeftHandSpaceTurn";
-    constexpr auto k_actionRightHandSpaceTurn
-        = "/actions/main/in/RightHandSpaceTurn";
-    constexpr auto k_actionLeftHandSpaceDrag
-        = "/actions/main/in/LeftHandSpaceDrag";
-    constexpr auto k_actionRightHandSpaceDrag
-        = "/actions/main/in/RightHandSpaceDrag";
-    constexpr auto k_actionOptionalOverrideLeftHandSpaceTurn
+    constexpr auto leftHandSpaceTurn = "/actions/main/in/LeftHandSpaceTurn";
+    constexpr auto rightHandSpaceTurn = "/actions/main/in/RightHandSpaceTurn";
+    constexpr auto leftHandSpaceDrag = "/actions/main/in/LeftHandSpaceDrag";
+    constexpr auto rightHandSpaceDrag = "/actions/main/in/RightHandSpaceDrag";
+    constexpr auto optionalOverrideLeftHandSpaceTurn
         = "/actions/main/in/OptionalOverrideLeftHandSpaceTurn";
-    constexpr auto k_actionOptionalOverrideRightHandSpaceTurn
+    constexpr auto optionalOverrideRightHandSpaceTurn
         = "/actions/main/in/OptionalOverrideRightHandSpaceTurn";
-    constexpr auto k_actionOptionalOverrideLeftHandSpaceDrag
+    constexpr auto optionalOverrideLeftHandSpaceDrag
         = "/actions/main/in/OptionalOverrideLeftHandSpaceDrag";
-    constexpr auto k_actionOptionalOverrideRightHandSpaceDrag
+    constexpr auto optionalOverrideRightHandSpaceDrag
         = "/actions/main/in/OptionalOverrideRightHandSpaceDrag";
-    constexpr auto k_actionSwapSpaceDragToLeftHandOverride
+    constexpr auto swapSpaceDragToLeftHandOverride
         = "/actions/main/in/SwapSpaceDragToLeftHandOverride";
-    constexpr auto k_actionSwapSpaceDragToRightHandOverride
+    constexpr auto swapSpaceDragToRightHandOverride
         = "/actions/main/in/SwapSpaceDragToRightHandOverride";
-    constexpr auto k_actionGravityToggle = "/actions/main/in/GravityToggle";
-    constexpr auto k_actionGravityReverse = "/actions/main/in/GravityReverse";
-    constexpr auto k_actionHeightToggle = "/actions/main/in/HeightToggle";
-    constexpr auto k_actionResetOffsets = "/actions/main/in/ResetOffsets";
-    constexpr auto k_actionSnapTurnLeft = "/actions/main/in/SnapTurnLeft";
-    constexpr auto k_actionSnapTurnRight = "/actions/main/in/SnapTurnRight";
-    constexpr auto k_actionXAxisLockToggle = "/actions/main/in/XAxisLockToggle";
-    constexpr auto k_actionYAxisLockToggle = "/actions/main/in/YAxisLockToggle";
-    constexpr auto k_actionZAxisLockToggle = "/actions/main/in/ZAxisLockToggle";
+    constexpr auto gravityToggle = "/actions/main/in/GravityToggle";
+    constexpr auto gravityReverse = "/actions/main/in/GravityReverse";
+    constexpr auto heightToggle = "/actions/main/in/HeightToggle";
+    constexpr auto resetOffsets = "/actions/main/in/ResetOffsets";
+    constexpr auto snapTurnLeft = "/actions/main/in/SnapTurnLeft";
+    constexpr auto snapTurnRight = "/actions/main/in/SnapTurnRight";
+    constexpr auto xAxisLockToggle = "/actions/main/in/XAxisLockToggle";
+    constexpr auto yAxisLockToggle = "/actions/main/in/YAxisLockToggle";
+    constexpr auto zAxisLockToggle = "/actions/main/in/ZAxisLockToggle";
 
-    constexpr auto k_actionPushToTalk = "/actions/main/in/PushToTalk";
+    constexpr auto pushToTalk = "/actions/main/in/PushToTalk";
 
-    constexpr auto k_actionHapticsLeft = "/actions/main/out/HapticsLeft";
-    constexpr auto k_actionHapticsRight = "/actions/main/out/HapticsRight";
+    constexpr auto hapticsLeft = "/actions/main/out/HapticsLeft";
+    constexpr auto hapticsRight = "/actions/main/out/HapticsRight";
 
-    constexpr auto k_actionProxSensor = "/actions/main/in/ProxSensor";
+    constexpr auto proxSensor = "/actions/main/in/ProxSensor";
 
 } // namespace action_keys
 
