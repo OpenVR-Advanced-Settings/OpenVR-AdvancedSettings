@@ -198,7 +198,7 @@ Keys for different action sets
 */
 namespace action_sets
 {
-    constexpr auto k_setMain = "/actions/main";
+    constexpr auto main = "/actions/main";
 } // namespace action_sets
 
 } // namespace input

@@ -99,7 +99,7 @@ Wrong action names may not result in direct error messages, but just features
 mystically not working.
 */
 SteamIVRInput::SteamIVRInput()
-    : m_manifest(), m_mainSet( action_sets::k_setMain ),
+    : m_manifest(), m_mainSet( action_sets::main ),
       m_nextTrack( action_keys::k_actionNextTrack ),
       m_previousTrack( action_keys::k_actionPreviousTrack ),
       m_pausePlayTrack( action_keys::k_actionPausePlayTrack ),
