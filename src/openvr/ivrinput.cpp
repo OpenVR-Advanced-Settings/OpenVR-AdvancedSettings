@@ -132,8 +132,7 @@ SteamIVRInput::SteamIVRInput()
       m_pushToTalk( action_keys::k_actionPushToTalk ),
       m_leftHaptic( action_keys::k_actionHapticsLeft ),
       m_rightHaptic( action_keys::k_actionHapticsRight ),
-      m_leftHand( input_keys::k_inputSourceLeft ),
-      m_rightHand( input_keys::k_inputSourceRight )
+      m_leftHand( input_keys::leftHand ), m_rightHand( input_keys::rightHand )
 {
     m_activeActionSet.ulActionSet = m_mainSet.handle();
     m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;

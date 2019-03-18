@@ -189,8 +189,8 @@ Keys to get input source handles (things like hmd controllers etc.)
 */
 namespace input_keys
 {
-    constexpr auto k_inputSourceLeft = "/user/hand/left";
-    constexpr auto k_inputSourceRight = "/user/hand/right";
+    constexpr auto leftHand = "/user/hand/left";
+    constexpr auto rightHand = "/user/hand/right";
 } // namespace input_keys
 
 /*!
