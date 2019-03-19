@@ -154,7 +154,7 @@
   ],
   "action_sets": [
     {
-      "name": "/actions/haptic",
+      "name": "/actions/motion",
       "usage": "leftright"
     },
     {
@@ -162,15 +162,15 @@
       "usage": "leftright"
     },
     {
-      "name": "/actions/misc",
-      "usage": "leftright"
-    },
-    {
       "name": "/actions/accessibility",
       "usage": "leftright"
     },
     {
-      "name": "/actions/motion",
+      "name": "/actions/misc",
+      "usage": "leftright"
+    },
+    {
+      "name": "/actions/haptic",
       "usage": "leftright"
     }
   ],
