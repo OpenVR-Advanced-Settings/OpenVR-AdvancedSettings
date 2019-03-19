@@ -21,33 +21,34 @@ namespace action_keys
     constexpr auto pausePlayTrack = "/actions/music/in/PausePlayTrack";
     constexpr auto stopTrack = "/actions/music/in/StopTrack";
 
-    constexpr auto leftHandSpaceTurn = "/actions/main/in/LeftHandSpaceTurn";
-    constexpr auto rightHandSpaceTurn = "/actions/main/in/RightHandSpaceTurn";
-    constexpr auto leftHandSpaceDrag = "/actions/main/in/LeftHandSpaceDrag";
-    constexpr auto rightHandSpaceDrag = "/actions/main/in/RightHandSpaceDrag";
+    constexpr auto leftHandSpaceTurn = "/actions/motion/in/LeftHandSpaceTurn";
+    constexpr auto rightHandSpaceTurn = "/actions/motion/in/RightHandSpaceTurn";
+    constexpr auto leftHandSpaceDrag = "/actions/motion/in/LeftHandSpaceDrag";
+    constexpr auto rightHandSpaceDrag = "/actions/motion/in/RightHandSpaceDrag";
     constexpr auto optionalOverrideLeftHandSpaceTurn
-        = "/actions/main/in/OptionalOverrideLeftHandSpaceTurn";
+        = "/actions/motion/in/OptionalOverrideLeftHandSpaceTurn";
     constexpr auto optionalOverrideRightHandSpaceTurn
-        = "/actions/main/in/OptionalOverrideRightHandSpaceTurn";
+        = "/actions/motion/in/OptionalOverrideRightHandSpaceTurn";
     constexpr auto optionalOverrideLeftHandSpaceDrag
-        = "/actions/main/in/OptionalOverrideLeftHandSpaceDrag";
+        = "/actions/motion/in/OptionalOverrideLeftHandSpaceDrag";
     constexpr auto optionalOverrideRightHandSpaceDrag
-        = "/actions/main/in/OptionalOverrideRightHandSpaceDrag";
+        = "/actions/motion/in/OptionalOverrideRightHandSpaceDrag";
     constexpr auto swapSpaceDragToLeftHandOverride
-        = "/actions/main/in/SwapSpaceDragToLeftHandOverride";
+        = "/actions/motion/in/SwapSpaceDragToLeftHandOverride";
     constexpr auto swapSpaceDragToRightHandOverride
-        = "/actions/main/in/SwapSpaceDragToRightHandOverride";
-    constexpr auto gravityToggle = "/actions/main/in/GravityToggle";
-    constexpr auto gravityReverse = "/actions/main/in/GravityReverse";
-    constexpr auto heightToggle = "/actions/main/in/HeightToggle";
-    constexpr auto resetOffsets = "/actions/main/in/ResetOffsets";
-    constexpr auto snapTurnLeft = "/actions/main/in/SnapTurnLeft";
-    constexpr auto snapTurnRight = "/actions/main/in/SnapTurnRight";
-    constexpr auto xAxisLockToggle = "/actions/main/in/XAxisLockToggle";
-    constexpr auto yAxisLockToggle = "/actions/main/in/YAxisLockToggle";
-    constexpr auto zAxisLockToggle = "/actions/main/in/ZAxisLockToggle";
+        = "/actions/motion/in/SwapSpaceDragToRightHandOverride";
+    constexpr auto gravityToggle = "/actions/motion/in/GravityToggle";
+    constexpr auto gravityReverse = "/actions/motion/in/GravityReverse";
+    constexpr auto resetOffsets = "/actions/motion/in/ResetOffsets";
 
-    constexpr auto pushToTalk = "/actions/main/in/PushToTalk";
+    constexpr auto heightToggle = "/actions/accessibility/in/HeightToggle";
+    constexpr auto snapTurnLeft = "/actions/accessibility/in/SnapTurnLeft";
+    constexpr auto snapTurnRight = "/actions/accessibility/in/SnapTurnRight";
+
+    constexpr auto xAxisLockToggle = "/actions/misc/in/XAxisLockToggle";
+    constexpr auto yAxisLockToggle = "/actions/misc/in/YAxisLockToggle";
+    constexpr auto zAxisLockToggle = "/actions/misc/in/ZAxisLockToggle";
+    constexpr auto pushToTalk = "/actions/misc/in/PushToTalk";
 
     constexpr auto hapticsLeft = "/actions/main/out/HapticsLeft";
     constexpr auto hapticsRight = "/actions/main/out/HapticsRight";
@@ -70,9 +71,12 @@ Keys for different action sets
 */
 namespace action_sets
 {
-    constexpr auto numberOfSets = 2;
+    constexpr auto numberOfSets = 5;
     constexpr auto main = "/actions/main";
     constexpr auto music = "/actions/music";
+    constexpr auto misc = "/actions/misc";
+    constexpr auto accessibility = "/actions/accessibility";
+    constexpr auto motion = "/actions/motion";
 } // namespace action_sets
 
 using ActiveActionSets
@@ -163,6 +167,9 @@ private:
 
     ActionSet m_mainSet;
     ActionSet m_music;
+    ActionSet m_motion;
+    ActionSet m_accessbility;
+    ActionSet m_misc;
 
     // Music player bindings
     DigitalAction m_nextTrack;
