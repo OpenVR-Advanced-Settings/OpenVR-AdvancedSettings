@@ -8,29 +8,17 @@ GroupBox {
     id: snapTurnGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "Snap Turn Angle"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.color: "#ffffff"
-        radius: 8
-    }
-
     ColumnLayout {
         anchors.fill: parent
 
-        Rectangle {
-            color: "#ffffff"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 5
-        }
-
         RowLayout {
             Layout.fillWidth: true
+
+            MyText {
+                text: "Snap Turn Angle:"
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 2
+            }
 
             MyTextField {
                 id: snapTurnAngleText

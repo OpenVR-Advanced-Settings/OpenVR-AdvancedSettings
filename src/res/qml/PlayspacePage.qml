@@ -318,20 +318,6 @@ MyStackViewPage {
             }
         }
 
-        GroupBox {
-            Layout.fillWidth: true
-
-            label: MyText {
-                leftPadding: 10
-                text: "Space Drag Binding"
-                bottomPadding: -10
-            }
-            background: Rectangle {
-                color: "transparent"
-                border.color: "#ffffff"
-                radius: 8
-            }
-        }
 
         ColumnLayout {
             RowLayout {

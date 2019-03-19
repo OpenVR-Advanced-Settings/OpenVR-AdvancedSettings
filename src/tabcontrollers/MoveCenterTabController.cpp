@@ -494,6 +494,7 @@ void MoveCenterTabController::setGravityStrength( float value, bool notify )
     {
         emit gravityStrengthChanged( m_gravityStrength );
     }
+    m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
 }
 
 float MoveCenterTabController::flingStrength() const

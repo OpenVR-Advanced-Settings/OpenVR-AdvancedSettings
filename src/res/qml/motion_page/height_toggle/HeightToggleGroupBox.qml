@@ -47,7 +47,7 @@ GroupBox {
             MyText {
                 text: "Height Offset (+ is down):"
                 horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
+                Layout.rightMargin: 2
             }
 
             MyTextField {
@@ -64,7 +64,7 @@ GroupBox {
                         MoveCenterTabController.heightToggleOffset = val.toFixed(2)
                         text = MoveCenterTabController.heightToggleOffset.toFixed(2)
                     } else {
-                        text = MoveCenterTabController.heighToggleOffset.toFixed(2)
+                        text = MoveCenterTabController.heightToggleOffset.toFixed(2)
                     }
                 }
             }
