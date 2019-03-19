@@ -66,8 +66,6 @@ class MoveCenterTabController : public QObject
                     requireLockYChanged )
     Q_PROPERTY( bool lockZToggle READ lockZToggle WRITE setLockZ NOTIFY
                     requireLockZChanged )
-    Q_PROPERTY( bool rotateHand READ rotateHand WRITE setRotateHand NOTIFY
-                    rotateHandChanged )
 
 private:
     OverlayController* parent;
@@ -84,7 +82,6 @@ private:
     int m_oldRotation = 0;
     int m_tempRotation = 0;
     bool m_adjustChaperone = true;
-    bool m_settingsHandTurningEnabled = false;
     bool m_moveShortcutRightPressed = false;
     bool m_moveShortcutLeftPressed = false;
     vr::TrackedDeviceIndex_t m_activeMoveController;
@@ -174,7 +171,6 @@ public:
     int rotation() const;
     int tempRotation() const;
     bool adjustChaperone() const;
-    bool rotateHand() const;
     bool moveShortcutRight() const;
     bool moveShortcutLeft() const;
     bool turnBindRight() const;
@@ -228,8 +224,6 @@ public slots:
 
     void setAdjustChaperone( bool value, bool notify = true );
 
-    void setRotateHand( bool value, bool notify = true );
-
     void setMoveShortcutRight( bool value, bool notify = true );
     void setMoveShortcutLeft( bool value, bool notify = true );
     void setTurnBindRight( bool value, bool notify = true );
@@ -262,7 +256,6 @@ signals:
     void rotationChanged( int value );
     void tempRotationChanged( int value );
     void adjustChaperoneChanged( bool value );
-    void rotateHandChanged( bool value );
     void moveShortcutRightChanged( bool value );
     void moveShortcutLeftChanged( bool value );
     void turnBindRightChanged( bool value );

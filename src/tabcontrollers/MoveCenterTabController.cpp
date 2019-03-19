@@ -46,11 +46,6 @@ void MoveCenterTabController::initStage1()
     {
         m_adjustChaperone = value.toBool();
     }
-    value = settings->value( "rotateHand", m_settingsHandTurningEnabled );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_settingsHandTurningEnabled = value.toBool();
-    }
     value = settings->value( "moveShortcutRight",
                              m_settingsRightHandDragEnabled );
     if ( value.isValid() && !value.isNull() )
@@ -280,25 +275,6 @@ void MoveCenterTabController::setAdjustChaperone( bool value, bool notify )
         {
             emit adjustChaperoneChanged( m_adjustChaperone );
         }
-    }
-}
-
-bool MoveCenterTabController::rotateHand() const
-{
-    return m_settingsHandTurningEnabled;
-}
-
-void MoveCenterTabController::setRotateHand( bool value, bool notify )
-{
-    m_settingsHandTurningEnabled = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "rotateHand", m_settingsHandTurningEnabled );
-    settings->endGroup();
-    settings->sync();
-    if ( notify )
-    {
-        emit rotateHandChanged( m_settingsHandTurningEnabled );
     }
 }
 
