@@ -6,7 +6,7 @@ import "common"
 
 
 MyStackViewPage {
-    headerText: "Space Settings"
+    headerText: "Space Offsets"
 
     content: ColumnLayout {
         spacing: 18
@@ -314,58 +314,10 @@ MyStackViewPage {
                             }
                        }
                     }
-
-                    MyToggleButton {
-                        id: spaceRotateHandToggle
-                        text: "Enable Space-Turn Binding"
-                        onCheckedChanged: {
-                            MoveCenterTabController.rotateHand = this.checked
-                        }
-                    }
-
-                    MyText {
-                        text: "Note: TurnSignal will ignore turning during Space-Turn rotation."
-                        font.pointSize: 15.0
-                    }
                 }
             }
         }
 
-        GroupBox {
-            Layout.fillWidth: true
-
-            label: MyText {
-                leftPadding: 10
-                text: "Space Drag Binding"
-                bottomPadding: -10
-            }
-            background: Rectangle {
-                color: "transparent"
-                border.color: "#ffffff"
-                radius: 8
-            }
-            ColumnLayout {
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    MyToggleButton {
-                        id: moveShortcutLeft
-                        text: "Enable Left Hand"
-                        onCheckedChanged: {
-                            MoveCenterTabController.moveShortcutLeft = this.checked
-                        }
-                    }
-
-                    MyToggleButton {
-                        id: moveShortcutRight
-                        text: "Enable Right Hand"
-                        onCheckedChanged: {
-                            MoveCenterTabController.moveShortcutRight = this.checked
-                        }
-                    }
-                }
-            }
-        }
 
         ColumnLayout {
             RowLayout {
@@ -397,13 +349,10 @@ MyStackViewPage {
 
         Component.onCompleted: {
             spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
-            spaceRotateHandToggle.checked = MoveCenterTabController.rotateHand
             spaceMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
             spaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
             spaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
             spaceRotationSlider.value = MoveCenterTabController.rotation
-            moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight
-            moveShortcutLeft.checked = MoveCenterTabController.moveShortcutLeft
 			lockXToggle.checked = MoveCenterTabController.lockXToggle
 			lockYToggle.checked = MoveCenterTabController.lockYToggle
 			lockZToggle.checked = MoveCenterTabController.lockZToggle
@@ -445,15 +394,6 @@ MyStackViewPage {
             }
             onAdjustChaperoneChanged: {
                 spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
-            }
-            onRotateHandChanged: {
-                spaceRotateHandToggle.checked = MoveCenterTabController.rotateHand
-            }
-            onMoveShortcutRightChanged: {
-                moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight
-            }
-            onMoveShortcutLeftChanged: {
-                moveShortcutLeft.checked = MoveCenterTabController.moveShortcutLeft
             }
 			onLockXToggleChanged: {
 				lockXToggle.checked = MoveCenterTabController.lockXToggle

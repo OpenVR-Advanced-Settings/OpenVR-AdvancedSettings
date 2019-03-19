@@ -46,11 +46,6 @@ void MoveCenterTabController::initStage1()
     {
         m_adjustChaperone = value.toBool();
     }
-    value = settings->value( "rotateHand", m_settingsHandTurningEnabled );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_settingsHandTurningEnabled = value.toBool();
-    }
     value = settings->value( "moveShortcutRight",
                              m_settingsRightHandDragEnabled );
     if ( value.isValid() && !value.isNull() )
@@ -82,6 +77,11 @@ void MoveCenterTabController::initStage1()
     if ( value.isValid() && !value.isNull() )
     {
         m_turnComfortFactor = value.toUInt();
+    }
+    value = settings->value( "snapTurnAngle", m_snapTurnAngle );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_snapTurnAngle = value.toInt();
     }
     value = settings->value( "heightToggleOffset", m_heightToggleOffset );
     if ( value.isValid() && !value.isNull() )
@@ -261,6 +261,28 @@ void MoveCenterTabController::setTempRotation( int value, bool notify )
     }
 }
 
+int MoveCenterTabController::snapTurnAngle() const
+{
+    return m_snapTurnAngle;
+}
+
+void MoveCenterTabController::setSnapTurnAngle( int value, bool notify )
+{
+    if ( m_snapTurnAngle != value )
+    {
+        m_snapTurnAngle = value;
+        auto settings = OverlayController::appSettings();
+        settings->beginGroup( "playspaceSettings" );
+        settings->setValue( "snapTurnAngle", m_snapTurnAngle );
+        settings->endGroup();
+        settings->sync();
+        if ( notify )
+        {
+            emit snapTurnAngleChanged( m_snapTurnAngle );
+        }
+    }
+}
+
 bool MoveCenterTabController::adjustChaperone() const
 {
     return m_adjustChaperone;
@@ -280,25 +302,6 @@ void MoveCenterTabController::setAdjustChaperone( bool value, bool notify )
         {
             emit adjustChaperoneChanged( m_adjustChaperone );
         }
-    }
-}
-
-bool MoveCenterTabController::rotateHand() const
-{
-    return m_settingsHandTurningEnabled;
-}
-
-void MoveCenterTabController::setRotateHand( bool value, bool notify )
-{
-    m_settingsHandTurningEnabled = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "rotateHand", m_settingsHandTurningEnabled );
-    settings->endGroup();
-    settings->sync();
-    if ( notify )
-    {
-        emit rotateHandChanged( m_settingsHandTurningEnabled );
     }
 }
 
@@ -491,6 +494,7 @@ void MoveCenterTabController::setGravityStrength( float value, bool notify )
     {
         emit gravityStrengthChanged( m_gravityStrength );
     }
+    m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
 }
 
 float MoveCenterTabController::flingStrength() const
@@ -1387,7 +1391,7 @@ void MoveCenterTabController::snapTurnLeft( bool snapTurnLeftJustPressed )
 
     // TODO add interface to configure snap angle.
     // temporarily hard coded to 45 degrees
-    int newRotationAngleDeg = m_rotation - 4500;
+    int newRotationAngleDeg = m_rotation - m_snapTurnAngle;
     // Keep angle within -18000 ~ 18000 centidegrees
     if ( newRotationAngleDeg > 18000 )
     {
@@ -1410,7 +1414,7 @@ void MoveCenterTabController::snapTurnRight( bool snapTurnRightJustPressed )
 
     // TODO add interface to configure snap angle.
     // temporarily hard coded to 45 degrees
-    int newRotationAngleDeg = m_rotation + 4500;
+    int newRotationAngleDeg = m_rotation + m_snapTurnAngle;
     // Keep angle within -18000 ~ 18000 centidegrees
     if ( newRotationAngleDeg > 18000 )
     {

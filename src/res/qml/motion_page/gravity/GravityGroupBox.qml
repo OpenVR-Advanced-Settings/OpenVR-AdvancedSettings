@@ -47,7 +47,7 @@ GroupBox {
             MyText {
                 text: "Gravity Strength (+ is down):"
                 horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
+                Layout.rightMargin: 2
             }
 
             MyTextField {
@@ -118,14 +118,14 @@ GroupBox {
             }
 
             MyText {
-                text: "Fling Strength"
+                text: "Fling Strength:"
                 horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
+                Layout.rightMargin: 2
             }
 
             MyTextField {
                 id: flingStrengthText
-                text: "1.00"
+                text: "1.0"
                 keyBoardUID: 153
                 Layout.preferredWidth: 120
                 Layout.leftMargin: 10
@@ -134,11 +134,43 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        MoveCenterTabController.flingStrength = val.toFixed(2)
-                        text = MoveCenterTabController.flingStrength.toFixed(2)
+                        MoveCenterTabController.flingStrength = val.toFixed(1)
+                        text = MoveCenterTabController.flingStrength.toFixed(1)
                     } else {
-                        text = MoveCenterTabController.flingStrength.toFixed(2)
+                        text = MoveCenterTabController.flingStrength.toFixed(1)
                     }
+                }
+            }
+
+            MyPushButton2 {
+                Layout.preferredWidth: 50
+                text: "1x"
+                onClicked: {
+                    MoveCenterTabController.flingStrength = 1.0
+                }
+            }
+
+            MyPushButton2 {
+                Layout.preferredWidth: 50
+                text: "2x"
+                onClicked: {
+                    MoveCenterTabController.flingStrength = 2.0
+                }
+            }
+
+            MyPushButton2 {
+                Layout.preferredWidth: 50
+                text: "3x"
+                onClicked: {
+                    MoveCenterTabController.flingStrength = 3.0
+                }
+            }
+
+            MyPushButton2 {
+                Layout.preferredWidth: 50
+                text: "4x"
+                onClicked: {
+                    MoveCenterTabController.flingStrength = 4.0
                 }
             }
 
