@@ -50,10 +50,9 @@ namespace action_keys
     constexpr auto zAxisLockToggle = "/actions/misc/in/ZAxisLockToggle";
     constexpr auto pushToTalk = "/actions/misc/in/PushToTalk";
 
-    constexpr auto hapticsLeft = "/actions/main/out/HapticsLeft";
-    constexpr auto hapticsRight = "/actions/main/out/HapticsRight";
-
-    constexpr auto proxSensor = "/actions/main/in/ProxSensor";
+    constexpr auto hapticsLeft = "/actions/haptic/out/HapticsLeft";
+    constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
+    constexpr auto proxSensor = "/actions/haptic/in/ProxSensor";
 
 } // namespace action_keys
 
@@ -72,7 +71,7 @@ Keys for different action sets
 namespace action_sets
 {
     constexpr auto numberOfSets = 5;
-    constexpr auto main = "/actions/main";
+    constexpr auto haptic = "/actions/haptic";
     constexpr auto music = "/actions/music";
     constexpr auto misc = "/actions/misc";
     constexpr auto accessibility = "/actions/accessibility";

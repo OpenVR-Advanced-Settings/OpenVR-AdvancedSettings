@@ -100,7 +100,7 @@ Wrong action names may not result in direct error messages, but just features
 mystically not working.
 */
 SteamIVRInput::SteamIVRInput()
-    : m_manifest(), m_mainSet( action_sets::main ),
+    : m_manifest(), m_mainSet( action_sets::haptic ),
       m_music( action_sets::music ), m_motion( action_sets::motion ),
       m_accessbility( action_sets::accessibility ), m_misc( action_sets::misc ),
       m_nextTrack( action_keys::nextTrack ),
