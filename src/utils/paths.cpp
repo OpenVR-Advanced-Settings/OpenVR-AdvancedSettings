@@ -30,8 +30,9 @@ optional<string> binaryDirectoryFindFile( const string fileName )
         return std::nullopt;
     }
 
-    const auto filePath = QDir( QString::fromStdString( *path ) + '/'
-                                + QString::fromStdString( fileName ) );
+    const auto filePath
+        = QDir( QString::fromStdString( *path ) + QDir::separator()
+                + QString::fromStdString( fileName ) );
     QFileInfo file( filePath.path() );
 
     if ( !file.exists() )
