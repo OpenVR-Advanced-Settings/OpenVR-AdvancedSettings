@@ -32,7 +32,7 @@ DISTFILES += \
     src/res/qml/utilities_page/* \
     src/res/qml/utilities_page/media_keys/* \
     src/res/qml/utilities_page/keyboard_utils/* \
-    src/res/qml/utilities_page/desktop_size/* \
+    src/res/qml/desktop_overlay_page/desktop_size/* \
     src/res/qml/utilities_page/alarm_clock/* \
     src/res/qml/audio_page/dialog_boxes/* \
     src/res/qml/audio_page/device_selector/* \
@@ -40,5 +40,9 @@ DISTFILES += \
     src/res/qml/audio_page/push_to_talk/* \
     src/res/qml/audio_page/profiles/* \
     src/res/qml/common/* \
+    src/res/qml/desktop_overlay_page/* \
+    src/res/qml/desktop_overlay_page/translation_left_right/SteamDesktopTranslationLeftRight.qml \
+    src/res/qml/desktop_overlay_page/translation_back_forwards/SteamDesktopTranslationBackForwards.qml \
+    src/res/qml/desktop_overlay_page/translation_up_down/SteamDesktopTranslationUpDown.qml \
 
 RC_FILE = src/res/icon.rc

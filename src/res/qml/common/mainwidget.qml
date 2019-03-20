@@ -5,6 +5,7 @@ import ".."
 import "../utilities_page"
 import "../audio_page"
 import "../motion_page"
+import "../desktop_overlay_page"
 
 Rectangle {
     id: root
@@ -67,6 +68,11 @@ Rectangle {
     }
 
     property UtilitiesPage utilitiesPage: UtilitiesPage {
+        stackView: mainView
+        visible: false
+    }
+
+    property DesktopOverlayPage desktopOverlayPage: DesktopOverlayPage {
         stackView: mainView
         visible: false
     }

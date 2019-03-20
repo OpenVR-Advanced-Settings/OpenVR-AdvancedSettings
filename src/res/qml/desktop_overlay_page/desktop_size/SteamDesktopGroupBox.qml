@@ -7,7 +7,7 @@ import "../../common"
 GroupBox {
     id: steamDesktopGroupBox
     Layout.fillWidth: true
-    
+
     label: MyText {
         leftPadding: 10
         text: "Steam Desktop Overlay Width"
@@ -20,14 +20,14 @@ GroupBox {
     }
     ColumnLayout {
         anchors.fill: parent
-        
+
         Rectangle {
             color: "#ffffff"
             height: 1
             Layout.fillWidth: true
             Layout.bottomMargin: 5
         }
-        
+
         ColumnLayout {
             RowLayout {
                 MyPushButton2 {
@@ -38,7 +38,7 @@ GroupBox {
                         steamDesktopWidthSlider.value -= 1.0
                     }
                 }
-                
+
                 MySlider {
                     id: steamDesktopWidthSlider
                     from: 0.1
@@ -55,7 +55,7 @@ GroupBox {
                         steamDesktopWidthText.text = value.toFixed(1)
                     }
                 }
-                
+
                 MyPushButton2 {
                     id: steamDesktopWidthPlusButton
                     Layout.preferredWidth: 40
@@ -64,7 +64,7 @@ GroupBox {
                         steamDesktopWidthSlider.value += 1.0
                     }
                 }
-                
+
                 MyTextField {
                     id: steamDesktopWidthText
                     text: "0.0"
