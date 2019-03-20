@@ -5,9 +5,80 @@
 #include "ivrinput_manifest.h"
 #include "ivrinput_action_set.h"
 #include "ivrinput_input_source.h"
+#include <array>
 
 namespace input
 {
+/*!
+The IVRInput system is _very_ finnicky about strings matching and if they don't
+match there are usually no errors logged reflecting that. constexpr auto strings
+should be used to refer to all action manifest strings.
+*/
+namespace action_keys
+{
+    constexpr auto nextTrack = "/actions/music/in/NextTrack";
+    constexpr auto previousTrack = "/actions/music/in/PreviousTrack";
+    constexpr auto pausePlayTrack = "/actions/music/in/PausePlayTrack";
+    constexpr auto stopTrack = "/actions/music/in/StopTrack";
+
+    constexpr auto leftHandSpaceTurn = "/actions/motion/in/LeftHandSpaceTurn";
+    constexpr auto rightHandSpaceTurn = "/actions/motion/in/RightHandSpaceTurn";
+    constexpr auto leftHandSpaceDrag = "/actions/motion/in/LeftHandSpaceDrag";
+    constexpr auto rightHandSpaceDrag = "/actions/motion/in/RightHandSpaceDrag";
+    constexpr auto optionalOverrideLeftHandSpaceTurn
+        = "/actions/motion/in/OptionalOverrideLeftHandSpaceTurn";
+    constexpr auto optionalOverrideRightHandSpaceTurn
+        = "/actions/motion/in/OptionalOverrideRightHandSpaceTurn";
+    constexpr auto optionalOverrideLeftHandSpaceDrag
+        = "/actions/motion/in/OptionalOverrideLeftHandSpaceDrag";
+    constexpr auto optionalOverrideRightHandSpaceDrag
+        = "/actions/motion/in/OptionalOverrideRightHandSpaceDrag";
+    constexpr auto swapSpaceDragToLeftHandOverride
+        = "/actions/motion/in/SwapSpaceDragToLeftHandOverride";
+    constexpr auto swapSpaceDragToRightHandOverride
+        = "/actions/motion/in/SwapSpaceDragToRightHandOverride";
+    constexpr auto gravityToggle = "/actions/motion/in/GravityToggle";
+    constexpr auto gravityReverse = "/actions/motion/in/GravityReverse";
+    constexpr auto resetOffsets = "/actions/motion/in/ResetOffsets";
+    constexpr auto heightToggle = "/actions/motion/in/HeightToggle";
+    constexpr auto snapTurnLeft = "/actions/motion/in/SnapTurnLeft";
+    constexpr auto snapTurnRight = "/actions/motion/in/SnapTurnRight";
+
+    constexpr auto xAxisLockToggle = "/actions/misc/in/XAxisLockToggle";
+    constexpr auto yAxisLockToggle = "/actions/misc/in/YAxisLockToggle";
+    constexpr auto zAxisLockToggle = "/actions/misc/in/ZAxisLockToggle";
+    constexpr auto pushToTalk = "/actions/misc/in/PushToTalk";
+
+    constexpr auto hapticsLeft = "/actions/haptic/out/HapticsLeft";
+    constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
+    constexpr auto proxSensor = "/actions/haptic/in/ProxSensor";
+
+} // namespace action_keys
+
+/*!
+Keys to get input source handles (things like hmd controllers etc.)
+*/
+namespace input_keys
+{
+    constexpr auto leftHand = "/user/hand/left";
+    constexpr auto rightHand = "/user/hand/right";
+} // namespace input_keys
+
+/*!
+Keys for different action sets
+*/
+namespace action_sets
+{
+    constexpr auto numberOfSets = 4;
+    constexpr auto haptic = "/actions/haptic";
+    constexpr auto music = "/actions/music";
+    constexpr auto misc = "/actions/misc";
+    constexpr auto motion = "/actions/motion";
+} // namespace action_sets
+
+using ActiveActionSets
+    = std::array<vr::VRActiveActionSet_t, action_sets::numberOfSets>;
+
 /*!
 Responsible for controller input.
 
@@ -92,7 +163,9 @@ private:
     Manifest m_manifest;
 
     ActionSet m_mainSet;
-    vr::VRActiveActionSet_t m_activeActionSet = {};
+    ActionSet m_music;
+    ActionSet m_motion;
+    ActionSet m_misc;
 
     // Music player bindings
     DigitalAction m_nextTrack;
@@ -131,74 +204,9 @@ private:
     // input sources
     InputSource m_leftHand;
     InputSource m_rightHand;
+
+    // Initialize the set of actions after everything else.
+    ActiveActionSets m_sets;
 };
-
-/*!
-The IVRInput system is _very_ finnicky about strings matching and if they don't
-match there are usually no errors logged reflecting that. constexpr auto strings
-should be used to refer to all action manifest strings.
-*/
-namespace action_keys
-{
-    constexpr auto k_actionNextTrack = "/actions/main/in/NextTrack";
-    constexpr auto k_actionPreviousTrack = "/actions/main/in/PreviousTrack";
-    constexpr auto k_actionPausePlayTrack = "/actions/main/in/PausePlayTrack";
-    constexpr auto k_actionStopTrack = "/actions/main/in/StopTrack";
-
-    constexpr auto k_actionLeftHandSpaceTurn
-        = "/actions/main/in/LeftHandSpaceTurn";
-    constexpr auto k_actionRightHandSpaceTurn
-        = "/actions/main/in/RightHandSpaceTurn";
-    constexpr auto k_actionLeftHandSpaceDrag
-        = "/actions/main/in/LeftHandSpaceDrag";
-    constexpr auto k_actionRightHandSpaceDrag
-        = "/actions/main/in/RightHandSpaceDrag";
-    constexpr auto k_actionOptionalOverrideLeftHandSpaceTurn
-        = "/actions/main/in/OptionalOverrideLeftHandSpaceTurn";
-    constexpr auto k_actionOptionalOverrideRightHandSpaceTurn
-        = "/actions/main/in/OptionalOverrideRightHandSpaceTurn";
-    constexpr auto k_actionOptionalOverrideLeftHandSpaceDrag
-        = "/actions/main/in/OptionalOverrideLeftHandSpaceDrag";
-    constexpr auto k_actionOptionalOverrideRightHandSpaceDrag
-        = "/actions/main/in/OptionalOverrideRightHandSpaceDrag";
-    constexpr auto k_actionSwapSpaceDragToLeftHandOverride
-        = "/actions/main/in/SwapSpaceDragToLeftHandOverride";
-    constexpr auto k_actionSwapSpaceDragToRightHandOverride
-        = "/actions/main/in/SwapSpaceDragToRightHandOverride";
-    constexpr auto k_actionGravityToggle = "/actions/main/in/GravityToggle";
-    constexpr auto k_actionGravityReverse = "/actions/main/in/GravityReverse";
-    constexpr auto k_actionHeightToggle = "/actions/main/in/HeightToggle";
-    constexpr auto k_actionResetOffsets = "/actions/main/in/ResetOffsets";
-    constexpr auto k_actionSnapTurnLeft = "/actions/main/in/SnapTurnLeft";
-    constexpr auto k_actionSnapTurnRight = "/actions/main/in/SnapTurnRight";
-    constexpr auto k_actionXAxisLockToggle = "/actions/main/in/XAxisLockToggle";
-    constexpr auto k_actionYAxisLockToggle = "/actions/main/in/YAxisLockToggle";
-    constexpr auto k_actionZAxisLockToggle = "/actions/main/in/ZAxisLockToggle";
-
-    constexpr auto k_actionPushToTalk = "/actions/main/in/PushToTalk";
-
-    constexpr auto k_actionHapticsLeft = "/actions/main/out/HapticsLeft";
-    constexpr auto k_actionHapticsRight = "/actions/main/out/HapticsRight";
-
-    constexpr auto k_actionProxSensor = "/actions/main/in/ProxSensor";
-
-} // namespace action_keys
-
-/*!
-Keys to get input source handles (things like hmd controllers etc.)
-*/
-namespace input_keys
-{
-    constexpr auto k_inputSourceLeft = "/user/hand/left";
-    constexpr auto k_inputSourceRight = "/user/hand/right";
-} // namespace input_keys
-
-/*!
-Keys for different action sets
-*/
-namespace action_sets
-{
-    constexpr auto k_setMain = "/actions/main";
-} // namespace action_sets
 
 } // namespace input

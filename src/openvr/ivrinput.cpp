@@ -2,6 +2,7 @@
 #include "ivrinput_action.h"
 #include <openvr.h>
 #include <iostream>
+#include <array>
 #include <easylogging++.h>
 
 namespace input
@@ -99,45 +100,46 @@ Wrong action names may not result in direct error messages, but just features
 mystically not working.
 */
 SteamIVRInput::SteamIVRInput()
-    : m_manifest(), m_mainSet( action_sets::k_setMain ),
-      m_nextTrack( action_keys::k_actionNextTrack ),
-      m_previousTrack( action_keys::k_actionPreviousTrack ),
-      m_pausePlayTrack( action_keys::k_actionPausePlayTrack ),
-      m_stopTrack( action_keys::k_actionStopTrack ),
-      m_leftHandSpaceTurn( action_keys::k_actionLeftHandSpaceTurn ),
-      m_rightHandSpaceTurn( action_keys::k_actionRightHandSpaceTurn ),
-      m_leftHandSpaceDrag( action_keys::k_actionLeftHandSpaceDrag ),
-      m_rightHandSpaceDrag( action_keys::k_actionRightHandSpaceDrag ),
+    : m_manifest(), m_mainSet( action_sets::haptic ),
+      m_music( action_sets::music ), m_motion( action_sets::motion ),
+      m_misc( action_sets::misc ), m_nextTrack( action_keys::nextTrack ),
+      m_previousTrack( action_keys::previousTrack ),
+      m_pausePlayTrack( action_keys::pausePlayTrack ),
+      m_stopTrack( action_keys::stopTrack ),
+      m_leftHandSpaceTurn( action_keys::leftHandSpaceTurn ),
+      m_rightHandSpaceTurn( action_keys::rightHandSpaceTurn ),
+      m_leftHandSpaceDrag( action_keys::leftHandSpaceDrag ),
+      m_rightHandSpaceDrag( action_keys::rightHandSpaceDrag ),
       m_optionalOverrideLeftHandSpaceTurn(
-          action_keys::k_actionOptionalOverrideLeftHandSpaceTurn ),
+          action_keys::optionalOverrideLeftHandSpaceTurn ),
       m_optionalOverrideRightHandSpaceTurn(
-          action_keys::k_actionOptionalOverrideRightHandSpaceTurn ),
+          action_keys::optionalOverrideRightHandSpaceTurn ),
       m_optionalOverrideLeftHandSpaceDrag(
-          action_keys::k_actionOptionalOverrideLeftHandSpaceDrag ),
+          action_keys::optionalOverrideLeftHandSpaceDrag ),
       m_optionalOverrideRightHandSpaceDrag(
-          action_keys::k_actionOptionalOverrideRightHandSpaceDrag ),
+          action_keys::optionalOverrideRightHandSpaceDrag ),
       m_swapSpaceDragToLeftHandOverride(
-          action_keys::k_actionSwapSpaceDragToLeftHandOverride ),
+          action_keys::swapSpaceDragToLeftHandOverride ),
       m_swapSpaceDragToRightHandOverride(
-          action_keys::k_actionSwapSpaceDragToRightHandOverride ),
-      m_gravityToggle( action_keys::k_actionGravityToggle ),
-      m_gravityReverse( action_keys::k_actionGravityReverse ),
-      m_heightToggle( action_keys::k_actionHeightToggle ),
-      m_resetOffsets( action_keys::k_actionResetOffsets ),
-      m_snapTurnLeft( action_keys::k_actionSnapTurnLeft ),
-      m_snapTurnRight( action_keys::k_actionSnapTurnRight ),
-      m_xAxisLockToggle( action_keys::k_actionXAxisLockToggle ),
-      m_yAxisLockToggle( action_keys::k_actionYAxisLockToggle ),
-      m_zAxisLockToggle( action_keys::k_actionZAxisLockToggle ),
-      m_pushToTalk( action_keys::k_actionPushToTalk ),
-      m_leftHaptic( action_keys::k_actionHapticsLeft ),
-      m_rightHaptic( action_keys::k_actionHapticsRight ),
-      m_leftHand( input_keys::k_inputSourceLeft ),
-      m_rightHand( input_keys::k_inputSourceRight )
+          action_keys::swapSpaceDragToRightHandOverride ),
+      m_gravityToggle( action_keys::gravityToggle ),
+      m_gravityReverse( action_keys::gravityReverse ),
+      m_heightToggle( action_keys::heightToggle ),
+      m_resetOffsets( action_keys::resetOffsets ),
+      m_snapTurnLeft( action_keys::snapTurnLeft ),
+      m_snapTurnRight( action_keys::snapTurnRight ),
+      m_xAxisLockToggle( action_keys::xAxisLockToggle ),
+      m_yAxisLockToggle( action_keys::yAxisLockToggle ),
+      m_zAxisLockToggle( action_keys::zAxisLockToggle ),
+      m_pushToTalk( action_keys::pushToTalk ),
+      m_leftHaptic( action_keys::hapticsLeft ),
+      m_rightHaptic( action_keys::hapticsRight ),
+      m_leftHand( input_keys::leftHand ), m_rightHand( input_keys::rightHand ),
+      m_sets( { m_mainSet.activeActionSet(),
+                m_music.activeActionSet(),
+                m_motion.activeActionSet(),
+                m_misc.activeActionSet() } )
 {
-    m_activeActionSet.ulActionSet = m_mainSet.handle();
-    m_activeActionSet.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;
-    m_activeActionSet.nPriority = 0;
 }
 /*!
 Returns true if the next media track should be played.
@@ -328,10 +330,10 @@ update state.
 */
 void SteamIVRInput::UpdateStates()
 {
-    constexpr auto numberOfSets = 1;
-
-    const auto error = vr::VRInput()->UpdateActionState(
-        &m_activeActionSet, sizeof( m_activeActionSet ), numberOfSets );
+    const auto error
+        = vr::VRInput()->UpdateActionState( m_sets.data(),
+                                            sizeof( vr::VRActiveActionSet_t ),
+                                            action_sets::numberOfSets );
 
     if ( error != vr::EVRInputError::VRInputError_None )
     {
