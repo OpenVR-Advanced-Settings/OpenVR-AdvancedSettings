@@ -29,7 +29,7 @@ optional<string> binaryDirectoryFindFile( const string fileName )
         return std::nullopt;
     }
 
-    const auto filePath = QString::fromStdString( *path ) + "/"
+    const auto filePath = QString::fromStdString( *path ) + "\\"
                           + QString::fromStdString( fileName );
     QFileInfo file( filePath );
 
