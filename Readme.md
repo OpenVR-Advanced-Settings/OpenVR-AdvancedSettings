@@ -82,17 +82,62 @@ To upgrade an existing installation first stop SteamVR and delete the old applic
 
 After SteamVR beta 1.3.1 the bindings for Advanced Settings will show up in the bindings menu.
 
-By default no buttons are bound.
+By default no buttons are bound. TODO
 
 The following actions currently exist:
+### Music
+
+Actions associated with media player.
 
 |    Action     |     Type      |  Explanation  |
 | ------------- | ------------- |  ------------ |
-| NextSong      | Binary/Button | The same as using the media keys. Tells a media player to play the next song.|
-| PreviousSong  | Binary/Button | The same as using the media keys. Tells a media player to play the previous song. |
-| pausePlaySong | Binary/Button | The same as using the media keys. Tells the media player to press play/pause. |
-| stopSong      | Binary/Button | The same as using the media keys. Tells the media player to stop playback. |
+| Play Next Track | Binary/Button | The same as using the media keys. Tells a media player to play the next song.|
+| Play Previous Track | Binary/Button | The same as using the media keys. Tells a media player to play the previous song. |
+| Pause/Play Track | Binary/Button | The same as using the media keys. Tells the media player to press play/pause. |
+| Stop Track| Binary/Button | The same as using the media keys. Tells the media player to stop playback. |
 
+### Motion
+
+Actions associated with motion tab, and motion.
+
+|    Action     |     Type      |  Explanation  |
+| ------------- | ------------- |  ------------ |
+| Left Hand Space Turn      | Binary/Button | Rotates PlaySpace based on left controller rotation while held.|
+| Right Hand Space Turn  | Binary/Button |  Rotates PlaySpace based on right controller rotation while held. |
+| Left Hand Space Drag      | Binary/Button |   Rotates PlaySpace based on left controller rotation while held.|
+| Right Hand Space Drag  | Binary/Button |  Rotates PlaySpace based on right controller rotation while held.|
+| (Optional Override) Left Hand Space Turn | Binary/Button |  ?|
+| (Optional Override) Right Hand Space Turn| Binary/Button |  ?|
+| (Optional Override) Left Hand Space Drag | Binary/Button |  ?|
+| (Optional Override) Right Hand Space Drag| Binary/Button |  ?|
+| Swap Active Space Drag to Left Hand (Override) | Binary/Button |  ?|
+| Swap Active Space Drag to Right Hand (Override) | Binary/Button |  ?|
+| Gravity Toggle | Binary/Button |  Toggles Gravity state when pressed.|
+| Gravity Reverse | Binary/Button |  Temporarily Reverses Gravity while held.|
+| Reset Offsets | Binary/Button |  Resets your offset and rotation to 0.|
+| Height Toggle | Binary/Button |  Toggles between your current height and an offset.|
+| Snap-Turn Left | Binary/Button |  Rotates a set value to the left based on settings in motion tab.|
+| Snap-Turn Right | Binary/Button |  Rotates a set value to the right based on settings in motion tab.|
+
+### Misc.
+
+Actions that don't have a clear category.
+
+|    Action     |     Type      |  Explanation  |
+| ------------- | ------------- |  ------------ |
+| X-Axis Lock Toggle | Binary/Button | Toggles the lock of the X-Axis for offsets.|
+| Y-Axis Lock Toggle | Binary/Button | Toggles the lock of the Y-Axis for offsets.|
+| Z-Axis Lock Toggle | Binary/Button | Toggles the lock of the Z-Axis for offsets.|
+| Push to Talk | Binary/Button |  Acts as starter for PTT, can mute if push-to-mute is selected.|
+
+### Haptics.
+
+Actions to be handled by the system.
+
+|    Action     |     Type      |  Explanation  |
+| ------------- | ------------- |  ------------ |
+| Haptics Left | Vibration | Handle for haptic events on the Left Controller. |
+| Haptics Right | Vibration | Handle for haptic events on the Right Controller. |
 
 <a name="command_line_arguments"></a>
 ## Command Line Arguments
