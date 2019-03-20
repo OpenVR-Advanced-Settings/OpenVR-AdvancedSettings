@@ -197,7 +197,7 @@
         "/actions/motion/in/SwapSpaceDragToLeftHandOverride" : "Swap Active Space Drag to Left Hand (Override)",
         "/actions/motion/in/SwapSpaceDragToRightHandOverride" : "Swap Active Space Drag to Right Hand (Override)",
         "/actions/motion/in/GravityToggle" : "Gravity Toggle",
-        "/actions/motion/in/GravityReverse" : "Gravity Reverse (Held)",
+        "/actions/motion/in/GravityReverse" : "Gravity Reverse",
         "/actions/motion/in/ResetOffsets" : "Reset Offsets",
         
         "/actions/accessibility/in/HeightToggle" : "Height Toggle",
