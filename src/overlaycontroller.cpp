@@ -20,6 +20,7 @@
 #include <openvr.h>
 #include <easylogging++.h>
 #include "utils/Matrix.h"
+#include "openvr/overlay_utils.h"
 
 // application namespace
 namespace advsettings
@@ -248,6 +249,16 @@ OverlayController::OverlayController( bool desktopMode,
         "UtilitiesTabController",
         []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_utilitiesTabController );
+            QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
+            return obj;
+        } );
+    qmlRegisterSingletonType<overlay::DesktopOverlay>(
+        qmlSingletonImportName,
+        1,
+        0,
+        "DesktopOverlay",
+        []( QQmlEngine*, QJSEngine* ) {
+            QObject* obj = &( objectAddress->m_desktopOverlay );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -715,6 +726,7 @@ void OverlayController::mainEventLoop()
         case vr::VREvent_DashboardActivated:
         {
             LOG( DEBUG ) << "Dashboard activated";
+            m_desktopOverlay.update();
             m_dashboardVisible = true;
         }
         break;

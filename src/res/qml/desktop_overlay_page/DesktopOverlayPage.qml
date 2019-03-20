@@ -2,28 +2,28 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
-import "media_keys"
-import "alarm_clock"
+import "translation_left_right"
+import "translation_back_forwards"
+import "translation_up_down"
 import "desktop_size"
-import "keyboard_utils"
 import "../common"
 
 MyStackViewPage {
-    headerText: "Utilities"
+    headerText: "Desktop Overlay"
 
     content: ColumnLayout {
         spacing: 18
 
-        KeyboardGroupBox {
-            id: keyboardGroupBox
+        SteamDesktopGroupBox {
         }
 
-        AlarmGroupBox {
-            id: alarmGroupBox
+        SteamDesktopTranslationUpDown {
         }
 
-        MediaControllerKeys {
-            id: mediaKeysGroupBox
+        SteamDesktopTranslationBackForwards {
+        }
+
+        SteamDesktopTranslationLeftRight {
         }
 
         Item {
