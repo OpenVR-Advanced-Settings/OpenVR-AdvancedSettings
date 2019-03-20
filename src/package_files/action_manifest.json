@@ -114,19 +114,18 @@
       "requirement": "optional",
       "type": "boolean"
     },
-    
     {
-      "name": "/actions/accessibility/in/HeightToggle",
+      "name": "/actions/motion/in/HeightToggle",
       "requirement": "optional",
       "type": "boolean"
     },
     {
-      "name": "/actions/accessibility/in/SnapTurnLeft",
+      "name": "/actions/motion/in/SnapTurnLeft",
       "requirement": "optional",
       "type": "boolean"
     },
     {
-      "name": "/actions/accessibility/in/SnapTurnRight",
+      "name": "/actions/motion/in/SnapTurnRight",
       "requirement": "optional",
       "type": "boolean"
     },
@@ -159,10 +158,6 @@
     },
     {
       "name": "/actions/music",
-      "usage": "leftright"
-    },
-    {
-      "name": "/actions/accessibility",
       "usage": "leftright"
     },
     {
