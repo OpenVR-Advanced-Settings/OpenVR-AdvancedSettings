@@ -4,6 +4,7 @@
 #include <QString>
 #include <QFileInfo>
 #include <easylogging++.h>
+#include <QDir>
 
 namespace paths
 {
@@ -29,9 +30,9 @@ optional<string> binaryDirectoryFindFile( const string fileName )
         return std::nullopt;
     }
 
-    const auto filePath = QString::fromStdString( *path ) + "/"
-                          + QString::fromStdString( fileName );
-    QFileInfo file( filePath );
+    const auto filePath = QDir( QString::fromStdString( *path ) + '/'
+                                + QString::fromStdString( fileName ) );
+    QFileInfo file( filePath.path() );
 
     if ( !file.exists() )
     {
@@ -40,7 +41,7 @@ optional<string> binaryDirectoryFindFile( const string fileName )
         return std::nullopt;
     }
 
-    return filePath.toStdString();
+    return QDir::toNativeSeparators( file.filePath() ).toStdString();
 }
 
 optional<string> settingsDirectory()

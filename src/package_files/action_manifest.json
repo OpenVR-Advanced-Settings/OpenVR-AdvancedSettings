@@ -116,17 +116,18 @@
     },
     
     {
-      "name": "/actions/accessibility/in/HeightToggle",
+
+      "name": "/actions/motion/in/HeightToggle",
       "requirement": "optional",
       "type": "boolean"
     },
     {
-      "name": "/actions/accessibility/in/SnapTurnLeft",
+      "name": "/actions/motion/in/SnapTurnLeft",
       "requirement": "optional",
       "type": "boolean"
     },
     {
-      "name": "/actions/accessibility/in/SnapTurnRight",
+      "name": "/actions/motion/in/SnapTurnRight",
       "requirement": "optional",
       "type": "boolean"
     },
@@ -159,10 +160,6 @@
     },
     {
       "name": "/actions/music",
-      "usage": "leftright"
-    },
-    {
-      "name": "/actions/accessibility",
       "usage": "leftright"
     },
     {
@@ -202,7 +199,7 @@
         "/actions/motion/in/SwapSpaceDragToLeftHandOverride" : "Swap Active Space Drag to Left Hand (Override)",
         "/actions/motion/in/SwapSpaceDragToRightHandOverride" : "Swap Active Space Drag to Right Hand (Override)",
         "/actions/motion/in/GravityToggle" : "Gravity Toggle",
-        "/actions/motion/in/GravityReverse" : "Gravity Reverse (Held)",
+        "/actions/motion/in/GravityReverse" : "Gravity Reverse",
         "/actions/motion/in/ResetOffsets" : "Reset Offsets",
         
         "/actions/accessibility/in/HeightToggle" : "Height Toggle",

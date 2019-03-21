@@ -102,8 +102,7 @@ mystically not working.
 SteamIVRInput::SteamIVRInput()
     : m_manifest(), m_mainSet( action_sets::haptic ),
       m_music( action_sets::music ), m_motion( action_sets::motion ),
-      m_accessbility( action_sets::accessibility ), m_misc( action_sets::misc ),
-      m_nextTrack( action_keys::nextTrack ),
+      m_misc( action_sets::misc ), m_nextTrack( action_keys::nextTrack ),
       m_previousTrack( action_keys::previousTrack ),
       m_pausePlayTrack( action_keys::pausePlayTrack ),
       m_stopTrack( action_keys::stopTrack ),
@@ -139,7 +138,6 @@ SteamIVRInput::SteamIVRInput()
       m_sets( { m_mainSet.activeActionSet(),
                 m_music.activeActionSet(),
                 m_motion.activeActionSet(),
-                m_accessbility.activeActionSet(),
                 m_misc.activeActionSet() } )
 {
 }

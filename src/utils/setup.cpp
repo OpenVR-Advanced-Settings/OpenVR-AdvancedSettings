@@ -146,6 +146,7 @@ void reinstallApplicationManifest( const std::string manifestPath )
     if ( vr::VRApplications()->IsApplicationInstalled(
              application_strings::applicationKey ) )
     {
+        LOG( INFO ) << "Manifest Previously Installed";
         // String size was arbitrarily chosen by original author.
         constexpr auto kStringSize = 1024;
         char oldApplicationWorkingDir[kStringSize] = { 0 };
