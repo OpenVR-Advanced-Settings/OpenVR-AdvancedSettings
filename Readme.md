@@ -106,12 +106,12 @@ Actions associated with motion tab, and motion.
 | Right Hand Space Turn  | Binary/Button |  Rotates PlaySpace based on right controller rotation while held. |
 | Left Hand Space Drag      | Binary/Button |   Rotates PlaySpace based on left controller rotation while held.|
 | Right Hand Space Drag  | Binary/Button |  Rotates PlaySpace based on right controller rotation while held.|
-| (Optional Override) Left Hand Space Turn | Binary/Button |  ?|
-| (Optional Override) Right Hand Space Turn| Binary/Button |  ?|
-| (Optional Override) Left Hand Space Drag | Binary/Button |  ?|
-| (Optional Override) Right Hand Space Drag| Binary/Button |  ?|
-| Swap Active Space Drag to Left Hand (Override) | Binary/Button |  ?|
-| Swap Active Space Drag to Right Hand (Override) | Binary/Button |  ?|
+| (Optional Override) Left Hand Space Turn | Binary/Button |  Complex interaction that gives priority over drag.|
+| (Optional Override) Right Hand Space Turn| Binary/Button |  Complex interaction that gives priority over drag.|
+| (Optional Override) Left Hand Space Drag | Binary/Button |  Complex interaction that gives priority over turn.|
+| (Optional Override) Right Hand Space Drag| Binary/Button |  Complex interaction that gives priority over turn.|
+| Swap Active Space Drag to Left Hand (Override) | Binary/Button |  Swaps the hand that is performing the drag to the left Hand|
+| Swap Active Space Drag to Right Hand (Override) | Binary/Button |  Swaps the hand that is performing the drag to the right Hand|
 | Gravity Toggle | Binary/Button |  Toggles Gravity state when pressed.|
 | Gravity Reverse | Binary/Button |  Temporarily Reverses Gravity while held.|
 | Reset Offsets | Binary/Button |  Resets your offset and rotation to 0.|
