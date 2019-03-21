@@ -162,7 +162,6 @@
         "/actions/haptic" : "Haptics",
         "/actions/music" : "Music",
         "/actions/misc" : "Misc",
-        "/actions/accessibility" : "Accessibility",
         "/actions/motion" : "Motion",
 
         "/actions/music/in/NextTrack" : "Play Next Track",
