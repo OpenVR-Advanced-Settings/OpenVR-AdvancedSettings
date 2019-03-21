@@ -51,7 +51,6 @@ namespace action_keys
 
     constexpr auto hapticsLeft = "/actions/haptic/out/HapticsLeft";
     constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
-    constexpr auto proxSensor = "/actions/haptic/in/ProxSensor";
 
 } // namespace action_keys
 
@@ -135,7 +134,6 @@ public:
 
     bool pushToTalk();
 
-    bool proxIsActive();
     vr::VRActionHandle_t leftHapticActionHandle();
     vr::VRActionHandle_t rightHapticActionHandle();
 
