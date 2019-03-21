@@ -3,14 +3,6 @@
    {
       "controller_type": "vive_controller",
       "binding_url": "default_action_manifests/vive_defaults.json"
-   },
-   {
-    "controller_type" : "generic",
-        "binding_url" : "default_action_manifests/generic_hmd_defaults.json"
-   },
-      {
-    "controller_type" : "vive",
-        "binding_url" : "default_action_manifests/vive_hmd_defaults.json"
    }
   ], 
   "actions": [
@@ -31,12 +23,6 @@
     },
     {
       "name": "/actions/music/in/StopTrack",
-      "requirement": "optional",
-      "type": "boolean"
-    },
-
-    {
-      "name": "/actions/haptic/in/ProxSensor",
       "requirement": "optional",
       "type": "boolean"
     },
@@ -176,7 +162,6 @@
         "/actions/haptic" : "Haptics",
         "/actions/music" : "Music",
         "/actions/misc" : "Misc",
-        "/actions/accessibility" : "Accessibility",
         "/actions/motion" : "Motion",
 
         "/actions/music/in/NextTrack" : "Play Next Track",
