@@ -40,16 +40,9 @@ namespace action_keys
     constexpr auto gravityToggle = "/actions/motion/in/GravityToggle";
     constexpr auto gravityReverse = "/actions/motion/in/GravityReverse";
     constexpr auto resetOffsets = "/actions/motion/in/ResetOffsets";
-<<<<<<< HEAD
-
-    constexpr auto heightToggle = "/actions/accessibility/in/HeightToggle";
-    constexpr auto snapTurnLeft = "/actions/accessibility/in/SnapTurnLeft";
-    constexpr auto snapTurnRight = "/actions/accessibility/in/SnapTurnRight";
-=======
     constexpr auto heightToggle = "/actions/motion/in/HeightToggle";
     constexpr auto snapTurnLeft = "/actions/motion/in/SnapTurnLeft";
     constexpr auto snapTurnRight = "/actions/motion/in/SnapTurnRight";
->>>>>>> master
 
     constexpr auto xAxisLockToggle = "/actions/misc/in/XAxisLockToggle";
     constexpr auto yAxisLockToggle = "/actions/misc/in/YAxisLockToggle";
