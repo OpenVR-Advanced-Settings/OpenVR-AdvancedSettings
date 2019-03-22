@@ -83,17 +83,17 @@ And you thought you were done?
 
 ### Odds and Ends.... and Haptics!
 
--	Haptics are a special Action. as it essentially tells the program which controller this haptic “action” belongs to.
--	The add/edit Haptics button will be  next to the add/edit chord button. [in our app haptics only exist in the “haptics” action set, as such you will want to set them.]
--	**YOU MUST HAVE AN EMPTY BINDING**, otherwise haptics will not be bind-able. Anything will do… even “unused” 
+- Haptics are a special Action. as it essentially tells the program which controller this haptic “action” belongs to.
+- The add/edit Haptics button will be  next to the add/edit chord button. [in our app haptics only exist in the “haptics” action set, as such you will want to set them.]
+- **YOU MUST HAVE AN EMPTY BINDING**, otherwise haptics will not be bind-able. Anything will do… even “unused” 
 (pic)
--	Other than that just place the appropriate haptic action in the appropriate spot!
+- Other than that just place the appropriate haptic action in the appropriate spot!
 
 ### But Wait it’s Broke!
 
--	We recommend a Separate bind for every action. Multiple actions to one bind can cause un-predictable behavior.
+- We recommend a Separate bind for every action. Multiple actions to one bind can cause un-predictable behavior.
 (pic)
--	This Guide Did not cover Legacy Applications or Simulated Actions, as the old input method is deprecated.
-
+- This Guide Did not cover Legacy Applications or Simulated Actions, as the old input method is deprecated.
+- We also include default bindings with our program, but it is impossible for us to include bindings for all controllers.
 
 
