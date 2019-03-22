@@ -11,7 +11,7 @@
 		!define THIRDDIR "..\third-party"
         !define PACKAGEDIR "..\src\package_files"
         !define PROJECTDIR "..\"
-        !define VERSION_STRING "2-8-0-dev"
+        !define VERSION_STRING "3-0-0-rc1"
 
         
     ;Installer icon

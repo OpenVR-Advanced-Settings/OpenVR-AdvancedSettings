@@ -3,14 +3,6 @@
    {
       "controller_type": "vive_controller",
       "binding_url": "default_action_manifests/vive_defaults.json"
-   },
-   {
-    "controller_type" : "generic",
-        "binding_url" : "default_action_manifests/generic_hmd_defaults.json"
-   },
-      {
-    "controller_type" : "vive",
-        "binding_url" : "default_action_manifests/vive_hmd_defaults.json"
    }
   ], 
   "actions": [
@@ -31,12 +23,6 @@
     },
     {
       "name": "/actions/music/in/StopTrack",
-      "requirement": "optional",
-      "type": "boolean"
-    },
-
-    {
-      "name": "/actions/haptic/in/ProxSensor",
       "requirement": "optional",
       "type": "boolean"
     },
@@ -178,7 +164,6 @@
         "/actions/haptic" : "Haptics",
         "/actions/music" : "Music",
         "/actions/misc" : "Misc",
-        "/actions/accessibility" : "Accessibility",
         "/actions/motion" : "Motion",
 
         "/actions/music/in/NextTrack" : "Play Next Track",
@@ -186,8 +171,9 @@
         "/actions/music/in/PausePlayTrack" : "Pause/Play Track",
         "/actions/music/in/StopTrack" : "Stop Track",
 
-        "/actions/motion/out/HapticsLeft" : "Haptics Left",
-        "/actions/motion/out/HapticsRight" : " Haptics Right",
+        "/actions/haptic/out/HapticsLeft" : "Haptics Left",
+        "/actions/haptic/out/HapticsRight" : " Haptics Right",
+		
         "/actions/motion/in/LeftHandSpaceTurn" : "Left Hand Space Turn",
         "/actions/motion/in/RightHandSpaceTurn" : "Right Hand Space Turn",
         "/actions/motion/in/LeftHandSpaceDrag" : "Left Hand Space Drag",
@@ -201,10 +187,9 @@
         "/actions/motion/in/GravityToggle" : "Gravity Toggle",
         "/actions/motion/in/GravityReverse" : "Gravity Reverse",
         "/actions/motion/in/ResetOffsets" : "Reset Offsets",
-        
-        "/actions/accessibility/in/HeightToggle" : "Height Toggle",
-        "/actions/accessibility/in/SnapTurnLeft" : "Snap-Turn Left",
-        "/actions/accessibility/in/SnapTurnRight" : "Snap-Turn Right",
+        "/actions/motion/in/HeightToggle" : "Height Toggle",
+        "/actions/motion/in/SnapTurnLeft" : "Snap-Turn Left",
+        "/actions/motion/in/SnapTurnRight" : "Snap-Turn Right",
         
         "/actions/misc/in/XAxisLockToggle" : "X-Axis Lock Toggle",
         "/actions/misc/in/YAxisLockToggle" : "Y-Axis Lock Toggle",
