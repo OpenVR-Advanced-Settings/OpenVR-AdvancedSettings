@@ -23,6 +23,7 @@
  >   * [Utilities Page](#utilities_page)
  >   * [Statistics Page](#statistics_page)
  >   * [Settings Page](#settings_page)
+ > * [SteamVR Input Guide](#steamvr_input_guide)
  > * [How To Compile](#how_to_compile)
  >   * [Building on Windows](#building_on_windows)
  >   * [Building on Linux](#building_on_linux)
@@ -309,6 +310,11 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 
 - **Autostart:** Allows you to enable/disable auto start.
 - **Force Revive Page:** Force the Revive page button on the root page to be visible.
+
+<a name="steamvr_input_guide"></a>
+# SteamVR Input Guide
+
+A Guide to the SteamVR Input System can be found [here](docs/SteamVRInputGuide.md)
 
 <a name="how_to_compile"></a>
 # How to Compile
