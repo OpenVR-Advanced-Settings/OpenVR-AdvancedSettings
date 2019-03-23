@@ -17,8 +17,8 @@
  >   * [Chaperone Page](#chaperone_page)
  >   * [Chaperone Proximity Warning Settings Page](#chaperone_proximity_page)
  >   * [Space Offset](#play_space_page)
- >   * [Space Fix Page](#space_fix_page)
  >   * [Motion Page](#motion_page)
+ >   * [Space Fix Page](#space_fix_page)
  >   * [Audio Page](#audio_page)
  >   * [Utilities Page](#utilities_page)
  >   * [Statistics Page](#statistics_page)
@@ -192,7 +192,6 @@ These version are not stable and this should be considered for advanced users on
 - **Enable Manual Supersampling Override**: Enables user control of Supersampling, instead of SteamVR auto profiles.
 - **Enable Motion Smoothing**: Enables Motion Smoothing, and disables asynchronous reprojection.
 - **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
-
 <a name="chaperone_page"></a>
 ## - Chaperone Page:
 
@@ -228,20 +227,9 @@ These version are not stable and this should be considered for advanced users on
 
 ![Play Space Page](docs/screenshots/OffsetPage.png)
 
-Allows to temporarily move and rotate the center of the playspace. This allows to reach interaction elements that are just inside our real-world walls or otherwise inaccessible (e.g. when your playspace is smaller than the recommended one). Can also be used to discover the terrors that lie outside of the intended playspace (ever wondered what's behind the door in The Lab?).
+Allows users to temporarily move and rotate the center of the playspace. This allows to reach interaction elements that are just outside our real-world walls or otherwise inaccessible (e.g. when your playspace is smaller than the recommended one). Can also be used to discover the terrors that lie outside of the intended playspace (ever wondered what's behind the door in The Lab?).
 
-- **Adjust Chaperone**: When enabled then the chaperone bounds stay in place when the playspace is moved or rotated (so noone gets hurt). Depending on chaperone mode this may or may not adjust with height.
-
-<a name="space_fix_page"></a>
-## - Space Fix Page:
-
-![Playspace Fix Page](docs/screenshots/FloorFixPage.png)
-
-
-- **Fix Floor** Allows you to fix the height of your floor. Just place one controller on your floor and press the button.
-- **Recenter Playspace** Besides fixing the floor height, also recenters the place space around the controller on the floor.
-- **Undo Fix** Removes last "fix"
-- **Apply Space Settings Offsets as Center** Takes Values from Offsets page and re-caliberates center/rotation. **caution**
+- **Adjust Chaperone**: When enabled, the chaperone bounds stay accurate even when the playspace is moved or rotated (so noone gets hurt). Depending on chaperone mode this may or may not adjust with height.
 
 <a name="motion_page"></a>
 ## - Motion Page:
@@ -250,20 +238,30 @@ Allows to temporarily move and rotate the center of the playspace. This allows t
 
 - **Space Drag**: Allows shifting your playspace by dragging your controller, Binds must be set via SteamVR Input system.
   - **Enable Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
-  - **Drag Comfort Mode**: adds discrete "steps" to your movement, higher values will require more movement to snap to next position.
-- **Space Turn**: Allows rotating your playspace by rotating your controller, Bnids must be set via SteamVR Input system.
+  - **Drag Comfort Mode**: Limits the rate at which your movement updates, reducing smoothness so that perceived motion starts to feel more like mini-teleports. Higher values reduce smoothness more.
+- **Space Turn**: Allows rotating your playspace by rotating your controller. Binds must be set via SteamVR Input system.
   - **Enable Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
-  - **Turn Comfort Mode**: adds discrete "steps" to your rotation, higher values will require more rotation to snap to next position.
-- **Height Toggle**: Snaps you between two heights, can be bound via SteamVr Input System.
+  - **Turn Comfort Mode**: Limits the rate at which your rotation updates, reducing smoothness so that perceived rotation starts to feel more like mini-snap-turns. Higher values reduce smoothness more.
+- **Height Toggle**: Toggle between zero and an offset for gravity floor height. If gravity is inactive the user is also moved to this offset. (Example: allows for quick switching between a seated and standing height.) Can be bound via SteamVr Input System.
   - **On**: Current toggle state, Binds directly modify this.
   - **Height Offset**: The amount of the offset (+ is down.)
   - **Set From Y-Offset**: grabs the Y-Offset value from Offset Page.
-- **Gravity Settings**: Applies a gravity to your offset.
+- **Gravity Settings**: Provides a gravity and momentum simulation to dynamically move your space offset.
   - **On**: Current toggle state, Binds directly modify this.
-  - **Gravity Strength**: current downward acceleration in m/$s^2$, planet Buttons adjust to planets local gravity.
+  - **Gravity Strength**: Gravity simulation's downward acceleration in meters per second squared. Planet buttons provide quick settings for well known gravity strengths. Values can also be typed in directly.
   - **Save Momentum**: whether your momentum is saved between on/off toggles of gravity.
   - **fling Strength**: adjusts the strength at which you "throw" yourself with space drag feature.
-- **Snap Turn**: Allows snap turning of pre-set values or manually set value. Must bind actions via SteamVR Input interface.
+- **Snap Turn**: Allows snap (instant) turning by the specified angle. Can type in values or use the preset buttons for angles that neatly divide 360 degrees. Must bind actions via SteamVR Input interface.
+
+<a name="space_fix_page"></a>
+## - Space Fix Page:
+
+![Playspace Fix Page](docs/screenshots/FloorFixPage.png)
+
+- **Fix Floor** Allows you to fix the height of your floor. Just place one controller on your floor and press the button.
+- **Recenter Playspace** Besides fixing the floor height, also recenters the place space around the controller on the floor.
+- **Undo Fix** Removes last "fix"
+- **Apply Space Settings Offsets as Center** Takes current values from Offsets page and re-caliberates center/rotation. **Caution** The reset function will then refer to this location as the new zero location, overriding the old zero location.
   
 <a name="audio_page"></a>
 ## - Audio Page:
