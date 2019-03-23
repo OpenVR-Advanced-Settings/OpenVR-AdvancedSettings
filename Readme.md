@@ -119,7 +119,7 @@ Override actions will take priority over non-override actions during simultaneou
 | (Optional Override) Left Hand Space Drag | Binary/Button |  Override version: will activate instead of non-override during simultaneous activation.|
 | (Optional Override) Right Hand Space Drag| Binary/Button |  Override version: will activate instead of non-override during simultaneous activation.|
 | Swap Active Space Drag to Left Hand (Override) | Binary/Button |  Activates space drag on left controller only if right controller is currently active in space drag. (Useful for climbing motions)|
-| Swap Active Space Drag to Right Hand (Override) | Binary/Button |  Swaps the hand that is performing the drag to the right Hand.|
+| Swap Active Space Drag to Right Hand (Override) | Binary/Button | Activates space drag on right controller only if left controller is currently active in space drag. (Useful for climbing motions)|
 | Gravity Toggle | Binary/Button |  Toggles Gravity state when pressed.|
 | Gravity Reverse | Binary/Button |  Temporarily Reverses Gravity while held.|
 | Reset Offsets | Binary/Button |  Resets your offset and rotation to 0.|
