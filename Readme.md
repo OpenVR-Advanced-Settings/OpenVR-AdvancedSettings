@@ -16,10 +16,10 @@
  >   * [SteamVR Page](#steamvr_page)
  >   * [Chaperone Page](#chaperone_page)
  >   * [Chaperone Proximity Warning Settings Page](#chaperone_proximity_page)
- >   * [Play Space Page](#play_space_page)
- >   * [Playspace Fix Page](#playspace_fix_page)
+ >   * [Space Offset](#play_space_page)
+ >   * [Space Fix Page](#space_fix_page)
+ >   * [Motion Page](#motion_page)
  >   * [Audio Page](#audio_page)
- >   * [Revive Page](#revive_page)
  >   * [Utilities Page](#utilities_page)
  >   * [Statistics Page](#statistics_page)
  >   * [Settings Page](#settings_page)
@@ -47,17 +47,22 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 - Chaperone Proximity Warning: Several warning methods can be configured.
 - Chaperone Profiles: Allows to quickly switch chaperone geometry and settings while in VR.
 - Temporarily move and rotate the playspace.
-- Floor height fix.
+- Floor height fix, for knuckles and wands.
+- Floor Center fix.
 - Displays several performance statistics and other statistics (e.g. headset rotations).
 - Select the playback/mirror/recording audio device
 - Mute/unmute and set volume of audio mirror device.
 - Mute/unmute and set volume of microphone device.
-- Implements push-to-talk and allows to configure push-to-talk profiles.
+- Implements push-to-talk, and push-to-mute
 - Desktop mode shows a window on the desktop instead of a VR overlay.
-- Revive settings support (Requires [Revive 1.0.4+](https://github.com/LibreVR/Revive) for full functionality).
 - VR Keyboard Input Utilities
 - Simple Alarm Clock
-- Player height adjust toggle (Credits to mklim)
+- Player height adjust toggle
+- Snap Turn option.
+- Advanced Space Features: gravity, space-turn, and space-drag
+- Simple Media Player macro keybind
+- SteamVR Input Action System implemented for maximum control of keybinds.
+
 
 <a name="usage"></a>
 # Usage
@@ -107,12 +112,12 @@ Actions associated with motion tab, and motion.
 | Right Hand Space Turn  | Binary/Button |  Rotates PlaySpace based on right controller rotation while held. |
 | Left Hand Space Drag      | Binary/Button |   Rotates PlaySpace based on left controller rotation while held.|
 | Right Hand Space Drag  | Binary/Button |  Rotates PlaySpace based on right controller rotation while held.|
-| (Optional Override) Left Hand Space Turn | Binary/Button |  Complex interaction that gives priority over drag.|
-| (Optional Override) Right Hand Space Turn| Binary/Button |  Complex interaction that gives priority over drag.|
-| (Optional Override) Left Hand Space Drag | Binary/Button |  Complex interaction that gives priority over turn.|
-| (Optional Override) Right Hand Space Drag| Binary/Button |  Complex interaction that gives priority over turn.|
-| Swap Active Space Drag to Left Hand (Override) | Binary/Button |  Swaps the hand that is performing the drag to the left Hand|
-| Swap Active Space Drag to Right Hand (Override) | Binary/Button |  Swaps the hand that is performing the drag to the right Hand|
+| (Optional Override) Left Hand Space Turn | Binary/Button |  Complex interaction that takes priority over other actions.|
+| (Optional Override) Right Hand Space Turn| Binary/Button |  Complex interaction that takes priority over other actions.|
+| (Optional Override) Left Hand Space Drag | Binary/Button |  Complex interaction that takes priority over other actions.|
+| (Optional Override) Right Hand Space Drag| Binary/Button |  Complex interaction that takes priority over other actions.|
+| Swap Active Space Drag to Left Hand (Override) | Binary/Button |  Swaps the hand that is performing the drag to the left Hand.|
+| Swap Active Space Drag to Right Hand (Override) | Binary/Button |  Swaps the hand that is performing the drag to the right Hand.|
 | Gravity Toggle | Binary/Button |  Toggles Gravity state when pressed.|
 | Gravity Reverse | Binary/Button |  Temporarily Reverses Gravity while held.|
 | Reset Offsets | Binary/Button |  Resets your offset and rotation to 0.|
@@ -210,32 +215,55 @@ These version are not stable and this should be considered for advanced users on
 ![Chaperone Proximity Warning Settings Page](docs/screenshots/ChaperoneWarningPage.png)
 
 - **Switch to Beginner Mode**: Switches the chaperone bound's style to beginner mode when the user's distance to the chaperone falls below the configured activation distance.
-- **Trigger Haptic Feedback**: The left and right controller start vibrating when the user's distance to the chaperone falls below the configured activation distance.
+- **Trigger Haptic Feedback**: The left and right controller start vibrating when the user's distance to the chaperone falls below the configured activation distance. (HMD or controllers can trigger)
 - **Audio Warning**: Plays an alarm sound when the user's distance to the chaperone falls below the configured activation distance.
   - **Loop Audio**: Whether the audio alarm should only be played once or in a loop.
   - **Loop Audio**: Modify audio volume as a function of the user's distance to the chaperone.
 - **Open dashboard**: Opens the dashboard when the user's distance to the chaperone falls below the configured activation distance. The idea is to pause the game (most single-player games auto-pause when the dashboard is shown) to give the user time for reorientation.
 - **Velocity Dependent Fade/Activation Distance**: Dynamically modifies the chaperone's fade distance and the proximity warning's activation distance as a function of the player's speed. The used formula is: *distance = old_distance * ( 1 + distance_modifier * max(left_controller_speed, right_controller_speed, hmd_speed) )*
 
-<a name="play_space_page"></a>
-## - Play Space Page:
+<a name="space_offset_page"></a>
+## - Space Offset Page:
 
-![Play Space Page](docs/screenshots/PlayspacePage.png)
+![Play Space Page](docs/screenshots/OffsetPage.png)
 
 Allows to temporarily move and rotate the center of the playspace. This allows to reach interaction elements that are just inside our real-world walls or otherwise inaccessible (e.g. when your playspace is smaller than the recommended one). Can also be used to discover the terrors that lie outside of the intended playspace (ever wondered what's behind the door in The Lab?).
 
-- **Virtual Move Shortcut**: Allows moving the placespace center by holding down the application menu shortcut and moving the controller.
-- **Adjust Chaperone**: When enabled then the chaperone bounds stay in place when the playspace is moved or rotated (so noone gets hurt). Unfortunately this does not work when moving up/down.
+- **Adjust Chaperone**: When enabled then the chaperone bounds stay in place when the playspace is moved or rotated (so noone gets hurt). Depending on chaperone mode this may or may not adjust with height.
 
-<a name="playspace_fix_page"></a>
-## - Playspace Fix Page:
+<a name="space_fix_page"></a>
+## - Space Fix Page:
 
 ![Playspace Fix Page](docs/screenshots/FloorFixPage.png)
 
 
 - **Fix Floor** Allows you to fix the height of your floor. Just place one controller on your floor and press the button.
 - **Recenter Playspace** Besides fixing the floor height, also recenters the place space around the controller on the floor.
+- **Undo Fix** Removes last "fix"
+- **Apply Space Settings Offsets as Center** Takes Values from Offsets page and re-caliberates center/rotation. **caution**
 
+<a name="motion_page"></a>
+## - Motion Page:
+
+![Motion Page](docs/screenshots/MotionPage.png)
+
+- **Space Drag**: Allows shifting your playspace by dragging your controller, Binds must be set via SteamVR Input system.
+  - **Enable Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
+  - **Drag Comfort Mode**: adds discrete "steps" to your movement, higher values will require more movement to snap to next position.
+- **Space Turn**: Allows rotating your playspace by rotating your controller, Bnids must be set via SteamVR Input system.
+  - **Enable Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
+  - **Turn Comfort Mode**: adds discrete "steps" to your rotation, higher values will require more rotation to snap to next position.
+- **Height Toggle**: Snaps you between two heights, can be bound via SteamVr Input System.
+  - **On**: Current toggle state, Binds directly modify this.
+  - **Height Offset**: The amount of the offset (+ is down.)
+  - **Set From Y-Offset**: grabs the Y-Offset value from Offset Page.
+- **Gravity Settings**: Applies a gravity to your offset.
+  - **On**: Current toggle state, Binds directly modify this.
+  - **Gravity Strength**: current downward acceleration in m/$s^2$, planet Buttons adjust to planets local gravity.
+  - **Save Momentum**: whether your momentum is saved between on/off toggles of gravity.
+  - **fling Strength**: adjusts the strength at which you "throw" yourself with space drag feature.
+- **Snap Turn**: Allows snap turning of pre-set values or manually set value. Must bind actions via SteamVR Input interface.
+  
 <a name="audio_page"></a>
 ## - Audio Page:
 
@@ -244,36 +272,12 @@ Allows to temporarily move and rotate the center of the playspace. This allows t
 - **Playback Device**: Allows to select the playback device.
 - **Mirror Device**: Allows to select the mirror device, set its volume and to mute/unmute it.
 - **Microphone**: Allows to select the microphone device, set its volume and to mute/unmute it.
-- **Proximity Sensor Mutes/Unmutes Microphone**: Allows the proximity sensor to mute the microphone when the user is not wearing the HMD, and to unmute it when the user is wearing the HMD.
 - **Push-to-Talk**: Enable/disable push-to-talk. When push-to-talk is activated the microphone gets muted unless the Push To Talk action is activated.
 - **Show Notification**: Shows a notification icon in the headset when the Push To Talk action is activated.
-- **Push-to-Mute**: Inverse push-to-talk. The Microphone is unmuted by default and muted when any of the configured buttons is pressed.
+- **Push-to-Mute**: Inverse push-to-talk. The Microphone is unmuted by default and muted when the keybind is pressed.
+  - **NOTE**: The Push-to-talk box must be enabled for this feature to work.
 - **Audio Profile**: Allows you to apply/define/delete audio profiles that save playback devices, mute state, and volume.
 
-<a name="revive_page"></a>
-## - Revive Page:
-
-![Revive Page](docs/screenshots/RevivePage.png)
-
-**The Revive page is not currently being maintained. Features may not be stable, performant or actually work.**
-
-The Revive page is only visible when the [Revive overlay](https://github.com/LibreVR/Revive) is installed. In case an installed Revive overlay is not correctly detected you can force the Revive page in the settings.
-
-Any changes to controller settings are immediately applied by Revive (Requires Revive 1.0.4+).
-
-- **Render Target Override**: Overrides the Oculus-side render target (aka supersampling). Enabling it prevents Oculus applications from dynamically modifying this value. Warning: Is applied on top of the SteamVR supersampling value. (pixelsPerDisplayPixel setting in the vrsettings file)
-- **Grip Button mode**: Allows to set the grip button mode. (ToggleGrip setting in the vrsettings file)
-- **Toggle Delay**: Allows to configure the toggle delay. (ToggleDelay setting in the vrsettings file)
-- **Trigger As Grip**:  Swaps the trigger and grip. (TriggerAsGrip setting in the vrsettings file)
-- **Deadzone**: Allows to modify the simulated thumbsticks' deadzone. (ThumbDeadzone setting in the vrsettings file)
-- **Sensitivity**: Allows to modify the simulated thumbsticks' sensitivity. (ThumbSensitivity setting the vrsettings file)
-- **Yaw**: Allows to modify the touch controllers yaw orientation. (TouchYaw setting the vrsettings file)
-- **Pitch**: Allows to modify the touch controllers pitch orientation. (TouchPitch setting the vrsettings file)
-- **Roll**: Allows to modify the touch controllers roll orientation. (TouchRoll setting the vrsettings file)
-- **X**: Allows to modify the touch controllers x-offset. (TouchX setting the vrsettings file)
-- **Y**: Allows to modify the touch controllers y-offset. (TouchY setting the vrsettings file)
-- **Z**: Allows to modify the touch controllers z-offset. (TouchZ setting the vrsettings file)
-- **Controller Profile**: Allows to apply/define/delete controller profiles that save the controller settings (grip button mode, deadzone, sensitivity, pitch/yaw/roll and x/y/z-offsets).
 
 <a name="utilities_page"></a>
 ## - Utilities Page:
@@ -284,7 +288,7 @@ Any changes to controller settings are immediately applied by Revive (Requires R
 
 - **Alarm Clock:** Just a simple alarm clock so you don't miss important appointments. VR can sure mess up perception of time. Does not work in desktop mode.
 
-- **Steam Desktop Overlay Width:** Allows to increase the size of the Steam desktop overlay. Useful for multi-monitor setups.
+- **Steam Desktop Overlay Width:** Allows to increase the size of the Steam desktop overlay. Useful for multi-monitor setups. It is saved between sessions.
 
 - **Media Control Keys:** Allows controlling a media player through the media keys. This is the same as having a keyboard with media keys and then pressing them. Should support most common media players.
 
