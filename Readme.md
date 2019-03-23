@@ -116,7 +116,7 @@ Override actions will take priority over non-override actions during simultaneou
 | Right Hand Space Drag  | Binary/Button |  Moves PlaySpace based on right controller position while held.|
 | (Optional Override) Left Hand Space Turn | Binary/Button |  Override version: will activate instead of non-override during simultaneous activation.|
 | (Optional Override) Right Hand Space Turn| Binary/Button |  Override version: will activate instead of non-override during simultaneous activation.|
-| (Optional Override) Left Hand Space Drag | Binary/Button |  Complex interaction that takes priority over other actions.|
+| (Optional Override) Left Hand Space Drag | Binary/Button |  Override version: will activate instead of non-override during simultaneous activation.|
 | (Optional Override) Right Hand Space Drag| Binary/Button |  Complex interaction that takes priority over other actions.|
 | Swap Active Space Drag to Left Hand (Override) | Binary/Button |  Activates space drag on left controller only if right controller is currently active in space drag. (Useful for climbing motions)|
 | Swap Active Space Drag to Right Hand (Override) | Binary/Button |  Swaps the hand that is performing the drag to the right Hand.|
