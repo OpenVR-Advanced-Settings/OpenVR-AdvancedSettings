@@ -107,6 +107,7 @@ Actions associated with media player.
 
 Actions associated with motion tab, and motion.
 
+Override actions will take priority over non-override actions during simultaneous activation. Example: binding space turn to single click and space drag (override) to double click on the same physical button.
 |    Action     |     Type      |  Explanation  |
 | ------------- | ------------- |  ------------ |
 | Left Hand Space Turn      | Binary/Button | Rotates PlaySpace based on left controller rotation while held.|
