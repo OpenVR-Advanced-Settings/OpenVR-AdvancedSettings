@@ -320,7 +320,8 @@ Allows to temporarily move and rotate the center of the playspace. This allows t
 # SteamVR Input Guide
 
 A Guide to the SteamVR Input System can be found [here](docs/SteamVRInputGuide.md)
-Or a Video guide by Kung can be found [here](https://youtu.be/2ZHdjOfnqOU)
+
+**Or** a Video guide by Kung can be found [here](https://youtu.be/2ZHdjOfnqOU)
 
 <a name="how_to_compile"></a>
 # How to Compile
