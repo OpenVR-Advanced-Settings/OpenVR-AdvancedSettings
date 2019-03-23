@@ -18,6 +18,14 @@ MyStackViewPage {
             }
         }
 
+        MyToggleButton {
+            id: forceReviveToggle
+            text: "Force Revive Page"
+            onCheckedChanged: {
+                SettingsTabController.setForceRevivePage(checked, true)
+            }
+        }
+
         Item {
             Layout.fillHeight: true
         }
