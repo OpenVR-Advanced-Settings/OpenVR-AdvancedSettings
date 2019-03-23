@@ -62,6 +62,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 - Advanced Space Features: gravity, space-turn, and space-drag
 - Simple Media Player macro keybind
 - SteamVR Input Action System implemented for maximum control of keybinds.
+- Removed forced on Die-in-Game Die-in-Life setting.
 
 
 <a name="usage"></a>
@@ -313,12 +314,13 @@ Allows to temporarily move and rotate the center of the playspace. This allows t
 ![Settings Page](docs/screenshots/SettingsPage.png)
 
 - **Autostart:** Allows you to enable/disable auto start.
-- **Force Revive Page:** Force the Revive page button on the root page to be visible.
+- **Force Revive Page:** No Longer Supported Does Nothing.
 
 <a name="steamvr_input_guide"></a>
 # SteamVR Input Guide
 
 A Guide to the SteamVR Input System can be found [here](docs/SteamVRInputGuide.md)
+Or a Video guide by Kung can be found [here](https://youtu.be/2ZHdjOfnqOU)
 
 <a name="how_to_compile"></a>
 # How to Compile
