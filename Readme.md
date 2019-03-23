@@ -107,22 +107,23 @@ Actions associated with media player.
 
 Actions associated with motion tab, and motion.
 
+Override actions will take priority over non-override actions during simultaneous activation. Example: binding space turn to single click and space drag (override) to double click on the same physical button.
 |    Action     |     Type      |  Explanation  |
 | ------------- | ------------- |  ------------ |
 | Left Hand Space Turn      | Binary/Button | Rotates PlaySpace based on left controller rotation while held.|
 | Right Hand Space Turn  | Binary/Button |  Rotates PlaySpace based on right controller rotation while held. |
-| Left Hand Space Drag      | Binary/Button |   Rotates PlaySpace based on left controller rotation while held.|
-| Right Hand Space Drag  | Binary/Button |  Rotates PlaySpace based on right controller rotation while held.|
-| (Optional Override) Left Hand Space Turn | Binary/Button |  Complex interaction that takes priority over other actions.|
-| (Optional Override) Right Hand Space Turn| Binary/Button |  Complex interaction that takes priority over other actions.|
-| (Optional Override) Left Hand Space Drag | Binary/Button |  Complex interaction that takes priority over other actions.|
-| (Optional Override) Right Hand Space Drag| Binary/Button |  Complex interaction that takes priority over other actions.|
-| Swap Active Space Drag to Left Hand (Override) | Binary/Button |  Swaps the hand that is performing the drag to the left Hand.|
-| Swap Active Space Drag to Right Hand (Override) | Binary/Button |  Swaps the hand that is performing the drag to the right Hand.|
+| Left Hand Space Drag      | Binary/Button |   Moves PlaySpace based on left controller position while held.|
+| Right Hand Space Drag  | Binary/Button |  Moves PlaySpace based on right controller position while held.|
+| (Optional Override) Left Hand Space Turn | Binary/Button |  Override version: will activate instead of non-override during simultaneous activation.|
+| (Optional Override) Right Hand Space Turn| Binary/Button |  Override version: will activate instead of non-override during simultaneous activation.|
+| (Optional Override) Left Hand Space Drag | Binary/Button |  Override version: will activate instead of non-override during simultaneous activation.|
+| (Optional Override) Right Hand Space Drag| Binary/Button |  Override version: will activate instead of non-override during simultaneous activation.|
+| Swap Active Space Drag to Left Hand (Override) | Binary/Button |  Activates space drag on left controller only if right controller is currently active in space drag. (Useful for climbing motions)|
+| Swap Active Space Drag to Right Hand (Override) | Binary/Button | Activates space drag on right controller only if left controller is currently active in space drag. (Useful for climbing motions)|
 | Gravity Toggle | Binary/Button |  Toggles Gravity state when pressed.|
 | Gravity Reverse | Binary/Button |  Temporarily Reverses Gravity while held.|
 | Reset Offsets | Binary/Button |  Resets your offset and rotation to 0.|
-| Height Toggle | Binary/Button |  Toggles between your current height and an offset.|
+| Height Toggle | Binary/Button |  Shifts the gravity floor level by offset configured in motion tab. If gravity is inactive: also shifts the user's current y-axis position by offset configured in motion tab.|
 | Snap-Turn Left | Binary/Button |  Rotates a set value to the left based on settings in motion tab.|
 | Snap-Turn Right | Binary/Button |  Rotates a set value to the right based on settings in motion tab.|
 
