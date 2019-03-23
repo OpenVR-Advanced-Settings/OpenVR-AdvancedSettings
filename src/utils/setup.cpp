@@ -187,7 +187,8 @@ void reinstallApplicationManifest( const std::string manifestPath )
 // "--force-no-manifest". The OpenVR initialization is necessary for both
 // removing and installing manifests.
 [[noreturn]] void handleManifests( const bool installManifest,
-                                   const bool removeManifest ) {
+                                   const bool removeManifest )
+{
     openvr_init::initializeOpenVR(
         openvr_init::OpenVrInitializationType::Utility );
 
