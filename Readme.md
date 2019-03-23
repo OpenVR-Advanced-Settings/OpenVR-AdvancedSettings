@@ -114,7 +114,7 @@ Override actions will take priority over non-override actions during simultaneou
 | Right Hand Space Turn  | Binary/Button |  Rotates PlaySpace based on right controller rotation while held. |
 | Left Hand Space Drag      | Binary/Button |   Moves PlaySpace based on left controller position while held.|
 | Right Hand Space Drag  | Binary/Button |  Moves PlaySpace based on right controller position while held.|
-| (Optional Override) Left Hand Space Turn | Binary/Button |  Complex interaction that takes priority over other actions.|
+| (Optional Override) Left Hand Space Turn | Binary/Button |  Override version: will activate instead of non-override during simultaneous activation.|
 | (Optional Override) Right Hand Space Turn| Binary/Button |  Complex interaction that takes priority over other actions.|
 | (Optional Override) Left Hand Space Drag | Binary/Button |  Complex interaction that takes priority over other actions.|
 | (Optional Override) Right Hand Space Drag| Binary/Button |  Complex interaction that takes priority over other actions.|
