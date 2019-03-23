@@ -9,14 +9,7 @@ void SettingsTabController::initStage1()
 {
     m_autoStartEnabled = vr::VRApplications()->GetApplicationAutoLaunch(
         application_strings::applicationKey );
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "applicationSettings" );
-    auto value = settings->value( "forceRevivePage", m_forceRevivePage );
-    settings->endGroup();
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_forceRevivePage = value.toBool();
-    }
+
 }
 
 void SettingsTabController::initStage2( OverlayController* var_parent,
@@ -64,28 +57,6 @@ void SettingsTabController::setAutoStartEnabled( bool value, bool notify )
         if ( notify )
         {
             emit autoStartEnabledChanged( m_autoStartEnabled );
-        }
-    }
-}
-
-bool SettingsTabController::forceRevivePage() const
-{
-    return m_forceRevivePage;
-}
-
-void SettingsTabController::setForceRevivePage( bool value, bool notify )
-{
-    if ( m_forceRevivePage != value )
-    {
-        m_forceRevivePage = value;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "applicationSettings" );
-        settings->setValue( "forceRevivePage", m_forceRevivePage );
-        settings->endGroup();
-        settings->sync();
-        if ( notify )
-        {
-            emit forceRevivePageChanged( m_forceRevivePage );
         }
     }
 }
