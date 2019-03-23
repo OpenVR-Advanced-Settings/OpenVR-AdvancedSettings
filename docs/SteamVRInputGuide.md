@@ -24,6 +24,7 @@
 ### Binding UI
 
 ![Binding Overview](screenshots/guide/bindingoverview.png)
+
 - A – Action sets, these tabs essentially let programmers have different keybinds for different events… say you may want different controls if you are driving a car versus running around. [In Advanced Settings we simply use them as a grouping utility, and ALL action sets are active ALL the time.]
 - B – Input options – your “buttons”
 - C – Chords/ Special Binds. More on these later.
@@ -34,15 +35,21 @@
 In this example we are going to use the "grip" button on a vive wand.
 
 - First WE click the  [+] on the grip line to create an emtpy binding
+
 ![Grip Plus](screenshots/guide/gripplus.png)
+
 - We then select the behavior of the button.
+
 ![Button Type](screenshots/guide/buttontype.png)
+
   - Button – action is active when button is pressed
   - Toggle Button – Action toggles state when button is pressed i.e. on until pressed again
   - Set Analog Action – for Actions that are not binary i.e. trigger is pressed 50%
 - Now we select our action for the button “click” By Clicking the “none” box.
 - Upon Clicking it a popup will let us choose the desired action.
+
 ![Action List](screenshots/guide/actionlist.png)
+
 - Now Simply Click the Checkmark to save changes, and you should be good to go!
 
 ### Advanced Bindings
@@ -50,15 +57,21 @@ In this example we are going to use the "grip" button on a vive wand.
 And you thought you were done?
 
 - First we will start by editing an action, hover over a set action and click the pen
+
 ![Edit Action](screenshots/guide/actionlist.png)
+
 - Now you will notice two important things the “more options” and the cog.
 - The Cog allows you to set up haptics for activating an action 
+
 ![Edit Action Haptics](screenshots/guide/actionhaptics.png)
+
   - Amplitude - how powerful 0-100% the haptics should be.
   - Duration – how long it will last 0-4 seconds.
   - Frequency – The frequency/”feel” of the vibration
 - But What about the “more options?!”
+
 ![More Options](screenshots/guide/moreoptions.png)
+
   - Single – single click
   - Double – double click (about .25 seconds in between clicks max)
   - Long Hold – Long hold ~1-2 seconds
@@ -71,28 +84,37 @@ And you thought you were done?
  **The Combo Maker!** Chords are just that, they allow you to combine a combination of Keys to do an action for example a Grip + trigger + trackpad Press.
  
 **NOTE:** For you to be able to select a button in the chord menu you need to have clicked the [+] for the button and have an empty slot like below, And the behavior (toggle/Button etc.) must also be correct.
+
 ![Empty Action](screenshots/guide/emptyaction.png)
 
 - Make sure you have empty Bindings or a binding for all keys you will want to use in your chord, then click the “Add Chords” followed by “Add New Chord”.
 - You will be prompted for an action, select the result of your chord.
 - You will Now see the prototype for your chord and can add inputs as you desire
+
 ![Chord Prototype](screenshots/guide/chordproto.png)
+
 - And keep adding if you want to make sure you really don’t accidently press it!
+
 ![Chord Complete](screenshots/guide/chordcomplete.png)
+
 - That’s is it add more or close and you are done!
 
 ### Odds and Ends.... and Haptics!
 
 - Haptics are a special Action. as it essentially tells the program which controller this haptic “action” belongs to.
 - The add/edit Haptics button will be  next to the add/edit chord button. [in our app haptics only exist in the “haptics” action set, as such you will want to set them.]
-- **YOU MUST HAVE AN EMPTY BINDING**, otherwise haptics will not be bind-able. Anything will do… even “unused” 
+- **YOU MUST HAVE AN EMPTY BINDING**, otherwise haptics will not be bind-able. Anything will do… even “unused”
+
 ![Empty Action](screenshots/guide/emptyaction.png)
+
 - Other than that just place the appropriate haptic action in the appropriate spot!
 
 ### But Wait it’s Broke!
 
 - We recommend a Separate bind for every action. Multiple actions to one bind can cause un-predictable behavior.
+
 ![Multiple Actions](screenshots/guide/multipleactions.png)
+
 - This Guide Did not cover Legacy Applications or Simulated Actions, as the old input method is deprecated.
 - We also include default bindings with our program, but it is impossible for us to include bindings for all controllers.
 
