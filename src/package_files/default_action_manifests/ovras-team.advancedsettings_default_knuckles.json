@@ -1,0 +1,109 @@
+{
+   "alias_info" : {},
+   "app_key" : "ovras-team.advancedsettings",
+   "bindings" : {
+      "/actions/haptic" : {
+         "haptics" : [
+            {
+               "output" : "/actions/haptic/out/hapticsleft",
+               "path" : "/user/hand/left/output/haptic"
+            },
+            {
+               "output" : "/actions/haptic/out/hapticsright",
+               "path" : "/user/hand/right/output/haptic"
+            }
+         ],
+         "sources" : [
+            {
+               "inputs" : {},
+               "mode" : "none",
+               "path" : "/user/hand/left/input/b"
+            },
+            {
+               "inputs" : {},
+               "mode" : "none",
+               "path" : "/user/hand/right/input/b"
+            }
+         ]
+      },
+      "/actions/main" : {
+         "sources" : []
+      },
+      "/actions/misc" : {
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/misc/in/pushtotalk"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/trigger"
+            }
+         ]
+      },
+      "/actions/motion" : {
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/lefthandspaceturn"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/b"
+            },
+            {
+               "inputs" : {
+                  "double" : {
+                     "output" : "/actions/motion/in/optionaloverridelefthandspacedrag"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/b"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/swapspacedragtolefthandoverride"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/b"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/righthandspaceturn"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/b"
+            },
+            {
+               "inputs" : {
+                  "double" : {
+                     "output" : "/actions/motion/in/optionaloverriderighthandspacedrag"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/b"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/swapspacedragtorighthandoverride"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/b"
+            }
+         ]
+      }
+   },
+   "controller_type" : "knuckles",
+   "description" : "",
+   "name" : "OVRAS Knuckles Default",
+   "options" : {},
+   "simulated_actions" : []
+}

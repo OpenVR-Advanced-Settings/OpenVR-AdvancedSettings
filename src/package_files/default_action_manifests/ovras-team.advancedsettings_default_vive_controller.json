@@ -1,0 +1,112 @@
+{
+   "alias_info" : {},
+   "app_key" : "ovras-team.advancedsettings",
+   "bindings" : {
+      "/actions/haptic" : {
+         "haptics" : [
+            {
+               "output" : "/actions/haptic/out/hapticsleft",
+               "path" : "/user/hand/left/output/haptic"
+            },
+            {
+               "output" : "/actions/haptic/out/hapticsright",
+               "path" : "/user/hand/right/output/haptic"
+            }
+         ],
+         "sources" : [
+            {
+               "inputs" : {},
+               "mode" : "none",
+               "path" : "/user/hand/left/input/application_menu"
+            },
+            {
+               "inputs" : {},
+               "mode" : "none",
+               "path" : "/user/hand/right/input/application_menu"
+            }
+         ]
+      },
+      "/actions/main" : {
+         "sources" : []
+      },
+      "/actions/misc" : {
+         "sources" : [
+            {
+               "inputs" : {
+                  "south" : {
+                     "output" : "/actions/misc/in/pushtotalk"
+                  }
+               },
+               "mode" : "dpad",
+               "parameters" : {
+                  "sub_mode" : "click"
+               },
+               "path" : "/user/hand/right/input/trackpad"
+            }
+         ]
+      },
+      "/actions/motion" : {
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/lefthandspaceturn"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/application_menu"
+            },
+            {
+               "inputs" : {
+                  "double" : {
+                     "output" : "/actions/motion/in/optionaloverridelefthandspacedrag"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/application_menu"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/righthandspaceturn"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/application_menu"
+            },
+            {
+               "inputs" : {
+                  "double" : {
+                     "output" : "/actions/motion/in/optionaloverriderighthandspacedrag"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/application_menu"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/swapspacedragtorighthandoverride"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/application_menu"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/swapspacedragtolefthandoverride"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/application_menu"
+            }
+         ]
+      }
+   },
+   "controller_type" : "vive_controller",
+   "description" : "",
+   "name" : "OVRAS Vive Wand Default",
+   "options" : {},
+   "simulated_actions" : []
+}
