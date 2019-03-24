@@ -327,7 +327,7 @@ A Guide to the SteamVR Input System can be found [here](docs/SteamVRInputGuide.m
 <a name="default_bindings"></a>
 # Default Bindings
 
-##Vive Wands
+## Vive Wands
 
 - Menu Button (both hands)
   - **Single Click**: Space Turn (respective hand)
@@ -337,7 +337,7 @@ A Guide to the SteamVR Input System can be found [here](docs/SteamVRInputGuide.m
   - **D-pad Down click**: Push-to-Talk
 - Haptics bound
 
-##Knuckles
+## Knuckles
 
 - B Button (both hands)
   - **Single Click**: Space Turn (respective hand)
