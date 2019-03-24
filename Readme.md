@@ -24,6 +24,7 @@
  >   * [Statistics Page](#statistics_page)
  >   * [Settings Page](#settings_page)
  > * [SteamVR Input Guide](#steamvr_input_guide)
+ > * [Default Bindings](#default_bindings)
  > * [How To Compile](#how_to_compile)
  >   * [Building on Windows](#building_on_windows)
  >   * [Building on Linux](#building_on_linux)
@@ -322,6 +323,33 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 A Guide to the SteamVR Input System can be found [here](docs/SteamVRInputGuide.md)
 
 **Or** a Video guide by Kung can be found [here](https://youtu.be/2ZHdjOfnqOU)
+
+<a name="default_bindings"></a>
+# Default Bindings
+
+##Vive Wands
+
+- Menu Button (both hands)
+  - **Single Click**: Space Turn (respective hand)
+  - **Double Click**: Space Drag (override) (respective hand)
+  - **Single Click**: Swap Active Space Drag (override) (respective hand)
+- TrackPad (right hand)
+  - **D-pad Down click**: Push-to-Talk
+- Haptics bound
+
+##Knuckles
+
+- B Button (both hands)
+  - **Single Click**: Space Turn (respective hand)
+  - **Double Click**: Space Drag (override) (respective hand)
+  - **Single Click**: Swap Active Space Drag (override) (respective hand)
+- Trigger (left hand)
+  - **Click**: Push-to-Talk
+- Haptics bound
+
+## Other Controllers
+
+No current default bindings you will have to make your own.
 
 <a name="how_to_compile"></a>
 # How to Compile
