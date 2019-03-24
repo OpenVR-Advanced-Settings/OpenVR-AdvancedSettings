@@ -2,7 +2,11 @@
   "default_bindings": [
    {
       "controller_type": "vive_controller",
-      "binding_url": "default_action_manifests/vive_defaults.json"
+      "binding_url": "default_action_manifests/ovras-team.advancedsettings_default_vive_controller.json"
+   },
+   {
+      "controller_type": "knuckles",
+      "binding_url": "default_action_manifests/ovras-team.advancedsettings_default_knuckles.json"
    }
   ], 
   "actions": [
