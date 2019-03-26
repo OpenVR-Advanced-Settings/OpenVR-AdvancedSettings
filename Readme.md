@@ -9,6 +9,8 @@
  >   * [Installer](#installer)
  >   * [Standalone](#standalone)
  >   * [Bindings](#bindings)
+ >   * [Default Bindings](#default_bindings)
+ >   * [SteamVR Input Guide](#steamvr_input_guide)
  >   * [Command Line Arguments](#command_line_arguments)
  >   * [Preview Builds](#preview_builds)
  > * [Documentation](#documentation)
@@ -23,7 +25,6 @@
  >   * [Utilities Page](#utilities_page)
  >   * [Statistics Page](#statistics_page)
  >   * [Settings Page](#settings_page)
- > * [SteamVR Input Guide](#steamvr_input_guide)
  > * [How To Compile](#how_to_compile)
  >   * [Building on Windows](#building_on_windows)
  >   * [Building on Linux](#building_on_linux)
@@ -89,7 +90,6 @@ To upgrade an existing installation first stop SteamVR and delete the old applic
 
 After SteamVR beta 1.3.1 the bindings for Advanced Settings will show up in the bindings menu.
 
-By default no buttons are bound. TODO
 
 The following actions currently exist:
 ### Music
@@ -147,6 +147,42 @@ Actions to be handled by the system.
 | ------------- | ------------- |  ------------ |
 | Haptics Left | Vibration | Handle for haptic events on the Left Controller. |
 | Haptics Right | Vibration | Handle for haptic events on the Right Controller. |
+
+
+<a name="default_bindings"></a>
+## Default Bindings
+
+### Vive Wands
+
+- Menu Button (both hands)
+  - **Single Click**: Space Turn (respective hand)
+  - **Double Click**: Space Drag (override) (respective hand)
+  - **Single Click**: Swap Active Space Drag (override) (respective hand)
+- TrackPad (right hand)
+  - **D-pad Down click**: Push-to-Talk
+- Haptics bound
+
+### Knuckles
+
+- B Button (both hands)
+  - **Single Click**: Space Turn (respective hand)
+  - **Double Click**: Space Drag (override) (respective hand)
+  - **Single Click**: Swap Active Space Drag (override) (respective hand)
+- Trigger (left hand)
+  - **Click**: Push-to-Talk
+- Haptics bound
+
+### Other Controllers
+
+No current default bindings you will have to make your own.
+
+
+<a name="steamvr_input_guide"></a>
+## SteamVR Input Guide
+
+A Guide to the SteamVR Input System can be found [here](docs/SteamVRInputGuide.md)
+
+**Or** a Video guide by Kung can be found [here](https://youtu.be/2ZHdjOfnqOU)
 
 <a name="command_line_arguments"></a>
 ## Command Line Arguments
@@ -315,13 +351,6 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 
 - **Autostart:** Allows you to enable/disable auto start.
 - **Force Revive Page:** No Longer Supported Does Nothing.
-
-<a name="steamvr_input_guide"></a>
-# SteamVR Input Guide
-
-A Guide to the SteamVR Input System can be found [here](docs/SteamVRInputGuide.md)
-
-**Or** a Video guide by Kung can be found [here](https://youtu.be/2ZHdjOfnqOU)
 
 <a name="how_to_compile"></a>
 # How to Compile
