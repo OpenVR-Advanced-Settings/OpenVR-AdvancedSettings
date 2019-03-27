@@ -1487,7 +1487,8 @@ void MoveCenterTabController::saveUncommittedChaperone()
     {
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
-        vr::VRChaperoneSetup()->HideWorkingSetPreview();
+        // test removal for oculus and WMR users
+        // vr::VRChaperoneSetup()->HideWorkingSetPreview();
         m_chaperoneCommitted = true;
     }
 }
