@@ -161,7 +161,10 @@ void FixFloorTabController::eventLoopTick(
                         floorOffsetY;
                         */
                     }
-                    floorOffsetY = static_cast<float>( tempOffsetY );
+                    else
+                    {
+                        floorOffsetY = static_cast<float>( tempOffsetY );
+                    }
                 }
                 else
                 {
@@ -188,7 +191,10 @@ void FixFloorTabController::eventLoopTick(
                         floorOffsetY;
                         */
                     }
-                    floorOffsetY = static_cast<float>( tempOffsetY );
+                    else
+                    {
+                        floorOffsetY = static_cast<float>( tempOffsetY );
+                    }
                 }
 
                 floorOffsetX = static_cast<float>( tempOffsetX );
