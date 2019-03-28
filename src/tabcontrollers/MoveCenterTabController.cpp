@@ -777,10 +777,10 @@ void MoveCenterTabController::applyChaperoneResetData()
         m_collisionBoundsForReset, m_collisionBoundsCountForReset );
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &m_universeCenterForReset );
-    vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live );
     // update the working set preview otherwise Oculus and WMR users may not see
     // results of the reset
     vr::VRChaperoneSetup()->ShowWorkingSetPreview();
+    vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live );
 }
 
 // START of drag bindings:
