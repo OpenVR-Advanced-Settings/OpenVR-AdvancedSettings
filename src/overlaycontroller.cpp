@@ -855,6 +855,7 @@ void OverlayController::AddOffsetToUniverseCenter(
     {
         if ( commit )
         {
+            vr::VRChaperoneSetup()->HideWorkingSetPreview();
             vr::VRChaperoneSetup()->RevertWorkingCopy();
         }
         vr::HmdMatrix34_t curPos;
@@ -907,6 +908,7 @@ void OverlayController::RotateUniverseCenter(
     {
         if ( commit )
         {
+            vr::VRChaperoneSetup()->HideWorkingSetPreview();
             vr::VRChaperoneSetup()->RevertWorkingCopy();
         }
         vr::HmdMatrix34_t curPos;
@@ -969,6 +971,7 @@ void OverlayController::AddOffsetToCollisionBounds( float offset[3],
     // y-coordinates reset to the defaults.
     if ( commit )
     {
+        vr::VRChaperoneSetup()->HideWorkingSetPreview();
         vr::VRChaperoneSetup()->RevertWorkingCopy();
     }
     unsigned collisionBoundsCount = 0;
@@ -1012,6 +1015,7 @@ void OverlayController::RotateCollisionBounds( float angle, bool commit )
 {
     if ( commit )
     {
+        vr::VRChaperoneSetup()->HideWorkingSetPreview();
         vr::VRChaperoneSetup()->RevertWorkingCopy();
     }
     unsigned collisionBoundsCount = 0;

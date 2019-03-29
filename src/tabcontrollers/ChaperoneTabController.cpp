@@ -812,7 +812,8 @@ void ChaperoneTabController::setHeight( float value, bool notify )
     if ( m_height != value )
     {
         m_height = value;
-        vr::VRChaperoneSetup()->RevertWorkingCopy();
+        // TODO revert?
+        // vr::VRChaperoneSetup()->RevertWorkingCopy();
         unsigned collisionBoundsCount = 0;
         vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
             nullptr, &collisionBoundsCount );
@@ -831,8 +832,9 @@ void ChaperoneTabController::setHeight( float value, bool notify )
             }
             vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
                 collisionBounds, collisionBoundsCount );
-            vr::VRChaperoneSetup()->CommitWorkingCopy(
-                vr::EChaperoneConfigFile_Live );
+            // TODO revert?
+            // vr::VRChaperoneSetup()->CommitWorkingCopy(
+            //    vr::EChaperoneConfigFile_Live );
             delete[] collisionBounds;
         }
         if ( notify )
@@ -1358,6 +1360,7 @@ void ChaperoneTabController::addChaperoneProfile(
     profile->includesChaperoneGeometry = includeGeometry;
     if ( includeGeometry )
     {
+        vr::VRChaperoneSetup()->HideWorkingSetPreview();
         vr::VRChaperoneSetup()->RevertWorkingCopy();
         uint32_t quadCount = 0;
         vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo( nullptr,
@@ -1505,6 +1508,7 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
         if ( profile.includesChaperoneGeometry )
         {
             parent->m_moveCenterTabController.reset();
+            vr::VRChaperoneSetup()->HideWorkingSetPreview();
             vr::VRChaperoneSetup()->RevertWorkingCopy();
             vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
                 profile.chaperoneGeometryQuads.get(),

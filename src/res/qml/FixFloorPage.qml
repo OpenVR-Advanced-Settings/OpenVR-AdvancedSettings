@@ -67,6 +67,8 @@ MyStackViewPage {
         MyPushButton {
             id: undoFixButton
             enabled: false
+            // TODO re-enable undo and remove visible: false
+            visible: false
             Layout.fillWidth: true
             text: "Undo Fix"
             onClicked: {
@@ -90,7 +92,7 @@ MyStackViewPage {
 
         Component.onCompleted: {
             statusMessageText.text = ""
-            undoFixButton.enabled = FixFloorTabController.canUndo
+            //undoFixButton.enabled = FixFloorTabController.canUndo
             fixButton.enabled = true
         }
 
@@ -118,10 +120,12 @@ MyStackViewPage {
             }
             onMeasureEndSignal: {
                 fixButton.enabled = true
-                undoFixButton.enabled = FixFloorTabController.canUndo
+                // undoFixButton.enabled = FixFloorTabController.canUndo
             }
             onCanUndoChanged: {
-                undoFixButton.enabled = FixFloorTabController.canUndo
+                //undoFixButton.enabled = FixFloorTabController.canUndo
+                // revert below to this -^
+                undoFixButton.enabled = false
             }
         }
 
