@@ -89,37 +89,13 @@ overlay::DesktopOverlay::DesktopOverlay()
 
 void DesktopOverlay::update()
 {
+    setDesktopOverlayWidth( m_width );
+
     auto positionMatrix = getDesktopOverlayPositions();
 
-    auto position = QVector3D( positionMatrix.m[0][3],
-                               positionMatrix.m[1][3],
-                               positionMatrix.m[2][3] );
+    auto changedPositions = getChangedMatrix( positionMatrix );
 
-    const auto screenRight = QVector3D( positionMatrix.m[0][0],
-                                        positionMatrix.m[1][0],
-                                        positionMatrix.m[2][0] );
-
-    const auto screenForwards = QVector3D( positionMatrix.m[0][2],
-                                           positionMatrix.m[1][2],
-                                           positionMatrix.m[2][2] );
-
-    const auto screenUp = QVector3D( positionMatrix.m[0][1],
-                                     positionMatrix.m[1][1],
-                                     positionMatrix.m[2][1] );
-
-    position += ( static_cast<float>( m_rightMovement ) * screenRight );
-
-    position += ( static_cast<float>( m_forwardsMovement ) * screenForwards );
-
-    position += ( static_cast<float>( m_upMovement ) * screenUp );
-
-    positionMatrix.m[0][3] = position.x();
-    positionMatrix.m[1][3] = position.y();
-    positionMatrix.m[2][3] = position.z();
-
-    setDesktopOverlayPositions( positionMatrix );
-
-    setDesktopOverlayWidth( m_width );
+    setDesktopOverlayPositions( changedPositions );
 }
 
 bool DesktopOverlay::isAvailable() const
@@ -184,6 +160,33 @@ void DesktopOverlay::setHeight( double height )
 double DesktopOverlay::getCurrentHeight() const noexcept
 {
     return m_upMovement;
+}
+
+vr::HmdMatrix34_t
+    DesktopOverlay::getChangedMatrix( vr::HmdMatrix34_t& matrix ) const noexcept
+{
+    auto position = QVector3D( matrix.m[0][3], matrix.m[1][3], matrix.m[2][3] );
+
+    const auto screenRight
+        = QVector3D( matrix.m[0][0], matrix.m[1][0], matrix.m[2][0] );
+
+    const auto screenForwards
+        = QVector3D( matrix.m[0][2], matrix.m[1][2], matrix.m[2][2] );
+
+    const auto screenUp
+        = QVector3D( matrix.m[0][1], matrix.m[1][1], matrix.m[2][1] );
+
+    position += ( static_cast<float>( m_rightMovement ) * screenRight );
+
+    position += ( static_cast<float>( m_forwardsMovement ) * screenForwards );
+
+    position += ( static_cast<float>( m_upMovement ) * screenUp );
+
+    matrix.m[0][3] = position.x();
+    matrix.m[1][3] = position.y();
+    matrix.m[2][3] = position.z();
+
+    return matrix;
 }
 
 } // namespace overlay
