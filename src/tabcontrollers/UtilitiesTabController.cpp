@@ -13,8 +13,6 @@
 // application namespace
 namespace advsettings
 {
-constexpr auto steamDesktopOverlaykey = "valve.steam.desktop";
-
 void UtilitiesTabController::initStage1()
 {
 #ifdef _WIN32
@@ -28,13 +26,10 @@ void UtilitiesTabController::initStage1()
     auto qAlarmIsModal = settings->value( "alarmIsModal", m_alarmIsModal );
     auto qAlarmHour = settings->value( "alarmHour", 0 );
     auto qAlarmMinute = settings->value( "alarmMinute", 0 );
-    auto qDesktopWidth = settings->value( "desktopWidth", 4.0 );
     settings->endGroup();
     m_alarmEnabled = qAlarmEnabled.toBool();
     m_alarmIsModal = qAlarmIsModal.toBool();
     m_alarmTime = QTime( qAlarmHour.toInt(), qAlarmMinute.toInt() );
-
-    setUpDesktopOverlay( qDesktopWidth.toFloat() );
 }
 
 void UtilitiesTabController::initStage2( OverlayController* var_parent,
@@ -311,42 +306,6 @@ void UtilitiesTabController::eventLoopTick()
 {
     if ( settingsUpdateCounter >= k_utilitiesSettingsUpdateCounter )
     {
-        vr::VROverlayHandle_t pOverlayHandle;
-        auto error = vr::VROverlay()->FindOverlay( steamDesktopOverlaykey,
-                                                   &pOverlayHandle );
-        if ( error == vr::VROverlayError_None )
-        {
-            if ( !m_steamDesktopOverlayAvailable )
-            {
-                m_steamDesktopOverlayAvailable = true;
-                emit steamDesktopOverlayAvailableChanged(
-                    m_steamDesktopOverlayAvailable );
-            }
-            float width;
-            error = vr::VROverlay()->GetOverlayWidthInMeters( pOverlayHandle,
-                                                              &width );
-            if ( error != vr::VROverlayError_None )
-            {
-                LOG( ERROR )
-                    << "Could not read overlay width of \""
-                    << steamDesktopOverlaykey << "\": "
-                    << vr::VROverlay()->GetOverlayErrorNameFromEnum( error );
-            }
-            else
-            {
-                setSteamDesktopOverlayWidth( width, true, false );
-            }
-        }
-        else
-        {
-            if ( m_steamDesktopOverlayAvailable )
-            {
-                m_steamDesktopOverlayAvailable = false;
-                emit steamDesktopOverlayAvailableChanged(
-                    m_steamDesktopOverlayAvailable );
-            }
-        }
-
         if ( m_alarmEnabled && m_alarmTime.isValid() )
         {
             auto now = QTime::currentTime();
@@ -555,106 +514,6 @@ void UtilitiesTabController::eventLoopTick()
     else
     {
         settingsUpdateCounter++;
-    }
-}
-
-bool steamDesktopOverlayExists()
-{
-    vr::VROverlayHandle_t pOverlayHandle = 0;
-    auto error = vr::VROverlay()->FindOverlay( steamDesktopOverlaykey,
-                                               &pOverlayHandle );
-    if ( error != vr::VROverlayError_None )
-    {
-        LOG( DEBUG ) << "Could not find overlay \"" << steamDesktopOverlaykey
-                     << "\": "
-                     << vr::VROverlay()->GetOverlayErrorNameFromEnum( error );
-        return false;
-    }
-    return true;
-}
-
-void UtilitiesTabController::setUpDesktopOverlay( float desktopWidthInMeters )
-{
-    auto setOverlayVariablesSuccess = [this, desktopWidthInMeters]() {
-        m_steamDesktopOverlayAvailable = true;
-        setSteamDesktopOverlayWidth( desktopWidthInMeters, true, true );
-        LOG( INFO ) << "Found overlay \"" << steamDesktopOverlaykey << "\".";
-    };
-
-    if ( steamDesktopOverlayExists() )
-    {
-        setOverlayVariablesSuccess();
-        return;
-    }
-
-    constexpr auto timeBetweenAdditionalAttempts = std::chrono::seconds( 1 );
-    constexpr auto maxAttempts = 7;
-    for ( int attempts = 0; attempts < maxAttempts; ++attempts )
-    {
-        std::this_thread::sleep_for( timeBetweenAdditionalAttempts );
-        if ( steamDesktopOverlayExists() )
-        {
-            setOverlayVariablesSuccess();
-            return;
-        }
-    }
-    LOG( INFO ) << "Could not find overlay \"" << steamDesktopOverlaykey
-                << "\" after " << maxAttempts << " extra attempts.";
-}
-
-bool UtilitiesTabController::steamDesktopOverlayAvailable() const
-{
-    return m_steamDesktopOverlayAvailable;
-}
-
-float UtilitiesTabController::steamDesktopOverlayWidth() const
-{
-    return m_steamDesktopOverlayWidth;
-}
-
-void UtilitiesTabController::setSteamDesktopOverlayWidth( float width,
-                                                          bool notify,
-                                                          bool notifyOpenVr )
-{
-    if ( std::abs( m_steamDesktopOverlayWidth - width ) > 0.01f )
-    {
-        m_steamDesktopOverlayWidth = width;
-
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "utilitiesSettings" );
-        settings->setValue( "desktopWidth", m_steamDesktopOverlayWidth );
-        settings->endGroup();
-
-        if ( notifyOpenVr )
-        {
-            vr::VROverlayHandle_t pOverlayHandle;
-            auto error = vr::VROverlay()->FindOverlay( steamDesktopOverlaykey,
-                                                       &pOverlayHandle );
-            if ( error != vr::VROverlayError_None )
-            {
-                LOG( ERROR )
-                    << "Could not find overlay \"" << steamDesktopOverlaykey
-                    << "\": "
-                    << vr::VROverlay()->GetOverlayErrorNameFromEnum( error );
-            }
-            else
-            {
-                error = vr::VROverlay()->SetOverlayWidthInMeters(
-                    pOverlayHandle, m_steamDesktopOverlayWidth );
-                if ( error != vr::VROverlayError_None )
-                {
-                    LOG( ERROR )
-                        << "Could not modify overlay width of \""
-                        << steamDesktopOverlaykey << "\": "
-                        << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                               error );
-                }
-            }
-        }
-        if ( notify )
-        {
-            emit steamDesktopOverlayWidthChanged( m_steamDesktopOverlayWidth );
-        }
     }
 }
 
