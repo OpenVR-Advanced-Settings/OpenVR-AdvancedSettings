@@ -56,6 +56,9 @@ public:
     double getCurrentHeight() const noexcept;
 
 private:
+    vr::HmdMatrix34_t getChangedMatrix( vr::HmdMatrix34_t& matrix ) const
+        noexcept;
+
     double m_width = defaultOverlayWidth;
     double m_forwardsMovement = defaultMovement;
     double m_rightMovement = defaultMovement;
