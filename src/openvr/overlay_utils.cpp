@@ -1,4 +1,5 @@
 #include "overlay_utils.h"
+#include "../overlaycontroller.h"
 
 namespace overlay
 {
@@ -54,7 +55,10 @@ void setDesktopOverlayWidth( double width )
 
 void setSettingsToValue( const std::string setting, const double value )
 {
-    QSettings settings;
+    QSettings settings( QSettings::Format::IniFormat,
+                        QSettings::Scope::UserScope,
+                        application_strings::applicationOrganizationName,
+                        application_strings::applicationName );
     settings.beginGroup( strings::settingsGroupName );
     settings.setValue( setting.c_str(), value );
     settings.endGroup();
@@ -62,7 +66,12 @@ void setSettingsToValue( const std::string setting, const double value )
 
 overlay::DesktopOverlay::DesktopOverlay()
 {
-    QSettings settings;
+    QSettings settings( QSettings::Format::IniFormat,
+                        QSettings::Scope::UserScope,
+                        application_strings::applicationOrganizationName,
+                        application_strings::applicationName );
+
+    LOG( INFO ) << settings.fileName();
     settings.beginGroup( strings::settingsGroupName );
     m_width = settings.value( strings::widthSettingsName, defaultOverlayWidth )
                   .toDouble();
