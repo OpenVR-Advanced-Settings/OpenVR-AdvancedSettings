@@ -82,9 +82,6 @@ GroupBox {
                     Layout.preferredWidth: 100
                     Layout.leftMargin: 10
                     horizontalAlignment: Text.AlignHCenter
-                    onAcceptableInputChanged: {
-                        steamDesktopForwardSlider.value = this.value
-                    }
                 }
             }
         }
