@@ -161,7 +161,10 @@ void FixFloorTabController::eventLoopTick(
                         floorOffsetY;
                         */
                     }
-                    floorOffsetY = static_cast<float>( tempOffsetY );
+                    else
+                    {
+                        floorOffsetY = static_cast<float>( tempOffsetY );
+                    }
                 }
                 else
                 {
@@ -188,7 +191,10 @@ void FixFloorTabController::eventLoopTick(
                         floorOffsetY;
                         */
                     }
-                    floorOffsetY = static_cast<float>( tempOffsetY );
+                    else
+                    {
+                        floorOffsetY = static_cast<float>( tempOffsetY );
+                    }
                 }
 
                 floorOffsetX = static_cast<float>( tempOffsetX );
@@ -205,7 +211,6 @@ void FixFloorTabController::eventLoopTick(
                     offset[0] = floorOffsetX;
                     offset[2] = floorOffsetZ;
                 }
-                parent->m_moveCenterTabController.reset();
                 parent->AddOffsetToUniverseCenter(
                     vr::TrackingUniverseStanding, offset, true );
                 statusMessage
@@ -291,6 +296,7 @@ void FixFloorTabController::setCanUndo( bool value, bool notify )
 
 void FixFloorTabController::fixFloorClicked()
 {
+    parent->m_moveCenterTabController.reset();
     statusMessage = "Fixing ...";
     statusMessageTimeout = 1.0;
     emit statusMessageSignal();
@@ -301,6 +307,7 @@ void FixFloorTabController::fixFloorClicked()
 
 void FixFloorTabController::recenterClicked()
 {
+    parent->m_moveCenterTabController.reset();
     statusMessage = "Fixing ...";
     statusMessageTimeout = 1.0;
     emit statusMessageSignal();

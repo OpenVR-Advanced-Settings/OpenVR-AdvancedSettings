@@ -731,6 +731,7 @@ void MoveCenterTabController::clampVelocity( double* velocity )
 
 void MoveCenterTabController::updateChaperoneResetData()
 {
+    vr::VRChaperoneSetup()->HideWorkingSetPreview();
     vr::VRChaperoneSetup()->RevertWorkingCopy();
     unsigned currentQuadCount = 0;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
@@ -768,16 +769,22 @@ void MoveCenterTabController::updateChaperoneResetData()
                 -universeCenterForResetYaw );
         }
     }
+    // update the working set preview for potential Oculus and WMR issues
+    vr::VRChaperoneSetup()->ShowWorkingSetPreview();
 }
 
 void MoveCenterTabController::applyChaperoneResetData()
 {
+    vr::VRChaperoneSetup()->HideWorkingSetPreview();
     vr::VRChaperoneSetup()->RevertWorkingCopy();
     vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
         m_collisionBoundsForReset, m_collisionBoundsCountForReset );
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &m_universeCenterForReset );
     vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live );
+    // update the working set preview otherwise Oculus and WMR users may not see
+    // results of the reset
+    vr::VRChaperoneSetup()->ShowWorkingSetPreview();
 }
 
 // START of drag bindings:
@@ -1487,7 +1494,8 @@ void MoveCenterTabController::saveUncommittedChaperone()
     {
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
-        vr::VRChaperoneSetup()->HideWorkingSetPreview();
+        // test removal for oculus and WMR users
+        // vr::VRChaperoneSetup()->HideWorkingSetPreview();
         m_chaperoneCommitted = true;
     }
 }
