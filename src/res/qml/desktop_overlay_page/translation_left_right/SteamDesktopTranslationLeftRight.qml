@@ -5,7 +5,6 @@ import ovras.advsettings 1.0
 import "../../common"
 
 GroupBox {
-    id: steamDesktopGroupBox
     Layout.fillWidth: true
 
     label: MyText {
@@ -30,16 +29,15 @@ GroupBox {
         ColumnLayout {
             RowLayout {
                 MyPushButton2 {
-                    id: steamDesktopWidthMinusButton
                     Layout.preferredWidth: 40
                     text: "-"
                     onClicked: {
-                        steamDesktopWidthSlider.value -= sliderStepSize
+                        steamDesktopRightSlider.value -= sliderStepSize
                     }
                 }
 
                 MySlider {
-                    id: steamDesktopWidthSlider
+                    id: steamDesktopRightSlider
                     from: -rightLeftLimit
                     to: rightLeftLimit
                     stepSize: sliderStepSize
@@ -47,34 +45,33 @@ GroupBox {
                     Layout.fillWidth: true
                     onValueChanged: {
                         DesktopOverlay.rightMovement = this.value
-                        steamDesktopWidthText.text = this.value.toFixed(2)
+                        steamDesktopRightText.text = this.value.toFixed(2)
                     }
                 }
 
                 MyPushButton2 {
-                    id: steamDesktopWidthPlusButton
                     Layout.preferredWidth: 40
                     text: "+"
                     onClicked: {
-                        steamDesktopWidthSlider.value += sliderStepSize
+                        steamDesktopRightSlider.value += sliderStepSize
                     }
                 }
 
                 MyTextField {
-                    id: steamDesktopWidthText
+                    id: steamDesktopRightText
                     text: "0.0"
                     keyBoardUID: 611
                     Layout.preferredWidth: 100
                     Layout.leftMargin: 10
                     horizontalAlignment: Text.AlignHCenter
                     onAcceptableInputChanged: {
-                        steamDesktopWidthSlider.value = this.value
+                        steamDesktopRightSlider.value = this.value
                     }
                 }
             }
         }
     }
     Component.onCompleted: {
-        steamDesktopWidthSlider.value = DesktopOverlay.rightMovement
+        steamDesktopRightSlider.value = DesktopOverlay.rightMovement
     }
 }

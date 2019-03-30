@@ -5,7 +5,6 @@ import ovras.advsettings 1.0
 import "../../common"
 
 GroupBox {
-    id: steamDesktopGroupBox
     Layout.fillWidth: true
 
     label: MyText {

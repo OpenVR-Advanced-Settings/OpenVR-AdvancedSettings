@@ -4,7 +4,6 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "media_keys"
 import "alarm_clock"
-import "desktop_size"
 import "keyboard_utils"
 import "../common"
 
