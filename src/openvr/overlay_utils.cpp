@@ -72,6 +72,9 @@ overlay::DesktopOverlay::DesktopOverlay()
     m_rightMovement
         = settings.value( strings::rightMovementSettingsName, defaultMovement )
               .toDouble();
+    m_upMovement
+        = settings.value( strings::upMovementSettingsName, defaultMovement )
+              .toDouble();
     settings.endGroup();
 }
 

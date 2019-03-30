@@ -24,6 +24,7 @@ namespace strings
 
 constexpr auto defaultOverlayWidth = 4.0;
 constexpr auto defaultMovement = 0.0;
+constexpr auto defaultWidth = 1.0;
 
 class DesktopOverlay : public QObject
 {

@@ -5,7 +5,6 @@ import ovras.advsettings 1.0
 import "../../common"
 
 GroupBox {
-    id: steamDesktopGroupBox
     Layout.fillWidth: true
 
     label: MyText {
@@ -18,24 +17,23 @@ GroupBox {
         border.color: "#ffffff"
         radius: 8
     }
+
+    property real sliderStepSize: 1.0
+    property real sliderStartingValue: 1.0
+
     ColumnLayout {
         anchors.fill: parent
 
-        Rectangle {
-            color: "#ffffff"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 5
+        LineSeparator {
         }
 
         ColumnLayout {
             RowLayout {
                 MyPushButton2 {
-                    id: steamDesktopWidthMinusButton
                     Layout.preferredWidth: 40
                     text: "-"
                     onClicked: {
-                        steamDesktopWidthSlider.value -= 1.0
+                        steamDesktopWidthSlider.value -= sliderStepSize
                     }
                 }
 
@@ -44,24 +42,22 @@ GroupBox {
                     from: 0.1
                     to: 32.0
                     stepSize: 0.1
-                    value: 1.0
+                    value: sliderStartingValue
                     Layout.fillWidth: true
                     onPositionChanged: {
-                        var val = this.from + ( this.position  * (this.to - this.from))
-                        steamDesktopWidthText.text = val.toFixed(1)
+                        //
                     }
                     onValueChanged: {
-                        UtilitiesTabController.setSteamDesktopOverlayWidth(value, false)
-                        steamDesktopWidthText.text = value.toFixed(1)
+                        DesktopOverlay.width = this.value
+                        steamDesktopWidthText.text = this.value.toFixed(2)
                     }
                 }
 
                 MyPushButton2 {
-                    id: steamDesktopWidthPlusButton
                     Layout.preferredWidth: 40
                     text: "+"
                     onClicked: {
-                        steamDesktopWidthSlider.value += 1.0
+                        steamDesktopWidthSlider.value += sliderStepSize
                     }
                 }
 
@@ -79,30 +75,13 @@ GroupBox {
                                 val = 0.1
                             }
                             steamDesktopWidthSlider.value = val
-                            UtilitiesTabController.setSteamDesktopOverlayWidth(val, false)
                         }
-                        text = UtilitiesTabController.steamDesktopOverlayWidth.toFixed(1)
                     }
                 }
             }
         }
     }
     Component.onCompleted: {
-        steamDesktopGroupBox.visible = UtilitiesTabController.steamDesktopOverlayAvailable
-        if (steamDesktopGroupBox.visible) {
-            steamDesktopWidthSlider.value = UtilitiesTabController.steamDesktopOverlayWidth
-        }
-    }
-    Connections {
-        target: UtilitiesTabController
-        onSteamDesktopOverlayAvailableChanged: {
-            steamDesktopGroupBox.visible = UtilitiesTabController.steamDesktopOverlayAvailable
-            if (steamDesktopGroupBox.visible) {
-                steamDesktopWidthSlider.value = UtilitiesTabController.steamDesktopOverlayWidth
-            }
-        }
-        onSteamDesktopOverlayWidthChanged: {
-            steamDesktopWidthSlider.value = UtilitiesTabController.steamDesktopOverlayWidth
-        }
+        steamDesktopWidthSlider.value = DesktopOverlay.width
     }
 }
