@@ -14,6 +14,12 @@ MyStackViewPage {
     content: ColumnLayout {
         spacing: 18
 
+        MyText {
+            Layout.alignment: Qt.AlignHCenter
+            horizontalAlignment: Text.AlignHCenter
+            text: "Reopen overlay to apply."
+        }
+
         SteamDesktopGroupBox {
         }
 
