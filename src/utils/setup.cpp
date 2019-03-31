@@ -15,19 +15,19 @@ void mainQtMessageHandler( QtMsgType type,
     switch ( type )
     {
     case QtDebugMsg:
-        LOG( DEBUG ) << localMsg.constData();
+        LOG( DEBUG ) << "QTMSGH: " << localMsg.constData();
         break;
     case QtInfoMsg:
-        LOG( INFO ) << localMsg.constData();
+        LOG( INFO ) << "QTMSGH: " << localMsg.constData();
         break;
     case QtWarningMsg:
-        LOG( WARNING ) << localMsg.constData();
+        LOG( WARNING ) << "QTMSGH: " << localMsg.constData();
         break;
     case QtCriticalMsg:
-        LOG( ERROR ) << localMsg.constData();
+        LOG( ERROR ) << "QTMSGH: " << localMsg.constData();
         break;
     case QtFatalMsg:
-        LOG( FATAL ) << localMsg.constData();
+        LOG( FATAL ) << "QTMSGH: " << localMsg.constData();
         break;
     }
 }
