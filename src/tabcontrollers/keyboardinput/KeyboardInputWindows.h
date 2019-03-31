@@ -1,7 +1,7 @@
 #ifndef KEYBOARDINPUTWINDOWS_H
 #define KEYBOARDINPUTWINDOWS_H
 
-#include "../KeyboardInput.h"
+#include "KeyboardInput.h"
 
 // application namespace
 namespace advsettings

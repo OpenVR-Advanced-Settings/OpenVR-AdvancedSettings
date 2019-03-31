@@ -1,7 +1,7 @@
 #ifndef KEYBOARDINPUTDUMMY_H
 #define KEYBOARDINPUTDUMMY_H
 
-#include "../KeyboardInput.h"
+#include "KeyboardInput.h"
 
 // application namespace
 namespace advsettings
