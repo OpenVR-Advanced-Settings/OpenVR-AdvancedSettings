@@ -36,44 +36,44 @@ void UtilitiesTabController::initStage2( OverlayController* var_parent,
 
 void UtilitiesTabController::sendKeyboardInput( QString input )
 {
-    keyboardInput.sendKeyboardInput( input );
+    keyboardinput::sendKeyboardInput( input );
 }
 
 void UtilitiesTabController::sendKeyboardEnter()
 {
-    keyboardInput.sendKeyboardEnter();
+    keyboardinput::sendKeyboardEnter();
 }
 
 void UtilitiesTabController::sendKeyboardAltEnter()
 {
-    keyboardInput.sendKeyboardAltEnter();
+    keyboardinput::sendKeyboardAltEnter();
 }
 
 void UtilitiesTabController::sendKeyboardAltTab()
 {
-    keyboardInput.sendKeyboardAltTab();
+    keyboardinput::sendKeyboardAltTab();
 }
 
 void UtilitiesTabController::sendKeyboardBackspace( const int count )
 {
-    keyboardInput.sendKeyboardBackspace( count );
+    keyboardinput::sendKeyboardBackspace( count );
 }
 
 void UtilitiesTabController::sendMediaNextSong()
 {
-    keyboardInput.sendMediaNextSong();
+    keyboardinput::sendMediaNextSong();
 }
 void UtilitiesTabController::sendMediaPreviousSong()
 {
-    keyboardInput.sendMediaPreviousSong();
+    keyboardinput::sendMediaPreviousSong();
 }
 void UtilitiesTabController::sendMediaPausePlay()
 {
-    keyboardInput.sendMediaPausePlay();
+    keyboardinput::sendMediaPausePlay();
 }
 void UtilitiesTabController::sendMediaStopSong()
 {
-    keyboardInput.sendMediaStopSong();
+    keyboardinput::sendMediaStopSong();
 }
 
 bool UtilitiesTabController::alarmEnabled() const

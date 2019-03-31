@@ -12,7 +12,6 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/PttController.cpp \
     src/utils/ChaperoneUtils.cpp \
     src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
-    src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp \
     src/openvr/openvr_init.cpp \
     src/openvr/ivrinput.cpp \
     src/utils/setup.cpp \
@@ -31,12 +30,10 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/UtilitiesTabController.h \
     src/tabcontrollers/AudioManager.h \
     src/tabcontrollers/PttController.h \
-    src/tabcontrollers/keyboardinput/KeyboardInput.h \
     src/utils/Matrix.h \
     src/utils/ChaperoneUtils.h \
     src/quaternion/quaternion.h \
     src/tabcontrollers/audiomanager/AudioManagerDummy.h \
-    src/tabcontrollers/keyboardinput/KeyboardInputDummy.h \
     src/openvr/openvr_init.h \
     src/openvr/ivrinput_action.h \
     src/openvr/ivrinput_manifest.h \
@@ -52,6 +49,11 @@ win32 {
         src/tabcontrollers/keyboardinput/KeyboardInputWindows.cpp
     HEADERS += src/tabcontrollers/audiomanager/AudioManagerWindows.h \
         src/tabcontrollers/keyboardinput/KeyboardInputWindows.h
+}
+
+!win32 {
+    SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp
+    HEADERS += src/tabcontrollers/keyboardinput/KeyboardInputDummy.h
 }
 
 win32-msvc {

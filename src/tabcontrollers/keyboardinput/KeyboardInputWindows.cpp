@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include "easylogging++.h"
 
-namespace advsettings
+namespace keyboardinput
 {
 /*!
 Represents the state of a keyboard button press. Can be either Up or Down.
@@ -127,7 +127,7 @@ void sendKeyPressAndRelease( const WORD virtualKeyCode )
     sendKeyboardInputRaw( numberOfActions, actions );
 }
 
-void KeyboardInputWindows::sendKeyboardInput( QString input )
+void sendKeyboardInput( QString input )
 {
     int len = input.length();
     if ( len > 0 )
@@ -202,7 +202,7 @@ void KeyboardInputWindows::sendKeyboardInput( QString input )
 /*!
 Sends a single Enter keypress to Windows.
 */
-void KeyboardInputWindows::sendKeyboardEnter()
+void sendKeyboardEnter()
 {
     sendKeyPressAndRelease( VK_RETURN );
 }
@@ -211,7 +211,7 @@ void KeyboardInputWindows::sendKeyboardEnter()
 Sends count amount of backspaces to Windows. count of 0 or below will do
 nothing.
 */
-void KeyboardInputWindows::sendKeyboardBackspace( const int count )
+void sendKeyboardBackspace( const int count )
 {
     // We can only send a positive amount of key presses.
     if ( count <= 0 )
@@ -232,7 +232,7 @@ Used for tabbing out of game windows blocking other programs on desktop while in
 VR. At least one use case was tabbing out of a fullscreen game to be able to use
 a music player.
 */
-void KeyboardInputWindows::sendKeyboardAltTab()
+void sendKeyboardAltTab()
 {
     constexpr auto altKey = VK_MENU;
     constexpr auto tabKey = VK_TAB;
@@ -256,7 +256,7 @@ Sends an Alt + Tab combination to Windows.
 Used for toggling full screen on games and various applications that appear on
 the desktop.
 */
-void KeyboardInputWindows::sendKeyboardAltEnter()
+void sendKeyboardAltEnter()
 {
     constexpr auto altKey = VK_MENU;
     constexpr auto enterKey = VK_RETURN;
@@ -277,7 +277,7 @@ void KeyboardInputWindows::sendKeyboardAltEnter()
 /*!
 Sends a media key Next Song button to Windows.
 */
-void KeyboardInputWindows::sendMediaNextSong()
+void sendMediaNextSong()
 {
     sendKeyPressAndRelease( VK_MEDIA_NEXT_TRACK );
 }
@@ -285,7 +285,7 @@ void KeyboardInputWindows::sendMediaNextSong()
 /*!
 Sends a media key Previous Song button to Windows.
 */
-void KeyboardInputWindows::sendMediaPreviousSong()
+void sendMediaPreviousSong()
 {
     sendKeyPressAndRelease( VK_MEDIA_PREV_TRACK );
 }
@@ -293,7 +293,7 @@ void KeyboardInputWindows::sendMediaPreviousSong()
 /*!
 Sends a media key Play/Pause button to Windows.
 */
-void KeyboardInputWindows::sendMediaPausePlay()
+void sendMediaPausePlay()
 {
     sendKeyPressAndRelease( VK_MEDIA_PLAY_PAUSE );
 }
@@ -301,9 +301,9 @@ void KeyboardInputWindows::sendMediaPausePlay()
 /*!
 Sends a media key Stop button to Windows.
 */
-void KeyboardInputWindows::sendMediaStopSong()
+void sendMediaStopSong()
 {
     sendKeyPressAndRelease( VK_MEDIA_STOP );
 }
 
-} // namespace advsettings
+} // namespace keyboardinput

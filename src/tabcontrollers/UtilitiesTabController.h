@@ -46,12 +46,6 @@ private:
     int m_batteryState[vr::k_unMaxTrackedDeviceCount];
     bool m_batteryVisible[vr::k_unMaxTrackedDeviceCount];
 
-#ifdef WIN32
-    KeyboardInputWindows keyboardInput;
-#else
-    KeyboardInputDummy keyboardInput;
-#endif
-
 public:
     void initStage1();
     void initStage2( OverlayController* var_parent, QQuickWindow* var_widget );
