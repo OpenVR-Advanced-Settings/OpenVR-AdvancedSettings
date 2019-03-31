@@ -1,4 +1,4 @@
-#include "KeyboardInputDummy.h"
+#include "KeyboardInput.h"
 
 // Used to get the compiler to shut up about C4100: unreferenced formal
 // parameter. The cast is to get GCC to shut up about it.
