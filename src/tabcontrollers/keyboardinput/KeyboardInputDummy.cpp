@@ -4,53 +4,53 @@
 // parameter. The cast is to get GCC to shut up about it.
 #define UNREFERENCED_PARAMETER( P ) static_cast<void>( ( P ) )
 
-namespace advsettings
+namespace keyboardinput
 {
-void KeyboardInputDummy::sendKeyboardInput( QString input )
+void sendKeyboardInput( QString input )
 {
     // noop
     UNREFERENCED_PARAMETER( input );
 }
 
-void KeyboardInputDummy::sendKeyboardEnter()
+void sendKeyboardEnter()
 {
     // noop
 }
 
-void KeyboardInputDummy::sendKeyboardBackspace( const int count )
+void sendKeyboardBackspace( const int count )
 {
     // noop
     UNREFERENCED_PARAMETER( count );
 }
 
-void KeyboardInputDummy::sendKeyboardAltTab()
+void sendKeyboardAltTab()
 {
     // noop
 }
 
-void KeyboardInputDummy::sendKeyboardAltEnter()
+void sendKeyboardAltEnter()
 {
     // noop
 }
 
-void KeyboardInputDummy::sendMediaNextSong()
+void sendMediaNextSong()
 {
     // noop
 }
 
-void KeyboardInputDummy::sendMediaPreviousSong()
+void sendMediaPreviousSong()
 {
     // noop
 }
 
-void KeyboardInputDummy::sendMediaPausePlay()
+void sendMediaPausePlay()
 {
     // noop
 }
 
-void KeyboardInputDummy::sendMediaStopSong()
+void sendMediaStopSong()
 {
     // noop
 }
 
-} // namespace advsettings
+} // namespace keyboardinput

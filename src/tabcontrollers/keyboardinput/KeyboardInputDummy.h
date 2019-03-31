@@ -1,25 +1,18 @@
-#ifndef KEYBOARDINPUTDUMMY_H
-#define KEYBOARDINPUTDUMMY_H
+#pragma once
 
-#include "KeyboardInput.h"
+#include <vector>
+#include <QString>
 
-// application namespace
-namespace advsettings
+namespace keyboardinput
 {
-class KeyboardInputDummy
-{
-public:
-    void sendKeyboardInput( QString input );
-    void sendKeyboardEnter();
-    void sendKeyboardBackspace( const int count );
-    void sendKeyboardAltTab();
-    void sendKeyboardAltEnter();
-    void sendMediaNextSong();
-    void sendMediaPreviousSong();
-    void sendMediaPausePlay();
-    void sendMediaStopSong();
-};
+void sendKeyboardInput( QString input );
+void sendKeyboardEnter();
+void sendKeyboardBackspace( const int count );
+void sendKeyboardAltTab();
+void sendKeyboardAltEnter();
+void sendMediaNextSong();
+void sendMediaPreviousSong();
+void sendMediaPausePlay();
+void sendMediaStopSong();
 
-} // namespace advsettings
-
-#endif // KEYBOARDINPUTDUMMY_H
+} // namespace keyboardinput
