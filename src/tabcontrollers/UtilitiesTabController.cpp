@@ -4,11 +4,6 @@
 #include "../overlaycontroller.h"
 #include <chrono>
 #include <thread>
-#ifdef _WIN32
-#    include "keyboardinput/KeyboardInputWindows.h"
-#else
-#    include "keyboardinput/KeyboardInputDummy.h"
-#endif
 
 // application namespace
 namespace advsettings

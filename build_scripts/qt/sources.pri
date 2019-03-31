@@ -30,6 +30,7 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/UtilitiesTabController.h \
     src/tabcontrollers/AudioManager.h \
     src/tabcontrollers/PttController.h \
+    src/tabcontrollers/keyboardinput/KeyboardInput.h \
     src/utils/Matrix.h \
     src/utils/ChaperoneUtils.h \
     src/quaternion/quaternion.h \
@@ -47,13 +48,11 @@ HEADERS += src/overlaycontroller.h \
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
         src/tabcontrollers/keyboardinput/KeyboardInputWindows.cpp
-    HEADERS += src/tabcontrollers/audiomanager/AudioManagerWindows.h \
-        src/tabcontrollers/keyboardinput/KeyboardInputWindows.h
+    HEADERS += src/tabcontrollers/audiomanager/AudioManagerWindows.h
 }
 
 !win32 {
     SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp
-    HEADERS += src/tabcontrollers/keyboardinput/KeyboardInputDummy.h
 }
 
 win32-msvc {
