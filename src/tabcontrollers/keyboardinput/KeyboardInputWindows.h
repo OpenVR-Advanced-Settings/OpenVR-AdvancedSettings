@@ -6,18 +6,18 @@
 // application namespace
 namespace advsettings
 {
-class KeyboardInputWindows : public KeyboardInput
+class KeyboardInputWindows
 {
 public:
-    virtual void sendKeyboardInput( QString input ) override;
-    virtual void sendKeyboardEnter() override;
-    virtual void sendKeyboardBackspace( const int count ) override;
-    virtual void sendKeyboardAltTab() override;
-    virtual void sendKeyboardAltEnter() override;
-    virtual void sendMediaNextSong() override;
-    virtual void sendMediaPreviousSong() override;
-    virtual void sendMediaPausePlay() override;
-    virtual void sendMediaStopSong() override;
+    void sendKeyboardInput( QString input );
+    void sendKeyboardEnter();
+    void sendKeyboardBackspace( const int count );
+    void sendKeyboardAltTab();
+    void sendKeyboardAltEnter();
+    void sendMediaNextSong();
+    void sendMediaPreviousSong();
+    void sendMediaPausePlay();
+    void sendMediaStopSong();
 };
 
 } // namespace advsettings

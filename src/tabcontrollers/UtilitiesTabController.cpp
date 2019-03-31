@@ -15,11 +15,6 @@ namespace advsettings
 {
 void UtilitiesTabController::initStage1()
 {
-#ifdef _WIN32
-    keyboardInput.reset( new KeyboardInputWindows() );
-#else
-    keyboardInput.reset( new KeyboardInputDummy() );
-#endif
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "utilitiesSettings" );
     auto qAlarmEnabled = settings->value( "alarmEnabled", m_alarmEnabled );
@@ -41,44 +36,44 @@ void UtilitiesTabController::initStage2( OverlayController* var_parent,
 
 void UtilitiesTabController::sendKeyboardInput( QString input )
 {
-    keyboardInput->sendKeyboardInput( input );
+    keyboardInput.sendKeyboardInput( input );
 }
 
 void UtilitiesTabController::sendKeyboardEnter()
 {
-    keyboardInput->sendKeyboardEnter();
+    keyboardInput.sendKeyboardEnter();
 }
 
 void UtilitiesTabController::sendKeyboardAltEnter()
 {
-    keyboardInput->sendKeyboardAltEnter();
+    keyboardInput.sendKeyboardAltEnter();
 }
 
 void UtilitiesTabController::sendKeyboardAltTab()
 {
-    keyboardInput->sendKeyboardAltTab();
+    keyboardInput.sendKeyboardAltTab();
 }
 
 void UtilitiesTabController::sendKeyboardBackspace( const int count )
 {
-    keyboardInput->sendKeyboardBackspace( count );
+    keyboardInput.sendKeyboardBackspace( count );
 }
 
 void UtilitiesTabController::sendMediaNextSong()
 {
-    keyboardInput->sendMediaNextSong();
+    keyboardInput.sendMediaNextSong();
 }
 void UtilitiesTabController::sendMediaPreviousSong()
 {
-    keyboardInput->sendMediaPreviousSong();
+    keyboardInput.sendMediaPreviousSong();
 }
 void UtilitiesTabController::sendMediaPausePlay()
 {
-    keyboardInput->sendMediaPausePlay();
+    keyboardInput.sendMediaPausePlay();
 }
 void UtilitiesTabController::sendMediaStopSong()
 {
-    keyboardInput->sendMediaStopSong();
+    keyboardInput.sendMediaStopSong();
 }
 
 bool UtilitiesTabController::alarmEnabled() const
