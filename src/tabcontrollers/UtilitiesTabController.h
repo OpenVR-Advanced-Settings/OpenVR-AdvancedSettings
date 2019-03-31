@@ -5,7 +5,11 @@
 #include <QTime>
 #include <openvr.h>
 #include <memory>
-#include "KeyboardInput.h"
+#ifdef WIN32
+#    include "keyboardinput/KeyboardInputWindows.h"
+#else
+#    include "keyboardinput/KeyboardInputDummy.h"
+#endif
 
 class QQuickWindow;
 // application namespace
@@ -42,7 +46,11 @@ private:
     int m_batteryState[vr::k_unMaxTrackedDeviceCount];
     bool m_batteryVisible[vr::k_unMaxTrackedDeviceCount];
 
-    std::unique_ptr<KeyboardInput> keyboardInput;
+#ifdef WIN32
+    KeyboardInputWindows keyboardInput;
+#else
+    KeyboardInputDummy keyboardInput;
+#endif
 
 public:
     void initStage1();
