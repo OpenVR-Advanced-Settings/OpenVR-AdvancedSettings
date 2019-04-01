@@ -10,8 +10,8 @@
 
 namespace keyboardinput
 {
-static void sendKeyPressAndRelease( const KeySym keySymbol,
-                                    const KeySym modifierSymbol )
+constexpr auto noModifier = 0;
+void sendKeyPress( const KeySym keySymbol, const KeySym modifierSymbol )
 {
     Display* const display = XOpenDisplay( nullptr );
 
@@ -50,23 +50,25 @@ void sendKeyboardInput( QString input )
 
 void sendKeyboardEnter()
 {
-    // noop
+    sendKeyPress( XK_ISO_Enter, noModifier );
 }
 
 void sendKeyboardBackspace( const int count )
 {
-    // noop
-    UNREFERENCED_PARAMETER( count );
+    for ( int i = 0; i < count; ++i )
+    {
+        sendKeyPress( XK_BackSpace, noModifier );
+    }
 }
 
 void sendKeyboardAltTab()
 {
-    sendKeyPressAndRelease( XK_Tab, XK_Alt_L );
+    sendKeyPress( XK_Tab, XK_Alt_L );
 }
 
 void sendKeyboardAltEnter()
 {
-    // noop
+    sendKeyPress( XK_ISO_Enter, XK_Alt_L );
 }
 
 void sendMediaNextSong()
