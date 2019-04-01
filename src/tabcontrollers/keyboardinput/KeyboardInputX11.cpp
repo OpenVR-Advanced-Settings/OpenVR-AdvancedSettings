@@ -10,38 +10,36 @@
 
 namespace keyboardinput
 {
-static void sendKeyPressAndRelease (const KeySym keySymbol, const KeySym modifierSymbol){
-    Display *disp = XOpenDisplay (NULL);
+static void sendKeyPressAndRelease( const KeySym keySymbol,
+                                    const KeySym modifierSymbol )
+{
+    Display* const display = XOpenDisplay( nullptr );
 
-    KeyCode keycode = 0;
-    keycode = XKeysymToKeycode (disp, keySymbol);
-
-    KeyCode modcode = 0;
-
-    if (keycode == 0) {
+    const KeyCode keycode = XKeysymToKeycode( display, keySymbol );
+    if ( keycode == 0 )
+    {
         return;
     }
 
-    XTestGrabControl (disp, True);
+    XTestGrabControl( display, True );
 
-    /* Generate modkey press */
-    if (modifierSymbol != 0) {
-        modcode = XKeysymToKeycode(disp, modsym);
-        XTestFakeKeyEvent (disp, modcode, True, 0);
-    }
-    /* Generate regular key press and release */
-    XTestFakeKeyEvent (disp, keycode, True, 0);
-    XTestFakeKeyEvent (disp, keycode, False, 0);
-
-    /* Generate modkey release */
-    if (modifierSymbol != 0) {
-        XTestFakeKeyEvent (disp, modcode, False, 0);
+    KeyCode modcode = 0;
+    if ( modifierSymbol != 0 )
+    {
+        modcode = XKeysymToKeycode( display, modifierSymbol );
+        XTestFakeKeyEvent( display, modcode, True, 0 );
     }
 
-    XSync (disp, False);
-    XTestGrabControl (disp, False);
+    XTestFakeKeyEvent( display, keycode, True, 0 );
+    XTestFakeKeyEvent( display, keycode, False, 0 );
 
-    XCloseDisplay(disp);
+    if ( modifierSymbol != 0 )
+    {
+        XTestFakeKeyEvent( display, modcode, False, 0 );
+    }
+
+    XSync( display, False );
+    XTestGrabControl( display, False );
 }
 
 void sendKeyboardInput( QString input )
@@ -63,7 +61,7 @@ void sendKeyboardBackspace( const int count )
 
 void sendKeyboardAltTab()
 {
-    // noop
+    sendKeyPressAndRelease( XK_Tab, XK_Alt_L );
 }
 
 void sendKeyboardAltEnter()
