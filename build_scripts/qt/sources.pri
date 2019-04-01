@@ -53,13 +53,13 @@ win32 {
     HEADERS += src/tabcontrollers/audiomanager/AudioManagerWindows.h
 }
 
-unix {
+unix:!macx {
     SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputX11.cpp
     CONFIG += x11
     LIBS += -lXtst
 }
 
-!win32&:!unix {
+macx {
     SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp
 }
 
