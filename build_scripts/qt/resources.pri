@@ -40,7 +40,7 @@ DISTFILES += \
     src/res/qml/audio_page/push_to_talk/* \
     src/res/qml/audio_page/profiles/* \
 	src/res/qml/video_page/* \
-	src/res/qml/video_page/dimmer/* \
+	src/res/qml/video_page/brightness/* \
     src/res/qml/common/* \
 
 RC_FILE = src/res/icon.rc

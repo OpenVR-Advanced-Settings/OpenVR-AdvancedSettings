@@ -3,15 +3,15 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../common"
-import "dimmer"
+import "brightness"
 
 MyStackViewPage {
-    headerText: "Motion Settings"
+    headerText: "Video Settings"
 
     content: ColumnLayout {
         spacing: 18
 
-        DimmerGroupBox { id: dimmerGroupBox }
+        BrightnessGroupBox { id: brightnessGroupBox }
 
         Item {
             Layout.fillHeight: true

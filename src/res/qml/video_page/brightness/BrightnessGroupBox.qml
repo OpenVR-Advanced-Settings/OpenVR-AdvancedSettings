@@ -5,12 +5,12 @@ import ovras.advsettings 1.0
 import "../../common"
 
 GroupBox {
-    id: dimmerGroupBox
+    id: brightnessGroupBox
     Layout.fillWidth: true
 
     label: MyText {
         leftPadding: 10
-        text: "Space Turn"
+        text: "Brightness"
         bottomPadding: -10
     }
     background: Rectangle {
