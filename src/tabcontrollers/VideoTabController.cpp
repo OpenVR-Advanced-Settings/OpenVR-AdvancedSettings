@@ -7,7 +7,7 @@ namespace advsettings
 {
 	void VideoTabController::initStage1() 
 	{
-		reloadVideoConfig();
+		//reloadVideoConfig();
 	}
 
 //TODO args
@@ -51,12 +51,11 @@ namespace advsettings
 		}
 		else
 		{
-			LOG(ERROR) << "Could not create ptt notification overlay: "
+			LOG(ERROR) << "Could not create dimmer notification overlay: "
 				<< vr::VROverlay()->GetOverlayErrorNameFromEnum(
 					overlayError);
 		}
-		emit defaultProfileDisplay();
-		*/
+		//emit defaultProfileDisplay();
 	}
 
 	void VideoTabController::eventLoopTick() 
