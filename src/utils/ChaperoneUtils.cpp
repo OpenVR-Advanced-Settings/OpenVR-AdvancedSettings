@@ -74,10 +74,21 @@ float ChaperoneUtils::_getDistanceToChaperone(
     return distance;
 }
 
-void ChaperoneUtils::loadChaperoneData()
+void ChaperoneUtils::loadChaperoneData( bool fromLiveBounds )
 {
     std::lock_guard<std::recursive_mutex> lock( _mutex );
-    vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo( nullptr, &_quadsCount );
+
+    if ( fromLiveBounds )
+    {
+        vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo( nullptr,
+                                                            &_quadsCount );
+    }
+    else
+    {
+        vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
+                                                               &_quadsCount );
+    }
+
     if ( _quadsCount > 0 )
     {
         std::unique_ptr<vr::HmdQuad_t> quadsBuffer(
@@ -86,8 +97,17 @@ void ChaperoneUtils::loadChaperoneData()
         _corners.reset( reinterpret_cast<vr::HmdVector3_t*>(
             new vr::HmdQuad_t[_quadsCount] ) );
         vr::HmdVector3_t* _cornersPtr = _corners.get();
-        vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo( quadsBufferPtr,
-                                                            &_quadsCount );
+        if ( fromLiveBounds )
+        {
+            vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo( quadsBufferPtr,
+                                                                &_quadsCount );
+        }
+        else
+        {
+            vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
+                quadsBufferPtr, &_quadsCount );
+        }
+
         for ( uint32_t i = 0; i < _quadsCount; i++ )
         {
             _cornersPtr[i] = quadsBufferPtr[i].vCorners[0];

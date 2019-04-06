@@ -140,8 +140,12 @@ void MoveCenterTabController::setTrackingUniverse( int value, bool notify )
 {
     if ( m_trackingUniverse != value )
     {
-        reset();
-        vr::VRChaperoneSetup()->HideWorkingSetPreview();
+        if ( !m_roomSetupModeDetected )
+        {
+            vr::VRChaperoneSetup()->HideWorkingSetPreview();
+            reset();
+        }
+
         m_trackingUniverse = value;
         if ( notify )
         {
@@ -707,9 +711,14 @@ void MoveCenterTabController::zeroOffsets()
         emit rotationChanged( m_rotation );
         updateChaperoneResetData();
         m_pendingZeroOffsets = false;
+        LOG( INFO ) << "SUCCESS: Chaperone Data Updated and Offsets zeroed out";
     }
     else
     {
+        if ( !m_pendingZeroOffsets )
+        {
+            LOG( INFO ) << "PENDING: Chaperone Data Update and Offsets zeroing";
+        }
         m_pendingZeroOffsets = true;
     }
 }
@@ -2001,6 +2010,10 @@ void MoveCenterTabController::updateSpace()
     vr::VRChaperoneSetup()->ShowWorkingSetPreview();
     m_chaperoneCommitted = false;
 
+    // loadChaperoneData( false ), false so that we don't load live data, and
+    // reference the working set instead.
+    parent->chaperoneUtils().loadChaperoneData( false );
+
     m_oldOffsetX = m_offsetX;
     m_oldOffsetY = m_offsetY;
     m_oldOffsetZ = m_offsetZ;
@@ -2025,7 +2038,22 @@ void MoveCenterTabController::eventLoopTick(
     // detect if room setup is running
     if ( m_trackingUniverse == vr::TrackingUniverseRawAndUncalibrated )
     {
+        if ( !m_roomSetupModeDetected )
+        {
+            m_roomSetupModeDetected = true;
+            LOG( INFO ) << "room setup ENTRY detected";
+            vr::VRChaperoneSetup()->HideWorkingSetPreview();
+            reset();
+            vr::VRChaperoneSetup()->RevertWorkingCopy();
+        }
         return;
+    }
+
+    if ( m_roomSetupModeDetected )
+    {
+        zeroOffsets();
+        m_roomSetupModeDetected = false;
+        LOG( INFO ) << "room setup EXIT detected";
     }
 
     // If we're trying to redifine the origin point, but can't becaues of bad

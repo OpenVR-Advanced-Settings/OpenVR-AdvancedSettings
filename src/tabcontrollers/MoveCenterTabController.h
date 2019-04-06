@@ -139,6 +139,7 @@ private:
     bool m_pendingZeroOffsets = true;
     bool m_dashWasOpenPreviousFrame = false;
     bool m_isResetDataStandingUniverse = true;
+    bool m_roomSetupModeDetected = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
