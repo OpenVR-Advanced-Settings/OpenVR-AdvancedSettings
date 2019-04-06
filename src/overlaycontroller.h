@@ -61,7 +61,7 @@ namespace advsettings
 // Avoid setting values to the same numbers.
 constexpr int k_audioSettingsUpdateCounter = 89;
 constexpr int k_chaperoneSettingsUpdateCounter = 101;
-constexpr int k_moveCenterSettingsUpdateCounter = 149;
+constexpr int k_moveCenterSettingsUpdateCounter = 83;
 constexpr int k_reviveSettingsUpdateCounter = 139;
 constexpr int k_settingsTabSettingsUpdateCounter = 157;
 constexpr int k_steamVrSettingsUpdateCounter = 97;

@@ -141,6 +141,7 @@ void MoveCenterTabController::setTrackingUniverse( int value, bool notify )
     if ( m_trackingUniverse != value )
     {
         reset();
+        vr::VRChaperoneSetup()->HideWorkingSetPreview();
         m_trackingUniverse = value;
         if ( notify )
         {
@@ -662,6 +663,12 @@ void MoveCenterTabController::modOffsetZ( float value, bool notify )
     }
 }
 
+void MoveCenterTabController::shutdown()
+{
+    reset();
+    vr::VRChaperoneSetup()->HideWorkingSetPreview();
+}
+
 void MoveCenterTabController::reset()
 {
     m_heightToggle = false;
@@ -741,50 +748,78 @@ void MoveCenterTabController::updateChaperoneResetData()
     m_collisionBoundsCountForReset = currentQuadCount;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
         m_collisionBoundsForReset, &currentQuadCount );
-    vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-        &m_universeCenterForReset );
-    float universeCenterForResetYaw = std::atan2(
-        m_universeCenterForReset.m[0][2], m_universeCenterForReset.m[2][2] );
-
-    // we want to store m_collisionBoundsForOffset as spacially relative to
-    // m_universeCenterForReset, so:
-
-    // for every quad in the chaperone bounds...
-    for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset; quad++ )
+    if ( m_trackingUniverse == vr::TrackingUniverseStanding )
     {
-        // at every corner in that quad...
-        for ( unsigned corner = 0; corner < 4; corner++ )
-        {
-            // copy from m_collisionBoundsForReset
-            m_collisionBoundsForOffset[quad].vCorners[corner].v[0]
-                = m_collisionBoundsForReset[quad].vCorners[corner].v[0];
-            m_collisionBoundsForOffset[quad].vCorners[corner].v[1]
-                = m_collisionBoundsForReset[quad].vCorners[corner].v[1];
-            m_collisionBoundsForOffset[quad].vCorners[corner].v[2]
-                = m_collisionBoundsForReset[quad].vCorners[corner].v[2];
+        vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+            &m_universeCenterForReset );
+        m_isResetDataStandingUniverse = true;
+    }
+    else
+    {
+        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+            &m_universeCenterForReset );
+        m_isResetDataStandingUniverse = false;
+    }
 
-            // unrotate by universe center's yaw
-            rotateFloatCoordinates(
-                m_collisionBoundsForOffset[quad].vCorners[corner].v,
-                -universeCenterForResetYaw );
+    if ( m_collisionBoundsCountForReset > 0 )
+    {
+        float universeCenterForResetYaw
+            = std::atan2( m_universeCenterForReset.m[0][2],
+                          m_universeCenterForReset.m[2][2] );
+
+        // we want to store m_collisionBoundsForOffset as spacially relative to
+        // m_universeCenterForReset, so:
+
+        // for every quad in the chaperone bounds...
+        for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset; quad++ )
+        {
+            // at every corner in that quad...
+            for ( unsigned corner = 0; corner < 4; corner++ )
+            {
+                // copy from m_collisionBoundsForReset
+                m_collisionBoundsForOffset[quad].vCorners[corner].v[0]
+                    = m_collisionBoundsForReset[quad].vCorners[corner].v[0];
+                m_collisionBoundsForOffset[quad].vCorners[corner].v[1]
+                    = m_collisionBoundsForReset[quad].vCorners[corner].v[1];
+                m_collisionBoundsForOffset[quad].vCorners[corner].v[2]
+                    = m_collisionBoundsForReset[quad].vCorners[corner].v[2];
+
+                // unrotate by universe center's yaw
+                rotateFloatCoordinates(
+                    m_collisionBoundsForOffset[quad].vCorners[corner].v,
+                    -universeCenterForResetYaw );
+            }
         }
     }
+
     // update the working set preview for potential Oculus and WMR issues
-    vr::VRChaperoneSetup()->ShowWorkingSetPreview();
+    // vr::VRChaperoneSetup()->ShowWorkingSetPreview();
 }
 
 void MoveCenterTabController::applyChaperoneResetData()
 {
     vr::VRChaperoneSetup()->HideWorkingSetPreview();
     vr::VRChaperoneSetup()->RevertWorkingCopy();
-    vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
-        m_collisionBoundsForReset, m_collisionBoundsCountForReset );
-    vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
-        &m_universeCenterForReset );
+    if ( m_collisionBoundsCountForReset > 0 )
+    {
+        vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
+            m_collisionBoundsForReset, m_collisionBoundsCountForReset );
+    }
+    if ( m_isResetDataStandingUniverse )
+    {
+        vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
+            &m_universeCenterForReset );
+    }
+    else
+    {
+        vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
+            &m_universeCenterForReset );
+    }
+
     vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live );
     // update the working set preview otherwise Oculus and WMR users may not see
     // results of the reset
-    vr::VRChaperoneSetup()->ShowWorkingSetPreview();
+    // vr::VRChaperoneSetup()->ShowWorkingSetPreview();
 }
 
 // START of drag bindings:
@@ -1492,10 +1527,14 @@ void MoveCenterTabController::saveUncommittedChaperone()
 {
     if ( !m_chaperoneCommitted )
     {
+        // double commit... once to ensure before we HideWorkingSetPreview the
+        // working set is synced. Commit a second time as a workaround for WMR
+        // and Rift not getting the commit during active ShowWorkingSetPreview
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
-        // test removal for oculus and WMR users
-        // vr::VRChaperoneSetup()->HideWorkingSetPreview();
+        vr::VRChaperoneSetup()->HideWorkingSetPreview();
+        vr::VRChaperoneSetup()->CommitWorkingCopy(
+            vr::EChaperoneConfigFile_Live );
         m_chaperoneCommitted = true;
     }
 }
@@ -1948,8 +1987,17 @@ void MoveCenterTabController::updateSpace()
             updatedBounds, m_collisionBoundsCountForReset );
         delete[] updatedBounds;
     }
-    vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
-        &offsetUniverseCenter );
+    if ( m_trackingUniverse == vr::TrackingUniverseStanding )
+    {
+        vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
+            &offsetUniverseCenter );
+    }
+    else
+    {
+        vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
+            &offsetUniverseCenter );
+    }
+
     vr::VRChaperoneSetup()->ShowWorkingSetPreview();
     m_chaperoneCommitted = false;
 
@@ -1966,15 +2014,18 @@ void MoveCenterTabController::eventLoopTick(
 {
     if ( settingsUpdateCounter >= k_moveCenterSettingsUpdateCounter )
     {
-        if ( parent->isDashboardVisible() )
-        {
-            setTrackingUniverse( int( universe ) );
-        }
+        setTrackingUniverse( int( universe ) );
         settingsUpdateCounter = 0;
     }
     else
     {
         settingsUpdateCounter++;
+    }
+
+    // detect if room setup is running
+    if ( m_trackingUniverse == vr::TrackingUniverseRawAndUncalibrated )
+    {
+        return;
     }
 
     // If we're trying to redifine the origin point, but can't becaues of bad

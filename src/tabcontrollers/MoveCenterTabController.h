@@ -138,6 +138,7 @@ private:
     bool m_chaperoneCommitted = true;
     bool m_pendingZeroOffsets = true;
     bool m_dashWasOpenPreviousFrame = false;
+    bool m_isResetDataStandingUniverse = true;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
@@ -248,6 +249,7 @@ public slots:
     void setLockY( bool value, bool notify = true );
     void setLockZ( bool value, bool notify = true );
 
+    void shutdown();
     void reset();
     void zeroOffsets();
 
