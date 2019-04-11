@@ -748,6 +748,13 @@ void OverlayController::mainEventLoop()
         }
         break;
 
+        case vr::VREvent_SeatedZeroPoseReset:
+        {
+            m_moveCenterTabController.incomingSeatedReset();
+            LOG( INFO ) << "Game Triggered Seated Zero-Position Reset";
+        }
+        break;
+
         // Multiple ChaperoneUniverseHasChanged are often emitted at the
         // same time (some with a little bit of delay) There is no sure way
         // to recognize redundant events, we can only exclude redundant

@@ -68,6 +68,9 @@ class MoveCenterTabController : public QObject
                     requireLockYChanged )
     Q_PROPERTY( bool lockZToggle READ lockZToggle WRITE setLockZ NOTIFY
                     requireLockZChanged )
+    Q_PROPERTY(
+        bool showLogMatricesButton READ showLogMatricesButton WRITE
+            setShowLogMatricesButton NOTIFY showLogMatricesButtonChanged )
 
 private:
     OverlayController* parent;
@@ -100,6 +103,7 @@ private:
     float m_gravityFloor = 0.0f;
     float m_gravityStrength = 9.8f;
     float m_flingStrength = 1.0f;
+    float m_seatedHeight = 1.0f;
     bool m_momentumSave = false;
     bool m_lockXToggle = false;
     bool m_lockYToggle = false;
@@ -138,8 +142,9 @@ private:
     bool m_chaperoneCommitted = true;
     bool m_pendingZeroOffsets = true;
     bool m_dashWasOpenPreviousFrame = false;
-    bool m_isResetDataStandingUniverse = true;
     bool m_roomSetupModeDetected = false;
+    bool m_seatedModeDetected = false;
+    bool m_showLogMatricesButton = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
@@ -150,6 +155,7 @@ private:
     vr::HmdQuad_t* m_collisionBoundsForReset;
     uint32_t m_collisionBoundsCountForReset = 0;
     vr::HmdMatrix34_t m_universeCenterForReset;
+    vr::HmdMatrix34_t m_seatedCenterForReset;
     vr::HmdQuad_t* m_collisionBoundsForOffset;
 
     void updateHmdRotationCounter( vr::TrackedDevicePose_t hmdPose,
@@ -162,6 +168,7 @@ private:
     void updateChaperoneResetData();
     void applyChaperoneResetData();
     void saveUncommittedChaperone();
+    void outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix );
 
 public:
     void initStage1();
@@ -192,8 +199,10 @@ public:
     bool lockXToggle() const;
     bool lockYToggle() const;
     bool lockZToggle() const;
+    bool showLogMatricesButton() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
+    void incomingSeatedReset();
 
     // actions:
     void leftHandSpaceDrag( bool leftHandDragActive );
@@ -249,9 +258,12 @@ public slots:
     void setLockX( bool value, bool notify = true );
     void setLockY( bool value, bool notify = true );
     void setLockZ( bool value, bool notify = true );
+    void setShowLogMatricesButton( bool value, bool notify = true );
 
     void shutdown();
     void reset();
+    void updateSeatedResetData();
+    void outputLogPoses();
     void zeroOffsets();
 
 signals:
@@ -278,6 +290,7 @@ signals:
     void requireLockXChanged( bool value );
     void requireLockYChanged( bool value );
     void requireLockZChanged( bool value );
+    void showLogMatricesButtonChanged( bool value );
 };
 
 } // namespace advsettings

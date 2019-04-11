@@ -340,6 +340,30 @@ MyStackViewPage {
                     }
                 }
 
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                MyPushButton {
+                    id: spaceLogMatrices
+                    Layout.preferredWidth: 250
+                    visible: MoveCenterTabController.showLogMatricesButton
+                    text: "Log Matrices"
+                    onClicked: {
+                        MoveCenterTabController.outputLogPoses()
+                    }
+                }
+
+                MyPushButton {
+                    id: spaceSeatedRecenter
+                    Layout.preferredWidth: 250
+                    visible: false
+                    text: "Seated Recenter"
+                    onClicked: {
+                        MoveCenterTabController.updateSeatedResetData()
+                    }
+                }
+
             }
         }
 
@@ -356,19 +380,14 @@ MyStackViewPage {
 			lockXToggle.checked = MoveCenterTabController.lockXToggle
 			lockYToggle.checked = MoveCenterTabController.lockYToggle
 			lockZToggle.checked = MoveCenterTabController.lockZToggle
+            spaceLogMatrices.visible = MoveCenterTabController.showLogMatricesButton
 			
             if (MoveCenterTabController.trackingUniverse === 0) {
                 spaceModeText.text = "Sitting"
-                spaceRotationPlusButton.enabled = false
-                spaceRotationMinusButton.enabled = false
-                spaceRotationSlider.enabled = false
-                spaceRotationText.text = "-"
+                spaceSeatedRecenter.visible = true
             } else if (MoveCenterTabController.trackingUniverse === 1) {
                 spaceModeText.text = "Standing"
-                spaceRotationPlusButton.enabled = true
-                spaceRotationMinusButton.enabled = true
-                spaceRotationSlider.enabled = true
-                spaceRotationText.text = "0°"
+                spaceSeatedRecenter.visible = false
             } else {
                 spaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
             }
@@ -407,16 +426,10 @@ MyStackViewPage {
             onTrackingUniverseChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {
                     spaceModeText.text = "Sitting"
-                    spaceRotationPlusButton.enabled = false
-                    spaceRotationMinusButton.enabled = false
-                    spaceRotationSlider.enabled = false
-                    spaceRotationText.text = "-"
+                    spaceSeatedRecenter.visible = true
                 } else if (MoveCenterTabController.trackingUniverse === 1) {
                     spaceModeText.text = "Standing"
-                    spaceRotationPlusButton.enabled = true
-                    spaceRotationMinusButton.enabled = true
-                    spaceRotationSlider.enabled = true
-                    spaceRotationText.text = "0°"
+                    spaceSeatedRecenter.visible = false
                 } else {
                     spaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
                 }
