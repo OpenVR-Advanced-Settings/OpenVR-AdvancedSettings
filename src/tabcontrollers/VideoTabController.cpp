@@ -85,4 +85,42 @@ namespace advsettings
 	void VideoTabController::saveVideoConfig() {
 
 	}
+
+	float VideoTabController::brightnessValue() const
+	{
+		return m_brightnessValue;
+	}
+
+	bool VideoTabController::brightnessEnabled() const
+	{
+		return m_brightnessEnabled;
+	}
+
+	void VideoTabController::setBrightnessEnabled(bool value, bool notify)
+	{
+		//TODO mutex?
+		//std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
+		if (value != m_brightnessEnabled)
+		{
+			m_brightnessEnabled = value;
+			if (notify)
+			{
+				emit brightnessEnabledChanged(value);
+			}
+		}
+	}
+
+	void VideoTabController::setBrightnessvalue(float value, bool notify)
+	{
+		//TODO mutex?
+		//std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
+		if (value != m_brightnessValue)
+		{
+			m_brightnessValue = value;
+			if (notify)
+			{
+				emit brightnessValueChanged(value);
+			}
+		}
+	}
 }

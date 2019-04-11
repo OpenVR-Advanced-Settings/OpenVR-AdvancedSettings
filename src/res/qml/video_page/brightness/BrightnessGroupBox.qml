@@ -33,18 +33,10 @@ GroupBox {
             Layout.fillWidth: true
 
             MyToggleButton {
-                id: turnBindLeft
-                text: "Enable Left Hand"
+                id: brightnessToggle
+                text: "Toggle Brightness Adjustment"
                 onCheckedChanged: {
                     MoveCenterTabController.turnBindLeft = this.checked
-                }
-            }
-
-            MyToggleButton {
-                id: turnBindRight
-                text: "Enable Right Hand"
-                onCheckedChanged: {
-                    MoveCenterTabController.turnBindRight = this.checked
                 }
             }
 
@@ -53,31 +45,50 @@ GroupBox {
             }
 
             MyText {
-                text: "Turn Comfort Mode:"
+                text: "Brightness:"
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }
 
             MySlider {
-                id: turnComfortSlider
-                from: 0
-                to: 10
-                stepSize: 1
-                value: 0
-                Layout.preferredWidth: 200
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+                id: brightnessSlider
+                from: 0.00
+                to: 1.0
+                stepSize: 0.01
+                value: 1.0.
+                    var val = (this.position * 100)/2 + 50
+                    chaperoneVisibilityText.text = Math.round(val) + "%"
+                }
                 onValueChanged: {
-                    turnComfortText.text = turnComfortSlider.value
-                    MoveCenterTabController.turnComfortFactor = turnComfortSlider.value
+                    //TODO change value
+                    ChaperoneTabController.setBoundsVisibility(value.toFixed(2), false)
                 }
             }
 
-            MyText {
-                id: turnComfortText
-                text: "0"
-                horizontalAlignment: Text.AlignRight
-                Layout.preferredWidth: 30
-                Layout.rightMargin: 10
+            MyTextField {
+                id: chaperoneVisibilityText
+                text: "100.00"
+                keyBoardUID: 301
+                Layout.preferredWidth: 100
+                Layout.leftMargin: 10
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < 50.0) {
+                            val = 50.0
+                        } else if (val > 100.0) {
+                            val = 100.0
+                        }
+                        var v = (val/100).toFixed(2)
+                        if (v <= chaperoneVisibilitySlider.to) {
+                            chaperoneVisibilitySlider.value = v
+                        } else {
+                            ChaperoneTabController.setBoundsVisibility(v, false)
+                        }
+                    }
+                    text = Math.round(ChaperoneTabController.boundsVisibility * 100) + "%"
+                }
             }
         }
     }
