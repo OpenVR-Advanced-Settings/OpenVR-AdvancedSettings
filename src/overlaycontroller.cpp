@@ -122,6 +122,7 @@ OverlayController::OverlayController( bool desktopMode,
     m_reviveTabController.initStage1(
         m_settingsTabController.forceRevivePage() );
     m_utilitiesTabController.initStage1();
+	m_videoTabController.initStage1();
 
     // init action handles
 
@@ -251,6 +252,16 @@ OverlayController::OverlayController( bool desktopMode,
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
+	qmlRegisterSingletonType<SteamVRTabController>(
+		qmlSingletonImportName,
+		1,
+		0,
+		"VideoTabController",
+		[](QQmlEngine*, QJSEngine*) {
+		QObject* obj = &(objectAddress->m_videoTabController);
+		QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+		return obj;
+	});
 }
 
 OverlayController::~OverlayController()
@@ -405,6 +416,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     m_settingsTabController.initStage2( this, m_pWindow.get() );
     m_reviveTabController.initStage2( this, m_pWindow.get() );
     m_utilitiesTabController.initStage2( this, m_pWindow.get() );
+	m_videoTabController.initStage2(this, m_pWindow.get());
 }
 
 void OverlayController::OnRenderRequest()
@@ -815,6 +827,7 @@ void OverlayController::mainEventLoop()
     m_settingsTabController.eventLoopTick();
     m_reviveTabController.eventLoopTick();
     m_audioTabController.eventLoopTick();
+	//TODO do I need loop for vide?
 
     if ( m_ulOverlayThumbnailHandle != vr::k_ulOverlayHandleInvalid )
     {

@@ -103,6 +103,12 @@ namespace advsettings
 		if (value != m_brightnessEnabled)
 		{
 			m_brightnessEnabled = value;
+			if (value) {
+				//TODO enable
+			}
+			else {
+				//TODO disable
+			}
 			if (notify)
 			{
 				emit brightnessEnabledChanged(value);
@@ -117,6 +123,16 @@ namespace advsettings
 		if (value != m_brightnessValue)
 		{
 			m_brightnessValue = value;
+			if (value <= 1.0f && value >= 0.0f) {
+				vr::VROverlayError overlayError = VROverlay()->SetOverlayAlpha(m_ulNotificationOverlayHandle, value)
+					//TODO handle error
+			}
+			else {
+				//TODO log warning invalid input?
+				m_brightnessValue = 1.0f;
+			}
+
+
 			if (notify)
 			{
 				emit brightnessValueChanged(value);
