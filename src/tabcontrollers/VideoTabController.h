@@ -2,7 +2,7 @@
 
 namespace advsettings {
 
-	class ChaperoneTabController : public QObject
+	class VideoTabController : public QObject
 	{
 		Q_OBJECT
 			Q_PROPERTY(bool brightnessEnabled READ brightnessEnabled WRITE
@@ -12,8 +12,7 @@ namespace advsettings {
 
 	private:
 		//TODO
-		constexpr auto notificationBrightnessFilename
-			= "todo";
+		//constexpr auto notificationBrightnessFilename
 		vr::VROverlayHandle_t m_brightnessNotificationOverlayHandle
 			= vr::k_ulOverlayHandleInvalid;
 		float m_brightnessValue = 1.0;
@@ -23,8 +22,7 @@ namespace advsettings {
 		void saveVideoConfig();
 
 
-		QString getSettingsName() override
-		{
+		QString getSettingsName(){
 			return "videoSettings";
 		}
 
@@ -51,6 +49,6 @@ namespace advsettings {
 	signals:
 		void brightnessEnabledChanged(bool value);
 		void brightnessValueChanged(float value);
-	}
+	};
 
 }

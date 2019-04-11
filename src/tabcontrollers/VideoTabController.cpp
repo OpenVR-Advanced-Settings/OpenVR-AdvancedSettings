@@ -104,10 +104,16 @@ namespace advsettings
 		{
 			m_brightnessEnabled = value;
 			if (value) {
-				//TODO enable
+				if(getBrightnessOverlayHandle() != vr::k_ulOverlayHandleInvalid)
+				{
+					vr::VROverlay()->ShowOverlay(getBrightnessOverlayHandle());
+				}
 			}
 			else {
-				//TODO disable
+				if (getBrightnessOverlayHandle() != vr::k_ulOverlayHandleInvalid)
+				{
+					vr::VROverlay()->HideOverlay(getBrightnessOverlayHandle());
+				}
 			}
 			if (notify)
 			{
