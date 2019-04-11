@@ -122,7 +122,7 @@ OverlayController::OverlayController( bool desktopMode,
     m_reviveTabController.initStage1(
         m_settingsTabController.forceRevivePage() );
     m_utilitiesTabController.initStage1();
-	m_videoTabController.initStage1();
+	//m_videoTabController.initStage1();
 
     // init action handles
 

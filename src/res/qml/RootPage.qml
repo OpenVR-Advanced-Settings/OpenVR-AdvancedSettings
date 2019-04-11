@@ -6,6 +6,7 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 import "common"
 import "utilities_page"
 import "audio_page"
+import "video_page"
 
 MyStackViewPage {
     id: rootPage
