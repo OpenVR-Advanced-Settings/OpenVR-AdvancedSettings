@@ -125,6 +125,17 @@ MyStackViewPage {
                        }
                    }
 
+                   MyPushButton {
+                       id: videoButton
+                       activationSoundEnabled: false
+                       text: "Video"
+                       Layout.fillWidth: true
+                       onClicked: {
+                           MyResources.playFocusChangedSound()
+                           mainView.push(videoPage)
+                       }
+                   }
+
                    Item {
                        Layout.fillHeight: true
                        Layout.fillWidth: true
