@@ -36,13 +36,12 @@ GroupBox {
                 id: brightnessToggle
                 text: "Toggle Brightness Adjustment"
                 onCheckedChanged: {
-                    MoveCenterTabController.turnBindLeft = this.checked
-                }
+                    VideoTabController.setBrightnessEnabled(this.checked, false)                }
             }
 
-            Item {
-                Layout.fillWidth: true
-            }
+            //Item {
+            //    Layout.fillWidth: true
+            //}
 
             MyText {
                 text: "Brightness:"
@@ -55,18 +54,19 @@ GroupBox {
                 from: 0.00
                 to: 1.0
                 stepSize: 0.01
-                value: 1.0.
-                    var val = (this.position * 100)/2 + 50
-                    chaperoneVisibilityText.text = Math.round(val) + "%"
+                value: 1.0
+                onPositionChanged: {
+                    var val = (this.position * 100)/2
+                    brightnessValueText.text = Math.round(val) + "%"
                 }
                 onValueChanged: {
                     //TODO change value
-                    ChaperoneTabController.setBoundsVisibility(value.toFixed(2), false)
+                    VideoTabController.setBrightnessValue(value.toFixed(2), false)
                 }
             }
 
             MyTextField {
-                id: chaperoneVisibilityText
+                id: brightnessValueText
                 text: "100.00"
                 keyBoardUID: 301
                 Layout.preferredWidth: 100
@@ -75,41 +75,37 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 50.0) {
-                            val = 50.0
+                        if (val < 0.0) {
+                            val = 0
                         } else if (val > 100.0) {
                             val = 100.0
                         }
                         var v = (val/100).toFixed(2)
-                        if (v <= chaperoneVisibilitySlider.to) {
-                            chaperoneVisibilitySlider.value = v
+                        if (v <= brightnessSlider.to) {
+                            brightnessSlider.value = v
                         } else {
-                            ChaperoneTabController.setBoundsVisibility(v, false)
+                            VideoTabController.setBrightnessValue(v, false)
                         }
                     }
-                    text = Math.round(ChaperoneTabController.boundsVisibility * 100) + "%"
+                    text = Math.round(VideoTabController.boundsVisibility * 100) + "%"
                 }
             }
         }
     }
 
     Component.onCompleted: {
-        turnBindLeft.checked = MoveCenterTabController.turnBindLeft
-        turnBindRight.checked = MoveCenterTabController.turnBindRight
-        turnComfortSlider.value = MoveCenterTabController.turnComfortFactor
+        brightnessSlider.value = VideoTabController.brightnessValue
+        brightnessToggle.checked = VideoTabController.brightnessEnabled
     }
 
     Connections {
-        target: MoveCenterTabController
+        target: VideoTabController
 
-        onTurnBindLeftChanged: {
-            turnBindLeft.checked = MoveCenterTabController.turnBindLeft
+        onBrightnessValueChanged: {
+            brightnessSlider.value = VideoTabController.brightnessValue
         }
-        onTurnBindRightChanged: {
-            turnBindRight.checked = MoveCenterTabController.turnBindRight
-        }
-        onTurnComfortFactorChanged: {
-            turnComfortSlider.value = MoveCenterTabController.turnComfortFactor
+        onBrightnessEnabledChanged: {
+            brightnessToggle.checked = VideoTabController.brightnessEnabled
         }
     }
 }
