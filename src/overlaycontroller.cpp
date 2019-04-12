@@ -20,6 +20,7 @@
 #include <openvr.h>
 #include <easylogging++.h>
 #include "utils/Matrix.h"
+#include "openvr/overlay_utils.h"
 
 // application namespace
 namespace advsettings
@@ -262,6 +263,16 @@ OverlayController::OverlayController( bool desktopMode,
 		QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
 		return obj;
 	});
+    qmlRegisterSingletonType<overlay::DesktopOverlay>(
+        qmlSingletonImportName,
+        1,
+        0,
+        "DesktopOverlay",
+        []( QQmlEngine*, QJSEngine* ) {
+            QObject* obj = &( objectAddress->m_desktopOverlay );
+            QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
+            return obj;
+        } );
 }
 
 OverlayController::~OverlayController()
@@ -711,7 +722,7 @@ void OverlayController::mainEventLoop()
             LOG( INFO ) << "Received quit request.";
             vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some
                                                        // time just in case
-            m_moveCenterTabController.reset();
+            m_moveCenterTabController.shutdown();
             // Un-mute mic before Exiting VR, as it is set at system level Not
             // Vr level.
             m_audioTabController.setMicMuted( false, false );
@@ -727,6 +738,7 @@ void OverlayController::mainEventLoop()
         case vr::VREvent_DashboardActivated:
         {
             LOG( DEBUG ) << "Dashboard activated";
+            m_desktopOverlay.update();
             m_dashboardVisible = true;
         }
         break;
@@ -745,6 +757,13 @@ void OverlayController::mainEventLoop()
             emit keyBoardInputSignal( QString( keyboardBuffer ),
                                       static_cast<unsigned long>(
                                           vrEvent.data.keyboard.uUserValue ) );
+        }
+        break;
+
+        case vr::VREvent_SeatedZeroPoseReset:
+        {
+            m_moveCenterTabController.incomingSeatedReset();
+            LOG( INFO ) << "Game Triggered Seated Zero-Position Reset";
         }
         break;
 

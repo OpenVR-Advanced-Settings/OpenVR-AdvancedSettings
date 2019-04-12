@@ -1,3 +1,4 @@
+
 ![language](https://img.shields.io/badge/Language-C%2B%2B17%2C%20QML-green.svg) ![dependencies](https://img.shields.io/badge/Dependencies-OpenVR%2C%20Qt5%2C%20Python3-green.svg)
 ![license_gpl3](https://img.shields.io/badge/License-GPL%203.0-green.svg) 
 
@@ -23,6 +24,7 @@
  >   * [Space Fix Page](#space_fix_page)
  >   * [Audio Page](#audio_page)
  >   * [Utilities Page](#utilities_page)
+ >   * [Desktop Overlay Page](#desktop_overlay_page)
  >   * [Statistics Page](#statistics_page)
  >   * [Settings Page](#settings_page)
  > * [How To Compile](#how_to_compile)
@@ -328,6 +330,19 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Steam Desktop Overlay Width:** Allows to increase the size of the Steam desktop overlay. Useful for multi-monitor setups. It is saved between sessions.
 
 - **Media Control Keys:** Allows controlling a media player through the media keys. This is the same as having a keyboard with media keys and then pressing them. Should support most common media players.
+
+<a name="desktop_overlay_page"></a>
+## - Desktop Overlay Page
+
+![Desktop Overlay Page](docs/screenshots/DesktopOverlayPage.png)
+
+-**Overlay Width:** The width of the overlay in meters. Multi screen setups need larger values to see any difference.
+
+-**Up/Down Translation:** Moves the overlay up and down.
+
+-**Forwards/Backwards Translation:** Moves the overlay forwards and backwards.
+
+-**Left/Right Translation:** Moves the overlay left or right.
 
 <a name="statistics_page"></a>
 ## - Statistics Page:

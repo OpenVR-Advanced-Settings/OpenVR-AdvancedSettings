@@ -40,6 +40,7 @@
 #include "tabcontrollers/VideoTabController.h"
 
 #include "openvr/ivrinput.h"
+#include "openvr/overlay_utils.h"
 
 namespace application_strings
 {
@@ -61,7 +62,7 @@ namespace advsettings
 // Avoid setting values to the same numbers.
 constexpr int k_audioSettingsUpdateCounter = 89;
 constexpr int k_chaperoneSettingsUpdateCounter = 101;
-constexpr int k_moveCenterSettingsUpdateCounter = 149;
+constexpr int k_moveCenterSettingsUpdateCounter = 83;
 constexpr int k_reviveSettingsUpdateCounter = 139;
 constexpr int k_settingsTabSettingsUpdateCounter = 157;
 constexpr int k_steamVrSettingsUpdateCounter = 97;
@@ -123,6 +124,7 @@ public: // I know it's an ugly hack to make them public to enable external
     ReviveTabController m_reviveTabController;
     UtilitiesTabController m_utilitiesTabController;
 	VideoTabController m_videoTabController;
+    overlay::DesktopOverlay m_desktopOverlay;
 
 private:
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );

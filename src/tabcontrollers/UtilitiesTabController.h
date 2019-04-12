@@ -5,7 +5,7 @@
 #include <QTime>
 #include <openvr.h>
 #include <memory>
-#include "KeyboardInput.h"
+#include "keyboardinput/KeyboardInput.h"
 
 class QQuickWindow;
 // application namespace
@@ -25,16 +25,8 @@ class UtilitiesTabController : public QObject
                     NOTIFY alarmTimeHourChanged )
     Q_PROPERTY( int alarmTimeMinute READ alarmTimeMinute WRITE
                     setAlarmTimeMinute NOTIFY alarmTimeMinuteChanged )
-    Q_PROPERTY(
-        bool steamDesktopOverlayAvailable READ steamDesktopOverlayAvailable
-            NOTIFY steamDesktopOverlayAvailableChanged )
-    Q_PROPERTY(
-        float steamDesktopOverlayWidth READ steamDesktopOverlayWidth WRITE
-            setSteamDesktopOverlayWidth NOTIFY steamDesktopOverlayWidthChanged )
 
 private:
-    void setUpDesktopOverlay( float desktopWidthInMeters );
-
     OverlayController* m_parent;
     QQuickWindow* m_widget;
 
@@ -44,14 +36,11 @@ private:
     bool m_alarmIsModal = true;
     QTime m_alarmTime;
     QTime m_alarmLastCheckTime;
-    bool m_steamDesktopOverlayAvailable = false;
-    float m_steamDesktopOverlayWidth = 4.0f;
+
     vr::VROverlayHandle_t m_batteryOverlayHandles[vr::k_unMaxTrackedDeviceCount]
         = { 0 };
     int m_batteryState[vr::k_unMaxTrackedDeviceCount];
     bool m_batteryVisible[vr::k_unMaxTrackedDeviceCount];
-
-    std::unique_ptr<KeyboardInput> keyboardInput;
 
 public:
     void initStage1();
@@ -63,9 +52,6 @@ public:
     bool alarmIsModal() const;
     int alarmTimeHour() const;
     int alarmTimeMinute() const;
-
-    bool steamDesktopOverlayAvailable() const;
-    float steamDesktopOverlayWidth() const;
 
 public slots:
     void sendKeyboardInput( QString input );
@@ -86,18 +72,11 @@ public slots:
     void modAlarmTimeHour( int value, bool notify = true );
     void modAlarmTimeMinute( int value, bool notify = true );
 
-    void setSteamDesktopOverlayWidth( float width,
-                                      bool notify = true,
-                                      bool notifyOpenVr = true );
-
 signals:
     void alarmEnabledChanged( bool enabled );
     void alarmIsModalChanged( bool modal );
     void alarmTimeHourChanged( int hour );
     void alarmTimeMinuteChanged( int min );
-
-    void steamDesktopOverlayAvailableChanged( bool available );
-    void steamDesktopOverlayWidthChanged( float width );
 };
 
 } // namespace advsettings

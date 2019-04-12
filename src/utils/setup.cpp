@@ -7,28 +7,27 @@ void mainQtMessageHandler( QtMsgType type,
                            const QMessageLogContext& context,
                            const QString& msg )
 {
+    // context contains null pointers on release builds. Cast to get rid of
+    // unreferenced formal parameter warnings.
+    static_cast<void>( context );
+
     QByteArray localMsg = msg.toLocal8Bit();
     switch ( type )
     {
     case QtDebugMsg:
-        LOG( DEBUG ) << localMsg.constData() << " (" << context.file << ":"
-                     << context.line << ")";
+        LOG( DEBUG ) << "QTMSGH: " << localMsg.constData();
         break;
     case QtInfoMsg:
-        LOG( INFO ) << localMsg.constData() << " (" << context.file << ":"
-                    << context.line << ")";
+        LOG( INFO ) << "QTMSGH: " << localMsg.constData();
         break;
     case QtWarningMsg:
-        LOG( WARNING ) << localMsg.constData() << " (" << context.file << ":"
-                       << context.line << ")";
+        LOG( WARNING ) << "QTMSGH: " << localMsg.constData();
         break;
     case QtCriticalMsg:
-        LOG( ERROR ) << localMsg.constData() << " (" << context.file << ":"
-                     << context.line << ")";
+        LOG( ERROR ) << "QTMSGH: " << localMsg.constData();
         break;
     case QtFatalMsg:
-        LOG( FATAL ) << localMsg.constData() << " (" << context.file << ":"
-                     << context.line << ")";
+        LOG( FATAL ) << "QTMSGH: " << localMsg.constData();
         break;
     }
 }
