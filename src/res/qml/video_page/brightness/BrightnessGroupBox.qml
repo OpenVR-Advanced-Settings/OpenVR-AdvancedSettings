@@ -34,58 +34,53 @@ GroupBox {
 
             MyToggleButton {
                 id: brightnessToggle
-                text: "Toggle Brightness Adjustment"
+                text: "Toggle On/Off"
                 onCheckedChanged: {
                     VideoTabController.setBrightnessEnabled(this.checked, false)                }
             }
 
-            //Item {
-            //    Layout.fillWidth: true
-            //}
+            Item {
+               Layout.preferredWidth: 150
+            }
 
             MyText {
-                text: "Brightness:"
+                text: "Value :"
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }
 
             MySlider {
                 id: brightnessSlider
-                from: 0.00
+                from: 0.05
                 to: 1.0
                 stepSize: 0.01
                 value: 1.0
+                Layout.fillWidth: true
                 onPositionChanged: {
                     var val = (this.position * 100)/2
                     brightnessValueText.text = Math.round(val) + "%"
                 }
                 onValueChanged: {
-                    //TODO change value
                     VideoTabController.setBrightnessValue(value.toFixed(2), false)
                 }
             }
 
             MyTextField {
                 id: brightnessValueText
-                text: "100.00"
-                keyBoardUID: 301
+                text: "100%"
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0.0) {
-                            val = 0
+                        if (val < 5) {
+                            val = 5
                         } else if (val > 100.0) {
                             val = 100.0
                         }
                         var v = (val/100).toFixed(2)
-                        if (v <= brightnessSlider.to) {
-                            brightnessSlider.value = v
-                        } else {
-                            VideoTabController.setBrightnessValue(v, false)
-                        }
+                        brightnessSlider.value = v
                     }
                     text = Math.round(VideoTabController.boundsVisibility * 100) + "%"
                 }
