@@ -11,7 +11,7 @@ import distutils.dir_util
 #Const globals
 #Version string must be bumped every release.
 #TODO: See developer documentation.
-VERSION_STRING = "3-0-1"
+VERSION_STRING = "3-1-0-RC1"
 
 EXIT_CODE_SUCCESS = 0
 EXIT_CODE_FAILURE_BUILD_APP = 1
