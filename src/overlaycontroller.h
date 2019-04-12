@@ -123,7 +123,7 @@ public: // I know it's an ugly hack to make them public to enable external
     SettingsTabController m_settingsTabController;
     ReviveTabController m_reviveTabController;
     UtilitiesTabController m_utilitiesTabController;
-	VideoTabController m_videoTabController;
+    VideoTabController m_videoTabController;
     overlay::DesktopOverlay m_desktopOverlay;
 
 private:

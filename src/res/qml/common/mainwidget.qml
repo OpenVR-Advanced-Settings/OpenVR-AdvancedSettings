@@ -77,6 +77,7 @@ Rectangle {
         stackView: mainView
         visible:false
     }
+
     property DesktopOverlayPage desktopOverlayPage: DesktopOverlayPage {
         stackView: mainView
         visible: false

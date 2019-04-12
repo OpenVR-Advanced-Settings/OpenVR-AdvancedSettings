@@ -25,7 +25,7 @@ MyStackViewPage {
                    Layout.preferredWidth: 250
                    Layout.maximumWidth: 250
                    Layout.fillHeight: true
-                   spacing: 18
+                   spacing: 10
                    MyPushButton {
                        id: steamVRButton
                        activationSoundEnabled: false
@@ -93,6 +93,17 @@ MyStackViewPage {
                    }
 
                    MyPushButton {
+                       id: videoButton
+                       activationSoundEnabled: false
+                       text: "Video"
+                       Layout.fillWidth: true
+                       onClicked: {
+                           MyResources.playFocusChangedSound()
+                           mainView.push(videoPage)
+                       }
+                   }
+
+                   MyPushButton {
                        id: reviveButton
                        activationSoundEnabled: false
                        text: "Revive"
@@ -134,17 +145,6 @@ MyStackViewPage {
                        onClicked: {
                            MyResources.playFocusChangedSound()
                            mainView.push(statisticsPage)
-                       }
-                   }
-
-                   MyPushButton {
-                       id: videoButton
-                       activationSoundEnabled: false
-                       text: "Video"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(videoPage)
                        }
                    }
 
