@@ -2,6 +2,7 @@
 #include <QQuickWindow>
 #include <QApplication>
 #include "../overlaycontroller.h"
+#include <math.h>
 
 namespace advsettings
 {
@@ -103,8 +104,6 @@ namespace advsettings
 
 	void VideoTabController::setBrightnessEnabled(bool value, bool notify)
 	{
-		//TODO mutex?
-		//std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
 		if (value != m_brightnessEnabled)
 		{
 			m_brightnessEnabled = value;
@@ -130,9 +129,9 @@ namespace advsettings
 
 	void VideoTabController::setBrightnessValue(float percvalue, bool notify)
 	{
-		//TODO mutex?
-		//std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
-		float realvalue = (1.0f - percvalue);
+
+		//This takes the Perceived value, and converts it to allow more accurate linear positioning. (human perception logarithmic)
+		float realvalue = static_cast<float>(sqrt(static_cast<double>(1.0f - percvalue)));
 
 		if (realvalue != m_opacityValue)
 		{
