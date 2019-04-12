@@ -8,10 +8,9 @@ namespace advsettings
 {
 	void VideoTabController::initStage1() 
 	{
-		//reloadVideoConfig();
+		
 	}
 
-//TODO args
 	void VideoTabController::initStage2(OverlayController* var_parent,
 		QQuickWindow* var_widget)
 	{
@@ -25,21 +24,18 @@ namespace advsettings
 			notifKey.c_str(), notifKey.c_str(), &m_brightnessNotificationOverlayHandle);
 		if (overlayError == vr::VROverlayError_None)
 		{
-			constexpr auto notificationIconFilename
-				= "/res/img/video/dimmer.png";
 			const auto notifIconPath
-				= paths::binaryDirectoryFindFile(notificationIconFilename);
+				= paths::binaryDirectoryFindFile(video_keys::k_brightnessOverlayFilename);
 			if (notifIconPath.has_value())
 			{
 				vr::VROverlay()->SetOverlayFromFile(m_brightnessNotificationOverlayHandle,
 					notifIconPath->c_str());
 				vr::VROverlay()->SetOverlayWidthInMeters(
-					m_brightnessNotificationOverlayHandle, 1.0f);
-				//Places the "overlay just past eye sight 1mx1m
+					m_brightnessNotificationOverlayHandle, k_overlayWidth);
 				vr::HmdMatrix34_t notificationTransform
 					= { { { 1.0f, 0.0f, 0.0f, 0.00f },
 				{ 0.0f, 1.0f, 0.0f, 0.00f },
-				{ 0.0f, 0.0f, 1.0f, -0.15f } } };
+				{ 0.0f, 0.0f, 1.0f, k_hmdDistance } } };
 				vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
 					m_brightnessNotificationOverlayHandle,
 					vr::k_unTrackedDeviceIndex_Hmd,
@@ -48,7 +44,7 @@ namespace advsettings
 			else
 			{
 				LOG(ERROR) << "Could not find notification icon \""
-					<< notificationIconFilename << "\"";
+					<< video_keys::k_brightnessOverlayFilename << "\"";
 			}
 		}
 		else
@@ -57,7 +53,8 @@ namespace advsettings
 				<< vr::VROverlay()->GetOverlayErrorNameFromEnum(
 					overlayError);
 		}
-		//emit defaultProfileDisplay();
+
+		reloadVideoConfig();
 	}
 
 	void VideoTabController::eventLoopTick() 
@@ -65,35 +62,35 @@ namespace advsettings
 
 	}
 
-	/*void VideoTabController::reloadVideoConfig() {
-		//Others Use Mutex needed?
+	void VideoTabController::reloadVideoConfig() {
 		auto settings = OverlayController::appSettings();
 		settings->beginGroup(getSettingsName());
-
-		//TODO might need emit params
-		setBrightnessEnabled(settings->value("brightnessEnabled", false).toBool());
-		setBrightnessLevel(settings->value("brightnessValue", 100).toFloat());
+		setBrightnessEnabled(settings->value("brightnessEnabled", false).toBool(), true);
+		m_opacityValue = settings->value("opacityValue", 0.0f).toFloat();
+		setBrightnessValue(settings->value("brightnessValue", 1.0f).toFloat(), true);
 		settings->endGroup();
 
 	}
-	*/
+	
 
-	/*
+	
 	void VideoTabController::saveVideoConfig() {
 		auto settings = OverlayController::appSettings();
 		settings->beginGroup(getSettingsName());
-
 		settings->setValue("brightnessEnabled", brightnessEnabled());
+		settings->setValue("opacityValue", opacityValue());
 		settings->setValue("brightnessValue", brightnessValue());
-	}
-	void VideoTabController::saveVideoConfig() {
+		settings->endGroup();
 
 	}
-	*/
+	
+	float VideoTabController::opacityValue() const {
+		return m_opacityValue;
+	}
 
 	float VideoTabController::brightnessValue() const
 	{
-		return (1.0f - m_opacityValue);
+		return m_brightnessValue;
 	}
 
 	bool VideoTabController::brightnessEnabled() const
@@ -111,15 +108,17 @@ namespace advsettings
 				if(getBrightnessOverlayHandle() != vr::k_ulOverlayHandleInvalid)
 				{
 					vr::VROverlay()->ShowOverlay(getBrightnessOverlayHandle());
-					LOG(INFO) << "overlay is on";
+					LOG(INFO) << "Brightness Overlay toggled on";
 				}
 			}
 			else {
 				if (getBrightnessOverlayHandle() != vr::k_ulOverlayHandleInvalid)
 				{
 					vr::VROverlay()->HideOverlay(getBrightnessOverlayHandle());
+					LOG(INFO) << "Brightness Overlay toggled off";
 				}
 			}
+			saveVideoConfig();
 			if (notify)
 			{
 				emit brightnessEnabledChanged(value);
@@ -135,14 +134,17 @@ namespace advsettings
 
 		if (realvalue != m_opacityValue)
 		{
-			m_opacityValue = realvalue;
+			m_brightnessValue = percvalue;
 			if (realvalue <= 1.0f && realvalue >= 0.0f) {
+				m_opacityValue = realvalue;
 				vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(m_brightnessNotificationOverlayHandle, realvalue);
 				if (overlayError != vr::VROverlayError_None) {
 					LOG(ERROR) << "Could not set alpha: "
 						<< vr::VROverlay()->GetOverlayErrorNameFromEnum(
 							overlayError);
 				}
+				//only saves if opacity Value is valid. [1-0]
+				saveVideoConfig();
 			}
 			else {
 				LOG(WARNING) << "alpha value is invalid setting to 1.0";

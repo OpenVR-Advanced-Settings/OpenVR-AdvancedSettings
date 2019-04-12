@@ -5,10 +5,15 @@
 #include <QString>
 #include <QVariant>
 #include <openvr.h>
-//#include "../overlaycontroller.h"
 
 
 class QQuickWindow;
+
+namespace video_keys {
+
+	constexpr auto k_brightnessOverlayFilename = "/res/img/video/dimmer.png";
+
+}//namespace video_keys
 
 namespace advsettings {
 	// forward declaration
@@ -23,18 +28,23 @@ namespace advsettings {
 				setBrightnessValue NOTIFY brightnessValueChanged)
 
 	private:
-		//TODO
-		//constexpr auto notificationBrightnessFilename
+
+		// how far away the overlay is, any OVERLAY closer will not be dimmed.
+		const float k_hmdDistance = -0.15f;
+		// how wide overlay is, Increase this value if edges of view are not dimmed.
+		const float k_overlayWidth = 1.0f;
 		OverlayController * parent;
 		QQuickWindow* widget;
 
 		vr::VROverlayHandle_t m_brightnessNotificationOverlayHandle
 			= vr::k_ulOverlayHandleInvalid;
 		float m_opacityValue = 0.0f;
+		float m_brightnessValue = 1.0f;
 		bool m_brightnessEnabled = false;
 
-		//void reloadVideoConfig();
-		//void saveVideoConfig();
+
+		void reloadVideoConfig();
+		void saveVideoConfig();
 
 
 		QString getSettingsName(){
@@ -48,6 +58,10 @@ namespace advsettings {
 
 
 	public:
+
+		
+		float opacityValue() const;
+		//inverse of brightnessValue
 		float brightnessValue() const;
 		bool brightnessEnabled() const;
 
@@ -66,4 +80,4 @@ namespace advsettings {
 		void brightnessValueChanged(float value);
 	};
 
-}// namespace
+}// namespace advsettings
