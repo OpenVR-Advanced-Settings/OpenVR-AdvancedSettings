@@ -34,10 +34,11 @@ namespace advsettings
 					notifIconPath->c_str());
 				vr::VROverlay()->SetOverlayWidthInMeters(
 					m_brightnessNotificationOverlayHandle, 1.0f);
+				//Places the "overlay just past eye sight 1mx1m should more or less cover all headsets
 				vr::HmdMatrix34_t notificationTransform
 					= { { { 1.0f, 0.0f, 0.0f, 0.00f },
 				{ 0.0f, 1.0f, 0.0f, 0.00f },
-				{ 0.0f, 0.0f, 1.0f, -0.3f } } };
+				{ 0.0f, 0.0f, 1.0f, -0.01f } } };
 				vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
 					m_brightnessNotificationOverlayHandle,
 					vr::k_unTrackedDeviceIndex_Hmd,
