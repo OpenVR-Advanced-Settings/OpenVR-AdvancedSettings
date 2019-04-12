@@ -6,12 +6,13 @@ import "../common"
 import "brightness"
 
 MyStackViewPage {
+    width: 1200
     headerText: "Video Settings"
 
     content: ColumnLayout {
         spacing: 18
 
-        BrightnessGroupBox { id: brightnessGroupBox }
+        BrightnessGroupBox { }
 
         Item {
             Layout.fillHeight: true

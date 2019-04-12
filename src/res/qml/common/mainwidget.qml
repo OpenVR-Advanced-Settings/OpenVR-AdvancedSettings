@@ -5,6 +5,7 @@ import ".."
 import "../utilities_page"
 import "../audio_page"
 import "../motion_page"
+import "../video_page"
 
 Rectangle {
     id: root
@@ -69,6 +70,11 @@ Rectangle {
     property UtilitiesPage utilitiesPage: UtilitiesPage {
         stackView: mainView
         visible: false
+    }
+
+    property VideoPage videoPage: VideoPage {
+        stackView: mainView
+        visible:false
     }
 
     StackView {
