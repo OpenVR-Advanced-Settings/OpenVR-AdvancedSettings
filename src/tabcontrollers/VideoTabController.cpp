@@ -34,11 +34,11 @@ namespace advsettings
 					notifIconPath->c_str());
 				vr::VROverlay()->SetOverlayWidthInMeters(
 					m_brightnessNotificationOverlayHandle, 1.0f);
-				//Places the "overlay just past eye sight 1mx1m should more or less cover all headsets
+				//Places the "overlay just past eye sight 1mx1m
 				vr::HmdMatrix34_t notificationTransform
 					= { { { 1.0f, 0.0f, 0.0f, 0.00f },
 				{ 0.0f, 1.0f, 0.0f, 0.00f },
-				{ 0.0f, 0.0f, 1.0f, -0.01f } } };
+				{ 0.0f, 0.0f, 1.0f, -0.15f } } };
 				vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
 					m_brightnessNotificationOverlayHandle,
 					vr::k_unTrackedDeviceIndex_Hmd,
@@ -92,7 +92,7 @@ namespace advsettings
 
 	float VideoTabController::brightnessValue() const
 	{
-		return m_brightnessValue;
+		return (1.0f - m_opacityValue);
 	}
 
 	bool VideoTabController::brightnessEnabled() const
@@ -112,6 +112,7 @@ namespace advsettings
 				if(getBrightnessOverlayHandle() != vr::k_ulOverlayHandleInvalid)
 				{
 					vr::VROverlay()->ShowOverlay(getBrightnessOverlayHandle());
+					LOG(INFO) << "overlay is on";
 				}
 			}
 			else {
@@ -127,16 +128,17 @@ namespace advsettings
 		}
 	}
 
-	void VideoTabController::setBrightnessValue(float value, bool notify)
+	void VideoTabController::setBrightnessValue(float percvalue, bool notify)
 	{
 		//TODO mutex?
 		//std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
-		if (value != m_brightnessValue)
+		float realvalue = (1.0f - percvalue);
+
+		if (realvalue != m_opacityValue)
 		{
-			m_brightnessValue = value;
-			if (value <= 1.0f && value >= 0.0f) {
-				vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(m_brightnessNotificationOverlayHandle, value);
-				
+			m_opacityValue = realvalue;
+			if (realvalue <= 1.0f && realvalue >= 0.0f) {
+				vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(m_brightnessNotificationOverlayHandle, realvalue);
 				if (overlayError != vr::VROverlayError_None) {
 					LOG(ERROR) << "Could not set alpha: "
 						<< vr::VROverlay()->GetOverlayErrorNameFromEnum(
@@ -145,13 +147,13 @@ namespace advsettings
 			}
 			else {
 				LOG(WARNING) << "alpha value is invalid setting to 1.0";
-				m_brightnessValue = 1.0f;
+				m_opacityValue = 0.0f;
 			}
 
 
 			if (notify)
 			{
-				emit brightnessValueChanged(value);
+				emit brightnessValueChanged(percvalue);
 			}
 		}
 	}

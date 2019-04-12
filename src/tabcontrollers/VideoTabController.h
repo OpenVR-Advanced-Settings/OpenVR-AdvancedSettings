@@ -30,7 +30,7 @@ namespace advsettings {
 
 		vr::VROverlayHandle_t m_brightnessNotificationOverlayHandle
 			= vr::k_ulOverlayHandleInvalid;
-		float m_brightnessValue = 1.0f;
+		float m_opacityValue = 0.0f;
 		bool m_brightnessEnabled = false;
 
 		//void reloadVideoConfig();
@@ -58,7 +58,7 @@ namespace advsettings {
 
 	public slots:
 		void setBrightnessEnabled(bool value, bool notify = true);
-		void setBrightnessValue(float value, bool notify = true);
+		void setBrightnessValue(float percvalue, bool notify = true);
 
 
 	signals:

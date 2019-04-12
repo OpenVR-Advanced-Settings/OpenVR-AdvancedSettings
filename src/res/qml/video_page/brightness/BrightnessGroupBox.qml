@@ -40,27 +40,28 @@ GroupBox {
             }
 
             Item {
-               Layout.preferredWidth: 150
+                Layout.preferredWidth: 150
             }
 
             MyText {
-                text: "Value :"
+                text: "Brightness:"
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }
 
             MySlider {
                 id: brightnessSlider
-                from: 0.05
+                from: 0.01
                 to: 1.0
                 stepSize: 0.01
                 value: 1.0
                 Layout.fillWidth: true
                 onPositionChanged: {
-                    var val = (this.position * 100)/2
+                    var val = (this.position * 100)
                     brightnessValueText.text = Math.round(val) + "%"
                 }
                 onValueChanged: {
+
                     VideoTabController.setBrightnessValue(value.toFixed(2), false)
                 }
             }
@@ -68,6 +69,7 @@ GroupBox {
             MyTextField {
                 id: brightnessValueText
                 text: "100%"
+                keyBoardUID: 301
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
                 horizontalAlignment: Text.AlignHCenter
@@ -80,7 +82,7 @@ GroupBox {
                             val = 100.0
                         }
                         var v = (val/100).toFixed(2)
-                        brightnessSlider.value = v
+                            brightnessSlider.value = v
                     }
                     text = Math.round(VideoTabController.boundsVisibility * 100) + "%"
                 }
