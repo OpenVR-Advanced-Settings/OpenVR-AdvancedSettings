@@ -71,6 +71,8 @@ class MoveCenterTabController : public QObject
     Q_PROPERTY(
         bool showLogMatricesButton READ showLogMatricesButton WRITE
             setShowLogMatricesButton NOTIFY showLogMatricesButtonChanged )
+    Q_PROPERTY( bool allowExternalEdits READ allowExternalEdits WRITE
+                    setAllowExternalEdits NOTIFY allowExternalEditsChanged )
 
 private:
     OverlayController* parent;
@@ -145,6 +147,7 @@ private:
     bool m_roomSetupModeDetected = false;
     bool m_seatedModeDetected = false;
     bool m_showLogMatricesButton = false;
+    bool m_allowExternalEdits = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
@@ -200,6 +203,7 @@ public:
     bool lockYToggle() const;
     bool lockZToggle() const;
     bool showLogMatricesButton() const;
+    bool allowExternalEdits() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
     void incomingSeatedReset();
@@ -259,6 +263,7 @@ public slots:
     void setLockY( bool value, bool notify = true );
     void setLockZ( bool value, bool notify = true );
     void setShowLogMatricesButton( bool value, bool notify = true );
+    void setAllowExternalEdits( bool value, bool notify = true );
 
     void shutdown();
     void reset();
@@ -291,6 +296,7 @@ signals:
     void requireLockYChanged( bool value );
     void requireLockZChanged( bool value );
     void showLogMatricesButtonChanged( bool value );
+    void allowExternalEditsChanged( bool value );
 };
 
 } // namespace advsettings

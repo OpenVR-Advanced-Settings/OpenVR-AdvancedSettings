@@ -26,6 +26,14 @@ MyStackViewPage {
             }
         }
 
+        MyToggleButton {
+            id: allowExternalEditsToggle
+            text: "Allow External App Chaperone Edits (Danger)"
+            onCheckedChanged: {
+                MoveCenterTabController.setAllowExternalEdits(checked, true)
+            }
+        }
+
         Item {
             Layout.fillHeight: true
         }
@@ -33,6 +41,7 @@ MyStackViewPage {
         Component.onCompleted: {
             settingsAutoStartToggle.checked = SettingsTabController.autoStartEnabled
             forceReviveToggle.checked = SettingsTabController.forceRevivePage
+            allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
         }
 
         Connections {
@@ -42,6 +51,13 @@ MyStackViewPage {
             }
             onForceRevivePageChanged: {
                 forceReviveToggle.checked = SettingsTabController.forceRevivePage
+            }
+        }
+
+        Connections {
+            target: MoveCenterTabController
+            onAllowExternalEditsChanged: {
+                allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
             }
         }
     }

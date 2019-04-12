@@ -123,6 +123,11 @@ void MoveCenterTabController::initStage1()
     {
         m_showLogMatricesButton = value.toBool();
     }
+    value = settings->value( "allowExternalEdits", m_allowExternalEdits );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_allowExternalEdits = value.toBool();
+    }
     settings->endGroup();
     m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
     m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
@@ -770,6 +775,25 @@ void MoveCenterTabController::setShowLogMatricesButton( bool value,
     if ( notify )
     {
         emit showLogMatricesButtonChanged( m_showLogMatricesButton );
+    }
+}
+
+bool MoveCenterTabController::allowExternalEdits() const
+{
+    return m_allowExternalEdits;
+}
+
+void MoveCenterTabController::setAllowExternalEdits( bool value, bool notify )
+{
+    m_allowExternalEdits = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "allowExternalEdits", m_allowExternalEdits );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit allowExternalEditsChanged( m_allowExternalEdits );
     }
 }
 
@@ -2093,6 +2117,15 @@ void MoveCenterTabController::updateSpace()
             saveUncommittedChaperone();
         }
         return;
+    }
+
+    if ( m_allowExternalEdits && m_oldOffsetX == 0.0f && m_oldOffsetY == 0.0f
+         && m_oldOffsetZ == 0.0f && m_oldRotation == 0 )
+    {
+        vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+        vr::VRChaperoneSetup()->CommitWorkingCopy(
+            vr::EChaperoneConfigFile_Live );
+        updateChaperoneResetData();
     }
 
     vr::HmdMatrix34_t offsetUniverseCenter;
