@@ -32,7 +32,7 @@ public:
         return _mutex;
     }
 
-    void loadChaperoneData();
+    void loadChaperoneData( bool fromLiveBounds = true );
 
     float getDistanceToChaperone( const vr::HmdVector3_t& point,
                                   vr::HmdVector3_t* projectedPoint = nullptr,

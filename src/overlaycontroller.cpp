@@ -710,7 +710,7 @@ void OverlayController::mainEventLoop()
             LOG( INFO ) << "Received quit request.";
             vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some
                                                        // time just in case
-            m_moveCenterTabController.reset();
+            m_moveCenterTabController.shutdown();
             // Un-mute mic before Exiting VR, as it is set at system level Not
             // Vr level.
             m_audioTabController.setMicMuted( false, false );
@@ -745,6 +745,13 @@ void OverlayController::mainEventLoop()
             emit keyBoardInputSignal( QString( keyboardBuffer ),
                                       static_cast<unsigned long>(
                                           vrEvent.data.keyboard.uUserValue ) );
+        }
+        break;
+
+        case vr::VREvent_SeatedZeroPoseReset:
+        {
+            m_moveCenterTabController.incomingSeatedReset();
+            LOG( INFO ) << "Game Triggered Seated Zero-Position Reset";
         }
         break;
 

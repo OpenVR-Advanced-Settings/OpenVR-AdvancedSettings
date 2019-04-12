@@ -118,6 +118,16 @@ void MoveCenterTabController::initStage1()
     {
         m_lockZToggle = value.toBool();
     }
+    value = settings->value( "showLogMatricesButton", m_showLogMatricesButton );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_showLogMatricesButton = value.toBool();
+    }
+    value = settings->value( "allowExternalEdits", m_allowExternalEdits );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_allowExternalEdits = value.toBool();
+    }
     settings->endGroup();
     m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
     m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
@@ -131,6 +141,109 @@ void MoveCenterTabController::initStage2( OverlayController* var_parent,
     this->widget = var_widget;
 }
 
+void MoveCenterTabController::outputLogPoses()
+{
+    vr::TrackedDevicePose_t devicePosesStanding[vr::k_unMaxTrackedDeviceCount];
+
+    vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+        vr::TrackingUniverseStanding,
+        0.0f,
+        devicePosesStanding,
+        vr::k_unMaxTrackedDeviceCount );
+
+    vr::HmdMatrix34_t hmdStanding
+        = devicePosesStanding[0].mDeviceToAbsoluteTracking;
+
+    LOG( INFO ) << "HMD POSE (standing universe)";
+    outputLogHmdMatrix( hmdStanding );
+
+    vr::TrackedDevicePose_t devicePosesSeated[vr::k_unMaxTrackedDeviceCount];
+
+    vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+        vr::TrackingUniverseSeated,
+        0.0f,
+        devicePosesSeated,
+        vr::k_unMaxTrackedDeviceCount );
+
+    vr::HmdMatrix34_t hmdSeated
+        = devicePosesSeated[0].mDeviceToAbsoluteTracking;
+
+    LOG( INFO ) << "HMD POSE (seated universe)";
+    outputLogHmdMatrix( hmdSeated );
+
+    auto leftHand = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
+        vr::TrackedControllerRole_LeftHand );
+    auto rightHand = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
+        vr::TrackedControllerRole_RightHand );
+
+    vr::HmdMatrix34_t leftHandMatrix
+        = devicePosesStanding[leftHand].mDeviceToAbsoluteTracking;
+    vr::HmdMatrix34_t rightHandMatrix
+        = devicePosesStanding[rightHand].mDeviceToAbsoluteTracking;
+
+    LOG( INFO ) << "LEFT Hand Controller Pose (standing universe)";
+    outputLogHmdMatrix( leftHandMatrix );
+
+    LOG( INFO ) << "RIGHT Hand Controller Pose (standing universe)";
+    outputLogHmdMatrix( rightHandMatrix );
+
+    vr::HmdMatrix34_t standingZero;
+    vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+        &standingZero );
+    LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+    outputLogHmdMatrix( standingZero );
+
+    vr::HmdMatrix34_t seatedZero;
+    vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+        &seatedZero );
+    LOG( INFO ) << "GetWorkingSeatedZeroPoseToRawTrackingPose";
+    outputLogHmdMatrix( seatedZero );
+
+    vr::HmdMatrix34_t seatedZeroLive;
+    vr::VRChaperoneSetup()->GetLiveSeatedZeroPoseToRawTrackingPose(
+        &seatedZeroLive );
+    LOG( INFO ) << "GetLiveSeatedZeroPoseToRawTrackingPose";
+    outputLogHmdMatrix( seatedZeroLive );
+
+    vr::HmdMatrix34_t seatedToStandingAbsolute
+        = vr::VRSystem()->GetSeatedZeroPoseToStandingAbsoluteTrackingPose();
+    LOG( INFO ) << "GetSeatedZeroPoseToStandingAbsoluteTrackingPose";
+    outputLogHmdMatrix( seatedToStandingAbsolute );
+
+    LOG( INFO ) << "m_universeCenterForReset";
+    outputLogHmdMatrix( m_universeCenterForReset );
+
+    LOG( INFO ) << "m_seatedCenterForReset";
+    outputLogHmdMatrix( m_seatedCenterForReset );
+}
+
+void MoveCenterTabController::outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix )
+{
+    LOG( INFO ) << hmdMatrix.m[0][0] << "\t\t\t" << hmdMatrix.m[0][1]
+                << "\t\t\t" << hmdMatrix.m[0][2] << "\t\t\t"
+                << hmdMatrix.m[0][3];
+    LOG( INFO ) << hmdMatrix.m[1][0] << "\t\t\t" << hmdMatrix.m[1][1]
+                << "\t\t\t" << hmdMatrix.m[1][2] << "\t\t\t"
+                << hmdMatrix.m[1][3];
+    LOG( INFO ) << hmdMatrix.m[2][0] << "\t\t\t" << hmdMatrix.m[2][1]
+                << "\t\t\t" << hmdMatrix.m[2][2] << "\t\t\t"
+                << hmdMatrix.m[2][3];
+
+    float atan2Yaw = std::atan2( hmdMatrix.m[0][2], hmdMatrix.m[2][2] );
+    LOG( INFO ) << "atan2 Yaw Calculation:  " << atan2Yaw << "radians  "
+                << ( ( static_cast<double>( atan2Yaw )
+                       * k_radiansToCentidegrees )
+                     / 100 )
+                << "degrees";
+
+    vr::HmdQuaternion_t hmdQuat = quaternion::fromHmdMatrix34( hmdMatrix );
+    double hmdQuatYaw = quaternion::getYaw( hmdQuat );
+    LOG( INFO ) << "Quaternion Yaw Calculation:  " << hmdQuatYaw << "radians  "
+                << ( ( hmdQuatYaw * k_radiansToCentidegrees ) / 100 )
+                << "degrees";
+    LOG( INFO ) << "";
+}
+
 int MoveCenterTabController::trackingUniverse() const
 {
     return static_cast<int>( m_trackingUniverse );
@@ -140,7 +253,12 @@ void MoveCenterTabController::setTrackingUniverse( int value, bool notify )
 {
     if ( m_trackingUniverse != value )
     {
-        reset();
+        vr::VRChaperoneSetup()->HideWorkingSetPreview();
+        if ( !m_roomSetupModeDetected && value == vr::TrackingUniverseStanding )
+        {
+            reset();
+        }
+
         m_trackingUniverse = value;
         if ( notify )
         {
@@ -207,11 +325,25 @@ void MoveCenterTabController::setRotation( int value, bool notify )
         // Get hmd pose matrix.
         vr::TrackedDevicePose_t
             devicePosesForRot[vr::k_unMaxTrackedDeviceCount];
-        vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
-            vr::TrackingUniverseStanding,
-            0.0f,
-            devicePosesForRot,
-            vr::k_unMaxTrackedDeviceCount );
+
+        // source must be current universe
+        if ( m_trackingUniverse == vr::TrackingUniverseSeated )
+        {
+            vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+                vr::TrackingUniverseSeated,
+                0.0f,
+                devicePosesForRot,
+                vr::k_unMaxTrackedDeviceCount );
+        }
+        else
+        {
+            vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+                vr::TrackingUniverseStanding,
+                0.0f,
+                devicePosesForRot,
+                vr::k_unMaxTrackedDeviceCount );
+        }
+
         vr::HmdMatrix34_t oldHmdPos
             = devicePosesForRot[0].mDeviceToAbsoluteTracking;
 
@@ -626,6 +758,45 @@ void MoveCenterTabController::setLockZ( bool value, bool notify )
     }
 }
 
+bool MoveCenterTabController::showLogMatricesButton() const
+{
+    return m_showLogMatricesButton;
+}
+
+void MoveCenterTabController::setShowLogMatricesButton( bool value,
+                                                        bool notify )
+{
+    m_showLogMatricesButton = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "showLogMatricesButton", m_showLogMatricesButton );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit showLogMatricesButtonChanged( m_showLogMatricesButton );
+    }
+}
+
+bool MoveCenterTabController::allowExternalEdits() const
+{
+    return m_allowExternalEdits;
+}
+
+void MoveCenterTabController::setAllowExternalEdits( bool value, bool notify )
+{
+    m_allowExternalEdits = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "allowExternalEdits", m_allowExternalEdits );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit allowExternalEditsChanged( m_allowExternalEdits );
+    }
+}
+
 void MoveCenterTabController::modOffsetX( float value, bool notify )
 {
     if ( !m_lockXToggle )
@@ -662,11 +833,22 @@ void MoveCenterTabController::modOffsetZ( float value, bool notify )
     }
 }
 
+void MoveCenterTabController::shutdown()
+{
+    reset();
+    vr::VRChaperoneSetup()->HideWorkingSetPreview();
+}
+
+void MoveCenterTabController::incomingSeatedReset()
+{
+    updateSeatedResetData();
+}
+
 void MoveCenterTabController::reset()
 {
+    vr::VRChaperoneSetup()->HideWorkingSetPreview();
     m_heightToggle = false;
     emit heightToggleChanged( m_heightToggle );
-    applyChaperoneResetData();
     m_oldOffsetX = 0.0f;
     m_oldOffsetY = 0.0f;
     m_oldOffsetZ = 0.0f;
@@ -675,6 +857,7 @@ void MoveCenterTabController::reset()
     m_offsetY = 0.0f;
     m_offsetZ = 0.0f;
     m_rotation = 0;
+    applyChaperoneResetData();
     emit offsetXChanged( m_offsetX );
     emit offsetYChanged( m_offsetY );
     emit offsetZChanged( m_offsetZ );
@@ -700,9 +883,20 @@ void MoveCenterTabController::zeroOffsets()
         emit rotationChanged( m_rotation );
         updateChaperoneResetData();
         m_pendingZeroOffsets = false;
+        if ( m_roomSetupModeDetected )
+        {
+            LOG( INFO ) << "room setup EXIT detected";
+            m_roomSetupModeDetected = false;
+        }
+
+        LOG( INFO ) << "SUCCESS: Chaperone Data Updated and Offsets zeroed out";
     }
     else
     {
+        if ( !m_pendingZeroOffsets )
+        {
+            LOG( INFO ) << "PENDING: Chaperone Data Update and Offsets zeroing";
+        }
         m_pendingZeroOffsets = true;
     }
 }
@@ -729,6 +923,46 @@ void MoveCenterTabController::clampVelocity( double* velocity )
     }
 }
 
+void MoveCenterTabController::updateSeatedResetData()
+{
+    reset();
+    vr::VRChaperoneSetup()->RevertWorkingCopy();
+    vr::TrackedDevicePose_t devicePosesStanding[vr::k_unMaxTrackedDeviceCount];
+    vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+        vr::TrackingUniverseStanding,
+        0.0f,
+        devicePosesStanding,
+        vr::k_unMaxTrackedDeviceCount );
+    vr::HmdMatrix34_t hmdMatrix
+        = devicePosesStanding[0].mDeviceToAbsoluteTracking;
+
+    vr::HmdQuaternion_t hmdQuat = quaternion::fromHmdMatrix34( hmdMatrix );
+    double hmdYaw = quaternion::getYaw( hmdQuat );
+    int hmdYawCentideg = static_cast<int>( hmdYaw * k_radiansToCentidegrees );
+    // Keep angle within -18000 ~ 18000 centidegrees
+    if ( hmdYawCentideg > 18000 )
+    {
+        hmdYawCentideg -= 36000;
+    }
+    else if ( hmdYawCentideg < -18000 )
+    {
+        hmdYawCentideg += 36000;
+    }
+
+    m_seatedCenterForReset = m_universeCenterForReset;
+    m_seatedHeight = hmdMatrix.m[1][3];
+    m_seatedCenterForReset.m[1][3] += m_seatedHeight;
+
+    m_offsetX = hmdMatrix.m[0][3];
+    m_offsetY = 0.0f;
+    m_offsetZ = hmdMatrix.m[2][3];
+    m_rotation = hmdYawCentideg;
+    emit offsetXChanged( m_offsetX );
+    emit offsetYChanged( m_offsetY );
+    emit offsetZChanged( m_offsetZ );
+    emit rotationChanged( m_rotation );
+}
+
 void MoveCenterTabController::updateChaperoneResetData()
 {
     vr::VRChaperoneSetup()->HideWorkingSetPreview();
@@ -741,50 +975,76 @@ void MoveCenterTabController::updateChaperoneResetData()
     m_collisionBoundsCountForReset = currentQuadCount;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
         m_collisionBoundsForReset, &currentQuadCount );
+
     vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
         &m_universeCenterForReset );
-    float universeCenterForResetYaw = std::atan2(
-        m_universeCenterForReset.m[0][2], m_universeCenterForReset.m[2][2] );
 
-    // we want to store m_collisionBoundsForOffset as spacially relative to
-    // m_universeCenterForReset, so:
+    // update seated center to standing offset by current hmd Y value.
+    m_seatedCenterForReset = m_universeCenterForReset;
+    vr::TrackedDevicePose_t devicePosesStanding[vr::k_unMaxTrackedDeviceCount];
+    vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+        vr::TrackingUniverseStanding,
+        0.0f,
+        devicePosesStanding,
+        vr::k_unMaxTrackedDeviceCount );
+    vr::HmdMatrix34_t hmdMatrix
+        = devicePosesStanding[0].mDeviceToAbsoluteTracking;
+    m_seatedHeight = hmdMatrix.m[1][3];
+    m_seatedCenterForReset.m[1][3] += m_seatedHeight;
 
-    // for every quad in the chaperone bounds...
-    for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset; quad++ )
+    if ( m_collisionBoundsCountForReset > 0 )
     {
-        // at every corner in that quad...
-        for ( unsigned corner = 0; corner < 4; corner++ )
-        {
-            // copy from m_collisionBoundsForReset
-            m_collisionBoundsForOffset[quad].vCorners[corner].v[0]
-                = m_collisionBoundsForReset[quad].vCorners[corner].v[0];
-            m_collisionBoundsForOffset[quad].vCorners[corner].v[1]
-                = m_collisionBoundsForReset[quad].vCorners[corner].v[1];
-            m_collisionBoundsForOffset[quad].vCorners[corner].v[2]
-                = m_collisionBoundsForReset[quad].vCorners[corner].v[2];
+        float universeCenterForResetYaw
+            = std::atan2( m_universeCenterForReset.m[0][2],
+                          m_universeCenterForReset.m[2][2] );
 
-            // unrotate by universe center's yaw
-            rotateFloatCoordinates(
-                m_collisionBoundsForOffset[quad].vCorners[corner].v,
-                -universeCenterForResetYaw );
+        // we want to store m_collisionBoundsForOffset as spacially relative to
+        // m_universeCenterForReset, so:
+
+        // for every quad in the chaperone bounds...
+        for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset; quad++ )
+        {
+            // at every corner in that quad...
+            for ( unsigned corner = 0; corner < 4; corner++ )
+            {
+                // copy from m_collisionBoundsForReset
+                m_collisionBoundsForOffset[quad].vCorners[corner].v[0]
+                    = m_collisionBoundsForReset[quad].vCorners[corner].v[0];
+                m_collisionBoundsForOffset[quad].vCorners[corner].v[1]
+                    = m_collisionBoundsForReset[quad].vCorners[corner].v[1];
+                m_collisionBoundsForOffset[quad].vCorners[corner].v[2]
+                    = m_collisionBoundsForReset[quad].vCorners[corner].v[2];
+
+                // unrotate by universe center's yaw
+                rotateFloatCoordinates(
+                    m_collisionBoundsForOffset[quad].vCorners[corner].v,
+                    -universeCenterForResetYaw );
+            }
         }
     }
+
     // update the working set preview for potential Oculus and WMR issues
-    vr::VRChaperoneSetup()->ShowWorkingSetPreview();
+    // vr::VRChaperoneSetup()->ShowWorkingSetPreview();
 }
 
 void MoveCenterTabController::applyChaperoneResetData()
 {
     vr::VRChaperoneSetup()->HideWorkingSetPreview();
     vr::VRChaperoneSetup()->RevertWorkingCopy();
-    vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
-        m_collisionBoundsForReset, m_collisionBoundsCountForReset );
+    if ( m_collisionBoundsCountForReset > 0 )
+    {
+        vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
+            m_collisionBoundsForReset, m_collisionBoundsCountForReset );
+    }
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &m_universeCenterForReset );
+    vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
+        &m_seatedCenterForReset );
+
     vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live );
     // update the working set preview otherwise Oculus and WMR users may not see
     // results of the reset
-    vr::VRChaperoneSetup()->ShowWorkingSetPreview();
+    // vr::VRChaperoneSetup()->ShowWorkingSetPreview();
 }
 
 // START of drag bindings:
@@ -1492,10 +1752,14 @@ void MoveCenterTabController::saveUncommittedChaperone()
 {
     if ( !m_chaperoneCommitted )
     {
+        // double commit... once to ensure before we HideWorkingSetPreview the
+        // working set is synced. Commit a second time as a workaround for WMR
+        // and Rift not getting the commit during active ShowWorkingSetPreview
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
-        // test removal for oculus and WMR users
-        // vr::VRChaperoneSetup()->HideWorkingSetPreview();
+        vr::VRChaperoneSetup()->HideWorkingSetPreview();
+        vr::VRChaperoneSetup()->CommitWorkingCopy(
+            vr::EChaperoneConfigFile_Live );
         m_chaperoneCommitted = true;
     }
 }
@@ -1855,6 +2119,15 @@ void MoveCenterTabController::updateSpace()
         return;
     }
 
+    if ( m_allowExternalEdits && m_oldOffsetX == 0.0f && m_oldOffsetY == 0.0f
+         && m_oldOffsetZ == 0.0f && m_oldRotation == 0 )
+    {
+        vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+        vr::VRChaperoneSetup()->CommitWorkingCopy(
+            vr::EChaperoneConfigFile_Live );
+        updateChaperoneResetData();
+    }
+
     vr::HmdMatrix34_t offsetUniverseCenter;
 
     // set offsetUniverseCenter to the current angle
@@ -1891,6 +2164,17 @@ void MoveCenterTabController::updateSpace()
         += m_universeCenterForReset.m[1][2] * m_offsetZ;
     offsetUniverseCenter.m[2][3]
         += m_universeCenterForReset.m[2][2] * m_offsetZ;
+
+    // keep the seated origin synced with offsets if in seated mode
+    if ( m_trackingUniverse == vr::TrackingUniverseSeated )
+    {
+        vr::HmdMatrix34_t offsetSeatedCenter = offsetUniverseCenter;
+
+        offsetSeatedCenter.m[1][3] += m_seatedHeight;
+
+        vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
+            &offsetSeatedCenter );
+    }
 
     if ( m_adjustChaperone )
     {
@@ -1950,8 +2234,13 @@ void MoveCenterTabController::updateSpace()
     }
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &offsetUniverseCenter );
+
     vr::VRChaperoneSetup()->ShowWorkingSetPreview();
     m_chaperoneCommitted = false;
+
+    // loadChaperoneData( false ), false so that we don't load live data, and
+    // reference the working set instead.
+    parent->chaperoneUtils().loadChaperoneData( false );
 
     m_oldOffsetX = m_offsetX;
     m_oldOffsetY = m_offsetY;
@@ -1964,28 +2253,58 @@ void MoveCenterTabController::eventLoopTick(
     vr::TrackedDevicePose_t* devicePoses )
 
 {
-    if ( settingsUpdateCounter >= k_moveCenterSettingsUpdateCounter )
+    // detect if room setup is running
+    if ( universe == vr::TrackingUniverseRawAndUncalibrated )
     {
-        if ( parent->isDashboardVisible() )
+        if ( !m_roomSetupModeDetected )
         {
-            setTrackingUniverse( int( universe ) );
+            m_roomSetupModeDetected = true;
+
+            // give up on any pending zero offsets so they aren't applied in the
+            // middle of room setup.
+            m_pendingZeroOffsets = false;
+
+            LOG( INFO ) << "room setup ENTRY detected";
+            vr::VRChaperoneSetup()->HideWorkingSetPreview();
+            reset();
+            vr::VRChaperoneSetup()->RevertWorkingCopy();
         }
-        settingsUpdateCounter = 0;
+        setTrackingUniverse( int( universe ) );
+        return;
     }
-    else
+
+    // detect entering seated mode
+    if ( universe == vr::TrackingUniverseSeated && !m_seatedModeDetected )
     {
-        settingsUpdateCounter++;
+        m_seatedModeDetected = true;
+        LOG( INFO ) << "seated mode ENTRY detected";
+    }
+
+    // detect exiting seated mode
+    if ( universe == vr::TrackingUniverseStanding && m_seatedModeDetected )
+    {
+        m_seatedModeDetected = false;
+        reset();
+        LOG( INFO ) << "seated mode EXIT detected";
     }
 
     // If we're trying to redifine the origin point, but can't becaues of bad
     // chaperone calibration, we keep trying and hold off on motion features
     // until we get ChaperoneCalibrationState_OK
-    if ( m_pendingZeroOffsets )
+
+    // if we were in room setup, but got this far in the loop, universe is no
+    // longer raw mode and we detect room setup exit and zeroOffsets() to apply
+    // new setup.
+    if ( m_pendingZeroOffsets || m_roomSetupModeDetected )
     {
         zeroOffsets();
+        // m_roomSetupModeDetected is set to false in zeroOffsets() if it's
+        // successful.
     }
     else
     {
+        setTrackingUniverse( int( universe ) );
+
         // get current space rotation in radians
         double angle = m_rotation * k_centidegreesToRadians;
 
