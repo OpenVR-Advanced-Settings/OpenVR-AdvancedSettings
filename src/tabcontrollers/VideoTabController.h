@@ -1,6 +1,18 @@
 #pragma once
 
+
+#include <QObject>
+#include <QString>
+#include <QVariant>
+#include <openvr.h>
+//#include "../overlaycontroller.h"
+
+
+class QQuickWindow;
+
 namespace advsettings {
+	// forward declaration
+	class OverlayController;
 
 	class VideoTabController : public QObject
 	{
@@ -13,13 +25,16 @@ namespace advsettings {
 	private:
 		//TODO
 		//constexpr auto notificationBrightnessFilename
+		OverlayController * parent;
+		QQuickWindow* widget;
+
 		vr::VROverlayHandle_t m_brightnessNotificationOverlayHandle
 			= vr::k_ulOverlayHandleInvalid;
-		float m_brightnessValue = 1.0;
+		float m_brightnessValue = 1.0f;
 		bool m_brightnessEnabled = false;
 
-		void reloadVideoConfig();
-		void saveVideoConfig();
+		//void reloadVideoConfig();
+		//void saveVideoConfig();
 
 
 		QString getSettingsName(){
@@ -37,8 +52,8 @@ namespace advsettings {
 		bool brightnessEnabled() const;
 
 		void initStage1();
-		//TODO ?? on args
 		void initStage2(OverlayController* var_parent, QQuickWindow* var_widget);
+		void eventLoopTick();
 
 
 	public slots:
@@ -51,4 +66,4 @@ namespace advsettings {
 		void brightnessValueChanged(float value);
 	};
 
-}
+}// namespace

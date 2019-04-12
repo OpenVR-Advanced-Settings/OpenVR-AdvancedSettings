@@ -33,7 +33,7 @@ namespace advsettings
 				vr::VROverlay()->SetOverlayFromFile(m_brightnessNotificationOverlayHandle,
 					notifIconPath->c_str());
 				vr::VROverlay()->SetOverlayWidthInMeters(
-					m_ulNotificationOverlayHandle, 1.0f);
+					m_brightnessNotificationOverlayHandle, 1.0f);
 				vr::HmdMatrix34_t notificationTransform
 					= { { { 1.0f, 0.0f, 0.0f, 0.00f },
 				{ 0.0f, 1.0f, 0.0f, 0.00f },
@@ -63,7 +63,7 @@ namespace advsettings
 
 	}
 
-	void VideoTabController::reloadVideoConfig() {
+	/*void VideoTabController::reloadVideoConfig() {
 		//Others Use Mutex needed?
 		auto settings = OverlayController::appSettings();
 		settings->beginGroup(getSettingsName());
@@ -74,7 +74,9 @@ namespace advsettings
 		settings->endGroup();
 
 	}
+	*/
 
+	/*
 	void VideoTabController::saveVideoConfig() {
 		auto settings = OverlayController::appSettings();
 		settings->beginGroup(getSettingsName());
@@ -85,6 +87,7 @@ namespace advsettings
 	void VideoTabController::saveVideoConfig() {
 
 	}
+	*/
 
 	float VideoTabController::brightnessValue() const
 	{
@@ -95,6 +98,7 @@ namespace advsettings
 	{
 		return m_brightnessEnabled;
 	}
+	
 
 	void VideoTabController::setBrightnessEnabled(bool value, bool notify)
 	{
@@ -122,7 +126,7 @@ namespace advsettings
 		}
 	}
 
-	void VideoTabController::setBrightnessvalue(float value, bool notify)
+	void VideoTabController::setBrightnessValue(float value, bool notify)
 	{
 		//TODO mutex?
 		//std::lock_guard<std::recursive_mutex> lock(eventLoopMutex);
@@ -130,11 +134,16 @@ namespace advsettings
 		{
 			m_brightnessValue = value;
 			if (value <= 1.0f && value >= 0.0f) {
-				vr::VROverlayError overlayError = VROverlay()->SetOverlayAlpha(m_ulNotificationOverlayHandle, value)
-					//TODO handle error
+				vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(m_brightnessNotificationOverlayHandle, value);
+				
+				if (overlayError != vr::VROverlayError_None) {
+					LOG(ERROR) << "Could not set alpha: "
+						<< vr::VROverlay()->GetOverlayErrorNameFromEnum(
+							overlayError);
+				}
 			}
 			else {
-				//TODO log warning invalid input?
+				LOG(WARNING) << "alpha value is invalid setting to 1.0";
 				m_brightnessValue = 1.0f;
 			}
 
