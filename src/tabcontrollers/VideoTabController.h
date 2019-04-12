@@ -45,6 +45,7 @@ namespace advsettings {
 
 		void reloadVideoConfig();
 		void saveVideoConfig();
+		void setOpacityValue();
 
 
 		QString getSettingsName(){

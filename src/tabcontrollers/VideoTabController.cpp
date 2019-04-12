@@ -67,8 +67,9 @@ namespace advsettings
 		settings->beginGroup(getSettingsName());
 		setBrightnessEnabled(settings->value("brightnessEnabled", false).toBool(), true);
 		m_opacityValue = settings->value("opacityValue", 0.0f).toFloat();
-		setBrightnessValue(settings->value("brightnessValue", 1.0f).toFloat(), true);
+		m_brightnessValue=settings->value("brightnessValue", 1.0f).toFloat();
 		settings->endGroup();
+		setOpacityValue();
 
 	}
 	
@@ -130,7 +131,7 @@ namespace advsettings
 	{
 
 		//This takes the Perceived value, and converts it to allow more accurate linear positioning. (human perception logarithmic)
-		float realvalue = static_cast<float>(sqrt(static_cast<double>(1.0f - percvalue)));
+		float realvalue = static_cast<float>(std::pow(static_cast<double>(1.0f - percvalue), 1/3.));
 
 		if (realvalue != m_opacityValue)
 		{
@@ -157,5 +158,15 @@ namespace advsettings
 				emit brightnessValueChanged(percvalue);
 			}
 		}
+	}
+
+	void VideoTabController::setOpacityValue() {
+		vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(m_brightnessNotificationOverlayHandle, m_opacityValue);
+		if (overlayError != vr::VROverlayError_None) {
+			LOG(ERROR) << "Could not set alpha: "
+				<< vr::VROverlay()->GetOverlayErrorNameFromEnum(
+					overlayError);
+		}
+		emit brightnessValueChanged(m_brightnessValue);
 	}
 }
