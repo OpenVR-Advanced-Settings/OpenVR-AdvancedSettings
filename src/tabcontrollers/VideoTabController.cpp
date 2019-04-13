@@ -2,7 +2,7 @@
 #include <QQuickWindow>
 #include <QApplication>
 #include "../overlaycontroller.h"
-#include <math.h>
+#include <cmath>
 
 namespace advsettings
 {
