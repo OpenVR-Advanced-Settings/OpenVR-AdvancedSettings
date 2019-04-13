@@ -961,6 +961,7 @@ void MoveCenterTabController::updateSeatedResetData()
     emit offsetYChanged( m_offsetY );
     emit offsetZChanged( m_offsetZ );
     emit rotationChanged( m_rotation );
+    parent->chaperoneUtils().loadChaperoneData( false );
 }
 
 void MoveCenterTabController::updateChaperoneResetData()
@@ -1023,8 +1024,7 @@ void MoveCenterTabController::updateChaperoneResetData()
         }
     }
 
-    // update the working set preview for potential Oculus and WMR issues
-    // vr::VRChaperoneSetup()->ShowWorkingSetPreview();
+    parent->chaperoneUtils().loadChaperoneData( false );
 }
 
 void MoveCenterTabController::applyChaperoneResetData()
@@ -1042,9 +1042,8 @@ void MoveCenterTabController::applyChaperoneResetData()
         &m_seatedCenterForReset );
 
     vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live );
-    // update the working set preview otherwise Oculus and WMR users may not see
-    // results of the reset
-    // vr::VRChaperoneSetup()->ShowWorkingSetPreview();
+
+    parent->chaperoneUtils().loadChaperoneData( false );
 }
 
 // START of drag bindings:
