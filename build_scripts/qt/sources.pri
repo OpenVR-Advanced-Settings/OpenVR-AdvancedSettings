@@ -10,6 +10,7 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/ReviveTabController.cpp \
     src/tabcontrollers/UtilitiesTabController.cpp \
     src/tabcontrollers/PttController.cpp \
+	src/tabcontrollers/VideoTabController.cpp \
     src/utils/ChaperoneUtils.cpp \
     src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
     src/openvr/openvr_init.cpp \
@@ -28,6 +29,7 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/SteamVRTabController.h \
     src/tabcontrollers/ReviveTabController.h \
     src/tabcontrollers/UtilitiesTabController.h \
+	src/tabcontrollers/VideoTabController.h \
     src/tabcontrollers/AudioManager.h \
     src/tabcontrollers/PttController.h \
     src/tabcontrollers/keyboardinput/KeyboardInput.h \

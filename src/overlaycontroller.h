@@ -37,6 +37,7 @@
 #include "tabcontrollers/SettingsTabController.h"
 #include "tabcontrollers/ReviveTabController.h"
 #include "tabcontrollers/UtilitiesTabController.h"
+#include "tabcontrollers/VideoTabController.h"
 
 #include "openvr/ivrinput.h"
 #include "openvr/overlay_utils.h"
@@ -47,7 +48,7 @@ constexpr auto applicationOrganizationName = "AdvancedSettings-Team";
 constexpr auto applicationName = "OpenVRAdvancedSettings";
 constexpr const char* applicationKey = "OVRAS-Team.AdvancedSettings";
 constexpr const char* applicationDisplayName = "Advanced Settings";
-constexpr const char* applicationVersionString = "v3.0.1";
+constexpr const char* applicationVersionString = "v3.1.0 RC1";
 } // namespace application_strings
 
 // application namespace
@@ -122,6 +123,7 @@ public: // I know it's an ugly hack to make them public to enable external
     SettingsTabController m_settingsTabController;
     ReviveTabController m_reviveTabController;
     UtilitiesTabController m_utilitiesTabController;
+    VideoTabController m_videoTabController;
     overlay::DesktopOverlay m_desktopOverlay;
 
 private:
