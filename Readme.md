@@ -23,6 +23,7 @@
  >   * [Motion Page](#motion_page)
  >   * [Space Fix Page](#space_fix_page)
  >   * [Audio Page](#audio_page)
+ >   * [Video Page](#video_page)
  >   * [Utilities Page](#utilities_page)
  >   * [Desktop Overlay Page](#desktop_overlay_page)
  >   * [Statistics Page](#statistics_page)
@@ -317,6 +318,15 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **NOTE**: The Push-to-talk box must be enabled for this feature to work.
 - **Audio Profile**: Allows you to apply/define/delete audio profiles that save playback devices, mute state, and volume.
 
+<a name="video_page"></a>
+## - Video Page:
+
+![Video Page](docs/screenshots/VideoPage.png)
+
+- **Brightness**: Allows Dimming of your view.
+  - **On/Off**: Toggles The Dimming on/off.
+  - **Brightness**: The amount of dimming.
+  - **Note**: Does not necessarily reduce light output of HMD will vary based on panel type etc.
 
 <a name="utilities_page"></a>
 ## - Utilities Page:

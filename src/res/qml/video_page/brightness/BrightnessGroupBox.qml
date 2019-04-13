@@ -84,7 +84,7 @@ GroupBox {
                         var v = (val/100).toFixed(2)
                             brightnessSlider.value = v
                     }
-                    text = Math.round(VideoTabController.boundsVisibility * 100) + "%"
+                    text = Math.round(VideoTabController.brightnessValue * 100) + "%"
                 }
             }
         }

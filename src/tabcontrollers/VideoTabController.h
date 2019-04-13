@@ -34,7 +34,7 @@ private:
     OverlayController* parent;
     QQuickWindow* widget;
 
-    vr::VROverlayHandle_t m_brightnessNotificationOverlayHandle
+    vr::VROverlayHandle_t m_brightnessOverlayHandle
         = vr::k_ulOverlayHandleInvalid;
     float m_opacityValue = 0.0f;
     float m_brightnessValue = 1.0f;
@@ -51,7 +51,7 @@ private:
 
     vr::VROverlayHandle_t getBrightnessOverlayHandle()
     {
-        return m_brightnessNotificationOverlayHandle;
+        return m_brightnessOverlayHandle;
     }
 
 public:
