@@ -93,6 +93,30 @@ GroupBox {
                 }
             }
         }
+        RowLayout {
+            spacing: 18
+            Layout.fillWidth: true
+
+            MyPushButton {
+                text: "Ctrl-C"
+                Layout.preferredWidth: 150
+                onClicked: {
+                    UtilitiesTabController.sendKeyboardCtrlC()
+                }
+            }
+
+            MyPushButton {
+                text: "Ctrl-V"
+                Layout.preferredWidth: 150
+                onClicked: {
+                    UtilitiesTabController.sendKeyboardCtrlV()
+                }
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
+        }
     }
     Component.onCompleted: {
         keyboardGroupBox.visible = !OverlayController.desktopMode

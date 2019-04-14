@@ -33,6 +33,16 @@ void sendKeyboardAltEnter()
     // noop
 }
 
+void sendKeyboardCtrlC()
+{
+    // noop
+}
+
+void sendKeyboardCtrlV()
+{
+    // noop
+}
+
 void sendMediaNextSong()
 {
     // noop
