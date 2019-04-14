@@ -19,7 +19,7 @@
  >   * [SteamVR Page](#steamvr_page)
  >   * [Chaperone Page](#chaperone_page)
  >   * [Chaperone Proximity Warning Settings Page](#chaperone_proximity_page)
- >   * [Space Offset](#play_space_page)
+ >   * [Space Offset](#space_offset_page)
  >   * [Motion Page](#motion_page)
  >   * [Space Fix Page](#space_fix_page)
  >   * [Audio Page](#audio_page)
@@ -215,7 +215,7 @@ These version are not stable and this should be considered for advanced users on
 <a name="top_page"></a>
 ## Top Page:
 
-![Root Page](docs/screenshots/RootPage.png)
+<img src="docs/screenshots/RootPage.png" width="600" alt="Root Page">
 
 - **Supersampling Profile**: Allows to apply supersampling profiles. Profiles can be created on the SteamVR page
 - **Chaperone Profile**: Allows to apply chaperone profiles. Profiles can be created on the Chaperone page
@@ -225,7 +225,7 @@ These version are not stable and this should be considered for advanced users on
 <a name="steamvr_page"></a>
 ## - SteamVR Page:
 
-![SteamVR Page](docs/screenshots/SteamVRPage.png)
+<img src="docs/screenshots/SteamVRPage.png" width="600" alt="SteamVR Page">
 
 - **Profile**: Allows to apply/define/delete supersampling profiles that save supersampling and reprojection settings.
 - **Application Supersampling**: Supersampling setting for OpenVR applications/games. Application supersampling [now behaves linearly](https://steamcommunity.com/games/250820/announcements/detail/1256913672017664045) where 2.0 means twice the number of pixel.
@@ -236,12 +236,12 @@ These version are not stable and this should be considered for advanced users on
 <a name="chaperone_page"></a>
 ## - Chaperone Page:
 
-![Chaperone Page](docs/screenshots/ChaperonePage.png)
+<img src="docs/screenshots/ChaperonePage.png" width="600" alt="Chaperone Page">
 
 - **Profile**: Allows to apply/define/delete chaperone profiles that save geometry info, style info or other chaperone settings (What exactly is saved in a chaperone profile can be selected when a profile is created).
 - **Visibility**: Allows to configure the visibility of the chaperone bounds. 50% to 100% opacity.
 - **Fade Distance**: Allows to configure the distance at which the chaperone bounds are shown. When set to 0 chaperone bounds are completely invisible.
-- **Height**: Allows to configure the height of the chaperone bounds.
+- **Height**: Allows to configure the height of the chaperone bounds. **(Temporarily disabled pending integration into new motion system.)**
 - **Center Marker**: Displays a marker that represents the center of the playspace.
 - **Play Space Maker**: Displays the outlines of the rectangle representing the playspace.
 - **Force Bounds**: Force chaperone bounds always on.
@@ -253,7 +253,7 @@ These version are not stable and this should be considered for advanced users on
 <a name="chaperone_proximity_page"></a>
 ## - Chaperone Proximity Warning Settings Page:
 
-![Chaperone Proximity Warning Settings Page](docs/screenshots/ChaperoneWarningPage.png)
+<img src="docs/screenshots/ChaperoneWarningPage.png" width="600" alt="Chaperone Proximity Warning Settings Page">
 
 - **Switch to Beginner Mode**: Switches the chaperone bound's style to beginner mode when the user's distance to the chaperone falls below the configured activation distance.
 - **Trigger Haptic Feedback**: The left and right controller start vibrating when the user's distance to the chaperone falls below the configured activation distance. (HMD or controllers can trigger)
@@ -266,16 +266,17 @@ These version are not stable and this should be considered for advanced users on
 <a name="space_offset_page"></a>
 ## - Space Offset Page:
 
-![Play Space Page](docs/screenshots/OffsetPage.png)
+<img src="docs/screenshots/OffsetPage.png" width="600" alt="Space Offsets Page">
 
 Allows users to temporarily move and rotate the center of the playspace. This allows to reach interaction elements that are just outside our real-world walls or otherwise inaccessible (e.g. when your playspace is smaller than the recommended one). Can also be used to discover the terrors that lie outside of the intended playspace (ever wondered what's behind the door in The Lab?).
 
 - **Adjust Chaperone**: When enabled, the chaperone bounds stay accurate even when the playspace is moved or rotated (so noone gets hurt). Depending on chaperone mode this may or may not adjust with height.
+- **Seated Recenter**: When clicked, applies the current location and angle of the headset to the offsets such that the user is brought to a centered position. Also applies the current headset height to the default seated height (not visible in offsets). This action will also be activated automatically when a seated application sends a reset center command. *Note: This button is only visible when running seated applications.*
 
 <a name="motion_page"></a>
 ## - Motion Page:
 
-![Motion Page](docs/screenshots/MotionPage.png)
+<img src="docs/screenshots/MotionPage.png" width="600" alt="Motion Page">
 
 - **Space Drag**: Allows shifting your playspace by dragging your controller, Binds must be set via SteamVR Input system.
   - **Enable Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
@@ -297,17 +298,17 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 <a name="space_fix_page"></a>
 ## - Space Fix Page:
 
-![Playspace Fix Page](docs/screenshots/FloorFixPage.png)
+<img src="docs/screenshots/FloorFixPage.png" width="600" alt="Space Fix Page">
 
 - **Fix Floor** Allows you to fix the height of your floor. Just place one controller on your floor and press the button.
 - **Recenter Playspace** Besides fixing the floor height, also recenters the place space around the controller on the floor.
-- **Undo Fix** Removes last "fix"
+- **Undo Fix** Removes last "fix" **(Temporarily disabled pending integration into new motion system.)**
 - **Apply Space Settings Offsets as Center** Takes current values from Offsets page and re-caliberates center/rotation. **Caution** The reset function will then refer to this location as the new zero location, overriding the old zero location.
   
 <a name="audio_page"></a>
 ## - Audio Page:
 
-![Audio Page](docs/screenshots/AudioPage.png)
+<img src="docs/screenshots/AudioPage.png" width="600" alt="Audio Page">
 
 - **Playback Device**: Allows to select the playback device.
 - **Mirror Device**: Allows to select the mirror device, set its volume and to mute/unmute it.
@@ -321,7 +322,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 <a name="video_page"></a>
 ## - Video Page:
 
-![Video Page](docs/screenshots/VideoPage.png)
+<img src="docs/screenshots/VideoPage.png" width="600" alt="Video Page">
 
 - **Brightness**: Allows Dimming of your view.
   - **On/Off**: Toggles The Dimming on/off.
@@ -331,7 +332,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 <a name="utilities_page"></a>
 ## - Utilities Page:
 
-![Utilities Page](docs/screenshots/UtilitiesPage.png)
+<img src="docs/screenshots/UtilitiesPage.png" width="600" alt="Utilities Page">
 
 - **Keyboard Utilities:** Some applications (mostly 2D-monitor applications with tackled-on/modded-in VR support) do not support the VR keyboard but require an actual physical keyboard for text input. This utilities allow to send emulated key strokes from VR keyboard input to such application to overcome this limitation. Does not work in desktop mode.
 
@@ -344,20 +345,20 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 <a name="desktop_overlay_page"></a>
 ## - Desktop Overlay Page
 
-![Desktop Overlay Page](docs/screenshots/DesktopOverlayPage.png)
+<img src="docs/screenshots/DesktopOverlayPage.png" width="600" alt="Desktop Overlay Page">
 
--**Overlay Width:** The width of the overlay in meters. Multi screen setups need larger values to see any difference.
+- **Overlay Width:** The width of the overlay in meters. Multi screen setups need larger values to see any difference.
 
--**Up/Down Translation:** Moves the overlay up and down.
+- **Up/Down Translation:** Moves the overlay up and down.
 
--**Forwards/Backwards Translation:** Moves the overlay forwards and backwards.
+- **Forwards/Backwards Translation:** Moves the overlay forwards and backwards.
 
--**Left/Right Translation:** Moves the overlay left or right.
+- **Left/Right Translation:** Moves the overlay left or right.
 
 <a name="statistics_page"></a>
 ## - Statistics Page:
 
-![Statistics Page](docs/screenshots/StatisticsPage.png)
+<img src="docs/screenshots/StatisticsPage.png" width="600" alt="Statistics Page">
 
 - **HMD Distance Moved**: Shows the distance the headset has moved on the xz-plane.
 - **HMD Rotations**: Shows the number of rotations around the y-axis (Useful for untangling the cord).
@@ -372,10 +373,11 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 <a name="settings_page"></a>
 ## - Settings Page:
 
-![Settings Page](docs/screenshots/SettingsPage.png)
+<img src="docs/screenshots/SettingsPage.png" width="600" alt="Settings Page">
 
 - **Autostart:** Allows you to enable/disable auto start.
 - **Force Revive Page:** No Longer Supported Does Nothing.
+- **Allow External App Chaperone Edits:** Incorporates changes to the chaperone and universe center made by other applications. These changes could come from anywhere, including apps with unpredictable interactions with Advanced Settings. Therefore, this option opens the potential for chaperone misalignment or corruption. However it also allows other chaperone tweaking tools to function in tandem with Advanced Settings. **This option should only be checked if required for compatibility with other apps.** *Note: Changes will only take effect when offsets and rotation are all zero.*
 
 <a name="how_to_compile"></a>
 # How to Compile

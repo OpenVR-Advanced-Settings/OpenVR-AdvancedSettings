@@ -49,6 +49,16 @@ void UtilitiesTabController::sendKeyboardAltTab()
     keyboardinput::sendKeyboardAltTab();
 }
 
+void UtilitiesTabController::sendKeyboardCtrlC()
+{
+    keyboardinput::sendKeyboardCtrlC();
+}
+
+void UtilitiesTabController::sendKeyboardCtrlV()
+{
+    keyboardinput::sendKeyboardCtrlV();
+}
+
 void UtilitiesTabController::sendKeyboardBackspace( const int count )
 {
     keyboardinput::sendKeyboardBackspace( count );

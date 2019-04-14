@@ -1760,6 +1760,7 @@ void MoveCenterTabController::saveUncommittedChaperone()
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
         m_chaperoneCommitted = true;
+        parent->chaperoneUtils().loadChaperoneData( false );
     }
 }
 

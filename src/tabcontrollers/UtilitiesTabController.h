@@ -58,6 +58,8 @@ public slots:
     void sendKeyboardEnter();
     void sendKeyboardAltTab();
     void sendKeyboardAltEnter();
+    void sendKeyboardCtrlC();
+    void sendKeyboardCtrlV();
     void sendKeyboardBackspace( const int count );
     void sendMediaNextSong();
     void sendMediaPreviousSong();

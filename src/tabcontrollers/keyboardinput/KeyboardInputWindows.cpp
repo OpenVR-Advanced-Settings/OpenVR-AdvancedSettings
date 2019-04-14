@@ -275,6 +275,52 @@ void sendKeyboardAltEnter()
 }
 
 /*!
+Sends a Ctrl + C combination to Windows.
+
+Used for copy in copy-paste operations.
+*/
+void sendKeyboardCtrlC()
+{
+    constexpr auto ctrlKey = VK_CONTROL;
+    constexpr auto cKey = 0x43;
+
+    const auto pressCtrl = createInputStruct( ctrlKey, KeyStatus::Down );
+    const auto pressC = createInputStruct( cKey, KeyStatus::Down );
+    const auto releaseC = createInputStruct( cKey, KeyStatus::Up );
+    const auto releaseCtrl = createInputStruct( ctrlKey, KeyStatus::Up );
+
+    constexpr auto numberOfActions = 4;
+
+    INPUT actions[numberOfActions]
+        = { pressCtrl, pressC, releaseC, releaseCtrl };
+
+    sendKeyboardInputRaw( numberOfActions, actions );
+}
+
+/*!
+Sends a Ctrl + V combination to Windows.
+
+Used for paste in copy-paste operations.
+*/
+void sendKeyboardCtrlV()
+{
+    constexpr auto ctrlKey = VK_CONTROL;
+    constexpr auto vKey = 0x56;
+
+    const auto pressCtrl = createInputStruct( ctrlKey, KeyStatus::Down );
+    const auto pressV = createInputStruct( vKey, KeyStatus::Down );
+    const auto releaseV = createInputStruct( vKey, KeyStatus::Up );
+    const auto releaseCtrl = createInputStruct( ctrlKey, KeyStatus::Up );
+
+    constexpr auto numberOfActions = 4;
+
+    INPUT actions[numberOfActions]
+        = { pressCtrl, pressV, releaseV, releaseCtrl };
+
+    sendKeyboardInputRaw( numberOfActions, actions );
+}
+
+/*!
 Sends a media key Next Song button to Windows.
 */
 void sendMediaNextSong()
