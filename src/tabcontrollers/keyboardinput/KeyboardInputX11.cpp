@@ -50,7 +50,7 @@ void sendKeyboardInput( QString input )
 
 void sendKeyboardEnter()
 {
-    sendKeyPress( XK_ISO_Enter, noModifier );
+    sendKeyPress( XK_Return, noModifier );
 }
 
 void sendKeyboardBackspace( const int count )
@@ -68,7 +68,7 @@ void sendKeyboardAltTab()
 
 void sendKeyboardAltEnter()
 {
-    sendKeyPress( XK_ISO_Enter, XK_Alt_L );
+    sendKeyPress( XK_Return, XK_Alt_L );
 }
 
 void sendMediaNextSong()
