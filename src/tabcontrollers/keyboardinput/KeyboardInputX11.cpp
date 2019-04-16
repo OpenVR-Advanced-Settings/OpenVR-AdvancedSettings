@@ -71,6 +71,16 @@ void sendKeyboardAltEnter()
     sendKeyPress( XK_Return, XK_Alt_L );
 }
 
+void sendKeyboardCtrlC()
+{
+    sendKeyPress( XK_c, XK_Control_L );
+}
+
+void sendKeyboardCtrlV()
+{
+    sendKeyPress( XK_v, XK_Control_L );
+}
+
 void sendMediaNextSong()
 {
     // noop
