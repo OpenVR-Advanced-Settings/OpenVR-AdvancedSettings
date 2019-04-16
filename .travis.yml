@@ -12,6 +12,7 @@ matrix:
         - g++-7
     env:
     - QMAKE_SPEC=linux-g++
+    - QT_SELECT="opt-qt512"
     compiler: gcc
 
   - os: linux
@@ -23,6 +24,7 @@ matrix:
         - g++-7
     env:
     - QMAKE_SPEC=linux-clang
+    - QT_SELECT="opt-qt512"
     compiler: clang
 
   - os: linux
@@ -34,6 +36,7 @@ matrix:
         - g++-7
     env:
     - USE_TIDY=TRUE
+    - QT_SELECT="opt-qt512"
     compiler: clang
 
 before_install:
@@ -41,13 +44,17 @@ before_install:
   - chmod +x ./build_scripts/linux/format.sh
   - chmod +x ./build_scripts/linux/run-clang-tidy.sh
   - chmod +x ./build_scripts/linux/verify_formatting.sh
-  - python ./build_scripts/run-clang-format.py ./src -r --color always  
+  - python ./build_scripts/run-clang-format.py ./src -r --color always
 
 install:
   - sudo add-apt-repository ppa:kubuntu-ppa/backports -y
+  - sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-xenial -y
   - sudo apt-get update -qq
-  - sudo apt-get install build-essential qtbase5-dev qttools5-dev qtdeclarative5-dev qtmultimedia5-dev qt5-default qttools5-dev-tools
+  - sudo apt-get install build-essential libgl1-mesa-dev
+  - sudo apt-get install qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2  qt512tools  qt512base
+  - sudo apt-get install libx11-dev libxt-dev libxtst-dev
   - sudo apt-get install bear clang-tidy
+  - qtchooser -install opt-qt512 /opt/qt512/bin/qmake
 
 script:
   - ./build_scripts/linux/build_linux.sh
