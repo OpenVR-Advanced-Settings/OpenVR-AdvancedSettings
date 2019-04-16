@@ -7,6 +7,7 @@ QMAKE_CXXFLAGS += -Wpedantic
 QMAKE_CXXFLAGS += -Werror
 #All includes from the third-party directory will not warn.
 QMAKE_CXXFLAGS += --system-header-prefix=third-party
+QMAKE_CXXFLAGS += --system-header-prefix=qt
 
 # Sign conversion warns on auto generated Qt MOC files.
 QMAKE_CXXFLAGS += -Weffc++ -Wconversion -Wno-sign-conversion
