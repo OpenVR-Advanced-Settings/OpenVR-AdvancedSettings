@@ -72,6 +72,9 @@ win32-clang-msvc {
 # Anything g++ or clang
 # In order to suppress warnings in third party headers
 *clang|*clang-g++|*clang-libc++|*g++* {
+    QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
+    QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]/QtCore
+    QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]/QtGui
     QMAKE_CXXFLAGS += -isystem ../third-party/openvr/headers
     QMAKE_CXXFLAGS += -isystem ../third-party/easylogging++
 }
