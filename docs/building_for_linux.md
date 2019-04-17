@@ -118,6 +118,7 @@ sudo apt-get install qt512-meta-full
 sudo apt-get install libx11-dev libxt-dev libxtst-dev
 sudo apt-get install bear clang-tidy
 qtchooser -install opt-qt512 /opt/qt512/bin/qmake
+export QT_SELECT=opt-qt512
 ```
 
 ## Ubuntu 18.04 Bionic
@@ -131,6 +132,7 @@ sudo apt-get install qt512-meta-full
 sudo apt-get install libx11-dev libxt-dev libxtst-dev
 sudo apt-get install bear clang-tidy
 qtchooser -install opt-qt512 /opt/qt512/bin/qmake
+export QT_SELECT=opt-qt512
 ```
 
 # Locations and Environment Variables
