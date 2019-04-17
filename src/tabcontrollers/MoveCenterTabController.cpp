@@ -131,7 +131,6 @@ void MoveCenterTabController::initStage1()
     settings->endGroup();
     m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
     m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
-    zeroOffsets();
 }
 
 void MoveCenterTabController::initStage2( OverlayController* var_parent,
@@ -139,6 +138,7 @@ void MoveCenterTabController::initStage2( OverlayController* var_parent,
 {
     this->parent = var_parent;
     this->widget = var_widget;
+    zeroOffsets();
 }
 
 void MoveCenterTabController::outputLogPoses()
@@ -961,7 +961,13 @@ void MoveCenterTabController::updateSeatedResetData()
     emit offsetYChanged( m_offsetY );
     emit offsetZChanged( m_offsetZ );
     emit rotationChanged( m_rotation );
-    parent->chaperoneUtils().loadChaperoneData( false );
+    unsigned checkQuadCount = 0;
+    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
+                                                           &checkQuadCount );
+    if ( checkQuadCount > 0 )
+    {
+        parent->chaperoneUtils().loadChaperoneData( false );
+    }
 }
 
 void MoveCenterTabController::updateChaperoneResetData()
@@ -1024,7 +1030,13 @@ void MoveCenterTabController::updateChaperoneResetData()
         }
     }
 
-    parent->chaperoneUtils().loadChaperoneData( false );
+    unsigned checkQuadCount = 0;
+    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
+                                                           &checkQuadCount );
+    if ( checkQuadCount > 0 )
+    {
+        parent->chaperoneUtils().loadChaperoneData( false );
+    }
 }
 
 void MoveCenterTabController::applyChaperoneResetData()
@@ -1043,7 +1055,13 @@ void MoveCenterTabController::applyChaperoneResetData()
 
     vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live );
 
-    parent->chaperoneUtils().loadChaperoneData( false );
+    unsigned checkQuadCount = 0;
+    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
+                                                           &checkQuadCount );
+    if ( checkQuadCount > 0 )
+    {
+        parent->chaperoneUtils().loadChaperoneData( false );
+    }
 }
 
 // START of drag bindings:
@@ -1760,7 +1778,13 @@ void MoveCenterTabController::saveUncommittedChaperone()
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
         m_chaperoneCommitted = true;
-        parent->chaperoneUtils().loadChaperoneData( false );
+        unsigned checkQuadCount = 0;
+        vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
+            nullptr, &checkQuadCount );
+        if ( checkQuadCount > 0 )
+        {
+            parent->chaperoneUtils().loadChaperoneData( false );
+        }
     }
 }
 
@@ -2240,7 +2264,10 @@ void MoveCenterTabController::updateSpace()
 
     // loadChaperoneData( false ), false so that we don't load live data, and
     // reference the working set instead.
-    parent->chaperoneUtils().loadChaperoneData( false );
+    if ( m_collisionBoundsCountForReset > 0 )
+    {
+        parent->chaperoneUtils().loadChaperoneData( false );
+    }
 
     m_oldOffsetX = m_offsetX;
     m_oldOffsetY = m_offsetY;
