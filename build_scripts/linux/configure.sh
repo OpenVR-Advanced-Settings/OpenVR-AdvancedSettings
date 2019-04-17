@@ -14,6 +14,6 @@ else
     # Clean up the artifacts and run everything together in that case.
     MAKE_COMMAND='bear make --jobs'
     QMAKE_SPEC='linux-clang'
-    CLANG_TIDY='../build_scripts/linux/run-clang-tidy.sh'
+    CLANG_TIDY='$SCRIPT_DIR/run-clang-tidy.sh'
 fi
 
