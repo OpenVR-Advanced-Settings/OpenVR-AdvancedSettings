@@ -131,7 +131,6 @@ void MoveCenterTabController::initStage1()
     settings->endGroup();
     m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
     m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
-    zeroOffsets();
 }
 
 void MoveCenterTabController::initStage2( OverlayController* var_parent,
@@ -139,6 +138,7 @@ void MoveCenterTabController::initStage2( OverlayController* var_parent,
 {
     this->parent = var_parent;
     this->widget = var_widget;
+    zeroOffsets();
 }
 
 void MoveCenterTabController::outputLogPoses()
