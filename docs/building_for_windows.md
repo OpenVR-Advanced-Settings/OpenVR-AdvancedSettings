@@ -14,7 +14,7 @@
 For compiling:
 
 1. [Microsoft Visual Studio](https://visualstudio.microsoft.com/downloads/) (tested on 2017 Community)
-2. [Qt Framework](https://www.qt.io/download) version later than 5.6 (Requires at least 5.6. 5.12 is recommended)
+2. [Qt Framework](https://www.qt.io/download) version equal to or greater than 5.12.
 3. [Python 3](https://www.python.org/downloads/) (must be in `PATH` environment variable)
 
 For pushing changes to the repo:
@@ -48,7 +48,7 @@ If an environment variable isn't set a default value will be provided. The defau
 
 | Environment Variable  | Default Value |
 | --------------------  | ------------- |
-| `QT_LOC`              | `"C:\Qt\5.11.1\msvc2017_64\bin\"`    |
+| `QT_LOC`              | `"C:\Qt\5.12.2\msvc2017_64\bin\"`    |
 | `VS_LOC`              | `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"`  |
 | `JOM_LOC`             | `"C:\Qt\Tools\QtCreator\bin\jom.exe"`|
 | `ZIP_LOC`             | `"C:\Program Files\7-Zip\7z.exe"`    |
