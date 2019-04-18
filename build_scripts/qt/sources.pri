@@ -78,6 +78,9 @@ win32-clang-msvc {
 # Anything g++ or clang
 # In order to suppress warnings in third party headers
 *clang|*clang-g++|*clang-libc++|*g++* {
+    #Force Linux to look into the current dir for the OpenVR lib
+    QMAKE_LFLAGS    += '-Wl,-rpath,\'\$$ORIGIN\''
+
     QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
     QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]/QtCore
     QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]/QtGui
