@@ -2,6 +2,7 @@
   * [Compiler and Build Essentials](#compiler-and-build-essentials)
   * [Qt](#qt)
   * [Official Qt Installer](#official-qt-installer)
+    + [`qtchooser`](#-qtchooser-)
   * [Unofficial Ubuntu Packages](#unofficial-ubuntu-packages)
   * [`qtchooser` and versions](#-qtchooser--and-versions)
   * [X11](#x11)
@@ -32,6 +33,9 @@ At least version `5.12` is required.
 ## Official Qt Installer
 
 The easiest way to get it is from the [official Qt installer](https://www.qt.io/download-qt-installer).
+
+### `qtchooser`
+After installing using the official installer you will likely need to `qtchooser -install <name> <qmake-location>` in order for Qt to use the correct version. See the `qtchooser` section below.
 
 ## Unofficial Ubuntu Packages
 
