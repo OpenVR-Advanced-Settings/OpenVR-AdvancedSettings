@@ -10,7 +10,7 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/ReviveTabController.cpp \
     src/tabcontrollers/UtilitiesTabController.cpp \
     src/tabcontrollers/PttController.cpp \
-	src/tabcontrollers/VideoTabController.cpp \
+    src/tabcontrollers/VideoTabController.cpp \
     src/utils/ChaperoneUtils.cpp \
     src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
     src/openvr/openvr_init.cpp \
@@ -29,7 +29,7 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/SteamVRTabController.h \
     src/tabcontrollers/ReviveTabController.h \
     src/tabcontrollers/UtilitiesTabController.h \
-	src/tabcontrollers/VideoTabController.h \
+    src/tabcontrollers/VideoTabController.h \
     src/tabcontrollers/AudioManager.h \
     src/tabcontrollers/PttController.h \
     src/tabcontrollers/keyboardinput/KeyboardInput.h \
@@ -72,6 +72,9 @@ win32-clang-msvc {
 # Anything g++ or clang
 # In order to suppress warnings in third party headers
 *clang|*clang-g++|*clang-libc++|*g++* {
+    QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
+    QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]/QtCore
+    QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]/QtGui
     QMAKE_CXXFLAGS += -isystem ../third-party/openvr/headers
     QMAKE_CXXFLAGS += -isystem ../third-party/easylogging++
 }

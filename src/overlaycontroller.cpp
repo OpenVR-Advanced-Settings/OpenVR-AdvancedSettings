@@ -420,7 +420,6 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
 
     m_steamVRTabController.initStage2( this, m_pWindow.get() );
     m_chaperoneTabController.initStage2( this, m_pWindow.get() );
-    m_moveCenterTabController.initStage2( this, m_pWindow.get() );
     m_fixFloorTabController.initStage2( this, m_pWindow.get() );
     m_audioTabController.initStage2( this, m_pWindow.get() );
     m_statisticsTabController.initStage2( this, m_pWindow.get() );
@@ -428,6 +427,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     m_reviveTabController.initStage2( this, m_pWindow.get() );
     m_utilitiesTabController.initStage2( this, m_pWindow.get() );
     m_videoTabController.initStage2( this, m_pWindow.get() );
+    m_moveCenterTabController.initStage2( this, m_pWindow.get() );
 }
 
 void OverlayController::OnRenderRequest()

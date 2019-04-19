@@ -1,27 +1,141 @@
-# Building for Linux
-
 - [Requirements](#requirements)
+  * [Compiler and Build Essentials](#compiler-and-build-essentials)
+  * [Qt](#qt)
+  * [Official Qt Installer](#official-qt-installer)
+  * [Unofficial Ubuntu Packages](#unofficial-ubuntu-packages)
+  * [`qtchooser` and versions](#-qtchooser--and-versions)
+  * [X11](#x11)
+  * [`clang-tidy` and `bear`](#-clang-tidy--and--bear-)
+- [TL;DR: for Ubuntu](#tl-dr--for-ubuntu)
+  * [Ubuntu 16.04 Xenial](#ubuntu-1604-xenial)
+  * [Ubuntu 18.04 Bionic](#ubuntu-1804-bionic)
 - [Locations and Environment Variables](#locations-and-environment-variables)
 - [Building](#building)
 - [Contributing](#contributing)
 
-## Requirements
+# Requirements
+## Compiler and Build Essentials
 
-The following packages are necessary for compiling: 
+You will need either `clang` og `g++`. At least `g++-7` or `clang` version `5.0` is required due to C++17 support.
+You will additionally need the `build-essential` and `libgl1-mesa-dev` packages.
 
-`sudo apt install build-essential qtbase5-dev qttools5-dev qtdeclarative5-dev qtmultimedia5-dev qt5-default qttools5-dev-tools`
+If they are available from your package manager they can be installed with `sudo apt install build-essential libgl1-mesa-dev`. If the versions in your package manager are not up to date, you can get the packages on Ubuntu with 
+```bash
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt update
+sudo apt install g++-7
+```
+## Qt
 
-If you install Qt 5.12 you should have the above packages.
+At least version `5.12` is required.
 
-Along with either `clang` or `g++`. At least `g++-7` is required, due to C++17 support.
+## Official Qt Installer
 
-For linting with `clang-tidy` the following are necessary:
+The easiest way to get it is from the [official Qt installer](https://www.qt.io/download-qt-installer).
 
-`sudo apt install bear clang-tidy`
+## Unofficial Ubuntu Packages
 
-All applications are required to be in the `PATH`.
+If you don't want to use the offical installer, you can use [this](https://launchpad.net/~beineri) PPA.
 
-## Locations and Environment Variables
+You will need at least `qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2  qt512tools  qt512base`, although if you have the drive space it's probably easier just to get `qt512-meta-full`.
+
+For Ubuntu 16.04
+```bash
+sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-xenial
+sudo apt-get update
+sudo apt install qt512-meta-full
+```
+For Ubuntu 18.04
+```bash
+sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-bionic
+sudo apt-get update
+sudo apt install qt512-meta-full
+```
+If you choose the wrong Ubuntu version you will get an error from `apt` about there not being a `Release` file. Try the other one instead.
+
+## `qtchooser` and versions
+
+If you have multiple Qt installations you might need to select the correct one using `qtchooser`.
+
+Type `qmake --version` into the terminal to see which version you're currently using:
+```bash
+$ qmake --version
+QMake version 3.1
+Using Qt version 5.12.2 in /opt/qt512/lib
+```
+If you get a version equal to or above `5.12` you don't need to use `qtchooser`.
+
+If you get `qmake: could not find a Qt installation of ''` or a version lower than `5.12` then you'll need to follow the steps below.
+
+You can list currently installed versions with `qtchooser -l`:
+```bash
+$ qtchooser -l
+4
+5
+opt-qt512
+qt4-x86_64-linux-gnu
+qt4
+qt5-x86_64-linux-gnu
+qt5
+```
+
+If you installed from the PPA above, you'll need to use `opt-qt512`. Activate this by setting the `QT_SELECT` environment variable:
+
+```bash
+export QT_SELECT=opt-qt512
+```
+
+Run `qmake --version` again to make sure the correct version is set.
+
+If you don't see the required version in the list of currently installed versions you will need to install it. You do this with `qtchooser -install <name> <path-to-qmake>`. If you used the PPA above then you'll need to write 
+```bash
+qtchooser -install opt-qt512 /opt/qt512/bin/qmake
+```
+
+Afterwards you should set the `QT_SELECT` environment variable to the name you chose (we used `opt-qt512`).
+
+## X11
+
+X11 packages are currently needed for sending keystrokes to the desktop from VR. Install the packages with `sudo apt-get install libx11-dev libxt-dev libxtst-dev`. This feature will be gated behind a compile flag soon.
+
+## `clang-tidy` and `bear`
+
+In order to use `clang-tidy` you will need `bear clang-tidy` in addition to the above (and `clang`). You will only need this if you're going to make contributions to the codebase.
+
+```bash
+sudo apt install bear clang-tidy
+```
+
+# TL;DR: for Ubuntu
+## Ubuntu 16.04 Xenial
+```bash
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-xenial
+sudo apt update
+sudo apt install g++-7
+sudo apt-get install build-essential libgl1-mesa-dev
+sudo apt-get install qt512-meta-full
+sudo apt-get install libx11-dev libxt-dev libxtst-dev
+sudo apt-get install bear clang-tidy
+qtchooser -install opt-qt512 /opt/qt512/bin/qmake
+export QT_SELECT=opt-qt512
+```
+
+## Ubuntu 18.04 Bionic
+```bash
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-bionic
+sudo apt update
+sudo apt install g++-7
+sudo apt-get install build-essential libgl1-mesa-dev
+sudo apt-get install qt512-meta-full
+sudo apt-get install libx11-dev libxt-dev libxtst-dev
+sudo apt-get install bear clang-tidy
+qtchooser -install opt-qt512 /opt/qt512/bin/qmake
+export QT_SELECT=opt-qt512
+```
+
+# Locations and Environment Variables
 
 The following environmental variables are relevant for building the project.
 
@@ -32,12 +146,12 @@ The following environmental variables are relevant for building the project.
 
 If an environment variable isn't set a default value will be provided. The default values are shown in the table below.
 
-## Building
+# Building
 
 With the programs above installed and environment variables set, go into the root folder of the repository and run `./build_scripts/linux/build_linux.sh`.
 
 If you copy the `third-party/openvr/lib/linux64/libopenvr_api.so` file into `/lib` you can run the `AdvancedSettings` file without anything else. Otherwise you'll need to run the `run-with-library.sh` file.
 
-## Contributing
+# Contributing
 
 For full details, see [CONTRIBUTING.md](CONTRIBUTING.md).

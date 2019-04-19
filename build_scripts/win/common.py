@@ -24,7 +24,7 @@ ZIP_LOC_VAR_NAME = "ZIP_LOC"
 NSIS_LOC_VAR_NAME = "NSIS_LOC"
 LLVM_LOC_VAR_NAME = "LLVM_LOC"
 
-QT_LOC_DEFAULT = r"C:\Qt\5.11.1\msvc2017_64\bin\""
+QT_LOC_DEFAULT = r"C:\Qt\5.12.2\msvc2017_64\bin\""
 VS_LOC_DEFAULT = r"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
 JOM_LOC_DEFAULT = r"C:\Qt\Tools\QtCreator\bin\jom.exe"
 ZIP_LOC_DEFAULT = r"C:\Program Files\7-Zip\7z.exe"
