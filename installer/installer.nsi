@@ -11,7 +11,8 @@
 		!define THIRDDIR "..\third-party"
         !define PACKAGEDIR "..\src\package_files"
         !define PROJECTDIR "..\"
-        !define /file VERSION_STRING "..\build_scripts\compile_version_string.txt"
+        !define /file VERSION_STRING_QUOTES "..\build_scripts\compile_version_string.txt"
+        !searchreplace VERSION_STRING ${VERSION_STRING_QUOTES} "$\"" ""
 
         
     ;Installer icon

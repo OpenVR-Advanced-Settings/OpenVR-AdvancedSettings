@@ -12,7 +12,7 @@ def get_version_string():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     with open(dir_path + "/../compile_version_string.txt", "r") as file:
         contents = file.readline()
-        return contents
+        return contents.strip('"')
 
 
 #Const globals
