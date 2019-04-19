@@ -32,8 +32,8 @@ void initializeProperly( const OpenVrInitializationType initType )
         }
         LOG( ERROR ) << "Failed to initialize OpenVR: "
                             + std::string(
-                                  vr::VR_GetVRInitErrorAsEnglishDescription(
-                                      initError ) );
+                                vr::VR_GetVRInitErrorAsEnglishDescription(
+                                    initError ) );
         exit( EXIT_FAILURE );
     }
     else
