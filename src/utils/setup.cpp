@@ -107,8 +107,8 @@ void enableApplicationAutostart()
         throw std::runtime_error(
             std::string( "Could not set auto start: " )
             + std::string(
-                  vr::VRApplications()->GetApplicationsErrorNameFromEnum(
-                      app_error ) ) );
+                vr::VRApplications()->GetApplicationsErrorNameFromEnum(
+                    app_error ) ) );
     }
 }
 
@@ -124,8 +124,8 @@ void installApplicationManifest( const std::string manifestPath )
         throw std::runtime_error(
             std::string( "Could not add application manifest: " )
             + std::string(
-                  vr::VRApplications()->GetApplicationsErrorNameFromEnum(
-                      app_error ) ) );
+                vr::VRApplications()->GetApplicationsErrorNameFromEnum(
+                    app_error ) ) );
     }
 }
 
@@ -163,8 +163,8 @@ void reinstallApplicationManifest( const std::string manifestPath )
                 "Could not find working directory of already "
                 "installed application: "
                 + std::string(
-                      vr::VRApplications()->GetApplicationsErrorNameFromEnum(
-                          app_error ) ) );
+                    vr::VRApplications()->GetApplicationsErrorNameFromEnum(
+                        app_error ) ) );
         }
 
         const auto oldManifestPath
