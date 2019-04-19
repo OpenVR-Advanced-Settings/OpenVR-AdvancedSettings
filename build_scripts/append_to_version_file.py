@@ -13,7 +13,7 @@ def get_version_string():
 def set_version_string(new_version_string):
     remove(version_file_path)
     with open(version_file_path, "w") as file:
-        file.write("\"" + new_version_string + "\"")
+        file.write(new_version_string)
 
 def main():
     current_version = get_version_string()

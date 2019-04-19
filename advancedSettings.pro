@@ -3,6 +3,9 @@ CONFIG   += c++1z
 
 DEFINES += ELPP_THREAD_SAFE ELPP_QT_LOGGING ELPP_NO_DEFAULT_LOG_FILE
 
+VERSION = "$$cat($$PWD/build_scripts/compile_version_string.txt)"
+DEFINES += APPLICATION_VERSION=\\\"$$VERSION\\\"
+
 lessThan(QT_MAJOR_VERSION, 5): error("requires Qt 5.12 or higher")
 lessThan(QT_MINOR_VERSION, 12): error("requires Qt 5.12 or higher")
 

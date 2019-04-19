@@ -48,9 +48,8 @@ constexpr auto applicationOrganizationName = "AdvancedSettings-Team";
 constexpr auto applicationName = "OpenVRAdvancedSettings";
 constexpr const char* applicationKey = "OVRAS-Team.AdvancedSettings";
 constexpr const char* applicationDisplayName = "Advanced Settings";
-constexpr const char* applicationVersionString = {
-#include "../build_scripts/compile_version_string.txt"
-};
+
+constexpr const char* applicationVersionString = APPLICATION_VERSION;
 
 } // namespace application_strings
 
