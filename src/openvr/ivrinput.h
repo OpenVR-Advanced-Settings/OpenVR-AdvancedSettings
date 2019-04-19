@@ -52,7 +52,7 @@ namespace action_keys
     constexpr auto hapticsLeft = "/actions/haptic/out/HapticsLeft";
     constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
 
-	constexpr auto chaperoneToggle = "/actions/misc/in/ChaperoneToggle"
+	constexpr auto chaperoneToggle = "/actions/misc/in/ChaperoneToggle";
 
 } // namespace action_keys
 
