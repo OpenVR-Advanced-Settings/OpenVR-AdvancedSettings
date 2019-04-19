@@ -28,7 +28,6 @@ init:
   - set TAG_NAME=%APPVEYOR_REPO_TAG_NAME%
 
 build_script:
-  - "C:\Program Files\LLVM\bin\clang-format.exe" --version
   - python ./build_scripts/run-clang-format.py ./src -r --clang-format-executable "C:\Program Files\LLVM\bin\clang-format.exe" --color always
   - call "build_windows.cmd"
 
