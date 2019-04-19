@@ -1,9 +1,10 @@
+#!/usr/bin/env python
 from sys import argv
 from os import path
 
 def get_version_string():
     dir_path = path.dirname(path.realpath(__file__))
-    with open(dir_path + "/compile_version_string.txt", "r") as file:
+    with open(path.join(dir_path, "compile_version_string.txt"), "r") as file:
         contents = file.readline()
         return contents.strip('"')    
     
