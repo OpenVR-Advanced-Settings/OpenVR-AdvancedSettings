@@ -17,5 +17,5 @@ def set_version_string(new_version_string):
 
 if __name__ == "__main__":
     current_version = get_version_string()
-    new_version = current_version + "-" + argv[1]
+    new_version = current_version + "+" + argv[1]
     set_version_string(new_version)
