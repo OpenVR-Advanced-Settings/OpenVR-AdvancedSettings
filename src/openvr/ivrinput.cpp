@@ -134,6 +134,7 @@ SteamIVRInput::SteamIVRInput()
       m_pushToTalk( action_keys::pushToTalk ),
       m_leftHaptic( action_keys::hapticsLeft ),
       m_rightHaptic( action_keys::hapticsRight ),
+	  m_chaperoneToggle( action_keys::chaperoneToggle ),
       m_leftHand( input_keys::leftHand ), m_rightHand( input_keys::rightHand ),
       m_sets( { m_mainSet.activeActionSet(),
                 m_music.activeActionSet(),
@@ -288,6 +289,11 @@ bool SteamIVRInput::zAxisLockToggle()
 bool SteamIVRInput::pushToTalk()
 {
     return isDigitalActionActivatedConstant( m_pushToTalk );
+}
+
+bool SteamIVRInput::chaperoneToggle()
+{
+	return isDigitalActionActivatedConstant(m_chaperoneToggle);
 }
 
 /*!

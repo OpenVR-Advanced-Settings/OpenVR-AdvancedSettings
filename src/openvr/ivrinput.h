@@ -52,6 +52,8 @@ namespace action_keys
     constexpr auto hapticsLeft = "/actions/haptic/out/HapticsLeft";
     constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
 
+	constexpr auto chaperoneToggle = "/actions/misc/in/ChaperoneToggle"
+
 } // namespace action_keys
 
 /*!
@@ -131,6 +133,7 @@ public:
     bool xAxisLockToggle();
     bool yAxisLockToggle();
     bool zAxisLockToggle();
+	bool chaperoneToggle();
 
     bool pushToTalk();
 
@@ -191,6 +194,9 @@ private:
     DigitalAction m_xAxisLockToggle;
     DigitalAction m_yAxisLockToggle;
     DigitalAction m_zAxisLockToggle;
+
+	//Misc Bindings
+	DigitalAction m_chaperoneToggle;
 
     // Push To Talk
     DigitalAction m_pushToTalk;
