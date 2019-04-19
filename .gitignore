@@ -2,6 +2,7 @@ debug
 release
 assets
 bin
+build
 Makefile*
 *.vcxproj*
 *.log
