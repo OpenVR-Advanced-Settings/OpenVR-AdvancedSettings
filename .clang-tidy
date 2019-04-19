@@ -97,7 +97,7 @@ WarningsAsErrors:           '*,
     -readability-redundant-declaration,
     -readability-redundant-member-init,
     -readability-static-accessed-through-instance'
-HeaderFilterRegex: '.*'
+HeaderFilterRegex: '^((?!qt).)*h$'
 AnalyzeTemporaryDtors: false
 FormatStyle:     none
 CheckOptions:
