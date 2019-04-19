@@ -337,8 +337,8 @@ void UtilitiesTabController::eventLoopTick()
                                 parent->setAlarmEnabled( true );
                             }
                             else if (
-                                res
-                                >= vr::VRMessageOverlayResponse_CouldntFindSystemOverlay )
+                                res >= vr::
+                                    VRMessageOverlayResponse_CouldntFindSystemOverlay )
                             {
                                 static const char* errorMessages[]
                                     = { "CouldntFindSystemOverlay",
@@ -346,7 +346,8 @@ void UtilitiesTabController::eventLoopTick()
                                         "ApplicationQuit" };
                                 int errorCode
                                     = res
-                                      - vr::VRMessageOverlayResponse_CouldntFindSystemOverlay;
+                                      - vr::
+                                          VRMessageOverlayResponse_CouldntFindSystemOverlay;
                                 if ( res < 3 )
                                 {
                                     LOG( ERROR )

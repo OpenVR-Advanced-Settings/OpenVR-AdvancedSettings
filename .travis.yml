@@ -44,7 +44,12 @@ before_install:
   - chmod +x ./build_scripts/linux/format.sh
   - chmod +x ./build_scripts/linux/run-clang-tidy.sh
   - chmod +x ./build_scripts/linux/verify_formatting.sh
-  - python ./build_scripts/run-clang-format.py ./src -r --color always
+  - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+  - sudo add-apt-repository 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
+  - sudo apt update -qq
+  - sudo apt install clang-format-8
+  - clang-format-8 --version
+  - python ./build_scripts/run-clang-format.py ./src -r --color always --clang-format-executable clang-format-8
 
 install:
   - sudo add-apt-repository ppa:kubuntu-ppa/backports -y
