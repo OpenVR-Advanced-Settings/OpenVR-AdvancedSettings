@@ -154,6 +154,8 @@ def build():
     COMPILE_MODE = ""
     COMPILER = ""
     
+    say("Attempting to build version: " + VERSION_STRING)
+    
     say("Testing if all required build environment variables are set:")
     QT_LOC = get_required_env_var_path(QT_LOC_VAR_NAME, QT_LOC_DEFAULT)
     VS_LOC = get_required_env_var_path(VS_LOC_VAR_NAME, VS_LOC_DEFAULT)
