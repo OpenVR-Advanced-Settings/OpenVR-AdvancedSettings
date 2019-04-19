@@ -26,6 +26,7 @@ clone_depth: 1
 
 init:
   - set TAG_NAME=%APPVEYOR_REPO_TAG_NAME%
+  - python ./build_scripts/append_to_version_file.py $(APPVEYOR_REPO_COMMIT) > ./build_scripts/compile_version_string.txt
 
 build_script:
   - python ./build_scripts/run-clang-format.py ./src -r --clang-format-executable "C:\Program Files\LLVM\bin\clang-format.exe" --color always
