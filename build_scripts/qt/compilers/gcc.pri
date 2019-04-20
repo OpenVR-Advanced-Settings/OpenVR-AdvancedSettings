@@ -1,5 +1,15 @@
-#g++-7 is needed for C++17 features. travis does not supply this by default.
-QMAKE_CXX = g++-7
+
+# Makes sure the "g++" command used to invoke the compilation is abvove version 7.
+# If it's at or above version 7 then we can use the default g++, otherwise we'll
+# specifically need g++-7.
+system( g++ --version | grep -e " [0-9]\?[0-9]\?[6-9].[0-9]" ) {
+    message('g++' version is not above 7. Manually using 'g++-7'.)
+    !system(g++-7 --version) {
+        error(At least g++-7 required.)
+    }
+    #g++-7 is needed for C++17 features. travis does not supply this by default.
+    QMAKE_CXX = g++-7
+}
 
 include(clang-gcc-common-switches.pri)
 
