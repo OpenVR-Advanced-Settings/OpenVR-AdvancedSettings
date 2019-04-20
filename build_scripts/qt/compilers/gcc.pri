@@ -1,8 +1,8 @@
-
 # Makes sure the "g++" command used to invoke the compilation is abvove version 7.
 # If it's at or above version 7 then we can use the default g++, otherwise we'll
 # specifically need g++-7.
-system( g++ --version | grep -e " [0-9]\?[0-9]\?[6-9].[0-9]" ) {
+GCC_VERSION = $$system("g++ -dumpversion")
+!greaterThan(GCC_VERSION, 6) {
     message('g++' version is not above 7. Manually using 'g++-7'.)
     !system(g++-7 --version) {
         error(At least g++-7 required.)
