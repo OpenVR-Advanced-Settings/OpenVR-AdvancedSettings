@@ -14,4 +14,4 @@ The version number string is kept in the `./build_scripts/compile_version_string
 
 The string should be three digits separated by dots (periods), as described in [semantic versioning](https://semver.org/) (like "2.8.0"). Additional qualifiers may be appended with a dash (and only a dash). The `QMAKE` build script relies on there only being dot separated integers before the first dash. If there are non-integers (or letters) before the first dash the Windows build will fail.
 
-The AppVeyor build server will append the last 8 digits of the commit hash. This is in order to make debugging various versions easier.
+The AppVeyor build server will append the last 8 digits of the commit hash. This is in order to make debugging various versions easier. If `-release` is found in the original version string, a hash will not be appended.
