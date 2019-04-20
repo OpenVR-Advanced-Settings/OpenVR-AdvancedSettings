@@ -139,6 +139,18 @@ qtchooser -install opt-qt512 /opt/qt512/bin/qmake
 export QT_SELECT=opt-qt512
 ```
 
+## Ubuntu 19.04 Disco
+
+```bash
+sudo apt install build-essential libgl1-mesa-dev
+sudo apt install g++7
+sudo apt install qt5-default qtmultimedia5-dev libqt5multimediawidgets5 libqt5multimedia5-plugins libqt5multimedia5 qml-module-qtquick-extras qml-module-qtquick-controls2 qml-module-qtquick-dialogs qtdeclarative5-dev
+sudo apt-get install libx11-dev libxt-dev libxtst-dev
+sudo apt install bear clang-tidy
+```
+You should not need to use `qtchooser` to set the Qt version on 19.04.
+
+
 # Locations and Environment Variables
 
 The following environmental variables are relevant for building the project.
