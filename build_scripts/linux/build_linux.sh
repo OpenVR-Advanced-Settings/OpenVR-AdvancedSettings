@@ -9,7 +9,7 @@ echo $MAKE_COMMAND
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
 qmake --version
-qmake -spec $QMAKE_SPEC $PROJECT_DIR
+qmake -spec $QMAKE_SPEC $PROJECT_DIR $QMAKE_EXTRAS
 $MAKE_COMMAND
 $CLANG_TIDY
 cp -r $PROJECT_DIR/src/res $BUILD_DIR/bin/linux/AdvancedSettings/

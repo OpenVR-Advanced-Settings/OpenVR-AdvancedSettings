@@ -54,9 +54,14 @@ win32 {
 }
 
 unix:!macx {
-    SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputX11.cpp
-    CONFIG += x11
-    LIBS += -lXtst
+    !noX11 {
+        SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputX11.cpp
+        CONFIG += x11
+        LIBS += -lXtst
+    }
+    else {
+        SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp
+    }
 }
 
 macx {
