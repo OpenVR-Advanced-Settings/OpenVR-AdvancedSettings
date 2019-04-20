@@ -84,8 +84,9 @@ win32-clang-msvc {
     QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
     QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]/QtCore
     QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]/QtGui
-    QMAKE_CXXFLAGS += -isystem ../third-party/openvr/headers
-    QMAKE_CXXFLAGS += -isystem ../third-party/easylogging++
+
+    QMAKE_CXXFLAGS += -isystem $$PWD/../../third-party/openvr/headers
+    QMAKE_CXXFLAGS += -isystem $$PWD/../../third-party/easylogging++
 }
 
 # easylogging++ used to be a header only lib. Now requires easylogging++.cc
