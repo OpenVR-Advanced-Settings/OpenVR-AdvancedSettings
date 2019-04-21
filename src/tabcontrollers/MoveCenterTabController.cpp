@@ -128,6 +128,11 @@ void MoveCenterTabController::initStage1()
     {
         m_allowExternalEdits = value.toBool();
     }
+    value = settings->value( "oldStyleMotion", m_oldStyleMotion );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_oldStyleMotion = value.toBool();
+    }
     settings->endGroup();
     m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
     m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
@@ -794,6 +799,31 @@ void MoveCenterTabController::setAllowExternalEdits( bool value, bool notify )
     if ( notify )
     {
         emit allowExternalEditsChanged( m_allowExternalEdits );
+    }
+}
+
+bool MoveCenterTabController::oldStyleMotion() const
+{
+    return m_oldStyleMotion;
+}
+
+void MoveCenterTabController::setOldStyleMotion( bool value, bool notify )
+{
+    // detect incoming change to old style, and hide working set
+    if ( value && !m_oldStyleMotion )
+    {
+        vr::VRChaperoneSetup()->HideWorkingSetPreview();
+    }
+
+    m_oldStyleMotion = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "oldStyleMotion", m_oldStyleMotion );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit oldStyleMotionChanged( m_oldStyleMotion );
     }
 }
 
@@ -2259,8 +2289,17 @@ void MoveCenterTabController::updateSpace()
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &offsetUniverseCenter );
 
-    vr::VRChaperoneSetup()->ShowWorkingSetPreview();
-    m_chaperoneCommitted = false;
+    if ( m_oldStyleMotion )
+    {
+        vr::VRChaperoneSetup()->CommitWorkingCopy(
+            vr::EChaperoneConfigFile_Live );
+        m_chaperoneCommitted = true;
+    }
+    else
+    {
+        vr::VRChaperoneSetup()->ShowWorkingSetPreview();
+        m_chaperoneCommitted = false;
+    }
 
     // loadChaperoneData( false ), false so that we don't load live data, and
     // reference the working set instead.
