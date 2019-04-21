@@ -3,10 +3,7 @@
 #include <X11/Intrinsic.h>
 #include <X11/extensions/XTest.h>
 #include <unistd.h>
-
-// Used to get the compiler to shut up about C4100: unreferenced formal
-// parameter. The cast is to get GCC to shut up about it.
-#define UNREFERENCED_PARAMETER( P ) static_cast<void>( ( P ) )
+#include <array>
 
 namespace keyboardinput
 {
@@ -44,8 +41,16 @@ void sendKeyPress( const KeySym keySymbol, const KeySym modifierSymbol )
 
 void sendKeyboardInput( QString input )
 {
-    // noop
-    UNREFERENCED_PARAMETER( input );
+    std::vector<char> characters = { 0 };
+    for ( const auto& character : input )
+    {
+        characters.push_back( character.toLatin1() );
+    }
+
+    for ( const auto character : characters )
+    {
+        sendKeyPress( XStringToKeysym( &character ), noModifier );
+    }
 }
 
 void sendKeyboardEnter()
