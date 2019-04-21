@@ -144,6 +144,61 @@ void MoveCenterTabController::initStage2( OverlayController* var_parent,
     this->parent = var_parent;
     this->widget = var_widget;
     zeroOffsets();
+    outputLogSettings();
+}
+
+void MoveCenterTabController::outputLogSettings()
+{
+    if ( !m_adjustChaperone )
+    {
+        LOG( WARNING ) << "LOADED SETTINGS: Adjust Chaperone DISABLED";
+    }
+    if ( m_settingsRightHandDragEnabled )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Right Hand Space-Drag Bind Enabled";
+    }
+    if ( m_settingsLeftHandDragEnabled )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Left Hand Space-Drag Bind Enabled";
+    }
+    if ( m_settingsRightHandTurnEnabled )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Right Hand Space-Turn Bind Enabled";
+    }
+    if ( m_settingsLeftHandTurnEnabled )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Left Hand Space-Turn Bind Enabled";
+    }
+    if ( m_dragComfortFactor > 0 )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Space-Drag Comfort Factor = "
+                    << m_dragComfortFactor;
+    }
+    if ( m_turnComfortFactor > 0 )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Space-Turn Comfort Factor = "
+                    << m_turnComfortFactor;
+    }
+    if ( m_lockXToggle )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: X Axis Locked";
+    }
+    if ( m_lockYToggle )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Y Axis Locked";
+    }
+    if ( m_lockZToggle )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Z Axis Locked";
+    }
+    if ( m_allowExternalEdits )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Allow External Edits Enabled";
+    }
+    if ( m_oldStyleMotion )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Old-Style Motion Enabled";
+    }
 }
 
 void MoveCenterTabController::outputLogPoses()
@@ -268,6 +323,7 @@ void MoveCenterTabController::setTrackingUniverse( int value, bool notify )
         if ( notify )
         {
             emit trackingUniverseChanged( m_trackingUniverse );
+            LOG( INFO ) << "Tracking Universe: " << m_trackingUniverse;
         }
     }
 }
@@ -439,6 +495,15 @@ void MoveCenterTabController::setAdjustChaperone( bool value, bool notify )
         {
             emit adjustChaperoneChanged( m_adjustChaperone );
         }
+        if ( !m_adjustChaperone )
+        {
+            LOG( WARNING ) << "CHANGED SETTINGS: Adjust Chaperone DISABLED";
+        }
+        else
+        {
+            LOG( INFO ) << "CHANGED SETTINGS: Adjust Chaperone Set: "
+                        << m_adjustChaperone;
+        }
     }
 }
 
@@ -459,6 +524,8 @@ void MoveCenterTabController::setMoveShortcutRight( bool value, bool notify )
     {
         emit moveShortcutRightChanged( m_settingsRightHandDragEnabled );
     }
+    LOG( INFO ) << "CHANGED SETTINGS: Right Hand Space-Drag Bind Enable Set: "
+                << m_settingsRightHandDragEnabled;
 }
 
 bool MoveCenterTabController::moveShortcutLeft() const
@@ -478,6 +545,8 @@ void MoveCenterTabController::setMoveShortcutLeft( bool value, bool notify )
     {
         emit moveShortcutLeftChanged( m_settingsLeftHandDragEnabled );
     }
+    LOG( INFO ) << "CHANGED SETTINGS: Left Hand Space-Drag Bind Enable Set: "
+                << m_settingsLeftHandDragEnabled;
 }
 
 bool MoveCenterTabController::turnBindLeft() const
@@ -497,6 +566,8 @@ void MoveCenterTabController::setTurnBindLeft( bool value, bool notify )
     {
         emit turnBindLeftChanged( m_settingsLeftHandTurnEnabled );
     }
+    LOG( INFO ) << "CHANGED SETTINGS: Left Hand Space-Turn Bind Enable Set: "
+                << m_settingsLeftHandTurnEnabled;
 }
 
 bool MoveCenterTabController::turnBindRight() const
@@ -516,6 +587,8 @@ void MoveCenterTabController::setTurnBindRight( bool value, bool notify )
     {
         emit turnBindRightChanged( m_settingsRightHandTurnEnabled );
     }
+    LOG( INFO ) << "CHANGED SETTINGS: Right Hand Space-Turn Bind Enable Set: "
+                << m_settingsRightHandTurnEnabled;
 }
 
 unsigned MoveCenterTabController::dragComfortFactor() const
@@ -800,6 +873,8 @@ void MoveCenterTabController::setAllowExternalEdits( bool value, bool notify )
     {
         emit allowExternalEditsChanged( m_allowExternalEdits );
     }
+    LOG( INFO ) << "CHANGED SETTINGS: Allow External Edits Set: "
+                << m_allowExternalEdits;
 }
 
 bool MoveCenterTabController::oldStyleMotion() const
@@ -825,6 +900,8 @@ void MoveCenterTabController::setOldStyleMotion( bool value, bool notify )
     {
         emit oldStyleMotionChanged( m_oldStyleMotion );
     }
+    LOG( INFO ) << "CHANGED SETTINGS: Old-Style Motion Set: "
+                << m_oldStyleMotion;
 }
 
 void MoveCenterTabController::modOffsetX( float value, bool notify )

@@ -175,6 +175,7 @@ private:
     void applyChaperoneResetData();
     void saveUncommittedChaperone();
     void outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix );
+    void outputLogSettings();
 
 public:
     void initStage1();
