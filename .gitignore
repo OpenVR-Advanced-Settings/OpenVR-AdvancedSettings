@@ -2,6 +2,7 @@ debug
 release
 assets
 bin
+build
 Makefile*
 *.vcxproj*
 *.log
@@ -13,3 +14,4 @@ installer/*.exe
 *.user*
 build_scripts/win/__pycache__
 build_scripts/win/current_build.bat
+AdvancedSettings_resource.rc
