@@ -47,7 +47,7 @@ A token is either a modifier symbol, literal symbol, symbol sequence or space ch
 |---|---|
 | A to Z | The letter in lowercase. `a`, `b`, `c`, ... |
 | Number Row 0-9 | The number. `0`, `1`, `2`, ... |
-| Function keys F1-F12 | Capital F followed by number. `F1`, `F2`, `F3`, ... |
+| Function keys F1-F9 | Capital F followed by number. `F1`, `F2`, `F3`, ... |
 | Backspace | `BACKSPACE` |
 | Space | `SPACE` |
 | Tab | `TAB` |
@@ -97,6 +97,8 @@ Two or more spaces in succession has the same effect as a single space.
 There is no limit on the length of the string.
 
 If a specific key is not supported on a platform, triggering that key is a no-op. A log message may be displayed.
+
+Only F1 through F9 is supported. This is because there is no way to tell if `F12` is meant to be `F1+, F1-, 2+, 2-` or `F12+, F12-`.
 
 Whether A on AZERTY keyboards triggers A or Q is undefined.
 
