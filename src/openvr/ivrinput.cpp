@@ -293,7 +293,7 @@ bool SteamIVRInput::pushToTalk()
 
 bool SteamIVRInput::chaperoneToggle()
 {
-	return isDigitalActionActivatedConstant(m_chaperoneToggle);
+	return isDigitalActionActivatedOnce(m_chaperoneToggle);
 }
 
 /*!
