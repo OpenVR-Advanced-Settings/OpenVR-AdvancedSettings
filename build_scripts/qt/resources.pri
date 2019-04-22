@@ -47,4 +47,4 @@ DISTFILES += \
     src/res/qml/desktop_overlay_page/translation_back_forwards/SteamDesktopTranslationBackForwards.qml \
     src/res/qml/desktop_overlay_page/translation_up_down/SteamDesktopTranslationUpDown.qml \
 
-RC_FILE = src/res/icon.rc
+win32:RC_ICONS += src/res/img/icons/advicon256px.ico

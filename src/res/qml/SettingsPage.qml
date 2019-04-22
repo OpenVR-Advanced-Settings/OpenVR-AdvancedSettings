@@ -34,6 +34,14 @@ MyStackViewPage {
             }
         }
 
+        MyToggleButton {
+            id: oldStyleMotionToggle
+            text: "Old-Style Motion (per-frame disk writes)"
+            onCheckedChanged: {
+                MoveCenterTabController.setOldStyleMotion(checked, true)
+            }
+        }
+
         Item {
             Layout.fillHeight: true
         }
@@ -42,6 +50,7 @@ MyStackViewPage {
             settingsAutoStartToggle.checked = SettingsTabController.autoStartEnabled
             forceReviveToggle.checked = SettingsTabController.forceRevivePage
             allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
+            oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
         }
 
         Connections {
@@ -58,6 +67,9 @@ MyStackViewPage {
             target: MoveCenterTabController
             onAllowExternalEditsChanged: {
                 allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
+            }
+            onOldStyleMotionChanged: {
+                oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
             }
         }
     }

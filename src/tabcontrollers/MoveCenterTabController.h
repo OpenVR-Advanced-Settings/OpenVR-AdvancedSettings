@@ -73,6 +73,8 @@ class MoveCenterTabController : public QObject
             setShowLogMatricesButton NOTIFY showLogMatricesButtonChanged )
     Q_PROPERTY( bool allowExternalEdits READ allowExternalEdits WRITE
                     setAllowExternalEdits NOTIFY allowExternalEditsChanged )
+    Q_PROPERTY( bool oldStyleMotion READ oldStyleMotion WRITE setOldStyleMotion
+                    NOTIFY oldStyleMotionChanged )
 
 private:
     OverlayController* parent;
@@ -148,6 +150,7 @@ private:
     bool m_seatedModeDetected = false;
     bool m_showLogMatricesButton = false;
     bool m_allowExternalEdits = false;
+    bool m_oldStyleMotion = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
@@ -172,6 +175,7 @@ private:
     void applyChaperoneResetData();
     void saveUncommittedChaperone();
     void outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix );
+    void outputLogSettings();
 
 public:
     void initStage1();
@@ -204,6 +208,7 @@ public:
     bool lockZToggle() const;
     bool showLogMatricesButton() const;
     bool allowExternalEdits() const;
+    bool oldStyleMotion() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
     void incomingSeatedReset();
@@ -264,6 +269,7 @@ public slots:
     void setLockZ( bool value, bool notify = true );
     void setShowLogMatricesButton( bool value, bool notify = true );
     void setAllowExternalEdits( bool value, bool notify = true );
+    void setOldStyleMotion( bool value, bool notify = true );
 
     void shutdown();
     void reset();
@@ -297,6 +303,7 @@ signals:
     void requireLockZChanged( bool value );
     void showLogMatricesButtonChanged( bool value );
     void allowExternalEditsChanged( bool value );
+    void oldStyleMotionChanged( bool value );
 };
 
 } // namespace advsettings
