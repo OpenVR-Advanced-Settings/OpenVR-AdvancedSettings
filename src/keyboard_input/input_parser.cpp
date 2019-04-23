@@ -61,7 +61,7 @@ std::vector<Token> ParseKeyboardInputsToTokens( const std::string inputs )
 {
     std::vector<Token> tokens{};
 
-    for ( auto ch = inputs.begin(); ch != inputs.end(); ++ch )
+    for ( auto ch = inputs.begin(), end = inputs.end(); ch != end; ++ch )
     {
         if ( const auto c = getNumberOrLetter( *ch ); c.has_value() )
         {
@@ -84,6 +84,10 @@ std::vector<Token> ParseKeyboardInputsToTokens( const std::string inputs )
         if ( *ch == 'F' )
         {
             ++ch;
+            if ( ch == end )
+            {
+                break;
+            }
             const auto token = getFunctionNumber( *ch );
             if ( token.has_value() )
             {

@@ -24,6 +24,8 @@ private slots:
     void Modifiers();
 
     void functionKeys();
+
+    void shouldExitEarlyFunctionKey();
 };
 
 const std::string alphabet = "abcdefghijklmnopqrstuvxyz";
@@ -161,6 +163,25 @@ void ParserTest::functionKeys()
 
     t = ParseKeyboardInputsToTokens( "F9" );
     e = std::vector<Token>( { Token::KEY_F9 } );
+    QVERIFY( t == e );
+}
+
+void ParserTest::shouldExitEarlyFunctionKey()
+{
+    auto t = ParseKeyboardInputsToTokens( "asF" );
+    auto e = std::vector<Token>( { Token::KEY_a, Token::KEY_s } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "asFs" );
+    e = std::vector<Token>( { Token::KEY_a, Token::KEY_s } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "F" );
+    e = std::vector<Token>( {} );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "Fsdfg" );
+    e = std::vector<Token>( {} );
     QVERIFY( t == e );
 }
 
