@@ -26,6 +26,8 @@ private slots:
     void functionKeys();
 
     void shouldExitEarlyFunctionKey();
+
+    void releaseHeldKeys();
 };
 
 const std::string alphabet = "abcdefghijklmnopqrstuvxyz";
@@ -182,6 +184,14 @@ void ParserTest::shouldExitEarlyFunctionKey()
 
     t = ParseKeyboardInputsToTokens( "Fsdfg" );
     e = std::vector<Token>( {} );
+    QVERIFY( t == e );
+}
+
+void ParserTest::releaseHeldKeys()
+{
+    auto t = ParseKeyboardInputsToTokens( "a s" );
+    auto e = std::vector<Token>(
+        { Token::KEY_a, Token::TOKEN_NEW_SEQUENCE, Token::KEY_s } );
     QVERIFY( t == e );
 }
 
