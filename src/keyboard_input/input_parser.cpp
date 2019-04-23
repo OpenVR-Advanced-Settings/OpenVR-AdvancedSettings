@@ -74,7 +74,12 @@ std::vector<Token> ParseKeyboardInputsToTokens( const std::string inputs )
             continue;
         }
 
-        if ( !isupper( *ch ) )
+        if ( isspace( *ch ) )
+        {
+            tokens.push_back( Token::TOKEN_NEW_SEQUENCE );
+        }
+
+        if ( !isupper( *ch ) || isspace( *ch ) )
         {
             // LOG incorrect character
             continue;
