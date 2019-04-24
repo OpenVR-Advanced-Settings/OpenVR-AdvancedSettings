@@ -53,6 +53,13 @@
 <qresource prefix="/qml/utilities_page">
         <file alias="UtilitiesPage.qml">qml/utilities_page/UtilitiesPage.qml</file>
 </qresource>
+<qresource prefix="/qml/utilities_imports">
+        <file alias="AlarmGroupBox.qml">qml/utilities_page/alarm_clock/AlarmGroupBox.qml</file>
+        <file alias="KeyboardGroupBox.qml">qml/utilities_page/keyboard_utils/KeyboardGroupBox.qml</file>
+        <file alias="MediaButton.qml">qml/utilities_page/media_keys/MediaButton.qml</file>
+        <file alias="MediaControllerKeys.qml">qml/utilities_page/media_keys/MediaControllerKeys.qml</file>
+</qresource>
+
 
 <qresource prefix="/qml/audio_page">
         <file alias="AudioPage.qml">qml/audio_page/AudioPage.qml</file>
