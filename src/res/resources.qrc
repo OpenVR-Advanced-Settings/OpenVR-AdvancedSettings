@@ -104,4 +104,12 @@
 <qresource prefix="/qml/desktop_overlay_page">
         <file alias="DesktopOverlayPage.qml">qml/desktop_overlay_page/DesktopOverlayPage.qml</file>
 </qresource>
+<qresource prefix="/qml/desktop_overlay_imports">
+
+        <file alias="SteamDesktopGroupBox.qml">qml/desktop_overlay_page/desktop_size/SteamDesktopGroupBox.qml</file>
+        <file alias="SteamDesktopTranslationBackForwards.qml">qml/desktop_overlay_page/translation_back_forwards/SteamDesktopTranslationBackForwards.qml</file>
+        <file alias="SteamDesktopTranslationLeftRight.qml">qml/desktop_overlay_page/translation_left_right/SteamDesktopTranslationLeftRight.qml</file>
+        <file alias="SteamDesktopTranslationUpDown.qml">qml/desktop_overlay_page/translation_up_down/SteamDesktopTranslationUpDown.qml</file>
+        
+</qresource>
 </RCC>
