@@ -3,7 +3,7 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
-import "common"
+import "./common"
 import "utilities_page"
 import "audio_page"
 import "video_page"

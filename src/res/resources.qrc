@@ -34,6 +34,22 @@
 
 </qresource>
 
+<qresource prefix="/qml/common">
+        <file alias="FullWidthSliderBox.qml">qml/common/FullWidthSliderBox.qml</file>
+        <file alias="LineSeparator.qml">qml/common/LineSeparator.qml</file>
+        <file alias="MyComboBox.qml">qml/common/MyComboBox.qml</file>
+        <file alias="MyDialogOkCancelPopup.qml">qml/common/MyDialogOkCancelPopup.qml</file>
+        <file alias="MyDialogOkPopup.qml">qml/common/MyDialogOkPopup.qml</file>
+        <file alias="MyPushButton.qml">qml/common/MyPushButton.qml</file>
+        <file alias="MyPushButton2.qml">qml/common/MyPushButton2.qml</file>
+        <file alias="MyResources.qml">qml/common/MyResources.qml</file>
+        <file alias="MySlider.qml">qml/common/MySlider.qml</file>
+        <file alias="MyStackViewPage.qml">qml/common/MyStackViewPage.qml</file>
+        <file alias="MyText.qml">qml/common/MyText.qml</file>
+        <file alias="MyTextField.qml">qml/common/MyTextField.qml</file>
+        <file alias="MyToggleButton.qml">qml/common/MyToggleButton.qml</file>
+</qresource>
+
 <qresource prefix="/qml/utilities_page">
         <file alias="UtilitiesPage.qml">qml/utilities_page/UtilitiesPage.qml</file>
 </qresource>
