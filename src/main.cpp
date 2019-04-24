@@ -48,7 +48,7 @@ int main( int argc, char* argv[] )
                                                    commandLineArgs.forceNoSound,
                                                    qmlEngine );
 
-        constexpr auto widgetPath = "res/qml/common/mainwidget.qml";
+        /*constexpr auto widgetPath = "res/qml/common/mainwidget.qml";
         const auto path = paths::binaryDirectoryFindFile( widgetPath );
 
         if ( !path.has_value() )
@@ -60,8 +60,9 @@ int main( int argc, char* argv[] )
 
         const auto url
             = QUrl::fromLocalFile( QString::fromStdString( ( *path ) ) );
-
-        QQmlComponent component( &qmlEngine, url );
+*/
+        QQmlComponent component(
+            &qmlEngine, QUrl( QStringLiteral( "qrc:/qml/mainwidget.qml" ) ) );
         auto errors = component.errors();
         for ( auto& e : errors )
         {
