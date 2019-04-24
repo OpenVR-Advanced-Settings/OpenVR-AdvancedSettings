@@ -57,9 +57,37 @@
 <qresource prefix="/qml/audio_page">
         <file alias="AudioPage.qml">qml/audio_page/AudioPage.qml</file>
 </qresource>
+<qresource prefix="/qml/audio_imports">
+        <file alias="AudioDeviceSelector.qml">qml/audio_page/device_selector/AudioDeviceSelector.qml</file>
+        <file alias="MicDeviceSelector.qml">qml/audio_page/device_selector/MicDeviceSelector.qml</file>
+        <file alias="MicVolumeSlider.qml">qml/audio_page/device_selector/MicVolumeSlider.qml</file>
+        <file alias="MirrorDeviceSelector.qml">qml/audio_page/device_selector/MirrorDeviceSelector.qml</file>
+        <file alias="MirrorVolumeSlider.qml">qml/audio_page/device_selector/MirrorVolumeSlider.qml</file>
+        
+        <file alias="AudioDeleteProfileDialog.qml">qml/audio_page/dialog_boxes/AudioDeleteProfileDialog.qml</file>
+        <file alias="AudioMessageDialog.qml">qml/audio_page/dialog_boxes/AudioMessageDialog.qml</file>
+        <file alias="AudioNewProfileDialog.qml">qml/audio_page/dialog_boxes/AudioNewProfileDialog.qml</file>
+        <file alias="PttDeleteProfileDialog.qml">qml/audio_page/dialog_boxes/PttDeleteProfileDialog.qml</file>
+        <file alias="PttNewProfileDialog.qml">qml/audio_page/dialog_boxes/PttNewProfileDialog.qml</file>
+        
+        <file alias="ProfileButtons.qml">qml/audio_page/profiles/ProfileButtons.qml</file>
+        <file alias="ProximityToggle.qml">qml/audio_page/proximity/ProximityToggle.qml</file>
+        <file alias="PttButtons.qml">qml/audio_page/push_to_talk/PttButtons.qml</file>
+</qresource>
+
+
+
 
 <qresource prefix="/qml/motion_page">
         <file alias="MotionPage.qml">qml/motion_page/MotionPage.qml</file>
+</qresource>
+<qresource prefix="/qml/motion_imports">
+        <file alias="GravityGroupBox.qml">qml/motion_page/gravity/GravityGroupBox.qml</file>
+        <file alias="HeightToggleGroupBox.qml">qml/motion_page/height_toggle/HeightToggleGroupBox.qml</file>
+        <file alias="SnapTurnGroupBox.qml">qml/motion_page/snap_turn/SnapTurnGroupBox.qml</file>
+        <file alias="SpaceDragGroupBox.qml">qml/motion_page/space_drag/SpaceDragGroupBox.qml</file>
+        <file alias="SpaceTurnGroupBox.qml">qml/motion_page/space_turn/SpaceTurnGroupBox.qml</file>
+        
 </qresource>
 
 <qresource prefix="/qml/video_page">
