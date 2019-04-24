@@ -57,6 +57,8 @@ std::optional<Token> getFunctionNumber( const char& character )
     }
 }
 
+std::optional<Token> checkIfLegalCapitalLiteral( std::string input ) {}
+
 std::vector<Token> ParseKeyboardInputsToTokens( const std::string inputs )
 {
     std::vector<Token> tokens{};
@@ -106,6 +108,16 @@ std::vector<Token> ParseKeyboardInputsToTokens( const std::string inputs )
                 break;
             }
         }
+
+        std::string characters = "";
+        characters.push_back( *ch );
+        while ( auto a = checkIfLegalCapitalLiteral( characters ) )
+        {
+        }
+        // while not recognized character
+        // ++ch
+        // if end break
+        // add token
     }
 
     return tokens;

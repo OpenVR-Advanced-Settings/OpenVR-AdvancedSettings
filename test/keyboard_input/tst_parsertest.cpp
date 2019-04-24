@@ -28,6 +28,8 @@ private slots:
     void shouldExitEarlyFunctionKey();
 
     void releaseHeldKeys();
+
+    void capitalLiterals();
 };
 
 const std::string alphabet = "abcdefghijklmnopqrstuvxyz";
@@ -192,6 +194,93 @@ void ParserTest::releaseHeldKeys()
     auto t = ParseKeyboardInputsToTokens( "a s" );
     auto e = std::vector<Token>(
         { Token::KEY_a, Token::TOKEN_NEW_SEQUENCE, Token::KEY_s } );
+    QVERIFY( t == e );
+}
+
+void ParserTest::capitalLiterals()
+{
+    auto t = ParseKeyboardInputsToTokens( "BACKSPACE" );
+    auto e = std::vector<Token>( { Token::KEY_BACKSPACE } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "SPACE" );
+    e = std::vector<Token>( { Token::KEY_SPACE } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "TAB" );
+    e = std::vector<Token>( { Token::KEY_TAB } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "ESC" );
+    e = std::vector<Token>( { Token::KEY_ESC } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "INS" );
+    e = std::vector<Token>( { Token::KEY_INS } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "DEL" );
+    e = std::vector<Token>( { Token::KEY_DEL } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "END" );
+    e = std::vector<Token>( { Token::KEY_END } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "PGDN" );
+    e = std::vector<Token>( { Token::KEY_PGDN } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "PGUP" );
+    e = std::vector<Token>( { Token::KEY_PGUP } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "CAPS" );
+    e = std::vector<Token>( { Token::KEY_CAPS } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "PRNSCRN" );
+    e = std::vector<Token>( { Token::KEY_PRNSCRN } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "PAUSE" );
+    e = std::vector<Token>( { Token::KEY_PAUSE } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "SCRLOCK" );
+    e = std::vector<Token>( { Token::KEY_SCRLOCK } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "LEFTARROW" );
+    e = std::vector<Token>( { Token::KEY_LEFTARROW } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "RIGHTARROW" );
+    e = std::vector<Token>( { Token::KEY_RIGHTARROW } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "UPARROW" );
+    e = std::vector<Token>( { Token::KEY_UPARROW } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "DOWNARROW" );
+    e = std::vector<Token>( { Token::KEY_DOWNARROW } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "KPSLASH" );
+    e = std::vector<Token>( { Token::KEY_KPSLASH } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "KPSTAR" );
+    e = std::vector<Token>( { Token::KEY_KPSTAR } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "KPMINUS" );
+    e = std::vector<Token>( { Token::KEY_KPMINUS } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "KPPLUS" );
+    e = std::vector<Token>( { Token::KEY_KPPLUS } );
     QVERIFY( t == e );
 }
 
