@@ -61,8 +61,10 @@ int main( int argc, char* argv[] )
         const auto url
             = QUrl::fromLocalFile( QString::fromStdString( ( *path ) ) );
 */
+
         QQmlComponent component(
             &qmlEngine, QUrl( QStringLiteral( "qrc:/qml/mainwidget.qml" ) ) );
+
         auto errors = component.errors();
         for ( auto& e : errors )
         {

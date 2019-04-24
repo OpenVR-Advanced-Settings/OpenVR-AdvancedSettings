@@ -22,5 +22,35 @@
 
     <file alias="mainwidget.qml">qml/common/mainwidget.qml</file>
     
+    <file alias="ChaperonePage.qml">qml/ChaperonePage.qml</file>
+    <file alias="ChaperoneWarningsPage.qml">qml/ChaperoneWarningsPage.qml</file>
+    <file alias="FixFloorPage.qml">qml/FixFloorPage.qml</file>
+    <file alias="PlayspacePage.qml">qml/PlayspacePage.qml</file>
+    <file alias="RevivePage.qml">qml/RevivePage.qml</file>
+    <file alias="RootPage.qml">qml/RootPage.qml</file>
+    <file alias="SettingsPage.qml">qml/SettingsPage.qml</file>
+    <file alias="StatisticsPage.qml">qml/StatisticsPage.qml</file>
+    <file alias="SteamVRPage.qml">qml/SteamVRPage.qml</file>
+
+</qresource>
+
+<qresource prefix="/qml/utilities_page">
+        <file alias="UtilitiesPage.qml">qml/utilities_page/UtilitiesPage.qml</file>
+</qresource>
+
+<qresource prefix="/qml/audio_page">
+        <file alias="AudioPage.qml">qml/audio_page/AudioPage.qml</file>
+</qresource>
+
+<qresource prefix="/qml/motion_page">
+        <file alias="MotionPage.qml">qml/motion_page/MotionPage.qml</file>
+</qresource>
+
+<qresource prefix="/qml/video_page">
+        <file alias="VideoPage.qml">qml/video_page/VideoPage.qml</file>
+</qresource>
+
+<qresource prefix="/qml/desktop_overlay_page">
+        <file alias="DesktopOverlayPage.qml">qml/desktop_overlay_page/DesktopOverlayPage.qml</file>
 </qresource>
 </RCC>
