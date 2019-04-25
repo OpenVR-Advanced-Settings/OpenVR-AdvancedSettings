@@ -225,7 +225,7 @@ std::vector<Token>
 }
 
 std::vector<Token>
-    removeDuplicateNewSequences( const std::vector<Token>& tokens )
+    removeDuplicateNewSequences( const std::vector<Token>& tokens ) noexcept
 {
     std::vector<Token> approvedTokens = {};
 
@@ -253,7 +253,48 @@ std::vector<Token>
     return approvedTokens;
 }
 
-std::vector<Token> removeIncorrectTokens( const std::vector<Token>& tokens )
+std::vector<Token>
+    removeTokenInSameSequence( const std::vector<Token>& tokens,
+                               const Token tokenToRemove ) noexcept
 {
-    return removeDuplicateNewSequences( tokens );
+    std::vector<Token> approvedTokens = {};
+
+    bool tokenInSequence = false;
+    for ( const auto& token : tokens )
+    {
+        if ( token == Token::TOKEN_NEW_SEQUENCE )
+        {
+            tokenInSequence = false;
+        }
+
+        if ( tokenInSequence && ( token == tokenToRemove ) )
+        {
+            continue;
+        }
+
+        if ( token == tokenToRemove )
+        {
+            tokenInSequence = true;
+        }
+        approvedTokens.push_back( token );
+    }
+    return approvedTokens;
+}
+
+std::vector<Token>
+    removeIncorrectTokens( const std::vector<Token>& tokens ) noexcept
+{
+    const auto spacesRemoved = removeDuplicateNewSequences( tokens );
+    const auto ctrlRemoved
+        = removeTokenInSameSequence( spacesRemoved, Token::MODIFIER_CTRL );
+    const auto altRemoved
+        = removeTokenInSameSequence( ctrlRemoved, Token::MODIFIER_ALT );
+    const auto shiftRemoved
+        = removeTokenInSameSequence( altRemoved, Token::MODIFIER_SHIFT );
+    const auto altgrRemoved
+        = removeTokenInSameSequence( shiftRemoved, Token::MODIFIER_ALTGR );
+    const auto superRemoved
+        = removeTokenInSameSequence( altgrRemoved, Token::MODIFIER_SUPER );
+
+    return superRemoved;
 }
