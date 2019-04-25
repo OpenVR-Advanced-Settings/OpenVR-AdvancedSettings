@@ -53,7 +53,7 @@ namespace action_keys
     constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
     constexpr auto proxSensor = "/actions/misc/in/ProxSensor";
 
-	constexpr auto chaperoneToggle = "/actions/misc/in/ChaperoneToggle";
+    constexpr auto chaperoneToggle = "/actions/misc/in/ChaperoneToggle";
 
 } // namespace action_keys
 
@@ -197,8 +197,8 @@ private:
     DigitalAction m_yAxisLockToggle;
     DigitalAction m_zAxisLockToggle;
 
-	//Misc Bindings
-	DigitalAction m_chaperoneToggle;
+    // Misc Bindings
+    DigitalAction m_chaperoneToggle;
 
     // Push To Talk
     DigitalAction m_pushToTalk;
@@ -207,7 +207,7 @@ private:
     DigitalAction m_leftHaptic;
     DigitalAction m_rightHaptic;
 
-    //prox Sensor
+    // prox Sensor
     DigitalAction m_proxSensor;
 
     // input sources

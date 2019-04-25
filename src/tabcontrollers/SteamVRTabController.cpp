@@ -104,20 +104,20 @@ void SteamVRTabController::eventLoopTick()
             }
             setMotionSmoothing( ms );
 
-			//Checks and synchs performance graph
-			auto pg = vr::VRSettings()->GetBool(
-				vr::k_pch_Perf_Section,
-				vr::k_pch_Perf_PerfGraphInHMD_Bool,
-				&vrSettingsError);
-			if (vrSettingsError != vr::VRSettingsError_None)
-			{
-				LOG(WARNING)
-					<< "Could not read \""
-					<< vr::k_pch_Perf_PerfGraphInHMD_Bool << "\" setting: "
-					<< vr::VRSettings()->GetSettingsErrorNameFromEnum(
-						vrSettingsError);
-			}
-			setPerformanceGraph(pg);
+            // Checks and synchs performance graph
+            auto pg
+                = vr::VRSettings()->GetBool( vr::k_pch_Perf_Section,
+                                             vr::k_pch_Perf_PerfGraphInHMD_Bool,
+                                             &vrSettingsError );
+            if ( vrSettingsError != vr::VRSettingsError_None )
+            {
+                LOG( WARNING )
+                    << "Could not read \"" << vr::k_pch_Perf_PerfGraphInHMD_Bool
+                    << "\" setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
+            }
+            setPerformanceGraph( pg );
         }
         settingsUpdateCounter = 0;
     }
@@ -464,30 +464,28 @@ void SteamVRTabController::initSupersampleOverride()
 
 bool SteamVRTabController::performanceGraph() const
 {
-	return m_performanceGraphToggle;
+    return m_performanceGraphToggle;
 }
 
-void SteamVRTabController::setPerformanceGraph(const bool value,
-	const bool notify)
+void SteamVRTabController::setPerformanceGraph( const bool value,
+                                                const bool notify )
 {
-	if (m_performanceGraphToggle != value)
-	{
-		m_performanceGraphToggle = value;
-		vr::VRSettings()->SetBool(
-			vr::k_pch_Perf_Section,
-			vr::k_pch_Perf_PerfGraphInHMD_Bool,
-			m_performanceGraphToggle);
-		vr::VRSettings()->Sync();
-		if (notify)
-		{
-			emit performanceGraphChanged(m_performanceGraphToggle);
-		}
-	}
+    if ( m_performanceGraphToggle != value )
+    {
+        m_performanceGraphToggle = value;
+        vr::VRSettings()->SetBool( vr::k_pch_Perf_Section,
+                                   vr::k_pch_Perf_PerfGraphInHMD_Bool,
+                                   m_performanceGraphToggle );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit performanceGraphChanged( m_performanceGraphToggle );
+        }
+    }
 }
 
 /*------------------------------------------*/
 /* -----------------------------------------*/
-
 
 void SteamVRTabController::reset()
 {
@@ -558,18 +556,16 @@ void SteamVRTabController::reset()
                               vrSettingsError );
     }
 
-	vr::VRSettings()->RemoveKeyInSection(
-		vr::k_pch_Perf_Section,
-		vr::k_pch_Perf_PerfGraphInHMD_Bool,
-		&vrSettingsError);
-	if (vrSettingsError != vr::VRSettingsError_None)
-	{
-		LOG(WARNING) << "Could not remove \""
-			<< vr::k_pch_Perf_PerfGraphInHMD_Bool
-			<< "\" setting: "
-			<< vr::VRSettings()->GetSettingsErrorNameFromEnum(
-				vrSettingsError);
-	}
+    vr::VRSettings()->RemoveKeyInSection( vr::k_pch_Perf_Section,
+                                          vr::k_pch_Perf_PerfGraphInHMD_Bool,
+                                          &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not remove \""
+                       << vr::k_pch_Perf_PerfGraphInHMD_Bool << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
 
     vr::VRSettings()->Sync();
     settingsUpdateCounter = 999; // Easiest way to get default values

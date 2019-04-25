@@ -560,10 +560,11 @@ void OverlayController::processMotionBindings()
 
 void OverlayController::processChaperoneBindings()
 {
-	if (m_actions.chaperoneToggle()) 
-	{
-		m_chaperoneTabController.setDisableChaperone(!(m_chaperoneTabController.disableChaperone()), true);
-	}
+    if ( m_actions.chaperoneToggle() )
+    {
+        m_chaperoneTabController.setDisableChaperone(
+            !( m_chaperoneTabController.disableChaperone() ), true );
+    }
 }
 
 void OverlayController::processPushToTalkBindings()
@@ -599,7 +600,7 @@ void OverlayController::processInputBindings()
 
     processPushToTalkBindings();
 
-	processChaperoneBindings();
+    processChaperoneBindings();
 }
 
 // vsync implementation:

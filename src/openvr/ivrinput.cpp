@@ -135,7 +135,7 @@ SteamIVRInput::SteamIVRInput()
       m_pushToTalk( action_keys::pushToTalk ),
       m_leftHaptic( action_keys::hapticsLeft ),
       m_rightHaptic( action_keys::hapticsRight ),
-      m_proxSensor( action_keys::proxSensor),
+      m_proxSensor( action_keys::proxSensor ),
       m_leftHand( input_keys::leftHand ), m_rightHand( input_keys::rightHand ),
       m_sets( { m_mainSet.activeActionSet(),
                 m_music.activeActionSet(),
@@ -294,7 +294,7 @@ bool SteamIVRInput::pushToTalk()
 
 bool SteamIVRInput::chaperoneToggle()
 {
-	return isDigitalActionActivatedOnce(m_chaperoneToggle);
+    return isDigitalActionActivatedOnce( m_chaperoneToggle );
 }
 
 bool SteamIVRInput::proxState()

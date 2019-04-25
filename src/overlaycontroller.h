@@ -134,7 +134,7 @@ private:
     void processMediaKeyBindings();
     void processMotionBindings();
     void processPushToTalkBindings();
-	void processChaperoneBindings();
+    void processChaperoneBindings();
 
 public:
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
