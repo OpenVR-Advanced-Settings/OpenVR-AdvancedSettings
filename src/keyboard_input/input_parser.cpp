@@ -223,3 +223,37 @@ std::vector<Token>
 
     return tokens;
 }
+
+std::vector<Token>
+    removeDuplicateNewSequences( const std::vector<Token>& tokens )
+{
+    std::vector<Token> approvedTokens = {};
+
+    bool previouslyNewSequenceToken = false;
+    for ( const auto& token : tokens )
+    {
+        if ( token != Token::TOKEN_NEW_SEQUENCE )
+        {
+            previouslyNewSequenceToken = false;
+        }
+
+        if ( previouslyNewSequenceToken )
+        {
+            continue;
+        }
+
+        if ( token == Token::TOKEN_NEW_SEQUENCE )
+        {
+            previouslyNewSequenceToken = true;
+        }
+
+        approvedTokens.push_back( token );
+    }
+
+    return approvedTokens;
+}
+
+std::vector<Token> removeIncorrectTokens( const std::vector<Token>& tokens )
+{
+    return removeDuplicateNewSequences( tokens );
+}
