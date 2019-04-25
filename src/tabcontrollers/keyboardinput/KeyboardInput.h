@@ -5,6 +5,17 @@
 
 namespace keyboardinput
 {
+/*!
+Represents the state of a keyboard button press. Can be either Up or Down.
+
+Implemented because neither Qt nor Windows.h included a sensible key state enum.
+*/
+enum class KeyStatus
+{
+    Up,
+    Down,
+};
+
 void sendKeyboardInput( QString input );
 void sendKeyboardEnter();
 void sendKeyboardBackspace( const int count );

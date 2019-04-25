@@ -5,17 +5,6 @@
 namespace keyboardinput
 {
 /*!
-Represents the state of a keyboard button press. Can be either Up or Down.
-
-Implemented because neither Qt nor Windows.h included a sensible key state enum.
-*/
-enum class KeyStatus
-{
-    Up,
-    Down,
-};
-
-/*!
 Fills out an INPUT struct ip with scanCode and keyup status.
 */
 void fillKiStruct( INPUT& ip, WORD scanCode, bool keyup )

@@ -53,7 +53,18 @@ win32 {
     HEADERS += src/tabcontrollers/audiomanager/AudioManagerWindows.h
 }
 
-!win32 {
+unix:!macx {
+    !noX11 {
+        SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputX11.cpp
+        CONFIG += x11
+        LIBS += -lXtst
+    }
+    else {
+        SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp
+    }
+}
+
+macx {
     SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp
 }
 
@@ -72,11 +83,15 @@ win32-clang-msvc {
 # Anything g++ or clang
 # In order to suppress warnings in third party headers
 *clang|*clang-g++|*clang-libc++|*g++* {
+    #Force Linux to look into the current dir for the OpenVR lib
+    QMAKE_LFLAGS    += '-Wl,-rpath,\'\$$ORIGIN\''
+
     QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
     QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]/QtCore
     QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]/QtGui
-    QMAKE_CXXFLAGS += -isystem ../third-party/openvr/headers
-    QMAKE_CXXFLAGS += -isystem ../third-party/easylogging++
+
+    QMAKE_CXXFLAGS += -isystem $$PWD/../../third-party/openvr/headers
+    QMAKE_CXXFLAGS += -isystem $$PWD/../../third-party/easylogging++
 }
 
 # easylogging++ used to be a header only lib. Now requires easylogging++.cc

@@ -2,6 +2,7 @@
   * [Compiler and Build Essentials](#compiler-and-build-essentials)
   * [Qt](#qt)
   * [Official Qt Installer](#official-qt-installer)
+    + [`qtchooser`](#-qtchooser-)
   * [Unofficial Ubuntu Packages](#unofficial-ubuntu-packages)
   * [`qtchooser` and versions](#-qtchooser--and-versions)
   * [X11](#x11)
@@ -32,6 +33,9 @@ At least version `5.12` is required.
 ## Official Qt Installer
 
 The easiest way to get it is from the [official Qt installer](https://www.qt.io/download-qt-installer).
+
+### `qtchooser`
+After installing using the official installer you will likely need to `qtchooser -install <name> <qmake-location>` in order for Qt to use the correct version. See the `qtchooser` section below.
 
 ## Unofficial Ubuntu Packages
 
@@ -135,6 +139,18 @@ qtchooser -install opt-qt512 /opt/qt512/bin/qmake
 export QT_SELECT=opt-qt512
 ```
 
+## Ubuntu 19.04 Disco
+
+```bash
+sudo apt install build-essential libgl1-mesa-dev
+sudo apt install g++7
+sudo apt install qt5-default qtmultimedia5-dev libqt5multimediawidgets5 libqt5multimedia5-plugins libqt5multimedia5 qml-module-qtquick-extras qml-module-qtquick-controls2 qml-module-qtquick-dialogs qtdeclarative5-dev
+sudo apt-get install libx11-dev libxt-dev libxtst-dev
+sudo apt install bear clang-tidy
+```
+You should not need to use `qtchooser` to set the Qt version on 19.04.
+
+
 # Locations and Environment Variables
 
 The following environmental variables are relevant for building the project.
@@ -143,6 +159,7 @@ The following environmental variables are relevant for building the project.
 | --------------------  | ------------- |
 | `QMAKE_SPEC`              | The [mkspec](https://forum.qt.io/topic/70970/what-is-mkspecs-used-for-how-to-configure-for-my-hardware) to compile to. Either `linux-g++` or `linux-clang`. Defaults to `linux-g++`.   |
 | `USE_TIDY`              | If set a compilation database will be created and the project linted. Can only be used with `clang`.  |
+| `NO_X11`              | If set the application will be compiled without X11 specific libraries. This disables certain things like sending keystrokes from VR.  |
 
 If an environment variable isn't set a default value will be provided. The default values are shown in the table below.
 

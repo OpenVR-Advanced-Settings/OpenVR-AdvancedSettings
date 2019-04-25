@@ -18,3 +18,6 @@ else
     CLANG_TIDY="$SCRIPT_DIR/run-clang-tidy.sh"
 fi
 
+if [[ -n $NO_X11 ]]; then
+    QMAKE_EXTRAS='CONFIG+=noX11'
+fi
