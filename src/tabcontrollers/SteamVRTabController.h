@@ -39,9 +39,8 @@ class SteamVRTabController : public QObject
         bool allowSupersampleOverride READ allowSupersampleOverride WRITE
             setAllowSupersampleOverride NOTIFY allowSupersampleOverrideChanged )
 
-	Q_PROPERTY(bool performanceGraph READ performanceGraph
-			WRITE setPerformanceGraph NOTIFY
-			performanceGraphChanged)
+    Q_PROPERTY( bool performanceGraph READ performanceGraph WRITE
+                    setPerformanceGraph NOTIFY performanceGraphChanged )
 
 private:
     OverlayController* parent;
@@ -51,7 +50,7 @@ private:
     bool m_motionSmoothing = true;
     bool m_allowSupersampleFiltering = true;
     bool m_allowSupersampleOverride = false;
-	bool m_performanceGraphToggle = false;
+    bool m_performanceGraphToggle = false;
 
     void initMotionSmoothing();
     void initSupersampleOverride();
@@ -70,7 +69,7 @@ public:
     bool motionSmoothing() const;
     bool allowSupersampleFiltering() const;
     bool allowSupersampleOverride() const;
-	bool performanceGraph() const;
+    bool performanceGraph() const;
 
     void reloadSteamVRProfiles();
     void saveSteamVRProfiles();
@@ -83,7 +82,7 @@ public slots:
     void setMotionSmoothing( bool value, bool notify = true );
     void setAllowSupersampleFiltering( bool value, bool notify = true );
     void setAllowSupersampleOverride( bool value, bool notify = true );
-	void setPerformanceGraph(bool value, bool notify = true);
+    void setPerformanceGraph( bool value, bool notify = true );
 
     void addSteamVRProfile( QString name,
                             bool includeSupersampling,
@@ -100,7 +99,7 @@ signals:
     void motionSmoothingChanged( bool value );
     void allowSupersampleFilteringChanged( bool value );
     void allowSupersampleOverrideChanged( bool value );
-	void performanceGraphChanged(bool value );
+    void performanceGraphChanged( bool value );
 
     void steamVRProfilesUpdated();
     void steamVRProfileAdded();
