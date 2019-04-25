@@ -2,8 +2,6 @@
 #include <QDebug>
 #include "input_parser.h"
 
-// add necessary includes here
-
 class ParserTest : public QObject
 {
     Q_OBJECT
@@ -30,6 +28,14 @@ private slots:
     void releaseHeldKeys();
 
     void capitalLiterals();
+
+    void abortedCapitalLiterals();
+
+    void multipleCapitalLiterals();
+
+    void sixtyfourBackspacesBenchmarked();
+
+    void sixtyfourAsBenchmarked();
 };
 
 const std::string alphabet = "abcdefghijklmnopqrstuvxyz";
@@ -284,6 +290,91 @@ void ParserTest::capitalLiterals()
     QVERIFY( t == e );
 }
 
+void ParserTest::abortedCapitalLiterals()
+{
+    auto t = ParseKeyboardInputsToTokens( "aKPPL" );
+    auto e = std::vector<Token>( { Token::KEY_a } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "aKPPLasd" );
+    e = std::vector<Token>( { Token::KEY_a } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "aDOESNTEXIST" );
+    e = std::vector<Token>( { Token::KEY_a } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "aBACKSPACEBACK" );
+    e = std::vector<Token>( { Token::KEY_a, Token::KEY_BACKSPACE } );
+    QVERIFY( t == e );
+}
+
+void ParserTest::multipleCapitalLiterals()
+{
+    auto t = ParseKeyboardInputsToTokens( "BACKSPACEa" );
+    auto e = std::vector<Token>( { Token::KEY_BACKSPACE, Token::KEY_a } );
+    QCOMPARE( t, e );
+
+    t = ParseKeyboardInputsToTokens( "BACKSPACEBACKSPACE" );
+    e = std::vector<Token>( { Token::KEY_BACKSPACE, Token::KEY_BACKSPACE } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "BACKSPACEaBACKSPACE" );
+    e = std::vector<Token>(
+        { Token::KEY_BACKSPACE, Token::KEY_a, Token::KEY_BACKSPACE } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "F1BACKSPACEaBACKSPACE" );
+    e = std::vector<Token>( { Token::KEY_F1,
+                              Token::KEY_BACKSPACE,
+                              Token::KEY_a,
+                              Token::KEY_BACKSPACE } );
+    QVERIFY( t == e );
+
+    t = ParseKeyboardInputsToTokens( "F1BACKSPACEaBACKSPACe" );
+    e = std::vector<Token>(
+        { Token::KEY_F1, Token::KEY_BACKSPACE, Token::KEY_a } );
+    QVERIFY( t == e );
+}
+
+void ParserTest::sixtyfourBackspacesBenchmarked()
+{
+    constexpr auto sixtyfourBackspaces
+        = "BACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKS"
+          "PACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEB"
+          "ACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSP"
+          "ACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBA"
+          "CKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPA"
+          "CEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBAC"
+          "KSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPAC"
+          "EBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACKSPACEBACK"
+          "SPACEBACKSPACEBACKSPACEBACKSPACE";
+
+    auto t = ParseKeyboardInputsToTokens( sixtyfourBackspaces );
+    std::vector<Token> e( 64, Token::KEY_BACKSPACE );
+    QVERIFY( t == e );
+
+    QBENCHMARK
+    {
+        auto t = ParseKeyboardInputsToTokens( sixtyfourBackspaces );
+    }
+}
+
+void ParserTest::sixtyfourAsBenchmarked()
+{
+    constexpr auto sixtyfourBackspaces
+        = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
+    auto t = ParseKeyboardInputsToTokens( sixtyfourBackspaces );
+    std::vector<Token> e( 64, Token::KEY_a );
+    QVERIFY( t == e );
+
+    QBENCHMARK
+    {
+        auto t = ParseKeyboardInputsToTokens( sixtyfourBackspaces );
+    }
+}
+
 QTEST_APPLESS_MAIN( ParserTest )
 
-#include "tst_parsertest.moc"
+#include "./release/tst_parsertest.moc"

@@ -57,7 +57,97 @@ std::optional<Token> getFunctionNumber( const char& character )
     }
 }
 
-std::optional<Token> checkIfLegalCapitalLiteral( std::string input ) {}
+std::optional<Token> checkIfLegalCapitalLiteral( std::string input )
+{
+    // C++ can't do string comparisons in switches. :(
+    if ( input == "BACKSPACE" )
+    {
+        return Token::KEY_BACKSPACE;
+    }
+    if ( input == "SPACE" )
+    {
+        return Token::KEY_SPACE;
+    }
+    if ( input == "TAB" )
+    {
+        return Token::KEY_TAB;
+    }
+    if ( input == "ESC" )
+    {
+        return Token::KEY_ESC;
+    }
+    if ( input == "INS" )
+    {
+        return Token::KEY_INS;
+    }
+    if ( input == "DEL" )
+    {
+        return Token::KEY_DEL;
+    }
+    if ( input == "END" )
+    {
+        return Token::KEY_END;
+    }
+    if ( input == "PGDN" )
+    {
+        return Token::KEY_PGDN;
+    }
+    if ( input == "PGUP" )
+    {
+        return Token::KEY_PGUP;
+    }
+    if ( input == "CAPS" )
+    {
+        return Token::KEY_CAPS;
+    }
+    if ( input == "PRNSCRN" )
+    {
+        return Token::KEY_PRNSCRN;
+    }
+    if ( input == "PAUSE" )
+    {
+        return Token::KEY_PAUSE;
+    }
+    if ( input == "SCRLOCK" )
+    {
+        return Token::KEY_SCRLOCK;
+    }
+    if ( input == "LEFTARROW" )
+    {
+        return Token::KEY_LEFTARROW;
+    }
+    if ( input == "RIGHTARROW" )
+    {
+        return Token::KEY_RIGHTARROW;
+    }
+    if ( input == "UPARROW" )
+    {
+        return Token::KEY_UPARROW;
+    }
+    if ( input == "DOWNARROW" )
+    {
+        return Token::KEY_DOWNARROW;
+    }
+    if ( input == "KPSLASH" )
+    {
+        return Token::KEY_KPSLASH;
+    }
+    if ( input == "KPSTAR" )
+    {
+        return Token::KEY_KPSTAR;
+    }
+    if ( input == "KPMINUS" )
+    {
+        return Token::KEY_KPMINUS;
+    }
+    if ( input == "KPPLUS" )
+    {
+        return Token::KEY_KPPLUS;
+    }
+
+    // LOG incorrect character
+    return std::nullopt;
+}
 
 std::vector<Token> ParseKeyboardInputsToTokens( const std::string inputs )
 {
@@ -111,13 +201,23 @@ std::vector<Token> ParseKeyboardInputsToTokens( const std::string inputs )
 
         std::string characters = "";
         characters.push_back( *ch );
-        while ( auto a = checkIfLegalCapitalLiteral( characters ) )
+        while ( ch + 1 != end )
         {
+            ++ch;
+            characters.push_back( *ch );
+            if ( auto c = checkIfLegalCapitalLiteral( characters );
+                 c.has_value() )
+            {
+                tokens.push_back( *c );
+                characters.clear();
+                // break out of the while
+                break;
+            }
         }
-        // while not recognized character
-        // ++ch
-        // if end break
-        // add token
+        if ( ch == end )
+        {
+            break;
+        }
     }
 
     return tokens;
