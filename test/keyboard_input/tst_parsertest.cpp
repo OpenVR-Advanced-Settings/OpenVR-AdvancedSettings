@@ -38,6 +38,10 @@ private slots:
     void sixtyfourAsBenchmarked();
 
     void removeDuplicateSpaces();
+
+    void removeDuplicateModifiers();
+
+    void removeIncorrectTokensBenchmark();
 };
 
 const std::string alphabet = "abcdefghijklmnopqrstuvxyz";
@@ -391,6 +395,123 @@ void ParserTest::removeDuplicateSpaces()
         { Token::KEY_a, Token::TOKEN_NEW_SEQUENCE, Token::KEY_d } );
 
     QCOMPARE( removeIncorrectTokens( e ), t );
+}
+
+void ParserTest::removeDuplicateModifiers()
+{
+    auto e = std::vector<Token>( { Token::KEY_a,
+                                   Token::MODIFIER_CTRL,
+                                   Token::KEY_a,
+                                   Token::MODIFIER_CTRL,
+                                   Token::TOKEN_NEW_SEQUENCE,
+                                   Token::MODIFIER_ALT,
+                                   Token::KEY_TAB,
+                                   Token::KEY_d } );
+    auto t = std::vector<Token>( { Token::KEY_a,
+                                   Token::MODIFIER_CTRL,
+                                   Token::KEY_a,
+                                   Token::TOKEN_NEW_SEQUENCE,
+                                   Token::MODIFIER_ALT,
+                                   Token::KEY_TAB,
+                                   Token::KEY_d } );
+
+    QCOMPARE( removeIncorrectTokens( e ), t );
+
+    e = std::vector<Token>( { Token::KEY_a,
+                              Token::MODIFIER_ALT,
+                              Token::KEY_a,
+                              Token::MODIFIER_ALT,
+                              Token::TOKEN_NEW_SEQUENCE,
+                              Token::MODIFIER_ALT,
+                              Token::KEY_TAB,
+                              Token::KEY_d } );
+    t = std::vector<Token>( { Token::KEY_a,
+                              Token::MODIFIER_ALT,
+                              Token::KEY_a,
+                              Token::TOKEN_NEW_SEQUENCE,
+                              Token::MODIFIER_ALT,
+                              Token::KEY_TAB,
+                              Token::KEY_d } );
+
+    QCOMPARE( removeIncorrectTokens( e ), t );
+
+    e = std::vector<Token>( { Token::KEY_a,
+                              Token::MODIFIER_SHIFT,
+                              Token::KEY_a,
+                              Token::MODIFIER_SHIFT,
+                              Token::TOKEN_NEW_SEQUENCE,
+                              Token::MODIFIER_ALT,
+                              Token::KEY_TAB,
+                              Token::KEY_d } );
+    t = std::vector<Token>( { Token::KEY_a,
+                              Token::MODIFIER_SHIFT,
+                              Token::KEY_a,
+                              Token::TOKEN_NEW_SEQUENCE,
+                              Token::MODIFIER_ALT,
+                              Token::KEY_TAB,
+                              Token::KEY_d } );
+
+    QCOMPARE( removeIncorrectTokens( e ), t );
+
+    e = std::vector<Token>( { Token::KEY_a,
+                              Token::MODIFIER_ALTGR,
+                              Token::KEY_a,
+                              Token::MODIFIER_ALTGR,
+                              Token::TOKEN_NEW_SEQUENCE,
+                              Token::MODIFIER_ALT,
+                              Token::KEY_TAB,
+                              Token::KEY_d } );
+    t = std::vector<Token>( { Token::KEY_a,
+                              Token::MODIFIER_ALTGR,
+                              Token::KEY_a,
+                              Token::TOKEN_NEW_SEQUENCE,
+                              Token::MODIFIER_ALT,
+                              Token::KEY_TAB,
+                              Token::KEY_d } );
+
+    QCOMPARE( removeIncorrectTokens( e ), t );
+
+    e = std::vector<Token>( { Token::KEY_a,
+                              Token::MODIFIER_SUPER,
+                              Token::KEY_a,
+                              Token::MODIFIER_SUPER,
+                              Token::TOKEN_NEW_SEQUENCE,
+                              Token::MODIFIER_ALT,
+                              Token::KEY_TAB,
+                              Token::KEY_d } );
+    t = std::vector<Token>( { Token::KEY_a,
+                              Token::MODIFIER_SUPER,
+                              Token::KEY_a,
+                              Token::TOKEN_NEW_SEQUENCE,
+                              Token::MODIFIER_ALT,
+                              Token::KEY_TAB,
+                              Token::KEY_d } );
+
+    QCOMPARE( removeIncorrectTokens( e ), t );
+}
+
+void ParserTest::removeIncorrectTokensBenchmark()
+{
+    auto e = std::vector<Token>( 100, Token::MODIFIER_SHIFT );
+
+    e.at( 0 ) = Token::KEY_a;
+    e.at( 10 ) = Token::TOKEN_NEW_SEQUENCE;
+    e.at( 11 ) = Token::KEY_a;
+    e.at( 95 ) = Token::KEY_a;
+
+    auto t = std::vector<Token>( { Token::KEY_a,
+                                   Token::MODIFIER_SHIFT,
+                                   Token::TOKEN_NEW_SEQUENCE,
+                                   Token::KEY_a,
+                                   Token::MODIFIER_SHIFT,
+                                   Token::KEY_a } );
+
+    QCOMPARE( removeIncorrectTokens( e ), t );
+
+    QBENCHMARK
+    {
+        QCOMPARE( removeIncorrectTokens( e ), t );
+    }
 }
 
 QTEST_APPLESS_MAIN( ParserTest )
