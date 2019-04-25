@@ -240,8 +240,9 @@ MyStackViewPage {
                            text: "Apply"
                            onClicked: {
                                if (summaryChaperoneProfileComboBox.currentIndex > 0) {
-                                   ChaperoneTabController.applyChaperoneProfile(summaryChaperoneProfileComboBox.currentIndex - 1)
-                                   summaryChaperoneProfileComboBox.currentIndex = 0
+                                   var index = summaryChaperoneProfileComboBox.currentIndex
+                                   ChaperoneTabController.applyChaperoneProfile(index - 1)
+                                   //summaryChaperoneProfileComboBox.currentIndex = 0
                                }
                            }
                        }
