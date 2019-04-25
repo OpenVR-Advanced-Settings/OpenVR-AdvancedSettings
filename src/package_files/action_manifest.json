@@ -5,6 +5,10 @@
       "binding_url": "default_action_manifests/ovras-team.advancedsettings_default_vive_controller.json"
    },
    {
+      "controller_type": "holographic_controller",
+      "binding_url": "default_action_manifests/ovras-team.advancedsettings_default_wmr.json"
+   },
+   {
       "controller_type": "knuckles",
       "binding_url": "default_action_manifests/ovras-team.advancedsettings_default_knuckles.json"
    },
