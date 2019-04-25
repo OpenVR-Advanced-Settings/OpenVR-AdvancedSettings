@@ -36,6 +36,8 @@ private slots:
     void sixtyfourBackspacesBenchmarked();
 
     void sixtyfourAsBenchmarked();
+
+    void removeDuplicateSpaces();
 };
 
 const std::string alphabet = "abcdefghijklmnopqrstuvxyz";
@@ -373,6 +375,22 @@ void ParserTest::sixtyfourAsBenchmarked()
     {
         auto t = ParseKeyboardInputsToTokens( sixtyfourBackspaces );
     }
+}
+
+void ParserTest::removeDuplicateSpaces()
+{
+    const auto e = std::vector<Token>( { Token::KEY_a,
+                                         Token::TOKEN_NEW_SEQUENCE,
+                                         Token::TOKEN_NEW_SEQUENCE,
+                                         Token::TOKEN_NEW_SEQUENCE,
+                                         Token::TOKEN_NEW_SEQUENCE,
+                                         Token::TOKEN_NEW_SEQUENCE,
+                                         Token::TOKEN_NEW_SEQUENCE,
+                                         Token::KEY_d } );
+    const auto t = std::vector<Token>(
+        { Token::KEY_a, Token::TOKEN_NEW_SEQUENCE, Token::KEY_d } );
+
+    QCOMPARE( removeIncorrectTokens( e ), t );
 }
 
 QTEST_APPLESS_MAIN( ParserTest )

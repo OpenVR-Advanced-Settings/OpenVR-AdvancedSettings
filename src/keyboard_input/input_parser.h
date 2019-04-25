@@ -88,4 +88,6 @@ enum class Token
     MODIFIER_SUPER,
 };
 
-std::vector<Token> ParseKeyboardInputsToTokens( std::string inputs ) noexcept;
+std::vector<Token>
+    ParseKeyboardInputsToTokens( const std::string inputs ) noexcept;
+std::vector<Token> removeIncorrectTokens( const std::vector<Token>& tokens );
