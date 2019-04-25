@@ -1,6 +1,6 @@
 #include "input_parser.h"
 
-std::optional<Token> getModifier( const char& character )
+std::optional<Token> getModifier( const char& character ) noexcept
 {
     switch ( character )
     {
@@ -19,7 +19,7 @@ std::optional<Token> getModifier( const char& character )
     }
 }
 
-std::optional<Token> getNumberOrLetter( const char& character )
+std::optional<Token> getNumberOrLetter( const char& character ) noexcept
 {
     if ( islower( character ) || isdigit( character ) )
     {
@@ -28,7 +28,7 @@ std::optional<Token> getNumberOrLetter( const char& character )
     return std::nullopt;
 }
 
-std::optional<Token> getFunctionNumber( const char& character )
+std::optional<Token> getFunctionNumber( const char& character ) noexcept
 {
     switch ( character )
     {
@@ -57,7 +57,7 @@ std::optional<Token> getFunctionNumber( const char& character )
     }
 }
 
-std::optional<Token> checkIfLegalCapitalLiteral( std::string input )
+std::optional<Token> checkIfLegalCapitalLiteral( std::string input ) noexcept
 {
     // C++ can't do string comparisons in switches. :(
     if ( input == "BACKSPACE" )
@@ -149,7 +149,8 @@ std::optional<Token> checkIfLegalCapitalLiteral( std::string input )
     return std::nullopt;
 }
 
-std::vector<Token> ParseKeyboardInputsToTokens( const std::string inputs )
+std::vector<Token>
+    ParseKeyboardInputsToTokens( const std::string inputs ) noexcept
 {
     std::vector<Token> tokens{};
 
