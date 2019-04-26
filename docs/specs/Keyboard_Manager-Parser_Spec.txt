@@ -38,7 +38,6 @@ A token is either a modifier symbol, literal symbol, symbol sequence or space ch
 | Ctrl | `^` |
 | Alt | `*` |
 | Shift | `>` |
-| AltGr | `/` |
 | Super (Windows) | `#` |
 
 ### Literal symbols
