@@ -289,10 +289,101 @@ std::vector<Token>
         = removeTokenInSameSequence( ctrlRemoved, Token::MODIFIER_ALT );
     const auto shiftRemoved
         = removeTokenInSameSequence( altRemoved, Token::MODIFIER_SHIFT );
-    const auto altgrRemoved
-        = removeTokenInSameSequence( shiftRemoved, Token::MODIFIER_ALTGR );
     const auto superRemoved
-        = removeTokenInSameSequence( altgrRemoved, Token::MODIFIER_SUPER );
+        = removeTokenInSameSequence( shiftRemoved, Token::MODIFIER_SUPER );
 
     return superRemoved;
+}
+
+bool isModifier( const Token token ) noexcept
+{
+    switch ( token )
+    {
+    case Token::MODIFIER_CTRL:
+        [[fallthrough]];
+    case Token::MODIFIER_ALT:
+        [[fallthrough]];
+    case Token::MODIFIER_SHIFT:
+        [[fallthrough]];
+    case Token::MODIFIER_SUPER:
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool isLiteral( const Token token ) noexcept
+{
+    if ( isalnum( static_cast<int>( token ) ) )
+    {
+        return true;
+    }
+
+    switch ( token )
+    {
+    case Token::KEY_F1:
+        return true;
+    case Token::KEY_F2:
+        return true;
+    case Token::KEY_F3:
+        return true;
+    case Token::KEY_F4:
+        return true;
+    case Token::KEY_F5:
+        return true;
+    case Token::KEY_F6:
+        return true;
+    case Token::KEY_F7:
+        return true;
+    case Token::KEY_F8:
+        return true;
+    case Token::KEY_F9:
+        return true;
+
+    case Token::KEY_BACKSPACE:
+        return true;
+    case Token::KEY_SPACE:
+        return true;
+    case Token::KEY_TAB:
+        return true;
+    case Token::KEY_ESC:
+        return true;
+    case Token::KEY_INS:
+        return true;
+    case Token::KEY_DEL:
+        return true;
+    case Token::KEY_END:
+        return true;
+    case Token::KEY_PGDN:
+        return true;
+    case Token::KEY_PGUP:
+        return true;
+    case Token::KEY_CAPS:
+        return true;
+    case Token::KEY_PRNSCRN:
+        return true;
+    case Token::KEY_PAUSE:
+        return true;
+    case Token::KEY_SCRLOCK:
+        return true;
+    case Token::KEY_LEFTARROW:
+        return true;
+    case Token::KEY_RIGHTARROW:
+        return true;
+    case Token::KEY_UPARROW:
+        return true;
+    case Token::KEY_DOWNARROW:
+        return true;
+    case Token::KEY_KPSLASH:
+        return true;
+    case Token::KEY_KPSTAR:
+        return true;
+    case Token::KEY_KPMINUS:
+        return true;
+    case Token::KEY_KPPLUS:
+        return true;
+
+    default:
+        return false;
+    }
 }

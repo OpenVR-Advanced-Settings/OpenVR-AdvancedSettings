@@ -47,11 +47,13 @@ HEADERS += src/overlaycontroller.h \
     src/utils/setup.h \
     src/utils/paths.h \
     src/openvr/overlay_utils.h \
-    src/keyboard_input/input_parser.h
+    src/keyboard_input/input_parser.h \
+    src/keyboard_input/input_sender.h
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
-        src/tabcontrollers/keyboardinput/KeyboardInputWindows.cpp
+        src/tabcontrollers/keyboardinput/KeyboardInputWindows.cpp \
+        src/keyboard_input/input_sender_win.cpp
     HEADERS += src/tabcontrollers/audiomanager/AudioManagerWindows.h
 }
 
