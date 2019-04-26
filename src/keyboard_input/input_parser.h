@@ -84,7 +84,6 @@ enum class Token
     MODIFIER_CTRL,
     MODIFIER_ALT,
     MODIFIER_SHIFT,
-    MODIFIER_ALTGR,
     MODIFIER_SUPER,
 };
 
