@@ -134,10 +134,6 @@ void ParserTest::Modifiers()
     e = std::vector<Token>( { Token::MODIFIER_SHIFT } );
     QVERIFY( t == e );
 
-    t = ParseKeyboardInputsToTokens( "/" );
-    e = std::vector<Token>( { Token::MODIFIER_ALTGR } );
-    QVERIFY( t == e );
-
     t = ParseKeyboardInputsToTokens( "#" );
     e = std::vector<Token>( { Token::MODIFIER_SUPER } );
     QVERIFY( t == e );
@@ -445,24 +441,6 @@ void ParserTest::removeDuplicateModifiers()
                               Token::KEY_d } );
     t = std::vector<Token>( { Token::KEY_a,
                               Token::MODIFIER_SHIFT,
-                              Token::KEY_a,
-                              Token::TOKEN_NEW_SEQUENCE,
-                              Token::MODIFIER_ALT,
-                              Token::KEY_TAB,
-                              Token::KEY_d } );
-
-    QCOMPARE( removeIncorrectTokens( e ), t );
-
-    e = std::vector<Token>( { Token::KEY_a,
-                              Token::MODIFIER_ALTGR,
-                              Token::KEY_a,
-                              Token::MODIFIER_ALTGR,
-                              Token::TOKEN_NEW_SEQUENCE,
-                              Token::MODIFIER_ALT,
-                              Token::KEY_TAB,
-                              Token::KEY_d } );
-    t = std::vector<Token>( { Token::KEY_a,
-                              Token::MODIFIER_ALTGR,
                               Token::KEY_a,
                               Token::TOKEN_NEW_SEQUENCE,
                               Token::MODIFIER_ALT,

@@ -10,8 +10,6 @@ std::optional<Token> getModifier( const char& character ) noexcept
         return Token::MODIFIER_ALT;
     case '>':
         return Token::MODIFIER_SHIFT;
-    case '/':
-        return Token::MODIFIER_ALTGR;
     case '#':
         return Token::MODIFIER_SUPER;
     default:
