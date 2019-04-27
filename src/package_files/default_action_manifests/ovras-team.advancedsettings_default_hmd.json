@@ -1,0 +1,23 @@
+{
+  "name": "OVRAS HMD default",
+  "controller_type": "generic_hmd",
+  "alias_info" : {},
+  "app_key" : "ovras-team.advancedsettings",
+  "bindings":
+  {
+   "/actions/misc" : {
+          "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/misc/in/ProxSensor"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/head/proximity"
+            }
+    ]
+   }
+  },
+  "description": ""
+}

@@ -558,6 +558,15 @@ void OverlayController::processMotionBindings()
         m_actions.swapSpaceDragToRightHandOverride() );
 }
 
+void OverlayController::processChaperoneBindings()
+{
+    if ( m_actions.chaperoneToggle() )
+    {
+        m_chaperoneTabController.setDisableChaperone(
+            !( m_chaperoneTabController.disableChaperone() ), true );
+    }
+}
+
 void OverlayController::processPushToTalkBindings()
 {
     const auto pushToTalkCannotChange = !m_audioTabController.pttChangeValid();
@@ -590,6 +599,8 @@ void OverlayController::processInputBindings()
     processMotionBindings();
 
     processPushToTalkBindings();
+
+    processChaperoneBindings();
 }
 
 // vsync implementation:

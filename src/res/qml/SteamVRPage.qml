@@ -276,6 +276,14 @@ MyStackViewPage {
             }
         }
 
+        MyToggleButton {
+            id: steamvrPerformanceGraphToggle
+            text: "Enable timing overlay"
+            onCheckedChanged: {
+                SteamVRTabController.setPerformanceGraph(this.checked, false)
+            }
+        }
+
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
 
         RowLayout {
@@ -310,6 +318,7 @@ MyStackViewPage {
             steamvrAllowSupersampleOverrideToggle.checked = SteamVRTabController.allowSupersampleOverride
             steamvrAllowSupersampleFilteringToggle.checked = SteamVRTabController.allowSupersampleFiltering
             steamvrMotionSmoothingToggle.checked = SteamVRTabController.motionSmoothing
+            steamvrPerformanceGraphToggle.checked = SteamVRTabController.performanceGraph
             if(!steamvrAllowSupersampleOverrideToggle.checked){
                 steamvrSupersamplingText.enabled = false
                 steamvrSupersamplingSlider.enabled = false
@@ -338,6 +347,9 @@ MyStackViewPage {
 
             onMotionSmoothingChanged: {
                 steamvrMotionSmoothingToggle.checked = SteamVRTabController.motionSmoothing
+            }
+            onPerformanceGraphChanged:{
+                steamvrPerformanceGraphToggle.checked = SteamVRTabController.performanceGraph
             }
 
             onSteamVRProfilesUpdated: {
