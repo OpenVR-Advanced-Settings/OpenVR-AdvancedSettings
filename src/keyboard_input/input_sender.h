@@ -10,7 +10,7 @@ enum class KeyStatus
 
 void sendTokensAsInput( const std::vector<Token> tokens );
 
-void sendStringAsInput( const std::string input )
+inline void sendStringAsInput( const std::string input )
 {
     const auto tokens = ParseKeyboardInputsToTokens( input );
     const auto inputs = removeIncorrectTokens( tokens );
