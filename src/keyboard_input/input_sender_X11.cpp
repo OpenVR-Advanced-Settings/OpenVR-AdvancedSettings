@@ -73,6 +73,8 @@ unsigned int tokenToKeyCode( const Token token, Display* const display )
         return XK_KP_Subtract;
     case Token::KEY_KPPLUS:
         return XK_KP_Add;
+    case Token::KEY_ENTER:
+        return XK_Return;
 
     case Token::MODIFIER_CTRL:
         return XK_Control_L;
