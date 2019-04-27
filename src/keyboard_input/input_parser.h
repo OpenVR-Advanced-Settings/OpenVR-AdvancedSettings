@@ -76,6 +76,7 @@ enum class Token
     KEY_KPSTAR,
     KEY_KPMINUS,
     KEY_KPPLUS,
+    KEY_ENTER,
 
     // Misc tokens
     TOKEN_NEW_SEQUENCE,

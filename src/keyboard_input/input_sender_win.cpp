@@ -73,6 +73,8 @@ WORD convertToVirtualKeycode( const Token token )
         return VK_SUBTRACT;
     case Token::KEY_KPPLUS:
         return VK_ADD;
+    case Token::KEY_ENTER:
+        return VK_RETURN;
 
     case Token::MODIFIER_CTRL:
         return VK_CONTROL;

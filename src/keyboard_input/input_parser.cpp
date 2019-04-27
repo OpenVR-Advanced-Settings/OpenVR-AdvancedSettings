@@ -142,6 +142,10 @@ std::optional<Token> checkIfLegalCapitalLiteral( std::string input ) noexcept
     {
         return Token::KEY_KPPLUS;
     }
+    if ( input == "ENTER" )
+    {
+        return Token::KEY_ENTER;
+    }
 
     // LOG incorrect character
     return std::nullopt;
@@ -381,6 +385,8 @@ bool isLiteral( const Token token ) noexcept
     case Token::KEY_KPMINUS:
         return true;
     case Token::KEY_KPPLUS:
+        return true;
+    case Token::KEY_ENTER:
         return true;
 
     default:
