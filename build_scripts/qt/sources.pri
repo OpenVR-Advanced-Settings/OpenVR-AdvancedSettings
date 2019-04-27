@@ -59,7 +59,8 @@ win32 {
 
 unix:!macx {
     !noX11 {
-        SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputX11.cpp
+        SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputX11.cpp \
+                src/keyboard_input/input_sender_X11.cpp
         CONFIG += x11
         LIBS += -lXtst
     }
