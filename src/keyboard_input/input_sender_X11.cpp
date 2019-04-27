@@ -107,7 +107,7 @@ void sendKeyPress( const Token token,
     XTestFakeKeyEvent( display, tokenToKeyCode( token, display ), keyDown, 0 );
 }
 
-void sendTokenAsInput( const std::vector<Token> tokens )
+void sendTokensAsInput( const std::vector<Token> tokens )
 {
     Display* const display = XOpenDisplay( nullptr );
     XTestGrabControl( display, True );

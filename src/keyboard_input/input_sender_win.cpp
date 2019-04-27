@@ -141,7 +141,7 @@ void sendKeyboardInputRaw( std::vector<INPUT> inputs )
     }
 }
 
-void sendTokenAsInput( const std::vector<Token> tokens )
+void sendTokensAsInput( const std::vector<Token> tokens )
 {
     std::vector<INPUT> inputs = {};
     std::vector<Token> heldInputs = {};
