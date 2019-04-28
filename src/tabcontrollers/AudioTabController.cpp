@@ -931,8 +931,8 @@ void AudioTabController::applyAudioProfile( unsigned index )
     if ( index < audioProfiles.size() )
     {
         auto& profile = audioProfiles[index];
-        int mInd = getMirrorIndex( profile.mirrorName );
-        int pInd = getPlaybackIndex( profile.playbackName );
+        int mInd = getMirrorIndex( profile.mirrorID );
+        int pInd = getPlaybackIndex( profile.playbackID );
 
         // Needed to keep remembering when swtiching from mirror/main etc.
         // TODO OPTI can possibly clean up logic to reduce overhead in future.
@@ -955,7 +955,7 @@ void AudioTabController::applyAudioProfile( unsigned index )
             setPlaybackDeviceIndex( pInd, true );
         }
 
-        setMicDeviceIndex( getRecordingIndex( profile.micName ), true );
+        setMicDeviceIndex( getRecordingIndex( profile.recordingID ), true );
         setMicMuted( profile.micMute, true );
         setMirrorMuted( profile.mirrorMute, true );
         setMicVolume( profile.micVol, true );
