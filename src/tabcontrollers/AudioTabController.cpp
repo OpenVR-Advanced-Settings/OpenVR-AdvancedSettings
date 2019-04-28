@@ -845,6 +845,7 @@ void AudioTabController::saveAudioProfiles()
         settings->setValue( "mirrorID", QString::fromStdString( p.mirrorID ) );
         settings->setValue( "recordingID",
                             QString::fromStdString( p.recordingID ) );
+        i++;
     }
     settings->endArray();
     settings->endGroup();
