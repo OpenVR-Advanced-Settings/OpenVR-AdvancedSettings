@@ -18,6 +18,9 @@ struct AudioProfile
     std::string playbackName;
     std::string mirrorName;
     std::string micName;
+    std::string recordingID;
+    std::string playbackID;
+    std::string mirrorID;
     float mirrorVol = 0.0;
     float micVol = 0.0;
     bool micMute = false;
@@ -102,6 +105,10 @@ private:
     int getMirrorIndex( std::string str );
 
     void removeOtherDefaultProfiles( QString name );
+
+    std::string getPlaybackDeviceID( int index );
+    std::string getMirrorDeviceID( int index );
+    std::string getRecordingDeviceID( int index );
 
     std::vector<AudioProfile> audioProfiles;
 

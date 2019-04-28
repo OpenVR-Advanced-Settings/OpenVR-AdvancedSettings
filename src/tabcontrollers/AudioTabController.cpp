@@ -467,9 +467,40 @@ QString AudioTabController::getPlaybackDeviceName( int index )
     }
 }
 
+std::string AudioTabController::getPlaybackDeviceID( int index )
+{
+    if ( index >= 0 && static_cast<size_t>( index ) < m_playbackDevices.size() )
+    {
+        return m_playbackDevices[static_cast<size_t>( index )].first;
+    }
+    else
+    {
+        LOG( ERROR ) << "Playback Device does not have a unique id";
+        return "<ERROR>";
+    }
+}
+
+std::string AudioTabController::getMirrorDeviceID( int index )
+{
+    return getPlaybackDeviceID( index );
+}
+
 int AudioTabController::getRecordingDeviceCount()
 {
     return static_cast<int>( m_recordingDevices.size() );
+}
+
+std::string AudioTabController::getRecordingDeviceID( int index )
+{
+    if ( index >= 0 && static_cast<size_t>( index ) < m_playbackDevices.size() )
+    {
+        return m_recordingDevices[static_cast<size_t>( index )].first;
+    }
+    else
+    {
+        LOG( ERROR ) << "Recording Device does not have a unique id";
+        return "<ERROR>";
+    }
 }
 
 QString AudioTabController::getRecordingDeviceName( int index )
@@ -484,6 +515,7 @@ QString AudioTabController::getRecordingDeviceName( int index )
         return "<ERROR>";
     }
 }
+
 int AudioTabController::playbackDeviceIndex() const
 {
     return m_playbackDeviceIndex;
@@ -763,6 +795,11 @@ void AudioTabController::reloadAudioProfiles()
         entry.micVol = settings->value( "micVol", 1.0 ).toFloat();
         entry.defaultProfile
             = settings->value( "defaultProfile", false ).toBool();
+        entry.mirrorID = settings->value( "mirrorID" ).toString().toStdString();
+        entry.recordingID
+            = settings->value( "recordingID" ).toString().toStdString();
+        entry.playbackID
+            = settings->value( "playbackID" ).toString().toStdString();
     }
     settings->endArray();
     settings->endGroup();
@@ -802,7 +839,12 @@ void AudioTabController::saveAudioProfiles()
         settings->setValue( "micVol", p.micVol );
         settings->setValue( "mirrorVol", p.mirrorVol );
         settings->setValue( "defaultProfile", p.defaultProfile );
-        i++;
+
+        settings->setValue( "playbackID",
+                            QString::fromStdString( p.playbackID ) );
+        settings->setValue( "mirrorID", QString::fromStdString( p.mirrorID ) );
+        settings->setValue( "recordingID",
+                            QString::fromStdString( p.recordingID ) );
     }
     settings->endArray();
     settings->endGroup();
@@ -852,6 +894,11 @@ void AudioTabController::addAudioProfile( QString name )
     profile->mirrorVol = m_mirrorVolume;
     profile->micVol = m_micVolume;
     profile->defaultProfile = m_isDefaultAudioProfile;
+
+    profile->playbackID = getPlaybackDeviceID( m_playbackDeviceIndex );
+    profile->mirrorID = getMirrorDeviceID( m_mirrorDeviceIndex );
+    profile->recordingID = getRecordingDeviceID( m_recordingDeviceIndex );
+
     if ( m_isDefaultAudioProfile )
     {
         removeOtherDefaultProfiles( name );
@@ -877,7 +924,7 @@ other: none
 Description: Applies the required logic to activate the audio profile.
 
 */
-// TODO Remembers Mirror Volume when switching to main volume.
+
 void AudioTabController::applyAudioProfile( unsigned index )
 {
     std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
@@ -957,7 +1004,7 @@ QString AudioTabController::getAudioProfileName( unsigned index )
 
 /*
 Name: getPlaybackIndex,  getRecordingIndex, and getMirrorIndex
-input: string, of microphone/playback device name
+input: string, of microphone/playback device ID
 output: integer for use In: setMicDeviceIndex(int,bool),
 setMirrorDeviceIndex(int,bool) setPlayBackDeviceIndex(int,bool)
 description: Gets proper index value for selecting specific devices.
@@ -968,7 +1015,7 @@ int AudioTabController::getPlaybackIndex( std::string str )
     // increment it.
     for ( unsigned int i = 0; i < m_playbackDevices.size(); i++ )
     {
-        if ( str.compare( m_playbackDevices[i].second ) == 0 )
+        if ( str.compare( m_playbackDevices[i].first ) == 0 )
         {
             return static_cast<int>( i );
         }
@@ -982,7 +1029,7 @@ int AudioTabController::getRecordingIndex( std::string str )
     // increment it.
     for ( unsigned int i = 0; i < m_recordingDevices.size(); i++ )
     {
-        if ( str.compare( m_recordingDevices[i].second ) == 0 )
+        if ( str.compare( m_recordingDevices[i].first ) == 0 )
         {
             return static_cast<int>( i );
         }
@@ -996,7 +1043,7 @@ int AudioTabController::getMirrorIndex( std::string str )
     // increment it.
     for ( unsigned int i = 0; i < m_playbackDevices.size(); i++ )
     {
-        if ( str.compare( m_playbackDevices[i].second ) == 0 )
+        if ( str.compare( m_playbackDevices[i].first ) == 0 )
         {
             return static_cast<int>( i );
         }
