@@ -21,7 +21,7 @@ RowLayout {
         Layout.preferredWidth: 850
         onActivated: {
             if (deviceIndex >= 0) {
-                AudioTabController.setPlaybackDeviceIndex(deviceIndex, false)
+                AudioTabController.setPlaybackDeviceIndex(deviceIndex)
             }
             setShownAudioDevice(index)
         }
