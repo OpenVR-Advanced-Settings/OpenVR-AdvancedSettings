@@ -8,6 +8,10 @@ MyDialogOkCancelPopup {
     id: pttDeleteProfileDialog
     property int profileIndex: -1
     dialogTitle: "Delete Profile"
+    dialogWidth: 600
+    dialogHeight: 300
+    y: -300
+    x: 100
     dialogText: "Do you really want to delete this ptt profile?"
     onClosed: {
         if (okClicked) {

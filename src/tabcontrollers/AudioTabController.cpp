@@ -539,28 +539,12 @@ void AudioTabController::setPlaybackDeviceIndex( int index, bool notify )
              && static_cast<size_t>( index ) < m_playbackDevices.size()
              && index != m_mirrorDeviceIndex )
         {
-            vr::EVRSettingsError vrSettingsError;
-            // Applys Audio Switch IN VR
-            vr::VRSettings()->SetString(
-                vr::k_pch_audio_Section,
-                vr::k_pch_audio_OnPlaybackDevice_String,
-                m_playbackDevices[static_cast<size_t>( index )].first.c_str(),
-                &vrSettingsError );
-            if ( vrSettingsError != vr::VRSettingsError_None )
-            {
-                LOG( WARNING )
-                    << "Could not write \""
-                    << vr::k_pch_audio_OnPlaybackDevice_String << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
-            }
-            else
-            {
-                vr::VRSettings()->Sync();
-                audioManager->setPlaybackDevice(
-                    m_playbackDevices[static_cast<size_t>( index )].first,
-                    notify );
-            }
+            // Code to change default
+            // ASDF
+
+            // Code to only change the Device and not apply changes to SteamVR
+            audioManager->setPlaybackDevice(
+                m_playbackDevices[static_cast<size_t>( index )].first, notify );
         }
         else if ( notify )
         {
@@ -637,27 +621,12 @@ void AudioTabController::setMicDeviceIndex( int index, bool notify )
         if ( index >= 0
              && static_cast<size_t>( index ) < m_recordingDevices.size() )
         {
-            vr::EVRSettingsError vrSettingsError;
-            vr::VRSettings()->SetString(
-                vr::k_pch_audio_Section,
-                vr::k_pch_audio_OnRecordDevice_String,
-                m_recordingDevices[static_cast<size_t>( index )].first.c_str(),
-                &vrSettingsError );
-            if ( vrSettingsError != vr::VRSettingsError_None )
-            {
-                LOG( WARNING )
-                    << "Could not write \""
-                    << vr::k_pch_audio_OnRecordDevice_String << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
-            }
-            else
-            {
-                vr::VRSettings()->Sync();
-                audioManager->setMicDevice(
-                    m_recordingDevices[static_cast<size_t>( index )].first,
-                    notify );
-            }
+            // ASDF
+
+            // code to just change Mic
+            audioManager->setMicDevice(
+                m_recordingDevices[static_cast<size_t>( index )].first,
+                notify );
         }
         else if ( notify )
         {
@@ -904,6 +873,10 @@ void AudioTabController::addAudioProfile( QString name )
     {
         removeOtherDefaultProfiles( name );
 
+        setDefaultMic( m_playbackDeviceIndex, false );
+        setDefaultMirror( m_mirrorDeviceIndex, false );
+        setDefaultPlayback( m_playbackDeviceIndex, false );
+
         setAudioProfileDefault( false );
     }
     saveAudioProfiles();
@@ -982,6 +955,10 @@ void AudioTabController::deleteAudioProfile( unsigned index )
     if ( index < audioProfiles.size() )
     {
         auto pos = audioProfiles.begin() + index;
+        if ( audioProfiles.at( index ).defaultProfile )
+        {
+            // TODO removes
+        }
         audioProfiles.erase( pos );
         saveAudioProfiles();
         OverlayController::appSettings()->sync();
@@ -1050,6 +1027,112 @@ int AudioTabController::getMirrorIndex( std::string str )
         }
     }
     return -1;
+}
+
+/*
+ Name: setDefaultPlayback/Mirror/Mic
+
+ input int index = index of m_playbackDevices to set
+
+ description: sets the SteamVR "on launch" audio options
+
+ NOTE: We Assume Index passed is good, and valid
+*/
+
+void AudioTabController::setDefaultPlayback( int index, bool notify )
+{
+    vr::EVRSettingsError vrSettingsError;
+    vr::VRSettings()->SetString(
+        vr::k_pch_audio_Section,
+        vr::k_pch_audio_OnPlaybackDevice_String,
+        m_playbackDevices[static_cast<size_t>( index )].first.c_str(),
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not write \""
+                       << vr::k_pch_audio_OnPlaybackDevice_String
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    else
+    {
+        vr::VRSettings()->Sync();
+        audioManager->setPlaybackDevice(
+            m_playbackDevices[static_cast<size_t>( index )].first, notify );
+    }
+}
+
+void AudioTabController::setDefaultMic( int index, bool notify )
+{
+    vr::EVRSettingsError vrSettingsError;
+    vr::VRSettings()->SetString(
+        vr::k_pch_audio_Section,
+        vr::k_pch_audio_OnRecordDevice_String,
+        m_recordingDevices[static_cast<size_t>( index )].first.c_str(),
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not write \""
+                       << vr::k_pch_audio_OnRecordDevice_String
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    else
+    {
+        vr::VRSettings()->Sync();
+        audioManager->setMicDevice(
+            m_recordingDevices[static_cast<size_t>( index )].first, notify );
+    }
+}
+
+void AudioTabController::setDefaultMirror( int index, bool notify )
+{
+    if ( index == -1 )
+    {
+        vr::EVRSettingsError vrSettingsError;
+        vr::VRSettings()->RemoveKeyInSection(
+            vr::k_pch_audio_Section,
+            vr::k_pch_audio_OnPlaybackMirrorDevice_String,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not remove \""
+                           << vr::k_pch_audio_OnPlaybackMirrorDevice_String
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        else
+        {
+            vr::VRSettings()->Sync();
+            audioManager->setMirrorDevice( "", notify );
+        }
+    }
+    else
+    {
+        vr::EVRSettingsError vrSettingsError;
+        vr::VRSettings()->SetString(
+            vr::k_pch_audio_Section,
+            vr::k_pch_audio_OnPlaybackMirrorDevice_String,
+            m_playbackDevices[static_cast<size_t>( index )].first.c_str(),
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not write \""
+                           << vr::k_pch_audio_OnPlaybackMirrorDevice_String
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        else
+        {
+            vr::VRSettings()->Sync();
+            audioManager->setMirrorDevice(
+                m_playbackDevices[static_cast<size_t>( index )].first, notify );
+        }
+    }
 }
 
 /*
