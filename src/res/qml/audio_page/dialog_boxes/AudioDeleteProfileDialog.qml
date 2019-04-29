@@ -16,7 +16,6 @@ MyDialogOkCancelPopup {
     onClosed: {
         if (okClicked) {
             AudioTabController.deleteAudioProfile(profileIndex)
-            pttProfileComboBox.currentIndex = 0
         }
     }
 }
