@@ -539,9 +539,6 @@ void AudioTabController::setPlaybackDeviceIndex( int index, bool notify )
              && static_cast<size_t>( index ) < m_playbackDevices.size()
              && index != m_mirrorDeviceIndex )
         {
-            // Code to change default
-            // ASDF
-
             // Code to only change the Device and not apply changes to SteamVR
             audioManager->setPlaybackDevice(
                 m_playbackDevices[static_cast<size_t>( index )].first, notify );
@@ -621,8 +618,6 @@ void AudioTabController::setMicDeviceIndex( int index, bool notify )
         if ( index >= 0
              && static_cast<size_t>( index ) < m_recordingDevices.size() )
         {
-            // ASDF
-
             // code to just change Mic
             audioManager->setMicDevice(
                 m_recordingDevices[static_cast<size_t>( index )].first,
@@ -871,9 +866,7 @@ void AudioTabController::addAudioProfile( QString name )
 
     if ( m_isDefaultAudioProfile )
     {
-        // TODO Set Mirror Logic?
         setDefaultMic( m_recordingDeviceIndex );
-        // setDefaultMirror( m_mirrorDeviceIndex, false );
         setDefaultPlayback( m_playbackDeviceIndex );
 
         removeOtherDefaultProfiles( name );
@@ -956,8 +949,8 @@ void AudioTabController::deleteAudioProfile( unsigned index )
     if ( index < audioProfiles.size() )
     {
         auto pos = audioProfiles.begin() + index;
-        // Remove PlayBack and Mic from Steam API Mirror Is handled @ destructor
-        // This is necessary because Mirro Device does not appear to be handled
+        // Remove PlayBack and Mic from Steam API Mirror Is handled @ shutdown
+        // This is necessary because Mirror Device does not appear to be handled
         // via native windows api.
         if ( audioProfiles.at( index ).defaultProfile )
         {
@@ -1225,7 +1218,6 @@ int AudioTabController::getDefaultAudioProfileIndex()
 /* ---------------------------*/
 /*----------------------------*/
 
-// Destructor to ensure that we set Mirror to correct Default.
 void AudioTabController::shutdown()
 {
     setMicMuted( false, false );
