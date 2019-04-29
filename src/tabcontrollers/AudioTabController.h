@@ -110,9 +110,9 @@ private:
     std::string getMirrorDeviceID( int index );
     std::string getRecordingDeviceID( int index );
 
-    void setDefaultPlayback( int index, bool notify );
-    void setDefaultMirror( int index, bool notify );
-    void setDefaultMic( int index, bool notify );
+    void setDefaultPlayback( int index, bool notify = true );
+    void setDefaultMirror( int index, bool notify = true );
+    void setDefaultMic( int index, bool notify = true );
 
     std::vector<AudioProfile> audioProfiles;
 

@@ -871,11 +871,11 @@ void AudioTabController::addAudioProfile( QString name )
 
     if ( m_isDefaultAudioProfile )
     {
-        removeOtherDefaultProfiles( name );
+        setDefaultMic( m_recordingDeviceIndex );
+        // setDefaultMirror( m_mirrorDeviceIndex, false );
+        setDefaultPlayback( m_playbackDeviceIndex );
 
-        setDefaultMic( m_playbackDeviceIndex, false );
-        setDefaultMirror( m_mirrorDeviceIndex, false );
-        setDefaultPlayback( m_playbackDeviceIndex, false );
+        removeOtherDefaultProfiles( name );
 
         setAudioProfileDefault( false );
     }
