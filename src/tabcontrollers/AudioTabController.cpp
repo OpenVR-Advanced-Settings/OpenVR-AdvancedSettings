@@ -871,6 +871,7 @@ void AudioTabController::addAudioProfile( QString name )
 
     if ( m_isDefaultAudioProfile )
     {
+        // TODO Set Mirror Logic?
         setDefaultMic( m_recordingDeviceIndex );
         // setDefaultMirror( m_mirrorDeviceIndex, false );
         setDefaultPlayback( m_playbackDeviceIndex );
