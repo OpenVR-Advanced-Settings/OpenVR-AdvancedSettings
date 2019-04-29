@@ -736,7 +736,8 @@ void OverlayController::mainEventLoop()
             m_moveCenterTabController.shutdown();
             // Un-mute mic before Exiting VR, as it is set at system level Not
             // Vr level.
-            m_audioTabController.setMicMuted( false, false );
+            // m_audioTabController.setMicMuted( false, false );
+            m_audioTabController.shutdown();
             m_chaperoneTabController.shutdown();
             Shutdown();
             QApplication::exit();
@@ -857,7 +858,6 @@ void OverlayController::mainEventLoop()
     m_settingsTabController.eventLoopTick();
     m_reviveTabController.eventLoopTick();
     m_audioTabController.eventLoopTick();
-    // TODO do I need loop for vide?
 
     if ( m_ulOverlayThumbnailHandle != vr::k_ulOverlayHandleInvalid )
     {

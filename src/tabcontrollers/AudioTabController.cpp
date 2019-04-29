@@ -51,7 +51,7 @@ void AudioTabController::initStage1()
     reloadPttProfiles();
     reloadPttConfig();
     reloadAudioProfiles();
-    applyDefaultProfile();
+    // applyDefaultProfile();
     reloadAudioSettings();
 
     eventLoopTick();
@@ -956,9 +956,45 @@ void AudioTabController::deleteAudioProfile( unsigned index )
     if ( index < audioProfiles.size() )
     {
         auto pos = audioProfiles.begin() + index;
+        // Remove PlayBack and Mic from Steam API Mirror Is handled @ destructor
+        // This is necessary because Mirro Device does not appear to be handled
+        // via native windows api.
         if ( audioProfiles.at( index ).defaultProfile )
         {
-            // TODO removes
+            vr::EVRSettingsError vrSettingsError;
+            vr::VRSettings()->RemoveKeyInSection(
+                vr::k_pch_audio_Section,
+                vr::k_pch_audio_OnPlaybackDevice_String,
+                &vrSettingsError );
+            if ( vrSettingsError != vr::VRSettingsError_None )
+            {
+                LOG( WARNING )
+                    << "Could not remove \""
+                    << vr::k_pch_audio_OnPlaybackDevice_String << "\" setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
+            }
+            else
+            {
+                vr::VRSettings()->Sync();
+            }
+
+            vr::VRSettings()->RemoveKeyInSection(
+                vr::k_pch_audio_Section,
+                vr::k_pch_audio_OnRecordDevice_String,
+                &vrSettingsError );
+            if ( vrSettingsError != vr::VRSettingsError_None )
+            {
+                LOG( WARNING )
+                    << "Could not remove \""
+                    << vr::k_pch_audio_OnRecordDevice_String << "\" setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
+            }
+            else
+            {
+                vr::VRSettings()->Sync();
+            }
         }
         audioProfiles.erase( pos );
         saveAudioProfiles();
@@ -1188,5 +1224,32 @@ int AudioTabController::getDefaultAudioProfileIndex()
 
 /* ---------------------------*/
 /*----------------------------*/
+
+// Destructor to ensure that we set Mirror to correct Default.
+void AudioTabController::shutdown()
+{
+    setMicMuted( false, false );
+    std::string mID;
+    bool hasDefaultProfile = false;
+    for ( unsigned i = 0; i < audioProfiles.size(); i++ )
+    {
+        auto& profile = audioProfiles[i];
+        if ( profile.defaultProfile )
+        {
+            mID = profile.mirrorID;
+            hasDefaultProfile = true;
+            break;
+        }
+    }
+    if ( hasDefaultProfile )
+    {
+        setMirrorDeviceIndex( getMirrorIndex( mID ) );
+    }
+    else
+    {
+        setMirrorDeviceIndex( -1 );
+    }
+    LOG( INFO ) << "Audio Tab Controller Has Shut Down";
+}
 
 } // namespace advsettings

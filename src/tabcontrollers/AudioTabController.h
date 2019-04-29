@@ -158,6 +158,7 @@ public:
     void onNewPlaybackDevice();
     void onNewMirrorDevice();
     void onDeviceStateChanged();
+    void shutdown();
 
 public slots:
     void setMirrorVolume( float value, bool notify = true );
