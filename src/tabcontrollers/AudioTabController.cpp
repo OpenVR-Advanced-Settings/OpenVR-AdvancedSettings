@@ -51,7 +51,7 @@ void AudioTabController::initStage1()
     reloadPttProfiles();
     reloadPttConfig();
     reloadAudioProfiles();
-    // TODO Verify new defaults working as intended
+    // TODO Verify new defaults working as intended befoere removing
     // applyDefaultProfile();
     reloadAudioSettings();
 
