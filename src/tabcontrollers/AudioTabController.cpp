@@ -51,6 +51,7 @@ void AudioTabController::initStage1()
     reloadPttProfiles();
     reloadPttConfig();
     reloadAudioProfiles();
+    // TODO Verify new defaults working as intended
     // applyDefaultProfile();
     reloadAudioSettings();
 
@@ -171,6 +172,9 @@ void AudioTabController::eventLoopTick()
 
     if ( settingsUpdateCounter >= k_audioSettingsUpdateCounter )
     {
+        // Not usable until OpenVR 1.4.x?
+        // Will require updates to action based system
+        /*
         if ( m_micProximitySensorCanMute )
         {
             vr::VRControllerState_t controllerState;
@@ -204,6 +208,7 @@ void AudioTabController::eventLoopTick()
                 }
             }
         }
+        */
         vr::EVRSettingsError vrSettingsError;
         char mirrorDeviceId[1024];
         vr::VRSettings()->GetString(
