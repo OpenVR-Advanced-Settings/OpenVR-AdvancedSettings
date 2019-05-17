@@ -101,6 +101,7 @@ void enableApplicationAutostart();
 void installApplicationManifest( const std::string manifestPath );
 void removeApplicationManifest( const std::string manifestPath );
 void reinstallApplicationManifest( const std::string manifestPath );
+void forceRemoveApplicationManifest( const std::string manifestPath );
 [[noreturn]] void handleManifests( const bool installManifest,
                                    const bool removeManifest );
 
