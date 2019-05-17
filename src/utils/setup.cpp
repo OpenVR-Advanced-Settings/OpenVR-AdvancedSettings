@@ -206,7 +206,7 @@ void reinstallApplicationManifest( const std::string manifestPath )
     installApplicationManifest( manifestPath );
 }
 
-void forceRemoveApplicationManifest( const std::string manifestPath )
+void forceRemoveApplicationManifest()
 {
     if ( vr::VRApplications()->IsApplicationInstalled(
              application_strings::applicationKey ) )
@@ -279,7 +279,7 @@ void forceRemoveApplicationManifest( const std::string manifestPath )
         }
         else if ( removeManifest )
         {
-            forceRemoveApplicationManifest( *manifestPath );
+            forceRemoveApplicationManifest();
             LOG( INFO ) << "Manifest removed.";
         }
     }
