@@ -117,15 +117,30 @@ void enableApplicationAutostart()
 // OpenVR must be initialized before calling this function.
 void installApplicationManifest( const std::string manifestPath )
 {
-    const auto app_error
-        = vr::VRApplications()->AddApplicationManifest( manifestPath.c_str() );
-    if ( app_error != vr::VRApplicationError_None )
+    if ( vr::VRApplications()->IsApplicationInstalled(
+             application_strings::applicationKey ) )
     {
-        throw std::runtime_error(
-            std::string( "Could not add application manifest: " )
-            + std::string(
-                vr::VRApplications()->GetApplicationsErrorNameFromEnum(
-                    app_error ) ) );
+        LOG( ERROR ) << "Manifest Is already Installed for Key "
+                     << application_strings::applicationKey;
+        LOG( ERROR ) << "You may have installed Advanced Settings in another "
+                        "directory please remove it OR"
+                        " manually delete the manifest install in in Steam "
+                        "install at Steam\\config\\appconfig.json";
+    }
+    else
+    {
+        const auto app_error = vr::VRApplications()->AddApplicationManifest(
+            manifestPath.c_str() );
+        LOG( INFO ) << "Manifest Installed at: " << manifestPath;
+        if ( app_error != vr::VRApplicationError_None )
+        {
+            throw std::runtime_error(
+                std::string( "Could not add application manifest: " )
+                + std::string(
+                    vr::VRApplications()->GetApplicationsErrorNameFromEnum(
+                        app_error ) ) );
+        }
+        vr::VRSettings()->Sync( true );
     }
 }
 
@@ -136,6 +151,19 @@ void removeApplicationManifest( const std::string manifestPath )
              application_strings::applicationKey ) )
     {
         vr::VRApplications()->RemoveApplicationManifest( manifestPath.c_str() );
+        LOG( INFO ) << "Attempting to Remove Manifest At:  " << manifestPath;
+        vr::VRSettings()->Sync( true );
+    }
+    if ( vr::VRApplications()->IsApplicationInstalled(
+             application_strings::applicationKey ) )
+    {
+        LOG( ERROR ) << "Removal Failed, run Advanced Settings from previous "
+                        "install directory OR manually delete it in Steam "
+                        "install at Steam\\config\\appconfig.json";
+    }
+    else
+    {
+        LOG( INFO ) << "Manifest Removed Successfully";
     }
 }
 
@@ -168,13 +196,53 @@ void reinstallApplicationManifest( const std::string manifestPath )
         }
 
         const auto oldManifestPath
-            = QDir::cleanPath( QDir( oldApplicationWorkingDir )
-                                   .absoluteFilePath( kVRManifestName ) );
-
-        removeApplicationManifest( manifestPath );
+            = QDir::toNativeSeparators(
+                  QDir::cleanPath( QDir( oldApplicationWorkingDir )
+                                       .absoluteFilePath( kVRManifestName ) ) )
+                  .toStdString();
+        removeApplicationManifest( oldManifestPath );
     }
 
     installApplicationManifest( manifestPath );
+}
+
+void forceRemoveApplicationManifest()
+{
+    if ( vr::VRApplications()->IsApplicationInstalled(
+             application_strings::applicationKey ) )
+    {
+        // String size was arbitrarily chosen by original author.
+        constexpr auto kStringSize = 1024;
+        char oldApplicationWorkingDir[kStringSize] = { 0 };
+        auto app_error = vr::VRApplicationError_None;
+        vr::VRApplications()->GetApplicationPropertyString(
+            application_strings::applicationKey,
+            vr::VRApplicationProperty_WorkingDirectory_String,
+            oldApplicationWorkingDir,
+            kStringSize,
+            &app_error );
+
+        if ( app_error != vr::VRApplicationError_None )
+        {
+            throw std::runtime_error(
+                "Could not find working directory of already "
+                "installed application: "
+                + std::string(
+                    vr::VRApplications()->GetApplicationsErrorNameFromEnum(
+                        app_error ) ) );
+        }
+
+        const auto oldManifestPath
+            = QDir::toNativeSeparators(
+                  QDir::cleanPath( QDir( oldApplicationWorkingDir )
+                                       .absoluteFilePath( kVRManifestName ) ) )
+                  .toStdString();
+        removeApplicationManifest( oldManifestPath );
+    }
+    else
+    {
+        LOG( INFO ) << "No Manifest Installed";
+    }
 }
 
 // Initializes OpenVR and calls the relevant manifest functions.
@@ -201,7 +269,8 @@ void reinstallApplicationManifest( const std::string manifestPath )
         {
             throw std::runtime_error( "Could not find application manifest." );
         }
-
+        // Keep Settings Clean
+        vr::VRSettings()->Sync( true );
         if ( installManifest )
         {
             reinstallApplicationManifest( *manifestPath );
@@ -210,7 +279,7 @@ void reinstallApplicationManifest( const std::string manifestPath )
         }
         else if ( removeManifest )
         {
-            removeApplicationManifest( *manifestPath );
+            forceRemoveApplicationManifest();
             LOG( INFO ) << "Manifest removed.";
         }
     }
