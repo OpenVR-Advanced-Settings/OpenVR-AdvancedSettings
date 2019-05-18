@@ -124,7 +124,7 @@ void installApplicationManifest( const std::string manifestPath )
                      << application_strings::applicationKey;
         LOG( ERROR ) << "You may have installed Advanced Settings in another "
                         "directory please remove it OR"
-                        "OR manually delete the manifest install in in Steam "
+                        " manually delete the manifest install in in Steam "
                         "install at Steam\\config\\appconfig.json";
     }
     else
