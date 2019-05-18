@@ -46,7 +46,7 @@ RowLayout {
         }
         onPlaybackDeviceListChanged: {
             audioMirrorNameCombo.devices = getAudioDeviceList()
-            setShownAudioDevice(AudioTabController.playbackDeviceIndex)
+            setShownAudioDevice(AudioTabController.mirrorDeviceIndex)
         }
     }
     function getAudioDeviceList() {
