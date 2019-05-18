@@ -23,7 +23,6 @@ RowLayout {
             if (deviceIndex >= 0) {
                 AudioTabController.setPlaybackDeviceIndex(deviceIndex)
             }
-            setShownAudioDevice(index)
         }
     }
     Component.onCompleted: {
