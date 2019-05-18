@@ -54,6 +54,8 @@ void VideoTabController::initStage2( OverlayController* var_parent,
     reloadVideoConfig();
 }
 
+void VideoTabController::initColorOverlay() {}
+
 void VideoTabController::eventLoopTick() {}
 
 void VideoTabController::reloadVideoConfig()

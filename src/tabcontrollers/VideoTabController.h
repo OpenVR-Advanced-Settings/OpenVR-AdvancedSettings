@@ -10,6 +10,7 @@ class QQuickWindow;
 namespace video_keys
 {
 constexpr auto k_brightnessOverlayFilename = "/res/img/video/dimmer.png";
+constexpr auto k_colorOverlayFilename = "/res/img/video/color.png";
 
 } // namespace video_keys
 
@@ -36,6 +37,9 @@ private:
 
     vr::VROverlayHandle_t m_brightnessOverlayHandle
         = vr::k_ulOverlayHandleInvalid;
+
+    vr::VROverlayHandle_t m_colorOverlayHandle = vr::k_ulOverlayHandleInvalid;
+
     float m_opacityValue = 0.0f;
     float m_brightnessValue = 1.0f;
     bool m_brightnessEnabled = false;
@@ -43,6 +47,7 @@ private:
     void reloadVideoConfig();
     void saveVideoConfig();
     void setOpacityValue();
+    void initColorOverlay();
 
     QString getSettingsName()
     {
