@@ -8,6 +8,8 @@ Slider {
     snapMode: Slider.SnapAlways
     wheelEnabled: true
     hoverEnabled: true
+    to: 1.0
+    from: 0.0
 
     background: Rectangle {
         x: parent.leftPadding
