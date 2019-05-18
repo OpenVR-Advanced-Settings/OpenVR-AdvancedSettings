@@ -97,11 +97,7 @@ void sendKeyPress( const Token token,
 {
     bool keyDown = false;
 
-    if ( status == KeyStatus::Up )
-    {
-        keyDown = false;
-    }
-    else
+    if ( status == KeyStatus::Down )
     {
         keyDown = true;
     }

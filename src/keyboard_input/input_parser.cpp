@@ -202,7 +202,7 @@ std::vector<Token>
             }
         }
 
-        std::string characters = "";
+        std::string characters;
         characters.push_back( *ch );
         while ( ch + 1 != end )
         {
