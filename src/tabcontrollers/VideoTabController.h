@@ -26,6 +26,16 @@ class VideoTabController : public QObject
                     setBrightnessEnabled NOTIFY brightnessEnabledChanged )
     Q_PROPERTY( float brightnessValue READ brightnessValue WRITE
                     setBrightnessValue NOTIFY brightnessValueChanged )
+    Q_PROPERTY( bool colorEnabled READ colorEnabled WRITE setColorEnabled NOTIFY
+                    colorEnabledChanged )
+    Q_PROPERTY( float colorOpacity READ colorOpacity Write setColorOpacity
+                    NOTIFY colorOpacityChanged )
+    Q_PROPERTY(
+        float colorRed READ colorRed Write setColorRed NOTIFY colorRedChanged )
+    Q_PROPERTY( float colorGreen READ colorGreen Write setcolorGreen NOTIFY
+                    colorGreenChanged )
+    Q_PROPERTY( float colorBlue READ colorBlue Write setcolorBlue NOTIFY
+                    colorBlueChanged )
 
 private:
     // how far away the overlay is, any OVERLAY closer will not be dimmed.
@@ -40,14 +50,25 @@ private:
 
     vr::VROverlayHandle_t m_colorOverlayHandle = vr::k_ulOverlayHandleInvalid;
 
-    float m_opacityValue = 0.0f;
+    float m_brightnessOpacityValue = 0.0f;
     float m_brightnessValue = 1.0f;
     bool m_brightnessEnabled = false;
 
+    // color member vars
+    bool m_colorEnabled = false;
+    float m_colorOpacity = 0.2f;
+    float m_colorRed = 1.0f;
+    float m_colorBlue = 1.0f;
+    float m_colorGreen = 1.0f;
+
     void reloadVideoConfig();
     void saveVideoConfig();
-    void setOpacityValue();
+    void setBrightnessOpacityValue();
+
+    void initBrightnessOverlay();
     void initColorOverlay();
+
+    void loadColorOverlay();
 
     QString getSettingsName()
     {
@@ -59,11 +80,23 @@ private:
         return m_brightnessOverlayHandle;
     }
 
+    vr::VROverlayHandle_t getColorOverlayHandle()
+    {
+        return m_colorOverlayHandle;
+    }
+
 public:
-    float opacityValue() const;
+    float brightnessOpacityValue() const;
     // inverse of brightnessValue
     float brightnessValue() const;
     bool brightnessEnabled() const;
+
+    // Color overlay Getters
+    bool colorEnabled() const;
+    float colorOpacity() const;
+    float colorRed() const;
+    float colorGreen() const;
+    float colorBlue() const;
 
     void initStage1();
     void initStage2( OverlayController* var_parent, QQuickWindow* var_widget );
@@ -73,9 +106,22 @@ public slots:
     void setBrightnessEnabled( bool value, bool notify = true );
     void setBrightnessValue( float percvalue, bool notify = true );
 
+    // Color overlay Setters
+    void setColorEnabled( bool value, bool notify = true );
+    void setColorOpacity( float value, bool notify = true );
+    void setColorRed( float value, bool notify = true );
+    void setColorGreen( float value, bool notify = true );
+    void setColorBlue( float value, bool notify = true );
+
 signals:
     void brightnessEnabledChanged( bool value );
     void brightnessValueChanged( float value );
+
+    void colorEnabledChanged( bool value );
+    void colorOpacityChanged( float value );
+    void colorRedChanged( float value );
+    void colorGreenChanged( float value );
+    void colorBlueChanged( float value );
 };
 
 } // namespace advsettings
