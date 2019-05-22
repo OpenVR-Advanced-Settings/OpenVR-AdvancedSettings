@@ -1,4 +1,4 @@
-#include "KeyboardInput.h"
+#include "keyboard_input.h"
 #include "src/keyboard_input/input_sender.h"
 
 namespace keyboardinput
@@ -54,26 +54,6 @@ void sendKeyboardCtrlV()
         = std::vector<Token>{ Token::MODIFIER_CTRL, Token::KEY_v };
 
     sendTokensAsInput( tokens );
-}
-
-void sendMediaNextSong()
-{
-    // noop
-}
-
-void sendMediaPreviousSong()
-{
-    // noop
-}
-
-void sendMediaPausePlay()
-{
-    // noop
-}
-
-void sendMediaStopSong()
-{
-    // noop
 }
 
 } // namespace keyboardinput
