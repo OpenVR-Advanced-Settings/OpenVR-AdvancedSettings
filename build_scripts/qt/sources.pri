@@ -18,7 +18,6 @@ SOURCES += src/main.cpp\
     src/utils/paths.cpp \
     src/openvr/overlay_utils.cpp \
     src/keyboard_input/keyboard_input.cpp \
-    src/media_keys/media_keys.cpp \
     src/keyboard_input/input_parser.cpp
 
 HEADERS += src/overlaycontroller.h \
@@ -54,7 +53,8 @@ HEADERS += src/overlaycontroller.h \
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
-        src/keyboard_input/input_sender_win.cpp
+        src/keyboard_input/input_sender_win.cpp \
+        src/media_keys/media_keys_win.cpp
     HEADERS += src/tabcontrollers/audiomanager/AudioManagerWindows.h
 }
 
@@ -67,13 +67,16 @@ unix:!macx {
     else {
         SOURCES += src/keyboard_input/input_sender_dummy.cpp
     }
-    SOURCES += src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
+
+    SOURCES += src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
+                src/media_keys/media_keys_dummy.cpp
     HEADERS += src/tabcontrollers/audiomanager/AudioManagerDummy.h
 }
 
 macx {
-    SOURCES += src/keyboard_input/input_sender_dummy.cpp
-    SOURCES += src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
+    SOURCES += src/keyboard_input/input_sender_dummy.cpp \
+                src/media_keys/media_keys_dummy.cpp \
+                src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
     HEADERS += src/tabcontrollers/audiomanager/AudioManagerDummy.h
 
 }
