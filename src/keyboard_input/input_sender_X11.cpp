@@ -5,7 +5,7 @@
 
 unsigned int tokenToKeyCode( const Token token, Display* const display )
 {
-    if ( isalnum( static_cast<int>( token ) ) )
+    if ( isLiteralKey( token ) )
     {
         return XKeysymToKeycode( display, static_cast<KeySym>( token ) );
     }
@@ -134,6 +134,14 @@ void sendTokensAsInput( const std::vector<Token> tokens )
             sendKeyPress( token, KeyStatus::Down, display );
             sendKeyPress( token, KeyStatus::Up, display );
             continue;
+        }
+    }
+
+    if ( !heldInputs.empty() )
+    {
+        for ( const auto& h : heldInputs )
+        {
+            sendKeyPress( h, KeyStatus::Up, display );
         }
     }
 

@@ -95,3 +95,4 @@ std::vector<Token>
 
 bool isModifier( const Token token ) noexcept;
 bool isLiteral( const Token token ) noexcept;
+bool isLiteralKey( const Token token ) noexcept;

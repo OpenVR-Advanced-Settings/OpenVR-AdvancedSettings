@@ -5,7 +5,7 @@
 
 WORD convertToVirtualKeycode( const Token token )
 {
-    if ( isalnum( static_cast<int>( token ) ) )
+    if ( isLiteralKey( token ) )
     {
         return static_cast<WORD>( VkKeyScan( static_cast<int>( token ) ) );
     }
@@ -175,6 +175,15 @@ void sendTokensAsInput( const std::vector<Token> tokens )
             inputs.push_back( createInputStruct(
                 convertToVirtualKeycode( token ), KeyStatus::Up ) );
             continue;
+        }
+    }
+
+    if ( !heldInputs.empty() )
+    {
+        for ( const auto& h : heldInputs )
+        {
+            inputs.push_back( createInputStruct( convertToVirtualKeycode( h ),
+                                                 KeyStatus::Up ) );
         }
     }
 

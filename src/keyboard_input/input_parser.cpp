@@ -316,13 +316,74 @@ bool isModifier( const Token token ) noexcept
     }
 }
 
+bool isLiteralKey( const Token token ) noexcept
+{
+    switch ( token )
+    {
+    case Token::KEY_a:
+        return true;
+    case Token::KEY_b:
+        return true;
+    case Token::KEY_c:
+        return true;
+    case Token::KEY_d:
+        return true;
+    case Token::KEY_e:
+        return true;
+    case Token::KEY_f:
+        return true;
+    case Token::KEY_g:
+        return true;
+    case Token::KEY_h:
+        return true;
+    case Token::KEY_i:
+        return true;
+    case Token::KEY_j:
+        return true;
+    case Token::KEY_k:
+        return true;
+    case Token::KEY_l:
+        return true;
+    case Token::KEY_m:
+        return true;
+    case Token::KEY_n:
+        return true;
+    case Token::KEY_o:
+        return true;
+    case Token::KEY_p:
+        return true;
+    case Token::KEY_q:
+        return true;
+    case Token::KEY_r:
+        return true;
+    case Token::KEY_s:
+        return true;
+    case Token::KEY_t:
+        return true;
+    case Token::KEY_u:
+        return true;
+    case Token::KEY_v:
+        return true;
+    case Token::KEY_w:
+        return true;
+    case Token::KEY_x:
+        return true;
+    case Token::KEY_y:
+        return true;
+    case Token::KEY_z:
+        return true;
+
+    default:
+        return false;
+    }
+}
+
 bool isLiteral( const Token token ) noexcept
 {
-    if ( isalnum( static_cast<int>( token ) ) )
+    if ( isLiteralKey( token ) )
     {
         return true;
     }
-
     switch ( token )
     {
     case Token::KEY_F1:

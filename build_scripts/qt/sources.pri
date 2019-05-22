@@ -12,12 +12,12 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/PttController.cpp \
     src/tabcontrollers/VideoTabController.cpp \
     src/utils/ChaperoneUtils.cpp \
-    src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
     src/openvr/openvr_init.cpp \
     src/openvr/ivrinput.cpp \
     src/utils/setup.cpp \
     src/utils/paths.cpp \
     src/openvr/overlay_utils.cpp \
+    src/tabcontrollers/keyboardinput/KeyboardInput.cpp \
     src/keyboard_input/input_parser.cpp
 
 HEADERS += src/overlaycontroller.h \
@@ -52,15 +52,13 @@ HEADERS += src/overlaycontroller.h \
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
-        src/tabcontrollers/keyboardinput/KeyboardInputWindows.cpp \
         src/keyboard_input/input_sender_win.cpp
     HEADERS += src/tabcontrollers/audiomanager/AudioManagerWindows.h
 }
 
 unix:!macx {
     !noX11 {
-        SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputX11.cpp \
-                src/keyboard_input/input_sender_X11.cpp
+        SOURCES += src/keyboard_input/input_sender_X11.cpp
         CONFIG += x11
         LIBS += -lXtst
     }
@@ -70,7 +68,6 @@ unix:!macx {
 }
 
 macx {
-    SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp
 }
 
 win32-msvc {
