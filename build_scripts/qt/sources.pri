@@ -17,7 +17,8 @@ SOURCES += src/main.cpp\
     src/utils/setup.cpp \
     src/utils/paths.cpp \
     src/openvr/overlay_utils.cpp \
-    src/tabcontrollers/keyboardinput/KeyboardInput.cpp \
+    src/keyboard_input/keyboard_input.cpp \
+    src/media_keys/media_keys.cpp \
     src/keyboard_input/input_parser.cpp
 
 HEADERS += src/overlaycontroller.h \
@@ -33,7 +34,8 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/VideoTabController.h \
     src/tabcontrollers/AudioManager.h \
     src/tabcontrollers/PttController.h \
-    src/tabcontrollers/keyboardinput/KeyboardInput.h \
+    src/keyboard_input/keyboard_input.h \
+    src/media_keys/media_keys.h \
     src/utils/Matrix.h \
     src/utils/ChaperoneUtils.h \
     src/quaternion/quaternion.h \
@@ -63,11 +65,17 @@ unix:!macx {
         LIBS += -lXtst
     }
     else {
-        SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp
+        SOURCES += src/keyboard_input/input_sender_dummy.cpp
     }
+    SOURCES += src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
+    HEADERS += src/tabcontrollers/audiomanager/AudioManagerDummy.h
 }
 
 macx {
+    SOURCES += src/keyboard_input/input_sender_dummy.cpp
+    SOURCES += src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
+    HEADERS += src/tabcontrollers/audiomanager/AudioManagerDummy.h
+
 }
 
 win32-msvc {
