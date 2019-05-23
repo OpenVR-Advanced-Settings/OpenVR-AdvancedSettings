@@ -119,6 +119,8 @@ void VideoTabController::reloadVideoConfig()
     m_colorBlue = settings->value( "colorBlue", 0.0f ).toFloat();
     settings->endGroup();
     setBrightnessOpacityValue();
+    loadColorOverlay();
+    // initColorOverlay();
 }
 
 void VideoTabController::saveVideoConfig()
@@ -246,6 +248,11 @@ bool VideoTabController::colorEnabled() const
 float VideoTabController::colorOpacity() const
 {
     return m_colorOpacity;
+}
+
+float VideoTabController::colorOpacityPerc() const
+{
+    return m_colorOpacityPerc;
 }
 
 float VideoTabController::colorRed() const
@@ -387,6 +394,52 @@ void VideoTabController::loadColorOverlay()
         LOG( ERROR ) << "Could not set Colors for color overlay: "
                      << vr::VROverlay()->GetOverlayErrorNameFromEnum(
                             overlayError );
+    }
+
+    overlayError = vr::VROverlay()->SetOverlayAlpha( m_colorOverlayHandle,
+                                                     m_colorOpacity );
+    if ( overlayError != vr::VROverlayError_None )
+    {
+        LOG( ERROR ) << "Could not set alpha: "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                            overlayError );
+    }
+}
+
+void VideoTabController::setColorOpacityPerc( float percvalue, bool notify )
+{
+    // This takes the Perceived value, and converts it to allow more accurate
+    // linear positioning. (human perception logarithmic)
+    float realvalue = static_cast<float>(
+        std::pow( static_cast<double>( 1.0f - percvalue ), 1 / 3. ) );
+
+    if ( realvalue != m_colorOpacity )
+    {
+        m_colorOpacityPerc = percvalue;
+        if ( realvalue <= 1.0f && realvalue >= 0.0f )
+        {
+            m_colorOpacity = realvalue;
+            vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
+                m_colorOverlayHandle, realvalue );
+            if ( overlayError != vr::VROverlayError_None )
+            {
+                LOG( ERROR ) << "Could not set alpha of color overlay: "
+                             << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                                    overlayError );
+            }
+            // only saves if opacity Value is valid. [1-0]
+            saveVideoConfig();
+        }
+        else
+        {
+            LOG( WARNING ) << "alpha value is invalid setting to 1.0";
+            m_brightnessOpacityValue = 0.0f;
+        }
+
+        if ( notify )
+        {
+            emit brightnessValueChanged( percvalue );
+        }
     }
 }
 

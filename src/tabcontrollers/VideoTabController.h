@@ -28,19 +28,22 @@ class VideoTabController : public QObject
                     setBrightnessValue NOTIFY brightnessValueChanged )
     Q_PROPERTY( bool colorEnabled READ colorEnabled WRITE setColorEnabled NOTIFY
                     colorEnabledChanged )
-    Q_PROPERTY( float colorOpacity READ colorOpacity Write setColorOpacity
+    Q_PROPERTY( float colorOpacity READ colorOpacity WRITE setColorOpacity
                     NOTIFY colorOpacityChanged )
+    Q_PROPERTY( float colorOpacityPerc READ colorOpacityPerc WRITE
+                    setColorOpacityPerc NOTIFY colorOpacityPercChanged )
     Q_PROPERTY(
-        float colorRed READ colorRed Write setColorRed NOTIFY colorRedChanged )
-    Q_PROPERTY( float colorGreen READ colorGreen Write setcolorGreen NOTIFY
+        float colorRed READ colorRed WRITE setColorRed NOTIFY colorRedChanged )
+    Q_PROPERTY( float colorGreen READ colorGreen WRITE setColorGreen NOTIFY
                     colorGreenChanged )
-    Q_PROPERTY( float colorBlue READ colorBlue Write setcolorBlue NOTIFY
+    Q_PROPERTY( float colorBlue READ colorBlue WRITE setColorBlue NOTIFY
                     colorBlueChanged )
 
 private:
     // how far away the overlay is, any OVERLAY closer will not be dimmed.
     const float k_hmdDistance = -0.15f;
-    // how wide overlay is, Increase this value if edges of view are not dimmed.
+    // how wide overlay is, Increase this value if edges of view are not
+    // dimmed.
     const float k_overlayWidth = 1.0f;
     OverlayController* parent;
     QQuickWindow* widget;
@@ -56,7 +59,8 @@ private:
 
     // color member vars
     bool m_colorEnabled = false;
-    float m_colorOpacity = 0.2f;
+    float m_colorOpacity = 1.0f;
+    float m_colorOpacityPerc = 0.0f;
     float m_colorRed = 1.0f;
     float m_colorBlue = 1.0f;
     float m_colorGreen = 1.0f;
@@ -97,6 +101,7 @@ public:
     float colorRed() const;
     float colorGreen() const;
     float colorBlue() const;
+    float colorOpacityPerc() const;
 
     void initStage1();
     void initStage2( OverlayController* var_parent, QQuickWindow* var_widget );
@@ -112,6 +117,7 @@ public slots:
     void setColorRed( float value, bool notify = true );
     void setColorGreen( float value, bool notify = true );
     void setColorBlue( float value, bool notify = true );
+    void setColorOpacityPerc( float value, bool notify = true );
 
 signals:
     void brightnessEnabledChanged( bool value );
@@ -122,6 +128,7 @@ signals:
     void colorRedChanged( float value );
     void colorGreenChanged( float value );
     void colorBlueChanged( float value );
+    void colorOpacityPercChanged( float value );
 };
 
 } // namespace advsettings
