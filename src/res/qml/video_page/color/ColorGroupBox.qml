@@ -168,7 +168,7 @@ GroupBox {
                 id: colorGreenText
                 text: "100%"
                 keyBoardUID: 301
-                Layout.preferGreenWidth: 100
+                Layout.preferredWidth: 100
                 Layout.leftMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
@@ -217,7 +217,7 @@ GroupBox {
                 id: colorBlueText
                 text: "100%"
                 keyBoardUID: 301
-                Layout.preferBlueWidth: 100
+                Layout.preferredWidth: 100
                 Layout.leftMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
