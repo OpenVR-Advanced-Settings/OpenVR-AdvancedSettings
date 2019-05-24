@@ -67,7 +67,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 - Simple Media Player macro keybind
 - SteamVR Input Action System implemented for maximum control of keybinds.
 - Removed forced on Die-in-Game Die-in-Life setting.
-
+- Bind VR controller buttons to send keyboard inputs (for example to mute VOIP applications while in VR).
 
 <a name="usage"></a>
 # Usage
@@ -90,9 +90,6 @@ To upgrade an existing installation first stop SteamVR and delete the old applic
 
 <a name="bindings"></a>
 ## Bindings
-
-After SteamVR beta 1.3.1 the bindings for Advanced Settings will show up in the bindings menu.
-
 
 The following actions currently exist:
 ### Music
@@ -141,6 +138,10 @@ Actions that don't have a clear category.
 | Y-Axis Lock Toggle | Binary/Button | Toggles the lock of the Y-Axis for offsets.|
 | Z-Axis Lock Toggle | Binary/Button | Toggles the lock of the Z-Axis for offsets.|
 | Push to Talk | Binary/Button |  Acts as starter for PTT, can mute if push-to-mute is selected.|
+| Keyboard Shortcut One | Binary/Button | Sends the key sequence defined the the settings file. Defaults to Ctrl+Shift+M (Discord default toggle mute). |
+| Keyboard Shortcut Two | Binary/Button | Sends the key sequence defined the the settings file. This has no default sequence. |
+| Keyboard Shortcut Three | Binary/Button | Sends the key sequence defined the the settings file. This has no default sequence. |
+
 
 ### Haptics.
 
@@ -334,11 +335,9 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 
 <img src="docs/screenshots/UtilitiesPage.png" width="600" alt="Utilities Page">
 
-- **Keyboard Utilities:** Some applications (mostly 2D-monitor applications with tackled-on/modded-in VR support) do not support the VR keyboard but require an actual physical keyboard for text input. This utilities allow to send emulated key strokes from VR keyboard input to such application to overcome this limitation. Does not work in desktop mode.
+- **Keyboard Utilities:** Some applications (mostly 2D-monitor applications with tackled-on/modded-in VR support) do not support the VR keyboard but require an actual physical keyboard for text input. This utilities allow to send emulated key strokes from VR keyboard input to such application to overcome this limitation. Does not work in desktop mode. The "Keyboard Input" button works as described [here](docs/specs/Keyboard_Manager-Parser_Spec.txt).
 
 - **Alarm Clock:** Just a simple alarm clock so you don't miss important appointments. VR can sure mess up perception of time. Does not work in desktop mode.
-
-- **Steam Desktop Overlay Width:** Allows to increase the size of the Steam desktop overlay. Useful for multi-monitor setups. It is saved between sessions.
 
 - **Media Control Keys:** Allows controlling a media player through the media keys. This is the same as having a keyboard with media keys and then pressing them. Should support most common media players.
 
