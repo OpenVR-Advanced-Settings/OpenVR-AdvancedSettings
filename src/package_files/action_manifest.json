@@ -160,6 +160,21 @@
       "name": "/actions/misc/in/ProxSensor",
       "requirement": "optional",
       "type": "boolean"
+    },
+    {
+      "name": "/actions/misc/in/KeyboardOne",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/misc/in/KeyboardTwo",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/misc/in/KeyboardThree",
+      "requirement": "optional",
+      "type": "boolean"
     }
 	
   ],
@@ -220,7 +235,10 @@
         "/actions/misc/in/ZAxisLockToggle" : "Z-Axis Lock Toggle",
         "/actions/misc/in/PushToTalk" : "Push To Talk",
 		    "/actions/misc/in/ChaperoneToggle" : "Chaperone Toggle",
-        "/actions/misc/in/ProxSensor" : "Proximity Sensor"
+        "/actions/misc/in/ProxSensor" : "Proximity Sensor",
+        "/actions/misc/in/KeyboardOne" : "Keyboard Shortcut One",
+        "/actions/misc/in/KeyboardTwo" : "Keyboard Shortcut Two",
+        "/actions/misc/in/KeyboardThree" : "Keyboard Shortcut Three"
     }
   ]
 }

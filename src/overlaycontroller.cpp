@@ -21,6 +21,7 @@
 #include <easylogging++.h>
 #include "utils/Matrix.h"
 #include "openvr/overlay_utils.h"
+#include "keyboard_input/input_sender.h"
 
 // application namespace
 namespace advsettings
@@ -588,6 +589,42 @@ void OverlayController::processPushToTalkBindings()
     }
 }
 
+void OverlayController::processKeyboardBindings()
+{
+    constexpr auto settingsKeyboardName = "keyboardShortcuts";
+
+    if ( m_actions.keyboardOne() )
+    {
+        constexpr auto defaultDiscordMuteBinding = "^>m";
+        // run keyboard
+        appSettings()->beginGroup( settingsKeyboardName );
+        const auto commands
+            = appSettings()
+                  ->value( "keyboardOne", defaultDiscordMuteBinding )
+                  .toString()
+                  .toStdString();
+        appSettings()->endGroup();
+        sendStringAsInput( commands );
+    }
+    if ( m_actions.keyboardTwo() )
+    {
+        // run keyboard
+        appSettings()->beginGroup( settingsKeyboardName );
+        const auto commands
+            = appSettings()->value( "keyboardTwo" ).toString().toStdString();
+        appSettings()->endGroup();
+        sendStringAsInput( commands );
+    }
+    if ( m_actions.keyboardThree() )
+    {
+        // run keyboard
+        appSettings()->beginGroup( settingsKeyboardName );
+        const auto commands
+            = appSettings()->value( "keyboardThree" ).toString().toStdString();
+        appSettings()->endGroup();
+        sendStringAsInput( commands );
+    }
+}
 /*!
 Checks if an action has been activated and dispatches the related action if it
 has been.
@@ -601,6 +638,8 @@ void OverlayController::processInputBindings()
     processPushToTalkBindings();
 
     processChaperoneBindings();
+
+    processKeyboardBindings();
 }
 
 // vsync implementation:
