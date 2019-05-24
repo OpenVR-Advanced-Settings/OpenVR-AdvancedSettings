@@ -596,7 +596,7 @@ void OverlayController::processKeyboardBindings()
     if ( m_actions.keyboardOne() )
     {
         constexpr auto defaultDiscordMuteBinding = "^>m";
-        // run keyboard
+
         appSettings()->beginGroup( settingsKeyboardName );
         const auto commands
             = appSettings()
@@ -604,24 +604,27 @@ void OverlayController::processKeyboardBindings()
                   .toString()
                   .toStdString();
         appSettings()->endGroup();
+
         sendStringAsInput( commands );
     }
+
     if ( m_actions.keyboardTwo() )
     {
-        // run keyboard
         appSettings()->beginGroup( settingsKeyboardName );
         const auto commands
             = appSettings()->value( "keyboardTwo" ).toString().toStdString();
         appSettings()->endGroup();
+
         sendStringAsInput( commands );
     }
+
     if ( m_actions.keyboardThree() )
     {
-        // run keyboard
         appSettings()->beginGroup( settingsKeyboardName );
         const auto commands
             = appSettings()->value( "keyboardThree" ).toString().toStdString();
         appSettings()->endGroup();
+
         sendStringAsInput( commands );
     }
 }
