@@ -3,6 +3,7 @@
 #include <vector>
 #include <cctype>
 #include <optional>
+#include <easylogging++.h>
 
 enum class Token
 {
