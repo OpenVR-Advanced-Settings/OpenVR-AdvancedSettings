@@ -50,7 +50,7 @@ std::optional<Token> getFunctionNumber( const char& character ) noexcept
         return Token::KEY_F9;
 
     default:
-        // LOG incorrect character
+        LOG( INFO ) << "Unknown function key number: " << character;
         return std::nullopt;
     }
 }
@@ -147,7 +147,6 @@ std::optional<Token> checkIfLegalCapitalLiteral( std::string input ) noexcept
         return Token::KEY_ENTER;
     }
 
-    // LOG incorrect character
     return std::nullopt;
 }
 
@@ -176,7 +175,7 @@ std::vector<Token>
 
         if ( !isupper( *ch ) || isspace( *ch ) )
         {
-            // LOG incorrect character
+            LOG( INFO ) << "Unknown character found in sequence: " << ch;
             continue;
         }
         // Everything below is upper case

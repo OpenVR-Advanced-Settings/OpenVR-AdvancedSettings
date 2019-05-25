@@ -86,7 +86,6 @@ WORD convertToVirtualKeycode( const Token token )
         return VK_LWIN;
 
     default:
-        // LOG incorrect symbol
         return 0;
     }
 }

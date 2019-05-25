@@ -86,7 +86,6 @@ unsigned int tokenToKeyCode( const Token token, Display* const display )
         return XK_Super_L;
 
     default:
-        // LOG incorrect symbol
         return 0;
     }
 }
