@@ -36,6 +36,9 @@ The default configuration is `^>m` for all bindings. Change the letter (`m`) to 
 For example, if you want Keyboard Shortcut Two to be `Ctrl+Shift+X` you would write `keyboardTwo=^>x`.
 If you just want it to be `Ctrl+X` you would remove the `>` symbol and just write `keyboardTwo=^m`.
 
+Notice that all pressed keys are released again when the sequence is over. 
+It is not possible to hold down keys.
+
 ### Advanced Configuration
 
 Look at the key table [spec](specs/Keyboard_Manager-Parser_Spec.txt) and find the keys that you want to press.
