@@ -274,6 +274,27 @@ OverlayController::OverlayController( bool desktopMode,
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
+
+    // Force keyboard shortcut settings to appear in config file.
+    constexpr auto settingsKeyboardName = "keyboardShortcuts";
+    appSettings()->beginGroup( settingsKeyboardName );
+
+    constexpr auto defaultDiscordMuteBindings = "^>m";
+    if ( appSettings()->value( "keyboardOne", "" ) == "" )
+    {
+        appSettings()->setValue( "keyboardOne", defaultDiscordMuteBindings );
+    }
+
+    if ( appSettings()->value( "keyboardTwo", "" ) == "" )
+    {
+        appSettings()->setValue( "keyboardTwo", defaultDiscordMuteBindings );
+    }
+
+    if ( appSettings()->value( "keyboardThree", "" ) == "" )
+    {
+        appSettings()->setValue( "keyboardThree", defaultDiscordMuteBindings );
+    }
+    appSettings()->endGroup();
 }
 
 OverlayController::~OverlayController()
@@ -595,14 +616,9 @@ void OverlayController::processKeyboardBindings()
 
     if ( m_actions.keyboardOne() )
     {
-        constexpr auto defaultDiscordMuteBinding = "^>m";
-
         appSettings()->beginGroup( settingsKeyboardName );
         const auto commands
-            = appSettings()
-                  ->value( "keyboardOne", defaultDiscordMuteBinding )
-                  .toString()
-                  .toStdString();
+            = appSettings()->value( "keyboardOne" ).toString().toStdString();
         appSettings()->endGroup();
 
         sendStringAsInput( commands );
