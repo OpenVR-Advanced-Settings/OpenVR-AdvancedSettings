@@ -335,7 +335,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 
 <img src="docs/screenshots/UtilitiesPage.png" width="600" alt="Utilities Page">
 
-- **Keyboard Utilities:** Some applications (mostly 2D-monitor applications with tackled-on/modded-in VR support) do not support the VR keyboard but require an actual physical keyboard for text input. This utilities allow to send emulated key strokes from VR keyboard input to such application to overcome this limitation. Does not work in desktop mode. The "Keyboard Input" button works as described [here](docs/specs/Keyboard_Manager-Parser_Spec.txt).
+- **Keyboard Utilities:** Some applications (mostly 2D-monitor applications with tackled-on/modded-in VR support) do not support the VR keyboard but require an actual physical keyboard for text input. This utilities allow to send emulated key strokes from VR keyboard input to such application to overcome this limitation. Does not work in desktop mode. The "Keyboard Input" button works as described [here](docs/specs/Keyboard_Manager-Parser_Spec.md).
 
 - **Alarm Clock:** Just a simple alarm clock so you don't miss important appointments. VR can sure mess up perception of time. Does not work in desktop mode.
 
