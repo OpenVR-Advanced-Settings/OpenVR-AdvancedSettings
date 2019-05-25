@@ -3,7 +3,7 @@
 The `Keyboard Shortcut One`, `Keyboard Shortcut Two` and `Keyboard Shortcut Three` actions under the `misc` tab will send the currently configured key sequence to the operating system.
 
 The default keybinding for all three actions is `Ctrl+Shift+M`, which mutes your microphone in Discord (unless you've changed it).
-This sequence can be changed to anything you want, as described in the [spec](specs/Keyboard_Manager-Parser_Spec.txt). An easier to read version of the spec can be found below.
+This sequence can be changed to anything you want, as described in the [spec](specs/Keyboard_Manager-Parser_Spec.md). An easier to read version of the spec can be found below.
 
 The hotkeys can for example be configured to run an AutoHotKey script or mute VOIP applications.
 
