@@ -175,7 +175,7 @@ std::vector<Token>
 
         if ( !isupper( *ch ) || isspace( *ch ) )
         {
-            LOG( INFO ) << "Unknown character found in sequence: " << ch;
+            LOG( INFO ) << "Unknown character found in sequence: " << *ch;
             continue;
         }
         // Everything below is upper case
