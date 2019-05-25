@@ -67,7 +67,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 - Simple Media Player macro keybind
 - SteamVR Input Action System implemented for maximum control of keybinds.
 - Removed forced on Die-in-Game Die-in-Life setting.
-- Bind VR controller buttons to send keyboard inputs (for example to mute VOIP applications while in VR).
+- Bind VR controller buttons to send keyboard inputs (for example to mute VOIP applications while in VR). [Tutorial](docs/keyboard_input_guide.md).
 
 <a name="usage"></a>
 # Usage
