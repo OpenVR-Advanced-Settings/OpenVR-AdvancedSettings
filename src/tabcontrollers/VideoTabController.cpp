@@ -6,16 +6,18 @@
 
 namespace advsettings
 {
-void VideoTabController::initStage1() {}
+void VideoTabController::initStage1()
+{
+    initBrightnessOverlay();
+    initColorOverlay();
+    m_overlayInit = true;
+}
 
 void VideoTabController::initStage2( OverlayController* var_parent,
                                      QQuickWindow* var_widget )
 {
     this->parent = var_parent;
     this->widget = var_widget;
-
-    initBrightnessOverlay();
-    initColorOverlay();
 
     reloadVideoConfig();
 }
@@ -48,7 +50,7 @@ void VideoTabController::initBrightnessOverlay()
         }
         else
         {
-            LOG( ERROR ) << "Could not base brightness overlay \""
+            LOG( ERROR ) << "Could not find brightness overlay \""
                          << video_keys::k_brightnessOverlayFilename << "\"";
         }
     }
@@ -114,13 +116,16 @@ void VideoTabController::reloadVideoConfig()
     m_brightnessValue = settings->value( "brightnessValue", 1.0f ).toFloat();
     setColorEnabled( settings->value( "colorEnabled", false ).toBool(), true );
     m_colorOpacity = settings->value( "colorOpacity", 0.0f ).toFloat();
-    m_colorRed = settings->value( "colorRed", 0.0f ).toFloat();
-    m_colorGreen = settings->value( "colorGreen", 0.0f ).toFloat();
-    m_colorBlue = settings->value( "colorBlue", 0.0f ).toFloat();
+    m_colorOpacityPerc = settings->value( "colorOpacityPerc", 1.0f ).toFloat();
+    setColorRed( settings->value( "colorRed", 0.0f ).toFloat() );
+    setColorGreen( settings->value( "colorGreen", 0.0f ).toFloat() );
+    setColorBlue( settings->value( "colorBlue", 0.0f ).toFloat() );
     settings->endGroup();
+    LOG( INFO ) << "bright opacityValue: " << m_brightnessOpacityValue
+                << " REd value is: " << m_colorRed;
     setBrightnessOpacityValue();
     loadColorOverlay();
-    // initColorOverlay();
+    settings->sync();
 }
 
 void VideoTabController::saveVideoConfig()
@@ -132,10 +137,12 @@ void VideoTabController::saveVideoConfig()
     settings->setValue( "brightnessValue", brightnessValue() );
     settings->setValue( "colorEnabled", colorEnabled() );
     settings->setValue( "colorOpacity", colorOpacity() );
+    settings->setValue( "colorOpacityPerc", colorOpacityPerc() );
     settings->setValue( "colorRed", colorRed() );
     settings->setValue( "colorGreen", colorGreen() );
     settings->setValue( "colorBlue", colorBlue() );
     settings->endGroup();
+    settings->sync();
 }
 
 float VideoTabController::brightnessOpacityValue() const
@@ -411,7 +418,7 @@ void VideoTabController::setColorOpacityPerc( float percvalue, bool notify )
     // This takes the Perceived value, and converts it to allow more accurate
     // linear positioning. (human perception logarithmic)
     float realvalue = static_cast<float>(
-        std::pow( static_cast<double>( 1.0f - percvalue ), 1 / 3. ) );
+        std::pow( static_cast<double>( 1.0f - percvalue ), 0.5555f ) );
 
     if ( realvalue != m_colorOpacity )
     {
@@ -426,6 +433,7 @@ void VideoTabController::setColorOpacityPerc( float percvalue, bool notify )
                 LOG( ERROR ) << "Could not set alpha of color overlay: "
                              << vr::VROverlay()->GetOverlayErrorNameFromEnum(
                                     overlayError );
+                LOG( INFO ) << "overlays init? " << m_overlayInit;
             }
             // only saves if opacity Value is valid. [1-0]
             saveVideoConfig();

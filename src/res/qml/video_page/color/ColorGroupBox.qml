@@ -95,7 +95,7 @@ GroupBox {
             MyText {
                 text: "Red:"
                 horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
+                Layout.preferredWidth: 200
             }
 
             MySlider {
@@ -144,7 +144,7 @@ GroupBox {
             MyText {
                 text: "Green:"
                 horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
+                Layout.preferredWidth: 200
             }
 
             MySlider {
@@ -193,7 +193,7 @@ GroupBox {
             MyText {
                 text: "Blue:"
                 horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
+                Layout.preferredWidth: 200
             }
 
             MySlider {

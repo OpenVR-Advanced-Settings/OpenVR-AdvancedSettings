@@ -64,6 +64,7 @@ private:
     float m_colorRed = 1.0f;
     float m_colorBlue = 1.0f;
     float m_colorGreen = 1.0f;
+    bool m_overlayInit = false;
 
     void reloadVideoConfig();
     void saveVideoConfig();
