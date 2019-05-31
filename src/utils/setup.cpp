@@ -120,12 +120,8 @@ void installApplicationManifest( const std::string manifestPath )
     if ( vr::VRApplications()->IsApplicationInstalled(
              application_strings::applicationKey ) )
     {
-        LOG( ERROR ) << "Manifest Is already Installed for Key "
-                     << application_strings::applicationKey;
-        LOG( ERROR ) << "You may have installed Advanced Settings in another "
-                        "directory please remove it OR"
-                        " manually delete the manifest install in in Steam "
-                        "install at Steam\\config\\appconfig.json";
+        LOG( INFO ) << "Manifest Is already Installed for Key "
+                    << application_strings::applicationKey;
     }
     else
     {
