@@ -5,7 +5,8 @@
 #include <QTime>
 #include <openvr.h>
 #include <memory>
-#include "keyboardinput/KeyboardInput.h"
+#include "src/keyboard_input/keyboard_input.h"
+#include "src/media_keys/media_keys.h"
 
 class QQuickWindow;
 // application namespace

@@ -131,6 +131,9 @@ SteamIVRInput::SteamIVRInput()
       m_xAxisLockToggle( action_keys::xAxisLockToggle ),
       m_yAxisLockToggle( action_keys::yAxisLockToggle ),
       m_zAxisLockToggle( action_keys::zAxisLockToggle ),
+      m_keyboardOne( action_keys::keyboardOne ),
+      m_keyboardTwo( action_keys::keyboardTwo ),
+      m_keyboardThree( action_keys::keyboardThree ),
       m_chaperoneToggle( action_keys::chaperoneToggle ),
       m_pushToTalk( action_keys::pushToTalk ),
       m_leftHaptic( action_keys::hapticsLeft ),
@@ -302,6 +305,19 @@ bool SteamIVRInput::proxState()
     return isDigitalActionActivatedConstant( m_pushToTalk );
 }
 
+bool SteamIVRInput::keyboardOne()
+{
+    return isDigitalActionActivatedOnce( m_keyboardOne );
+}
+
+bool SteamIVRInput::keyboardTwo()
+{
+    return isDigitalActionActivatedOnce( m_keyboardTwo );
+}
+bool SteamIVRInput::keyboardThree()
+{
+    return isDigitalActionActivatedOnce( m_keyboardThree );
+}
 /*!
 Returns the action handle of the Left Haptic Action
 */

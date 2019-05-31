@@ -12,12 +12,13 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/PttController.cpp \
     src/tabcontrollers/VideoTabController.cpp \
     src/utils/ChaperoneUtils.cpp \
-    src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
     src/openvr/openvr_init.cpp \
     src/openvr/ivrinput.cpp \
     src/utils/setup.cpp \
     src/utils/paths.cpp \
-    src/openvr/overlay_utils.cpp
+    src/openvr/overlay_utils.cpp \
+    src/keyboard_input/keyboard_input.cpp \
+    src/keyboard_input/input_parser.cpp
 
 HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/AudioTabController.h \
@@ -32,7 +33,8 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/VideoTabController.h \
     src/tabcontrollers/AudioManager.h \
     src/tabcontrollers/PttController.h \
-    src/tabcontrollers/keyboardinput/KeyboardInput.h \
+    src/keyboard_input/keyboard_input.h \
+    src/media_keys/media_keys.h \
     src/utils/Matrix.h \
     src/utils/ChaperoneUtils.h \
     src/quaternion/quaternion.h \
@@ -45,27 +47,38 @@ HEADERS += src/overlaycontroller.h \
     src/openvr/ivrinput.h \
     src/utils/setup.h \
     src/utils/paths.h \
-    src/openvr/overlay_utils.h
+    src/openvr/overlay_utils.h \
+    src/keyboard_input/input_parser.h \
+    src/keyboard_input/input_sender.h
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
-        src/tabcontrollers/keyboardinput/KeyboardInputWindows.cpp
+        src/keyboard_input/input_sender_win.cpp \
+        src/media_keys/media_keys_win.cpp
     HEADERS += src/tabcontrollers/audiomanager/AudioManagerWindows.h
 }
 
 unix:!macx {
     !noX11 {
-        SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputX11.cpp
+        SOURCES += src/keyboard_input/input_sender_X11.cpp
         CONFIG += x11
         LIBS += -lXtst
     }
     else {
-        SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp
+        SOURCES += src/keyboard_input/input_sender_dummy.cpp
     }
+
+    SOURCES += src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
+                src/media_keys/media_keys_dummy.cpp
+    HEADERS += src/tabcontrollers/audiomanager/AudioManagerDummy.h
 }
 
 macx {
-    SOURCES += src/tabcontrollers/keyboardinput/KeyboardInputDummy.cpp
+    SOURCES += src/keyboard_input/input_sender_dummy.cpp \
+                src/media_keys/media_keys_dummy.cpp \
+                src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
+    HEADERS += src/tabcontrollers/audiomanager/AudioManagerDummy.h
+
 }
 
 win32-msvc {

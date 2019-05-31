@@ -49,6 +49,10 @@ namespace action_keys
     constexpr auto zAxisLockToggle = "/actions/misc/in/ZAxisLockToggle";
     constexpr auto pushToTalk = "/actions/misc/in/PushToTalk";
 
+    constexpr auto keyboardOne = "/actions/misc/in/KeyboardOne";
+    constexpr auto keyboardTwo = "/actions/misc/in/KeyboardTwo";
+    constexpr auto keyboardThree = "/actions/misc/in/KeyboardThree";
+
     constexpr auto hapticsLeft = "/actions/haptic/out/HapticsLeft";
     constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
     constexpr auto proxSensor = "/actions/misc/in/ProxSensor";
@@ -139,6 +143,10 @@ public:
 
     bool pushToTalk();
 
+    bool keyboardOne();
+    bool keyboardTwo();
+    bool keyboardThree();
+
     vr::VRActionHandle_t leftHapticActionHandle();
     vr::VRActionHandle_t rightHapticActionHandle();
 
@@ -196,6 +204,11 @@ private:
     DigitalAction m_xAxisLockToggle;
     DigitalAction m_yAxisLockToggle;
     DigitalAction m_zAxisLockToggle;
+
+    // Keyboard Shortcuts
+    DigitalAction m_keyboardOne;
+    DigitalAction m_keyboardTwo;
+    DigitalAction m_keyboardThree;
 
     // Misc Bindings
     DigitalAction m_chaperoneToggle;
