@@ -12,8 +12,6 @@ void VideoTabController::initStage1()
     initColorOverlay();
     m_overlayInit = true;
     reloadVideoConfig();
-    // LOG( INFO ) << "brightness overlay is: " << m_brightnessEnabled;
-    // LOG( INFO ) << "color overlay is: " << m_colorEnabled;
 }
 
 void VideoTabController::initStage2( OverlayController* var_parent,
