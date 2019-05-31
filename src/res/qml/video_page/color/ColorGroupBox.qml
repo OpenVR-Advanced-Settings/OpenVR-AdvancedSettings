@@ -51,13 +51,13 @@ GroupBox {
 
             MySlider {
                 id: colorOpacitySlider
-                from: 0.01
+                from: 0.5
                 to: 1.0
                 stepSize: 0.01
                 value: 1.0
                 Layout.fillWidth: true
                 onPositionChanged: {
-                    var val = (this.position * 100)
+                    var val = ((this.position * 100)/2 + 50)
                     colorOpacityText.text = Math.round(val) + "%"
                 }
                 onValueChanged: {
@@ -69,15 +69,15 @@ GroupBox {
             MyTextField {
                 id: colorOpacityText
                 text: "100%"
-                keyBoardUID: 301
+                keyBoardUID: 911
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 5) {
-                            val = 5
+                        if (val < 50) {
+                            val = 50
                         } else if (val > 100.0) {
                             val = 100.0
                         }
@@ -118,7 +118,7 @@ GroupBox {
             MyTextField {
                 id: colorRedText
                 text: "100%"
-                keyBoardUID: 301
+                keyBoardUID: 912
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
                 horizontalAlignment: Text.AlignHCenter
@@ -167,7 +167,7 @@ GroupBox {
             MyTextField {
                 id: colorGreenText
                 text: "100%"
-                keyBoardUID: 301
+                keyBoardUID: 913
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
                 horizontalAlignment: Text.AlignHCenter
@@ -216,7 +216,7 @@ GroupBox {
             MyTextField {
                 id: colorBlueText
                 text: "100%"
-                keyBoardUID: 301
+                keyBoardUID: 914
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
                 horizontalAlignment: Text.AlignHCenter

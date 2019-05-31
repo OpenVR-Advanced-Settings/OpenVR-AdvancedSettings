@@ -61,9 +61,9 @@ private:
     bool m_colorEnabled = false;
     float m_colorOpacity = 1.0f;
     float m_colorOpacityPerc = 0.0f;
-    float m_colorRed = 1.0f;
-    float m_colorBlue = 1.0f;
-    float m_colorGreen = 1.0f;
+    float m_colorRed = 0.0f;
+    float m_colorBlue = 0.0f;
+    float m_colorGreen = 0.0f;
     bool m_overlayInit = false;
 
     void reloadVideoConfig();

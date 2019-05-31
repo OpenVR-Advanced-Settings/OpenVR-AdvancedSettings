@@ -11,6 +11,9 @@ void VideoTabController::initStage1()
     initBrightnessOverlay();
     initColorOverlay();
     m_overlayInit = true;
+    reloadVideoConfig();
+    // LOG( INFO ) << "brightness overlay is: " << m_brightnessEnabled;
+    // LOG( INFO ) << "color overlay is: " << m_colorEnabled;
 }
 
 void VideoTabController::initStage2( OverlayController* var_parent,
@@ -18,8 +21,6 @@ void VideoTabController::initStage2( OverlayController* var_parent,
 {
     this->parent = var_parent;
     this->widget = var_widget;
-
-    reloadVideoConfig();
 }
 
 void VideoTabController::initBrightnessOverlay()
@@ -417,6 +418,12 @@ void VideoTabController::setColorOpacityPerc( float percvalue, bool notify )
 {
     // This takes the Perceived value, and converts it to allow more accurate
     // linear positioning. (human perception logarithmic)
+
+    // clamp the "percieved" value to 50% this is to ensure useability.
+    if ( percvalue <= 0.5f )
+    {
+        percvalue = 0.5f;
+    }
     float realvalue = static_cast<float>(
         std::pow( static_cast<double>( 1.0f - percvalue ), 0.5555f ) );
 
@@ -433,7 +440,6 @@ void VideoTabController::setColorOpacityPerc( float percvalue, bool notify )
                 LOG( ERROR ) << "Could not set alpha of color overlay: "
                              << vr::VROverlay()->GetOverlayErrorNameFromEnum(
                                     overlayError );
-                LOG( INFO ) << "overlays init? " << m_overlayInit;
             }
             // only saves if opacity Value is valid. [1-0]
             saveVideoConfig();
