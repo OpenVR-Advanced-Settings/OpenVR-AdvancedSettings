@@ -527,8 +527,8 @@ MyStackViewPage {
 
         Component.onCompleted: {
             chaperoneVisibilitySlider.value = ChaperoneTabController.boundsVisibility
-            if(chaperoneVisibilitySlider.value < 0.5){
-                chaperoneVisibilitySlider.value = 0.5
+            if(chaperoneVisibilitySlider.value < 0.3){
+                chaperoneVisibilitySlider.value = 0.3
             }
 
             var d = ChaperoneTabController.fadeDistance.toFixed(1)

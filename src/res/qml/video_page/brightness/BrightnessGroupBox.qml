@@ -69,7 +69,7 @@ GroupBox {
             MyTextField {
                 id: brightnessValueText
                 text: "100%"
-                keyBoardUID: 301
+                keyBoardUID: 901
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
                 horizontalAlignment: Text.AlignHCenter
