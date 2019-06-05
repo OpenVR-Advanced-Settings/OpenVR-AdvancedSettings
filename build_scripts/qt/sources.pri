@@ -68,8 +68,15 @@ unix:!macx {
         SOURCES += src/keyboard_input/input_sender_dummy.cpp
     }
 
-    SOURCES += src/tabcontrollers/audiomanager/AudioManagerDummy.cpp \
-                src/media_keys/media_keys_dummy.cpp
+    !noDBUS {
+        SOURCES += src/media_keys/media_keys_dbus.cpp
+        QT += dbus
+    }
+    else {
+        SOURCES += src/media_keys/media_keys_dummy.cpp
+    }
+
+    SOURCES += src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
     HEADERS += src/tabcontrollers/audiomanager/AudioManagerDummy.h
 }
 
