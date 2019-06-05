@@ -6,6 +6,7 @@
   * [Unofficial Ubuntu Packages](#unofficial-ubuntu-packages)
   * [`qtchooser` and versions](#-qtchooser--and-versions)
   * [X11](#x11)
+  * [DBUS](#dbus)
   * [`clang-tidy` and `bear`](#-clang-tidy--and--bear-)
 - [TL;DR: for Ubuntu](#tl-dr--for-ubuntu)
   * [Ubuntu 16.04 Xenial](#ubuntu-1604-xenial)
@@ -100,7 +101,11 @@ Afterwards you should set the `QT_SELECT` environment variable to the name you c
 
 ## X11
 
-X11 packages are currently needed for sending keystrokes to the desktop from VR. Install the packages with `sudo apt-get install libx11-dev libxt-dev libxtst-dev`. This feature will be gated behind a compile flag soon.
+X11 packages are currently needed for sending keystrokes to the desktop from VR. Install the packages with `sudo apt-get install libx11-dev libxt-dev libxtst-dev`. 
+
+## DBUS
+
+DBUS is  needed for controlling media players from VR. 
 
 ## `clang-tidy` and `bear`
 
@@ -160,6 +165,7 @@ The following environmental variables are relevant for building the project.
 | `QMAKE_SPEC`              | The [mkspec](https://forum.qt.io/topic/70970/what-is-mkspecs-used-for-how-to-configure-for-my-hardware) to compile to. Either `linux-g++` or `linux-clang`. Defaults to `linux-g++`.   |
 | `USE_TIDY`              | If set a compilation database will be created and the project linted. Can only be used with `clang`.  |
 | `NO_X11`              | If set the application will be compiled without X11 specific libraries. This disables certain things like sending keystrokes from VR.  |
+| `NO_DBUS`              | If set the application will be compiled without DBUS specific functionality. This disables certain things like media keys.  |
 
 If an environment variable isn't set a default value will be provided. The default values are shown in the table below.
 
