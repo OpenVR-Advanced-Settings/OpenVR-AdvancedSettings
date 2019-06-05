@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=OpenVR Advanced Settings
+Comment=OVRAS
+Exec=AdvancedSettings
+Icon=AdvancedSettings
+Categories=Office;
