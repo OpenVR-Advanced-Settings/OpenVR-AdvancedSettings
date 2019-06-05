@@ -21,3 +21,6 @@ fi
 if [[ -n $NO_X11 ]]; then
     QMAKE_EXTRAS='CONFIG+=noX11'
 fi
+if [[ -n $NO_DBUS ]]; then
+    QMAKE_EXTRAS='CONFIG+=noDBUS'
+fi
