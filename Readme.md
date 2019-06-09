@@ -42,11 +42,13 @@
 - [License](#license)
 
 # OpenVR Advanced Settings Overlay
-Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
+Adds an overlay to the OpenVR dashboard that allows access to advanced settings and useful utilities.
 
 ![Example Screenshot](docs/screenshots/InVRScreenshot.png)
 
 # Features
+
+Do all this without leaving VR:
 
 - Set supersampling values.
 - Enable/disable motion smoothing and advanced supersample filtering.
@@ -57,21 +59,17 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 - Temporarily move and rotate the playspace.
 - Floor height fix, for knuckles and wands.
 - Floor Center fix.
-- Displays several performance statistics and other statistics (e.g. headset rotations).
-- Select the playback/mirror/recording audio device
-- Mute/unmute and set volume of audio mirror device.
-- Mute/unmute and set volume of microphone device.
-- Implements push-to-talk, and push-to-mute
-- Desktop mode shows a window on the desktop instead of a VR overlay.
-- VR Keyboard Input Utilities
+- Display several performance statistics and other statistics (e.g. headset rotations).
+- Control audio devices, volumes and mirror devices.
+- Control microphone as push-to-talk or push-to-mute via VR controller button.
 - Simple Alarm Clock
 - Player height adjust toggle
 - Snap Turn option.
 - Advanced Space Features: gravity, space-turn, and space-drag
-- Simple Media Player macro keybind
-- SteamVR Input Action System implemented for maximum control of keybinds.
-- Removed forced on Die-in-Game Die-in-Life setting.
+- Control media players (Pause/Play, Next Song, Previous Song, Stop).
+- Send keyboard inputs (like Alt+Tab, Alt+Enter, Backspace, etc.).
 - Bind VR controller buttons to send keyboard inputs (for example to mute VOIP applications while in VR). [Tutorial](docs/keyboard_input_guide.md).
+- All the above also available from a window on the desktop.
 
 # Usage
 
