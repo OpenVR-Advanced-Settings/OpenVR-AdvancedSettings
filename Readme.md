@@ -209,7 +209,7 @@ These version are not stable and this should be considered for advanced users on
 
 # Documentation
 
-## Top Page:
+## Top Page
 
 <img src="docs/screenshots/RootPage.png" width="600" alt="Root Page">
 
@@ -218,7 +218,7 @@ These version are not stable and this should be considered for advanced users on
 - **Microphone**: Allows to set the microphone volume and to mute/unmute it.
 - **Push-to-Talk**: Enable/disable push-to-talk.
 
-## - SteamVR Page:
+## - SteamVR Page
 
 <img src="docs/screenshots/SteamVRPage.png" width="600" alt="SteamVR Page">
 
@@ -228,7 +228,7 @@ These version are not stable and this should be considered for advanced users on
 - **Enable Manual Supersampling Override**: Enables user control of Supersampling, instead of SteamVR auto profiles.
 - **Enable Motion Smoothing**: Enables Motion Smoothing, and disables asynchronous reprojection.
 - **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
-## - Chaperone Page:
+## - Chaperone Page
 
 <img src="docs/screenshots/ChaperonePage.png" width="600" alt="Chaperone Page">
 
@@ -244,7 +244,7 @@ These version are not stable and this should be considered for advanced users on
 - **Flip Orientation**: Flips the orientation of the play space.
 - **Reload from Disk**: Reloads the chaperone bounds geometry from disk.
 
-## - Chaperone Proximity Warning Settings Page:
+## - Chaperone Proximity Warning Settings Page
 
 <img src="docs/screenshots/ChaperoneWarningPage.png" width="600" alt="Chaperone Proximity Warning Settings Page">
 
@@ -256,7 +256,7 @@ These version are not stable and this should be considered for advanced users on
 - **Open dashboard**: Opens the dashboard when the user's distance to the chaperone falls below the configured activation distance. The idea is to pause the game (most single-player games auto-pause when the dashboard is shown) to give the user time for reorientation.
 - **Velocity Dependent Fade/Activation Distance**: Dynamically modifies the chaperone's fade distance and the proximity warning's activation distance as a function of the player's speed. The used formula is: *distance = old_distance * ( 1 + distance_modifier * max(left_controller_speed, right_controller_speed, hmd_speed) )*
 
-## - Space Offset Page:
+## - Space Offset Page
 
 <img src="docs/screenshots/OffsetPage.png" width="600" alt="Space Offsets Page">
 
@@ -265,7 +265,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Adjust Chaperone**: When enabled, the chaperone bounds stay accurate even when the playspace is moved or rotated (so noone gets hurt). Depending on chaperone mode this may or may not adjust with height.
 - **Seated Recenter**: When clicked, applies the current location and angle of the headset to the offsets such that the user is brought to a centered position. Also applies the current headset height to the default seated height (not visible in offsets). This action will also be activated automatically when a seated application sends a reset center command. *Note: This button is only visible when running seated applications.*
 
-## - Motion Page:
+## - Motion Page
 
 <img src="docs/screenshots/MotionPage.png" width="600" alt="Motion Page">
 
@@ -286,7 +286,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **fling Strength**: adjusts the strength at which you "throw" yourself with space drag feature.
 - **Snap Turn**: Allows snap (instant) turning by the specified angle. Can type in values or use the preset buttons for angles that neatly divide 360 degrees. Must bind actions via SteamVR Input interface.
 
-## - Space Fix Page:
+## - Space Fix Page
 
 <img src="docs/screenshots/FloorFixPage.png" width="600" alt="Space Fix Page">
 
@@ -295,7 +295,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Undo Fix** Removes last "fix" **(Temporarily disabled pending integration into new motion system.)**
 - **Apply Space Settings Offsets as Center** Takes current values from Offsets page and re-caliberates center/rotation. **Caution** The reset function will then refer to this location as the new zero location, overriding the old zero location.
   
-## - Audio Page:
+## - Audio Page
 
 <img src="docs/screenshots/AudioPage.png" width="600" alt="Audio Page">
 
@@ -308,7 +308,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **NOTE**: The Push-to-talk box must be enabled for this feature to work.
 - **Audio Profile**: Allows you to apply/define/delete audio profiles that save playback devices, mute state, and volume.
 
-## - Video Page:
+## - Video Page
 
 <img src="docs/screenshots/VideoPage.png" width="600" alt="Video Page">
 
@@ -317,7 +317,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **Brightness**: The amount of dimming.
   - **Note**: Does not necessarily reduce light output of HMD will vary based on panel type etc.
 
-## - Utilities Page:
+## - Utilities Page
 
 <img src="docs/screenshots/UtilitiesPage.png" width="600" alt="Utilities Page">
 
@@ -339,7 +339,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 
 - **Left/Right Translation:** Moves the overlay left or right.
 
-## - Statistics Page:
+## - Statistics Page
 
 <img src="docs/screenshots/StatisticsPage.png" width="600" alt="Statistics Page">
 
@@ -353,7 +353,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Timed Out**: Number of times the currently running application timed out.
 - **Reprojection Ratio**: Ratio of presented frames to reprojected frames.
 
-## - Settings Page:
+## - Settings Page
 
 <img src="docs/screenshots/SettingsPage.png" width="600" alt="Settings Page">
 
