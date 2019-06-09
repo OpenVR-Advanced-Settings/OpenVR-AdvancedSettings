@@ -6,6 +6,7 @@
 [![Build Status](https://travis-ci.org/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings.svg?branch=master)](https://travis-ci.org/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings)
 
 # OpenVR Advanced Settings Overlay
+Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 
 - [Features](#features)
 - [Usage](#usage)
@@ -24,26 +25,24 @@
   * [Command Line Arguments](#command-line-arguments)
   * [Preview builds](#preview-builds)
 - [Documentation](#documentation)
-  * [Top Page:](#top-page-)
-  * [- SteamVR Page:](#--steamvr-page-)
-  * [- Chaperone Page:](#--chaperone-page-)
-  * [- Chaperone Proximity Warning Settings Page:](#--chaperone-proximity-warning-settings-page-)
-  * [- Space Offset Page:](#--space-offset-page-)
-  * [- Motion Page:](#--motion-page-)
-  * [- Space Fix Page:](#--space-fix-page-)
-  * [- Audio Page:](#--audio-page-)
-  * [- Video Page:](#--video-page-)
-  * [- Utilities Page:](#--utilities-page-)
+  * [Top Page](#top-page)
+  * [- SteamVR Page](#--steamvr-page)
+  * [- Chaperone Page](#--chaperone-page)
+  * [- Chaperone Proximity Warning Settings Page](#--chaperone-proximity-warning-settings-page)
+  * [- Space Offset Page](#--space-offset-page)
+  * [- Motion Page](#--motion-page)
+  * [- Space Fix Page](#--space-fix-page)
+  * [- Audio Page](#--audio-page)
+  * [- Video Page](#--video-page)
+  * [- Utilities Page](#--utilities-page)
   * [- Desktop Overlay Page](#--desktop-overlay-page)
-  * [- Statistics Page:](#--statistics-page-)
-  * [- Settings Page:](#--settings-page-)
+  * [- Statistics Page](#--statistics-page)
+  * [- Settings Page](#--settings-page)
 - [How to Compile](#how-to-compile)
   * [Building on Windows](#building-on-windows)
   * [Building on Linux](#building-on-linux)
 - [Notes:](#notes-)
 - [License](#license)
-
-Adds an overlay to the OpenVR dashboard that allows access to advanced settings.
 
 ![Example Screenshot](docs/screenshots/InVRScreenshot.png)
 
