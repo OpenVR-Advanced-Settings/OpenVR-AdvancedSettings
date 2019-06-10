@@ -33,7 +33,25 @@ OverlayController::OverlayController( bool desktopMode,
                                       QQmlEngine& qmlEngine )
     : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ), m_actions()
 {
-    m_runtimePathUrl = QUrl::fromLocalFile( vr::VR_RuntimePath() );
+    // Arbitrarily chosen Max Length of Directory path, should be sufficient for
+    // Any set-up
+    const uint32_t maxLength = 16192;
+    uint32_t requiredLength;
+
+    char tempRuntimePath[maxLength];
+    bool pathIsGood
+        = vr::VR_GetRuntimePath( tempRuntimePath, maxLength, &requiredLength );
+
+    // Throw Error If over 16k characters in path string
+    if ( !pathIsGood )
+    {
+        LOG( ERROR ) << "Error Finding VR Runtime Path, Attempting Recovery: ";
+        uint32_t maxLengthRe = requiredLength;
+        LOG( INFO ) << "Open VR reporting Required path length of: "
+                    << maxLengthRe;
+    }
+
+    m_runtimePathUrl = QUrl::fromLocalFile( tempRuntimePath );
     LOG( INFO ) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
     QString activationSoundFile = m_runtimePathUrl.toLocalFile().append(
