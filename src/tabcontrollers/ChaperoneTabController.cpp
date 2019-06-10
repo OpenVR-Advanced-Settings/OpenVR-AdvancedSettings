@@ -1311,11 +1311,14 @@ void ChaperoneTabController::setDisableChaperone( bool value, bool notify )
     }
 }
 
-void ChaperoneTabController::flipOrientation()
+void ChaperoneTabController::flipOrientation( double degrees )
 {
     parent->m_moveCenterTabController.reset();
+    double rad = 0;
+    rad = degrees * ( M_PI / 180.0 );
+
     parent->RotateUniverseCenter( vr::TrackingUniverseStanding,
-                                  static_cast<float>( M_PI ) );
+                                  static_cast<float>( rad ) );
     parent->m_moveCenterTabController.zeroOffsets();
 }
 

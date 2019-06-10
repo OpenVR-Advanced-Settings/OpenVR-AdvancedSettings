@@ -263,7 +263,7 @@ public slots:
     void setChaperoneVelocityModifierEnabled( bool value, bool notify = true );
     void setChaperoneVelocityModifier( float value, bool notify = true );
 
-    void flipOrientation();
+    void flipOrientation( double degrees = 180 );
     void reloadFromDisk();
 
     void addChaperoneProfile( QString name,

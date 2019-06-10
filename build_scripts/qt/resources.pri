@@ -16,6 +16,8 @@ DISTFILES += \
     src/res/qml/audio_page/* \
     src/res/qml/ChaperonePage.qml \
     src/res/qml/ChaperoneWarningsPage.qml \
+    src/res/qml/chaperone_page/* \
+    src/res/qml/chaperone_page/change_orientation/* \
     src/res/qml/FixFloorPage.qml \
     src/res/qml/PlayspacePage.qml \
     src/res/qml/motion_page/* \
@@ -39,8 +41,8 @@ DISTFILES += \
     src/res/qml/audio_page/proximity/* \
     src/res/qml/audio_page/push_to_talk/* \
     src/res/qml/audio_page/profiles/* \
-	src/res/qml/video_page/* \
-	src/res/qml/video_page/brightness/* \
+    src/res/qml/video_page/* \
+    src/res/qml/video_page/brightness/* \
     src/res/qml/common/* \
     src/res/qml/desktop_overlay_page/* \
     src/res/qml/desktop_overlay_page/translation_left_right/SteamDesktopTranslationLeftRight.qml \

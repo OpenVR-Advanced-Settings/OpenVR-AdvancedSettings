@@ -4,7 +4,8 @@ import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
 import ovras.advsettings 1.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
-import "common"
+import "../common"
+import "change_orientation"
 
 MyStackViewPage {
     headerText: "Chaperone Settings"
@@ -489,15 +490,16 @@ MyStackViewPage {
                 mainView.push(chaperoneWarningsPage)
             }
         }
+        ChangeOrientationGroupBox { }
 
-        MyPushButton {
-            id: chaperoneFlipOrientationButton
-            text: "Flip Orientation"
-            Layout.preferredWidth: 250
-            onClicked: {
-                ChaperoneTabController.flipOrientation()
-            }
-        }
+        //MyPushButton {
+        //    id: chaperoneFlipOrientationButton
+        //    text: "Flip Orientation"
+        //    Layout.preferredWidth: 250
+        //    onClicked: {
+        //        ChaperoneTabController.flipOrientation()
+        //   }
+        //}
 
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
 
