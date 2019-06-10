@@ -53,10 +53,6 @@ GroupBox {
                     stepSize: 1
                     value: 0
                     Layout.fillWidth: true
-                    //onPositionChanged: {
-                    //    var val = this.value
-                    //    spaceRotationText.text = val
-                    //}
                     onValueChanged: {
                         var val = this.value
                         spaceRotationText.text = val

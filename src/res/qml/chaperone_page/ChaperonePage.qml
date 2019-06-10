@@ -492,14 +492,6 @@ MyStackViewPage {
         }
         ChangeOrientationGroupBox { }
 
-        //MyPushButton {
-        //    id: chaperoneFlipOrientationButton
-        //    text: "Flip Orientation"
-        //    Layout.preferredWidth: 250
-        //    onClicked: {
-        //        ChaperoneTabController.flipOrientation()
-        //   }
-        //}
 
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
 
