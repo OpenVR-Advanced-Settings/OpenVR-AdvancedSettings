@@ -449,7 +449,7 @@ MyStackViewPage {
                 MyTextField {
                     id: velModifierText
                     text: "0.00"
-                    keyBoardUID: 803
+                    keyBoardUID: 804
                     Layout.preferredWidth: 100
                     Layout.leftMargin: 10
                     horizontalAlignment: Text.AlignHCenter

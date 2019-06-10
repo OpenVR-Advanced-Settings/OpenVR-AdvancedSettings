@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../common"
 import "brightness"
+import "color"
 
 MyStackViewPage {
     width: 1200
@@ -12,7 +13,10 @@ MyStackViewPage {
     content: ColumnLayout {
         spacing: 18
 
-        BrightnessGroupBox { }
+        BrightnessGroupBox {
+        id: brightnessGroupBox}
+        ColorGroupBox {
+        id:  colorGroupBox}
 
         Item {
             Layout.fillHeight: true

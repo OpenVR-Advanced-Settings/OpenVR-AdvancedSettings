@@ -43,6 +43,7 @@ DISTFILES += \
     src/res/qml/audio_page/profiles/* \
     src/res/qml/video_page/* \
     src/res/qml/video_page/brightness/* \
+    src/res/qml/video_page/color/* \
     src/res/qml/common/* \
     src/res/qml/desktop_overlay_page/* \
     src/res/qml/desktop_overlay_page/translation_left_right/SteamDesktopTranslationLeftRight.qml \
