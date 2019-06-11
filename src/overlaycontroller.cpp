@@ -605,6 +605,7 @@ void OverlayController::processChaperoneBindings()
         m_chaperoneTabController.setDisableChaperone(
             !( m_chaperoneTabController.disableChaperone() ), true );
     }
+    m_chaperoneTabController.setProxState( m_actions.proxState() );
 }
 
 void OverlayController::processPushToTalkBindings()
@@ -637,7 +638,6 @@ void OverlayController::processPushToTalkBindings()
 
     const auto pushToTalkButtonActivated = m_actions.pushToTalk();
     const auto pushToTalkCurrentlyActive = m_audioTabController.pttActive();
-    // TODO handle if no prox sensor on HMD
 
     if ( pushToTalkButtonActivated && !pushToTalkCurrentlyActive )
     {
@@ -698,8 +698,6 @@ void OverlayController::processInputBindings()
     processChaperoneBindings();
 
     processKeyboardBindings();
-
-    // TODO prox sensor shenanigans!
 }
 
 // vsync implementation:

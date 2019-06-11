@@ -175,6 +175,10 @@ private:
 
     bool m_isHapticGood = true;
     bool m_isHMDActive = false;
+    bool m_isProxActive = true;
+    bool m_HMDHasProx = false;
+
+    void initProxSensor();
 
     int m_updateTicksChaperoneReload = 0;
 
@@ -209,6 +213,8 @@ public:
     void setLeftHapticActionHandle( vr::VRActionHandle_t handle );
     void setRightInputHandle( vr::VRInputValueHandle_t handle );
     void setLeftInputHandle( vr::VRInputValueHandle_t handle );
+
+    void setProxState( bool value );
 
     bool isChaperoneSwitchToBeginnerEnabled() const;
     float chaperoneSwitchToBeginnerDistance() const;
