@@ -60,36 +60,37 @@ Below are described some behaviors that aren't strictly necessary for using the 
 
 ![Edit Action](screenshots/guide/editaction.png)
 
-- Now you will notice two important things the “more options” and the cog.
+- Now you will notice two important things the "more options" and the cog.
 - The Cog allows you to set up haptics for activating an action 
 
 ![Edit Action Haptics](screenshots/guide/actionhaptics.png)
 
-- Amplitude - how powerful 0-100% the haptics should be.
-- Duration – how long it will last 0-4 seconds.
-- Frequency – The frequency/”feel” of the vibration
-- But What about the “more options?!”
+- Amplitude - How powerful the haptic will be, from 0 to 100 percent.
+- Duration - How long the haptic will last, from 0 to 4 seconds.
+- Frequency - The frequency/"feel" of the haptic.
+- But what about the "more options?"
 
 ![More Options](screenshots/guide/moreoptions.png)
 
-  - Single – single click
-  - Double – double click (about .25 seconds in between clicks max)
-  - Long Hold – Long hold ~1-2 seconds
-  - Held – Action active when held!
-  - Touch – Active when the button is being touched (knuckles/ touch)
-  - And More – Analog inputs (i.e. Triggers/joysticks/ trackpads ) have more options and configurations you can try out!
- 
+- Here you can bind different actions to the same button, but different activation methods.
+- Single – Single click. The default.
+- Double – Double click (about .25 seconds in between clicks max).
+- Long Hold – Long hold ~1-2 seconds.
+- Held – Action active when held.
+- Touch – Active when the button is being touched (knuckles/ touch).
+- And More – Analog inputs (triggers/joysticks/trackpads) have more options and configurations you can try out.
+
 ### Chord Bindings
- 
- **The Combo Maker!** Chords are just that, they allow you to combine a combination of Keys to do an action for example a Grip + trigger + trackpad Press.
- 
-**NOTE:** For you to be able to select a button in the chord menu you need to have clicked the [+] for the button and have an empty slot like below, And the behavior (toggle/Button etc.) must also be correct.
+
+**The Combo Maker!** Chords are just that, they allow you to combine a combination of keys to do an action for example a grip + trigger + trackpad Press.
+
+**NOTE:** For you to be able to select a button in the chord menu you need to have clicked the [+] for the button and have an empty slot like below, and the behavior (toggle/button, etc.) must also be correct.
 
 ![Empty Action](screenshots/guide/emptyaction.png)
 
-- Make sure you have empty Bindings or a binding for all keys you will want to use in your chord, then click the “Add Chords” followed by “Add New Chord”.
+- Make sure you have empty bindings or a binding for all keys you will want to use in your chord, then click the "Add Chords" followed by "Add New Chord".
 - You will be prompted for an action, select the result of your chord.
-- You will Now see the prototype for your chord and can add inputs as you desire
+- You will now see the prototype for your chord and can add inputs as you desire
 
 ![Chord Prototype](screenshots/guide/chordproto.png)
 
@@ -97,21 +98,21 @@ Below are described some behaviors that aren't strictly necessary for using the 
 
 ![Chord Complete](screenshots/guide/chordcomplete.png)
 
-- That’s is it add more or close and you are done!
+- That’s is it. Add more or close and you are done!
 
 ### Odds and Ends.... and Haptics!
 
-- Haptics are a special Action. as it essentially tells the program which controller this haptic “action” belongs to.
-- The add/edit Haptics button will be  next to the add/edit chord button. [in our app haptics only exist in the “haptics” action set, as such you will want to set them.]
-- **YOU MUST HAVE AN EMPTY BINDING**, otherwise haptics will not be bind-able. Anything will do… even “unused”
+- Haptics are a special action. It essentially tells the program which controller this haptic "action" belongs to.
+- The add/edit Haptics button will be  next to the add/edit chord button. Find our app. (Haptics only exist in the "haptics" action set, as such you will want to set them.)
+- **YOU MUST HAVE AN EMPTY BINDING**, otherwise haptics will not be bind-able. Anything will do, even "unused".
 
 ![Empty Action](screenshots/guide/emptyaction.png)
 
 - Other than that just place the appropriate haptic action in the appropriate spot!
 
-### But Wait it’s Broke!
+### But wait it’s broke!
 
-- We recommend a Separate bind for every action. Multiple actions to one bind can cause un-predictable behavior.
+- We recommend a separate bind for every action. Multiple actions to one bind can cause un-predictable behavior.
 
 ![Multiple Actions](screenshots/guide/multipleactions.png)
 
