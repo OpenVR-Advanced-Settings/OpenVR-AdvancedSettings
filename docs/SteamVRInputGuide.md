@@ -15,7 +15,7 @@ All the types mean to you is which physical buttons can be bound to which action
 ## Okay Cool? How do I do this?
 
 1. Go to SteamVR dashboard->Steam->Controller Bindings OR go to http://127.0.0.1:8998/dashboard/controllerbinding.html from a desktop browser WHILE steamVR is running.
-2. Select your application you want to modify keybinds (Advanced Settings will currently always be at the bottom)
+2. Select the application you want to modify keybinds for (Advanced Settings will currently always be at the bottom)
 3. Select your controller (the controller must be on).
 4. Select your binding.
 5. Now we are ready to bind our actions!
@@ -24,16 +24,16 @@ All the types mean to you is which physical buttons can be bound to which action
 
 ![Binding Overview](screenshots/guide/bindingoverview.png)
 
-- A – Action sets, these tabs essentially let programmers have different keybinds for different events… say you may want different controls if you are driving a car versus running around. [In Advanced Settings we simply use them as a grouping utility, and ALL action sets are active ALL the time.]
-- B – Input options – your “buttons”
-- C – Chords/ Special Binds. More on these later.
+- A – Action sets. These tabs essentially let programmers have different keybinds for different scenarios. You may want different controls when you are driving a car versus running around. In Advanced Settings we simply use them as a grouping utility, and ALL action sets are active ALL the time. 
+- B – Input options – your "buttons"
+- C – Chords/Special Binds. More on these later.
 - D – Controller Diagram, visually shows you the button location on a depiction of the controller
 
 ### My First Bind
 
-In this example we are going to use the "grip" button on a vive wand.
+In this example we are going to use the "grip" button on a vive wand to play the next song on a media player.
 
-- First WE click the  [+] on the grip line to create an emtpy binding
+- First we click the [+] on the grip line to create an emtpy binding.
 
 ![Grip Plus](screenshots/guide/gripplus.png)
 
@@ -41,32 +41,33 @@ In this example we are going to use the "grip" button on a vive wand.
 
 ![Button Type](screenshots/guide/buttontype.png)
 
-  - Button – action is active when button is pressed
-  - Toggle Button – Action toggles state when button is pressed i.e. on until pressed again
-  - Set Analog Action – for Actions that are not binary i.e. trigger is pressed 50%
-- Now we select our action for the button “click” By Clicking the “none” box.
-- Upon Clicking it a popup will let us choose the desired action.
+- Button – Action is active when button is pressed.
+- Toggle Button – Action toggles state when button is pressed i.e. on until pressed again.
+- Set Analog Action – Action that are not binary i.e. trigger is pressed 50%
+- Select the "Button" option.
 
 ![Action List](screenshots/guide/actionlist.png)
 
-- Now Simply Click the Checkmark to save changes, and you should be good to go!
+- In the next menu choose "Play Next Track".
+- Now simply click the checkmark to save changes, and you should be good to go!
 
 ### Advanced Bindings
 
-And you thought you were done?
+The guide above will satisfy the binding needs of 90% of people.
+Below are described some behaviors that aren't strictly necessary for using the application, but could improve your experience.
 
-- First we will start by editing an action, hover over a set action and click the pen
+- First we will start by editing an action, hover over a set action and click the pen.
 
-![Edit Action](screenshots/guide/actionlist.png)
+![Edit Action](screenshots/guide/editaction.png)
 
 - Now you will notice two important things the “more options” and the cog.
 - The Cog allows you to set up haptics for activating an action 
 
 ![Edit Action Haptics](screenshots/guide/actionhaptics.png)
 
-  - Amplitude - how powerful 0-100% the haptics should be.
-  - Duration – how long it will last 0-4 seconds.
-  - Frequency – The frequency/”feel” of the vibration
+- Amplitude - how powerful 0-100% the haptics should be.
+- Duration – how long it will last 0-4 seconds.
+- Frequency – The frequency/”feel” of the vibration
 - But What about the “more options?!”
 
 ![More Options](screenshots/guide/moreoptions.png)
