@@ -2,24 +2,23 @@
 
 ## What is SteamVR Input?
 
-- A universal keybind system for all controllers (in steamVR)
-- A way for You to share/find keybind layouts.
-- A way for developers to easily program for all controllers [needs a driver]
+- A universal keybind system for all controllers (in steamVR).
+- A way for you to share/find keybind layouts.
+- A way for developers to easily program for all controllers [needs a driver].
 
 ## What do I need to know?
 
-- You don’t bind buttons like a/b. you bind “actions”
-- An action is simply just that an action…. Like “jump,” “shoot,” or “interact”
-  - Action Have Types such as : Digital (on/off), Analog (range of values 0-100 say), or special ones like Vibration (specifically for haptics)
+- You don’t bind buttons like "a" or "b", you bind actions like "jump", "shoot" or "interact".
+- Actions have types such as: Digital (on/off), Analog (range of values), or special ones like Vibration (specifically for haptics).
+All the types mean to you is which physical buttons can be bound to which actions.
 
 ## Okay Cool? How do I do this?
 
-1. Go to SteamVR dashboard->Steam->Controller Bindings OR go to http://127.0.0.1:8998/dashboard/controllerbinding.html from a desktop browser WHILE steamVR is running
-(pic)
+1. Go to SteamVR dashboard->Steam->Controller Bindings OR go to http://127.0.0.1:8998/dashboard/controllerbinding.html from a desktop browser WHILE steamVR is running.
 2. Select your application you want to modify keybinds (Advanced Settings will currently always be at the bottom)
-3. Select your Controller, (the controller must be on)
+3. Select your controller (the controller must be on).
 4. Select your binding.
-5. Now We Are Ready to Bind our Actions!
+5. Now we are ready to bind our actions!
 
 ### Binding UI
 
