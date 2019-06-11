@@ -102,9 +102,9 @@ void sendKeyPress( const Token token,
     }
 
     LOG( INFO ) << "Pressing key:";
-    LOG( INFO ) << token;
+    LOG( INFO ) << static_cast<int>( token );
     LOG( INFO ) << "Status:";
-    LOG( INFO ) << status;
+    LOG( INFO ) << static_cast<int>( status );
 
     XTestFakeKeyEvent( display, tokenToKeyCode( token, display ), keyDown, 0 );
 }
