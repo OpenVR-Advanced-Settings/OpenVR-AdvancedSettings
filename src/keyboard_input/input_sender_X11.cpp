@@ -101,6 +101,11 @@ void sendKeyPress( const Token token,
         keyDown = true;
     }
 
+    LOG( INFO ) << "Pressing key:";
+    LOG( INFO ) << token;
+    LOG( INFO ) << "Status:";
+    LOG( INFO ) << status;
+
     XTestFakeKeyEvent( display, tokenToKeyCode( token, display ), keyDown, 0 );
 }
 
