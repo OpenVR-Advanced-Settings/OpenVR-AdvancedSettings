@@ -611,6 +611,25 @@ void OverlayController::processPushToTalkBindings()
 {
     const auto pushToTalkCannotChange = !m_audioTabController.pttChangeValid();
     const auto pushToTalkEnabled = m_audioTabController.pttEnabled();
+
+    const auto proxSensorActivated = m_actions.proxState();
+    const auto useProxSensor = m_audioTabController.micProximitySensorCanMute();
+
+    if ( useProxSensor )
+    {
+        if ( !proxSensorActivated )
+        {
+            m_audioTabController.setMicMuted( true );
+            return;
+        }
+        // strictly speaking this is not the most elegant solution, but should
+        // work well enough.
+        else if ( !pushToTalkEnabled )
+        {
+            m_audioTabController.setMicMuted( false );
+        }
+    }
+
     if ( pushToTalkCannotChange || !pushToTalkEnabled )
     {
         return;
@@ -618,6 +637,8 @@ void OverlayController::processPushToTalkBindings()
 
     const auto pushToTalkButtonActivated = m_actions.pushToTalk();
     const auto pushToTalkCurrentlyActive = m_audioTabController.pttActive();
+    // TODO handle if no prox sensor on HMD
+
     if ( pushToTalkButtonActivated && !pushToTalkCurrentlyActive )
     {
         m_audioTabController.startPtt();
@@ -677,6 +698,8 @@ void OverlayController::processInputBindings()
     processChaperoneBindings();
 
     processKeyboardBindings();
+
+    // TODO prox sensor shenanigans!
 }
 
 // vsync implementation:

@@ -5,12 +5,12 @@
   "app_key" : "ovras-team.advancedsettings",
   "bindings":
   {
-   "/actions/haptics" : {
+   "/actions/haptic" : {
           "sources" : [
             {
                "inputs" : {
                   "click" : {
-                     "output" : "/actions/haptics/in/ProxSensor"
+                     "output" : "/actions/haptic/in/ProxSensor"
                   }
                },
                "mode" : "button",
