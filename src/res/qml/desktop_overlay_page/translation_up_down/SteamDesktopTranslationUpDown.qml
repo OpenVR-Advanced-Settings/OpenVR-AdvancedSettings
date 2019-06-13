@@ -10,6 +10,7 @@ FullWidthSliderBox {
     lowerLimit: -4.0
     upperLimit: 4.0
     sliderStepSize: 0.10
+    kbUID: 602
 
     function onValueChanged(value) {
         DesktopOverlay.height = value

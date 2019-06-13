@@ -11,6 +11,7 @@ GroupBox {
     property alias sliderValue: steamDesktopForwardSlider.value
     property alias lowerLimit: steamDesktopForwardSlider.from
     property alias upperLimit: steamDesktopForwardSlider.to
+    property alias kbUID: steamDesktopForwardText.keyBoardUID
 
 
     function onValueChanged(value) {
