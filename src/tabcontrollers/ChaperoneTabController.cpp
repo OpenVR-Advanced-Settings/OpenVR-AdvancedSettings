@@ -1750,38 +1750,6 @@ void ChaperoneTabController::setProxState( bool value )
     m_isProxActive = value;
 }
 
-void ChaperoneTabController::initProxSensor()
-{
-    vr::ETrackedPropertyError error;
-    bool hasProx = vr::VRSystem()->GetBoolTrackedDeviceProperty(
-        vr::TrackedDeviceClass_HMD,
-        vr::Prop_ContainsProximitySensor_Bool,
-        &error );
-
-    LOG( ERROR ) << "Error when checking for Prox Sensor: "
-                 << vr::VRSystem()->GetPropErrorNameFromEnum( error );
-    if ( hasProx )
-    {
-        LOG( INFO ) << "HMD has prox sensor";
-        if ( error == vr::TrackedProp_Success )
-        {
-            m_HMDHasProx = true;
-        }
-        else
-        {
-            m_HMDHasProx = false;
-            LOG( ERROR ) << "Error when checking for Prox Sensor: "
-                         << vr::VRSystem()->GetPropErrorNameFromEnum( error );
-            LOG( INFO ) << "Assuming no Prox Sensor, Chaperone warnings will "
-                           "not disable via prox sensor";
-        }
-    }
-    else
-    {
-        LOG( INFO ) << "HMD does not have proximity Sensor";
-    }
-}
-
 void ChaperoneTabController::shutdown()
 {
     if ( m_enableChaperoneSwitchToBeginner

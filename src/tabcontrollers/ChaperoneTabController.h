@@ -178,8 +178,6 @@ private:
     bool m_isProxActive = false;
     bool m_HMDHasProx = false;
 
-    void initProxSensor();
-
     int m_updateTicksChaperoneReload = 0;
 
     vr::VRActionHandle_t m_rightActionHandle;
