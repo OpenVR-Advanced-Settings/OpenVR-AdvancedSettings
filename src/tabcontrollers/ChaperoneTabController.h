@@ -175,7 +175,7 @@ private:
 
     bool m_isHapticGood = true;
     bool m_isHMDActive = false;
-    bool m_isProxActive = true;
+    bool m_isProxActive = false;
     bool m_HMDHasProx = false;
 
     void initProxSensor();
