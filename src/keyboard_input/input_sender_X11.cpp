@@ -3,7 +3,7 @@
 #include <X11/Intrinsic.h>
 #include <X11/extensions/XTest.h>
 
-unsigned int tokenToKeyCode( const Token token, Display* const display )
+unsigned int tokenToKeyCode( const Token token )
 {
     switch ( token )
     {
@@ -175,7 +175,7 @@ void sendKeyPress( const Token token,
     LOG( INFO ) << "Status:";
     LOG( INFO ) << static_cast<int>( status );
 
-    XTestFakeKeyEvent( display, tokenToKeyCode( token, display ), keyDown, 0 );
+    XTestFakeKeyEvent( display, tokenToKeyCode( token ), keyDown, 0 );
 }
 
 void sendTokensAsInput( const std::vector<Token> tokens )
