@@ -5,13 +5,82 @@
 
 unsigned int tokenToKeyCode( const Token token, Display* const display )
 {
-    if ( isLiteralKey( token ) )
-    {
-        return XKeysymToKeycode( display, static_cast<KeySym>( token ) );
-    }
-
     switch ( token )
     {
+    case Token::KEY_a:
+        return XK_a;
+    case Token::KEY_b:
+        return XK_b;
+    case Token::KEY_c:
+        return XK_c;
+    case Token::KEY_d:
+        return XK_d;
+    case Token::KEY_e:
+        return XK_e;
+    case Token::KEY_f:
+        return XK_f;
+    case Token::KEY_g:
+        return XK_g;
+    case Token::KEY_h:
+        return XK_h;
+    case Token::KEY_i:
+        return XK_i;
+    case Token::KEY_j:
+        return XK_j;
+    case Token::KEY_k:
+        return XK_k;
+    case Token::KEY_l:
+        return XK_l;
+    case Token::KEY_m:
+        return XK_m;
+    case Token::KEY_n:
+        return XK_n;
+    case Token::KEY_o:
+        return XK_o;
+    case Token::KEY_p:
+        return XK_p;
+    case Token::KEY_q:
+        return XK_q;
+    case Token::KEY_r:
+        return XK_r;
+    case Token::KEY_s:
+        return XK_s;
+    case Token::KEY_t:
+        return XK_t;
+    case Token::KEY_u:
+        return XK_u;
+    case Token::KEY_v:
+        return XK_v;
+    case Token::KEY_w:
+        return XK_w;
+    case Token::KEY_x:
+        return XK_x;
+    case Token::KEY_y:
+        return XK_y;
+    case Token::KEY_z:
+        return XK_z;
+
+    case Token::KEY_0:
+        return XK_0;
+    case Token::KEY_1:
+        return XK_1;
+    case Token::KEY_2:
+        return XK_2;
+    case Token::KEY_3:
+        return XK_3;
+    case Token::KEY_4:
+        return XK_4;
+    case Token::KEY_5:
+        return XK_5;
+    case Token::KEY_6:
+        return XK_6;
+    case Token::KEY_7:
+        return XK_7;
+    case Token::KEY_8:
+        return XK_8;
+    case Token::KEY_9:
+        return XK_9;
+
     case Token::KEY_F1:
         return XK_F1;
     case Token::KEY_F2:
