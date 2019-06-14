@@ -120,6 +120,7 @@ void sendTokensAsInput( const std::vector<Token> tokens )
         if ( isModifier( token ) )
         {
             sendKeyPress( token, KeyStatus::Down, display );
+            heldInputs.push_back( token );
             continue;
         }
 
