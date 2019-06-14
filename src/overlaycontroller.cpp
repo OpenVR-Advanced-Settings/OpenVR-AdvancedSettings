@@ -33,7 +33,25 @@ OverlayController::OverlayController( bool desktopMode,
                                       QQmlEngine& qmlEngine )
     : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ), m_actions()
 {
-    m_runtimePathUrl = QUrl::fromLocalFile( vr::VR_RuntimePath() );
+    // Arbitrarily chosen Max Length of Directory path, should be sufficient for
+    // Any set-up
+    const uint32_t maxLength = 16192;
+    uint32_t requiredLength;
+
+    char tempRuntimePath[maxLength];
+    bool pathIsGood
+        = vr::VR_GetRuntimePath( tempRuntimePath, maxLength, &requiredLength );
+
+    // Throw Error If over 16k characters in path string
+    if ( !pathIsGood )
+    {
+        LOG( ERROR ) << "Error Finding VR Runtime Path, Attempting Recovery: ";
+        uint32_t maxLengthRe = requiredLength;
+        LOG( INFO ) << "Open VR reporting Required path length of: "
+                    << maxLengthRe;
+    }
+
+    m_runtimePathUrl = QUrl::fromLocalFile( tempRuntimePath );
     LOG( INFO ) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
     QString activationSoundFile = m_runtimePathUrl.toLocalFile().append(
@@ -587,12 +605,32 @@ void OverlayController::processChaperoneBindings()
         m_chaperoneTabController.setDisableChaperone(
             !( m_chaperoneTabController.disableChaperone() ), true );
     }
+    m_chaperoneTabController.setProxState( m_actions.proxState() );
 }
 
 void OverlayController::processPushToTalkBindings()
 {
     const auto pushToTalkCannotChange = !m_audioTabController.pttChangeValid();
     const auto pushToTalkEnabled = m_audioTabController.pttEnabled();
+
+    const auto proxSensorActivated = m_actions.proxState();
+    const auto useProxSensor = m_audioTabController.micProximitySensorCanMute();
+
+    if ( useProxSensor )
+    {
+        if ( !proxSensorActivated )
+        {
+            m_audioTabController.setMicMuted( true );
+            return;
+        }
+        // strictly speaking this is not the most elegant solution, but should
+        // work well enough.
+        else if ( !pushToTalkEnabled )
+        {
+            m_audioTabController.setMicMuted( false );
+        }
+    }
+
     if ( pushToTalkCannotChange || !pushToTalkEnabled )
     {
         return;
@@ -600,6 +638,7 @@ void OverlayController::processPushToTalkBindings()
 
     const auto pushToTalkButtonActivated = m_actions.pushToTalk();
     const auto pushToTalkCurrentlyActive = m_audioTabController.pttActive();
+
     if ( pushToTalkButtonActivated && !pushToTalkCurrentlyActive )
     {
         m_audioTabController.startPtt();
