@@ -170,11 +170,6 @@ void sendKeyPress( const Token token,
         keyDown = true;
     }
 
-    LOG( INFO ) << "Pressing key:";
-    LOG( INFO ) << static_cast<int>( token );
-    LOG( INFO ) << "Status:";
-    LOG( INFO ) << static_cast<int>( status );
-
     XTestFakeKeyEvent( display,
                        XKeysymToKeycode( display, tokenToKeySym( token ) ),
                        keyDown,
