@@ -229,14 +229,14 @@ void FixFloorTabController::eventLoopTick(
 int FixFloorTabController::getControllerType(
     vr::TrackedDeviceIndex_t controllerRole )
 {
-    int maxLength = 64;
+    const uint32_t maxLength = 64;
     /*
     vr::k_unMaxPropertyStringSize is Theoretical Max Size, however it is
     1024*32, and its pretty unrealistic to expect a controller name to be that
     big. We are just going to set 64 as an arbitrary size, and print error to
     log if too small
     */
-    char* controllerTypeString = new char[maxLength];
+    char controllerTypeString[maxLength];
     vr::ETrackedPropertyError error;
     auto stringLength = vr::VRSystem()->GetStringTrackedDeviceProperty(
         controllerRole,
@@ -255,15 +255,12 @@ int FixFloorTabController::getControllerType(
     }
     else if ( strcmp( controllerTypeString, "knuckles" ) == 0 )
     {
-        delete[] controllerTypeString;
         return Controller_Knuckles;
     }
     else if ( strcmp( controllerTypeString, "vive_controller" ) == 0 )
     {
-        delete[] controllerTypeString;
         return Controller_Wand;
     }
-    delete[] controllerTypeString;
     return Controller_Unknown;
 }
 

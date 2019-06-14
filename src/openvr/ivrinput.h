@@ -55,7 +55,7 @@ namespace action_keys
 
     constexpr auto hapticsLeft = "/actions/haptic/out/HapticsLeft";
     constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
-    constexpr auto proxSensor = "/actions/misc/in/ProxSensor";
+    constexpr auto proxSensor = "/actions/haptic/in/ProxSensor";
 
     constexpr auto chaperoneToggle = "/actions/misc/in/ChaperoneToggle";
 

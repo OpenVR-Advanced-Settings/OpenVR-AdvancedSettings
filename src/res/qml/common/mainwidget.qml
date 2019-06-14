@@ -7,6 +7,7 @@ import "../audio_page"
 import "../motion_page"
 import "../video_page"
 import "../desktop_overlay_page"
+import "../chaperone_page"
 
 Rectangle {
     id: root

@@ -42,8 +42,8 @@ void ChaperoneTabController::initStage1()
     m_fadeDistanceRemembered
         = settings->value( "fadeDistanceRemembered", 0.5f ).toFloat();
     settings->endGroup();
-    // initHaptics();
     reloadChaperoneProfiles();
+
     eventLoopTick( nullptr, 0.0f, 0.0f, 0.0f );
 }
 
@@ -362,6 +362,15 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     vr::VRSystem()->GetControllerState( vr::k_unTrackedDeviceIndex_Hmd,
                                         &hmdState,
                                         sizeof( vr::VRControllerState_t ) );
+    // If proximity Sensor is True (only can be true if exists)
+    // Then use prox sensor else use hmd activity level.
+    // Needed as detection since the "has prox sensor" property is unreliable.
+    // Note m_isProxActive should only ever be set to true if there is a prox
+    // sensor AND its currently on.
+
+    bool proxSensorOverrideState = false;
+    m_HMDHasProx ? ( proxSensorOverrideState = m_isProxActive )
+                 : ( proxSensorOverrideState = m_isHMDActive );
 
     // Switch to Beginner Mode
     if ( m_enableChaperoneSwitchToBeginner )
@@ -439,7 +448,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
         float activationDistance = m_chaperoneHapticFeedbackDistance
                                    * m_chaperoneVelocityModifierCurrent;
 
-        if ( distance <= activationDistance && m_isHMDActive )
+        if ( distance <= activationDistance && proxSensorOverrideState )
         {
             if ( !m_chaperoneHapticFeedbackActive )
             {
@@ -493,7 +502,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                     this );
             }
         }
-        else if ( ( distance > activationDistance || !m_isHMDActive )
+        else if ( ( distance > activationDistance || !proxSensorOverrideState )
                   && m_chaperoneHapticFeedbackActive )
         {
             m_chaperoneHapticFeedbackActive = false;
@@ -507,7 +516,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
         float activationDistance = m_chaperoneAlarmSoundDistance
                                    * m_chaperoneVelocityModifierCurrent;
 
-        if ( distance <= activationDistance && m_isHMDActive )
+        if ( distance <= activationDistance && proxSensorOverrideState )
         {
             if ( !m_chaperoneAlarmSoundActive )
             {
@@ -529,7 +538,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                 parent->setAlarm01SoundVolume( 1.0f );
             }
         }
-        else if ( ( distance > activationDistance || !m_isHMDActive )
+        else if ( ( distance > activationDistance || !proxSensorOverrideState )
                   && m_chaperoneAlarmSoundActive )
         {
             parent->cancelAlarm01Sound();
@@ -1311,11 +1320,14 @@ void ChaperoneTabController::setDisableChaperone( bool value, bool notify )
     }
 }
 
-void ChaperoneTabController::flipOrientation()
+void ChaperoneTabController::flipOrientation( double degrees )
 {
     parent->m_moveCenterTabController.reset();
+    double rad = 0;
+    rad = degrees * ( M_PI / 180.0 );
+
     parent->RotateUniverseCenter( vr::TrackingUniverseStanding,
-                                  static_cast<float>( M_PI ) );
+                                  static_cast<float>( rad ) );
     parent->m_moveCenterTabController.zeroOffsets();
 }
 
@@ -1726,6 +1738,16 @@ void ChaperoneTabController::setLeftInputHandle(
     vr::VRInputValueHandle_t handle )
 {
     m_leftInputHandle = handle;
+}
+
+void ChaperoneTabController::setProxState( bool value )
+{
+    if ( value )
+    {
+        m_HMDHasProx = true;
+    }
+
+    m_isProxActive = value;
 }
 
 void ChaperoneTabController::shutdown()

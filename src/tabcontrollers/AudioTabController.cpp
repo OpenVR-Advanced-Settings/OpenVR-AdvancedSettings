@@ -172,43 +172,6 @@ void AudioTabController::eventLoopTick()
 
     if ( settingsUpdateCounter >= k_audioSettingsUpdateCounter )
     {
-        // Not usable until OpenVR 1.4.x?
-        // Will require updates to action based system
-        /*
-        if ( m_micProximitySensorCanMute )
-        {
-            vr::VRControllerState_t controllerState;
-            if ( vr::VRSystem()->GetControllerState(
-                     vr::k_unTrackedDeviceIndex_Hmd,
-                     &controllerState,
-                     sizeof( vr::VRControllerState_t ) ) )
-            {
-                if ( ( controllerState.ulButtonPressed
-                       & vr::ButtonMaskFromId( vr::k_EButton_ProximitySensor ) )
-                     == 0 )
-                {
-                    if ( !m_micMuted )
-                    {
-                        setMicMuted( true );
-                    }
-                }
-                else
-                {
-                    if ( m_micMuted )
-                    {
-                        setMicMuted( false );
-                    }
-                }
-            }
-            else
-            {
-                if ( !parent->isDashboardVisible() )
-                {
-                    LOG( ERROR ) << "Could not read proximity sensor!";
-                }
-            }
-        }
-        */
         vr::EVRSettingsError vrSettingsError;
         char mirrorDeviceId[1024];
         vr::VRSettings()->GetString(
@@ -623,6 +586,9 @@ void AudioTabController::setMicDeviceIndex( int index, bool notify )
         if ( index >= 0
              && static_cast<size_t>( index ) < m_recordingDevices.size() )
         {
+            // un-mute mic before switching to ensure on exit all recording
+            // devices will be un-muted
+            setMicMuted( false, false );
             // code to just change Mic
             audioManager->setMicDevice(
                 m_recordingDevices[static_cast<size_t>( index )].first,

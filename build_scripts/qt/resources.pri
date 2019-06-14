@@ -16,6 +16,8 @@ DISTFILES += \
     src/res/qml/audio_page/* \
     src/res/qml/ChaperonePage.qml \
     src/res/qml/ChaperoneWarningsPage.qml \
+    src/res/qml/chaperone_page/* \
+    src/res/qml/chaperone_page/change_orientation/* \
     src/res/qml/FixFloorPage.qml \
     src/res/qml/PlayspacePage.qml \
     src/res/qml/motion_page/* \
