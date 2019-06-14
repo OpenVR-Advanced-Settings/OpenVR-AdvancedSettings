@@ -302,7 +302,7 @@ bool SteamIVRInput::chaperoneToggle()
 
 bool SteamIVRInput::proxState()
 {
-    return isDigitalActionActivatedConstant( m_pushToTalk );
+    return isDigitalActionActivatedConstant( m_proxSensor );
 }
 
 bool SteamIVRInput::keyboardOne()
