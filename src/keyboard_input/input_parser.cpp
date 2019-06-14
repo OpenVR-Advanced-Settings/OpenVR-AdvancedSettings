@@ -372,6 +372,27 @@ bool isLiteralKey( const Token token ) noexcept
     case Token::KEY_z:
         return true;
 
+    case Token::KEY_0:
+        return true;
+    case Token::KEY_1:
+        return true;
+    case Token::KEY_2:
+        return true;
+    case Token::KEY_3:
+        return true;
+    case Token::KEY_4:
+        return true;
+    case Token::KEY_5:
+        return true;
+    case Token::KEY_6:
+        return true;
+    case Token::KEY_7:
+        return true;
+    case Token::KEY_8:
+        return true;
+    case Token::KEY_9:
+        return true;
+
     default:
         return false;
     }
