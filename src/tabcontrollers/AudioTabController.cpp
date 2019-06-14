@@ -586,6 +586,9 @@ void AudioTabController::setMicDeviceIndex( int index, bool notify )
         if ( index >= 0
              && static_cast<size_t>( index ) < m_recordingDevices.size() )
         {
+            // un-mute mic before switching to ensure on exit all recording
+            // devices will be un-muted
+            setMicMuted( false, false );
             // code to just change Mic
             audioManager->setMicDevice(
                 m_recordingDevices[static_cast<size_t>( index )].first,
