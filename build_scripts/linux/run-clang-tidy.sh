@@ -1,10 +1,10 @@
 set +e
-clang-tidy --version
+clang-tidy-7 --version
 
 ERROR=0
 for file in $(find ../src -name "*.cpp"); do
     echo $file
-    clang-tidy $file
+    clang-tidy-7 $file
 
     EXIT=$?
     if [[ $EXIT != 0 ]]; then

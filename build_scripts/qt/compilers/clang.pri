@@ -1,14 +1,36 @@
-# Makes sure the "clang++" command used to invoke the compilation is abvove version 8.
-# If it's at or above version 7 then we can use the default clang++ otherwise we'll
-# specifically need clang++-8.
-CLANG_VERSION = $$system("clang++ -dumpversion")
-!greaterThan(CLANG_VERSION, 7) {
-    message('clang++' version is not above 8. Manually using 'clang++-8'.)
-    !system(clang++-8 --version) {
-        error(At least clang++-8 required.)
+# comments are the value of CLANG_VERSION
+CLANG_VERSION = $$system("clang --version | grep 'clang version'")
+# clang version 6.0.0-1ubuntu2 (tags/RELEASE_600/final)
+CLANG_VERSION = $$split(CLANG_VERSION, ' ')
+# CLANG_VERSION is now a list, this is shown as spaces in QMAKE
+# clang version 6.0.0-1ubuntu2 (tags/RELEASE_600/final)
+CLANG_VERSION = $$member(CLANG_VERSION, 2)
+# 6.0.0-1ubuntu2
+CLANG_VERSION = $$split(CLANG_VERSION, '.')
+# 6 0 0-1ubuntu2
+CLANG_VERSION = $$member(CLANG_VERSION, 0)
+# 6
+
+greaterThan(CLANG_VERSION, 4) {
+    message('clang' version is above 4. Using regular clang.)
+}
+else {
+    system("clang-5 --version") {
+        QMAKE_CXX = clang-5
+        message('clang-5' found.)
     }
-    #clang++-8 is needed for C++17 features. travis does not supply this by default.
-    QMAKE_CXX = clang++-8
+    system("clang-6 --version") {
+        QMAKE_CXX = clang-6
+        message('clang-6' found.)
+    }
+    system("clang-7 --version") {
+        QMAKE_CXX = clang-7
+        message('clang-7' found.)
+    }
+    system("clang-8 --version") {
+        QMAKE_CXX = clang-8
+        message('clang-8' found.)
+    }
 }
 
 include(clang-gcc-common-switches.pri)
