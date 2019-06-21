@@ -1,6 +1,14 @@
-version: 2
+workflows:
+    version: 2
+    gcc_1:
+        jobs:
+          - gcc
+    clang_1:
+        jobs:
+          - clang
+
 jobs:
-    build:
+    gcc:
         docker:
             - image: "ubuntu:xenial"
         steps:
@@ -47,4 +55,53 @@ jobs:
             - run:
                 name: Run build script
                 command: './build_scripts/linux/build_linux.sh'
-
+    clang:
+        docker:
+            - image: circleci/buildpack-deps:xenial
+        steps:
+            - checkout
+            - run:
+                name: Set up env vars
+                command: echo 'export QMAKE_SPEC=linux-clang' >> $BASH_ENV; echo 'export QT_SELECT=opt-qt512' >> $BASH_ENV
+            - run:
+                name: Update and upgrade
+                command: 'sudo apt-get update && sudo apt-get upgrade -y'
+            - run:
+                name: Get wget
+                command: 'sudo  apt-get install wget -y; sudo  apt-get install software-properties-common -y'
+            - run:
+                name: Prereqs for clang-format-8
+                command: wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo  apt-key add -; sudo  add-apt-repository 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
+            - run:
+                name: Installing clang-format-8
+                command: ' sudo apt update -qq;  sudo apt install clang-format-8 -y; sudo clang-format-8 --version;'
+            - run:
+                name: Installing clang-8
+                command: 'sudo apt install clang-8 -y; sudo apt install clang -y; clang++ --version;'
+            - run:
+                name: Run clang-format
+                command: 'python ./build_scripts/run-clang-format.py ./src -r --color always --clang-format-executable clang-format-8'
+            - run:
+                name: Install g++-7
+                command: sudo apt-get install -y software-properties-common; sudo add-apt-repository ppa:ubuntu-toolchain-r/test; sudo apt update; sudo apt install g++-7 -y;
+            - run:
+                name: Install required packages
+                command: 'sudo  add-apt-repository ppa:kubuntu-ppa/backports -y;  sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-xenial -y;  sudo apt-get update -qq;  sudo apt-get install build-essential libgl1-mesa-dev -y'
+            - run:
+                name: Install QT packages
+                command: 'sudo apt-get install qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2  qt512tools  qt512base qtchooser -y'
+            - run:
+                name: Install X11 packages
+                command: ' sudo apt-get install libx11-dev libxt-dev libxtst-dev -y'
+            - run:
+                name: Install bear/clang-tidy
+                command: ' sudo apt-get install bear clang-tidy -y'
+            - run:
+                name: Set up QT
+                command: 'qtchooser -install opt-qt512 /opt/qt512/bin/qmake'
+            - run:
+                name: Give build scripts +x
+                command: 'chmod +x ./build_scripts/linux/build_linux.sh; chmod +x ./build_scripts/linux/format.sh; chmod +x ./build_scripts/linux/run-clang-tidy.sh ;chmod +x ./build_scripts/linux/verify_formatting.sh'
+            - run:
+                name: Run build script
+                command: './build_scripts/linux/build_linux.sh'
