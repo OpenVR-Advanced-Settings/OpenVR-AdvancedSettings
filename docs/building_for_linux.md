@@ -132,7 +132,6 @@ export QT_SELECT=opt-qt512
 
 ## Ubuntu 18.04 Bionic
 ```bash
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test
 sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-bionic
 sudo apt update
 sudo apt install g++-7
@@ -166,8 +165,7 @@ The following environmental variables are relevant for building the project.
 | `USE_TIDY`              | If set a compilation database will be created and the project linted. Can only be used with `clang`.  |
 | `NO_X11`              | If set the application will be compiled without X11 specific libraries. This disables certain things like sending keystrokes from VR.  |
 | `NO_DBUS`              | If set the application will be compiled without DBUS specific functionality. This disables certain things like media keys.  |
-
-If an environment variable isn't set a default value will be provided. The default values are shown in the table below.
+| `MAKE_JOBS`              | Argument to `make --jobs`. Defaults to nothing (unlimited amount of jobs).  |
 
 # Building
 
