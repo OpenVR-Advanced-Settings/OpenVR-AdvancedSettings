@@ -42,6 +42,14 @@ MyStackViewPage {
             }
         }
 
+        MyToggleButton {
+            id: universeCenteredRotationToggle
+            text: "Universe-Centered Rotation (Disables HMD Centering)"
+            onCheckedChanged: {
+                MoveCenterTabController.setUniverseCenteredRotation(checked, true)
+            }
+        }
+
         Item {
             Layout.fillHeight: true
         }
@@ -51,6 +59,7 @@ MyStackViewPage {
             forceReviveToggle.checked = SettingsTabController.forceRevivePage
             allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
             oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
+            universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
         }
 
         Connections {
@@ -70,6 +79,9 @@ MyStackViewPage {
             }
             onOldStyleMotionChanged: {
                 oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
+            }
+            onUniverseCenteredRotationChanged: {
+                universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
             }
         }
     }

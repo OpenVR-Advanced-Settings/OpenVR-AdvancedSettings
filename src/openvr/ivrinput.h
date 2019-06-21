@@ -43,6 +43,8 @@ namespace action_keys
     constexpr auto heightToggle = "/actions/motion/in/HeightToggle";
     constexpr auto snapTurnLeft = "/actions/motion/in/SnapTurnLeft";
     constexpr auto snapTurnRight = "/actions/motion/in/SnapTurnRight";
+    constexpr auto smoothTurnLeft = "/actions/motion/in/SmoothTurnLeft";
+    constexpr auto smoothTurnRight = "/actions/motion/in/SmoothTurnRight";
 
     constexpr auto xAxisLockToggle = "/actions/misc/in/XAxisLockToggle";
     constexpr auto yAxisLockToggle = "/actions/misc/in/YAxisLockToggle";
@@ -135,6 +137,8 @@ public:
     bool resetOffsets();
     bool snapTurnLeft();
     bool snapTurnRight();
+    bool smoothTurnLeft();
+    bool smoothTurnRight();
     bool xAxisLockToggle();
     bool yAxisLockToggle();
     bool zAxisLockToggle();
@@ -201,6 +205,8 @@ private:
     DigitalAction m_resetOffsets;
     DigitalAction m_snapTurnLeft;
     DigitalAction m_snapTurnRight;
+    DigitalAction m_smoothTurnLeft;
+    DigitalAction m_smoothTurnRight;
     DigitalAction m_xAxisLockToggle;
     DigitalAction m_yAxisLockToggle;
     DigitalAction m_zAxisLockToggle;
