@@ -36,6 +36,8 @@ class MoveCenterTabController : public QObject
                     tempRotationChanged )
     Q_PROPERTY( int snapTurnAngle READ snapTurnAngle WRITE setSnapTurnAngle
                     NOTIFY snapTurnAngleChanged )
+    Q_PROPERTY( int smoothTurnRate READ smoothTurnRate WRITE setSmoothTurnRate
+                    NOTIFY smoothTurnRateChanged )
     Q_PROPERTY( bool adjustChaperone READ adjustChaperone WRITE
                     setAdjustChaperone NOTIFY adjustChaperoneChanged )
     Q_PROPERTY( bool moveShortcutRight READ moveShortcutRight WRITE
@@ -75,6 +77,9 @@ class MoveCenterTabController : public QObject
                     setAllowExternalEdits NOTIFY allowExternalEditsChanged )
     Q_PROPERTY( bool oldStyleMotion READ oldStyleMotion WRITE setOldStyleMotion
                     NOTIFY oldStyleMotionChanged )
+    Q_PROPERTY(
+        bool universeCenteredRotation READ universeCenteredRotation WRITE
+            setUniverseCenteredRotation NOTIFY universeCenteredRotationChanged )
 
 private:
     OverlayController* parent;
@@ -91,6 +96,7 @@ private:
     int m_oldRotation = 0;
     int m_tempRotation = 0;
     int m_snapTurnAngle = 4500;
+    int m_smoothTurnRate = 100;
     bool m_adjustChaperone = true;
     bool m_moveShortcutRightPressed = false;
     bool m_moveShortcutLeftPressed = false;
@@ -151,6 +157,7 @@ private:
     bool m_showLogMatricesButton = false;
     bool m_allowExternalEdits = false;
     bool m_oldStyleMotion = false;
+    bool m_universeCenteredRotation = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
@@ -190,6 +197,7 @@ public:
     int rotation() const;
     int tempRotation() const;
     int snapTurnAngle() const;
+    int smoothTurnRate() const;
     bool adjustChaperone() const;
     bool moveShortcutRight() const;
     bool moveShortcutLeft() const;
@@ -209,6 +217,7 @@ public:
     bool showLogMatricesButton() const;
     bool allowExternalEdits() const;
     bool oldStyleMotion() const;
+    bool universeCenteredRotation() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
     void incomingSeatedReset();
@@ -230,6 +239,8 @@ public:
     void resetOffsets( bool resetOffsetsJustPressed );
     void snapTurnLeft( bool snapTurnLeftJustPressed );
     void snapTurnRight( bool snapTurnRightJustPressed );
+    void smoothTurnLeft( bool smoothTurnLeftActive );
+    void smoothTurnRight( bool smoothTurnRightActive );
     void xAxisLockToggle( bool xAxisLockToggleJustPressed );
     void yAxisLockToggle( bool yAxisLockToggleJustPressed );
     void zAxisLockToggle( bool zAxisLockToggleJustPressed );
@@ -245,6 +256,7 @@ public slots:
     void setRotation( int value, bool notify = true );
     void setTempRotation( int value, bool notify = true );
     void setSnapTurnAngle( int value, bool notify = true );
+    void setSmoothTurnRate( int value, bool notify = true );
 
     void setAdjustChaperone( bool value, bool notify = true );
     void setMoveShortcutRight( bool value, bool notify = true );
@@ -270,6 +282,7 @@ public slots:
     void setShowLogMatricesButton( bool value, bool notify = true );
     void setAllowExternalEdits( bool value, bool notify = true );
     void setOldStyleMotion( bool value, bool notify = true );
+    void setUniverseCenteredRotation( bool value, bool notify = true );
 
     void shutdown();
     void reset();
@@ -285,6 +298,7 @@ signals:
     void rotationChanged( int value );
     void tempRotationChanged( int value );
     void snapTurnAngleChanged( int value );
+    void smoothTurnRateChanged( int value );
     void adjustChaperoneChanged( bool value );
     void moveShortcutRightChanged( bool value );
     void moveShortcutLeftChanged( bool value );
@@ -304,6 +318,7 @@ signals:
     void showLogMatricesButtonChanged( bool value );
     void allowExternalEditsChanged( bool value );
     void oldStyleMotionChanged( bool value );
+    void universeCenteredRotationChanged( bool value );
 };
 
 } // namespace advsettings

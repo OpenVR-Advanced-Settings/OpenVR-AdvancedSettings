@@ -24,7 +24,7 @@ GroupBox {
                 id: snapTurnAngleText
                 text: "45°"
                 keyBoardUID: 154
-                Layout.preferredWidth: 150
+                Layout.preferredWidth: 100
                 Layout.leftMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
@@ -39,26 +39,6 @@ GroupBox {
                 }
             }
 
-            Item {
-                Layout.fillWidth: true
-            }
-
-            MyPushButton {
-                id: snapTurnButton15
-                Layout.preferredWidth: 90
-                text:"15°"
-                onClicked: {
-                    MoveCenterTabController.snapTurnAngle = 1500
-                }
-           }
-            MyPushButton {
-                id: snapTurnButton30
-                Layout.preferredWidth: 90
-                text:"30°"
-                onClicked: {
-                    MoveCenterTabController.snapTurnAngle = 3000
-                }
-           }
             MyPushButton {
                 id: snapTurnButton45
                 Layout.preferredWidth: 90
@@ -83,11 +63,41 @@ GroupBox {
                     MoveCenterTabController.snapTurnAngle = 18000
                 }
            }
+
+           Item {
+               Layout.fillWidth: true
+           }
+
+           MyText {
+               text: "Smooth Turn Rate:"
+               horizontalAlignment: Text.AlignRight
+               Layout.rightMargin: 2
+           }
+
+           MyTextField {
+               id: smoothTurnRateText
+               text: "100%"
+               keyBoardUID: 155
+               Layout.preferredWidth: 130
+               Layout.leftMargin: 10
+               horizontalAlignment: Text.AlignHCenter
+               function onInputEvent(input) {
+                   var val = parseInt(input)
+                   if (!isNaN(val)) {
+                       MoveCenterTabController.smoothTurnRate = val
+                       text = MoveCenterTabController.smoothTurnRate + "%"
+                   } else {
+                       text = MoveCenterTabController.smoothTurnRate + "%"
+                   }
+               }
+           }
+
         }
     }
 
     Component.onCompleted: {
         snapTurnAngleText.text = ( Math.round( MoveCenterTabController.snapTurnAngle / 100 ) ) + "°"
+        smoothTurnRateText.text = MoveCenterTabController.smoothTurnRate + "%"
     }
 
     Connections {
@@ -95,6 +105,9 @@ GroupBox {
 
         onSnapTurnAngleChanged: {
             snapTurnAngleText.text = ( Math.round( MoveCenterTabController.snapTurnAngle / 100 ) ) + "°"
+        }
+        onSmoothTurnRateChanged: {
+            smoothTurnRateText.text = MoveCenterTabController.smoothTurnRate + "%"
         }
     }
 }

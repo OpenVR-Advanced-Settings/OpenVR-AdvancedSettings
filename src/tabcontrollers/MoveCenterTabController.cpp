@@ -83,6 +83,11 @@ void MoveCenterTabController::initStage1()
     {
         m_snapTurnAngle = value.toInt();
     }
+    value = settings->value( "smoothTurnRate", m_smoothTurnRate );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_smoothTurnRate = value.toInt();
+    }
     value = settings->value( "heightToggleOffset", m_heightToggleOffset );
     if ( value.isValid() && !value.isNull() )
     {
@@ -132,6 +137,12 @@ void MoveCenterTabController::initStage1()
     if ( value.isValid() && !value.isNull() )
     {
         m_oldStyleMotion = value.toBool();
+    }
+    value = settings->value( "universeCenteredRotation",
+                             m_universeCenteredRotation );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_universeCenteredRotation = value.toBool();
     }
     settings->endGroup();
     m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
@@ -198,6 +209,10 @@ void MoveCenterTabController::outputLogSettings()
     if ( m_oldStyleMotion )
     {
         LOG( INFO ) << "LOADED SETTINGS: Old-Style Motion Enabled";
+    }
+    if ( m_universeCenteredRotation )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Universe-Centered Rotation Enabled";
     }
 }
 
@@ -381,6 +396,16 @@ void MoveCenterTabController::setRotation( int value, bool notify )
 {
     if ( m_rotation != value )
     {
+        if ( m_universeCenteredRotation )
+        {
+            m_rotation = value;
+            if ( notify )
+            {
+                emit rotationChanged( m_rotation );
+            }
+            return;
+        }
+
         double angle = ( value - m_rotation ) * k_centidegreesToRadians;
 
         // Get hmd pose matrix.
@@ -472,6 +497,28 @@ void MoveCenterTabController::setSnapTurnAngle( int value, bool notify )
         if ( notify )
         {
             emit snapTurnAngleChanged( m_snapTurnAngle );
+        }
+    }
+}
+
+int MoveCenterTabController::smoothTurnRate() const
+{
+    return m_smoothTurnRate;
+}
+
+void MoveCenterTabController::setSmoothTurnRate( int value, bool notify )
+{
+    if ( m_smoothTurnRate != value )
+    {
+        m_smoothTurnRate = value;
+        auto settings = OverlayController::appSettings();
+        settings->beginGroup( "playspaceSettings" );
+        settings->setValue( "smoothTurnRate", m_smoothTurnRate );
+        settings->endGroup();
+        settings->sync();
+        if ( notify )
+        {
+            emit smoothTurnRateChanged( m_smoothTurnRate );
         }
     }
 }
@@ -902,6 +949,29 @@ void MoveCenterTabController::setOldStyleMotion( bool value, bool notify )
     }
     LOG( INFO ) << "CHANGED SETTINGS: Old-Style Motion Set: "
                 << m_oldStyleMotion;
+}
+
+bool MoveCenterTabController::universeCenteredRotation() const
+{
+    return m_universeCenteredRotation;
+}
+
+void MoveCenterTabController::setUniverseCenteredRotation( bool value,
+                                                           bool notify )
+{
+    m_universeCenteredRotation = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "universeCenteredRotation",
+                        m_universeCenteredRotation );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit universeCenteredRotationChanged( m_universeCenteredRotation );
+    }
+    LOG( INFO ) << "CHANGED SETTINGS: Universe-Centered Rotation Set: "
+                << m_universeCenteredRotation;
 }
 
 void MoveCenterTabController::modOffsetX( float value, bool notify )
@@ -1780,8 +1850,6 @@ void MoveCenterTabController::snapTurnLeft( bool snapTurnLeftJustPressed )
         return;
     }
 
-    // TODO add interface to configure snap angle.
-    // temporarily hard coded to 45 degrees
     int newRotationAngleDeg = m_rotation - m_snapTurnAngle;
     // Keep angle within -18000 ~ 18000 centidegrees
     if ( newRotationAngleDeg > 18000 )
@@ -1803,9 +1871,55 @@ void MoveCenterTabController::snapTurnRight( bool snapTurnRightJustPressed )
         return;
     }
 
-    // TODO add interface to configure snap angle.
-    // temporarily hard coded to 45 degrees
     int newRotationAngleDeg = m_rotation + m_snapTurnAngle;
+    // Keep angle within -18000 ~ 18000 centidegrees
+    if ( newRotationAngleDeg > 18000 )
+    {
+        newRotationAngleDeg -= 36000;
+    }
+    else if ( newRotationAngleDeg < -18000 )
+    {
+        newRotationAngleDeg += 36000;
+    }
+
+    setRotation( newRotationAngleDeg );
+}
+
+void MoveCenterTabController::smoothTurnLeft( bool smoothTurnLeftActive )
+{
+    if ( !smoothTurnLeftActive )
+    {
+        return;
+    }
+
+    // Activates every tick. m_smoothTurnRate effectively becomes a percentage
+    // of a degree per tick. A setting of 100 would equal 90 degrees/sec or 15
+    // RPM with a framerate of 90fps
+    int newRotationAngleDeg = m_rotation - m_smoothTurnRate;
+    // Keep angle within -18000 ~ 18000 centidegrees
+    if ( newRotationAngleDeg > 18000 )
+    {
+        newRotationAngleDeg -= 36000;
+    }
+    else if ( newRotationAngleDeg < -18000 )
+    {
+        newRotationAngleDeg += 36000;
+    }
+
+    setRotation( newRotationAngleDeg );
+}
+
+void MoveCenterTabController::smoothTurnRight( bool smoothTurnRightActive )
+{
+    if ( !smoothTurnRightActive )
+    {
+        return;
+    }
+
+    // Activates every tick. m_smoothTurnRate effectively becomes a percentage
+    // of a degree per tick. A setting of 100 would equal 90 degrees/sec or 15
+    // RPM with a framerate of 90fps
+    int newRotationAngleDeg = m_rotation + m_smoothTurnRate;
     // Keep angle within -18000 ~ 18000 centidegrees
     if ( newRotationAngleDeg > 18000 )
     {
