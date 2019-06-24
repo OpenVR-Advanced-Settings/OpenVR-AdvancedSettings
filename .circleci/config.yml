@@ -97,6 +97,7 @@ jobs:
             QMAKE_SPEC: linux-clang
             QT_SELECT: opt-qt512
             USE_TIDY: TRUE
+            CLANG_TIDY_EXECUTABLE: clang-tidy-7
             MAKE_JOBS: 2
         docker:
             - image: "ubuntu:xenial"
