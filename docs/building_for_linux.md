@@ -166,6 +166,8 @@ The following environmental variables are relevant for building the project.
 | `NO_X11`              | If set the application will be compiled without X11 specific libraries. This disables certain things like sending keystrokes from VR.  |
 | `NO_DBUS`              | If set the application will be compiled without DBUS specific functionality. This disables certain things like media keys.  |
 | `MAKE_JOBS`              | Argument to `make --jobs`. Defaults to nothing (unlimited amount of jobs).  |
+| `CLANG_TIDY_EXECUTABLE`              | Name of the `clang-tidy` executable. Defaults to `clang-tidy`. Used for specifying a specific version or path, for example `clang-tidy-7`.  |
+
 
 # Building
 
