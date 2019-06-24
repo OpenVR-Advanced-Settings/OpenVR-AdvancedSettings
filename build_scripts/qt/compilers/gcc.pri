@@ -1,14 +1,17 @@
-# Makes sure the "g++" command used to invoke the compilation is abvove version 7.
-# If it's at or above version 7 then we can use the default g++, otherwise we'll
-# specifically need g++-7.
 GCC_VERSION = $$system("g++ -dumpversion")
-!greaterThan(GCC_VERSION, 6) {
-    message('g++' version is not above 7. Manually using 'g++-7'.)
-    !system(g++-7 --version) {
-        error(At least g++-7 required.)
+greaterThan(GCC_VERSION, 6) {
+    message('g++' version is above 6. Using regular g++.)
+}
+else {
+    message('g++' version is not above 6. Attempting to use highest specific version.)
+    system(g++-7 --version) {
+        message('g++-7' found.)
+        QMAKE_CXX = g++-7
     }
-    #g++-7 is needed for C++17 features. travis does not supply this by default.
-    QMAKE_CXX = g++-7
+    system(g++-8 --version) {
+        message('g++-8' found.)
+        QMAKE_CXX = g++-8
+    }
 }
 
 include(clang-gcc-common-switches.pri)

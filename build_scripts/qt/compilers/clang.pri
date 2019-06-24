@@ -15,6 +15,7 @@ greaterThan(CLANG_VERSION, 4) {
     message('clang' version is above 4. Using regular clang.)
 }
 else {
+    message('clang' version is not above 4. Attempting to use highest specific version.)
     system("clang-5 --version") {
         QMAKE_CXX = clang-5
         message('clang-5' found.)
