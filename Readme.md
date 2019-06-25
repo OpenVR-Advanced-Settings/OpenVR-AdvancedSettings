@@ -39,7 +39,7 @@
   * [Building on Windows](#building-on-windows)
   * [Building on Linux](#building-on-linux)
 - [Notes:](#notes-)
-- [Common Issues](#--common-issues)
+- [Common Issues](#common-issues)
 - [License](#license)
 
 # OpenVR Advanced Settings Overlay
@@ -384,12 +384,12 @@ Full build instructions can be found [here](docs/building_for_linux.md).
 # Common Issues:
 
 - **Issue:** Upon clicking ADV-Settings icon no page shows up.
- - **Cause:** related to multiple GPU systems (and specifically nvidia), and ALVR
- - **Solution:** go to Nvidia Control Panel -> manage 3D settings -> add Advanced Settings, and force the vr gpu for it.
+  - **Cause:** related to multiple GPU systems (and specifically nvidia), and ALVR
+  - **Solution:** go to Nvidia Control Panel -> manage 3D settings -> add Advanced Settings, and force the vr gpu for it.
 
 - **Issue:** Snap back when using motion controls with WMR headset
- - **Cause:** WMR boundary off, or set up for standing only.
- - **Solution:** Please set-up WMR for all experiences, and then if you don't want WMR boundary you can toggle off the boundary **after** SteamVR/OpenVR has been started.
+  - **Cause:** WMR boundary off, or set up for standing only.
+  - **Solution:** Please set-up WMR for all experiences, and then if you don't want WMR boundary you can toggle off the boundary **after** SteamVR/OpenVR has been started.
 
 # License
 
