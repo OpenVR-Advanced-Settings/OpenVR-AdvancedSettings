@@ -51,8 +51,6 @@ void AudioTabController::initStage1()
     reloadPttProfiles();
     reloadPttConfig();
     reloadAudioProfiles();
-    // TODO Verify new defaults working as intended befoere removing
-    // applyDefaultProfile();
     reloadAudioSettings();
 
     eventLoopTick();
@@ -314,6 +312,7 @@ void AudioTabController::setMicVolume( float value, bool notify )
 void AudioTabController::setMicMuted( bool value, bool notify )
 {
     std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+
     if ( value != m_micMuted )
     {
         m_micMuted = value;
@@ -581,6 +580,7 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
 
 void AudioTabController::setMicDeviceIndex( int index, bool notify )
 {
+    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
     if ( index != m_recordingDeviceIndex )
     {
         if ( index >= 0
@@ -588,13 +588,23 @@ void AudioTabController::setMicDeviceIndex( int index, bool notify )
         {
             // un-mute mic before switching to ensure on exit all recording
             // devices will be un-muted
-            setMicMuted( false, false );
+            bool tempProx = false;
+            if ( micProximitySensorCanMute() )
+            {
+                setMicProximitySensorCanMute( false );
+                tempProx = true;
+            }
+            setMicMuted( false, true );
             // code to just change Mic
             audioManager->setMicDevice(
                 m_recordingDevices[static_cast<size_t>( index )].first,
                 notify );
+            if ( tempProx )
+            {
+                setMicProximitySensorCanMute( true );
+            }
         }
-        else if ( notify )
+        if ( notify )
         {
             emit micDeviceIndexChanged( m_recordingDeviceIndex );
         }
@@ -1191,9 +1201,18 @@ int AudioTabController::getDefaultAudioProfileIndex()
 
 void AudioTabController::shutdown()
 {
-    setMicMuted( false, false );
+    setMicMuted( false, true );
     std::string mID;
     bool hasDefaultProfile = false;
+
+    // Un-mutes mic to prevent confusion on exit.
+
+    setMicMuted( false );
+
+    // handles Setting Mirror back to User based settings
+    // since we have to change the Mirror Device via valve api.
+    // possibly could change windows tab controller to allow us to do
+    // natively.
     for ( unsigned i = 0; i < audioProfiles.size(); i++ )
     {
         auto& profile = audioProfiles[i];
