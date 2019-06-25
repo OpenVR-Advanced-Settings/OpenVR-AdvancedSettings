@@ -278,7 +278,7 @@ MyStackViewPage {
 
         MyToggleButton {
             id: steamvrPerformanceGraphToggle
-            text: "Enable timing overlay"
+            text: "Enable Timing Overlay"
             onCheckedChanged: {
                 SteamVRTabController.setPerformanceGraph(this.checked, false)
             }

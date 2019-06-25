@@ -113,8 +113,8 @@ Below are described some behaviors that aren't strictly necessary for using the 
 ### Binding the System Button
 
 - In order to be able to properly bind and use the System button you will need to do a few things.
- - Open the steamvr.vrsettings file with a text editor (default install location (win): C:\Program Files (x86)\Steam\config)
- - Add the Option `"sendSystemButtonToAllApps" : true` In the `steamvr` section
+  - Open the steamvr.vrsettings file with a text editor (default install location (win): C:\Program Files (x86)\Steam\config)
+  - Add the Option `"sendSystemButtonToAllApps" : true` In the `steamvr` section
 - Example
 
 ```
@@ -130,7 +130,7 @@ Below are described some behaviors that aren't strictly necessary for using the 
    },
 ```
 
-**Note:** make sure you have it formatted exactly (need comma after if its not last item in list, and last item must not have a comma)
+**Note:** make sure you have it formatted exactly (commas after every item except last in list.)
 
 
 ### But wait it’s broke!
