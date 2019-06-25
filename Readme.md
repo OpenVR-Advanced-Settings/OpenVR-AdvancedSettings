@@ -39,6 +39,7 @@
   * [Building on Windows](#building-on-windows)
   * [Building on Linux](#building-on-linux)
 - [Notes:](#notes-)
+- [Common Issues](#--common-issues)
 - [License](#license)
 
 # OpenVR Advanced Settings Overlay
@@ -88,6 +89,8 @@ To install for the first time simply start AdvancedSettings.exe once while Steam
 To upgrade an existing installation first stop SteamVR and delete the old application folder (or override it). Then start SteamVR and run AdvancedSettings.exe once.
 
 ## Bindings
+
+For information on how to properly set-up bindings see: [SteamVR Input Guide](#steamvr-input-guide)
 
 The following actions currently exist:
 ### Music
@@ -222,6 +225,7 @@ These version are not stable and this should be considered for advanced users on
 - **Profile**: Allows to apply/define/delete supersampling profiles that save supersampling and reprojection settings.
 - **Application Supersampling**: Supersampling setting for OpenVR applications/games. Application supersampling [now behaves linearly](https://steamcommunity.com/games/250820/announcements/detail/1256913672017664045) where 2.0 means twice the number of pixel.
   - **Note**: Manual Supersampling Override be checked.
+  - **Note**: Some apps will require restarting for changes of Super-Sampling to take effect.
 - **Enable Manual Supersampling Override**: Enables user control of Supersampling, instead of SteamVR auto profiles.
 - **Enable Motion Smoothing**: Enables Motion Smoothing, and disables asynchronous reprojection.
 - **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
@@ -376,6 +380,16 @@ Full build instructions can be found [here](docs/building_for_linux.md).
 - Application autostart can also be configured in the SteamVR menu (SteamVR->Settings->Applications->"Advanced Settings").
 
 - You can modify the shutdown wait time when restarting SteamVR by opening restartvrserver.bat and changing the number behind "timeout /t" (unit is seconds).
+
+# Common Issues:
+
+- **Issue:** Upon clicking ADV-Settings icon no page shows up.
+ - **Cause:** related to multiple GPU systems (and specifically nvidia), and ALVR
+ - **Solution:** go to Nvidia Control Panel -> manage 3D settings -> add Advanced Settings, and force the vr gpu for it.
+
+- **Issue:** Snap back when using motion controls with WMR headset
+ - **Cause:** WMR boundary off, or set up for standing only.
+ - **Solution:** Please set-up WMR for all experiences, and then if you don't want WMR boundary you can toggle off the boundary **after** SteamVR/OpenVR has been started.
 
 # License
 
