@@ -1205,6 +1205,8 @@ void AudioTabController::shutdown()
     std::string mID;
     bool hasDefaultProfile = false;
 
+    // Un-mutes mic to prevent confusion on exit.
+
     setMicMuted( false );
 
     // handles Setting Mirror back to User based settings
