@@ -383,7 +383,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Force Revive Page:** No Longer Supported Does Nothing.
 - **Allow External App Chaperone Edits:** Incorporates changes to the chaperone and universe center made by other applications. These changes could come from anywhere, including apps with unpredictable interactions with Advanced Settings. Therefore, this option opens the potential for chaperone misalignment or corruption. However it also allows other chaperone tweaking tools to function in tandem with Advanced Settings. **This option should only be checked if required for compatibility with other apps.** *Note: Changes will only take effect when offsets and rotation are all zero.*
 - **Old-Style Motion:** Uses the old system of writing the chaperone universe center and bounds to disk every frame. Use this option only if you experience issues with playspace motion such as snapping back to reset position after releasing a space-drag. This old mode is smooth on most systems but is in theory less performant than the normal method.
-- **Universe-Centered Rotation:** Causes Rotation to be applied to Universe Center Rather than HMD.
+- **Universe-Centered Rotation:** Causes Rotation to be applied to Universe Center Rather than HMD (Disables offsets automatically compensating to pivot at the HMD).
 
 # How to Compile
 
