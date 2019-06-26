@@ -16,6 +16,11 @@ mkdir -p $EXE_DIR/usr/share/icons/hicolor
 mkdir -p $EXE_DIR/usr/share/icons/hicolor/256x256
 mkdir -p $EXE_DIR/usr/share/icons/hicolor/256x256/apps
 
+# https://github.com/probonopd/linuxdeployqt/issues/25
+# linuxdeployqt fails to deploy QtQuick/Dialogs and QtQuick/LocalStorage
+mkdir -p $EXE_DIR/usr/qml/QtQuick/Dialogs
+cp -r /opt/qt512/qml/QtQuick/Dialogs $EXE_DIR/usr/qml/QtQuick
+
 cp $EXE_DIR/AdvancedSettings $EXE_DIR/usr/bin
 cp -r $EXE_DIR/res $EXE_DIR/usr/bin
 cp -r $EXE_DIR/default_action_manifests $EXE_DIR/usr/bin
