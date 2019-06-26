@@ -33,4 +33,4 @@ qmake --version
 
 $PROJECT_DIR/linuxdeployqt-continuous-x86_64.AppImage -version
 
-$PROJECT_DIR/linuxdeployqt-continuous-x86_64.AppImage $EXE_DIR/usr/share/applications/AdvancedSettings.desktop --appimage-extract-and-run -appimage -verbose=2 -always-overwrite
+$PROJECT_DIR/linuxdeployqt-continuous-x86_64.AppImage $EXE_DIR/usr/share/applications/AdvancedSettings.desktop --appimage-extract-and-run -appimage -verbose=2 -always-overwrite -qmldir=$PROJECT_DIR/src/res/qml
