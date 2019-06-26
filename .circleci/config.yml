@@ -50,7 +50,7 @@ update_and_install_prereqs: &update_and_install_prereqs
     - run:
         name: Install QT packages
         command: |
-            apt-get install qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2  qt512tools  qt512base qtchooser -y
+            apt-get install qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2 qt512quickcontrols qt512tools qt512imageformats qt512svg qt512base qtchooser -y
     - run:
         name: Install X11 packages
         command: apt-get install libx11-dev libxt-dev libxtst-dev -y
@@ -121,7 +121,8 @@ jobs:
             - run:
                 name: Install QT packages
                 command: |
-                    apt-get install qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2  qt512tools  qt512base qtchooser -y
+                    apt-get install qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2 qt512quickcontrols qt512tools qt512imageformats qt512svg qt512base qtchooser -y
+            - run: ls -R /opt/qt512
             - run:
                 name: Install X11 packages
                 command: apt-get install libx11-dev libxt-dev libxtst-dev -y

@@ -42,7 +42,7 @@ After installing using the official installer you will likely need to `qtchooser
 
 If you don't want to use the offical installer, you can use [this](https://launchpad.net/~beineri) PPA.
 
-You will need at least `qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2  qt512tools  qt512base`, although if you have the drive space it's probably easier just to get `qt512-meta-full`.
+You will need at least `qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2 qt512quickcontrols qt512tools qt512imageformats qt512svg qt512base`, although if you have the drive space it's probably easier just to get `qt512-meta-full`.
 
 For Ubuntu 16.04
 ```bash
