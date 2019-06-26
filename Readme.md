@@ -301,7 +301,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **Save Momentum**: whether your momentum is saved between on/off toggles of gravity.
   - **fling Strength**: adjusts the strength at which you "throw" yourself with space drag feature.
 - **Snap Turn Angle**: Allows snap (instant) turning by the specified angle. Can type in values or use the preset buttons for angles that neatly divide 360 degrees. Must bind actions via SteamVR Input interface.
-- **Smooth Turn Rate**: Allows smooth turning by a percentage of a degree per frame. (i.e. 100% at 90 hz is 90 degress/sec or 15 RPM)
+- **Smooth Turn Rate**: Allows smooth turning by a percentage of a degree per frame. (i.e. 100% at 90fps is 90 degress/sec or 15 RPM)
 
 ## - Space Fix Page
 
