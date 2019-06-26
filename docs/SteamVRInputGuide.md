@@ -110,6 +110,29 @@ Below are described some behaviors that aren't strictly necessary for using the 
 
 - Other than that just place the appropriate haptic action in the appropriate spot!
 
+### Binding the System Button
+
+- In order to be able to properly bind and use the System button you will need to do a few things.
+  - Open the steamvr.vrsettings file with a text editor (default install location (win): C:\Program Files (x86)\Steam\config)
+  - Add the Option `"sendSystemButtonToAllApps" : true` In the `steamvr` section
+- Example
+
+```
+   "steamvr" : {
+      "debugInputBinding" : true,
+      "installID" : "123456789101112",
+      "lastVersionNotice" : "1.5.14",
+      "lastVersionNoticeDate" : "1561427586",
+      "motionSmoothing" : false,
+      "sendSystemButtonToAllApps" : true,
+      "supersampleManualOverride" : true,
+      "supersampleScale" : 1.7999999523162842
+   },
+```
+
+**Note:** make sure you have it formatted exactly (commas after every item except last in list.)
+
+
 ### But wait it’s broke!
 
 - We recommend a separate bind for every action. Multiple actions to one bind can cause un-predictable behavior.

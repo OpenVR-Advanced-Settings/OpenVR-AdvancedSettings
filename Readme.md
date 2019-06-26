@@ -39,6 +39,7 @@
   * [Building on Windows](#building-on-windows)
   * [Building on Linux](#building-on-linux)
 - [Notes:](#notes-)
+- [Common Issues](#common-issues)
 - [License](#license)
 
 # OpenVR Advanced Settings Overlay
@@ -89,6 +90,8 @@ To upgrade an existing installation first stop SteamVR and delete the old applic
 
 ## Bindings
 
+For information on how to properly set-up bindings see: [SteamVR Input Guide](#steamvr-input-guide)
+
 The following actions currently exist:
 ### Music
 
@@ -125,6 +128,8 @@ Override actions will take priority over non-override actions during simultaneou
 | Height Toggle | Binary/Button |  Shifts the gravity floor level by offset configured in motion tab. If gravity is inactive: also shifts the user's current y-axis position by offset configured in motion tab. |
 | Snap-Turn Left | Binary/Button |  Rotates a set value to the left based on settings in motion tab. |
 | Snap-Turn Right | Binary/Button |  Rotates a set value to the right based on settings in motion tab. |
+| Smooth-Turn Right | Binary/Button | Rotates an amount per frame to the right based on settings in motion tab. |
+| Smooth-Turn Left | Binary/Button | Rotates an amount per frame to the left based on settings in motion tab. |
 
 ### Misc.
 
@@ -135,6 +140,7 @@ Actions that don't have a clear category.
 | X-Axis Lock Toggle | Binary/Button | Toggles the lock of the X-Axis for offsets.|
 | Y-Axis Lock Toggle | Binary/Button | Toggles the lock of the Y-Axis for offsets.|
 | Z-Axis Lock Toggle | Binary/Button | Toggles the lock of the Z-Axis for offsets.|
+| Chaperone Toggle | Binary/Button | Toggles the chaperone on/off. |
 | Push to Talk | Binary/Button |  Acts as starter for PTT, can mute if push-to-mute is selected.|
 | Keyboard Shortcut One | Binary/Button | Sends the key sequence defined the the settings file. Defaults to Ctrl+Shift+M (Discord default toggle mute). |
 | Keyboard Shortcut Two | Binary/Button | Sends the key sequence defined the the settings file. This has no default sequence. |
@@ -149,6 +155,7 @@ Actions to be handled by the system.
 | ------------- | ------------- |  ------------ |
 | Haptics Left | Vibration | Handle for haptic events on the Left Controller. |
 | Haptics Right | Vibration | Handle for haptic events on the Right Controller. |
+| Proximity Sensor | Binary/Button | Connects Automatically to your HMD's proximity sensor. **Do not "bind" this action**, it will cause un-predictable behavior. |
 
 
 ## Default Bindings
@@ -163,7 +170,7 @@ Actions to be handled by the system.
   - **D-pad Down click**: Push-to-Talk
 - Haptics bound
 
-### Knuckles
+### Valve Index Controllers (Knuckles)
 
 - B Button (both hands)
   - **Single Click**: Space Turn (respective hand)
@@ -171,6 +178,16 @@ Actions to be handled by the system.
   - **Single Click**: Swap Active Space Drag (override) (respective hand)
 - Trigger (left hand)
   - **Click**: Push-to-Talk
+- Haptics boun
+
+### WMR
+
+- Menu Button (both hands)
+  - **Single Click**: Space Turn (respective hand)
+  - **Double Click**: Space Drag (override) (respective hand)
+  - **Single Click**: Swap Active Space Drag (override) (respective hand)
+- TrackPad (right hand)
+  - **D-pad Down click**: Push-to-Talk
 - Haptics bound
 
 ### Other Controllers
@@ -222,8 +239,10 @@ These version are not stable and this should be considered for advanced users on
 - **Profile**: Allows to apply/define/delete supersampling profiles that save supersampling and reprojection settings.
 - **Application Supersampling**: Supersampling setting for OpenVR applications/games. Application supersampling [now behaves linearly](https://steamcommunity.com/games/250820/announcements/detail/1256913672017664045) where 2.0 means twice the number of pixel.
   - **Note**: Manual Supersampling Override be checked.
+  - **Note**: Some apps will require restarting for changes of Super-Sampling to take effect.
 - **Enable Manual Supersampling Override**: Enables user control of Supersampling, instead of SteamVR auto profiles.
 - **Enable Motion Smoothing**: Enables Motion Smoothing, and disables asynchronous reprojection.
+- **Enable Timing Overlay**: Enables a simple Timing overlay, locked to HMD currently.
 - **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
 ## - Chaperone Page
 
@@ -238,7 +257,7 @@ These version are not stable and this should be considered for advanced users on
 - **Force Bounds**: Force chaperone bounds always on.
 - **Disable Chaperone**: Disables Chaperone by setting fade distance to 0.0.
 - **Proximity Warning Settings**: Opens a page that allows to configure several warning methods for when the user comes too close to the chaperone bounds.
-- **Flip Orientation**: Flips the orientation of the play space.
+- **Rotate Orientation**: Rotates the orientation by a set amount.
 - **Reload from Disk**: Reloads the chaperone bounds geometry from disk.
 
 ## - Chaperone Proximity Warning Settings Page
@@ -281,7 +300,8 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **Gravity Strength**: Gravity simulation's downward acceleration in meters per second squared. Planet buttons provide quick settings for well known gravity strengths. Values can also be typed in directly.
   - **Save Momentum**: whether your momentum is saved between on/off toggles of gravity.
   - **fling Strength**: adjusts the strength at which you "throw" yourself with space drag feature.
-- **Snap Turn**: Allows snap (instant) turning by the specified angle. Can type in values or use the preset buttons for angles that neatly divide 360 degrees. Must bind actions via SteamVR Input interface.
+- **Snap Turn Angle**: Allows snap (instant) turning by the specified angle. Can type in values or use the preset buttons for angles that neatly divide 360 degrees. Must bind actions via SteamVR Input interface.
+- **Smooth Turn Rate**: Allows smooth turning by a percentage of a degree per frame. (i.e. 100% at 90fps is 90 degress/sec or 15 RPM)
 
 ## - Space Fix Page
 
@@ -299,6 +319,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Playback Device**: Allows to select the playback device.
 - **Mirror Device**: Allows to select the mirror device, set its volume and to mute/unmute it.
 - **Microphone**: Allows to select the microphone device, set its volume and to mute/unmute it.
+- **Proximity Sensor Mutes/Unmutes Microphone**: Uses the HMD's proximity Sensor to mute the mic when it is removed from your head, PTT works with this feature, But you will be un-able to manually mute/un-mute your mic via icon.
 - **Push-to-Talk**: Enable/disable push-to-talk. When push-to-talk is activated the microphone gets muted unless the Push To Talk action is activated.
 - **Show Notification**: Shows a notification icon in the headset when the Push To Talk action is activated.
 - **Push-to-Mute**: Inverse push-to-talk. The Microphone is unmuted by default and muted when the keybind is pressed.
@@ -313,6 +334,10 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **On/Off**: Toggles The Dimming on/off.
   - **Brightness**: The amount of dimming.
   - **Note**: Does not necessarily reduce light output of HMD will vary based on panel type etc.
+- **Color Adjustment**: Allows Adjusting of the Color of your display.
+  - **On/Off**: Toggles adjustment on/off.
+  - **Opacity**: The amount of color applied.
+  - **Color Options**: Adjusts percentage of each of the respective colors.
 
 ## - Utilities Page
 
@@ -358,6 +383,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Force Revive Page:** No Longer Supported Does Nothing.
 - **Allow External App Chaperone Edits:** Incorporates changes to the chaperone and universe center made by other applications. These changes could come from anywhere, including apps with unpredictable interactions with Advanced Settings. Therefore, this option opens the potential for chaperone misalignment or corruption. However it also allows other chaperone tweaking tools to function in tandem with Advanced Settings. **This option should only be checked if required for compatibility with other apps.** *Note: Changes will only take effect when offsets and rotation are all zero.*
 - **Old-Style Motion:** Uses the old system of writing the chaperone universe center and bounds to disk every frame. Use this option only if you experience issues with playspace motion such as snapping back to reset position after releasing a space-drag. This old mode is smooth on most systems but is in theory less performant than the normal method.
+- **Universe-Centered Rotation:** Causes Rotation to be applied to Universe Center Rather than HMD (Disables offsets automatically compensating to pivot at the HMD).
 
 # How to Compile
 
@@ -376,6 +402,18 @@ Full build instructions can be found [here](docs/building_for_linux.md).
 - Application autostart can also be configured in the SteamVR menu (SteamVR->Settings->Applications->"Advanced Settings").
 
 - You can modify the shutdown wait time when restarting SteamVR by opening restartvrserver.bat and changing the number behind "timeout /t" (unit is seconds).
+
+- When Using Proximity Sensor Features while the Dashboard is up the action will not evaluate, so your mic will be muted, and some chaperone warnings won't work while dashboard is up.
+
+# Common Issues:
+
+- **Issue:** Upon clicking ADV-Settings icon no page shows up.
+  - **Cause:** related to multiple GPU systems (and specifically nvidia), and ALVR
+  - **Solution:** go to Nvidia Control Panel -> manage 3D settings -> add Advanced Settings, and force the vr gpu for it.
+
+- **Issue:** Snap back when using motion controls with WMR headset
+  - **Cause:** WMR boundary off, or set up for standing only.
+  - **Solution:** Please set-up WMR for all experiences, and then if you don't want WMR boundary you can toggle off the boundary **after** SteamVR/OpenVR has been started.
 
 # License
 
