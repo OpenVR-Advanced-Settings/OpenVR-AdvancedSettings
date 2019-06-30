@@ -83,12 +83,12 @@ jobs:
             - checkout
             - run: sudo apt-get update && sudo apt-get upgrade -y
             - run:
-                name: Get wget and apt-key
+                name: Get apt-key
+                # Required for LLVM
                 command: |
-                    sudo apt-get install wget -y
                     sudo apt-get install software-properties-common -y
             - run:
-                name: Set up LLVM-8 repo
+                name: Get LLVM repos
                 command: |
                     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
                     sudo add-apt-repository 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
@@ -96,6 +96,8 @@ jobs:
                     sudo apt-get update -qq
             - run:
                 name: Install LLVM-8 binaries
+                # clang is required due to a check by Qmake.
+                # clang-tidy-8 has new errors compared to clang-tidy-7, so we haven't upgraded.
                 command: |
                     sudo apt-get install clang-format-8 -y
                     sudo apt-get install clang-tidy-7 -y
@@ -120,7 +122,6 @@ jobs:
                 name: Install QT packages
                 command: |
                     sudo apt-get install qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2 qt512quickcontrols qt512tools qt512imageformats qt512svg qt512base qtchooser -y
-            - run: ls -R /opt/qt512
             - run:
                 name: Install X11 packages
                 command: sudo apt-get install libx11-dev libxt-dev libxtst-dev -y
@@ -137,7 +138,11 @@ jobs:
                     chmod +x ./build_scripts/linux/format.sh
                     chmod +x ./build_scripts/linux/run-clang-tidy.sh
                     chmod +x ./build_scripts/linux/verify_formatting.sh
-            - run: python ./build_scripts/append_to_version_file.py $(git rev-parse HEAD | cut -c -8)
+            - run:
+                name: Update version number
+                command: |
+                    python ./build_scripts/append_to_version_file.py $(git rev-parse HEAD | cut -c -8)
+                    cat ./build_scripts/compile_version_string.txt
             - run:
                 name: Run build script
                 command: ./build_scripts/linux/build_linux.sh
