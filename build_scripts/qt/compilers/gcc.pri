@@ -12,6 +12,10 @@ else {
         message('g++-8' found.)
         QMAKE_CXX = g++-8
     }
+    system(g++-9 --version) {
+        message('g++-9' found.)
+        QMAKE_CXX = g++-9
+    }
 }
 
 include(clang-gcc-common-switches.pri)
