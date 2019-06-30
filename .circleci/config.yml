@@ -67,7 +67,6 @@ update_and_install_prereqs: &update_and_install_prereqs
             chmod +x ./build_scripts/linux/format.sh
             chmod +x ./build_scripts/linux/run-clang-tidy.sh
             chmod +x ./build_scripts/linux/verify_formatting.sh
-    - run: clang --version
     - run:
         name: Run build script
         command: ./build_scripts/linux/build_linux.sh
@@ -139,7 +138,6 @@ jobs:
                     chmod +x ./build_scripts/linux/run-clang-tidy.sh
                     chmod +x ./build_scripts/linux/verify_formatting.sh
             - run: python ./build_scripts/append_to_version_file.py $(git rev-parse HEAD | cut -c -8)
-            - run: clang --version
             - run:
                 name: Run build script
                 command: ./build_scripts/linux/build_linux.sh
