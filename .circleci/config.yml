@@ -105,11 +105,11 @@ jobs:
                 name: Run clang-format
                 command: python ./build_scripts/run-clang-format.py ./src -r --color always --clang-format-executable clang-format-8
             - run:
-                name: Install g++-7
+                name: Install g++
                 command: |
                     sudo add-apt-repository ppa:ubuntu-toolchain-r/test
                     sudo apt-get update
-                    sudo apt-get install g++-7 -y
+                    sudo apt-get install g++-9 -y
             - run:
                 name: Add required QT repos
                 command: |
