@@ -34,7 +34,7 @@ GroupBox {
 
             MyToggleButton {
                 id: turnBindLeft
-                text: "Enable Left Hand"
+                text: "Left Hand"
                 onCheckedChanged: {
                     MoveCenterTabController.turnBindLeft = this.checked
                 }
@@ -42,7 +42,7 @@ GroupBox {
 
             MyToggleButton {
                 id: turnBindRight
-                text: "Enable Right Hand"
+                text: "Right Hand"
                 onCheckedChanged: {
                     MoveCenterTabController.turnBindRight = this.checked
                 }
@@ -53,7 +53,7 @@ GroupBox {
             }
 
             MyText {
-                text: "Turn Comfort Mode:"
+                text: "Comfort Mode:"
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }
@@ -64,7 +64,7 @@ GroupBox {
                 to: 10
                 stepSize: 1
                 value: 0
-                Layout.preferredWidth: 200
+                Layout.preferredWidth: 180
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
                 onValueChanged: {
                     turnComfortText.text = turnComfortSlider.value
@@ -79,6 +79,14 @@ GroupBox {
                 Layout.preferredWidth: 30
                 Layout.rightMargin: 10
             }
+
+            MyToggleButton {
+                id: turnBounds
+                text: "Force Bounds"
+                onCheckedChanged: {
+                    MoveCenterTabController.turnBounds = this.checked
+                }
+            }
         }
     }
 
@@ -86,6 +94,7 @@ GroupBox {
         turnBindLeft.checked = MoveCenterTabController.turnBindLeft
         turnBindRight.checked = MoveCenterTabController.turnBindRight
         turnComfortSlider.value = MoveCenterTabController.turnComfortFactor
+        turnBounds.checked = MoveCenterTabController.turnBounds
     }
 
     Connections {
@@ -99,6 +108,9 @@ GroupBox {
         }
         onTurnComfortFactorChanged: {
             turnComfortSlider.value = MoveCenterTabController.turnComfortFactor
+        }
+        onTurnBoundsChanged: {
+            turnBounds.checked = MoveCenterTabController.turnBounds
         }
     }
 }

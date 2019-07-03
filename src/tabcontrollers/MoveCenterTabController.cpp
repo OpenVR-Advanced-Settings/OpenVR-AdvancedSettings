@@ -68,6 +68,16 @@ void MoveCenterTabController::initStage1()
     {
         m_settingsRightHandTurnEnabled = value.toBool();
     }
+    value = settings->value( "dragBounds", m_dragBounds );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_dragBounds = value.toBool();
+    }
+    value = settings->value( "turnBounds", m_turnBounds );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_turnBounds = value.toBool();
+    }
     value = settings->value( "dragComfortFactor", m_dragComfortFactor );
     if ( value.isValid() && !value.isNull() )
     {
@@ -213,6 +223,14 @@ void MoveCenterTabController::outputLogSettings()
     if ( m_universeCenteredRotation )
     {
         LOG( INFO ) << "LOADED SETTINGS: Universe-Centered Rotation Enabled";
+    }
+    if ( m_dragBounds )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Space Drag Force Bounds Enabled";
+    }
+    if ( m_turnBounds )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Space Turn Force Bounds Enabled";
     }
 }
 
@@ -636,6 +654,62 @@ void MoveCenterTabController::setTurnBindRight( bool value, bool notify )
     }
     LOG( INFO ) << "CHANGED SETTINGS: Right Hand Space-Turn Bind Enable Set: "
                 << m_settingsRightHandTurnEnabled;
+}
+
+bool MoveCenterTabController::dragBounds() const
+{
+    return m_dragBounds;
+}
+
+void MoveCenterTabController::setDragBounds( bool value, bool notify )
+{
+    // detect deactivate
+    if ( m_dragBounds && !value )
+    {
+        // set force bounds back to default on deactivate
+        vr::VRChaperone()->ForceBoundsVisible(
+            parent->m_chaperoneTabController.forceBounds() );
+    }
+    m_dragBounds = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "dragBounds", m_dragBounds );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit dragBoundsChanged( m_dragBounds );
+    }
+    LOG( INFO ) << "CHANGED SETTINGS: Space Drag Force Bounds set: "
+                << m_dragBounds;
+}
+
+bool MoveCenterTabController::turnBounds() const
+{
+    return m_turnBounds;
+}
+
+void MoveCenterTabController::setTurnBounds( bool value, bool notify )
+{
+    // detect deactivate
+    if ( m_turnBounds && !value )
+    {
+        // set force bounds back to default on deactivate
+        vr::VRChaperone()->ForceBoundsVisible(
+            parent->m_chaperoneTabController.forceBounds() );
+    }
+    m_turnBounds = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "turnBounds", m_turnBounds );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit turnBoundsChanged( m_turnBounds );
+    }
+    LOG( INFO ) << "CHANGED SETTINGS: Space Turn Force Bounds set: "
+                << m_turnBounds;
 }
 
 unsigned MoveCenterTabController::dragComfortFactor() const
@@ -2588,6 +2662,24 @@ void MoveCenterTabController::eventLoopTick(
                 // in the time motion was paused during the open dash
                 m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
                 m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
+            }
+
+            // force chaperone bounds visible if turn or drag settings require
+            if ( m_dragBounds
+                 && m_activeDragHand != vr::TrackedControllerRole_Invalid )
+            {
+                vr::VRChaperone()->ForceBoundsVisible( true );
+            }
+            else if ( m_turnBounds
+                      && m_activeTurnHand != vr::TrackedControllerRole_Invalid )
+            {
+                vr::VRChaperone()->ForceBoundsVisible( true );
+            }
+            // only set back to default every frame if setting is enabled
+            else if ( m_turnBounds || m_dragBounds )
+            {
+                vr::VRChaperone()->ForceBoundsVisible(
+                    parent->m_chaperoneTabController.forceBounds() );
             }
 
             // Smooth turn motion can cause sim-sickness so we check if the user

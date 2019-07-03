@@ -48,6 +48,10 @@ class MoveCenterTabController : public QObject
                     turnBindLeftChanged )
     Q_PROPERTY( bool turnBindRight READ turnBindRight WRITE setTurnBindRight
                     NOTIFY turnBindRightChanged )
+    Q_PROPERTY( bool dragBounds READ dragBounds WRITE setDragBounds NOTIFY
+                    dragBoundsChanged )
+    Q_PROPERTY( bool turnBounds READ turnBounds WRITE setTurnBounds NOTIFY
+                    turnBoundsChanged )
     Q_PROPERTY( unsigned dragComfortFactor READ dragComfortFactor WRITE
                     setDragComfortFactor NOTIFY dragComfortFactorChanged )
     Q_PROPERTY( unsigned turnComfortFactor READ turnComfortFactor WRITE
@@ -108,6 +112,8 @@ private:
     bool m_settingsRightHandTurnEnabled = false;
     unsigned m_dragComfortFactor = 0;
     unsigned m_turnComfortFactor = 0;
+    bool m_dragBounds = false;
+    bool m_turnBounds = false;
     bool m_heightToggle = false;
     float m_heightToggleOffset = -1.0f;
     float m_gravityFloor = 0.0f;
@@ -203,6 +209,8 @@ public:
     bool moveShortcutLeft() const;
     bool turnBindRight() const;
     bool turnBindLeft() const;
+    bool dragBounds() const;
+    bool turnBounds() const;
     unsigned dragComfortFactor() const;
     unsigned turnComfortFactor() const;
     bool heightToggle() const;
@@ -265,6 +273,8 @@ public slots:
     void setTurnBindLeft( bool value, bool notify = true );
     void setDragComfortFactor( unsigned value, bool notify = true );
     void setTurnComfortFactor( unsigned value, bool notify = true );
+    void setDragBounds( bool value, bool notify = true );
+    void setTurnBounds( bool value, bool notify = true );
     void setHeightToggle( bool value, bool notify = true );
     void setHeightToggleOffset( float value, bool notify = true );
     void setGravityStrength( float value, bool notify = true );
@@ -304,6 +314,8 @@ signals:
     void moveShortcutLeftChanged( bool value );
     void turnBindRightChanged( bool value );
     void turnBindLeftChanged( bool value );
+    void dragBoundsChanged( bool value );
+    void turnBoundsChanged( bool value );
     void dragComfortFactorChanged( unsigned value );
     void turnComfortFactorChanged( unsigned value );
     void heightToggleChanged( bool value );
