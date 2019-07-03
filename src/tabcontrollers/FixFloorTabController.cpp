@@ -221,6 +221,8 @@ void FixFloorTabController::eventLoopTick(
                 setCanUndo( true );
                 state = 0;
                 parent->m_moveCenterTabController.zeroOffsets();
+                // this reset fixes a bug where fixed floor wouldn't show in WMR
+                parent->m_moveCenterTabController.reset();
             }
         }
     }

@@ -34,7 +34,7 @@ GroupBox {
 
             MyToggleButton {
                 id: moveShortcutLeft
-                text: "Enable Left Hand"
+                text: "Left Hand"
                 onCheckedChanged: {
                     MoveCenterTabController.moveShortcutLeft = this.checked
                 }
@@ -42,7 +42,7 @@ GroupBox {
 
             MyToggleButton {
                 id: moveShortcutRight
-                text: "Enable Right Hand"
+                text: "Right Hand"
                 onCheckedChanged: {
                     MoveCenterTabController.moveShortcutRight = this.checked
                 }
@@ -53,7 +53,7 @@ GroupBox {
             }
 
             MyText {
-                text: "Drag Comfort Mode:"
+                text: "Comfort Mode:"
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }
@@ -64,7 +64,7 @@ GroupBox {
                 to: 10
                 stepSize: 1
                 value: 0
-                Layout.preferredWidth: 200
+                Layout.preferredWidth: 180
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
                 onValueChanged: {
                     dragComfortText.text = dragComfortSlider.value
@@ -79,6 +79,14 @@ GroupBox {
                 Layout.preferredWidth: 30
                 Layout.rightMargin: 10
             }
+
+            MyToggleButton {
+                id: dragBounds
+                text: "Force Bounds"
+                onCheckedChanged: {
+                    MoveCenterTabController.dragBounds = this.checked
+                }
+            }
         }
     }
 
@@ -86,6 +94,7 @@ GroupBox {
         moveShortcutLeft.checked = MoveCenterTabController.moveShortcutLeft
         moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight
         dragComfortSlider.value = MoveCenterTabController.dragComfortFactor
+        dragBounds.checked = MoveCenterTabController.dragBounds
     }
 
     Connections {
@@ -99,6 +108,9 @@ GroupBox {
         }
         onDragComfortFactorChanged: {
             dragComfortSlider.value = MoveCenterTabController.dragComfortFactor
+        }
+        onDragBoundsChanged: {
+            dragBounds.checked = MoveCenterTabController.dragBounds
         }
     }
 }
