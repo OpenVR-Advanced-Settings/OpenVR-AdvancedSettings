@@ -286,11 +286,13 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 <img src="docs/screenshots/MotionPage.png" width="600" alt="Motion Page">
 
 - **Space Drag**: Allows shifting your playspace by dragging your controller, Binds must be set via SteamVR Input system.
-  - **Enable Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
-  - **Drag Comfort Mode**: Limits the rate at which your movement updates, reducing smoothness so that perceived motion starts to feel more like mini-teleports. Higher values reduce smoothness more.
+  - **Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
+  - **Comfort Mode**: Limits the rate at which your movement updates, reducing smoothness so that perceived motion starts to feel more like mini-teleports. Higher values reduce smoothness more.
+  - **Force Bounds**: Forces the display of the chaperone bounds during Space Drag.
 - **Space Turn**: Allows rotating your playspace by rotating your controller. Binds must be set via SteamVR Input system.
-  - **Enable Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
-  - **Turn Comfort Mode**: Limits the rate at which your rotation updates, reducing smoothness so that perceived rotation starts to feel more like mini-snap-turns. Higher values reduce smoothness more.
+  - **Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
+  - **Comfort Mode**: Limits the rate at which your rotation updates, reducing smoothness so that perceived rotation starts to feel more like mini-snap-turns. Higher values reduce smoothness more.
+  - **Force Bounds**: Forces the display of the chaperone bounds during Space Turn.
 - **Height Toggle**: Toggle between zero and an offset for gravity floor height. If gravity is inactive the user is also moved to this offset. (Example: allows for quick switching between a seated and standing height.) Can be bound via SteamVr Input System.
   - **On**: Current toggle state, Binds directly modify this.
   - **Height Offset**: The amount of the offset (+ is down.)
