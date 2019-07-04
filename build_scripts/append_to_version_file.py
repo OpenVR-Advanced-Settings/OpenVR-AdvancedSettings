@@ -7,7 +7,7 @@ version_file_path = path.join(current_path, "compile_version_string.txt")
 
 def get_version_string():
     with open(version_file_path, "r") as file:
-        contents = file.readline()
+        contents = file.readline().strip('\n')
         return contents.strip('"')
 
 def set_version_string(new_version_string):
