@@ -43,7 +43,7 @@ It is not possible to hold down keys.
 
 ### Advanced Configuration
 
-Look at the key table [spec](specs/Keyboard_Manager-Parser_Spec.txt) and find the keys that you want to press.
+Look at the key table [spec](specs/Keyboard_Manager-Parser_Spec.md) and find the keys that you want to press.
 
 Notice that single characters (a, b, c, etc.) are lower case, while buttons are uppercase (ENTER, END, ESC, etc.). 
 If you enter single letters as upper case it will not work.
