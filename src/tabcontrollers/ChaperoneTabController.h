@@ -177,6 +177,8 @@ private:
     bool m_isHMDActive = false;
     bool m_isProxActive = false;
     bool m_HMDHasProx = false;
+    bool m_leftHapticClickActivated = false;
+    bool m_rightHapticClickActivated = false;
 
     int m_updateTicksChaperoneReload = 0;
 
@@ -238,6 +240,10 @@ public:
     Q_INVOKABLE QString getChaperoneProfileName( unsigned index );
 
     float getBoundsMaxY();
+
+    // actions
+    void addLeftHapticClick( bool leftHapticClickPressed );
+    void addRightHapticClick( bool rightHapticClickPressed );
 
 public slots:
     void setBoundsVisibility( float value, bool notify = true );

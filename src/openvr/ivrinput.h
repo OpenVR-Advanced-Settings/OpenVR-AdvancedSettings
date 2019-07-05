@@ -58,6 +58,9 @@ namespace action_keys
     constexpr auto hapticsLeft = "/actions/haptic/out/HapticsLeft";
     constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
     constexpr auto proxSensor = "/actions/haptic/in/ProxSensor";
+    constexpr auto addLeftHapticClick = "/actions/haptic/in/AddLeftHapticClick";
+    constexpr auto addRightHapticClick
+        = "/actions/haptic/in/AddRightHapticClick";
 
     constexpr auto chaperoneToggle = "/actions/misc/in/ChaperoneToggle";
 
@@ -144,6 +147,8 @@ public:
     bool zAxisLockToggle();
     bool chaperoneToggle();
     bool proxState();
+    bool addLeftHapticClick();
+    bool addRightHapticClick();
 
     bool pushToTalk();
 
@@ -225,6 +230,8 @@ private:
     // haptic bindings
     DigitalAction m_leftHaptic;
     DigitalAction m_rightHaptic;
+    DigitalAction m_addLeftHapticClick;
+    DigitalAction m_addRightHapticClick;
 
     // prox Sensor
     DigitalAction m_proxSensor;

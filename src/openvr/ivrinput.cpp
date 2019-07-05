@@ -140,6 +140,8 @@ SteamIVRInput::SteamIVRInput()
       m_pushToTalk( action_keys::pushToTalk ),
       m_leftHaptic( action_keys::hapticsLeft ),
       m_rightHaptic( action_keys::hapticsRight ),
+      m_addLeftHapticClick( action_keys::addLeftHapticClick ),
+      m_addRightHapticClick( action_keys::addRightHapticClick ),
       m_proxSensor( action_keys::proxSensor ),
       m_leftHand( input_keys::leftHand ), m_rightHand( input_keys::rightHand ),
       m_sets( { m_mainSet.activeActionSet(),
@@ -315,6 +317,16 @@ bool SteamIVRInput::chaperoneToggle()
 bool SteamIVRInput::proxState()
 {
     return isDigitalActionActivatedConstant( m_proxSensor );
+}
+
+bool SteamIVRInput::addLeftHapticClick()
+{
+    return isDigitalActionActivatedConstant( m_addLeftHapticClick );
+}
+
+bool SteamIVRInput::addRightHapticClick()
+{
+    return isDigitalActionActivatedConstant( m_addRightHapticClick );
 }
 
 bool SteamIVRInput::keyboardOne()
