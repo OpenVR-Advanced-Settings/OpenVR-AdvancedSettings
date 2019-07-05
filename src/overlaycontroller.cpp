@@ -608,6 +608,10 @@ void OverlayController::processChaperoneBindings()
             !( m_chaperoneTabController.disableChaperone() ), true );
     }
     m_chaperoneTabController.setProxState( m_actions.proxState() );
+    m_chaperoneTabController.addLeftHapticClick(
+        m_actions.addLeftHapticClick() );
+    m_chaperoneTabController.addRightHapticClick(
+        m_actions.addRightHapticClick() );
 }
 
 void OverlayController::processPushToTalkBindings()

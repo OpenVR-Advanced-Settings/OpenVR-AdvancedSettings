@@ -1740,6 +1740,62 @@ void ChaperoneTabController::setLeftInputHandle(
     m_leftInputHandle = handle;
 }
 
+void ChaperoneTabController::addLeftHapticClick( bool leftHapticClickPressed )
+{
+    // detect new press
+    if ( leftHapticClickPressed && !m_leftHapticClickActivated )
+    {
+        // play activation haptic sequence
+        vr::VRInput()->TriggerHapticVibrationAction(
+            m_leftActionHandle, 0.0f, 0.08f, 300.0f, 0.7f, m_leftInputHandle );
+        m_leftHapticClickActivated = true;
+        return;
+    }
+
+    // detect new release
+    if ( !leftHapticClickPressed && m_leftHapticClickActivated )
+    {
+        // play deactivation haptic sequence
+        vr::VRInput()->TriggerHapticVibrationAction(
+            m_leftActionHandle, 0.0f, 0.08f, 120.0f, 0.7f, m_leftInputHandle );
+
+        m_leftHapticClickActivated = false;
+        return;
+    }
+}
+
+void ChaperoneTabController::addRightHapticClick( bool rightHapticClickPressed )
+{
+    // detect new press
+    if ( rightHapticClickPressed && !m_rightHapticClickActivated )
+    {
+        // play activation haptic sequence
+        vr::VRInput()->TriggerHapticVibrationAction( m_rightActionHandle,
+                                                     0.0f,
+                                                     0.08f,
+                                                     300.0f,
+                                                     0.7f,
+                                                     m_rightInputHandle );
+        m_rightHapticClickActivated = true;
+        return;
+    }
+
+    // detect new release
+    if ( !rightHapticClickPressed && m_rightHapticClickActivated )
+    {
+        // play deactivation haptic sequence
+        vr::VRInput()->TriggerHapticVibrationAction( m_rightActionHandle,
+                                                     0.0f,
+                                                     0.08f,
+                                                     120.0f,
+                                                     0.7f,
+                                                     m_rightInputHandle );
+
+        m_rightHapticClickActivated = false;
+        return;
+    }
+}
+
 void ChaperoneTabController::setProxState( bool value )
 {
     if ( value )
