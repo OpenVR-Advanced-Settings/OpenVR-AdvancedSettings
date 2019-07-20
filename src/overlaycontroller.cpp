@@ -492,7 +492,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     m_settingsTabController.initStage2( this );
     m_reviveTabController.initStage2( this );
     m_utilitiesTabController.initStage2( this );
-    m_moveCenterTabController.initStage2( this, m_pWindow.get() );
+    m_moveCenterTabController.initStage2( this );
 }
 
 void OverlayController::OnRenderRequest()
