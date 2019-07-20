@@ -135,7 +135,6 @@ OverlayController::OverlayController( bool desktopMode,
     m_steamVRTabController.initStage1();
     m_chaperoneTabController.initStage1();
     m_moveCenterTabController.initStage1();
-    m_fixFloorTabController.initStage1();
     m_audioTabController.initStage1();
     m_statisticsTabController.initStage1();
     m_settingsTabController.initStage1();
