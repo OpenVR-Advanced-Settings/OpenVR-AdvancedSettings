@@ -489,7 +489,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     m_fixFloorTabController.initStage2( this );
     m_audioTabController.initStage2();
     m_statisticsTabController.initStage2( this );
-    m_settingsTabController.initStage2( this, m_pWindow.get() );
+    m_settingsTabController.initStage2( this );
     m_reviveTabController.initStage2( this, m_pWindow.get() );
     m_utilitiesTabController.initStage2( this, m_pWindow.get() );
     m_videoTabController.initStage2( this, m_pWindow.get() );
