@@ -486,7 +486,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
 
     m_steamVRTabController.initStage2( this );
     m_chaperoneTabController.initStage2( this );
-    m_fixFloorTabController.initStage2( this, m_pWindow.get() );
+    m_fixFloorTabController.initStage2( this );
     m_audioTabController.initStage2( this, m_pWindow.get() );
     m_statisticsTabController.initStage2( this, m_pWindow.get() );
     m_settingsTabController.initStage2( this, m_pWindow.get() );
