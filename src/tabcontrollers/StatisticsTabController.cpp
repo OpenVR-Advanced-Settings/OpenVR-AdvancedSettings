@@ -5,8 +5,6 @@
 // application namespace
 namespace advsettings
 {
-void StatisticsTabController::initStage1() {}
-
 void StatisticsTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
