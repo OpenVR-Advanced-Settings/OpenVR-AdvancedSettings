@@ -136,7 +136,6 @@ OverlayController::OverlayController( bool desktopMode,
     m_chaperoneTabController.initStage1();
     m_moveCenterTabController.initStage1();
     m_audioTabController.initStage1();
-    m_statisticsTabController.initStage1();
     m_settingsTabController.initStage1();
     m_reviveTabController.initStage1(
         m_settingsTabController.forceRevivePage() );
