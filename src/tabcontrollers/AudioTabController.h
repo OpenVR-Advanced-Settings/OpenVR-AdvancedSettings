@@ -54,9 +54,6 @@ class AudioTabController : public PttController
                     setAudioProfileDefault NOTIFY audioProfileDefaultChanged )
 
 private:
-    OverlayController* parent;
-    QQuickWindow* widget;
-
     vr::VROverlayHandle_t m_ulNotificationOverlayHandle
         = vr::k_ulOverlayHandleInvalid;
 
@@ -118,7 +115,7 @@ private:
 
 public:
     void initStage1();
-    void initStage2( OverlayController* var_parent, QQuickWindow* var_widget );
+    void initStage2();
 
     void reloadAudioSettings();
     void saveAudioSettings();
