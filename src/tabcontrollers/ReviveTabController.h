@@ -70,7 +70,6 @@ class ReviveTabController : public QObject
 
 private:
     OverlayController* parent;
-    QQuickWindow* widget;
 
     bool m_isOverlayInstalled = false;
     int m_gripButtonMode = 0;
@@ -98,7 +97,7 @@ private:
 
 public:
     void initStage1( bool forceRevivePage );
-    void initStage2( OverlayController* parent, QQuickWindow* widget );
+    void initStage2( OverlayController* parent );
 
     void eventLoopTick();
 
