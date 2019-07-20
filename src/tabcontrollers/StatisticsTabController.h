@@ -26,7 +26,6 @@ class StatisticsTabController : public QObject
 
 private:
     OverlayController* parent;
-    QQuickWindow* widget;
 
     bool rotationResetFlag = false;
     float rotationOffset = 0.0f;
@@ -53,7 +52,7 @@ private:
 
 public:
     void initStage1();
-    void initStage2( OverlayController* parent, QQuickWindow* widget );
+    void initStage2( OverlayController* parent );
 
     void eventLoopTick( vr::TrackedDevicePose_t* devicePoses,
                         float leftSpeed,
