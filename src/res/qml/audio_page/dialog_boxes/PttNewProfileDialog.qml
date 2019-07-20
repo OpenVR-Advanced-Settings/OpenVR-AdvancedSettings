@@ -19,7 +19,7 @@ MyDialogOkCancelPopup {
             }
             MyTextField {
                 id: pttNewProfileName
-                keyBoardUID: 590
+                keyBoardUID: 591
                 color: "#cccccc"
                 text: ""
                 Layout.fillWidth: true
