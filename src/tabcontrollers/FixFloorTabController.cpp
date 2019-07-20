@@ -7,11 +7,9 @@ namespace advsettings
 {
 void FixFloorTabController::initStage1() {}
 
-void FixFloorTabController::initStage2( OverlayController* var_parent,
-                                        QQuickWindow* var_widget )
+void FixFloorTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
-    this->widget = var_widget;
 }
 
 void FixFloorTabController::eventLoopTick(
