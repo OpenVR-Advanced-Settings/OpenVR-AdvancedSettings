@@ -45,8 +45,6 @@ private:
     // how wide overlay is, Increase this value if edges of view are not
     // dimmed.
     const float k_overlayWidth = 1.0f;
-    OverlayController* parent;
-    QQuickWindow* widget;
 
     vr::VROverlayHandle_t m_brightnessOverlayHandle
         = vr::k_ulOverlayHandleInvalid;
@@ -105,7 +103,6 @@ public:
     float colorOpacityPerc() const;
 
     void initStage1();
-    void initStage2( OverlayController* var_parent, QQuickWindow* var_widget );
     void eventLoopTick();
 
 public slots:

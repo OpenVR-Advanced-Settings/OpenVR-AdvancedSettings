@@ -491,8 +491,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     m_statisticsTabController.initStage2( this );
     m_settingsTabController.initStage2( this );
     m_reviveTabController.initStage2( this );
-    m_utilitiesTabController.initStage2( this, m_pWindow.get() );
-    m_videoTabController.initStage2( this, m_pWindow.get() );
+    m_utilitiesTabController.initStage2( this );
     m_moveCenterTabController.initStage2( this, m_pWindow.get() );
 }
 
