@@ -14,13 +14,6 @@ void VideoTabController::initStage1()
     reloadVideoConfig();
 }
 
-void VideoTabController::initStage2( OverlayController* var_parent,
-                                     QQuickWindow* var_widget )
-{
-    this->parent = var_parent;
-    this->widget = var_widget;
-}
-
 void VideoTabController::initBrightnessOverlay()
 {
     std::string notifKey = std::string( application_strings::applicationKey )

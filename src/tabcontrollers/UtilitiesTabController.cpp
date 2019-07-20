@@ -22,11 +22,9 @@ void UtilitiesTabController::initStage1()
     m_alarmTime = QTime( qAlarmHour.toInt(), qAlarmMinute.toInt() );
 }
 
-void UtilitiesTabController::initStage2( OverlayController* var_parent,
-                                         QQuickWindow* var_widget )
+void UtilitiesTabController::initStage2( OverlayController* var_parent )
 {
     this->m_parent = var_parent;
-    this->m_widget = var_widget;
 }
 
 void UtilitiesTabController::sendKeyboardInput( QString input )

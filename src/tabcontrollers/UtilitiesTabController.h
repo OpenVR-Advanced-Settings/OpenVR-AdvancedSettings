@@ -29,7 +29,6 @@ class UtilitiesTabController : public QObject
 
 private:
     OverlayController* m_parent;
-    QQuickWindow* m_widget;
 
     unsigned settingsUpdateCounter = 0;
 
@@ -45,7 +44,7 @@ private:
 
 public:
     void initStage1();
-    void initStage2( OverlayController* var_parent, QQuickWindow* var_widget );
+    void initStage2( OverlayController* var_parent );
 
     void eventLoopTick();
 
