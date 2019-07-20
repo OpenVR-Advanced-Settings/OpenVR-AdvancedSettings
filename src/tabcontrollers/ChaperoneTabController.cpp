@@ -47,11 +47,9 @@ void ChaperoneTabController::initStage1()
     eventLoopTick( nullptr, 0.0f, 0.0f, 0.0f );
 }
 
-void ChaperoneTabController::initStage2( OverlayController* var_parent,
-                                         QQuickWindow* var_widget )
+void ChaperoneTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
-    this->widget = var_widget;
 }
 
 ChaperoneTabController::~ChaperoneTabController()

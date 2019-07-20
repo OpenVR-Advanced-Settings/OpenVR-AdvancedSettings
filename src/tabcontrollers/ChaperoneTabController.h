@@ -135,7 +135,6 @@ class ChaperoneTabController : public QObject
 
 private:
     OverlayController* parent;
-    QQuickWindow* widget;
 
     float m_visibility = 0.6f;
     float m_fadeDistance = 0.7f;
@@ -193,7 +192,7 @@ public:
     ~ChaperoneTabController();
 
     void initStage1();
-    void initStage2( OverlayController* parent, QQuickWindow* widget );
+    void initStage2( OverlayController* parent );
 
     void eventLoopTick( vr::TrackedDevicePose_t* devicePoses,
                         float leftSpeed,
