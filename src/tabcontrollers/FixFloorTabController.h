@@ -53,7 +53,6 @@ private:
     int getControllerType( vr::TrackedDeviceIndex_t controllerRole );
 
 public:
-    void initStage1();
     void initStage2( OverlayController* parent );
 
     void eventLoopTick( vr::TrackedDevicePose_t* devicePoses );

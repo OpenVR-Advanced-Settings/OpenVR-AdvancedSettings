@@ -5,8 +5,6 @@
 // application namespace
 namespace advsettings
 {
-void FixFloorTabController::initStage1() {}
-
 void FixFloorTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
