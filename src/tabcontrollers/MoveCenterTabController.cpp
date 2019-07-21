@@ -159,11 +159,9 @@ void MoveCenterTabController::initStage1()
     m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
 }
 
-void MoveCenterTabController::initStage2( OverlayController* var_parent,
-                                          QQuickWindow* var_widget )
+void MoveCenterTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
-    this->widget = var_widget;
     zeroOffsets();
     outputLogSettings();
 }

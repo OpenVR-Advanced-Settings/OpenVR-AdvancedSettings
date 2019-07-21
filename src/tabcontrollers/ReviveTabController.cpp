@@ -297,11 +297,9 @@ void ReviveTabController::initStage1( bool forceRevivePage )
     }
 }
 
-void ReviveTabController::initStage2( OverlayController* var_parent,
-                                      QQuickWindow* var_widget )
+void ReviveTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
-    this->widget = var_widget;
 }
 
 void ReviveTabController::eventLoopTick()

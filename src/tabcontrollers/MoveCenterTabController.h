@@ -87,7 +87,6 @@ class MoveCenterTabController : public QObject
 
 private:
     OverlayController* parent;
-    QQuickWindow* widget;
 
     int m_trackingUniverse = static_cast<int>( vr::TrackingUniverseStanding );
     float m_offsetX = 0.0f;
@@ -192,7 +191,7 @@ private:
 
 public:
     void initStage1();
-    void initStage2( OverlayController* parent, QQuickWindow* widget );
+    void initStage2( OverlayController* parent );
 
     void eventLoopTick( vr::ETrackingUniverseOrigin universe,
                         vr::TrackedDevicePose_t* devicePoses );

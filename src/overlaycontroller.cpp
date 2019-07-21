@@ -137,9 +137,7 @@ OverlayController::OverlayController( bool desktopMode,
     m_steamVRTabController.initStage1();
     m_chaperoneTabController.initStage1();
     m_moveCenterTabController.initStage1();
-    m_fixFloorTabController.initStage1();
     m_audioTabController.initStage1();
-    m_statisticsTabController.initStage1();
     m_settingsTabController.initStage1();
     m_reviveTabController.initStage1(
         m_settingsTabController.forceRevivePage() );
@@ -315,6 +313,32 @@ OverlayController::OverlayController( bool desktopMode,
         appSettings()->setValue( "keyboardThree", defaultDiscordMuteBindings );
     }
     appSettings()->endGroup();
+
+    // Keep the settings for vsyncDisabled here in main overlaycontroller
+    appSettings()->beginGroup( "applicationSettings" );
+    auto value = appSettings()->value( "vsyncDisabled", m_vsyncDisabled );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_vsyncDisabled = value.toBool();
+    }
+    value = appSettings()->value( "customTickRateMs", m_customTickRateMs );
+    if ( value.isValid() && !value.isNull() )
+    {
+        // keep sane tickrate (between 1~k_maxCustomTickRate)
+        if ( value.toInt() < 1 )
+        {
+            m_customTickRateMs = 1;
+        }
+        else if ( value.toInt() > k_maxCustomTickRate )
+        {
+            m_customTickRateMs = k_maxCustomTickRate;
+        }
+        else
+        {
+            m_customTickRateMs = value.toInt();
+        }
+    }
+    appSettings()->endGroup();
 }
 
 OverlayController::~OverlayController()
@@ -460,16 +484,15 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
 
     m_pPumpEventsTimer->start();
 
-    m_steamVRTabController.initStage2( this, m_pWindow.get() );
-    m_chaperoneTabController.initStage2( this, m_pWindow.get() );
-    m_fixFloorTabController.initStage2( this, m_pWindow.get() );
-    m_audioTabController.initStage2( this, m_pWindow.get() );
-    m_statisticsTabController.initStage2( this, m_pWindow.get() );
-    m_settingsTabController.initStage2( this, m_pWindow.get() );
-    m_reviveTabController.initStage2( this, m_pWindow.get() );
-    m_utilitiesTabController.initStage2( this, m_pWindow.get() );
-    m_videoTabController.initStage2( this, m_pWindow.get() );
-    m_moveCenterTabController.initStage2( this, m_pWindow.get() );
+    m_steamVRTabController.initStage2( this );
+    m_chaperoneTabController.initStage2( this );
+    m_fixFloorTabController.initStage2( this );
+    m_audioTabController.initStage2();
+    m_statisticsTabController.initStage2( this );
+    m_settingsTabController.initStage2( this );
+    m_reviveTabController.initStage2( this );
+    m_utilitiesTabController.initStage2( this );
+    m_moveCenterTabController.initStage2( this );
 }
 
 void OverlayController::OnRenderRequest()
@@ -708,35 +731,115 @@ void OverlayController::processInputBindings()
     processKeyboardBindings();
 }
 
+bool OverlayController::vsyncDisabled() const
+{
+    return m_vsyncDisabled;
+}
+
+void OverlayController::setVsyncDisabled( bool value, bool notify )
+{
+    if ( m_vsyncDisabled == value )
+    {
+        return;
+    }
+    m_vsyncDisabled = value;
+    appSettings()->beginGroup( "applicationSettings" );
+    appSettings()->setValue( "vsyncDisabled", m_vsyncDisabled );
+    appSettings()->endGroup();
+    appSettings()->sync();
+    if ( notify )
+    {
+        emit vsyncDisabledChanged( m_vsyncDisabled );
+    }
+}
+
+int OverlayController::customTickRateMs() const
+{
+    return m_customTickRateMs;
+}
+
+void OverlayController::setCustomTickRateMs( int value, bool notify )
+{
+    if ( m_customTickRateMs == value )
+    {
+        return;
+    }
+    // keep m_customTickRateMs sane (between 1~k_maxCustomTickRate)
+    if ( value < 1 )
+    {
+        m_customTickRateMs = 1;
+    }
+    else if ( value > k_maxCustomTickRate )
+    {
+        m_customTickRateMs = k_maxCustomTickRate;
+    }
+    else
+    {
+        m_customTickRateMs = value;
+    }
+
+    appSettings()->beginGroup( "applicationSettings" );
+    appSettings()->setValue( "customTickRateMs", m_customTickRateMs );
+    appSettings()->endGroup();
+    appSettings()->sync();
+    if ( notify )
+    {
+        emit customTickRateMsChanged( m_customTickRateMs );
+    }
+}
+
 // vsync implementation:
-// (this function triggers every 1ms)
+// this function triggers every 1ms
+// this function should remain lightweight and only check if it's time to run
+// mainEventLoop() or not.
 void OverlayController::OnTimeoutPumpEvents()
 {
-    // get the current frame number from the VRSystem frame counter
-    vr::VRSystem()->GetTimeSinceLastVsync( nullptr, &m_currentFrame );
-
-    // Check if we are in the next frame yet
-    if ( m_currentFrame > m_lastFrame )
+    if ( m_vsyncDisabled )
     {
-        // If the frame has advanced since last check, it's time for our main
-        // event loop. (this function should trigger about every 11ms assuming
-        // 90fps compositor)
-        mainEventLoop();
+        // check if it's time for a custom tick rate tick
+        if ( m_customTickRateCounter > m_customTickRateMs )
+        {
+            mainEventLoop();
+            m_customTickRateCounter = 0;
+        }
+        else
+        {
+            m_customTickRateCounter++;
+        }
+    }
 
-        // wait for the next frame after executing our main event loop once.
-        m_lastFrame = m_currentFrame;
-        m_vsyncTooLateCounter = 0;
-    }
-    else if ( m_vsyncTooLateCounter >= k_nonVsyncTickRate )
+    // vsync is enabled
+    else
     {
-        mainEventLoop();
-        // m_lastFrame = m_currentFrame + 1 skips the next vsync frame in case
-        // it was just about to trigger, to prevent double updates faster than
-        // 11ms.
-        m_lastFrame = m_currentFrame + 1;
-        m_vsyncTooLateCounter = 0;
+        // get the current frame number from the VRSystem frame counter
+        vr::VRSystem()->GetTimeSinceLastVsync( nullptr, &m_currentFrame );
+
+        // Check if we are in the next frame yet
+        if ( m_currentFrame > m_lastFrame )
+        {
+            // If the frame has advanced since last check, it's time for our
+            // main event loop. (this function should trigger about every 11ms
+            // assuming 90fps compositor)
+            mainEventLoop();
+
+            // wait for the next frame after executing our main event loop once.
+            m_lastFrame = m_currentFrame;
+            m_vsyncTooLateCounter = 0;
+        }
+        else if ( m_vsyncTooLateCounter >= k_nonVsyncTickRate )
+        {
+            mainEventLoop();
+            // m_lastFrame = m_currentFrame + 1 skips the next vsync frame in
+            // case it was just about to trigger, to prevent double updates
+            // faster than 11ms.
+            m_lastFrame = m_currentFrame + 1;
+            m_vsyncTooLateCounter = 0;
+        }
+        else
+        {
+            m_vsyncTooLateCounter++;
+        }
     }
-    m_vsyncTooLateCounter++;
 }
 
 void OverlayController::mainEventLoop()

@@ -47,11 +47,9 @@ void ChaperoneTabController::initStage1()
     eventLoopTick( nullptr, 0.0f, 0.0f, 0.0f );
 }
 
-void ChaperoneTabController::initStage2( OverlayController* var_parent,
-                                         QQuickWindow* var_widget )
+void ChaperoneTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
-    this->widget = var_widget;
 }
 
 ChaperoneTabController::~ChaperoneTabController()
@@ -574,27 +572,6 @@ void ChaperoneTabController::eventLoopTick(
     float rightSpeed,
     float hmdSpeed )
 {
-    m_chaperoneVelocityModifierCurrent = 1.0f;
-    if ( m_enableChaperoneVelocityModifier )
-    {
-        float mod = m_chaperoneVelocityModifier
-                    * std::max( { leftSpeed, rightSpeed, hmdSpeed } );
-        if ( mod > 0.02f )
-        {
-            m_chaperoneVelocityModifierCurrent += mod;
-        }
-    }
-    float newFadeDistance = m_fadeDistance * m_chaperoneVelocityModifierCurrent;
-    if ( m_fadeDistanceModified != newFadeDistance )
-    {
-        m_fadeDistanceModified = newFadeDistance;
-        vr::VRSettings()->SetFloat(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_FadeDistance_Float,
-            m_fadeDistanceModified );
-        vr::VRSettings()->Sync();
-    }
-
     if ( devicePoses )
     {
         m_isHMDActive = false;
@@ -687,6 +664,28 @@ void ChaperoneTabController::eventLoopTick(
 
     if ( settingsUpdateCounter >= k_chaperoneSettingsUpdateCounter )
     {
+        m_chaperoneVelocityModifierCurrent = 1.0f;
+        if ( m_enableChaperoneVelocityModifier )
+        {
+            float mod = m_chaperoneVelocityModifier
+                        * std::max( { leftSpeed, rightSpeed, hmdSpeed } );
+            if ( mod > 0.02f )
+            {
+                m_chaperoneVelocityModifierCurrent += mod;
+            }
+        }
+        float newFadeDistance
+            = m_fadeDistance * m_chaperoneVelocityModifierCurrent;
+        if ( m_fadeDistanceModified != newFadeDistance )
+        {
+            m_fadeDistanceModified = newFadeDistance;
+            vr::VRSettings()->SetFloat(
+                vr::k_pch_CollisionBounds_Section,
+                vr::k_pch_CollisionBounds_FadeDistance_Float,
+                m_fadeDistanceModified );
+            vr::VRSettings()->Sync();
+        }
+
         if ( parent->isDashboardVisible() )
         {
             vr::EVRSettingsError vrSettingsError;

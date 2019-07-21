@@ -44,7 +44,6 @@ class SteamVRTabController : public QObject
 
 private:
     OverlayController* parent;
-    QQuickWindow* widget;
 
     float m_superSampling = 1.0;
     bool m_motionSmoothing = true;
@@ -61,7 +60,7 @@ private:
 
 public:
     void initStage1();
-    void initStage2( OverlayController* parent, QQuickWindow* widget );
+    void initStage2( OverlayController* parent );
 
     void eventLoopTick();
 

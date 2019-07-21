@@ -56,12 +56,8 @@ void AudioTabController::initStage1()
     eventLoopTick();
 }
 
-void AudioTabController::initStage2( OverlayController* var_parent,
-                                     QQuickWindow* var_widget )
+void AudioTabController::initStage2()
 {
-    this->parent = var_parent;
-    this->widget = var_widget;
-
     std::string notifKey = std::string( application_strings::applicationKey )
                            + ".pptnotification";
 

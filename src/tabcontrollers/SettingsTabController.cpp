@@ -19,11 +19,9 @@ void SettingsTabController::initStage1()
     }
 }
 
-void SettingsTabController::initStage2( OverlayController* var_parent,
-                                        QQuickWindow* var_widget )
+void SettingsTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
-    this->widget = var_widget;
 }
 
 void SettingsTabController::eventLoopTick()
