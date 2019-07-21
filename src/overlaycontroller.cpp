@@ -43,6 +43,8 @@ OverlayController::OverlayController( bool desktopMode,
         = vr::VR_GetRuntimePath( tempRuntimePath, maxLength, &requiredLength );
 
     // Throw Error If over 16k characters in path string
+    int zz = 50;
+    LOG( ERROR ) << zz;
     if ( !pathIsGood )
     {
         LOG( ERROR ) << "Error Finding VR Runtime Path, Attempting Recovery: ";

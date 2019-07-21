@@ -247,6 +247,8 @@ MyStackViewPage {
             text: "Enable Manual Supersampling Override"
             onCheckedChanged: {
                 SteamVRTabController.setAllowSupersampleOverride(this.checked, false)
+                SteamVRTabController.setSuperSampling(steamvrSupersamplingSlider.value.toFixed(1), false)
+                steamvrSupersamplingText.text = SteamVRTabController.superSampling.toFixed(1)
                 if(!this.checked){
                     steamvrSupersamplingText.enabled = false
                     steamvrSupersamplingSlider.enabled = false
