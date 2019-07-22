@@ -1067,6 +1067,11 @@ void OverlayController::mainEventLoop()
     m_reviveTabController.eventLoopTick();
     m_audioTabController.eventLoopTick();
 
+    if ( vr::VROverlay()->IsDashboardVisible() )
+    {
+        m_steamVRTabController.dashboardLoopTick();
+    }
+
     if ( m_ulOverlayThumbnailHandle != vr::k_ulOverlayHandleInvalid )
     {
         while ( vr::VROverlay()->PollNextOverlayEvent(

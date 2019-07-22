@@ -63,6 +63,7 @@ public:
     void initStage2( OverlayController* parent );
 
     void eventLoopTick();
+    void dashboardLoopTick();
 
     float superSampling() const;
     bool motionSmoothing() const;

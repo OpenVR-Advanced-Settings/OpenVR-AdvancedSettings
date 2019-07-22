@@ -200,11 +200,9 @@ MyStackViewPage {
                 value: 1.0
                 snapMode: Slider.SnapAlways
                 Layout.fillWidth: true
-                onPositionChanged: {
-                    var val = this.from + ( this.position  * (this.to - this.from))
-                    steamvrSupersamplingText.text = val.toFixed(1)
-                }
                 onValueChanged: {
+                    var val = this.value
+                    steamvrSupersamplingText.text = val.toFixed(1)
                     SteamVRTabController.setSuperSampling(this.value.toFixed(1), false)
                 }
             }
