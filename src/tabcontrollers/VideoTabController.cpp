@@ -113,8 +113,6 @@ void VideoTabController::reloadVideoConfig()
     setColorGreen( settings->value( "colorGreen", 0.0f ).toFloat() );
     setColorBlue( settings->value( "colorBlue", 0.0f ).toFloat() );
     settings->endGroup();
-    LOG( INFO ) << "bright opacityValue: " << m_brightnessOpacityValue
-                << " REd value is: " << m_colorRed;
     setBrightnessOpacityValue();
     loadColorOverlay();
     settings->sync();

@@ -22,10 +22,8 @@ void SteamVRTabController::eventLoopTick() {}
 
 void SteamVRTabController::dashboardLoopTick()
 {
-    LOG( INFO ) << "dashboard tick";
     if ( settingsUpdateCounter >= k_steamVrSettingsUpdateCounter )
     {
-        LOG( INFO ) << "update tick";
         vr::EVRSettingsError vrSettingsError;
         // checks supersampling override and resynchs if necessry
         // also prints error if can't find.

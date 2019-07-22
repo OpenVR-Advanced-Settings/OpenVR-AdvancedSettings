@@ -43,8 +43,6 @@ OverlayController::OverlayController( bool desktopMode,
         = vr::VR_GetRuntimePath( tempRuntimePath, maxLength, &requiredLength );
 
     // Throw Error If over 16k characters in path string
-    int zz = 50;
-    LOG( ERROR ) << zz;
     if ( !pathIsGood )
     {
         LOG( ERROR ) << "Error Finding VR Runtime Path, Attempting Recovery: ";
@@ -1060,7 +1058,7 @@ void OverlayController::mainEventLoop()
     m_fixFloorTabController.eventLoopTick( devicePoses );
     m_statisticsTabController.eventLoopTick(
         devicePoses, leftSpeed, rightSpeed );
-    m_steamVRTabController.eventLoopTick();
+    // m_steamVRTabController.eventLoopTick();
     m_chaperoneTabController.eventLoopTick(
         devicePoses, leftSpeed, rightSpeed, hmdSpeed );
     m_settingsTabController.eventLoopTick();
