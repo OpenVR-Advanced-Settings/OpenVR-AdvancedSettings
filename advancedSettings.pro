@@ -45,7 +45,7 @@ include($$include_dir/sources.pri)
 include($$include_dir/resources.pri)
 
 # Copy extra files
-COPIES += resCopy readmeCopy licenseCopy packageFilesCopy
+COPIES += resCopy readmeCopy licenseCopy packageFilesCopy openvrApiCopy
 COPY_DEST_DIR = $$OUT_PWD/$$DESTDIR
 
 resCopy.files = src/res/*
@@ -61,3 +61,7 @@ licenseCopy.path = $$COPY_DEST_DIR
 
 packageFilesCopy.files = src/package_files/*
 packageFilesCopy.path = $$COPY_DEST_DIR
+
+win32:openvrApiCopy.files = third-party/openvr/bin/win64/openvr_api.dll
+unix:openvrApiCopy.files = third-party/openvr/lib/linux64/libopenvr_api.so
+openvrApiCopy.path = $$COPY_DEST_DIR

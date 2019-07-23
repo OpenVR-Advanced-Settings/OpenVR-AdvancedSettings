@@ -5,8 +5,6 @@ import os
 import sys
 import argparse
 import subprocess
-import shutil
-import distutils.dir_util
 import string
 
 def get_version_string():
@@ -210,39 +208,4 @@ def get_original_dir():
 
 def get_deploy_dir():
     return DEPLOY_DIR
-
-def copy_file(src, dest):
-    """Copies a file and outputs status to console."""
-    say(f"Copying {src} to {dest}")
-    shutil.copy(src, dest)
-    say(f"{src} to {dest} copied.")
-
-def copy_folder(src, dest):
-    """Copies a folder and outputs status to console."""
-    say(f"Copying {src} to {dest}")
-    distutils.dir_util.copy_tree(src, dest)
-    say(f"{src} to {dest} copied.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
