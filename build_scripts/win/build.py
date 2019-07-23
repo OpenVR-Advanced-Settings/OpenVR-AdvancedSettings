@@ -127,9 +127,6 @@ def deploy():
     copy_file(get_project_dir() + "\\third-party\\openvr\\LICENSE", get_deploy_dir() + "\\LICENSE-VALVE.txt")
     copy_file(get_project_dir() + "\\third-party\\easylogging++\\LICENSE", get_deploy_dir() + "\\LICENSE-MIT.txt")
 
-    #res
-    copy_folder(get_project_dir() + "\\src\\res", get_deploy_dir() + "\\res")
-
     #package files
     copy_folder(get_project_dir() + "\\src\\package_files", get_deploy_dir())
 
