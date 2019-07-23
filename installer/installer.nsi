@@ -110,9 +110,9 @@ Section "Install" SecInstall
 	SetOutPath "$INSTDIR"
 
 	;ADD YOUR OWN FILES HERE...
-    File "${BASEDIR}\LICENSE-GPL.txt"
-    File "${BASEDIR}\LICENSE-MIT.txt"
-    File "${BASEDIR}\LICENSE-VALVE.txt"
+    File "${BASEDIR}\LICENSE"
+    File "${BASEDIR}\LICENSE-MIT"
+    File "${BASEDIR}\LICENSE-VALVE"
     
 	File "${BASEDIR}\*.exe"
     ;Any action manifests
