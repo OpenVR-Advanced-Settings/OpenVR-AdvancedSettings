@@ -13,7 +13,4 @@ qmake -spec $QMAKE_SPEC $PROJECT_DIR $QMAKE_EXTRAS
 $MAKE_COMMAND
 $CLANG_TIDY
 
-cp $PROJECT_DIR/src/package_files/action_manifest.json $BUILD_DIR/bin/linux/AdvancedSettings/
-cp $PROJECT_DIR/src/package_files/manifest.vrmanifest $BUILD_DIR/bin/linux/AdvancedSettings/
-cp -r $PROJECT_DIR/src/package_files/default_action_manifests $BUILD_DIR/bin/linux/AdvancedSettings/
 cp $PROJECT_DIR/third-party/openvr/lib/linux64/libopenvr_api.so $BUILD_DIR/bin/linux/AdvancedSettings/
