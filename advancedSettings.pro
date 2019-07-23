@@ -1,5 +1,5 @@
 QT       += core gui qml quick multimedia widgets
-CONFIG   += c++1z
+CONFIG   += c++1z file_copies
 
 DEFINES += ELPP_THREAD_SAFE ELPP_QT_LOGGING ELPP_NO_DEFAULT_LOG_FILE
 
@@ -43,3 +43,9 @@ win32-clang-msvc{
 include($$include_dir/sources.pri)
 
 include($$include_dir/resources.pri)
+
+# Copy extra files
+COPIES += resCopy
+
+resCopy.files = src/res/*
+resCopy.path = $$OUT_PWD/$$DESTDIR/res
