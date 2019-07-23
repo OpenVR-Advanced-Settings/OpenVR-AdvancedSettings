@@ -90,7 +90,7 @@ def deploy():
     set_dirs()
 
     say("Testing if all required build environment variables are set:")
-    QT_LOC = get_required_env_var_path(QT_LOC_VAR_NAME, QT_LOC_DEFAULT)
+    QT_LOC = find_qt_path()
     say("All required build environment values are set.")
 
     if is_env_var_set(BUILD_DEBUG_VAR_NAME):
@@ -153,13 +153,13 @@ def build():
 
     COMPILE_MODE = ""
     COMPILER = ""
-    
+
     say("Attempting to build version: " + VERSION_STRING)
-    
+
     say("Testing if all required build environment variables are set:")
-    QT_LOC = get_required_env_var_path(QT_LOC_VAR_NAME, QT_LOC_DEFAULT)
+    QT_LOC = find_qt_path()
     VS_LOC = get_required_env_var_path(VS_LOC_VAR_NAME, VS_LOC_DEFAULT)
-    
+
     if is_env_var_set(BUILD_CLANG_VAR_NAME):
         say(f"{BUILD_CLANG_VAR_NAME} defined. Building for win32-clang-msvc.")
         get_required_env_var_path(LLVM_LOC_VAR_NAME, LLVM_LOC_DEFAULT)
