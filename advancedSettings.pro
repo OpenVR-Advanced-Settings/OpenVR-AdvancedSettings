@@ -45,7 +45,7 @@ include($$include_dir/sources.pri)
 include($$include_dir/resources.pri)
 
 # Copy extra files
-COPIES += resCopy readmeCopy licenseCopy
+COPIES += resCopy readmeCopy licenseCopy packageFilesCopy
 COPY_DEST_DIR = $$OUT_PWD/$$DESTDIR
 
 resCopy.files = src/res/*
@@ -58,3 +58,6 @@ licenseCopy.files = LICENSE \
                     third-party/openvr/LICENSE-VALVE  \
                     third-party/easylogging++/LICENSE-MIT
 licenseCopy.path = $$COPY_DEST_DIR
+
+packageFilesCopy.files = src/package_files/*
+packageFilesCopy.path = $$COPY_DEST_DIR

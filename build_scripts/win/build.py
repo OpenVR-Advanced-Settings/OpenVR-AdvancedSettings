@@ -119,9 +119,6 @@ def deploy():
 
     say("Copying necessary files:")
 
-    #package files
-    copy_folder(get_project_dir() + "\\src\\package_files", get_deploy_dir())
-
     #openvr dll
     copy_file(get_project_dir() + "\\third-party\\openvr\\bin\\win64\\openvr_api.dll", get_deploy_dir() + "\\openvr_api.dll")
 
