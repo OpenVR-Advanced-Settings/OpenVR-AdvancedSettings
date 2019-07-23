@@ -125,6 +125,13 @@ def get_required_env_var_path(env_var_name: str, default_env_var_value: str):
     return path
 
 def find_qt_path():
+    """
+    Returns the location of the Qt bin directory.
+
+    Precedence goes to the QT_LOC_VAR_NAME environment variable.
+    If that is set and exists it will be used, if it's set and doesn't exist
+    likely locations will be searched for an install.
+    """
     if is_env_var_set(QT_LOC_VAR_NAME):
         say(f"{QT_LOC_VAR_NAME} is defined. Attempting to find first.")
         qt_path = os.getenv(QT_LOC_VAR_NAME).replace('"', '')
@@ -143,6 +150,10 @@ def find_qt_path():
     return qt_path
 
 def traverse_and_find_qt_path():
+    """
+    Searches all drives (A-Z) and versions above 12 to find the
+    Qt install location.
+    """
     qt_folder_name = r":\\Qt\\"
     qt_visual_studio_name = r"\\msvc2017_64\bin\\"
     qt_major_version = 5
