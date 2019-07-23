@@ -45,7 +45,11 @@ include($$include_dir/sources.pri)
 include($$include_dir/resources.pri)
 
 # Copy extra files
-COPIES += resCopy
+COPIES += resCopy readmeCopy
+COPY_DEST_DIR = $$OUT_PWD/$$DESTDIR
 
 resCopy.files = src/res/*
-resCopy.path = $$OUT_PWD/$$DESTDIR/res
+resCopy.path = $$COPY_DEST_DIR/res
+
+readmeCopy.files = Readme.md
+readmeCopy.path = $$COPY_DEST_DIR
