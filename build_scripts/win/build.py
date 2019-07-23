@@ -119,9 +119,6 @@ def deploy():
 
     say("Copying necessary files:")
 
-    #readme
-    copy_file(get_project_dir() + "\Readme.md", get_deploy_dir() + "\Readme.md")
-
     #license
     copy_file(get_project_dir() + "\\LICENSE", get_deploy_dir() + "\\LICENSE-GPL.txt")
     copy_file(get_project_dir() + "\\third-party\\openvr\\LICENSE", get_deploy_dir() + "\\LICENSE-VALVE.txt")
