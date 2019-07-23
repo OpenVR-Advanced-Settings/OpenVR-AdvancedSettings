@@ -13,4 +13,3 @@ qmake -spec $QMAKE_SPEC $PROJECT_DIR $QMAKE_EXTRAS
 $MAKE_COMMAND
 $CLANG_TIDY
 
-cp $PROJECT_DIR/third-party/openvr/lib/linux64/libopenvr_api.so $BUILD_DIR/bin/linux/AdvancedSettings/

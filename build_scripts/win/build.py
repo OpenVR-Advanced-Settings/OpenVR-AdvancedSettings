@@ -117,11 +117,6 @@ def deploy():
 
     say("windeployqt added to file.")
 
-    say("Copying necessary files:")
-
-    #openvr dll
-    copy_file(get_project_dir() + "\\third-party\\openvr\\bin\\win64\\openvr_api.dll", get_deploy_dir() + "\\openvr_api.dll")
-
     say("Creating batch file:")
     create_batch_file()
     say("Batch file created.")
