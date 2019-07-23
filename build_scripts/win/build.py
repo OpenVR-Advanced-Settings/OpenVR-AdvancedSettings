@@ -15,7 +15,7 @@ for seven different applications:
 The script does error checking on environmental variables before outputting
 a simple Windows batch file that will be called by other batch scripts.
 
-The reason that a batch file is created and run outside of python is that if 
+The reason that a batch file is created and run outside of python is that if
 you don't do it like that, you have these options
 
 1) Run applications one by one in python.
@@ -33,7 +33,7 @@ you don't do it like that, you have these options
 
 3) Write the entire thing in another language (like Powershell).
 
-    This was tried and even though Powershell has decent stdlib functionality like 
+    This was tried and even though Powershell has decent stdlib functionality like
     testing paths and replacing chars in strings, it is still lacking in some areas
     like actually running .exe files without resorting to weird tricks and cmd line hacks.
     In addition, Powershell has some weird tendencies compared to other "real"
@@ -115,7 +115,7 @@ def deploy():
     add_error_handling_line_to_bat_file()
     add_line_to_run_bat_file("@ECHO windeployqt finished.")
 
-    say("windeployqt added to file.")        
+    say("windeployqt added to file.")
 
     say("Copying necessary files:")
 
@@ -126,20 +126,20 @@ def deploy():
     copy_file(get_project_dir() + "\\LICENSE", get_deploy_dir() + "\\LICENSE-GPL.txt")
     copy_file(get_project_dir() + "\\third-party\\openvr\\LICENSE", get_deploy_dir() + "\\LICENSE-VALVE.txt")
     copy_file(get_project_dir() + "\\third-party\\easylogging++\\LICENSE", get_deploy_dir() + "\\LICENSE-MIT.txt")
-    
+
     #res
     copy_folder(get_project_dir() + "\\src\\res", get_deploy_dir() + "\\res")
 
     #package files
     copy_folder(get_project_dir() + "\\src\\package_files", get_deploy_dir())
-    
+
     #openvr dll
     copy_file(get_project_dir() + "\\third-party\\openvr\\bin\\win64\\openvr_api.dll", get_deploy_dir() + "\\openvr_api.dll")
 
     say("Creating batch file:")
     create_batch_file()
     say("Batch file created.")
-    
+
 
 def build():
     """
@@ -167,7 +167,7 @@ def build():
     else:
         say(f"{BUILD_CLANG_VAR_NAME} not defined. Building for msvc.")
         COMPILER = "win32-msvc"
-        
+
     say("All required build environment values are set.")
 
     #Otherwise qmake gets confused
@@ -201,8 +201,8 @@ def build():
     add_line_to_run_bat_file("@ECHO Running qmake:")
     add_line_to_run_bat_file('"' + QMAKE_LOC + '"' +  " -spec " + COMPILER + " CONFIG+=X86_64 " + "CONFIG+=" + COMPILE_MODE)
     add_error_handling_line_to_bat_file()
-    add_line_to_run_bat_file("@ECHO qmake done.")    
-        
+    add_line_to_run_bat_file("@ECHO qmake done.")
+
     if is_env_var_set(JOM_LOC_VAR_NAME):
         JOM_LOC = os.getenv(JOM_LOC_VAR_NAME)
     else:
@@ -229,7 +229,7 @@ def build():
     add_line_to_run_bat_file("cd " + get_original_dir())
 
     create_batch_file()
-    
+
 if __name__ == "__main__":
     if argv[1] == "build":
         build()
@@ -240,4 +240,4 @@ if __name__ == "__main__":
 
 
 
-    
+
