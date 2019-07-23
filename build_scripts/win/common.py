@@ -7,6 +7,7 @@ import argparse
 import subprocess
 import shutil
 import distutils.dir_util
+import string
 
 def get_version_string():
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -122,6 +123,46 @@ def get_required_env_var_path(env_var_name: str, default_env_var_value: str):
         exit_on_error(EXIT_CODE_FAILURE_BUILD_LOCATION)
     say(f"{env_var_name} exists.")
     return path
+
+def find_qt_path():
+    if is_env_var_set(QT_LOC_VAR_NAME):
+        say(f"{QT_LOC_VAR_NAME} is defined. Attempting to find first.")
+        qt_path = os.getenv(QT_LOC_VAR_NAME).replace('"', '')
+        say(f"{QT_LOC_VAR_NAME} is set to '{qt_path}'.")
+        if os.path.exists(qt_path):
+            say(f"'{qt_path}' exists. Using this path.")
+            return qt_path
+        else:
+            say(f"'{qt_path}' does not exist, attempting to traverse filesystem.")
+
+    qt_path = traverse_and_find_qt_path()
+    if qt_path == "NOTFOUND":
+       say("Qt path could not be find by traversal. Exiting.")
+       exit_on_error(EXIT_CODE_FAILURE_BUILD_LOCATION)
+
+    return qt_path
+
+def traverse_and_find_qt_path():
+    qt_folder_name = r":\\Qt\\"
+    qt_visual_studio_name = r"\\msvc2017_64\bin\\"
+    qt_major_version = 5
+    qt_minor_versions = [12, 13, 14, 15, 16]
+    qt_patch_versions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    # We search the A and B drive letters even though it's
+    # unlikely for the install to be there
+    windows_drive_letters = string.ascii_uppercase
+    for drive in windows_drive_letters:
+        # Go in reverse because we want the highest versions first
+        for minor in reversed(qt_minor_versions):
+            for patch in reversed(qt_patch_versions):
+                version = str(qt_major_version) + "." + str(minor) + "." + str(patch)
+                path = str(drive) + qt_folder_name + version + qt_visual_studio_name
+                if os.path.exists(path):
+                    say("Found QT path: '" + path + "'")
+                    return path
+    say("Did not find any valid QT path.")
+    return "NOTFOUND"
+
 
 def create_batch_file():
     """
