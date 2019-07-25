@@ -30,7 +30,7 @@ public:
     void initStage1();
     void initStage2( OverlayController* parent );
 
-    void eventLoopTick();
+    void dashboardLoopTick();
 
     bool autoStartEnabled() const;
     bool forceRevivePage() const;

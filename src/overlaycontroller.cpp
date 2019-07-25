@@ -1055,19 +1055,18 @@ void OverlayController::mainEventLoop()
     m_moveCenterTabController.eventLoopTick(
         vr::VRCompositor()->GetTrackingSpace(), devicePoses );
     m_utilitiesTabController.eventLoopTick();
-    m_fixFloorTabController.eventLoopTick( devicePoses );
     m_statisticsTabController.eventLoopTick(
         devicePoses, leftSpeed, rightSpeed );
-    // m_steamVRTabController.eventLoopTick();
     m_chaperoneTabController.eventLoopTick(
         devicePoses, leftSpeed, rightSpeed, hmdSpeed );
-    m_settingsTabController.eventLoopTick();
-    m_reviveTabController.eventLoopTick();
     m_audioTabController.eventLoopTick();
 
     if ( vr::VROverlay()->IsDashboardVisible() )
     {
+        m_reviveTabController.dashboardLoopTick();
+        m_settingsTabController.dashboardLoopTick();
         m_steamVRTabController.dashboardLoopTick();
+        m_fixFloorTabController.dashboardLoopTick( devicePoses );
     }
 
     if ( m_ulOverlayThumbnailHandle != vr::k_ulOverlayHandleInvalid )

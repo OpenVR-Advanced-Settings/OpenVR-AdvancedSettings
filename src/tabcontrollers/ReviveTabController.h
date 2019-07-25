@@ -99,7 +99,7 @@ public:
     void initStage1( bool forceRevivePage );
     void initStage2( OverlayController* parent );
 
-    void eventLoopTick();
+    void dashboardLoopTick();
 
     bool isOverlayInstalled() const;
 

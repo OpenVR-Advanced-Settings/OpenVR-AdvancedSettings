@@ -24,15 +24,12 @@ void SettingsTabController::initStage2( OverlayController* var_parent )
     this->parent = var_parent;
 }
 
-void SettingsTabController::eventLoopTick()
+void SettingsTabController::dashboardLoopTick()
 {
     if ( settingsUpdateCounter >= k_settingsTabSettingsUpdateCounter )
     {
-        if ( parent->isDashboardVisible() )
-        {
-            setAutoStartEnabled( vr::VRApplications()->GetApplicationAutoLaunch(
-                application_strings::applicationKey ) );
-        }
+        setAutoStartEnabled( vr::VRApplications()->GetApplicationAutoLaunch(
+            application_strings::applicationKey ) );
         settingsUpdateCounter = 0;
     }
     else

@@ -18,8 +18,6 @@ void SteamVRTabController::initStage2( OverlayController* var_parent )
     this->parent = var_parent;
 }
 
-void SteamVRTabController::eventLoopTick() {}
-
 void SteamVRTabController::dashboardLoopTick()
 {
     if ( settingsUpdateCounter >= k_steamVrSettingsUpdateCounter )
@@ -60,10 +58,10 @@ void SteamVRTabController::dashboardLoopTick()
                 setSuperSampling( 1.0 );
             }
         }
-        else if ( m_superSampling != ss )
+        else if ( fabs( m_superSampling - ss ) > 0.05f )
         {
-            LOG( DEBUG ) << "OpenVR reports a changed supersampling value: "
-                         << m_superSampling << " => " << ss;
+            LOG( INFO ) << "OpenVR reports a changed supersampling value: "
+                        << m_superSampling << " => " << ss;
             setSuperSampling( ss );
         }
         // checks if Supersampling filter is on and changes if it has been
