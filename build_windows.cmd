@@ -27,12 +27,6 @@ IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
 call %project_dir%\build_scripts\win\current_build.bat
 IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
 
-ECHO %top_level_activity%: Calling deployment script.
-%PYTHON_LOC%python %project_dir%\build_scripts\win\build.py deploy
-IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
-call %project_dir%\build_scripts\win\current_build.bat
-IF ERRORLEVEL 1 EXIT /B %exit_code_failure_build_apps%
-
 REM The average dev doesn't need to package and zip it, just build it and test.
 IF NOT DEFINED BUILD_PACKAGE (
     ECHO %top_level_activity%: BUILD_PACKAGE not set. Not building installer and portable zip versions.
