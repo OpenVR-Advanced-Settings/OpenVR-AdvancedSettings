@@ -81,47 +81,6 @@ def package():
 
     create_batch_file()
 
-
-def deploy():
-    """
-    Runs windeployqt and copies necessary files.
-    """
-    set_current_activity("DEPLOY")
-    set_dirs()
-
-    say("Testing if all required build environment variables are set:")
-    QT_LOC = find_qt_path()
-    say("All required build environment values are set.")
-
-    if is_env_var_set(BUILD_DEBUG_VAR_NAME):
-        COMPILE_MODE = "debug"
-        say(f"{BUILD_DEBUG_VAR_NAME} defined. Deploying '{COMPILE_MODE}' version.")
-    else:
-        COMPILE_MODE = "release"
-        say(f"{BUILD_DEBUG_VAR_NAME} not defined. Deploying '{COMPILE_MODE}' version.")
-
-    say("Adding windeployqt to file.")
-
-    add_line_to_run_bat_file("set PATH=%PATH%;" + QT_LOC + ";")
-
-    add_line_to_run_bat_file("@ECHO Starting windeployqt:")
-
-    #Extremely long line
-    add_line_to_run_bat_file('"' + "windeployqt" + '"'
-                             + " --dir " + get_deploy_dir()
-                             + "\\qtdata --libdir " + get_deploy_dir()
-                             + " --plugindir " + get_deploy_dir() + "\\qtdata\\plugins --no-system-d3d-compiler --no-opengl-sw --"
-                             + COMPILE_MODE + " --qmldir " + get_project_dir() + "\\src\\res\\qml\\ " + get_deploy_dir() + "\\AdvancedSettings.exe")
-    add_error_handling_line_to_bat_file()
-    add_line_to_run_bat_file("@ECHO windeployqt finished.")
-
-    say("windeployqt added to file.")
-
-    say("Creating batch file:")
-    create_batch_file()
-    say("Batch file created.")
-
-
 def build():
     """
     Runs:
@@ -214,11 +173,6 @@ def build():
 if __name__ == "__main__":
     if argv[1] == "build":
         build()
-    elif argv[1] == "deploy":
-        deploy()
     elif argv[1] == "package":
         package()
-
-
-
 
