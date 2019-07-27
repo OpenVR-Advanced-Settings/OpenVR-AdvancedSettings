@@ -14,7 +14,7 @@ Currently, the only way to change which sequences are run when the bindings are 
 
 On Windows the settings file can be found in `%APPDATA%\AdvancedSettings-Team` (copy paste this into Explorer or the Run command).
 
-On Linux the settings file can be found in `~/.local/share/AdvancedSettings-Team/OpenVRAdvancedSettings/`.
+On Linux the settings file can be found in `~/.config/AdvancedSettings-Team/`.
 
 The `OpenVRAdvancedSettings.ini` file will contain a heading like
 ```
