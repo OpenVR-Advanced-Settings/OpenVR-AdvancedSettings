@@ -94,3 +94,16 @@ win32 {
     # for running executables.
     QMAKE_POST_LINK = cmd /c $$WINDEPLOYQT_FULL_LINE
 }
+
+# Add make install support
+unix {
+    isEmpty(PREFIX){
+        PREFIX = /opt/OpenVR-AdvancedSettings
+    }
+
+    application.path = $$PREFIX
+    application.files = $$COPY_DEST_DIR
+
+    INSTALLS += application
+}
+
