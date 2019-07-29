@@ -13,6 +13,7 @@
   * [Ubuntu 18.04 Bionic](#ubuntu-1804-bionic)
 - [Locations and Environment Variables](#locations-and-environment-variables)
 - [Building](#building)
+- [Installing](#installing)
 - [Contributing](#contributing)
 
 # Requirements
@@ -174,6 +175,12 @@ The following environmental variables are relevant for building the project.
 With the programs above installed and environment variables set, go into the root folder of the repository and run `./build_scripts/linux/build_linux.sh`.
 
 If you copy the `third-party/openvr/lib/linux64/libopenvr_api.so` file into `/lib` you can run the `AdvancedSettings` file without anything else. Otherwise you'll need to run the `run-with-library.sh` file.
+
+# Installing
+
+The application can be installed by running `sudo make install` in the directory of the `Makefile`. 
+This will copy the build directory to `/opt/OpenVR-AdvancedSettings/AdvancedSettings` by default.
+The `PREFIX` location can be changed while running `qmake` by writing `qmake PREFIX=/your/dir/here`, then `make` and `sudo make install`.
 
 # Contributing
 
