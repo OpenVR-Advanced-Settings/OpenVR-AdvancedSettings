@@ -111,7 +111,7 @@ jobs:
                 command: |
                     sudo add-apt-repository ppa:ubuntu-toolchain-r/test
                     sudo apt-get update
-                    sudo apt-get install g++-9 -y
+                    sudo apt-get install g++-7 -y
             - run:
                 name: Add required QT repos
                 command: |
