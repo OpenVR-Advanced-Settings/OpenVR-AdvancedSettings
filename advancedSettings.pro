@@ -45,7 +45,7 @@ include($$include_dir/sources.pri)
 include($$include_dir/resources.pri)
 
 # Copy extra files
-COPIES += resCopy readmeCopy licenseCopy packageFilesCopy openvrApiCopy
+COPIES += resCopy readmeCopy licenseCopy packageFoldersCopy openvrApiCopy packageFilesCopy
 COPY_DEST_DIR = $$OUT_PWD/$$DESTDIR
 
 resCopy.files = src/res/*
@@ -59,7 +59,11 @@ licenseCopy.files = LICENSE \
                     third-party/easylogging++/LICENSE-MIT
 licenseCopy.path = $$COPY_DEST_DIR
 
-packageFilesCopy.files = src/package_files/*
+packageFoldersCopy.files = src/package_files/default_action_manifests
+packageFoldersCopy.path = $$COPY_DEST_DIR
+
+packageFilesCopy.files = src/package_files/action_manifest.json src/package_files/manifest.vrmanifest
+win32:packageFilesCopy.files += src/package_files/qt.conf src/package_files/restartvrserver.bat src/package_files/startdesktopmode.bat
 packageFilesCopy.path = $$COPY_DEST_DIR
 
 win32:openvrApiCopy.files = third-party/openvr/bin/win64/openvr_api.dll
