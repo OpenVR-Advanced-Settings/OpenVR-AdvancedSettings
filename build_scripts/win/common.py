@@ -5,13 +5,12 @@ import os
 import sys
 import argparse
 import subprocess
-import shutil
-import distutils.dir_util
+import string
 
 def get_version_string():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     with open(dir_path + "/../compile_version_string.txt", "r") as file:
-        contents = file.readline()
+        contents = file.readline().strip()
         return contents
 
 
@@ -123,6 +122,57 @@ def get_required_env_var_path(env_var_name: str, default_env_var_value: str):
     say(f"{env_var_name} exists.")
     return path
 
+def find_qt_path():
+    """
+    Returns the location of the Qt bin directory.
+
+    Precedence goes to the QT_LOC_VAR_NAME environment variable.
+    If that is set and exists it will be used, if it's set and doesn't exist
+    likely locations will be searched for an install.
+    """
+    if is_env_var_set(QT_LOC_VAR_NAME):
+        say(f"{QT_LOC_VAR_NAME} is defined. Attempting to find first.")
+        qt_path = os.getenv(QT_LOC_VAR_NAME).replace('"', '')
+        say(f"{QT_LOC_VAR_NAME} is set to '{qt_path}'.")
+        if os.path.exists(qt_path):
+            say(f"'{qt_path}' exists. Using this path.")
+            return qt_path
+        else:
+            say(f"'{qt_path}' does not exist, attempting to traverse filesystem.")
+
+    qt_path = traverse_and_find_qt_path()
+    if qt_path == "NOTFOUND":
+       say("Qt path could not be find by traversal. Exiting.")
+       exit_on_error(EXIT_CODE_FAILURE_BUILD_LOCATION)
+
+    return qt_path
+
+def traverse_and_find_qt_path():
+    """
+    Searches all drives (A-Z) and versions above 12 to find the
+    Qt install location.
+    """
+    qt_folder_name = r":\\Qt\\"
+    qt_visual_studio_name = r"\\msvc2017_64\bin\\"
+    qt_major_version = 5
+    qt_minor_versions = [12, 13, 14, 15, 16]
+    qt_patch_versions = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    # We search the A and B drive letters even though it's
+    # unlikely for the install to be there
+    windows_drive_letters = string.ascii_uppercase
+    for drive in windows_drive_letters:
+        # Go in reverse because we want the highest versions first
+        for minor in reversed(qt_minor_versions):
+            for patch in reversed(qt_patch_versions):
+                version = str(qt_major_version) + "." + str(minor) + "." + str(patch)
+                path = str(drive) + qt_folder_name + version + qt_visual_studio_name
+                if os.path.exists(path):
+                    say("Found QT path: '" + path + "'")
+                    return path
+    say("Did not find any valid QT path.")
+    return "NOTFOUND"
+
+
 def create_batch_file():
     """
     Creates a batch file in the dir. Must be called by another outside batch file.
@@ -158,39 +208,4 @@ def get_original_dir():
 
 def get_deploy_dir():
     return DEPLOY_DIR
-
-def copy_file(src, dest):
-    """Copies a file and outputs status to console."""
-    say(f"Copying {src} to {dest}")
-    shutil.copy(src, dest)
-    say(f"{src} to {dest} copied.")
-
-def copy_folder(src, dest):
-    """Copies a folder and outputs status to console."""
-    say(f"Copying {src} to {dest}")
-    distutils.dir_util.copy_tree(src, dest)
-    say(f"{src} to {dest} copied.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

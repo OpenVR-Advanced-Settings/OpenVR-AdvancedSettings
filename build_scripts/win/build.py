@@ -15,7 +15,7 @@ for seven different applications:
 The script does error checking on environmental variables before outputting
 a simple Windows batch file that will be called by other batch scripts.
 
-The reason that a batch file is created and run outside of python is that if 
+The reason that a batch file is created and run outside of python is that if
 you don't do it like that, you have these options
 
 1) Run applications one by one in python.
@@ -33,7 +33,7 @@ you don't do it like that, you have these options
 
 3) Write the entire thing in another language (like Powershell).
 
-    This was tried and even though Powershell has decent stdlib functionality like 
+    This was tried and even though Powershell has decent stdlib functionality like
     testing paths and replacing chars in strings, it is still lacking in some areas
     like actually running .exe files without resorting to weird tricks and cmd line hacks.
     In addition, Powershell has some weird tendencies compared to other "real"
@@ -81,66 +81,6 @@ def package():
 
     create_batch_file()
 
-
-def deploy():
-    """
-    Runs windeployqt and copies necessary files.
-    """
-    set_current_activity("DEPLOY")
-    set_dirs()
-
-    say("Testing if all required build environment variables are set:")
-    QT_LOC = get_required_env_var_path(QT_LOC_VAR_NAME, QT_LOC_DEFAULT)
-    say("All required build environment values are set.")
-
-    if is_env_var_set(BUILD_DEBUG_VAR_NAME):
-        COMPILE_MODE = "debug"
-        say(f"{BUILD_DEBUG_VAR_NAME} defined. Deploying '{COMPILE_MODE}' version.")
-    else:
-        COMPILE_MODE = "release"
-        say(f"{BUILD_DEBUG_VAR_NAME} not defined. Deploying '{COMPILE_MODE}' version.")
-
-    say("Adding windeployqt to file.")
-
-    add_line_to_run_bat_file("set PATH=%PATH%;" + QT_LOC + ";")
-
-    add_line_to_run_bat_file("@ECHO Starting windeployqt:")
-
-    #Extremely long line
-    add_line_to_run_bat_file('"' + "windeployqt" + '"'
-                             + " --dir " + get_deploy_dir()
-                             + "\\qtdata --libdir " + get_deploy_dir()
-                             + " --plugindir " + get_deploy_dir() + "\\qtdata\\plugins --no-system-d3d-compiler --no-opengl-sw --"
-                             + COMPILE_MODE + " --qmldir " + get_project_dir() + "\\src\\res\\qml\\ " + get_deploy_dir() + "\\AdvancedSettings.exe")
-    add_error_handling_line_to_bat_file()
-    add_line_to_run_bat_file("@ECHO windeployqt finished.")
-
-    say("windeployqt added to file.")        
-
-    say("Copying necessary files:")
-
-    #readme
-    copy_file(get_project_dir() + "\Readme.md", get_deploy_dir() + "\Readme.md")
-
-    #license
-    copy_file(get_project_dir() + "\\LICENSE", get_deploy_dir() + "\\LICENSE-GPL.txt")
-    copy_file(get_project_dir() + "\\third-party\\openvr\\LICENSE", get_deploy_dir() + "\\LICENSE-VALVE.txt")
-    copy_file(get_project_dir() + "\\third-party\\easylogging++\\LICENSE", get_deploy_dir() + "\\LICENSE-MIT.txt")
-    
-    #res
-    copy_folder(get_project_dir() + "\\src\\res", get_deploy_dir() + "\\res")
-
-    #package files
-    copy_folder(get_project_dir() + "\\src\\package_files", get_deploy_dir())
-    
-    #openvr dll
-    copy_file(get_project_dir() + "\\third-party\\openvr\\bin\\win64\\openvr_api.dll", get_deploy_dir() + "\\openvr_api.dll")
-
-    say("Creating batch file:")
-    create_batch_file()
-    say("Batch file created.")
-    
-
 def build():
     """
     Runs:
@@ -153,13 +93,13 @@ def build():
 
     COMPILE_MODE = ""
     COMPILER = ""
-    
+
     say("Attempting to build version: " + VERSION_STRING)
-    
+
     say("Testing if all required build environment variables are set:")
-    QT_LOC = get_required_env_var_path(QT_LOC_VAR_NAME, QT_LOC_DEFAULT)
+    QT_LOC = find_qt_path()
     VS_LOC = get_required_env_var_path(VS_LOC_VAR_NAME, VS_LOC_DEFAULT)
-    
+
     if is_env_var_set(BUILD_CLANG_VAR_NAME):
         say(f"{BUILD_CLANG_VAR_NAME} defined. Building for win32-clang-msvc.")
         get_required_env_var_path(LLVM_LOC_VAR_NAME, LLVM_LOC_DEFAULT)
@@ -167,7 +107,7 @@ def build():
     else:
         say(f"{BUILD_CLANG_VAR_NAME} not defined. Building for msvc.")
         COMPILER = "win32-msvc"
-        
+
     say("All required build environment values are set.")
 
     #Otherwise qmake gets confused
@@ -201,8 +141,8 @@ def build():
     add_line_to_run_bat_file("@ECHO Running qmake:")
     add_line_to_run_bat_file('"' + QMAKE_LOC + '"' +  " -spec " + COMPILER + " CONFIG+=X86_64 " + "CONFIG+=" + COMPILE_MODE)
     add_error_handling_line_to_bat_file()
-    add_line_to_run_bat_file("@ECHO qmake done.")    
-        
+    add_line_to_run_bat_file("@ECHO qmake done.")
+
     if is_env_var_set(JOM_LOC_VAR_NAME):
         JOM_LOC = os.getenv(JOM_LOC_VAR_NAME)
     else:
@@ -229,15 +169,10 @@ def build():
     add_line_to_run_bat_file("cd " + get_original_dir())
 
     create_batch_file()
-    
+
 if __name__ == "__main__":
     if argv[1] == "build":
         build()
-    elif argv[1] == "deploy":
-        deploy()
     elif argv[1] == "package":
         package()
 
-
-
-    

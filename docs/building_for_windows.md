@@ -48,7 +48,7 @@ If an environment variable isn't set a default value will be provided. The defau
 
 | Environment Variable  | Default Value |
 | --------------------  | ------------- |
-| `QT_LOC`              | `"C:\Qt\5.12.2\msvc2017_64\bin\"`    |
+| `QT_LOC`              | No default value. Will traverse the filesystem looking for "DRIVE_LETTER:\Qt\VERSION\msvc2017\bin\". Will use the highest value found unless this variable is set. |
 | `VS_LOC`              | `"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"`  |
 | `JOM_LOC`             | `"C:\Qt\Tools\QtCreator\bin\jom.exe"`|
 | `ZIP_LOC`             | `"C:\Program Files\7-Zip\7z.exe"`    |

@@ -1,5 +1,5 @@
 QT       += core gui qml quick multimedia widgets
-CONFIG   += c++1z
+CONFIG   += c++1z file_copies
 
 DEFINES += ELPP_THREAD_SAFE ELPP_QT_LOGGING ELPP_NO_DEFAULT_LOG_FILE
 
@@ -43,3 +43,67 @@ win32-clang-msvc{
 include($$include_dir/sources.pri)
 
 include($$include_dir/resources.pri)
+
+# Copy extra files
+COPIES += resCopy readmeCopy licenseCopy packageFoldersCopy openvrApiCopy packageFilesCopy
+COPY_DEST_DIR = $$OUT_PWD/$$DESTDIR
+
+resCopy.files = src/res/*
+resCopy.path = $$COPY_DEST_DIR/res
+
+readmeCopy.files = Readme.md
+readmeCopy.path = $$COPY_DEST_DIR
+
+licenseCopy.files = LICENSE \
+                    third-party/openvr/LICENSE-VALVE  \
+                    third-party/easylogging++/LICENSE-MIT
+licenseCopy.path = $$COPY_DEST_DIR
+
+packageFoldersCopy.files = src/package_files/default_action_manifests
+packageFoldersCopy.path = $$COPY_DEST_DIR
+
+packageFilesCopy.files = src/package_files/action_manifest.json src/package_files/manifest.vrmanifest
+win32:packageFilesCopy.files += src/package_files/qt.conf src/package_files/restartvrserver.bat src/package_files/startdesktopmode.bat
+packageFilesCopy.path = $$COPY_DEST_DIR
+
+win32:openvrApiCopy.files = third-party/openvr/bin/win64/openvr_api.dll
+unix:openvrApiCopy.files = third-party/openvr/lib/linux64/libopenvr_api.so
+openvrApiCopy.path = $$COPY_DEST_DIR
+
+# Deploy resources and DLLs to exe dir on Windows
+win32 {
+    WINDEPLOYQT_LOCATION = $$dirname(QMAKE_QMAKE)/windeployqt.exe
+
+    CONFIG( debug, debug|release ) {
+        WINDEPLOYQT_BUILD_TARGET += "--debug"
+    } else {
+        WINDEPLOYQT_BUILD_TARGET += "--release"
+    }
+
+    WINDEPLOYQT_OPTIONS = --dir $$COPY_DEST_DIR/qtdata \
+                          --libdir $$COPY_DEST_DIR \
+                          --plugindir $$COPY_DEST_DIR/qtdata/plugins \
+                          --no-system-d3d-compiler \
+                          --no-opengl-sw \
+                          $$WINDEPLOYQT_BUILD_TARGET \
+                          --qmldir $$PWD/src/res/qml \
+                          $$COPY_DEST_DIR/AdvancedSettings.exe
+    WINDEPLOYQT_FULL_LINE = "$$WINDEPLOYQT_LOCATION $$WINDEPLOYQT_OPTIONS"
+
+    # Force windeployqt to run in cmd, because powershell has different syntax
+    # for running executables.
+    QMAKE_POST_LINK = cmd /c $$WINDEPLOYQT_FULL_LINE
+}
+
+# Add make install support
+unix {
+    isEmpty(PREFIX){
+        PREFIX = /opt/OpenVR-AdvancedSettings
+    }
+
+    application.path = $$PREFIX
+    application.files = $$COPY_DEST_DIR
+
+    INSTALLS += application
+}
+

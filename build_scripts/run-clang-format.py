@@ -24,6 +24,12 @@ import traceback
 
 from functools import partial
 
+try:
+    from subprocess import DEVNULL  # py3k
+except ImportError:
+    DEVNULL = open(os.devnull, "wb")
+
+
 DEFAULT_EXTENSIONS = 'c,h,C,H,cpp,hpp,cc,hh,c++,h++,cxx,hxx'
 
 
@@ -137,7 +143,11 @@ def run_clang_format_diff(args, file):
             universal_newlines=True,
             **encoding_py3)
     except OSError as exc:
-        raise DiffError(str(exc))
+        raise DiffError(
+            "Command '{}' failed to start: {}".format(
+                subprocess.list2cmdline(invocation), exc
+            )
+        )
     proc_stdout = proc.stdout
     proc_stderr = proc.stderr
     if sys.version_info[0] < 3:
@@ -151,8 +161,12 @@ def run_clang_format_diff(args, file):
     errs = list(proc_stderr.readlines())
     proc.wait()
     if proc.returncode:
-        raise DiffError("clang-format exited with status {}: '{}'".format(
-            proc.returncode, file), errs)
+        raise DiffError(
+            "Command '{}' returned non-zero exit status {}".format(
+                subprocess.list2cmdline(invocation), proc.returncode
+            ),
+            errs,
+        )
     return make_diff(file, original, outs), errs
 
 
@@ -266,6 +280,22 @@ def main():
     elif args.color == 'auto':
         colored_stdout = sys.stdout.isatty()
         colored_stderr = sys.stderr.isatty()
+
+    version_invocation = [args.clang_format_executable, str("--version")]
+    try:
+        subprocess.check_call(version_invocation, stdout=DEVNULL)
+    except subprocess.CalledProcessError as e:
+        print_trouble(parser.prog, str(e), use_colors=colored_stderr)
+        return ExitStatus.TROUBLE
+    except OSError as e:
+        print_trouble(
+            parser.prog,
+            "Command '{}' failed to start: {}".format(
+                subprocess.list2cmdline(version_invocation), e
+            ),
+            use_colors=colored_stderr,
+        )
+        return ExitStatus.TROUBLE
 
     retcode = ExitStatus.SUCCESS
     files = list_files(
