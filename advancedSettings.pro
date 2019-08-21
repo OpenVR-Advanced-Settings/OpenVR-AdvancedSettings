@@ -101,6 +101,8 @@ unix {
         PREFIX = /opt/OpenVR-AdvancedSettings
     }
 
+    message(PREFIX value is: \'$$PREFIX\'. `make install` will install to this location.)
+
     application.path = $$PREFIX
     application.files = $$COPY_DEST_DIR
 
