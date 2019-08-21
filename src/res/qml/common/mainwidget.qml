@@ -64,11 +64,6 @@ Rectangle {
         visible: false
     }
 
-    property RevivePage revivePage: RevivePage {
-        stackView: mainView
-        visible: false
-    }
-
     property UtilitiesPage utilitiesPage: UtilitiesPage {
         stackView: mainView
         visible: false
