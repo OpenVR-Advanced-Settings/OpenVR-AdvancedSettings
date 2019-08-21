@@ -9,7 +9,8 @@ void SteamVRTabController::initStage1()
 {
     initMotionSmoothing();
     initSupersampleOverride();
-    eventLoopTick();
+    // eventLoopTick();
+    dashboardLoopTick();
     reloadSteamVRProfiles();
 }
 
