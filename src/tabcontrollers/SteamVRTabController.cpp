@@ -59,7 +59,7 @@ void SteamVRTabController::dashboardLoopTick()
                 setSuperSampling( 1.0 );
             }
         }
-        else if ( fabs( m_superSampling - ss ) > 0.05f )
+        else if ( fabs( static_cast<double>( m_superSampling - ss ) ) > 0.05 )
         {
             LOG( INFO ) << "OpenVR reports a changed supersampling value: "
                         << m_superSampling << " => " << ss;
