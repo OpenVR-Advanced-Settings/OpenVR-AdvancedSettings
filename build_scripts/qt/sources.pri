@@ -7,7 +7,6 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/SettingsTabController.cpp \
     src/tabcontrollers/StatisticsTabController.cpp \
     src/tabcontrollers/SteamVRTabController.cpp \
-    src/tabcontrollers/ReviveTabController.cpp \
     src/tabcontrollers/UtilitiesTabController.cpp \
     src/tabcontrollers/PttController.cpp \
     src/tabcontrollers/VideoTabController.cpp \
@@ -28,7 +27,6 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/SettingsTabController.h \
     src/tabcontrollers/StatisticsTabController.h \
     src/tabcontrollers/SteamVRTabController.h \
-    src/tabcontrollers/ReviveTabController.h \
     src/tabcontrollers/UtilitiesTabController.h \
     src/tabcontrollers/VideoTabController.h \
     src/tabcontrollers/AudioManager.h \
