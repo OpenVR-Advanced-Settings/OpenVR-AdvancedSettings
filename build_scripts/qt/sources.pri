@@ -58,19 +58,23 @@ win32 {
 
 unix:!macx {
     !noX11 {
+        message(X11 features enabled.)
         SOURCES += src/keyboard_input/input_sender_X11.cpp
         CONFIG += x11
         LIBS += -lXtst
     }
     else {
+        message(X11 features disabled.)
         SOURCES += src/keyboard_input/input_sender_dummy.cpp
     }
 
     !noDBUS {
+        message(DBUS features enabled.)
         SOURCES += src/media_keys/media_keys_dbus.cpp
         QT += dbus
     }
     else {
+        message(DBUS features disabled.)
         SOURCES += src/media_keys/media_keys_dummy.cpp
     }
 
