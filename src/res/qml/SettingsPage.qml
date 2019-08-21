@@ -19,14 +19,6 @@ MyStackViewPage {
         }
 
         MyToggleButton {
-            id: forceReviveToggle
-            text: "Force Revive Page"
-            onCheckedChanged: {
-                SettingsTabController.setForceRevivePage(checked, true)
-            }
-        }
-
-        MyToggleButton {
             id: allowExternalEditsToggle
             text: "Allow External App Chaperone Edits (Danger)"
             onCheckedChanged: {
@@ -111,7 +103,6 @@ MyStackViewPage {
 
         Component.onCompleted: {
             settingsAutoStartToggle.checked = SettingsTabController.autoStartEnabled
-            forceReviveToggle.checked = SettingsTabController.forceRevivePage
 
             allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
             oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
@@ -128,9 +119,6 @@ MyStackViewPage {
             target: SettingsTabController
             onAutoStartEnabledChanged: {
                 settingsAutoStartToggle.checked = SettingsTabController.autoStartEnabled
-            }
-            onForceRevivePageChanged: {
-                forceReviveToggle.checked = SettingsTabController.forceRevivePage
             }
         }
 

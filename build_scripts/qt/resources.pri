@@ -26,7 +26,6 @@ DISTFILES += \
     src/res/qml/motion_page/snap_turn/* \
     src/res/qml/motion_page/space_drag/* \
     src/res/qml/motion_page/space_turn/* \
-    src/res/qml/RevivePage.qml \
     src/res/qml/RootPage.qml \
     src/res/qml/SettingsPage.qml \
     src/res/qml/StatisticsPage.qml \

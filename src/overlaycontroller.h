@@ -35,7 +35,6 @@
 #include "tabcontrollers/AudioTabController.h"
 #include "tabcontrollers/StatisticsTabController.h"
 #include "tabcontrollers/SettingsTabController.h"
-#include "tabcontrollers/ReviveTabController.h"
 #include "tabcontrollers/UtilitiesTabController.h"
 #include "tabcontrollers/VideoTabController.h"
 
@@ -65,7 +64,6 @@ namespace advsettings
 constexpr int k_audioSettingsUpdateCounter = 89;
 constexpr int k_chaperoneSettingsUpdateCounter = 101;
 constexpr int k_moveCenterSettingsUpdateCounter = 83;
-constexpr int k_reviveSettingsUpdateCounter = 139;
 constexpr int k_settingsTabSettingsUpdateCounter = 157;
 constexpr int k_steamVrSettingsUpdateCounter = 97;
 constexpr int k_utilitiesSettingsUpdateCounter = 19;
@@ -131,7 +129,6 @@ public: // I know it's an ugly hack to make them public to enable external
     AudioTabController m_audioTabController;
     StatisticsTabController m_statisticsTabController;
     SettingsTabController m_settingsTabController;
-    ReviveTabController m_reviveTabController;
     UtilitiesTabController m_utilitiesTabController;
     VideoTabController m_videoTabController;
     overlay::DesktopOverlay m_desktopOverlay;
