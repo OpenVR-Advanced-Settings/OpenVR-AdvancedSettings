@@ -104,18 +104,6 @@ MyStackViewPage {
                    }
 
                    MyPushButton {
-                       id: reviveButton
-                       activationSoundEnabled: false
-                       text: "Revive"
-                       Layout.fillWidth: true
-                       visible: SettingsTabController.forceRevivePage ? true : ReviveTabController.isOverlayInstalled
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(revivePage)
-                       }
-                   }
-
-                   MyPushButton {
                        id: utilitiesButton
                        activationSoundEnabled: false
                        text: "Utilities"
@@ -467,12 +455,6 @@ MyStackViewPage {
        }
    }
 
-   Connections {
-       target: SettingsTabController
-       onForceRevivePageChanged: {
-           reviveButton.visible = SettingsTabController.forceRevivePage ? true : ReviveTabController.isOverlayInstalled
-       }
-   }
 
    function updateStatistics() {
        var rotations = StatisticsTabController.hmdRotations

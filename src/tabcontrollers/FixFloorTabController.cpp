@@ -10,7 +10,7 @@ void FixFloorTabController::initStage2( OverlayController* var_parent )
     this->parent = var_parent;
 }
 
-void FixFloorTabController::eventLoopTick(
+void FixFloorTabController::dashboardLoopTick(
     vr::TrackedDevicePose_t* devicePoses )
 {
     if ( state > 0 )

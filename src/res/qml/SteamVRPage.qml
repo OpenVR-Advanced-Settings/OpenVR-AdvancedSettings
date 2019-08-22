@@ -200,12 +200,10 @@ MyStackViewPage {
                 value: 1.0
                 snapMode: Slider.SnapAlways
                 Layout.fillWidth: true
-                onPositionChanged: {
-                    var val = this.from + ( this.position  * (this.to - this.from))
-                    steamvrSupersamplingText.text = val.toFixed(1)
-                }
                 onValueChanged: {
-                    SteamVRTabController.setSuperSampling(this.value.toFixed(1), false)
+                    var val = this.value
+                    steamvrSupersamplingText.text = val.toFixed(1)
+                    SteamVRTabController.setSuperSampling(this.value.toFixed(1), true)
                 }
             }
 
@@ -244,9 +242,11 @@ MyStackViewPage {
         }
         MyToggleButton {
             id: steamvrAllowSupersampleOverrideToggle
-            text: "Enable Manual Supersampling Override"
+            text: "Enable Manual Supersampling Override: (refresh dashboard to take effect)"
             onCheckedChanged: {
                 SteamVRTabController.setAllowSupersampleOverride(this.checked, false)
+                SteamVRTabController.setSuperSampling(steamvrSupersamplingSlider.value, true)
+                steamvrSupersamplingText.text = SteamVRTabController.superSampling.toFixed(1)
                 if(!this.checked){
                     steamvrSupersamplingText.enabled = false
                     steamvrSupersamplingSlider.enabled = false
@@ -333,13 +333,14 @@ MyStackViewPage {
             target: SteamVRTabController
             onSuperSamplingChanged: {
                 var s1 = SteamVRTabController.superSampling.toFixed(1)
-                if (s1 <= steamvrSupersamplingSlider.to && Math.abs(steamvrSupersamplingSlider.value-s1) > 0.08) {
-                    steamvrSupersamplingSlider.value = s1
-                }
+                steamvrSupersamplingSlider.value = s1
                 steamvrSupersamplingText.text = s1
             }
             onAllowSupersampleOverrideChanged: {
                 steamvrAllowSupersampleOverrideToggle.checked = SteamVRTabController.allowSupersampleOverride
+                var s1 = SteamVRTabController.superSampling.toFixed(1)
+                steamvrSupersamplingSlider.value = s1
+                steamvrSupersamplingText.text = s1
             }
             onAllowSupersampleFilteringChanged: {
                 steamvrAllowSupersampleFilteringToggle.checked = SteamVRTabController.allowSupersampleFiltering

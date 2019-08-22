@@ -56,6 +56,7 @@ public:
     void initStage2( OverlayController* parent );
 
     void eventLoopTick( vr::TrackedDevicePose_t* devicePoses );
+    void dashboardLoopTick( vr::TrackedDevicePose_t* devicePoses );
 
     Q_INVOKABLE QString currentStatusMessage();
     Q_INVOKABLE float currentStatusMessageTimeout();
