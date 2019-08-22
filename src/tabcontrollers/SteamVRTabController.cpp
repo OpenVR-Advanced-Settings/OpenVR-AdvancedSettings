@@ -1,6 +1,6 @@
 #include "SteamVRTabController.h"
-#include "../overlaycontroller.h"
 #include <QQuickWindow>
+#include "../overlaycontroller.h"
 
 // application namespace
 namespace advsettings
@@ -9,7 +9,6 @@ void SteamVRTabController::initStage1()
 {
     initMotionSmoothing();
     initSupersampleOverride();
-    // eventLoopTick();
     dashboardLoopTick();
     reloadSteamVRProfiles();
 }
