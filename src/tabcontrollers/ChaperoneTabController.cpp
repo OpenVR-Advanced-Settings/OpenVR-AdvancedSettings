@@ -714,7 +714,7 @@ float ChaperoneTabController::boundsVisibility() const
 
 void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
 {
-    if ( fabs( m_visibility - m_visibility ) > 0.005f )
+    if ( fabs( static_cast<double>( m_visibility - m_visibility ) ) > 0.005 )
     {
         if ( value <= 0.3f )
         {
@@ -744,7 +744,7 @@ float ChaperoneTabController::fadeDistance() const
 
 void ChaperoneTabController::setFadeDistance( float value, bool notify )
 {
-    if ( fabs( m_fadeDistance - value ) > 0.005f )
+    if ( fabs( static_cast<double>( m_fadeDistance - value ) ) > 0.005 )
     {
         m_fadeDistance = value;
         vr::VRSettings()->SetFloat(
@@ -766,7 +766,7 @@ float ChaperoneTabController::height() const
 
 void ChaperoneTabController::setHeight( float value, bool notify )
 {
-    if ( fabs( m_height - value ) > 0.005f )
+    if ( fabs( static_cast<double>( m_height - value ) ) > 0.005 )
     {
         m_height = value;
         // TODO revert?
@@ -803,7 +803,7 @@ void ChaperoneTabController::setHeight( float value, bool notify )
 
 void ChaperoneTabController::updateHeight( float value, bool notify )
 {
-    if ( fabs( m_height - value ) > 0.005f )
+    if ( fabs( static_cast<double>( m_height - value ) ) > 0.005 )
     {
         m_height = value;
         if ( notify )
@@ -991,7 +991,9 @@ void ChaperoneTabController::setChaperoneSwitchToBeginnerEnabled( bool value,
 void ChaperoneTabController::setChaperoneSwitchToBeginnerDistance( float value,
                                                                    bool notify )
 {
-    if ( fabs( m_chaperoneSwitchToBeginnerDistance - value ) > 0.005f )
+    if ( fabs( static_cast<double>( m_chaperoneSwitchToBeginnerDistance
+                                    - value ) )
+         > 0.005 )
     {
         m_chaperoneSwitchToBeginnerDistance = value;
         auto settings = OverlayController::appSettings();
@@ -1036,7 +1038,9 @@ void ChaperoneTabController::setChaperoneHapticFeedbackEnabled( bool value,
 void ChaperoneTabController::setChaperoneHapticFeedbackDistance( float value,
                                                                  bool notify )
 {
-    if ( fabs( m_chaperoneHapticFeedbackDistance - value ) > 0.005f )
+    if ( fabs(
+             static_cast<double>( m_chaperoneHapticFeedbackDistance - value ) )
+         > 0.005 )
     {
         m_chaperoneHapticFeedbackDistance = value;
         auto settings = OverlayController::appSettings();
@@ -1132,7 +1136,8 @@ void ChaperoneTabController::setChaperoneAlarmSoundAdjustVolume( bool value,
 void ChaperoneTabController::setChaperoneAlarmSoundDistance( float value,
                                                              bool notify )
 {
-    if ( fabs( m_chaperoneAlarmSoundDistance - value ) > 0.005f )
+    if ( fabs( static_cast<double>( m_chaperoneAlarmSoundDistance - value ) )
+         > 0.005 )
     {
         m_chaperoneAlarmSoundDistance = value;
         auto settings = OverlayController::appSettings();
@@ -1173,7 +1178,8 @@ void ChaperoneTabController::setChaperoneShowDashboardEnabled( bool value,
 void ChaperoneTabController::setChaperoneShowDashboardDistance( float value,
                                                                 bool notify )
 {
-    if ( fabs( m_chaperoneShowDashboardDistance - value ) > 0.005f )
+    if ( fabs( static_cast<double>( m_chaperoneShowDashboardDistance - value ) )
+         > 0.005 )
     {
         m_chaperoneShowDashboardDistance = value;
         auto settings = OverlayController::appSettings();
