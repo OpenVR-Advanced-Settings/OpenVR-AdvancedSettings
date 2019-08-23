@@ -60,8 +60,6 @@ struct ChaperoneProfile
     float chaperoneAlarmSoundDistance = 0.0f;
     bool enableChaperoneShowDashboard = false;
     float chaperoneShowDashboardDistance = 0.0f;
-    bool enableChaperoneVelocityModifier = false;
-    float chaperoneVelocityModifier = 0.0f;
 };
 
 class ChaperoneTabController : public QObject
@@ -125,14 +123,6 @@ class ChaperoneTabController : public QObject
             WRITE setChaperoneShowDashboardDistance NOTIFY
                 chaperoneShowDashboardDistanceChanged )
 
-    Q_PROPERTY( bool chaperoneVelocityModifierEnabled READ
-                    isChaperoneVelocityModifierEnabled WRITE
-                        setChaperoneVelocityModifierEnabled NOTIFY
-                            chaperoneVelocityModifierEnabledChanged )
-    Q_PROPERTY( float chaperoneVelocityModifier READ chaperoneVelocityModifier
-                    WRITE setChaperoneVelocityModifier NOTIFY
-                        chaperoneVelocityModifierChanged )
-
 private:
     OverlayController* parent;
 
@@ -165,10 +155,6 @@ private:
     bool m_enableChaperoneShowDashboard = false;
     float m_chaperoneShowDashboardDistance = 0.5f;
     bool m_chaperoneShowDashboardActive = false;
-
-    bool m_enableChaperoneVelocityModifier = false;
-    float m_chaperoneVelocityModifier = 0.0f;
-    float m_chaperoneVelocityModifierCurrent = 1.0f;
 
     unsigned settingsUpdateCounter = 0;
 
@@ -229,9 +215,6 @@ public:
     bool isChaperoneShowDashboardEnabled() const;
     float chaperoneShowDashboardDistance() const;
 
-    bool isChaperoneVelocityModifierEnabled() const;
-    float chaperoneVelocityModifier() const;
-
     void reloadChaperoneProfiles();
     void saveChaperoneProfiles();
 
@@ -268,9 +251,6 @@ public slots:
 
     void setChaperoneShowDashboardEnabled( bool value, bool notify = true );
     void setChaperoneShowDashboardDistance( float value, bool notify = true );
-
-    void setChaperoneVelocityModifierEnabled( bool value, bool notify = true );
-    void setChaperoneVelocityModifier( float value, bool notify = true );
 
     void flipOrientation( double degrees = 180 );
     void reloadFromDisk();
@@ -315,9 +295,6 @@ signals:
 
     void chaperoneShowDashboardEnabledChanged( bool value );
     void chaperoneShowDashboardDistanceChanged( float value );
-
-    void chaperoneVelocityModifierEnabledChanged( bool value );
-    void chaperoneVelocityModifierChanged( float value );
 
     void chaperoneProfilesUpdated();
 };
