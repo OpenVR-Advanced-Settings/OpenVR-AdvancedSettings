@@ -7,6 +7,11 @@
 
 [![Discord Shield](https://discordapp.com/api/guilds/593808397304987648/widget.png?style=shield)](https://discordapp.com/invite/cW6cRyv)
 
+# OpenVR Advanced Settings Overlay
+Adds an overlay to the OpenVR dashboard that allows access to advanced settings and useful utilities.
+
+![Example Screenshot](docs/screenshots/InVRScreenshot.png)
+
 - [Features](#features)
 - [Usage](#usage)
   * [Installer](#installer)
@@ -43,11 +48,6 @@
 - [Notes:](#notes-)
 - [Common Issues](#common-issues)
 - [License](#license)
-
-# OpenVR Advanced Settings Overlay
-Adds an overlay to the OpenVR dashboard that allows access to advanced settings and useful utilities.
-
-![Example Screenshot](docs/screenshots/InVRScreenshot.png)
 
 # Features
 
