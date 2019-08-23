@@ -6,6 +6,7 @@
 #include <chrono>
 #include <thread>
 #include <openvr.h>
+#include <cmath>
 
 class QQuickWindow;
 // application namespace
@@ -128,7 +129,6 @@ private:
 
     float m_visibility = 0.6f;
     float m_fadeDistance = 0.7f;
-    float m_fadeDistanceModified = 0.7f;
     float m_height = 2.0f;
     bool m_centerMarker = false;
     bool m_playSpaceMarker = false;
@@ -180,10 +180,7 @@ public:
     void initStage1();
     void initStage2( OverlayController* parent );
 
-    void eventLoopTick( vr::TrackedDevicePose_t* devicePoses,
-                        float leftSpeed,
-                        float rightSpeed,
-                        float hmdSpeed );
+    void eventLoopTick( vr::TrackedDevicePose_t* devicePoses );
     void handleChaperoneWarnings( float distance );
 
     float boundsVisibility() const;

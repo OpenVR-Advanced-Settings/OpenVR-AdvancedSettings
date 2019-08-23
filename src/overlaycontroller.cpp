@@ -1044,8 +1044,7 @@ void OverlayController::mainEventLoop()
     m_utilitiesTabController.eventLoopTick();
     m_statisticsTabController.eventLoopTick(
         devicePoses, leftSpeed, rightSpeed );
-    m_chaperoneTabController.eventLoopTick(
-        devicePoses, leftSpeed, rightSpeed, hmdSpeed );
+    m_chaperoneTabController.eventLoopTick( devicePoses );
     m_audioTabController.eventLoopTick();
 
     if ( vr::VROverlay()->IsDashboardVisible() )
