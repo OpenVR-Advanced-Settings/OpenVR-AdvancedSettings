@@ -1030,15 +1030,7 @@ void OverlayController::mainEventLoop()
         rightSpeed
             = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
     }
-    auto hmdSpeed = 0.0f;
-    if ( devicePoses[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid
-         && devicePoses[vr::k_unTrackedDeviceIndex_Hmd].eTrackingResult
-                == vr::TrackingResult_Running_OK )
-    {
-        auto& vel = devicePoses[vr::k_unTrackedDeviceIndex_Hmd].vVelocity.v;
-        hmdSpeed
-            = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
-    }
+
     m_moveCenterTabController.eventLoopTick(
         vr::VRCompositor()->GetTrackingSpace(), devicePoses );
     m_utilitiesTabController.eventLoopTick();
