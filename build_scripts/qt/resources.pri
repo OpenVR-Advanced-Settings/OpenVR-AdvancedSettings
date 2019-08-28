@@ -29,7 +29,7 @@ DISTFILES += \
     src/res/qml/RootPage.qml \
     src/res/qml/SettingsPage.qml \
     src/res/qml/StatisticsPage.qml \
-    src/res/qml/SteamVRPage.qml \
+    src/res/qml/steamvr_page/SteamVRPage.qml \
     src/res/qml/utilities_page/* \
     src/res/qml/utilities_page/media_keys/* \
     src/res/qml/utilities_page/keyboard_utils/* \
