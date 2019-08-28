@@ -35,6 +35,7 @@ GroupBox {
             MyToggleButton {
                 id: steamvrPerformanceGraphToggle
                 text: "Enable Timing Overlay"
+                Layout.preferredWidth: 400
                 onCheckedChanged: {
                     SteamVRTabController.setPerformanceGraph(this.checked, false)
                 }
@@ -46,6 +47,7 @@ GroupBox {
 
             MyToggleButton {
                 id: steamvrSystemButtonToggle
+                Layout.fillWidth: true
                 text: "Enable System Button Binding"
                 onCheckedChanged: {
                     SteamVRTabController.setSystemButton(this.checked, false)
@@ -57,6 +59,7 @@ GroupBox {
 
             MyToggleButton {
                 id: steamvrMultipleDriverToggle
+                Layout.preferredWidth: 400
                 text: "Allow Multiple Drivers"
                 onCheckedChanged: {
                     SteamVRTabController.setMultipleDriver(this.checked, false)
@@ -69,9 +72,36 @@ GroupBox {
 
             MyToggleButton {
                 id: steamvrNoFadeToGridToggle
+                Layout.fillWidth: true
                 text: "No Fade to Grid"
                 onCheckedChanged: {
                     SteamVRTabController.setNoFadeToGrid(this.checked, false)
+                }
+            }
+        }
+
+        RowLayout {
+            spacing: 16
+
+            MyToggleButton {
+                id: steamvrNotificationToggle
+                text: "Disable Notifications"
+                 Layout.preferredWidth: 400
+                onCheckedChanged: {
+                    SteamVRTabController.setDND(this.checked, false)
+                }
+            }
+            MyText {
+                Layout.preferredWidth: 20
+                text: " "
+            }
+
+            MyToggleButton {
+                id: steamvrIMUFallbackToggle
+                Layout.fillWidth: true
+                text: "IMU FallBack"
+                onCheckedChanged: {
+                    SteamVRTabController.setIMUFallback(this.checked, false)
                 }
             }
         }
@@ -83,7 +113,8 @@ GroupBox {
         steamvrSystemButtonToggle.checked = SteamVRTabController.systemButton
         steamvrMultipleDriverToggle.checked = SteamVRTabController.multipleDriver
         steamvrNoFadeToGridToggle.checked = SteamVRTabController.noFadeToGrid
-
+        steamvrNotificationToggle.checked = SteamVRTabController.dnd
+        steamvrIMUFallbackToggle.checked = SteamVRTabController.imuFallback
     }
 
     Connections {
@@ -99,6 +130,12 @@ GroupBox {
         }
         onNoFadeToGridChanged:{
             steamvrNoFadeToGridToggle.checked = SteamVRTabController.noFadeToGrid
+        }
+        onDNDChanged:{
+            steamvrNotificationToggle.checked = SteamVRTabController.dnd
+        }
+        onIMUFallbackChanged:{
+            steamvrIMUFallbackToggle.checked = SteamVRTabController.imuFallback
         }
 
     }

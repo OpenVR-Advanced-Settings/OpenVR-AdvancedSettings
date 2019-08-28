@@ -160,6 +160,36 @@ if ( vrSettingsError != vr::VRSettingsError_None )
         }
         setMultipleDriver( md );
 
+        // synch imu fallback
+        auto imu = vr::VRSettings()->GetBool(
+            vr::k_pch_Lighthouse_Section,
+            vr::k_pch_Lighthouse_EnableImuFallback_Bool,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_Lighthouse_EnableImuFallback_Bool
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        setIMUFallback( imu );
+
+        // synch dnd
+        auto donotd = vr::VRSettings()->GetBool(
+            vr::k_pch_Notifications_Section,
+            vr::k_pch_Notifications_DoNotDisturb_Bool,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_Notifications_DoNotDisturb_Bool
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        setDND( donotd );
+
         settingsUpdateCounter = 0;
     }
     else
@@ -595,6 +625,48 @@ void SteamVRTabController::setSystemButton( const bool value,
         if ( notify )
         {
             emit systemButtonChanged( m_systemButtonToggle );
+        }
+    }
+}
+
+bool SteamVRTabController::dnd() const
+{
+    return m_dnd;
+}
+
+void SteamVRTabController::setDND( const bool value, const bool notify )
+{
+    if ( m_dnd != value )
+    {
+        m_dnd = value;
+        vr::VRSettings()->SetBool( vr::k_pch_Notifications_Section,
+                                   vr::k_pch_Notifications_DoNotDisturb_Bool,
+                                   m_dnd );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit dNDChanged( m_dnd );
+        }
+    }
+}
+
+bool SteamVRTabController::imuFallback() const
+{
+    return m_imuFallback;
+}
+
+void SteamVRTabController::setIMUFallback( const bool value, const bool notify )
+{
+    if ( m_imuFallback != value )
+    {
+        m_imuFallback = value;
+        vr::VRSettings()->SetBool( vr::k_pch_Lighthouse_Section,
+                                   vr::k_pch_Lighthouse_EnableImuFallback_Bool,
+                                   m_imuFallback );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit iMUFallbackChanged( m_imuFallback );
         }
     }
 }

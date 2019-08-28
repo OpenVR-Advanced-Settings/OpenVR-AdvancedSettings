@@ -49,6 +49,9 @@ class SteamVRTabController : public QObject
 
     Q_PROPERTY( bool performanceGraph READ performanceGraph WRITE
                     setPerformanceGraph NOTIFY performanceGraphChanged )
+    Q_PROPERTY( bool dnd READ dnd WRITE setDND NOTIFY dNDChanged )
+    Q_PROPERTY( bool imuFallback READ imuFallback WRITE setIMUFallback NOTIFY
+                    iMUFallbackChanged )
 
 private:
     OverlayController* parent;
@@ -61,6 +64,8 @@ private:
     bool m_systemButtonToggle = false;
     bool m_noFadeToGridToggle = false;
     bool m_multipleDriverToggle = false;
+    bool m_imuFallback = false;
+    bool m_dnd = false;
 
     // void initMotionSmoothing();
     // void initSupersampleOverride();
@@ -84,6 +89,8 @@ public:
     bool noFadeToGrid() const;
     bool multipleDriver() const;
     bool systemButton() const;
+    bool dnd() const;
+    bool imuFallback() const;
 
     // void reloadSteamVRProfiles();
     // void saveSteamVRProfiles();
@@ -100,6 +107,8 @@ public slots:
     void setSystemButton( bool value, bool notify = true );
     void setNoFadeToGrid( bool value, bool notify = true );
     void setMultipleDriver( bool value, bool notify = true );
+    void setDND( bool value, bool notify = true );
+    void setIMUFallback( bool value, bool notify = true );
 
     // void addSteamVRProfile( QString name,
     //                        bool includeSupersampling,
@@ -120,6 +129,8 @@ signals:
     void multipleDriverChanged( bool value );
     void systemButtonChanged( bool value );
     void noFadeToGridChanged( bool value );
+    void dNDChanged( bool value );
+    void iMUFallbackChanged( bool value );
 
     void steamVRProfilesUpdated();
     void steamVRProfileAdded();
