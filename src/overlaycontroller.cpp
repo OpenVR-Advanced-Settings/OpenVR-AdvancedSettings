@@ -1053,6 +1053,7 @@ void OverlayController::mainEventLoop()
         m_settingsTabController.dashboardLoopTick();
         m_steamVRTabController.dashboardLoopTick();
         m_fixFloorTabController.dashboardLoopTick( devicePoses );
+        m_videoTabController.dashboardLoopTick();
     }
 
     if ( m_ulOverlayThumbnailHandle != vr::k_ulOverlayHandleInvalid )

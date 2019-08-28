@@ -27,17 +27,18 @@ struct SteamVRProfile
 class SteamVRTabController : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY( float superSampling READ superSampling WRITE setSuperSampling
-                    NOTIFY superSamplingChanged )
+    // Q_PROPERTY( float superSampling READ superSampling WRITE setSuperSampling
+    //              NOTIFY superSamplingChanged )
 
-    Q_PROPERTY( bool motionSmoothing READ motionSmoothing WRITE
-                    setMotionSmoothing NOTIFY motionSmoothingChanged )
-    Q_PROPERTY( bool allowSupersampleFiltering READ allowSupersampleFiltering
-                    WRITE setAllowSupersampleFiltering NOTIFY
-                        allowSupersampleFilteringChanged )
-    Q_PROPERTY(
-        bool allowSupersampleOverride READ allowSupersampleOverride WRITE
-            setAllowSupersampleOverride NOTIFY allowSupersampleOverrideChanged )
+    // Q_PROPERTY( bool motionSmoothing READ motionSmoothing WRITE
+    //               setMotionSmoothing NOTIFY motionSmoothingChanged )
+    // Q_PROPERTY( bool allowSupersampleFiltering READ allowSupersampleFiltering
+    //               WRITE setAllowSupersampleFiltering NOTIFY
+    //                 allowSupersampleFilteringChanged )
+    // Q_PROPERTY(
+    //    bool allowSupersampleOverride READ allowSupersampleOverride WRITE
+    //       setAllowSupersampleOverride NOTIFY allowSupersampleOverrideChanged
+    //       )
 
     Q_PROPERTY( bool performanceGraph READ performanceGraph WRITE
                     setPerformanceGraph NOTIFY performanceGraphChanged )
@@ -45,14 +46,14 @@ class SteamVRTabController : public QObject
 private:
     OverlayController* parent;
 
-    float m_superSampling = 1.0;
-    bool m_motionSmoothing = true;
-    bool m_allowSupersampleFiltering = true;
-    bool m_allowSupersampleOverride = false;
+    // float m_superSampling = 1.0;
+    // bool m_motionSmoothing = true;
+    // bool m_allowSupersampleFiltering = true;
+    // bool m_allowSupersampleOverride = false;
     bool m_performanceGraphToggle = false;
 
-    void initMotionSmoothing();
-    void initSupersampleOverride();
+    // void initMotionSmoothing();
+    // void initSupersampleOverride();
 
     std::vector<SteamVRProfile> steamvrProfiles;
 
@@ -65,10 +66,10 @@ public:
     void eventLoopTick();
     void dashboardLoopTick();
 
-    float superSampling() const;
-    bool motionSmoothing() const;
-    bool allowSupersampleFiltering() const;
-    bool allowSupersampleOverride() const;
+    // float superSampling() const;
+    // bool motionSmoothing() const;
+    // bool allowSupersampleFiltering() const;
+    // bool allowSupersampleOverride() const;
     bool performanceGraph() const;
 
     void reloadSteamVRProfiles();
@@ -78,10 +79,10 @@ public:
     Q_INVOKABLE QString getSteamVRProfileName( unsigned index );
 
 public slots:
-    void setSuperSampling( float value, bool notify = true );
-    void setMotionSmoothing( bool value, bool notify = true );
-    void setAllowSupersampleFiltering( bool value, bool notify = true );
-    void setAllowSupersampleOverride( bool value, bool notify = true );
+    // void setSuperSampling( float value, bool notify = true );
+    // void setMotionSmoothing( bool value, bool notify = true );
+    // void setAllowSupersampleFiltering( bool value, bool notify = true );
+    // void setAllowSupersampleOverride( bool value, bool notify = true );
     void setPerformanceGraph( bool value, bool notify = true );
 
     void addSteamVRProfile( QString name,
@@ -95,10 +96,10 @@ public slots:
     void restartSteamVR();
 
 signals:
-    void superSamplingChanged( float value );
-    void motionSmoothingChanged( bool value );
-    void allowSupersampleFilteringChanged( bool value );
-    void allowSupersampleOverrideChanged( bool value );
+    // void superSamplingChanged( float value );
+    // void motionSmoothingChanged( bool value );
+    // void allowSupersampleFilteringChanged( bool value );
+    // void allowSupersampleOverrideChanged( bool value );
     void performanceGraphChanged( bool value );
 
     void steamVRProfilesUpdated();

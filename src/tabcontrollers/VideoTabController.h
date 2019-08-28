@@ -31,8 +31,20 @@ class VideoTabController : public QObject
                     colorGreenChanged )
     Q_PROPERTY( float colorBlue READ colorBlue WRITE setColorBlue NOTIFY
                     colorBlueChanged )
+    Q_PROPERTY( float superSampling READ superSampling WRITE setSuperSampling
+                    NOTIFY superSamplingChanged )
+    Q_PROPERTY(
+        bool allowSupersampleOverride READ allowSupersampleOverride WRITE
+            setAllowSupersampleOverride NOTIFY allowSupersampleOverrideChanged )
+    Q_PROPERTY( bool motionSmoothing READ motionSmoothing WRITE
+                    setMotionSmoothing NOTIFY motionSmoothingChanged )
+    Q_PROPERTY( bool allowSupersampleFiltering READ allowSupersampleFiltering
+                    WRITE setAllowSupersampleFiltering NOTIFY
+                        allowSupersampleFilteringChanged )
 
 private:
+    unsigned settingsUpdateCounter = 0;
+
     // how far away the overlay is, any OVERLAY closer will not be dimmed.
     const float k_hmdDistance = -0.15f;
     // how wide overlay is, Increase this value if edges of view are not
@@ -53,7 +65,14 @@ private:
     float m_colorGreen = 0.0f;
     bool m_overlayInit = false;
 
+    float m_superSampling = 1.0;
+    bool m_allowSupersampleOverride = false;
+    bool m_motionSmoothing = true;
+    bool m_allowSupersampleFiltering = true;
+
     void initColorGain();
+    void initSupersampleOverride();
+    void initMotionSmoothing();
 
     void reloadVideoConfig();
     void saveVideoConfig();
@@ -83,17 +102,28 @@ public:
     float colorGreen() const;
     float colorBlue() const;
 
+    bool allowSupersampleOverride() const;
+    float superSampling() const;
+    bool motionSmoothing() const;
+    bool allowSupersampleFiltering() const;
+
     void initStage1();
     void eventLoopTick();
+    void dashboardLoopTick();
 
 public slots:
     void setBrightnessEnabled( bool value, bool notify = true );
     void setBrightnessValue( float percvalue, bool notify = true );
 
+    void setSuperSampling( float value, bool notify = true );
+    void setAllowSupersampleOverride( bool value, bool notify = true );
     // Color overlay Setters
     void setColorRed( float value, bool notify = true );
     void setColorGreen( float value, bool notify = true );
     void setColorBlue( float value, bool notify = true );
+
+    void setMotionSmoothing( bool value, bool notify = true );
+    void setAllowSupersampleFiltering( bool value, bool notify = true );
 
 signals:
     void brightnessEnabledChanged( bool value );
@@ -101,6 +131,12 @@ signals:
     void colorRedChanged( float value );
     void colorGreenChanged( float value );
     void colorBlueChanged( float value );
+
+    void superSamplingChanged( float value );
+    void allowSupersampleOverrideChanged( bool value );
+
+    void motionSmoothingChanged( bool value );
+    void allowSupersampleFilteringChanged( bool value );
 };
 
 } // namespace advsettings

@@ -10,6 +10,8 @@ void VideoTabController::initStage1()
 {
     initBrightnessOverlay();
     initColorGain();
+    initMotionSmoothing();
+    initSupersampleOverride();
     m_overlayInit = true;
     reloadVideoConfig();
 }
@@ -55,6 +57,96 @@ void VideoTabController::initBrightnessOverlay()
 }
 
 void VideoTabController::eventLoopTick() {}
+
+void VideoTabController::dashboardLoopTick()
+{
+    // TODO different key
+    if ( settingsUpdateCounter >= k_steamVrSettingsUpdateCounter )
+    {
+        vr::EVRSettingsError vrSettingsError;
+
+        // checks supersampling override and resynchs if necessry
+        // also prints error if can't find.
+        auto sso = vr::VRSettings()->GetBool(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_SteamVR_SupersampleManualOverride_Bool
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+
+        setAllowSupersampleOverride( sso );
+        // checks supersampling and re-synchs if necessary
+        auto ss = vr::VRSettings()->GetFloat(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_SupersampleScale_Float,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_SteamVR_SupersampleScale_Float
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+            if ( m_superSampling != 1.0f )
+            {
+                LOG( DEBUG ) << "OpenVR returns an error and we have a custom "
+                                "supersampling value: "
+                             << m_superSampling;
+                setSuperSampling( 1.0 );
+            }
+        }
+        else if ( fabs( static_cast<double>( m_superSampling - ss ) ) > 0.05 )
+        {
+            LOG( INFO ) << "OpenVR reports a changed supersampling value: "
+                        << m_superSampling << " => " << ss;
+            setSuperSampling( ss );
+        }
+        // checks if Supersampling filter is on and changes if it has been
+        // changed elsewhere
+
+        auto sf = vr::VRSettings()->GetBool(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        setAllowSupersampleFiltering( sf );
+
+        // Checks if Motion smoothing setting can be read and synchs adv
+        // settings to steamvr/openvr
+        auto ms
+            = vr::VRSettings()->GetBool( vr::k_pch_SteamVR_Section,
+                                         vr::k_pch_SteamVR_MotionSmoothing_Bool,
+                                         &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_SteamVR_MotionSmoothing_Bool
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        setMotionSmoothing( ms );
+
+        settingsUpdateCounter = 0;
+    }
+    else
+    {
+        settingsUpdateCounter++;
+    }
+}
 
 void VideoTabController::reloadVideoConfig()
 {
@@ -336,5 +428,165 @@ void VideoTabController::initColorGain()
         setColorBlue( temporary );
     }
 }
+
+/*
+ * -------------------------
+ * SuperSampling
+ * -------------------------
+ */
+
+// Getters
+
+float VideoTabController::superSampling() const
+{
+    return m_superSampling;
+}
+
+bool VideoTabController::allowSupersampleOverride() const
+{
+    return m_allowSupersampleOverride;
+}
+
+void VideoTabController::initSupersampleOverride()
+{
+    bool temporary = false;
+    vr::EVRSettingsError vrSettingsError;
+    temporary = vr::VRSettings()->GetBool(
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not get SuperSampling Override State \""
+                       << vr::k_pch_SteamVR_SupersampleManualOverride_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    vr::VRSettings()->Sync();
+    setAllowSupersampleOverride( temporary, true );
+}
+
+void VideoTabController::setSuperSampling( float value, const bool notify )
+{
+    bool override = false;
+    // Mirrors Desktop Clamp
+    if ( value < 0.2f )
+    {
+        LOG( WARNING ) << "Encountered a supersampling value <= 0.2, setting "
+                          "supersampling to 1.0";
+        value = 1.0f;
+        override = true;
+    }
+
+    // TODO delta comparison
+    if ( override || m_superSampling != value )
+    {
+        LOG( DEBUG ) << "Supersampling value changed: " << m_superSampling
+                     << " => " << value;
+        m_superSampling = value;
+        vr::VRSettings()->SetFloat( vr::k_pch_SteamVR_Section,
+                                    vr::k_pch_SteamVR_SupersampleScale_Float,
+                                    m_superSampling );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit superSamplingChanged( m_superSampling );
+        }
+    }
+}
+
+void VideoTabController::setAllowSupersampleOverride( const bool value,
+                                                      const bool notify )
+{
+    if ( m_allowSupersampleOverride != value )
+    {
+        m_allowSupersampleOverride = value;
+        vr::VRSettings()->SetBool(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
+            m_allowSupersampleOverride );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit allowSupersampleOverrideChanged( m_allowSupersampleOverride );
+        }
+    }
+}
+
+/*
+ * -------------------------
+ * motion smoothing/antistropic (misc)
+ * -------------------------
+ */
+
+bool VideoTabController::motionSmoothing() const
+{
+    return m_motionSmoothing;
+}
+
+void VideoTabController::setMotionSmoothing( const bool value,
+                                             const bool notify )
+{
+    if ( m_motionSmoothing != value )
+    {
+        m_motionSmoothing = value;
+        vr::VRSettings()->SetBool( vr::k_pch_SteamVR_Section,
+                                   vr::k_pch_SteamVR_MotionSmoothing_Bool,
+                                   m_motionSmoothing );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit motionSmoothingChanged( m_motionSmoothing );
+        }
+    }
+}
+
+void VideoTabController::initMotionSmoothing()
+{
+    bool temporary = false;
+    vr::EVRSettingsError vrSettingsError;
+    temporary
+        = vr::VRSettings()->GetBool( vr::k_pch_SteamVR_Section,
+                                     vr::k_pch_SteamVR_MotionSmoothing_Bool,
+                                     &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not get MotionSmoothing State \""
+                       << vr::k_pch_SteamVR_MotionSmoothing_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    vr::VRSettings()->Sync();
+    setMotionSmoothing( temporary, true );
+}
+
+bool VideoTabController::allowSupersampleFiltering() const
+{
+    return m_allowSupersampleFiltering;
+}
+
+void VideoTabController::setAllowSupersampleFiltering( const bool value,
+                                                       const bool notify )
+{
+    if ( m_allowSupersampleFiltering != value )
+    {
+        m_allowSupersampleFiltering = value;
+        vr::VRSettings()->SetBool(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
+            m_allowSupersampleFiltering );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit allowSupersampleFilteringChanged(
+                m_allowSupersampleFiltering );
+        }
+    }
+}
+
+/*------------------------------------------*/
+/* -----------------------------------------*/
 
 } // namespace advsettings

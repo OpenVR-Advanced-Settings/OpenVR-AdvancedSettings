@@ -174,7 +174,7 @@ MyStackViewPage {
             }
         }
 
-        RowLayout {
+        /*RowLayout {
             spacing: 16
 
             MyText {
@@ -240,6 +240,8 @@ MyStackViewPage {
                 }
             }
         }
+        */
+        /*
         MyToggleButton {
             id: steamvrAllowSupersampleOverrideToggle
             text: "Enable Manual Supersampling Override: (refresh dashboard to take effect)"
@@ -259,22 +261,22 @@ MyStackViewPage {
                     steamvrSupersampleDecrement.enabled = true
                 }
             }
-        }
-        MyToggleButton {
+        }*/
+       /* MyToggleButton {
             id: steamvrAllowSupersampleFilteringToggle
             text: "Enable Advanced Supersample Filtering"
             onCheckedChanged: {
                 SteamVRTabController.setAllowSupersampleFiltering(this.checked, false)
             }
-        }
+        }*/
 
-        MyToggleButton {
+        /*MyToggleButton {
             id: steamvrMotionSmoothingToggle
             text: "Enable Motion Smoothing"
             onCheckedChanged: {
                 SteamVRTabController.setMotionSmoothing(this.checked, false)
             }
-        }
+        }*/
 
         MyToggleButton {
             id: steamvrPerformanceGraphToggle
@@ -311,6 +313,7 @@ MyStackViewPage {
         }
 
         Component.onCompleted: {
+            /*
             var s1 = SteamVRTabController.superSampling.toFixed(1)
             if (s1 <= steamvrSupersamplingSlider.to) {
                 steamvrSupersamplingSlider.value = s1
@@ -327,10 +330,12 @@ MyStackViewPage {
             }
 
             reloadSteamVRProfiles()
+            */
         }
 
         Connections {
             target: SteamVRTabController
+            /*
             onSuperSamplingChanged: {
                 var s1 = SteamVRTabController.superSampling.toFixed(1)
                 steamvrSupersamplingSlider.value = s1
@@ -349,9 +354,6 @@ MyStackViewPage {
             onMotionSmoothingChanged: {
                 steamvrMotionSmoothingToggle.checked = SteamVRTabController.motionSmoothing
             }
-            onPerformanceGraphChanged:{
-                steamvrPerformanceGraphToggle.checked = SteamVRTabController.performanceGraph
-            }
 
             onSteamVRProfilesUpdated: {
                 reloadSteamVRProfiles()
@@ -359,10 +361,14 @@ MyStackViewPage {
             onSteamVRProfileAdded:{
                 steamvrProfileComboBox.currentIndex = SteamVRTabController.getSteamVRProfileCount()
             }
+            */
+            onPerformanceGraphChanged:{
+                steamvrPerformanceGraphToggle.checked = SteamVRTabController.performanceGraph
+            }
         }
     }
 
-    function reloadSteamVRProfiles() {
+    /*function reloadSteamVRProfiles() {
         var profiles = [""]
         var profileCount = SteamVRTabController.getSteamVRProfileCount()
         for (var i = 0; i < profileCount; i++) {
@@ -371,4 +377,5 @@ MyStackViewPage {
         steamvrProfileComboBox.currentIndex = 0
         steamvrProfileComboBox.model = profiles
     }
+    */
 }
