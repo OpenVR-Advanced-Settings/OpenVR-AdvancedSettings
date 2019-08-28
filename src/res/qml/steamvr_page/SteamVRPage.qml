@@ -3,7 +3,34 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../common"
+import "basestation"
+import "camera"
+import "steamvrmisc"
 
+MyStackViewPage {
+    width: 1200
+    headerText: "SteamVR"
+
+    content: ColumnLayout {
+        spacing: 16
+
+        SteamVRMiscGroupBox {
+        id: steamVRGroupBox}
+        //CameraGroupBox {
+        //id:  cameraGroupBox}
+        //BaseStationGroupBox{
+        //id: baseStationGroupBox
+        //}
+
+        Item {
+            Layout.fillHeight: true
+        }
+
+    }
+}
+
+
+/*
 MyStackViewPage {
     id: myStackViewPage1
     headerText: "SteamVR Settings"
@@ -276,7 +303,7 @@ MyStackViewPage {
             onCheckedChanged: {
                 SteamVRTabController.setMotionSmoothing(this.checked, false)
             }
-        }*/
+        }
 
         MyToggleButton {
             id: steamvrPerformanceGraphToggle
@@ -330,7 +357,7 @@ MyStackViewPage {
             }
 
             reloadSteamVRProfiles()
-            */
+
         }
 
         Connections {
@@ -361,7 +388,7 @@ MyStackViewPage {
             onSteamVRProfileAdded:{
                 steamvrProfileComboBox.currentIndex = SteamVRTabController.getSteamVRProfileCount()
             }
-            */
+
             onPerformanceGraphChanged:{
                 steamvrPerformanceGraphToggle.checked = SteamVRTabController.performanceGraph
             }
@@ -377,5 +404,5 @@ MyStackViewPage {
         steamvrProfileComboBox.currentIndex = 0
         steamvrProfileComboBox.model = profiles
     }
-    */
-}
+
+}*/

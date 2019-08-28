@@ -10,7 +10,7 @@ void SteamVRTabController::initStage1()
     // initMotionSmoothing();
     // initSupersampleOverride();
     dashboardLoopTick();
-    reloadSteamVRProfiles();
+    // reloadSteamVRProfiles();
 }
 
 void SteamVRTabController::initStage2( OverlayController* var_parent )
@@ -116,6 +116,50 @@ if ( vrSettingsError != vr::VRSettingsError_None )
         }
         setPerformanceGraph( pg );
 
+        // synch systembutton
+        auto sb = vr::VRSettings()->GetBool(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_SendSystemButtonToAllApps_Bool,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_SteamVR_SendSystemButtonToAllApps_Bool
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        setSystemButton( sb );
+
+        // synch nofadetogrid
+        auto nf = vr::VRSettings()->GetBool( vr::k_pch_SteamVR_Section,
+                                             vr::k_pch_SteamVR_DoNotFadeToGrid,
+                                             &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_SteamVR_DoNotFadeToGrid
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        setNoFadeToGrid( nf );
+
+        // synch multipleDriver
+        auto md = vr::VRSettings()->GetBool(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        setMultipleDriver( md );
+
         settingsUpdateCounter = 0;
     }
     else
@@ -128,7 +172,7 @@ if ( vrSettingsError != vr::VRSettingsError_None )
 /*------------------------------------------*/
 /*Profile Logic Functions*/
 
-void SteamVRTabController::addSteamVRProfile(
+/*void SteamVRTabController::addSteamVRProfile(
     const QString name,
     const bool includeSupersampling,
     const bool includeSupersampleFiltering,
@@ -171,7 +215,8 @@ void SteamVRTabController::addSteamVRProfile(
     emit steamVRProfilesUpdated();
     emit steamVRProfileAdded();
 }
-
+*/
+/*
 void SteamVRTabController::applySteamVRProfile( const unsigned index )
 {
     if ( index < steamvrProfiles.size() )
@@ -193,7 +238,8 @@ void SteamVRTabController::applySteamVRProfile( const unsigned index )
         vr::VRSettings()->Sync( true );
     }
 }
-
+*/
+/*
 void SteamVRTabController::deleteSteamVRProfile( const unsigned index )
 {
     if ( index < steamvrProfiles.size() )
@@ -227,7 +273,7 @@ void SteamVRTabController::reloadSteamVRProfiles()
                 = settings->value( "supersamplingOverride", false ).toBool();
             entry.supersampling
                 = settings->value( "supersampling", 1.0f ).toFloat();
-        }*/
+        }
         entry.includesSupersampleFiltering
             = settings->value( "includesSupersampleFiltering", false ).toBool();
         if ( entry.includesSupersampleFiltering )
@@ -266,7 +312,7 @@ void SteamVRTabController::saveSteamVRProfiles()
                                 p.supersampleOverride );
             settings->setValue( "supersampling", p.supersampling );
         }
-        */
+
         settings->setValue( "includesSupersampleFiltering",
                             p.includesSupersampleFiltering );
         if ( p.includesSupersampleFiltering )
@@ -303,6 +349,7 @@ QString SteamVRTabController::getSteamVRProfileName( const unsigned index )
     }
 }
 
+*/
 /* -----------------------------------------*/
 /*------------------------------------------*/
 /*SuperSample (value) functions*/
@@ -484,10 +531,78 @@ void SteamVRTabController::setPerformanceGraph( const bool value,
     }
 }
 
+bool SteamVRTabController::multipleDriver() const
+{
+    return m_multipleDriverToggle;
+}
+
+void SteamVRTabController::setMultipleDriver( const bool value,
+                                              const bool notify )
+{
+    if ( m_multipleDriverToggle != value )
+    {
+        m_multipleDriverToggle = value;
+        vr::VRSettings()->SetBool(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool,
+            m_multipleDriverToggle );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit multipleDriverChanged( m_multipleDriverToggle );
+        }
+    }
+}
+
+bool SteamVRTabController::noFadeToGrid() const
+{
+    return m_noFadeToGridToggle;
+}
+
+void SteamVRTabController::setNoFadeToGrid( const bool value,
+                                            const bool notify )
+{
+    if ( m_noFadeToGridToggle != value )
+    {
+        m_noFadeToGridToggle = value;
+        vr::VRSettings()->SetBool( vr::k_pch_SteamVR_Section,
+                                   vr::k_pch_SteamVR_DoNotFadeToGrid,
+                                   m_noFadeToGridToggle );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit noFadeToGridChanged( m_noFadeToGridToggle );
+        }
+    }
+}
+
+bool SteamVRTabController::systemButton() const
+{
+    return m_systemButtonToggle;
+}
+
+void SteamVRTabController::setSystemButton( const bool value,
+                                            const bool notify )
+{
+    if ( m_systemButtonToggle != value )
+    {
+        m_systemButtonToggle = value;
+        vr::VRSettings()->SetBool(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_SendSystemButtonToAllApps_Bool,
+            m_systemButtonToggle );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit systemButtonChanged( m_systemButtonToggle );
+        }
+    }
+}
+
 /*------------------------------------------*/
 /* -----------------------------------------*/
 
-void SteamVRTabController::reset()
+/*void SteamVRTabController::reset()
 {
     vr::EVRSettingsError vrSettingsError;
 
@@ -579,5 +694,5 @@ void SteamVRTabController::restartSteamVR()
     LOG( INFO ) << "SteamVR Restart Command: " << cmd;
     QProcess::startDetached( cmd );
 }
-
+*/
 } // namespace advsettings
