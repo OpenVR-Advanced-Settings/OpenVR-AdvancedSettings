@@ -160,21 +160,6 @@ if ( vrSettingsError != vr::VRSettingsError_None )
         }
         setMultipleDriver( md );
 
-        // synch imu fallback
-        auto imu = vr::VRSettings()->GetBool(
-            vr::k_pch_Lighthouse_Section,
-            vr::k_pch_Lighthouse_EnableImuFallback_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_Lighthouse_EnableImuFallback_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setIMUFallback( imu );
-
         // synch dnd
         auto donotd = vr::VRSettings()->GetBool(
             vr::k_pch_Notifications_Section,
@@ -189,6 +174,66 @@ if ( vrSettingsError != vr::VRSettingsError_None )
                                   vrSettingsError );
         }
         setDND( donotd );
+
+        // synch camera
+        auto ca = vr::VRSettings()->GetBool( vr::k_pch_Camera_Section,
+                                             vr::k_pch_Camera_EnableCamera_Bool,
+                                             &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_Camera_EnableCamera_Bool
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        setCameraActive( ca );
+
+        // synch camera room
+        auto cr = vr::VRSettings()->GetBool(
+            vr::k_pch_Camera_Section,
+            vr::k_pch_Camera_EnableCameraForRoomView_Bool,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_Camera_EnableCameraForRoomView_Bool
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        setCameraRoom( cr );
+
+        // synch camera dashboard
+        auto cd = vr::VRSettings()->GetBool(
+            vr::k_pch_Camera_Section,
+            vr::k_pch_Camera_EnableCameraInDashboard_Bool,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING ) << "Could not read \""
+                           << vr::k_pch_Camera_EnableCameraInDashboard_Bool
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
+        }
+        setCameraDashboard( cd );
+
+        // synch camera bounds
+        auto cb = vr::VRSettings()->GetBool(
+            vr::k_pch_Camera_Section,
+            vr::k_pch_Camera_EnableCameraForCollisionBounds_Bool,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( WARNING )
+                << "Could not read \""
+                << vr::k_pch_Camera_EnableCameraForCollisionBounds_Bool
+                << "\" setting: "
+                << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                       vrSettingsError );
+        }
+        setCameraBounds( cb );
 
         settingsUpdateCounter = 0;
     }
@@ -650,30 +695,101 @@ void SteamVRTabController::setDND( const bool value, const bool notify )
     }
 }
 
-bool SteamVRTabController::imuFallback() const
+/*------------------------------------------*/
+/* -----------Camera Setting----------------*/
+
+bool SteamVRTabController::cameraActive() const
 {
-    return m_imuFallback;
+    return m_cameraActive;
 }
 
-void SteamVRTabController::setIMUFallback( const bool value, const bool notify )
+void SteamVRTabController::setCameraActive( const bool value,
+                                            const bool notify )
 {
-    if ( m_imuFallback != value )
+    if ( m_cameraActive != value )
     {
-        m_imuFallback = value;
-        vr::VRSettings()->SetBool( vr::k_pch_Lighthouse_Section,
-                                   vr::k_pch_Lighthouse_EnableImuFallback_Bool,
-                                   m_imuFallback );
+        m_cameraActive = value;
+        vr::VRSettings()->SetBool( vr::k_pch_Camera_Section,
+                                   vr::k_pch_Camera_EnableCamera_Bool,
+                                   m_cameraActive );
         vr::VRSettings()->Sync();
         if ( notify )
         {
-            emit iMUFallbackChanged( m_imuFallback );
+            emit cameraActiveChanged( m_cameraActive );
+        }
+    }
+}
+
+bool SteamVRTabController::cameraBounds() const
+{
+    return m_cameraBounds;
+}
+
+void SteamVRTabController::setCameraBounds( const bool value,
+                                            const bool notify )
+{
+    if ( m_cameraBounds != value )
+    {
+        m_cameraBounds = value;
+        vr::VRSettings()->SetBool(
+            vr::k_pch_Camera_Section,
+            vr::k_pch_Camera_EnableCameraForCollisionBounds_Bool,
+            m_cameraBounds );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit cameraBoundsChanged( m_cameraBounds );
+        }
+    }
+}
+
+bool SteamVRTabController::cameraRoom() const
+{
+    return m_cameraRoom;
+}
+
+void SteamVRTabController::setCameraRoom( const bool value, const bool notify )
+{
+    if ( m_cameraRoom != value )
+    {
+        m_cameraRoom = value;
+        vr::VRSettings()->SetBool(
+            vr::k_pch_Camera_Section,
+            vr::k_pch_Camera_EnableCameraForRoomView_Bool,
+            m_cameraRoom );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit cameraRoomChanged( m_cameraRoom );
+        }
+    }
+}
+
+bool SteamVRTabController::cameraDashboard() const
+{
+    return m_cameraDashboard;
+}
+
+void SteamVRTabController::setCameraDashboard( const bool value,
+                                               const bool notify )
+{
+    if ( m_cameraDashboard != value )
+    {
+        m_cameraDashboard = value;
+        vr::VRSettings()->SetBool(
+            vr::k_pch_Camera_Section,
+            vr::k_pch_Camera_EnableCameraInDashboard_Bool,
+            m_cameraDashboard );
+        vr::VRSettings()->Sync();
+        if ( notify )
+        {
+            emit cameraDashboardChanged( m_cameraDashboard );
         }
     }
 }
 
 /*------------------------------------------*/
 /* -----------------------------------------*/
-
 /*void SteamVRTabController::reset()
 {
     vr::EVRSettingsError vrSettingsError;
@@ -757,7 +873,7 @@ void SteamVRTabController::setIMUFallback( const bool value, const bool notify )
     vr::VRSettings()->Sync();
     settingsUpdateCounter = 999; // Easiest way to get default values
 }
-
+*/
 void SteamVRTabController::restartSteamVR()
 {
     QString cmd = QString( "cmd.exe /C restartvrserver.bat \"" )
@@ -766,5 +882,5 @@ void SteamVRTabController::restartSteamVR()
     LOG( INFO ) << "SteamVR Restart Command: " << cmd;
     QProcess::startDetached( cmd );
 }
-*/
+
 } // namespace advsettings

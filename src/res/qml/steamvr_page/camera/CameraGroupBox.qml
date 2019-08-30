@@ -5,12 +5,12 @@ import ovras.advsettings 1.0
 import "../../common"
 
 GroupBox {
-    id: brightnessGroupBox
+    id: cameraGroupBox
     Layout.fillWidth: true
 
     label: MyText {
         leftPadding: 10
-        text: "Misc:"
+        text: "Camera: (requires SteamVR restart)"
         bottomPadding: -10
     }
     background: Rectangle {
@@ -33,22 +33,51 @@ GroupBox {
             spacing: 16
 
             MyToggleButton {
-                id: videoMotionSmoothingToggle
-                text: "Motion Smoothing"
+                id: steamvrCameraActiveToggle
+                text: "Enable Camera"
+                Layout.preferredWidth: 400
                 onCheckedChanged: {
-                       VideoTabController.setMotionSmoothing(this.checked, false)
+                       SteamVRTabController.setCameraActive(this.checked, false)
+                    if(this.checked){
+                        steamvrCameraBoundsToggle.enabled = true
+                        steamvrCameraDashboardToggle.enabled = true
+                        steamvrCameraRoomToggle.enabled = true
+                    }else{
+                        steamvrCameraBoundsToggle.enabled = false
+                        steamvrCameraDashboardToggle.enabled = false
+                        steamvrCameraRoomToggle.enabled = false
+                    }
                 }
             }
-            MyText {
-                Layout.preferredWidth: 200
-                text: " "
+
+
+        }
+        RowLayout {
+            spacing: 16
+
+            MyToggleButton {
+                id: steamvrCameraBoundsToggle
+                text: "Camera for Bounds"
+                Layout.preferredWidth: 300
+                onCheckedChanged: {
+                       SteamVRTabController.setCameraBounds(this.checked, false)
+                }
             }
 
             MyToggleButton {
-                id: videoAllowSupersampleFilteringToggle
-                text: "Antistropic Filtering"
+                id: steamvrCameraDashboardToggle
+                text: "Camera for Dashboard"
+                Layout.preferredWidth: 300
                 onCheckedChanged: {
-                    VideoTabController.setAllowSupersampleFiltering(this.checked, false)
+                    SteamVRTabController.setCameraDashboard(this.checked, false)
+                }
+            }
+
+            MyToggleButton {
+                id: steamvrCameraRoomToggle
+                text: "Camera for Room View"
+                onCheckedChanged: {
+                    SteamVRTabController.setCameraRoom(this.checked, false)
                 }
             }
         }
@@ -56,20 +85,35 @@ GroupBox {
     }
 
     Component.onCompleted: {
-        videoAllowSupersampleFilteringToggle.checked = VideoTabController.allowSupersampleFiltering
-        videoMotionSmoothingToggle.checked = VideoTabController.motionSmoothing
+        var c1 = SteamVRTabController.cameraActive
+        steamvrCameraActiveToggle.checked = c1
+        steamvrCameraBoundsToggle.checked = SteamVRTabController.cameraBounds
+        steamvrCameraDashboardToggle.checked = SteamVRTabController.cameraDashboard
+        steamvrCameraRoomToggle.checked = SteamVRTabController.cameraRoom
+
+        if(!c1){
+            steamvrCameraDashboardToggle.enabled = false;
+            steamvrCameraBoundsToggle.enabled = false;
+            steamvrCameraRoomToggle.enabled = false;
+        }
 
     }
 
     Connections {
-        target: VideoTabController
-        onAllowSupersampleFilteringChanged: {
-            videoAllowSupersampleFilteringToggle.checked = VideoTabController.allowSupersampleFiltering
+        target: SteamVRTabController
+        onCameraActiveChanged: {
+            steamvrCameraActiveToggle.checked = SteamVRTabController.cameraActive
+        }
+        onCameraRoomChanged: {
+            steamvrCameraRoomToggle.checked = SteamVRTabController.cameraRoom
+        }
+        onCameraDashboardChanged: {
+            steamvrCameraDashboardToggle.checked = SteamVRTabController.cameraDashboard
+        }
+        onCameraBoundsChanged: {
+            steamvrCameraBoundsToggle.checked = SteamVRTabController.cameraBounds
         }
 
-        onMotionSmoothingChanged: {
-            videoMotionSmoothingToggle.checked = VideoTabController.motionSmoothing
-        }
 
     }
 }

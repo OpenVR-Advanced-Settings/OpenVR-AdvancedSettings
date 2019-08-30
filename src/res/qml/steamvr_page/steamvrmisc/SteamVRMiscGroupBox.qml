@@ -5,7 +5,7 @@ import ovras.advsettings 1.0
 import "../../common"
 
 GroupBox {
-    id: steamVRGroupBox
+    id: steamVRMiscGroupBox
     Layout.fillWidth: true
 
     label: MyText {
@@ -96,14 +96,6 @@ GroupBox {
                 text: " "
             }
 
-            MyToggleButton {
-                id: steamvrIMUFallbackToggle
-                Layout.fillWidth: true
-                text: "IMU FallBack"
-                onCheckedChanged: {
-                    SteamVRTabController.setIMUFallback(this.checked, false)
-                }
-            }
         }
 
     }
@@ -114,7 +106,6 @@ GroupBox {
         steamvrMultipleDriverToggle.checked = SteamVRTabController.multipleDriver
         steamvrNoFadeToGridToggle.checked = SteamVRTabController.noFadeToGrid
         steamvrNotificationToggle.checked = SteamVRTabController.dnd
-        steamvrIMUFallbackToggle.checked = SteamVRTabController.imuFallback
     }
 
     Connections {
@@ -133,9 +124,6 @@ GroupBox {
         }
         onDNDChanged:{
             steamvrNotificationToggle.checked = SteamVRTabController.dnd
-        }
-        onIMUFallbackChanged:{
-            steamvrIMUFallbackToggle.checked = SteamVRTabController.imuFallback
         }
 
     }

@@ -50,8 +50,15 @@ class SteamVRTabController : public QObject
     Q_PROPERTY( bool performanceGraph READ performanceGraph WRITE
                     setPerformanceGraph NOTIFY performanceGraphChanged )
     Q_PROPERTY( bool dnd READ dnd WRITE setDND NOTIFY dNDChanged )
-    Q_PROPERTY( bool imuFallback READ imuFallback WRITE setIMUFallback NOTIFY
-                    iMUFallbackChanged )
+
+    Q_PROPERTY( bool cameraActive READ cameraActive WRITE setCameraActive NOTIFY
+                    cameraActiveChanged )
+    Q_PROPERTY( bool cameraBounds READ cameraBounds WRITE setCameraBounds NOTIFY
+                    cameraBoundsChanged )
+    Q_PROPERTY( bool cameraRoom READ cameraRoom WRITE setCameraRoom NOTIFY
+                    cameraRoomChanged )
+    Q_PROPERTY( bool cameraDashboard READ cameraDashboard WRITE
+                    setCameraDashboard NOTIFY cameraDashboardChanged )
 
 private:
     OverlayController* parent;
@@ -64,8 +71,12 @@ private:
     bool m_systemButtonToggle = false;
     bool m_noFadeToGridToggle = false;
     bool m_multipleDriverToggle = false;
-    bool m_imuFallback = false;
     bool m_dnd = false;
+
+    bool m_cameraActive = false;
+    bool m_cameraBounds = false;
+    bool m_cameraRoom = false;
+    bool m_cameraDashboard = false;
 
     // void initMotionSmoothing();
     // void initSupersampleOverride();
@@ -90,7 +101,11 @@ public:
     bool multipleDriver() const;
     bool systemButton() const;
     bool dnd() const;
-    bool imuFallback() const;
+
+    bool cameraActive() const;
+    bool cameraBounds() const;
+    bool cameraRoom() const;
+    bool cameraDashboard() const;
 
     // void reloadSteamVRProfiles();
     // void saveSteamVRProfiles();
@@ -108,7 +123,11 @@ public slots:
     void setNoFadeToGrid( bool value, bool notify = true );
     void setMultipleDriver( bool value, bool notify = true );
     void setDND( bool value, bool notify = true );
-    void setIMUFallback( bool value, bool notify = true );
+
+    void setCameraActive( bool value, bool notify = true );
+    void setCameraBounds( bool value, bool notify = true );
+    void setCameraRoom( bool value, bool notify = true );
+    void setCameraDashboard( bool value, bool notify = true );
 
     // void addSteamVRProfile( QString name,
     //                        bool includeSupersampling,
@@ -118,7 +137,7 @@ public slots:
     // void deleteSteamVRProfile( unsigned index );
 
     // void reset();
-    // void restartSteamVR();
+    void restartSteamVR();
 
 signals:
     // void superSamplingChanged( float value );
@@ -130,7 +149,11 @@ signals:
     void systemButtonChanged( bool value );
     void noFadeToGridChanged( bool value );
     void dNDChanged( bool value );
-    void iMUFallbackChanged( bool value );
+
+    void cameraActiveChanged( bool value );
+    void cameraBoundsChanged( bool value );
+    void cameraRoomChanged( bool value );
+    void cameraDashboardChanged( bool value );
 
     void steamVRProfilesUpdated();
     void steamVRProfileAdded();

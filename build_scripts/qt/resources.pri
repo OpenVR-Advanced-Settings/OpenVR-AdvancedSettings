@@ -32,7 +32,6 @@ DISTFILES += \
     src/res/qml/steamvr_page/SteamVRPage.qml \
 	src/res/qml/steamvr_page/camera/* \
 	src/res/qml/steamvr_page/steamvrmisc/* \
-	src/res/qml/steamvr_page/basestation/* \
     src/res/qml/utilities_page/* \
     src/res/qml/utilities_page/media_keys/* \
     src/res/qml/utilities_page/keyboard_utils/* \
