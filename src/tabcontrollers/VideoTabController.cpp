@@ -497,8 +497,8 @@ void VideoTabController::setSuperSampling( float value, const bool notify )
         override = true;
     }
 
-    // TODO delta comparison
-    if ( override || m_superSampling != value )
+    if ( override
+         || fabs( static_cast<double>( m_superSampling - value ) ) > .005 )
     {
         LOG( DEBUG ) << "Supersampling value changed: " << m_superSampling
                      << " => " << value;
