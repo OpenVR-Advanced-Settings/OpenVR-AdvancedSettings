@@ -164,34 +164,36 @@ MyStackViewPage {
                        spacing: 18
 
                        MyText {
-                           text: "Supersampling Profile:"
+                           text: "Video Profile:"
+                       }
+                       Item{
+                          Layout.fillWidth: true
                        }
 
                        MyComboBox {
-                           id: summarySteamVRProfileComboBox
+                           id: summaryVideoProfileComboBox
                            Layout.maximumWidth: 378
                            Layout.minimumWidth: 378
                            Layout.preferredWidth: 378
-                           Layout.fillWidth: true
                            model: [""]
                            onCurrentIndexChanged: {
                                if (currentIndex > 0) {
-                                   summarySteamVRProfileApplyButton.enabled = true
+                                   summaryVideoProfileApplyButton.enabled = true
                                } else {
-                                   summarySteamVRProfileApplyButton.enabled = false
+                                   summaryVideoProfileApplyButton.enabled = false
                                }
                            }
                        }
 
                        MyPushButton {
-                           id: summarySteamVRProfileApplyButton
+                           id: summaryVideoProfileApplyButton
                            enabled: false
                            Layout.preferredWidth: 150
                            text: "Apply"
                            onClicked: {
-                               if (summarySteamVRProfileComboBox.currentIndex > 0) {
-                                   SteamVRTabController.applySteamVRProfile(summarySteamVRProfileComboBox.currentIndex - 1)
-                                   summarySteamVRProfileComboBox.currentIndex = 0
+                               if (summaryVideoProfileComboBox.currentIndex > 0) {
+                                   VideoTabController.applyVideoProfile(summaryVideoProfileComboBox.currentIndex - 1)
+                                   summaryVideoProfileComboBox.currentIndex = 0
                                }
                            }
                        }
@@ -394,7 +396,7 @@ MyStackViewPage {
 
    Component.onCompleted: {
        reloadChaperoneProfiles()
-       reloadSteamVRProfiles()
+       reloadVideoProfiles()
 
        summaryVersionText.text = applicationVersion
 
@@ -423,9 +425,9 @@ MyStackViewPage {
    }
 
    Connections {
-       target: SteamVRTabController
-       onSteamVRProfilesUpdated: {
-           reloadSteamVRProfiles()
+       target: VideoTabController
+       onVideoProfilesUpdated: {
+           reloadVideoProfiles()
        }
    }
 
@@ -499,13 +501,13 @@ MyStackViewPage {
     }
 
 
-    function reloadSteamVRProfiles() {
+    function reloadVideoProfiles() {
        var profiles = [""]
-       var profileCount = SteamVRTabController.getSteamVRProfileCount()
+       var profileCount = VideoTabController.getVideoProfileCount()
        for (var i = 0; i < profileCount; i++) {
-           profiles.push(SteamVRTabController.getSteamVRProfileName(i))
+           profiles.push(VideoTabController.getVideoProfileName(i))
        }
-       summarySteamVRProfileComboBox.currentIndex = 0
-       summarySteamVRProfileComboBox.model = profiles
+       summaryVideoProfileComboBox.currentIndex = 0
+       summaryVideoProfileComboBox.model = profiles
     }
 }

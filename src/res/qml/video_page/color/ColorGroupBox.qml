@@ -41,7 +41,7 @@ GroupBox {
             MySlider {
                 id: colorRedSlider
                 from: 0.01
-                to: 1.0
+                to: 2.0
                 stepSize: 0.01
                 value: 1.0
                 Layout.fillWidth: true
@@ -85,7 +85,7 @@ GroupBox {
             MySlider {
                 id: colorGreenSlider
                 from: 0.01
-                to: 1.0
+                to: 2.0
                 stepSize: 0.01
                 value: 1.0
                 Layout.fillWidth: true
@@ -130,7 +130,7 @@ GroupBox {
                 MySlider {
                     id: colorBlueSlider
                     from: 0.01
-                    to: 1.0
+                    to: 2.0
                     stepSize: 0.01
                     value: 1.0
                     Layout.fillWidth: true

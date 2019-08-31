@@ -330,7 +330,7 @@ void VideoTabController::setColorRed( float value, bool notify )
                          << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                                 vrSettingsError );
         }
-        LOG( INFO ) << "Changed Red Gain to: " << m_colorRed;
+        LOG( DEBUG ) << "Changed Red Gain to: " << m_colorRed;
         vr::VRSettings()->Sync();
         if ( notify )
         {
@@ -357,7 +357,7 @@ void VideoTabController::setColorGreen( float value, bool notify )
                          << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                                 vrSettingsError );
         }
-        LOG( INFO ) << "Changed Green Gain to: " << m_colorGreen;
+        LOG( DEBUG ) << "Changed Green Gain to: " << m_colorGreen;
         vr::VRSettings()->Sync();
         if ( notify )
         {
@@ -384,7 +384,7 @@ void VideoTabController::setColorBlue( float value, bool notify )
                          << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                                 vrSettingsError );
         }
-        LOG( INFO ) << "Changed Blue Gain to: " << m_colorBlue;
+        LOG( DEBUG ) << "Changed Blue Gain to: " << m_colorBlue;
         vr::VRSettings()->Sync();
         if ( notify )
         {
