@@ -7,13 +7,14 @@ import "brightness"
 import "color"
 import "supersampling"
 import "miscvid"
+import "profiles"
 
 MyStackViewPage {
     width: 1200
     headerText: "Video Settings"
 
     content: ColumnLayout {
-        spacing: 16
+        spacing: 10
 
         BrightnessGroupBox {
         id: brightnessGroupBox}
@@ -22,6 +23,10 @@ MyStackViewPage {
         SuperSamplingGroupBox{
             id: ssGroupBox
         }
+        VideoProfileGroupBox{
+            id: videoProfileGroupBox
+        }
+
         VideoMiscGroupBox{
             id:miscVideoGroupBox
         }

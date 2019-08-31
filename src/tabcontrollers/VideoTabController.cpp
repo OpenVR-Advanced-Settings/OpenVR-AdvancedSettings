@@ -14,6 +14,7 @@ void VideoTabController::initStage1()
     initSupersampleOverride();
     m_overlayInit = true;
     reloadVideoConfig();
+    reloadVideoProfiles();
 }
 
 void VideoTabController::initBrightnessOverlay()
@@ -157,6 +158,14 @@ void VideoTabController::reloadVideoConfig()
     m_brightnessOpacityValue
         = settings->value( "brightnessOpacityValue", 0.0f ).toFloat();
     m_brightnessValue = settings->value( "brightnessValue", 1.0f ).toFloat();
+    setAllowSupersampleFiltering(
+        settings->value( "supersampleFiltering", true ).toBool() );
+    setMotionSmoothing( settings->value( "motionSmooth", true ).toBool() );
+
+    setColorRed( settings->value( "colorRed", 1.0f ).toFloat() );
+    setColorBlue( settings->value( "colorBlue", 1.0f ).toFloat() );
+    setColorGreen( settings->value( "colorGreen", 1.0f ).toFloat() );
+
     settings->endGroup();
     setBrightnessOpacityValue();
     settings->sync();
@@ -169,6 +178,15 @@ void VideoTabController::saveVideoConfig()
     settings->setValue( "brightnessEnabled", brightnessEnabled() );
     settings->setValue( "brightnessOpacityValue", brightnessOpacityValue() );
     settings->setValue( "brightnessValue", brightnessValue() );
+    settings->setValue( "supersamplingOverride", m_allowSupersampleOverride );
+    settings->setValue( "supersampling", m_superSampling );
+    settings->setValue( "supersampleFiltering", m_allowSupersampleFiltering );
+    settings->setValue( "motionSmooth", m_motionSmoothing );
+
+    settings->setValue( "colorRed", m_colorRed );
+    settings->setValue( "colorBlue", m_colorBlue );
+    settings->setValue( "colorGreen", m_colorGreen );
+
     settings->endGroup();
     settings->sync();
 }
@@ -583,6 +601,158 @@ void VideoTabController::setAllowSupersampleFiltering( const bool value,
             emit allowSupersampleFilteringChanged(
                 m_allowSupersampleFiltering );
         }
+    }
+}
+
+/* -----------------------------------------*/
+/*------------------------------------------*/
+/*Profile Logic Functions*/
+
+void VideoTabController::addVideoProfile( const QString name )
+{
+    VideoProfile* profile = nullptr;
+    for ( auto& p : videoProfiles )
+    {
+        if ( p.profileName.compare( name.toStdString() ) == 0 )
+        {
+            profile = &p;
+            break;
+        }
+    }
+    if ( !profile )
+    {
+        auto i = videoProfiles.size();
+        videoProfiles.emplace_back();
+        profile = &videoProfiles[i];
+    }
+    profile->profileName = name.toStdString();
+
+    profile->supersampleOverride = m_allowSupersampleOverride;
+    profile->supersampling = m_superSampling;
+    profile->anisotropicFiltering = m_allowSupersampleFiltering;
+    profile->motionSmooth = m_motionSmoothing;
+    profile->colorRed = m_colorRed;
+    profile->colorGreen = m_colorGreen;
+    profile->colorBlue = m_colorBlue;
+    profile->brightnessToggle = m_brightnessEnabled;
+    profile->brightnessValue = m_brightnessValue;
+
+    saveVideoProfiles();
+    OverlayController::appSettings()->sync();
+    emit videoProfilesUpdated();
+    emit videoProfileAdded();
+}
+
+void VideoTabController::applyVideoProfile( const unsigned index )
+{
+    if ( index < videoProfiles.size() )
+    {
+        auto& profile = videoProfiles[index];
+
+        setAllowSupersampleOverride( profile.supersampleOverride );
+        setSuperSampling( profile.supersampling );
+        setAllowSupersampleFiltering( profile.anisotropicFiltering );
+        setMotionSmoothing( profile.motionSmooth );
+        setColorRed( profile.colorRed );
+        setColorBlue( profile.colorBlue );
+        setColorGreen( profile.colorGreen );
+        setBrightnessEnabled( profile.brightnessToggle );
+        setBrightnessValue( profile.brightnessValue );
+        vr::VRSettings()->Sync( true );
+    }
+}
+
+void VideoTabController::deleteVideoProfile( const unsigned index )
+{
+    if ( index < videoProfiles.size() )
+    {
+        auto pos = videoProfiles.begin() + index;
+        videoProfiles.erase( pos );
+        saveVideoProfiles();
+        OverlayController::appSettings()->sync();
+        emit videoProfilesUpdated();
+    }
+}
+
+void VideoTabController::reloadVideoProfiles()
+{
+    videoProfiles.clear();
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "steamVRSettings" );
+    auto profileCount = settings->beginReadArray( "steamVRProfiles" );
+    for ( int i = 0; i < profileCount; i++ )
+    {
+        settings->setArrayIndex( i );
+        videoProfiles.emplace_back();
+        auto& entry = videoProfiles[static_cast<size_t>( i )];
+        entry.profileName
+            = settings->value( "profileName" ).toString().toStdString();
+
+        entry.supersampleOverride
+            = settings->value( "supersamplingOverride", false ).toBool();
+        entry.supersampling
+            = settings->value( "supersampling", 1.0f ).toFloat();
+        entry.anisotropicFiltering
+            = settings->value( "anisotropicFiltering", true ).toBool();
+        entry.motionSmooth = settings->value( "motionSmooth", true ).toBool();
+
+        entry.colorRed = settings->value( "colorRed", 1.0f ).toFloat();
+        entry.colorBlue = settings->value( "colorBlue", 1.0f ).toFloat();
+        entry.colorGreen = settings->value( "colorGreen", 1.0f ).toFloat();
+
+        entry.brightnessToggle
+            = settings->value( "brightnessToggle", false ).toBool();
+        entry.brightnessValue
+            = settings->value( "brightnessValue", 1.0f ).toFloat();
+    }
+    settings->endArray();
+    settings->endGroup();
+}
+
+void VideoTabController::saveVideoProfiles()
+{
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "VideoSettings" );
+    settings->beginWriteArray( "videoProfiles" );
+    unsigned i = 0;
+    for ( auto& p : videoProfiles )
+    {
+        settings->setArrayIndex( static_cast<int>( i ) );
+        settings->setValue( "profileName",
+                            QString::fromStdString( p.profileName ) );
+
+        settings->setValue( "supersamplingOverride", p.supersampleOverride );
+        settings->setValue( "supersampling", p.supersampling );
+        settings->setValue( "anisotropicFiltering", p.anisotropicFiltering );
+        settings->setValue( "motionSmooth", p.motionSmooth );
+
+        settings->setValue( "colorRed", p.colorRed );
+        settings->setValue( "colorBlue", p.colorBlue );
+        settings->setValue( "colorGreen", p.colorGreen );
+
+        settings->setValue( "brightnessToggle", p.brightnessToggle );
+        settings->setValue( "brightnessValue", p.brightnessValue );
+
+        i++;
+    }
+    settings->endArray();
+    settings->endGroup();
+}
+
+int VideoTabController::getVideoProfileCount()
+{
+    return static_cast<int>( videoProfiles.size() );
+}
+
+QString VideoTabController::getVideoProfileName( const unsigned index )
+{
+    if ( index >= videoProfiles.size() )
+    {
+        return QString();
+    }
+    else
+    {
+        return QString::fromStdString( videoProfiles[index].profileName );
     }
 }
 

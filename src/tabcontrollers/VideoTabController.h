@@ -18,6 +18,21 @@ namespace advsettings
 // forward declaration
 class OverlayController;
 
+struct VideoProfile
+{
+    std::string profileName;
+
+    float supersampling = 1.0f;
+    bool anisotropicFiltering = false;
+    bool motionSmooth = false;
+    bool supersampleOverride = false;
+    float colorRed = 1.0f;
+    float colorGreen = 1.0f;
+    float colorBlue = 1.0f;
+    bool brightnessToggle = false;
+    float brightnessValue = 1.0f;
+};
+
 class VideoTabController : public QObject
 {
     Q_OBJECT
@@ -80,6 +95,8 @@ private:
 
     void initBrightnessOverlay();
 
+    std::vector<VideoProfile> videoProfiles;
+
     QString getSettingsName()
     {
         return "videoSettings";
@@ -111,6 +128,12 @@ public:
     void eventLoopTick();
     void dashboardLoopTick();
 
+    void reloadVideoProfiles();
+    void saveVideoProfiles();
+
+    Q_INVOKABLE int getVideoProfileCount();
+    Q_INVOKABLE QString getVideoProfileName( unsigned index );
+
 public slots:
     void setBrightnessEnabled( bool value, bool notify = true );
     void setBrightnessValue( float percvalue, bool notify = true );
@@ -125,6 +148,10 @@ public slots:
     void setMotionSmoothing( bool value, bool notify = true );
     void setAllowSupersampleFiltering( bool value, bool notify = true );
 
+    void addVideoProfile( QString name );
+    void applyVideoProfile( unsigned index );
+    void deleteVideoProfile( unsigned index );
+
 signals:
     void brightnessEnabledChanged( bool value );
     void brightnessValueChanged( float value );
@@ -137,6 +164,9 @@ signals:
 
     void motionSmoothingChanged( bool value );
     void allowSupersampleFilteringChanged( bool value );
+
+    void videoProfilesUpdated();
+    void videoProfileAdded();
 };
 
 } // namespace advsettings

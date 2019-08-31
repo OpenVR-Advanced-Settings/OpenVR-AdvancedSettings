@@ -39,14 +39,13 @@ GroupBox {
                        VideoTabController.setMotionSmoothing(this.checked, false)
                 }
             }
-            MyText {
-                Layout.preferredWidth: 200
-                text: " "
+            Item {
+                Layout.preferredWidth: 20
             }
 
             MyToggleButton {
                 id: videoAllowSupersampleFilteringToggle
-                text: "Antistropic Filtering"
+                text: "Advanced SS Filtering"
                 onCheckedChanged: {
                     VideoTabController.setAllowSupersampleFiltering(this.checked, false)
                 }
