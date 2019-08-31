@@ -158,13 +158,6 @@ void VideoTabController::reloadVideoConfig()
     m_brightnessOpacityValue
         = settings->value( "brightnessOpacityValue", 0.0f ).toFloat();
     m_brightnessValue = settings->value( "brightnessValue", 1.0f ).toFloat();
-    setAllowSupersampleFiltering(
-        settings->value( "supersampleFiltering", true ).toBool() );
-    setMotionSmoothing( settings->value( "motionSmooth", true ).toBool() );
-
-    setColorRed( settings->value( "colorRed", 1.0f ).toFloat() );
-    setColorBlue( settings->value( "colorBlue", 1.0f ).toFloat() );
-    setColorGreen( settings->value( "colorGreen", 1.0f ).toFloat() );
 
     settings->endGroup();
     setBrightnessOpacityValue();
@@ -178,14 +171,6 @@ void VideoTabController::saveVideoConfig()
     settings->setValue( "brightnessEnabled", brightnessEnabled() );
     settings->setValue( "brightnessOpacityValue", brightnessOpacityValue() );
     settings->setValue( "brightnessValue", brightnessValue() );
-    settings->setValue( "supersamplingOverride", m_allowSupersampleOverride );
-    settings->setValue( "supersampling", m_superSampling );
-    settings->setValue( "supersampleFiltering", m_allowSupersampleFiltering );
-    settings->setValue( "motionSmooth", m_motionSmoothing );
-
-    settings->setValue( "colorRed", m_colorRed );
-    settings->setValue( "colorBlue", m_colorBlue );
-    settings->setValue( "colorGreen", m_colorGreen );
 
     settings->endGroup();
     settings->sync();

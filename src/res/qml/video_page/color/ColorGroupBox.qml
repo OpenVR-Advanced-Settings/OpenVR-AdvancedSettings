@@ -46,7 +46,7 @@ GroupBox {
                 value: 1.0
                 Layout.fillWidth: true
                 onPositionChanged: {
-                    var val = (this.position * 100)
+                    var val = (this.value * 100)
                     colorRedText.text = Math.round(val) + "%"
                 }
                 onValueChanged: {
@@ -90,7 +90,7 @@ GroupBox {
                 value: 1.0
                 Layout.fillWidth: true
                 onPositionChanged: {
-                    var val = (this.position * 100)
+                    var val = (this.value * 100)
                     colorGreenText.text = Math.round(val) + "%"
                 }
                 onValueChanged: {
@@ -135,7 +135,7 @@ GroupBox {
                     value: 1.0
                     Layout.fillWidth: true
                     onPositionChanged: {
-                        var val = (this.position * 100)
+                        var val = (this.value * 100)
                         colorBlueText.text = Math.round(val) + "%"
                     }
                     onValueChanged: {
