@@ -2,6 +2,7 @@
 #include <QQuickWindow>
 #include <QApplication>
 #include "../overlaycontroller.h"
+#include "../keyboard_input/input_sender.h"
 #include <chrono>
 #include <thread>
 
@@ -77,6 +78,40 @@ void UtilitiesTabController::sendMediaPausePlay()
 void UtilitiesTabController::sendMediaStopSong()
 {
     keyboardinput::sendMediaStopSong();
+}
+
+void UtilitiesTabController::sendKeyboardOne()
+{
+    m_parent->appSettings()->beginGroup( "keyboardShortcuts" );
+    const auto commands = m_parent->appSettings()
+                              ->value( "keyboardOne" )
+                              .toString()
+                              .toStdString();
+    m_parent->appSettings()->endGroup();
+
+    sendStringAsInput( commands );
+}
+void UtilitiesTabController::sendKeyboardTwo()
+{
+    m_parent->appSettings()->beginGroup( "keyboardShortcuts" );
+    const auto commands = m_parent->appSettings()
+                              ->value( "keyboardTwo" )
+                              .toString()
+                              .toStdString();
+    m_parent->appSettings()->endGroup();
+
+    sendStringAsInput( commands );
+}
+void UtilitiesTabController::sendKeyboardThree()
+{
+    m_parent->appSettings()->beginGroup( "keyboardShortcuts" );
+    const auto commands = m_parent->appSettings()
+                              ->value( "keyboardThree" )
+                              .toString()
+                              .toStdString();
+    m_parent->appSettings()->endGroup();
+
+    sendStringAsInput( commands );
 }
 
 bool UtilitiesTabController::alarmEnabled() const

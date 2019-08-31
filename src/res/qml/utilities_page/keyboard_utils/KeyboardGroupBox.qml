@@ -111,7 +111,28 @@ GroupBox {
                 onClicked: {
                     UtilitiesTabController.sendKeyboardCtrlV()
                 }
-            }
+             }
+            MyPushButton {
+                text: "Custom Key 1"
+                Layout.preferredWidth: 200
+                onClicked: {
+                    UtilitiesTabController.sendKeyboardOne();
+                }
+             }
+            MyPushButton {
+                text: "Custom Key 2"
+                Layout.preferredWidth: 200
+                onClicked: {
+                    UtilitiesTabController.sendKeyboardTwo();
+                }
+             }
+            MyPushButton {
+                text: "Custom Key 3"
+                Layout.preferredWidth: 200
+                onClicked: {
+                    UtilitiesTabController.sendKeyboardThree();
+                }
+             }
 
             Item {
                 Layout.fillWidth: true
