@@ -65,6 +65,9 @@ public slots:
     void sendMediaPreviousSong();
     void sendMediaPausePlay();
     void sendMediaStopSong();
+    Q_INVOKABLE void sendKeyboardOne();
+    Q_INVOKABLE void sendKeyboardTwo();
+    Q_INVOKABLE void sendKeyboardThree();
 
     void setAlarmEnabled( bool enabled, bool notify = true );
     void setAlarmIsModal( bool modal, bool notify = true );

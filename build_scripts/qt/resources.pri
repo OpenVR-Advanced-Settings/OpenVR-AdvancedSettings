@@ -29,7 +29,9 @@ DISTFILES += \
     src/res/qml/RootPage.qml \
     src/res/qml/SettingsPage.qml \
     src/res/qml/StatisticsPage.qml \
-    src/res/qml/SteamVRPage.qml \
+    src/res/qml/steamvr_page/SteamVRPage.qml \
+	src/res/qml/steamvr_page/camera/* \
+	src/res/qml/steamvr_page/steamvrmisc/* \
     src/res/qml/utilities_page/* \
     src/res/qml/utilities_page/media_keys/* \
     src/res/qml/utilities_page/keyboard_utils/* \
@@ -43,6 +45,10 @@ DISTFILES += \
     src/res/qml/video_page/* \
     src/res/qml/video_page/brightness/* \
     src/res/qml/video_page/color/* \
+	src/res/qml/video_page/supersampling/* \
+	src/res/qml/video_page/miscvid/* \
+	src/res/qml/video_page/profiles/* \
+	src/res/qml/video_page/dialogboxes/* \
     src/res/qml/common/* \
     src/res/qml/desktop_overlay_page/* \
     src/res/qml/desktop_overlay_page/translation_left_right/SteamDesktopTranslationLeftRight.qml \
