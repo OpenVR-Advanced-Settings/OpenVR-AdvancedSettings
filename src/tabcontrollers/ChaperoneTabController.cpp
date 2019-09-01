@@ -33,18 +33,13 @@ void ChaperoneTabController::initStage1()
         = settings->value( "chaperoneShowDashboardEnabled", false ).toBool();
     m_chaperoneShowDashboardDistance
         = settings->value( "chaperoneShowDashboardDistance", 0.5f ).toFloat();
-    m_enableChaperoneVelocityModifier
-        = settings->value( "chaperoneVelocityModifierEnabled", false ).toBool();
-    m_chaperoneVelocityModifier
-        = settings->value( "chaperoneVelocityModifier", 0.3f ).toFloat();
-    m_chaperoneVelocityModifierCurrent = 1.0f;
     m_disableChaperone = settings->value( "disableChaperone", false ).toBool();
     m_fadeDistanceRemembered
         = settings->value( "fadeDistanceRemembered", 0.5f ).toFloat();
     settings->endGroup();
     reloadChaperoneProfiles();
 
-    eventLoopTick( nullptr, 0.0f, 0.0f, 0.0f );
+    eventLoopTick( nullptr );
 }
 
 void ChaperoneTabController::initStage2( OverlayController* var_parent )
@@ -210,12 +205,6 @@ void ChaperoneTabController::reloadChaperoneProfiles()
             entry.chaperoneShowDashboardDistance
                 = settings->value( "chaperoneShowDashboardDistance", 0.5f )
                       .toFloat();
-            entry.enableChaperoneVelocityModifier
-                = settings->value( "chaperoneVelocityModifierEnabled", false )
-                      .toBool();
-            entry.chaperoneVelocityModifier
-                = settings->value( "chaperoneVelocityModifier", 0.3f )
-                      .toFloat();
         }
     }
     settings->endArray();
@@ -343,10 +332,6 @@ void ChaperoneTabController::saveChaperoneProfiles()
                                 p.enableChaperoneShowDashboard );
             settings->setValue( "chaperoneShowDashboardDistance",
                                 p.chaperoneShowDashboardDistance );
-            settings->setValue( "chaperoneVelocityModifierEnabled",
-                                p.enableChaperoneVelocityModifier );
-            settings->setValue( "chaperoneVelocityModifier",
-                                p.chaperoneVelocityModifier );
         }
         i++;
     }
@@ -373,8 +358,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     // Switch to Beginner Mode
     if ( m_enableChaperoneSwitchToBeginner )
     {
-        float activationDistance = m_chaperoneSwitchToBeginnerDistance
-                                   * m_chaperoneVelocityModifierCurrent;
+        float activationDistance = m_chaperoneSwitchToBeginnerDistance;
 
         if ( distance <= activationDistance && m_isHMDActive
              && !m_chaperoneSwitchToBeginnerActive )
@@ -443,8 +427,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
 
     if ( m_enableChaperoneHapticFeedback )
     {
-        float activationDistance = m_chaperoneHapticFeedbackDistance
-                                   * m_chaperoneVelocityModifierCurrent;
+        float activationDistance = m_chaperoneHapticFeedbackDistance;
 
         if ( distance <= activationDistance && proxSensorOverrideState )
         {
@@ -511,8 +494,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     if ( m_enableChaperoneAlarmSound )
     {
         // LOG(WARNING) << "In alarm";
-        float activationDistance = m_chaperoneAlarmSoundDistance
-                                   * m_chaperoneVelocityModifierCurrent;
+        float activationDistance = m_chaperoneAlarmSoundDistance;
 
         if ( distance <= activationDistance && proxSensorOverrideState )
         {
@@ -547,8 +529,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     // Show Dashboard
     if ( m_enableChaperoneShowDashboard )
     {
-        float activationDistance = m_chaperoneShowDashboardDistance
-                                   * m_chaperoneVelocityModifierCurrent;
+        float activationDistance = m_chaperoneShowDashboardDistance;
         if ( distance <= activationDistance && !m_chaperoneShowDashboardActive )
         {
             if ( !vr::VROverlay()->IsDashboardVisible() )
@@ -567,32 +548,8 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
 }
 
 void ChaperoneTabController::eventLoopTick(
-    vr::TrackedDevicePose_t* devicePoses,
-    float leftSpeed,
-    float rightSpeed,
-    float hmdSpeed )
+    vr::TrackedDevicePose_t* devicePoses )
 {
-    m_chaperoneVelocityModifierCurrent = 1.0f;
-    if ( m_enableChaperoneVelocityModifier )
-    {
-        float mod = m_chaperoneVelocityModifier
-                    * std::max( { leftSpeed, rightSpeed, hmdSpeed } );
-        if ( mod > 0.02f )
-        {
-            m_chaperoneVelocityModifierCurrent += mod;
-        }
-    }
-    float newFadeDistance = m_fadeDistance * m_chaperoneVelocityModifierCurrent;
-    if ( m_fadeDistanceModified != newFadeDistance )
-    {
-        m_fadeDistanceModified = newFadeDistance;
-        vr::VRSettings()->SetFloat(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_FadeDistance_Float,
-            m_fadeDistanceModified );
-        vr::VRSettings()->Sync();
-    }
-
     if ( devicePoses )
     {
         m_isHMDActive = false;
@@ -702,23 +659,16 @@ void ChaperoneTabController::eventLoopTick(
                            vrSettingsError );
             }
             setBoundsVisibility( vis / 255.0f );
-            if ( m_chaperoneVelocityModifierCurrent == 1.0f )
+            if ( vrSettingsError != vr::VRSettingsError_None )
             {
-                auto fd = vr::VRSettings()->GetFloat(
-                    vr::k_pch_CollisionBounds_Section,
-                    vr::k_pch_CollisionBounds_FadeDistance_Float,
-                    &vrSettingsError );
-                if ( vrSettingsError != vr::VRSettingsError_None )
-                {
-                    LOG( WARNING )
-                        << "Could not read \""
-                        << vr::k_pch_CollisionBounds_FadeDistance_Float
-                        << "\" setting: "
-                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                               vrSettingsError );
-                }
-                setFadeDistance( fd );
+                LOG( WARNING )
+                    << "Could not read \""
+                    << vr::k_pch_CollisionBounds_FadeDistance_Float
+                    << "\" setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
             }
+
             auto cm = vr::VRSettings()->GetBool(
                 vr::k_pch_CollisionBounds_Section,
                 vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
@@ -764,7 +714,7 @@ float ChaperoneTabController::boundsVisibility() const
 
 void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
 {
-    if ( m_visibility != value )
+    if ( fabs( static_cast<double>( m_visibility - m_visibility ) ) > 0.005 )
     {
         if ( value <= 0.3f )
         {
@@ -794,7 +744,7 @@ float ChaperoneTabController::fadeDistance() const
 
 void ChaperoneTabController::setFadeDistance( float value, bool notify )
 {
-    if ( m_fadeDistance != value )
+    if ( fabs( static_cast<double>( m_fadeDistance - value ) ) > 0.005 )
     {
         m_fadeDistance = value;
         vr::VRSettings()->SetFloat(
@@ -816,7 +766,7 @@ float ChaperoneTabController::height() const
 
 void ChaperoneTabController::setHeight( float value, bool notify )
 {
-    if ( m_height != value )
+    if ( fabs( static_cast<double>( m_height - value ) ) > 0.005 )
     {
         m_height = value;
         // TODO revert?
@@ -853,7 +803,7 @@ void ChaperoneTabController::setHeight( float value, bool notify )
 
 void ChaperoneTabController::updateHeight( float value, bool notify )
 {
-    if ( m_height != value )
+    if ( fabs( static_cast<double>( m_height - value ) ) > 0.005 )
     {
         m_height = value;
         if ( notify )
@@ -966,16 +916,6 @@ float ChaperoneTabController::chaperoneShowDashboardDistance() const
     return m_chaperoneShowDashboardDistance;
 }
 
-bool ChaperoneTabController::isChaperoneVelocityModifierEnabled() const
-{
-    return m_enableChaperoneVelocityModifier;
-}
-
-float ChaperoneTabController::chaperoneVelocityModifier() const
-{
-    return m_chaperoneVelocityModifier;
-}
-
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount()
 {
     return static_cast<unsigned int>( chaperoneProfiles.size() );
@@ -1051,7 +991,9 @@ void ChaperoneTabController::setChaperoneSwitchToBeginnerEnabled( bool value,
 void ChaperoneTabController::setChaperoneSwitchToBeginnerDistance( float value,
                                                                    bool notify )
 {
-    if ( m_chaperoneSwitchToBeginnerDistance != value )
+    if ( fabs( static_cast<double>( m_chaperoneSwitchToBeginnerDistance
+                                    - value ) )
+         > 0.005 )
     {
         m_chaperoneSwitchToBeginnerDistance = value;
         auto settings = OverlayController::appSettings();
@@ -1096,7 +1038,9 @@ void ChaperoneTabController::setChaperoneHapticFeedbackEnabled( bool value,
 void ChaperoneTabController::setChaperoneHapticFeedbackDistance( float value,
                                                                  bool notify )
 {
-    if ( m_chaperoneHapticFeedbackDistance != value )
+    if ( fabs(
+             static_cast<double>( m_chaperoneHapticFeedbackDistance - value ) )
+         > 0.005 )
     {
         m_chaperoneHapticFeedbackDistance = value;
         auto settings = OverlayController::appSettings();
@@ -1192,7 +1136,8 @@ void ChaperoneTabController::setChaperoneAlarmSoundAdjustVolume( bool value,
 void ChaperoneTabController::setChaperoneAlarmSoundDistance( float value,
                                                              bool notify )
 {
-    if ( m_chaperoneAlarmSoundDistance != value )
+    if ( fabs( static_cast<double>( m_chaperoneAlarmSoundDistance - value ) )
+         > 0.005 )
     {
         m_chaperoneAlarmSoundDistance = value;
         auto settings = OverlayController::appSettings();
@@ -1233,7 +1178,8 @@ void ChaperoneTabController::setChaperoneShowDashboardEnabled( bool value,
 void ChaperoneTabController::setChaperoneShowDashboardDistance( float value,
                                                                 bool notify )
 {
-    if ( m_chaperoneShowDashboardDistance != value )
+    if ( fabs( static_cast<double>( m_chaperoneShowDashboardDistance - value ) )
+         > 0.005 )
     {
         m_chaperoneShowDashboardDistance = value;
         auto settings = OverlayController::appSettings();
@@ -1246,46 +1192,6 @@ void ChaperoneTabController::setChaperoneShowDashboardDistance( float value,
         {
             emit chaperoneShowDashboardDistanceChanged(
                 m_chaperoneShowDashboardDistance );
-        }
-    }
-}
-
-void ChaperoneTabController::setChaperoneVelocityModifierEnabled( bool value,
-                                                                  bool notify )
-{
-    if ( m_enableChaperoneVelocityModifier != value )
-    {
-        m_enableChaperoneVelocityModifier = value;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "chaperoneSettings" );
-        settings->setValue( "chaperoneVelocityModifierEnabled",
-                            m_enableChaperoneVelocityModifier );
-        settings->endGroup();
-        settings->sync();
-        if ( notify )
-        {
-            emit chaperoneVelocityModifierEnabledChanged(
-                m_enableChaperoneVelocityModifier );
-        }
-    }
-}
-
-void ChaperoneTabController::setChaperoneVelocityModifier( float value,
-                                                           bool notify )
-{
-    if ( m_chaperoneVelocityModifier != value )
-    {
-        m_chaperoneVelocityModifier = value;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "chaperoneSettings" );
-        settings->setValue( "chaperoneVelocityModifier",
-                            m_chaperoneVelocityModifier );
-        settings->endGroup();
-        settings->sync();
-        if ( notify )
-        {
-            emit chaperoneVelocityModifierChanged(
-                m_chaperoneVelocityModifier );
         }
     }
 }
@@ -1501,9 +1407,6 @@ void ChaperoneTabController::addChaperoneProfile(
         profile->enableChaperoneShowDashboard = m_enableChaperoneShowDashboard;
         profile->chaperoneShowDashboardDistance
             = m_chaperoneShowDashboardDistance;
-        profile->enableChaperoneVelocityModifier
-            = m_enableChaperoneVelocityModifier;
-        profile->chaperoneVelocityModifier = m_chaperoneVelocityModifier;
     }
     saveChaperoneProfiles();
     OverlayController::appSettings()->sync();
@@ -1599,9 +1502,6 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
                 profile.chaperoneShowDashboardDistance );
             setChaperoneShowDashboardEnabled(
                 profile.enableChaperoneShowDashboard );
-            setChaperoneVelocityModifier( profile.chaperoneVelocityModifier );
-            setChaperoneVelocityModifierEnabled(
-                profile.enableChaperoneVelocityModifier );
         }
         vr::VRSettings()->Sync( true );
         updateHeight( getBoundsMaxY() );

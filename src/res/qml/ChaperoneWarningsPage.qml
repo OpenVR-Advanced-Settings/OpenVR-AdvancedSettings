@@ -384,95 +384,6 @@ MyStackViewPage {
             }
         }
 
-
-        ColumnLayout {
-            spacing: 0
-            MyToggleButton {
-                id: velModifierToggle
-                text: "Velocity Dependent Fade/Activation Distance"
-                onCheckedChanged: {
-                    ChaperoneTabController.chaperoneVelocityModifierEnabled = checked
-                }
-            }
-            RowLayout {
-                MyText {
-                    text: "Distance Modifier: "
-                    Layout.preferredWidth: 250
-                }
-                MyPushButton2 {
-                    id: velModifierMinusButton
-                    Layout.preferredWidth: 40
-                    text: "-"
-                    onClicked: {
-                        var val = ChaperoneTabController.chaperoneVelocityModifier - 0.01
-                        if (val < 0.0) {
-                            val = 0.0;
-                        }
-                        ChaperoneTabController.chaperoneVelocityModifier = val.toFixed(2)
-                    }
-                }
-
-                MySlider {
-                    id: velModifierSlider
-                    from: 0
-                    to: 1.0
-                    stepSize: 0.01
-                    value: 0.3
-                    Layout.fillWidth: true
-                    onPositionChanged: {
-                        var val = this.from + ( this.position  * (this.to - this.from))
-                        velModifierText.text = val.toFixed(2)
-                    }
-                    onValueChanged: {
-                        var val = velModifierSlider.value.toFixed(2)
-                        if (val < 0.0) {
-                            val = 0.0
-                        }
-                        ChaperoneTabController.chaperoneVelocityModifier = val
-                        velModifierText.text = val
-                    }
-                }
-
-                MyPushButton2 {
-                    id: velModifierPlusButton
-                    Layout.preferredWidth: 40
-                    text: "+"
-                    onClicked: {
-                        var val = ChaperoneTabController.chaperoneVelocityModifier + 0.01
-                        if (val > 1.0) {
-                            val = 1.0;
-                        }
-                        ChaperoneTabController.chaperoneVelocityModifier = val.toFixed(2)
-                    }
-                }
-
-                MyTextField {
-                    id: velModifierText
-                    text: "0.00"
-                    keyBoardUID: 804
-                    Layout.preferredWidth: 100
-                    Layout.leftMargin: 10
-                    horizontalAlignment: Text.AlignHCenter
-                    function onInputEvent(input) {
-                        var val = parseFloat(input)
-                        if (!isNaN(val)) {
-                            if (val < 0.0) {
-                                val = 0.0
-                            }
-                            val = val.toFixed(2)
-                            ChaperoneTabController.chaperoneVelocityModifier = val
-                            text = val
-                        } else {
-                            text = ChaperoneTabController.chaperoneVelocityModifier.toFixed(2)
-                        }
-                    }
-                }
-            }
-        }
-
-
-        Item { Layout.fillHeight: true; Layout.fillWidth: true }
-
         Component.onCompleted: {
             switchBeginnerToggle.checked = ChaperoneTabController.chaperoneSwitchToBeginnerEnabled
             var d = ChaperoneTabController.chaperoneSwitchToBeginnerDistance.toFixed(2)
@@ -500,12 +411,6 @@ MyStackViewPage {
                 openDashboardDistanceSlider.value = d
             }
             openDashboardDistanceText.text = d
-            velModifierToggle.checked = ChaperoneTabController.chaperoneVelocityModifierEnabled
-            d = ChaperoneTabController.chaperoneVelocityModifier.toFixed(2)
-            if (d <= velModifierSlider.to) {
-                velModifierSlider.value = d
-            }
-            velModifierText.text = d
         }
 
         Connections {
@@ -552,16 +457,6 @@ MyStackViewPage {
                     openDashboardDistanceSlider.value = d
                 }
                 openDashboardDistanceText.text = d
-            }
-            onChaperoneVelocityModifierEnabledChanged: {
-                velModifierToggle.checked = ChaperoneTabController.chaperoneVelocityModifierEnabled
-            }
-            onChaperoneVelocityModifierChanged: {
-                var d = ChaperoneTabController.chaperoneVelocityModifier.toFixed(2)
-                if (d <= velModifierSlider.to && Math.abs(velModifierSlider.value - d) > 0.0008) {
-                    velModifierSlider.value = d
-                }
-                velModifierText.text = d
             }
         }
     }
