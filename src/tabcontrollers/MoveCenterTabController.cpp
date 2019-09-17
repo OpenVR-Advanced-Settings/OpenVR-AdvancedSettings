@@ -38,7 +38,6 @@ namespace advsettings
 {
 void MoveCenterTabController::initStage1()
 {
-    setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "playspaceSettings" );
     auto value = settings->value( "adjustChaperone", m_adjustChaperone );
@@ -1095,6 +1094,12 @@ void MoveCenterTabController::incomingSeatedReset()
 
 void MoveCenterTabController::reset()
 {
+    if ( !m_chaperoneBasisAcquired )
+    {
+        LOG( WARNING ) << "WARNING: Attempted reset offsets before chaperone "
+                          "basis is acquired!";
+        return;
+    }
     vr::VRChaperoneSetup()->HideWorkingSetPreview();
     m_heightToggle = false;
     emit heightToggleChanged( m_heightToggle );
@@ -1132,6 +1137,15 @@ void MoveCenterTabController::zeroOffsets()
         emit rotationChanged( m_rotation );
         updateChaperoneResetData();
         m_pendingZeroOffsets = false;
+        if ( !m_chaperoneBasisAcquired )
+        {
+            m_chaperoneBasisAcquired = true;
+            if ( !m_initComplete )
+            {
+                setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
+                m_initComplete = true;
+            }
+        }
         if ( m_roomSetupModeDetected )
         {
             LOG( INFO ) << "room setup EXIT detected";

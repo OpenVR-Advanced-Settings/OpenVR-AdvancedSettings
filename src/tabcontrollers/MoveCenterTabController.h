@@ -89,6 +89,8 @@ private:
     OverlayController* parent;
 
     int m_trackingUniverse = static_cast<int>( vr::TrackingUniverseStanding );
+    bool m_chaperoneBasisAcquired = false;
+    bool m_initComplete = false;
     float m_offsetX = 0.0f;
     float m_offsetY = 0.0f;
     float m_offsetZ = 0.0f;
@@ -172,8 +174,14 @@ private:
     std::chrono::steady_clock::time_point m_lastDragUpdateTimePoint;
     vr::HmdQuad_t* m_collisionBoundsForReset;
     uint32_t m_collisionBoundsCountForReset = 0;
-    vr::HmdMatrix34_t m_universeCenterForReset;
-    vr::HmdMatrix34_t m_seatedCenterForReset;
+    vr::HmdMatrix34_t m_universeCenterForReset
+        = { { { 1.0f, 0.0f, 0.0f, 0.0f },
+              { 0.0f, 1.0f, 0.0f, 0.0f },
+              { 0.0f, 0.0f, 1.0f, 0.0f } } };
+    vr::HmdMatrix34_t m_seatedCenterForReset
+        = { { { 1.0f, 0.0f, 0.0f, 0.0f },
+              { 0.0f, 1.0f, 0.0f, 0.0f },
+              { 0.0f, 0.0f, 1.0f, 0.0f } } };
     vr::HmdQuad_t* m_collisionBoundsForOffset;
 
     void updateHmdRotationCounter( vr::TrackedDevicePose_t hmdPose,
