@@ -1136,6 +1136,7 @@ void MoveCenterTabController::zeroOffsets()
         emit offsetZChanged( m_offsetZ );
         emit rotationChanged( m_rotation );
         updateChaperoneResetData();
+        reset();
         m_pendingZeroOffsets = false;
         if ( !m_chaperoneBasisAcquired )
         {
@@ -2076,14 +2077,9 @@ void MoveCenterTabController::saveUncommittedChaperone()
 {
     if ( !m_chaperoneCommitted )
     {
-        // double commit... once to ensure before we HideWorkingSetPreview the
-        // working set is synced. Commit a second time as a workaround for WMR
-        // and Rift not getting the commit during active ShowWorkingSetPreview
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
         vr::VRChaperoneSetup()->HideWorkingSetPreview();
-        vr::VRChaperoneSetup()->CommitWorkingCopy(
-            vr::EChaperoneConfigFile_Live );
         m_chaperoneCommitted = true;
         unsigned checkQuadCount = 0;
         vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
@@ -2429,24 +2425,10 @@ void MoveCenterTabController::updateGravity()
 
 void MoveCenterTabController::updateSpace()
 {
-    // If all offsets and rotation are still the same...
+    // Do nothing if all offsets and rotation are still the same...
     if ( m_offsetX == m_oldOffsetX && m_offsetY == m_oldOffsetY
          && m_offsetZ == m_oldOffsetZ && m_rotation == m_oldRotation )
     {
-        // ... wait for the comfort mode delay and commit chaperone
-        if ( m_dragComfortFactor >= m_turnComfortFactor )
-        {
-            if ( m_dragComfortFrameSkipCounter
-                 >= ( m_dragComfortFactor * m_dragComfortFactor ) )
-            {
-                saveUncommittedChaperone();
-            }
-        }
-        else if ( m_turnComfortFrameSkipCounter
-                  >= ( m_turnComfortFactor * m_turnComfortFactor ) )
-        {
-            saveUncommittedChaperone();
-        }
         return;
     }
 
