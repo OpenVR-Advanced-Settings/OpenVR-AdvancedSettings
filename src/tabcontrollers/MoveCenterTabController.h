@@ -16,6 +16,11 @@ constexpr double k_radiansToCentidegrees = 18000.0 / M_PI;
 constexpr double k_quaternionInvalidValue = -1000.0;
 constexpr double k_quaternionUnderIsInvalidValueThreshold = -900.0;
 constexpr double k_terminalVelocity_mps = 50.0;
+// give the max offset a buffer to avoid crossing when traveling at astronomical
+// velocities
+constexpr double k_maxOpenvrWorkingSetOffest = 39900.0;
+constexpr double k_maxOpenvrCommitOffset = 990.0;
+constexpr double k_maxOvrasUniverseCenteredTurningOffset = 25000.0;
 
 class OverlayController;
 

@@ -244,6 +244,9 @@ void MoveCenterTabController::outputLogPoses()
     vr::HmdMatrix34_t hmdStanding
         = devicePosesStanding[0].mDeviceToAbsoluteTracking;
 
+    LOG( INFO ) << "";
+    LOG( INFO ) << " ____Begin Matrices Log Ouput__________";
+    LOG( INFO ) << "|";
     LOG( INFO ) << "HMD POSE (standing universe)";
     outputLogHmdMatrix( hmdStanding );
 
@@ -305,6 +308,9 @@ void MoveCenterTabController::outputLogPoses()
 
     LOG( INFO ) << "m_seatedCenterForReset";
     outputLogHmdMatrix( m_seatedCenterForReset );
+
+    LOG( INFO ) << "|____End Matrices Log Ouput____________";
+    LOG( INFO ) << "";
 }
 
 void MoveCenterTabController::outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix )
@@ -1120,6 +1126,83 @@ void MoveCenterTabController::reset()
 
 void MoveCenterTabController::zeroOffsets()
 {
+    // first we'll check if we're outside the max commit distance
+
+    vr::HmdMatrix34_t currentCenter;
+    vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+        &currentCenter );
+    double currentCenterYaw = static_cast<double>(
+        std::atan2( currentCenter.m[0][2], currentCenter.m[2][2] ) );
+    double currentCenterXyz[3]
+        = { static_cast<double>( currentCenter.m[0][3] ),
+            static_cast<double>( currentCenter.m[1][3] ),
+            static_cast<double>( currentCenter.m[2][3] ) };
+    // unrotate to get raw values of xyz
+    rotateCoordinates( currentCenterXyz,
+                       currentCenterYaw
+                           - ( m_rotation * k_centidegreesToRadians ) );
+    if ( abs( currentCenterXyz[0] ) > k_maxOpenvrCommitOffset )
+    {
+        LOG( INFO ) << "Attempted Zero Offsets out of commit bounds ( X: "
+                    << currentCenterXyz[0] << " )";
+        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        outputLogHmdMatrix( currentCenter );
+        // if reset happens before init is complete we set the universe center
+        // to the raw tracking zero point
+        reset();
+        if ( !m_chaperoneBasisAcquired )
+        {
+            LOG( WARNING )
+                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS ACQUIRED<[!]><[!]> "
+                   "Setting universe center to raw tracking zero point.";
+        }
+        else
+        {
+            LOG( INFO ) << "-Resetting offsets-";
+        }
+    }
+    else if ( abs( currentCenterXyz[1] ) > k_maxOpenvrCommitOffset )
+    {
+        LOG( INFO ) << "Attempted Zero Offsets out of commit bounds ( Y: "
+                    << currentCenterXyz[1] << " )";
+        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        outputLogHmdMatrix( currentCenter );
+        // if reset happens before init is complete we set the universe center
+        // to the raw tracking zero point
+        reset();
+        if ( !m_chaperoneBasisAcquired )
+        {
+            LOG( WARNING )
+                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS ACQUIRED<[!]><[!]> "
+                   "Setting universe center to raw tracking zero point.";
+        }
+        else
+        {
+            LOG( INFO ) << "-Resetting offsets-";
+        }
+    }
+    else if ( abs( currentCenterXyz[2] ) > k_maxOpenvrCommitOffset )
+    {
+        LOG( INFO ) << "Attempted Zero Offsets out of commit bounds ( Z: "
+                    << currentCenterXyz[2] << " )";
+        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        outputLogHmdMatrix( currentCenter );
+        // if reset happens before init is complete we set the universe
+        // center to the raw tracking zero point
+        reset();
+        if ( !m_chaperoneBasisAcquired )
+        {
+            LOG( WARNING )
+                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS ACQUIRED<[!]><[!]> "
+                   "Setting universe center to raw tracking zero point.";
+        }
+        else
+        {
+            LOG( INFO ) << "-Resetting offsets-";
+        }
+    }
+
+    // finished checking if out of bounds, proceed with normal zeroing offsets
     if ( vr::VRChaperone()->GetCalibrationState()
          == vr::ChaperoneCalibrationState_OK )
     {
@@ -1136,7 +1219,6 @@ void MoveCenterTabController::zeroOffsets()
         emit offsetZChanged( m_offsetZ );
         emit rotationChanged( m_rotation );
         updateChaperoneResetData();
-        reset();
         m_pendingZeroOffsets = false;
         if ( !m_chaperoneBasisAcquired )
         {
@@ -1236,7 +1318,6 @@ void MoveCenterTabController::updateSeatedResetData()
 
 void MoveCenterTabController::updateChaperoneResetData()
 {
-    vr::VRChaperoneSetup()->HideWorkingSetPreview();
     vr::VRChaperoneSetup()->RevertWorkingCopy();
     unsigned currentQuadCount = 0;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
@@ -2432,6 +2513,7 @@ void MoveCenterTabController::updateSpace()
         return;
     }
 
+    // reload from disk if we're at zero offsets and allow external edits
     if ( m_allowExternalEdits && m_oldOffsetX == 0.0f && m_oldOffsetY == 0.0f
          && m_oldOffsetZ == 0.0f && m_oldRotation == 0 )
     {
@@ -2478,6 +2560,67 @@ void MoveCenterTabController::updateSpace()
     offsetUniverseCenter.m[2][3]
         += m_universeCenterForReset.m[2][2] * m_offsetZ;
 
+    // check if we just pushed offsetUniverseCenter out of bounds (40km)
+    // (we reuse offsetUniverseCenterYaw to rotate the chaperone also)
+    double offsetUniverseCenterYaw = static_cast<double>( std::atan2(
+        offsetUniverseCenter.m[0][2], offsetUniverseCenter.m[2][2] ) );
+    double offsetUniverseCenterXyz[3]
+        = { static_cast<double>( offsetUniverseCenter.m[0][3] ),
+            static_cast<double>( offsetUniverseCenter.m[1][3] ),
+            static_cast<double>( offsetUniverseCenter.m[2][3] ) };
+    // unrotate to get raw values of xyz
+    rotateCoordinates( offsetUniverseCenterXyz,
+                       offsetUniverseCenterYaw
+                           - ( m_rotation * k_centidegreesToRadians ) );
+    if ( abs( offsetUniverseCenterXyz[0] ) > k_maxOpenvrWorkingSetOffest
+         || ( abs( offsetUniverseCenterXyz[0] )
+                  > k_maxOvrasUniverseCenteredTurningOffset
+              && m_universeCenteredRotation ) )
+    {
+        LOG( INFO ) << "Raw universe center out of bounds ( X: "
+                    << offsetUniverseCenterXyz[0] << " )";
+        vr::HmdMatrix34_t standingZero;
+        vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+            &standingZero );
+        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        outputLogHmdMatrix( standingZero );
+        reset();
+        LOG( INFO ) << "-Resetting offsets-";
+        return;
+    }
+    if ( abs( offsetUniverseCenterXyz[1] ) > k_maxOpenvrWorkingSetOffest
+         || ( abs( offsetUniverseCenterXyz[1] )
+                  > k_maxOvrasUniverseCenteredTurningOffset
+              && m_universeCenteredRotation ) )
+    {
+        LOG( INFO ) << "Raw universe center out of bounds ( Y: "
+                    << offsetUniverseCenterXyz[1] << " )";
+        vr::HmdMatrix34_t standingZero;
+        vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+            &standingZero );
+        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        outputLogHmdMatrix( standingZero );
+        reset();
+        LOG( INFO ) << "-Resetting offsets-";
+        return;
+    }
+    if ( abs( offsetUniverseCenterXyz[2] ) > k_maxOpenvrWorkingSetOffest
+         || ( abs( offsetUniverseCenterXyz[2] )
+                  > k_maxOvrasUniverseCenteredTurningOffset
+              && m_universeCenteredRotation ) )
+    {
+        LOG( INFO ) << "Raw universe center out of bounds ( Z: "
+                    << offsetUniverseCenterXyz[2] << " )";
+        vr::HmdMatrix34_t standingZero;
+        vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+            &standingZero );
+        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        outputLogHmdMatrix( standingZero );
+        reset();
+        LOG( INFO ) << "-Resetting offsets-";
+        return;
+    }
+
     // keep the seated origin synced with offsets if in seated mode
     if ( m_trackingUniverse == vr::TrackingUniverseSeated )
     {
@@ -2493,9 +2636,6 @@ void MoveCenterTabController::updateSpace()
     {
         // make a copy of our bounds and
         // reorient relative to new universe center
-
-        float offsetUniverseCenterYaw = std::atan2(
-            offsetUniverseCenter.m[0][2], offsetUniverseCenter.m[2][2] );
 
         vr::HmdQuad_t* updatedBounds
             = new vr::HmdQuad_t[m_collisionBoundsCountForReset];
@@ -2535,8 +2675,9 @@ void MoveCenterTabController::updateSpace()
                        - m_universeCenterForReset.m[2][3];
 
                 // rotate by universe center's yaw
-                rotateFloatCoordinates( updatedBounds[quad].vCorners[corner].v,
-                                        offsetUniverseCenterYaw );
+                rotateFloatCoordinates(
+                    updatedBounds[quad].vCorners[corner].v,
+                    static_cast<float>( offsetUniverseCenterYaw ) );
             }
         }
 
@@ -2550,6 +2691,49 @@ void MoveCenterTabController::updateSpace()
 
     if ( m_oldStyleMotion )
     {
+        // check if universe center is outside of OpenVR commit bounds (1km)
+        if ( abs( offsetUniverseCenterXyz[0] ) > k_maxOpenvrCommitOffset )
+        {
+            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of commit "
+                           "bounds ( X: "
+                        << offsetUniverseCenterXyz[0] << " )";
+            vr::HmdMatrix34_t standingZero;
+            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+                &standingZero );
+            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+            outputLogHmdMatrix( standingZero );
+            reset();
+            LOG( INFO ) << "-Resetting offsets-";
+            return;
+        }
+        if ( abs( offsetUniverseCenterXyz[1] ) > k_maxOpenvrCommitOffset )
+        {
+            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of commit "
+                           "bounds ( Y: "
+                        << offsetUniverseCenterXyz[1] << " )";
+            vr::HmdMatrix34_t standingZero;
+            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+                &standingZero );
+            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+            outputLogHmdMatrix( standingZero );
+            reset();
+            LOG( INFO ) << "-Resetting offsets-";
+            return;
+        }
+        if ( abs( offsetUniverseCenterXyz[2] ) > k_maxOpenvrCommitOffset )
+        {
+            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of commit "
+                           "bounds ( Z: "
+                        << offsetUniverseCenterXyz[2] << " )";
+            vr::HmdMatrix34_t standingZero;
+            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+                &standingZero );
+            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+            outputLogHmdMatrix( standingZero );
+            reset();
+            LOG( INFO ) << "-Resetting offsets-";
+            return;
+        }
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
         m_chaperoneCommitted = true;
