@@ -151,8 +151,12 @@ unsigned int tokenToKeySym( const Token token )
         return XK_Alt_L;
     case Token::MODIFIER_SHIFT:
         return XK_Shift_L;
+    case Token::MODIFIER_RSHIFT:
+        return XK_Shift_R;
     case Token::MODIFIER_SUPER:
         return XK_Super_L;
+    case Token::MODIFIER_TILDE:
+        return XK_grave;
 
     default:
         return 0;
@@ -182,12 +186,22 @@ void sendTokensAsInput( const std::vector<Token> tokens )
     XTestGrabControl( display, True );
 
     std::vector<Token> heldInputs = {};
+    bool noKeyUp = false;
     for ( const auto& token : tokens )
     {
+        if ( token == Token::TOKEN_NO_KEYUP_NEXT )
+        {
+            noKeyUp = true;
+            continue;
+        }
+
         if ( isModifier( token ) )
         {
             sendKeyPress( token, KeyStatus::Down, display );
-            heldInputs.push_back( token );
+            if ( noKeyUp )
+            {
+                heldInputs.push_back( token );
+            }
             continue;
         }
 
@@ -204,7 +218,16 @@ void sendTokensAsInput( const std::vector<Token> tokens )
         if ( isLiteral( token ) )
         {
             sendKeyPress( token, KeyStatus::Down, display );
-            sendKeyPress( token, KeyStatus::Up, display );
+            if ( noKeyUp )
+            {
+                sendKeyPress( token, KeyStatus::Up, display );
+            }
+            continue;
+        }
+
+        if ( token != Token::TOKEN_NO_KEYUP_NEXT )
+        {
+            noKeyUp = false;
             continue;
         }
     }

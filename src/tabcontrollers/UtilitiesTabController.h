@@ -22,6 +22,8 @@ class UtilitiesTabController : public QObject
                     alarmEnabledChanged )
     Q_PROPERTY( bool alarmIsModal READ alarmIsModal WRITE setAlarmIsModal NOTIFY
                     alarmIsModalChanged )
+    Q_PROPERTY(
+        bool vrcDebug READ vrcDebug WRITE setVrcDebug NOTIFY vrcDebugChanged )
     Q_PROPERTY( int alarmTimeHour READ alarmTimeHour WRITE setAlarmTimeHour
                     NOTIFY alarmTimeHourChanged )
     Q_PROPERTY( int alarmTimeMinute READ alarmTimeMinute WRITE
@@ -34,6 +36,7 @@ private:
 
     bool m_alarmEnabled = false;
     bool m_alarmIsModal = true;
+    bool m_vrcDebug = false;
     QTime m_alarmTime;
     QTime m_alarmLastCheckTime;
 
@@ -50,6 +53,7 @@ public:
 
     bool alarmEnabled() const;
     bool alarmIsModal() const;
+    bool vrcDebug() const;
     int alarmTimeHour() const;
     int alarmTimeMinute() const;
 
@@ -61,6 +65,26 @@ public slots:
     void sendKeyboardCtrlC();
     void sendKeyboardCtrlV();
     void sendKeyboardBackspace( const int count );
+    void sendKeyboardRShiftTilde1();
+    void sendKeyboardRShiftTilde2();
+    void sendKeyboardRShiftTilde3();
+    void sendKeyboardRShiftTilde4();
+    void sendKeyboardRShiftTilde5();
+    void sendKeyboardRShiftTilde6();
+    void sendKeyboardRShiftTilde7();
+    void sendKeyboardRShiftTilde8();
+    void sendKeyboardRShiftTilde9();
+    void sendKeyboardRShiftTilde0();
+    void sendKeyboardRShiftTilde1Delayed();
+    void sendKeyboardRShiftTilde2Delayed();
+    void sendKeyboardRShiftTilde3Delayed();
+    void sendKeyboardRShiftTilde4Delayed();
+    void sendKeyboardRShiftTilde5Delayed();
+    void sendKeyboardRShiftTilde6Delayed();
+    void sendKeyboardRShiftTilde7Delayed();
+    void sendKeyboardRShiftTilde8Delayed();
+    void sendKeyboardRShiftTilde9Delayed();
+    void sendKeyboardRShiftTilde0Delayed();
     void sendMediaNextSong();
     void sendMediaPreviousSong();
     void sendMediaPausePlay();
@@ -71,6 +95,7 @@ public slots:
 
     void setAlarmEnabled( bool enabled, bool notify = true );
     void setAlarmIsModal( bool modal, bool notify = true );
+    void setVrcDebug( bool value, bool notify = true );
     void setAlarmTimeHour( int hour, bool notify = true );
     void setAlarmTimeMinute( int min, bool notify = true );
     void setAlarmTimeToCurrentTime();
@@ -80,6 +105,7 @@ public slots:
 signals:
     void alarmEnabledChanged( bool enabled );
     void alarmIsModalChanged( bool modal );
+    void vrcDebugChanged( bool value );
     void alarmTimeHourChanged( int hour );
     void alarmTimeMinuteChanged( int min );
 };

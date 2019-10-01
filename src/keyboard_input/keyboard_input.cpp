@@ -56,4 +56,184 @@ void sendKeyboardCtrlV()
     sendTokensAsInput( tokens );
 }
 
+void sendKeyboardRShiftTilde1()
+{
+    const auto tokens = std::vector<Token>{
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_RSHIFT,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_TILDE,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::KEY_1
+    };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde2()
+{
+    const auto tokens = std::vector<Token>{
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_RSHIFT,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_TILDE,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::KEY_2
+    };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde3()
+{
+    const auto tokens = std::vector<Token>{
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_RSHIFT,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_TILDE,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::KEY_3
+    };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde4()
+{
+    const auto tokens = std::vector<Token>{
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_RSHIFT,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_TILDE,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::KEY_4
+    };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde5()
+{
+    const auto tokens = std::vector<Token>{
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_RSHIFT,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_TILDE,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::KEY_5
+    };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde6()
+{
+    const auto tokens = std::vector<Token>{
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_RSHIFT,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_TILDE,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::KEY_6
+    };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde7()
+{
+    const auto tokens = std::vector<Token>{
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_RSHIFT,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_TILDE,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::KEY_7
+    };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde8()
+{
+    const auto tokens = std::vector<Token>{
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_RSHIFT,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_TILDE,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::KEY_8
+    };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde9()
+{
+    const auto tokens = std::vector<Token>{
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_RSHIFT,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_TILDE,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::KEY_9
+    };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde0()
+{
+    const auto tokens = std::vector<Token>{
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_RSHIFT,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::MODIFIER_TILDE,
+        Token::TOKEN_NO_KEYUP_NEXT, Token::KEY_0
+    };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde1Delayed()
+{
+    const auto tokens = std::vector<Token>{ Token::MODIFIER_RSHIFT,
+                                            Token::MODIFIER_TILDE,
+                                            Token::KEY_1 };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde2Delayed()
+{
+    const auto tokens = std::vector<Token>{ Token::MODIFIER_RSHIFT,
+                                            Token::MODIFIER_TILDE,
+                                            Token::KEY_2 };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde3Delayed()
+{
+    const auto tokens = std::vector<Token>{ Token::MODIFIER_RSHIFT,
+                                            Token::MODIFIER_TILDE,
+                                            Token::KEY_3 };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde4Delayed()
+{
+    const auto tokens = std::vector<Token>{ Token::MODIFIER_RSHIFT,
+                                            Token::MODIFIER_TILDE,
+                                            Token::KEY_4 };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde5Delayed()
+{
+    const auto tokens = std::vector<Token>{ Token::MODIFIER_RSHIFT,
+                                            Token::MODIFIER_TILDE,
+                                            Token::KEY_5 };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde6Delayed()
+{
+    const auto tokens = std::vector<Token>{ Token::MODIFIER_RSHIFT,
+                                            Token::MODIFIER_TILDE,
+                                            Token::KEY_6 };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde7Delayed()
+{
+    const auto tokens = std::vector<Token>{ Token::MODIFIER_RSHIFT,
+                                            Token::MODIFIER_TILDE,
+                                            Token::KEY_7 };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde8Delayed()
+{
+    const auto tokens = std::vector<Token>{ Token::MODIFIER_RSHIFT,
+                                            Token::MODIFIER_TILDE,
+                                            Token::KEY_8 };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde9Delayed()
+{
+    const auto tokens = std::vector<Token>{ Token::MODIFIER_RSHIFT,
+                                            Token::MODIFIER_TILDE,
+                                            Token::KEY_9 };
+    sendTokensAsInput( tokens );
+}
+
+void sendKeyboardRShiftTilde0Delayed()
+{
+    const auto tokens = std::vector<Token>{ Token::MODIFIER_RSHIFT,
+                                            Token::MODIFIER_TILDE,
+                                            Token::KEY_0 };
+    sendTokensAsInput( tokens );
+}
+
 } // namespace keyboardinput

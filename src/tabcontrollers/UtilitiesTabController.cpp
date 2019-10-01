@@ -15,11 +15,13 @@ void UtilitiesTabController::initStage1()
     settings->beginGroup( "utilitiesSettings" );
     auto qAlarmEnabled = settings->value( "alarmEnabled", m_alarmEnabled );
     auto qAlarmIsModal = settings->value( "alarmIsModal", m_alarmIsModal );
+    auto qVrcDebug = settings->value( "vrcDebug", m_vrcDebug );
     auto qAlarmHour = settings->value( "alarmHour", 0 );
     auto qAlarmMinute = settings->value( "alarmMinute", 0 );
     settings->endGroup();
     m_alarmEnabled = qAlarmEnabled.toBool();
     m_alarmIsModal = qAlarmIsModal.toBool();
+    m_vrcDebug = qVrcDebug.toBool();
     m_alarmTime = QTime( qAlarmHour.toInt(), qAlarmMinute.toInt() );
 }
 
@@ -61,6 +63,106 @@ void UtilitiesTabController::sendKeyboardCtrlV()
 void UtilitiesTabController::sendKeyboardBackspace( const int count )
 {
     keyboardinput::sendKeyboardBackspace( count );
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde1()
+{
+    keyboardinput::sendKeyboardRShiftTilde1();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde2()
+{
+    keyboardinput::sendKeyboardRShiftTilde2();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde3()
+{
+    keyboardinput::sendKeyboardRShiftTilde3();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde4()
+{
+    keyboardinput::sendKeyboardRShiftTilde4();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde5()
+{
+    keyboardinput::sendKeyboardRShiftTilde5();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde6()
+{
+    keyboardinput::sendKeyboardRShiftTilde6();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde7()
+{
+    keyboardinput::sendKeyboardRShiftTilde7();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde8()
+{
+    keyboardinput::sendKeyboardRShiftTilde8();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde9()
+{
+    keyboardinput::sendKeyboardRShiftTilde9();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde0()
+{
+    keyboardinput::sendKeyboardRShiftTilde0();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde1Delayed()
+{
+    keyboardinput::sendKeyboardRShiftTilde1Delayed();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde2Delayed()
+{
+    keyboardinput::sendKeyboardRShiftTilde2Delayed();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde3Delayed()
+{
+    keyboardinput::sendKeyboardRShiftTilde3Delayed();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde4Delayed()
+{
+    keyboardinput::sendKeyboardRShiftTilde4Delayed();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde5Delayed()
+{
+    keyboardinput::sendKeyboardRShiftTilde5Delayed();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde6Delayed()
+{
+    keyboardinput::sendKeyboardRShiftTilde6Delayed();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde7Delayed()
+{
+    keyboardinput::sendKeyboardRShiftTilde7Delayed();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde8Delayed()
+{
+    keyboardinput::sendKeyboardRShiftTilde8Delayed();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde9Delayed()
+{
+    keyboardinput::sendKeyboardRShiftTilde9Delayed();
+}
+
+void UtilitiesTabController::sendKeyboardRShiftTilde0Delayed()
+{
+    keyboardinput::sendKeyboardRShiftTilde0Delayed();
 }
 
 void UtilitiesTabController::sendMediaNextSong()
@@ -124,6 +226,11 @@ bool UtilitiesTabController::alarmIsModal() const
     return m_alarmIsModal;
 }
 
+bool UtilitiesTabController::vrcDebug() const
+{
+    return m_vrcDebug;
+}
+
 int UtilitiesTabController::alarmTimeHour() const
 {
     return m_alarmTime.hour();
@@ -165,6 +272,23 @@ void UtilitiesTabController::setAlarmIsModal( bool modal, bool notify )
         if ( notify )
         {
             emit alarmIsModalChanged( m_alarmIsModal );
+        }
+    }
+}
+
+void UtilitiesTabController::setVrcDebug( bool value, bool notify )
+{
+    if ( m_vrcDebug != value )
+    {
+        m_vrcDebug = value;
+        auto settings = OverlayController::appSettings();
+        settings->beginGroup( "utilitiesSettings" );
+        settings->setValue( "vrcDebug", m_vrcDebug );
+        settings->endGroup();
+        settings->sync();
+        if ( notify )
+        {
+            emit vrcDebugChanged( m_vrcDebug );
         }
     }
 }
