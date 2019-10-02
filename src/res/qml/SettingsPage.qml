@@ -42,6 +42,22 @@ MyStackViewPage {
             }
         }
 
+        MyToggleButton {
+            id: enableSeatedOffsetsRecenterToggle
+            text: "Enable Auto-set Seated Offsets During Seated Recenter"
+            onCheckedChanged: {
+                MoveCenterTabController.setEnableSeatedOffsetsRecenter(checked, true)
+            }
+        }
+
+        MyToggleButton {
+            id: disableSeatedMotionToggle
+            text: "Disable All Motion Features When in Seated Mode"
+            onCheckedChanged: {
+                MoveCenterTabController.setDisableSeatedMotion(checked, true)
+            }
+        }
+
 
         RowLayout {
             Layout.fillWidth: true
@@ -107,6 +123,8 @@ MyStackViewPage {
             allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
             oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
             universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
+            enableSeatedOffsetsRecenterToggle.checked = MoveCenterTabController.enableSeatedOffsetsRecenter
+            disableSeatedMotionToggle.checked = MoveCenterTabController.disableSeatedMotion
 
             customTickRateText.text = OverlayController.customTickRateMs
             vsyncDisabledToggle.checked = OverlayController.vsyncDisabled
@@ -132,6 +150,12 @@ MyStackViewPage {
             }
             onUniverseCenteredRotationChanged: {
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
+            }
+            onEnableSeatedOffsetsRecenterChanged: {
+                enableSeatedOffsetsRecenterToggle.checked = MoveCenterTabController.enableSeatedOffsetsRecenter
+            }
+            onDisableSeatedMotionChanged: {
+                disableSeatedMotionToggle.checked = MoveCenterTabController.disableSeatedMotion
             }
         }
 

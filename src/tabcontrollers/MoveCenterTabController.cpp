@@ -153,6 +153,17 @@ void MoveCenterTabController::initStage1()
     {
         m_universeCenteredRotation = value.toBool();
     }
+    value = settings->value( "enableSeatedOffsetsRecenter",
+                             m_enableSeatedOffsetsRecenter );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_enableSeatedOffsetsRecenter = value.toBool();
+    }
+    value = settings->value( "disableSeatedMotion", m_disableSeatedMotion );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_disableSeatedMotion = value.toBool();
+    }
     settings->endGroup();
     m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
     m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
@@ -220,6 +231,14 @@ void MoveCenterTabController::outputLogSettings()
     if ( m_universeCenteredRotation )
     {
         LOG( INFO ) << "LOADED SETTINGS: Universe-Centered Rotation Enabled";
+    }
+    if ( m_enableSeatedOffsetsRecenter )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Seated Offsets Recenter Enabled";
+    }
+    if ( m_disableSeatedMotion )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Seated Motion Disabled";
     }
     if ( m_dragBounds )
     {
@@ -1051,6 +1070,51 @@ void MoveCenterTabController::setUniverseCenteredRotation( bool value,
                 << m_universeCenteredRotation;
 }
 
+bool MoveCenterTabController::enableSeatedOffsetsRecenter() const
+{
+    return m_enableSeatedOffsetsRecenter;
+}
+
+void MoveCenterTabController::setEnableSeatedOffsetsRecenter( bool value,
+                                                              bool notify )
+{
+    m_enableSeatedOffsetsRecenter = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "enableSeatedOffsetsRecenter",
+                        m_enableSeatedOffsetsRecenter );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit enableSeatedOffsetsRecenterChanged(
+            m_enableSeatedOffsetsRecenter );
+    }
+    LOG( INFO ) << "CHANGED SETTINGS: Enable Seated Offsets Recenter Set: "
+                << m_enableSeatedOffsetsRecenter;
+}
+
+bool MoveCenterTabController::disableSeatedMotion() const
+{
+    return m_disableSeatedMotion;
+}
+
+void MoveCenterTabController::setDisableSeatedMotion( bool value, bool notify )
+{
+    m_disableSeatedMotion = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "disableSeatedMotion", m_disableSeatedMotion );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit disableSeatedMotionChanged( m_disableSeatedMotion );
+    }
+    LOG( INFO ) << "CHANGED SETTINGS: Disable Seated Motion Set: "
+                << m_disableSeatedMotion;
+}
+
 void MoveCenterTabController::modOffsetX( float value, bool notify )
 {
     if ( !m_lockXToggle )
@@ -1095,7 +1159,10 @@ void MoveCenterTabController::shutdown()
 
 void MoveCenterTabController::incomingSeatedReset()
 {
-    updateSeatedResetData();
+    if ( !m_disableSeatedMotion )
+    {
+        updateSeatedResetData();
+    }
 }
 
 void MoveCenterTabController::reset()
@@ -1299,14 +1366,18 @@ void MoveCenterTabController::updateSeatedResetData()
     m_seatedHeight = hmdMatrix.m[1][3];
     m_seatedCenterForReset.m[1][3] += m_seatedHeight;
 
-    m_offsetX = hmdMatrix.m[0][3];
-    m_offsetY = 0.0f;
-    m_offsetZ = hmdMatrix.m[2][3];
-    m_rotation = hmdYawCentideg;
-    emit offsetXChanged( m_offsetX );
-    emit offsetYChanged( m_offsetY );
-    emit offsetZChanged( m_offsetZ );
-    emit rotationChanged( m_rotation );
+    if ( m_enableSeatedOffsetsRecenter )
+    {
+        m_offsetX = hmdMatrix.m[0][3];
+        m_offsetY = 0.0f;
+        m_offsetZ = hmdMatrix.m[2][3];
+        m_rotation = hmdYawCentideg;
+        emit offsetXChanged( m_offsetX );
+        emit offsetYChanged( m_offsetY );
+        emit offsetZChanged( m_offsetZ );
+        emit rotationChanged( m_rotation );
+    }
+
     unsigned checkQuadCount = 0;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
                                                            &checkQuadCount );
@@ -2809,6 +2880,10 @@ void MoveCenterTabController::eventLoopTick(
         zeroOffsets();
         // m_roomSetupModeDetected is set to false in zeroOffsets() if it's
         // successful.
+    }
+    else if ( m_seatedModeDetected && m_disableSeatedMotion )
+    {
+        return;
     }
     else
     {

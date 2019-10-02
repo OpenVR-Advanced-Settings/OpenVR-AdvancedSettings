@@ -23,8 +23,16 @@ MyStackViewPage {
             }
         }
 
+        MyText {
+            id: seatedDisableWarningText
+            visible: false
+            text: "Settings Tab: 'Disable Motion in Seated Mode' checked"
+        }
+
         GroupBox {
             Layout.fillWidth: true
+            id: offsetsGroupBox
+            visible: true
 
             label: MyText {
                 leftPadding: 10
@@ -220,6 +228,8 @@ MyStackViewPage {
 
         GroupBox {
             Layout.fillWidth: true
+            id: rotationGroupBox
+            visible: true
 
             label: MyText {
                 leftPadding: 10
@@ -322,6 +332,8 @@ MyStackViewPage {
         ColumnLayout {
             RowLayout {
                 Layout.fillWidth: true
+                id: resetButtonRow
+                visible: true
 
                 MyPushButton {
                     id: spaceResetButton
@@ -385,11 +397,24 @@ MyStackViewPage {
             if (MoveCenterTabController.trackingUniverse === 0) {
                 spaceModeText.text = "Sitting"
                 spaceSeatedRecenter.visible = true
+                offsetsGroupBox.visible = !MoveCenterTabController.disableSeatedMotion
+                rotationGroupBox.visible = !MoveCenterTabController.disableSeatedMotion
+                resetButtonRow.visible = !MoveCenterTabController.disableSeatedMotion
+                seatedDisableWarningText.visible = MoveCenterTabController.disableSeatedMotion
+
             } else if (MoveCenterTabController.trackingUniverse === 1) {
                 spaceModeText.text = "Standing"
                 spaceSeatedRecenter.visible = false
+                offsetsGroupBox.visible = true
+                rotationGroupBox.visible = true
+                resetButtonRow.visible = true
+                seatedDisableWarningText.visible = false
             } else {
                 spaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
+                offsetsGroupBox.visible = false
+                rotationGroupBox.visible = false
+                resetButtonRow.visible = false
+                seatedDisableWarningText.visible = false
             }
         }
 
@@ -423,15 +448,37 @@ MyStackViewPage {
 			onLockZToggleChanged: {
 				lockZToggle.checked = MoveCenterTabController.lockZToggle
 			}
+            onDisableSeatedMotionChanged: {
+                if (MoveCenterTabController.trackingUniverse === 0) {
+                    spaceModeText.text = "Sitting"
+                    spaceSeatedRecenter.visible = true
+                    offsetsGroupBox.visible = !MoveCenterTabController.disableSeatedMotion
+                    rotationGroupBox.visible = !MoveCenterTabController.disableSeatedMotion
+                    resetButtonRow.visible = !MoveCenterTabController.disableSeatedMotion
+                    seatedDisableWarningText.visible = MoveCenterTabController.disableSeatedMotion
+                }
+            }
             onTrackingUniverseChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {
                     spaceModeText.text = "Sitting"
                     spaceSeatedRecenter.visible = true
+                    offsetsGroupBox.visible = !MoveCenterTabController.disableSeatedMotion
+                    rotationGroupBox.visible = !MoveCenterTabController.disableSeatedMotion
+                    resetButtonRow.visible = !MoveCenterTabController.disableSeatedMotion
+                    seatedDisableWarningText.visible = MoveCenterTabController.disableSeatedMotion
                 } else if (MoveCenterTabController.trackingUniverse === 1) {
                     spaceModeText.text = "Standing"
                     spaceSeatedRecenter.visible = false
+                    offsetsGroupBox.visible = true
+                    rotationGroupBox.visible = true
+                    resetButtonRow.visible = true
+                    seatedDisableWarningText.visible = false
                 } else {
                     spaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
+                    offsetsGroupBox.visible = false
+                    rotationGroupBox.visible = false
+                    resetButtonRow.visible = false
+                    seatedDisableWarningText.visible = false
                 }
             }
         }

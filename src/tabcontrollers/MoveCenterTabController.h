@@ -89,6 +89,12 @@ class MoveCenterTabController : public QObject
     Q_PROPERTY(
         bool universeCenteredRotation READ universeCenteredRotation WRITE
             setUniverseCenteredRotation NOTIFY universeCenteredRotationChanged )
+    Q_PROPERTY(
+        bool enableSeatedOffsetsRecenter READ enableSeatedOffsetsRecenter WRITE
+            setEnableSeatedOffsetsRecenter NOTIFY
+                enableSeatedOffsetsRecenterChanged )
+    Q_PROPERTY( bool disableSeatedMotion READ disableSeatedMotion WRITE
+                    setDisableSeatedMotion NOTIFY disableSeatedMotionChanged )
 
 private:
     OverlayController* parent;
@@ -170,6 +176,8 @@ private:
     bool m_allowExternalEdits = false;
     bool m_oldStyleMotion = false;
     bool m_universeCenteredRotation = false;
+    bool m_enableSeatedOffsetsRecenter = false;
+    bool m_disableSeatedMotion = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
@@ -238,6 +246,8 @@ public:
     bool allowExternalEdits() const;
     bool oldStyleMotion() const;
     bool universeCenteredRotation() const;
+    bool enableSeatedOffsetsRecenter() const;
+    bool disableSeatedMotion() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
     void incomingSeatedReset();
@@ -305,6 +315,8 @@ public slots:
     void setAllowExternalEdits( bool value, bool notify = true );
     void setOldStyleMotion( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
+    void setEnableSeatedOffsetsRecenter( bool value, bool notify = true );
+    void setDisableSeatedMotion( bool value, bool notify = true );
 
     void shutdown();
     void reset();
@@ -343,6 +355,8 @@ signals:
     void allowExternalEditsChanged( bool value );
     void oldStyleMotionChanged( bool value );
     void universeCenteredRotationChanged( bool value );
+    void enableSeatedOffsetsRecenterChanged( bool value );
+    void disableSeatedMotionChanged( bool value );
 };
 
 } // namespace advsettings

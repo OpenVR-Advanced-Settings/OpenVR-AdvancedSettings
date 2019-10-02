@@ -25,6 +25,17 @@ MyStackViewPage {
             Layout.fillWidth: true
         }
 
+        MyText {
+            text: "(Disabled in 'Seated' Universe Type)"
+            id: seatedWarningText
+            visible: false
+            wrapMode: Text.WordWrap
+            font.pointSize: 28
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            Layout.fillWidth: true
+        }
+
         Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
@@ -94,6 +105,14 @@ MyStackViewPage {
             statusMessageText.text = ""
             //undoFixButton.enabled = FixFloorTabController.canUndo
             fixButton.enabled = true
+
+            if (MoveCenterTabController.trackingUniverse === 0) {
+                fixButton.enabled = false
+                recenterButton.enabled = false
+                zeroSpaceButton.enabled = false
+                undoFixButton.enabled = false
+                seatedWarningText.visible = true
+            }
         }
 
         Timer {
@@ -126,6 +145,32 @@ MyStackViewPage {
                 //undoFixButton.enabled = FixFloorTabController.canUndo
                 // revert below to this -^
                 undoFixButton.enabled = false
+            }
+        }
+
+        Connections {
+            target: MoveCenterTabController
+            onTrackingUniverseChanged: {
+                if (MoveCenterTabController.trackingUniverse === 0) {
+                    fixButton.enabled = false
+                    recenterButton.enabled = false
+                    zeroSpaceButton.enabled = false
+                    undoFixButton.enabled = false
+                    seatedWarningText.visible = true
+                } else if (MoveCenterTabController.trackingUniverse === 1) {
+                    fixButton.enabled = true
+                    recenterButton.enabled = true
+                    zeroSpaceButton.enabled = true
+                    // undoFixButton.enabled = true
+                    // TODO Fix Undo Feature -^
+                    seatedWarningText.visible = false
+                } else {
+                    fixButton.enabled = false
+                    recenterButton.enabled = false
+                    zeroSpaceButton.enabled = false
+                    undoFixButton.enabled = false
+                    seatedWarningText.visible = false
+                }
             }
         }
 
