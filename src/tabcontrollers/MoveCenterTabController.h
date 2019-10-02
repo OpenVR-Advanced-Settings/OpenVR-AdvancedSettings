@@ -24,6 +24,15 @@ constexpr double k_maxOvrasUniverseCenteredTurningOffset = 25000.0;
 
 class OverlayController;
 
+struct OffsetProfile
+{
+    std::string profileName;
+    float offsetX = 0.0f;
+    float offsetY = 0.0f;
+    float offsetZ = 0.0f;
+    int rotation = 0;
+};
+
 class MoveCenterTabController : public QObject
 {
     Q_OBJECT
@@ -210,6 +219,8 @@ private:
     void outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix );
     void outputLogSettings();
 
+    std::vector<OffsetProfile> m_offsetProfiles;
+
 public:
     void initStage1();
     void initStage2( OverlayController* parent );
@@ -251,6 +262,11 @@ public:
     double getHmdYawTotal();
     void resetHmdYawTotal();
     void incomingSeatedReset();
+
+    void reloadOffsetProfiles();
+    void saveOffsetProfiles();
+    Q_INVOKABLE unsigned getOffsetProfileCount();
+    Q_INVOKABLE QString getOffsetProfileName( unsigned index );
 
     // actions:
     void leftHandSpaceDrag( bool leftHandDragActive );
@@ -324,6 +340,10 @@ public slots:
     void outputLogPoses();
     void zeroOffsets();
 
+    void addOffsetProfile( QString name );
+    void applyOffsetProfile( unsigned index );
+    void deleteOffsetProfile( unsigned index );
+
 signals:
     void trackingUniverseChanged( int value );
     void offsetXChanged( float value );
@@ -357,6 +377,8 @@ signals:
     void universeCenteredRotationChanged( bool value );
     void enableSeatedOffsetsRecenterChanged( bool value );
     void disableSeatedMotionChanged( bool value );
+
+    void offsetProfilesUpdated();
 };
 
 } // namespace advsettings

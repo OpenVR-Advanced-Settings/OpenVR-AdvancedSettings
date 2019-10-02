@@ -165,6 +165,7 @@ void MoveCenterTabController::initStage1()
         m_disableSeatedMotion = value.toBool();
     }
     settings->endGroup();
+    reloadOffsetProfiles();
     m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
     m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
 }
@@ -174,6 +175,126 @@ void MoveCenterTabController::initStage2( OverlayController* var_parent )
     this->parent = var_parent;
     zeroOffsets();
     outputLogSettings();
+}
+
+void MoveCenterTabController::reloadOffsetProfiles()
+{
+    m_offsetProfiles.clear();
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    auto profileCount = settings->beginReadArray( "offsetProfiles" );
+    for ( int i = 0; i < profileCount; i++ )
+    {
+        settings->setArrayIndex( i );
+        m_offsetProfiles.emplace_back();
+        auto& entry = m_offsetProfiles[static_cast<size_t>( i )];
+        entry.profileName
+            = settings->value( "profileName" ).toString().toStdString();
+        entry.offsetX = settings->value( "offsetX", 0.0f ).toFloat();
+        entry.offsetY = settings->value( "offsetY", 0.0f ).toFloat();
+        entry.offsetZ = settings->value( "offsetZ", 0.0f ).toFloat();
+        entry.rotation = settings->value( "rotation", 0 ).toInt();
+    }
+    settings->endArray();
+    settings->endGroup();
+}
+
+void MoveCenterTabController::saveOffsetProfiles()
+{
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->beginWriteArray( "offsetProfiles" );
+    unsigned i = 0;
+    for ( auto& p : m_offsetProfiles )
+    {
+        settings->setArrayIndex( static_cast<int>( i ) );
+        settings->setValue( "profileName",
+                            QString::fromStdString( p.profileName ) );
+        settings->setValue( "offsetX", p.offsetX );
+        settings->setValue( "offsetY", p.offsetY );
+        settings->setValue( "offsetZ", p.offsetZ );
+        settings->setValue( "rotation", p.rotation );
+        i++;
+    }
+    settings->endArray();
+    settings->endGroup();
+}
+
+Q_INVOKABLE unsigned MoveCenterTabController::getOffsetProfileCount()
+{
+    return static_cast<unsigned int>( m_offsetProfiles.size() );
+}
+
+Q_INVOKABLE QString
+    MoveCenterTabController::getOffsetProfileName( unsigned index )
+{
+    if ( index >= m_offsetProfiles.size() )
+    {
+        return QString();
+    }
+    else
+    {
+        return QString::fromStdString( m_offsetProfiles[index].profileName );
+    }
+}
+
+void MoveCenterTabController::addOffsetProfile( QString name )
+{
+    OffsetProfile* profile = nullptr;
+    for ( auto& p : m_offsetProfiles )
+    {
+        if ( p.profileName.compare( name.toStdString() ) == 0 )
+        {
+            profile = &p;
+            break;
+        }
+    }
+    if ( !profile )
+    {
+        auto i = m_offsetProfiles.size();
+        m_offsetProfiles.emplace_back();
+        profile = &m_offsetProfiles[i];
+    }
+    profile->profileName = name.toStdString();
+    profile->offsetX = m_offsetX;
+    profile->offsetY = m_offsetY;
+    profile->offsetZ = m_offsetZ;
+    profile->rotation = m_rotation;
+    saveOffsetProfiles();
+    OverlayController::appSettings()->sync();
+    emit offsetProfilesUpdated();
+}
+
+void MoveCenterTabController::applyOffsetProfile( unsigned index )
+{
+    if ( index < m_offsetProfiles.size() )
+    {
+        auto& profile = m_offsetProfiles[index];
+        m_rotation = profile.rotation;
+        m_offsetX = profile.offsetX;
+        m_offsetY = profile.offsetY;
+        m_offsetZ = profile.offsetZ;
+        emit rotationChanged( m_rotation );
+        emit offsetXChanged( m_offsetX );
+        emit offsetYChanged( m_offsetY );
+        emit offsetZChanged( m_offsetZ );
+        LOG( INFO ) << "Applying Offset Profile:" << profile.profileName
+                    << " X:" << m_offsetX << " Y:" << m_offsetY
+                    << " Z:" << m_offsetZ << " Rotation:"
+                    << ( static_cast<float>( m_rotation ) / 100 );
+    }
+}
+
+void MoveCenterTabController::deleteOffsetProfile( unsigned index )
+{
+    if ( index < m_offsetProfiles.size() )
+    {
+        auto pos = m_offsetProfiles.begin() + index;
+        m_offsetProfiles.erase( pos );
+        saveOffsetProfiles();
+        OverlayController::appSettings()->sync();
+        emit offsetProfilesUpdated();
+    }
 }
 
 void MoveCenterTabController::outputLogSettings()
