@@ -345,7 +345,7 @@ GroupBox {
 
             Timer {
                 id: timer1
-                interval: 50
+                interval: 100
                 repeat: false
                 running: false
                 triggeredOnStart: false
@@ -368,7 +368,7 @@ GroupBox {
 
             Timer {
                 id: timer2
-                interval: 50
+                interval: 100
                 repeat: false
                 running: false
                 triggeredOnStart: false
@@ -391,7 +391,7 @@ GroupBox {
 
             Timer {
                 id: timer3
-                interval: 50
+                interval: 100
                 repeat: false
                 running: false
                 triggeredOnStart: false
@@ -414,7 +414,7 @@ GroupBox {
 
             Timer {
                 id: timer4
-                interval: 50
+                interval: 100
                 repeat: false
                 running: false
                 triggeredOnStart: false
@@ -437,7 +437,7 @@ GroupBox {
 
             Timer {
                 id: timer5
-                interval: 50
+                interval: 100
                 repeat: false
                 running: false
                 triggeredOnStart: false
@@ -460,7 +460,7 @@ GroupBox {
 
             Timer {
                 id: timer6
-                interval: 50
+                interval: 100
                 repeat: false
                 running: false
                 triggeredOnStart: false
@@ -483,7 +483,7 @@ GroupBox {
 
             Timer {
                 id: timer7
-                interval: 50
+                interval: 100
                 repeat: false
                 running: false
                 triggeredOnStart: false
@@ -506,7 +506,7 @@ GroupBox {
 
             Timer {
                 id: timer8
-                interval: 50
+                interval: 100
                 repeat: false
                 running: false
                 triggeredOnStart: false
@@ -529,7 +529,7 @@ GroupBox {
 
             Timer {
                 id: timer9
-                interval: 50
+                interval: 100
                 repeat: false
                 running: false
                 triggeredOnStart: false
@@ -552,7 +552,7 @@ GroupBox {
 
             Timer {
                 id: timer0
-                interval: 50
+                interval: 100
                 repeat: false
                 running: false
                 triggeredOnStart: false
