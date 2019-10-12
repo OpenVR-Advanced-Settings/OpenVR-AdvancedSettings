@@ -170,17 +170,18 @@ void AudioTabController::eventLoopTick()
         char mirrorDeviceId[1024];
         vr::VRSettings()->GetString(
             vr::k_pch_audio_Section,
-            vr::k_pch_audio_OnPlaybackMirrorDevice_String,
+            k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND,
             mirrorDeviceId,
             1024,
             &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_audio_OnPlaybackMirrorDevice_String
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
+            LOG( WARNING )
+                << "Could not read \""
+                << k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND
+                << "\" setting: "
+                << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                       vrSettingsError );
         }
         if ( lastMirrorDevId.compare( mirrorDeviceId ) != 0 )
         {
