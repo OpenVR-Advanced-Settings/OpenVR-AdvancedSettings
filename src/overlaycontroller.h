@@ -77,6 +77,9 @@ class OverlayController : public QObject
 {
     Q_OBJECT
     Q_PROPERTY( bool m_desktopMode READ isDesktopMode )
+    Q_PROPERTY(
+        bool crashRecoveryDisabled READ crashRecoveryDisabled WRITE
+            setCrashRecoveryDisabled NOTIFY crashRecoveryDisabledChanged )
     Q_PROPERTY( bool vsyncDisabled READ vsyncDisabled WRITE setVsyncDisabled
                     NOTIFY vsyncDisabledChanged )
     Q_PROPERTY( int customTickRateMs READ customTickRateMs WRITE
@@ -101,7 +104,9 @@ private:
     Qt::MouseButtons m_lastMouseButtons = nullptr;
 
     bool m_desktopMode;
+    bool m_previousShutdownSafe = true;
     bool m_noSound;
+    bool m_crashRecoveryDisabled = false;
     bool m_vsyncDisabled = false;
     int m_customTickRateMs = 20;
 
@@ -182,6 +187,12 @@ public:
         return m_desktopMode;
     }
 
+    bool isPreviousShutdownSafe()
+    {
+        return m_previousShutdownSafe;
+    }
+    void setPreviousShutdownSafe( bool value );
+
     utils::ChaperoneUtils& chaperoneUtils() noexcept
     {
         return m_chaperoneUtils;
@@ -199,6 +210,7 @@ public:
                         vr::VREvent_t* pEvent );
     void mainEventLoop();
 
+    bool crashRecoveryDisabled() const;
     bool vsyncDisabled() const;
     int customTickRateMs() const;
 
@@ -215,11 +227,13 @@ public slots:
     void setAlarm01SoundVolume( float vol );
     void cancelAlarm01Sound();
 
+    void setCrashRecoveryDisabled( bool value, bool notify = true );
     void setVsyncDisabled( bool value, bool notify = true );
     void setCustomTickRateMs( int value, bool notify = true );
 
 signals:
     void keyBoardInputSignal( QString input, unsigned long userValue = 0 );
+    void crashRecoveryDisabledChanged( bool value );
     void vsyncDisabledChanged( bool value );
     void customTickRateMsChanged( int value );
 

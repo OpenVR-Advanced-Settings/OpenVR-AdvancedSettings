@@ -1215,6 +1215,11 @@ void MoveCenterTabController::setEnableSeatedOffsetsRecenter( bool value,
                 << m_enableSeatedOffsetsRecenter;
 }
 
+bool MoveCenterTabController::isInitComplete() const
+{
+    return m_initComplete;
+}
+
 bool MoveCenterTabController::disableSeatedMotion() const
 {
     return m_disableSeatedMotion;
@@ -1414,7 +1419,30 @@ void MoveCenterTabController::zeroOffsets()
             if ( !m_initComplete )
             {
                 setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
-                m_initComplete = true;
+                if ( parent->isPreviousShutdownSafe() )
+                {
+                    // all init complete, safe to autosave chaperone profile
+                    parent->m_chaperoneTabController.createNewAutosaveProfile();
+                    m_initComplete = true;
+                }
+                else
+                {
+                    // shutdown was unsafe last session!
+                    LOG( WARNING )
+                        << "DETECTED UNSAFE SHUTDOWN FROM LAST SESSION";
+                    m_initComplete = true;
+                    if ( !parent->crashRecoveryDisabled() )
+                    {
+                        parent->m_chaperoneTabController
+                            .applyAutosavedProfile();
+                        LOG( INFO )
+                            << "Applying last good chaperone profile autosave";
+                    }
+                }
+                // Now mark previous shutdown as unsafe in case we crash some
+                // time during this session. Previous shutdown will be marked as
+                // being safe once more just before our app shuts down properly.
+                parent->setPreviousShutdownSafe( false );
             }
         }
         if ( m_roomSetupModeDetected )

@@ -313,8 +313,8 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 
 - **Fix Floor** Allows you to fix the height of your floor. Just place one controller on your floor and press the button.
 - **Recenter Playspace** Besides fixing the floor height, also recenters the place space around the controller on the floor.
-- **Undo Fix** Removes last "fix" **(Temporarily disabled pending integration into new motion system.)**
 - **Apply Space Settings Offsets as Center** Takes current values from Offsets page and re-caliberates center/rotation. **Caution** The reset function will then refer to this location as the new zero location, overriding the old zero location.
+- **Revert All Changes from This Session** Reverts the chaperone config back to the state it was in when launching vr. (This applies the Autosaved Profile from the Chaperone Tab).
   
 ## - Audio Page
 
@@ -390,6 +390,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Universe-Centered Rotation:** Causes Rotation to be applied to Universe Center Rather than HMD (Disables offsets automatically compensating to pivot at the HMD).
 - **Enable Auto-set Seated Offsets During Seated Recenter:** Stops the Space Offsets tab offsets from moving you to the center during seated mode recentering. (In case the offset recentering interferes with position in some applications).
 - **Disable All Motion Features When in Seated Mode:** Use this if Advanced Settings causes strange positioning in a seated application. (Different apps handle seated mode in different ways, some are less compatible with Advanced Settings). Note: all Space Offsets and Motion tab features will be disabled.
+- **Disable Automatic Crash Recovery of Chaperone Config:** This prevents applying of the last good autosaved chaperone profile when starting up after not shutting down properly.
 - **Disable App Vsync:** Allows setting a custom base update rate for Advanced Settings. (Might be useful on HMDs with very high or very low refresh rates).
 
 # How to Compile

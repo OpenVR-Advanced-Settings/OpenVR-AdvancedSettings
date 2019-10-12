@@ -59,7 +59,7 @@ MyStackViewPage {
             id: fixButton
             Layout.fillWidth: true
             text: "Fix Floor"
-            Layout.preferredHeight: 100
+            Layout.preferredHeight: 80
             onClicked: {
                 FixFloorTabController.fixFloorClicked()
             }
@@ -69,7 +69,7 @@ MyStackViewPage {
             id: recenterButton
             Layout.fillWidth: true
             text: "Recenter Space"
-            Layout.preferredHeight: 100
+            Layout.preferredHeight: 80
             onClicked: {
                 FixFloorTabController.recenterClicked()
             }
@@ -91,9 +91,23 @@ MyStackViewPage {
             id: zeroSpaceButton
             Layout.fillWidth: true
             text: "Apply Space Settings Offsets as Center"
-            Layout.preferredHeight: 100
+            Layout.preferredHeight: 80
             onClicked: {
                 MoveCenterTabController.zeroOffsets()
+            }
+        }
+
+        Item {
+            Layout.preferredHeight: 32
+        }
+
+        MyPushButton {
+            id: revertButton
+            Layout.fillWidth: true
+            text: "Revert All Changes from This Session"
+            Layout.preferredHeight: 80
+            onClicked: {
+                ChaperoneTabController.applyAutosavedProfile()
             }
         }
 
@@ -110,6 +124,7 @@ MyStackViewPage {
                 fixButton.enabled = false
                 recenterButton.enabled = false
                 zeroSpaceButton.enabled = false
+                revertButton.enabled = false
                 undoFixButton.enabled = false
                 seatedWarningText.visible = true
             }
@@ -155,12 +170,14 @@ MyStackViewPage {
                     fixButton.enabled = false
                     recenterButton.enabled = false
                     zeroSpaceButton.enabled = false
+                    revertButton.enabled = false
                     undoFixButton.enabled = false
                     seatedWarningText.visible = true
                 } else if (MoveCenterTabController.trackingUniverse === 1) {
                     fixButton.enabled = true
                     recenterButton.enabled = true
                     zeroSpaceButton.enabled = true
+                    revertButton.enabled = true
                     // undoFixButton.enabled = true
                     // TODO Fix Undo Feature -^
                     seatedWarningText.visible = false
@@ -168,6 +185,7 @@ MyStackViewPage {
                     fixButton.enabled = false
                     recenterButton.enabled = false
                     zeroSpaceButton.enabled = false
+                    revertButton.enabled = false
                     undoFixButton.enabled = false
                     seatedWarningText.visible = false
                 }

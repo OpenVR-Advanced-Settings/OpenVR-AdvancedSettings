@@ -300,7 +300,8 @@ OverlayController::OverlayController( bool desktopMode,
     }
     appSettings()->endGroup();
 
-    // Keep the settings for vsyncDisabled here in main overlaycontroller
+    // Keep the settings for vsyncDisabled and crash recovery here in main
+    // overlaycontroller
     appSettings()->beginGroup( "applicationSettings" );
     auto value = appSettings()->value( "vsyncDisabled", m_vsyncDisabled );
     if ( value.isValid() && !value.isNull() )
@@ -323,6 +324,18 @@ OverlayController::OverlayController( bool desktopMode,
         {
             m_customTickRateMs = value.toInt();
         }
+    }
+    value = appSettings()->value( "previousShutdownSafe",
+                                  m_previousShutdownSafe );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_previousShutdownSafe = value.toBool();
+    }
+    value = appSettings()->value( "crashRecoveryDisabled",
+                                  m_crashRecoveryDisabled );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_crashRecoveryDisabled = value.toBool();
     }
     appSettings()->endGroup();
 }
@@ -365,6 +378,9 @@ void OverlayController::Shutdown()
     m_pFbo.reset();
     m_pOpenGLContext.reset();
     m_pOffscreenSurface.reset();
+
+    // save to settings that shutdown was safe
+    setPreviousShutdownSafe( true );
 }
 
 void OverlayController::SetWidget( QQuickItem* quickItem,
@@ -716,6 +732,28 @@ void OverlayController::processInputBindings()
     processKeyboardBindings();
 }
 
+bool OverlayController::crashRecoveryDisabled() const
+{
+    return m_crashRecoveryDisabled;
+}
+
+void OverlayController::setCrashRecoveryDisabled( bool value, bool notify )
+{
+    if ( m_crashRecoveryDisabled == value )
+    {
+        return;
+    }
+    m_crashRecoveryDisabled = value;
+    appSettings()->beginGroup( "applicationSettings" );
+    appSettings()->setValue( "crashRecoveryDisabled", m_crashRecoveryDisabled );
+    appSettings()->endGroup();
+    appSettings()->sync();
+    if ( notify )
+    {
+        emit crashRecoveryDisabledChanged( m_crashRecoveryDisabled );
+    }
+}
+
 bool OverlayController::vsyncDisabled() const
 {
     return m_vsyncDisabled;
@@ -736,6 +774,19 @@ void OverlayController::setVsyncDisabled( bool value, bool notify )
     {
         emit vsyncDisabledChanged( m_vsyncDisabled );
     }
+}
+
+void OverlayController::setPreviousShutdownSafe( bool value )
+{
+    if ( m_previousShutdownSafe == value )
+    {
+        return;
+    }
+    m_previousShutdownSafe = value;
+    appSettings()->beginGroup( "applicationSettings" );
+    appSettings()->setValue( "previousShutdownSafe", m_previousShutdownSafe );
+    appSettings()->endGroup();
+    appSettings()->sync();
 }
 
 int OverlayController::customTickRateMs() const

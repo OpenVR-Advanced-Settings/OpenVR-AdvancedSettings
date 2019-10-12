@@ -644,60 +644,7 @@ void ChaperoneTabController::eventLoopTick(
     {
         if ( parent->isDashboardVisible() )
         {
-            vr::EVRSettingsError vrSettingsError;
-            float vis = static_cast<float>( vr::VRSettings()->GetInt32(
-                vr::k_pch_CollisionBounds_Section,
-                vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-                &vrSettingsError ) );
-            if ( vrSettingsError != vr::VRSettingsError_None )
-            {
-                LOG( WARNING )
-                    << "Could not read \""
-                    << vr::k_pch_CollisionBounds_ColorGammaA_Int32
-                    << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
-            }
-            setBoundsVisibility( vis / 255.0f );
-            if ( vrSettingsError != vr::VRSettingsError_None )
-            {
-                LOG( WARNING )
-                    << "Could not read \""
-                    << vr::k_pch_CollisionBounds_FadeDistance_Float
-                    << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
-            }
-
-            auto cm = vr::VRSettings()->GetBool(
-                vr::k_pch_CollisionBounds_Section,
-                vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
-                &vrSettingsError );
-            if ( vrSettingsError != vr::VRSettingsError_None )
-            {
-                LOG( WARNING )
-                    << "Could not read \""
-                    << vr::k_pch_CollisionBounds_CenterMarkerOn_Bool
-                    << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
-            }
-            setCenterMarker( cm );
-            auto ps = vr::VRSettings()->GetBool(
-                vr::k_pch_CollisionBounds_Section,
-                vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
-                &vrSettingsError );
-            if ( vrSettingsError != vr::VRSettingsError_None )
-            {
-                LOG( WARNING )
-                    << "Could not read \""
-                    << vr::k_pch_CollisionBounds_PlaySpaceOn_Bool
-                    << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
-            }
-            setPlaySpaceMarker( ps );
-            updateHeight( getBoundsMaxY() );
+            updateChaperoneSettings();
         }
         settingsUpdateCounter = 0;
     }
@@ -705,6 +652,60 @@ void ChaperoneTabController::eventLoopTick(
     {
         settingsUpdateCounter++;
     }
+}
+
+void ChaperoneTabController::updateChaperoneSettings()
+{
+    vr::EVRSettingsError vrSettingsError;
+    float vis = static_cast<float>(
+        vr::VRSettings()->GetInt32( vr::k_pch_CollisionBounds_Section,
+                                    vr::k_pch_CollisionBounds_ColorGammaA_Int32,
+                                    &vrSettingsError ) );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_CollisionBounds_ColorGammaA_Int32
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    setBoundsVisibility( vis / 255.0f );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_CollisionBounds_FadeDistance_Float
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+
+    auto cm = vr::VRSettings()->GetBool(
+        vr::k_pch_CollisionBounds_Section,
+        vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_CollisionBounds_CenterMarkerOn_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    setCenterMarker( cm );
+    auto ps
+        = vr::VRSettings()->GetBool( vr::k_pch_CollisionBounds_Section,
+                                     vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
+                                     &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_CollisionBounds_PlaySpaceOn_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    setPlaySpaceMarker( ps );
+    updateHeight( getBoundsMaxY() );
 }
 
 float ChaperoneTabController::boundsVisibility() const
@@ -1517,6 +1518,91 @@ void ChaperoneTabController::deleteChaperoneProfile( unsigned index )
         saveChaperoneProfiles();
         OverlayController::appSettings()->sync();
         emit chaperoneProfilesUpdated();
+    }
+}
+
+std::pair<bool, unsigned>
+    ChaperoneTabController::getChaperoneProfileIndexFromName( std::string name )
+{
+    std::pair<bool, unsigned> result = { false, 0 };
+    unsigned profileIndex = 0;
+    for ( auto& p : chaperoneProfiles )
+    {
+        if ( name == p.profileName )
+        {
+            result.first = true;
+            result.second = profileIndex;
+            break;
+        }
+        profileIndex++;
+    }
+    return result;
+}
+
+void ChaperoneTabController::createNewAutosaveProfile()
+{
+    // update settings to live chaperone
+    updateChaperoneSettings();
+
+    // lookup the index for old autosave and delete it
+    std::pair<bool, unsigned> previousAutosaveIndexLookup
+        = getChaperoneProfileIndexFromName( "«Autosaved Profile (previous)»" );
+    if ( previousAutosaveIndexLookup.first )
+    {
+        deleteChaperoneProfile( previousAutosaveIndexLookup.second );
+    }
+    else
+    {
+        LOG( INFO )
+            << "[Chaperone Autosave] «Autosaved Profile (previous)» not found";
+    }
+
+    // lookup the index for current autosave and rename to old
+    std::pair<bool, unsigned> currentAutosaveIndexLookup
+        = getChaperoneProfileIndexFromName( "«Autosaved Profile»" );
+    if ( currentAutosaveIndexLookup.first )
+    {
+        chaperoneProfiles[currentAutosaveIndexLookup.second].profileName
+            = "«Autosaved Profile (previous)»";
+        saveChaperoneProfiles();
+        OverlayController::appSettings()->sync();
+        emit chaperoneProfilesUpdated();
+    }
+    else
+    {
+        LOG( INFO ) << "[Chaperone Autosave] «Autosaved Profile» not found";
+    }
+
+    // create a new autosave from current chaperone (all options set true)
+    addChaperoneProfile( "«Autosaved Profile»",
+                         true,
+                         true,
+                         true,
+                         true,
+                         true,
+                         true,
+                         true,
+                         true,
+                         true,
+                         true );
+}
+
+void ChaperoneTabController::applyAutosavedProfile()
+{
+    // lookup index of autosave
+    std::pair<bool, unsigned> autosaveIndexLookup
+        = getChaperoneProfileIndexFromName( "«Autosaved Profile»" );
+
+    // check if it exists
+    if ( autosaveIndexLookup.first )
+    {
+        // apply if it exists
+        applyChaperoneProfile( autosaveIndexLookup.second );
+    }
+    else
+    {
+        LOG( WARNING ) << "Failed to apply chaperone Autosaved Profile "
+                          "(autosave doesn't exist)";
     }
 }
 

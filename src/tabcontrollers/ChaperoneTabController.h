@@ -157,6 +157,7 @@ private:
     bool m_chaperoneShowDashboardActive = false;
 
     unsigned settingsUpdateCounter = 0;
+    void updateChaperoneSettings();
 
     bool m_isHapticGood = true;
     bool m_isHMDActive = false;
@@ -164,6 +165,8 @@ private:
     bool m_HMDHasProx = false;
     bool m_leftHapticClickActivated = false;
     bool m_rightHapticClickActivated = false;
+
+    bool m_autosaveComplete = false;
 
     int m_updateTicksChaperoneReload = 0;
 
@@ -219,6 +222,9 @@ public:
     Q_INVOKABLE QString getChaperoneProfileName( unsigned index );
 
     float getBoundsMaxY();
+    std::pair<bool, unsigned>
+        getChaperoneProfileIndexFromName( std::string name );
+    void createNewAutosaveProfile();
 
     // actions
     void addLeftHapticClick( bool leftHapticClickPressed );
@@ -265,6 +271,7 @@ public slots:
                               bool includesProximityWarningSettings );
     void applyChaperoneProfile( unsigned index );
     void deleteChaperoneProfile( unsigned index );
+    void applyAutosavedProfile();
 
     void reset();
 

@@ -259,6 +259,7 @@ public:
     bool universeCenteredRotation() const;
     bool enableSeatedOffsetsRecenter() const;
     bool disableSeatedMotion() const;
+    bool isInitComplete() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
     void incomingSeatedReset();

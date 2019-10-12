@@ -58,6 +58,13 @@ MyStackViewPage {
             }
         }
 
+        MyToggleButton {
+            id: disableCrashRecoveryToggle
+            text: "Disable Automatic Crash Recovery of Chaperone Config"
+            onCheckedChanged: {
+                OverlayController.setCrashRecoveryDisabled(checked, true)
+            }
+        }
 
         RowLayout {
             Layout.fillWidth: true
@@ -126,6 +133,7 @@ MyStackViewPage {
             enableSeatedOffsetsRecenterToggle.checked = MoveCenterTabController.enableSeatedOffsetsRecenter
             disableSeatedMotionToggle.checked = MoveCenterTabController.disableSeatedMotion
 
+            disableCrashRecoveryToggle.checked = OverlayController.crashRecoveryDisabled
             customTickRateText.text = OverlayController.customTickRateMs
             vsyncDisabledToggle.checked = OverlayController.vsyncDisabled
             customTickRateText.visible = vsyncDisabledToggle.checked
@@ -167,6 +175,10 @@ MyStackViewPage {
                 customTickRateLabel.visible = vsyncDisabledToggle.checked
                 customTickRateMsLabel.visible = vsyncDisabledToggle.checked
             }
+            onCrashRecoveryDisabledChanged: {
+                disableCrashRecoveryToggle.checked = OverlayController.crashRecoveryDisabled
+            }
+
             onCustomTickRateMsChanged: {
                 customTickRateText.text = OverlayController.customTickRateMs
             }
