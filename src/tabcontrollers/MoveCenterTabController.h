@@ -102,8 +102,8 @@ class MoveCenterTabController : public QObject
         bool enableSeatedOffsetsRecenter READ enableSeatedOffsetsRecenter WRITE
             setEnableSeatedOffsetsRecenter NOTIFY
                 enableSeatedOffsetsRecenterChanged )
-    Q_PROPERTY( bool disableSeatedMotion READ disableSeatedMotion WRITE
-                    setDisableSeatedMotion NOTIFY disableSeatedMotionChanged )
+    Q_PROPERTY( bool enableSeatedMotion READ enableSeatedMotion WRITE
+                    setEnableSeatedMotion NOTIFY enableSeatedMotionChanged )
 
 private:
     OverlayController* parent;
@@ -186,7 +186,7 @@ private:
     bool m_oldStyleMotion = false;
     bool m_universeCenteredRotation = false;
     bool m_enableSeatedOffsetsRecenter = false;
-    bool m_disableSeatedMotion = false;
+    bool m_enableSeatedMotion = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
@@ -258,7 +258,7 @@ public:
     bool oldStyleMotion() const;
     bool universeCenteredRotation() const;
     bool enableSeatedOffsetsRecenter() const;
-    bool disableSeatedMotion() const;
+    bool enableSeatedMotion() const;
     bool isInitComplete() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
@@ -333,7 +333,7 @@ public slots:
     void setOldStyleMotion( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
     void setEnableSeatedOffsetsRecenter( bool value, bool notify = true );
-    void setDisableSeatedMotion( bool value, bool notify = true );
+    void setEnableSeatedMotion( bool value, bool notify = true );
 
     void shutdown();
     void reset();
@@ -377,7 +377,7 @@ signals:
     void oldStyleMotionChanged( bool value );
     void universeCenteredRotationChanged( bool value );
     void enableSeatedOffsetsRecenterChanged( bool value );
-    void disableSeatedMotionChanged( bool value );
+    void enableSeatedMotionChanged( bool value );
 
     void offsetProfilesUpdated();
 };

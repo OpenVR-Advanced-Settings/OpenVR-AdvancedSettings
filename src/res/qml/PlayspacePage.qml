@@ -528,10 +528,10 @@ MyStackViewPage {
             if (MoveCenterTabController.trackingUniverse === 0) {
                 spaceModeText.text = "Sitting"
                 spaceSeatedRecenter.visible = true
-                offsetsGroupBox.visible = !MoveCenterTabController.disableSeatedMotion
-                rotationGroupBox.visible = !MoveCenterTabController.disableSeatedMotion
-                resetButtonRow.visible = !MoveCenterTabController.disableSeatedMotion
-                seatedDisableWarningText.visible = MoveCenterTabController.disableSeatedMotion
+                offsetsGroupBox.visible = MoveCenterTabController.enableSeatedMotion
+                rotationGroupBox.visible = MoveCenterTabController.enableSeatedMotion
+                resetButtonRow.visible = MoveCenterTabController.enableSeatedMotion
+                seatedDisableWarningText.visible = !MoveCenterTabController.enableSeatedMotion
 
             } else if (MoveCenterTabController.trackingUniverse === 1) {
                 spaceModeText.text = "Standing"
@@ -580,24 +580,24 @@ MyStackViewPage {
 			onLockZToggleChanged: {
 				lockZToggle.checked = MoveCenterTabController.lockZToggle
 			}
-            onDisableSeatedMotionChanged: {
+            onEnableSeatedMotionChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {
                     spaceModeText.text = "Sitting"
                     spaceSeatedRecenter.visible = true
-                    offsetsGroupBox.visible = !MoveCenterTabController.disableSeatedMotion
-                    rotationGroupBox.visible = !MoveCenterTabController.disableSeatedMotion
-                    resetButtonRow.visible = !MoveCenterTabController.disableSeatedMotion
-                    seatedDisableWarningText.visible = MoveCenterTabController.disableSeatedMotion
+                    offsetsGroupBox.visible = MoveCenterTabController.enableSeatedMotion
+                    rotationGroupBox.visible = MoveCenterTabController.enableSeatedMotion
+                    resetButtonRow.visible = MoveCenterTabController.enableSeatedMotion
+                    seatedDisableWarningText.visible = !MoveCenterTabController.enableSeatedMotion
                 }
             }
             onTrackingUniverseChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {
                     spaceModeText.text = "Sitting"
                     spaceSeatedRecenter.visible = true
-                    offsetsGroupBox.visible = !MoveCenterTabController.disableSeatedMotion
-                    rotationGroupBox.visible = !MoveCenterTabController.disableSeatedMotion
-                    resetButtonRow.visible = !MoveCenterTabController.disableSeatedMotion
-                    seatedDisableWarningText.visible = MoveCenterTabController.disableSeatedMotion
+                    offsetsGroupBox.visible = MoveCenterTabController.enableSeatedMotion
+                    rotationGroupBox.visible = MoveCenterTabController.enableSeatedMotion
+                    resetButtonRow.visible = MoveCenterTabController.enableSeatedMotion
+                    seatedDisableWarningText.visible = !MoveCenterTabController.enableSeatedMotion
                 } else if (MoveCenterTabController.trackingUniverse === 1) {
                     spaceModeText.text = "Standing"
                     spaceSeatedRecenter.visible = false

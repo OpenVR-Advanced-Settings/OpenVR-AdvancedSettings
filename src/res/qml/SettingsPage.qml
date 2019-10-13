@@ -43,19 +43,30 @@ MyStackViewPage {
         }
 
         MyToggleButton {
-            id: enableSeatedOffsetsRecenterToggle
-            text: "Enable Auto-set Seated Offsets During Seated Recenter"
+            id: enableSeatedMotionToggle
+            text: "Enable Motion Features When in Seated Mode (Experimental)"
             onCheckedChanged: {
-                MoveCenterTabController.setEnableSeatedOffsetsRecenter(checked, true)
+                MoveCenterTabController.setEnableSeatedMotion(checked, true)
+                seatedOffsetsRecenterRow.visible = checked
             }
         }
 
-        MyToggleButton {
-            id: disableSeatedMotionToggle
-            text: "Disable All Motion Features When in Seated Mode"
-            onCheckedChanged: {
-                MoveCenterTabController.setDisableSeatedMotion(checked, true)
+        RowLayout {
+            Layout.fillWidth: true
+            id: seatedOffsetsRecenterRow
+
+            Item {
+                Layout.preferredWidth: 50
             }
+
+            MyToggleButton {
+                id: enableSeatedOffsetsRecenterToggle
+                text: "Enable Auto-set Seated Offsets During Seated Recenter"
+                onCheckedChanged: {
+                    MoveCenterTabController.setEnableSeatedOffsetsRecenter(checked, true)
+                }
+            }
+
         }
 
         MyToggleButton {
@@ -119,6 +130,41 @@ MyStackViewPage {
             }
         }
 
+        RowLayout {
+            id: debugStateRow
+            Layout.fillWidth: true
+
+            MyText {
+                id: debugStateLabel
+                text: "Debug State: "
+                horizontalAlignment: Text.AlignRight
+                Layout.leftMargin: 20
+                Layout.rightMargin: 2
+            }
+
+            MyTextField {
+                id: debugStateText
+                text: "0"
+                keyBoardUID: 1002
+                Layout.preferredWidth: 140
+                Layout.leftMargin: 10
+                Layout.rightMargin: 1
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseInt(input, 10)
+                    if (!isNaN(val)) {
+                        OverlayController.debugState = val
+                        text = OverlayController.debugState
+                    } else {
+                        text = OverlayController.debugState
+                    }
+                }
+            }
+            Item {
+                Layout.fillWidth: true
+            }
+        }
+
         Item {
             Layout.fillHeight: true
         }
@@ -131,7 +177,8 @@ MyStackViewPage {
             oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
             universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
             enableSeatedOffsetsRecenterToggle.checked = MoveCenterTabController.enableSeatedOffsetsRecenter
-            disableSeatedMotionToggle.checked = MoveCenterTabController.disableSeatedMotion
+            enableSeatedMotionToggle.checked = MoveCenterTabController.enableSeatedMotion
+            seatedOffsetsRecenterRow.visible = MoveCenterTabController.enableSeatedMotion
 
             disableCrashRecoveryToggle.checked = OverlayController.crashRecoveryDisabled
             customTickRateText.text = OverlayController.customTickRateMs
@@ -139,6 +186,7 @@ MyStackViewPage {
             customTickRateText.visible = vsyncDisabledToggle.checked
             customTickRateLabel.visible = vsyncDisabledToggle.checked
             customTickRateMsLabel.visible = vsyncDisabledToggle.checked
+            debugStateRow.visible = OverlayController.enableDebug
         }
 
         Connections {
@@ -162,8 +210,9 @@ MyStackViewPage {
             onEnableSeatedOffsetsRecenterChanged: {
                 enableSeatedOffsetsRecenterToggle.checked = MoveCenterTabController.enableSeatedOffsetsRecenter
             }
-            onDisableSeatedMotionChanged: {
-                disableSeatedMotionToggle.checked = MoveCenterTabController.disableSeatedMotion
+            onEnableSeatedMotionChanged: {
+                enableSeatedMotionToggle.checked = MoveCenterTabController.enableSeatedMotion
+                seatedOffsetsRecenterRow.visible = MoveCenterTabController.enableSeatedMotion
             }
         }
 
@@ -181,6 +230,10 @@ MyStackViewPage {
 
             onCustomTickRateMsChanged: {
                 customTickRateText.text = OverlayController.customTickRateMs
+            }
+
+            onEnableDebugChanged: {
+                debugStateRow.visible = OverlayController.enableDebug
             }
         }
     }

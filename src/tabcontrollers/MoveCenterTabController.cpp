@@ -159,10 +159,10 @@ void MoveCenterTabController::initStage1()
     {
         m_enableSeatedOffsetsRecenter = value.toBool();
     }
-    value = settings->value( "disableSeatedMotion", m_disableSeatedMotion );
+    value = settings->value( "enableSeatedMotion", m_enableSeatedMotion );
     if ( value.isValid() && !value.isNull() )
     {
-        m_disableSeatedMotion = value.toBool();
+        m_enableSeatedMotion = value.toBool();
     }
     settings->endGroup();
     reloadOffsetProfiles();
@@ -357,9 +357,9 @@ void MoveCenterTabController::outputLogSettings()
     {
         LOG( INFO ) << "LOADED SETTINGS: Seated Offsets Recenter Enabled";
     }
-    if ( m_disableSeatedMotion )
+    if ( m_enableSeatedMotion )
     {
-        LOG( INFO ) << "LOADED SETTINGS: Seated Motion Disabled";
+        LOG( INFO ) << "LOADED SETTINGS: Seated Motion Enabled";
     }
     if ( m_dragBounds )
     {
@@ -1220,25 +1220,25 @@ bool MoveCenterTabController::isInitComplete() const
     return m_initComplete;
 }
 
-bool MoveCenterTabController::disableSeatedMotion() const
+bool MoveCenterTabController::enableSeatedMotion() const
 {
-    return m_disableSeatedMotion;
+    return m_enableSeatedMotion;
 }
 
-void MoveCenterTabController::setDisableSeatedMotion( bool value, bool notify )
+void MoveCenterTabController::setEnableSeatedMotion( bool value, bool notify )
 {
-    m_disableSeatedMotion = value;
+    m_enableSeatedMotion = value;
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "disableSeatedMotion", m_disableSeatedMotion );
+    settings->setValue( "enableSeatedMotion", m_enableSeatedMotion );
     settings->endGroup();
     settings->sync();
     if ( notify )
     {
-        emit disableSeatedMotionChanged( m_disableSeatedMotion );
+        emit enableSeatedMotionChanged( m_enableSeatedMotion );
     }
-    LOG( INFO ) << "CHANGED SETTINGS: Disable Seated Motion Set: "
-                << m_disableSeatedMotion;
+    LOG( INFO ) << "CHANGED SETTINGS: Enable Seated Motion Set: "
+                << m_enableSeatedMotion;
 }
 
 void MoveCenterTabController::modOffsetX( float value, bool notify )
@@ -1285,7 +1285,12 @@ void MoveCenterTabController::shutdown()
 
 void MoveCenterTabController::incomingSeatedReset()
 {
-    if ( !m_disableSeatedMotion )
+    if ( parent->enableDebug() && parent->debugState() == 2 )
+    {
+        return;
+    }
+
+    if ( m_enableSeatedMotion )
     {
         updateSeatedResetData();
     }
@@ -1487,7 +1492,10 @@ void MoveCenterTabController::clampVelocity( double* velocity )
 
 void MoveCenterTabController::updateSeatedResetData()
 {
-    reset();
+    if ( !( parent->enableDebug() && parent->debugState() == 1 ) )
+    {
+        reset();
+    }
     vr::VRChaperoneSetup()->RevertWorkingCopy();
     vr::TrackedDevicePose_t devicePosesStanding[vr::k_unMaxTrackedDeviceCount];
     vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
@@ -1525,6 +1533,38 @@ void MoveCenterTabController::updateSeatedResetData()
         emit offsetYChanged( m_offsetY );
         emit offsetZChanged( m_offsetZ );
         emit rotationChanged( m_rotation );
+    }
+
+    if ( parent->enableDebug() )
+    {
+        switch ( parent->debugState() )
+        {
+        case 3:
+        {
+            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+                &m_seatedCenterForReset );
+        }
+        break;
+        case 4:
+        {
+            vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+                &m_seatedCenterForReset );
+        }
+        break;
+        case 5:
+        {
+            vr::VRChaperoneSetup()->GetLiveSeatedZeroPoseToRawTrackingPose(
+                &m_seatedCenterForReset );
+        }
+        break;
+        case 6:
+        {
+            m_seatedCenterForReset
+                = vr::VRSystem()
+                      ->GetSeatedZeroPoseToStandingAbsoluteTrackingPose();
+        }
+        break;
+        }
     }
 
     unsigned checkQuadCount = 0;
@@ -3030,10 +3070,6 @@ void MoveCenterTabController::eventLoopTick(
         // m_roomSetupModeDetected is set to false in zeroOffsets() if it's
         // successful.
     }
-    else if ( m_seatedModeDetected && m_disableSeatedMotion )
-    {
-        return;
-    }
     else
     {
         setTrackingUniverse( int( universe ) );
@@ -3052,6 +3088,13 @@ void MoveCenterTabController::eventLoopTick(
         else
         {
             m_hmdRotationStatsUpdateCounter++;
+        }
+
+        // stop everything before processing motion if we're in seated mode and
+        // don't have seated motion enabled
+        if ( m_seatedModeDetected && !m_enableSeatedMotion )
+        {
+            return;
         }
 
         // only update dynamic motion if the dash is closed

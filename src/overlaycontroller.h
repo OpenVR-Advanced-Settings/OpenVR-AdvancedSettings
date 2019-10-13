@@ -82,8 +82,12 @@ class OverlayController : public QObject
             setCrashRecoveryDisabled NOTIFY crashRecoveryDisabledChanged )
     Q_PROPERTY( bool vsyncDisabled READ vsyncDisabled WRITE setVsyncDisabled
                     NOTIFY vsyncDisabledChanged )
+    Q_PROPERTY( bool enableDebug READ enableDebug WRITE setEnableDebug NOTIFY
+                    enableDebugChanged )
     Q_PROPERTY( int customTickRateMs READ customTickRateMs WRITE
                     setCustomTickRateMs NOTIFY customTickRateMsChanged )
+    Q_PROPERTY( int debugState READ debugState WRITE setDebugState NOTIFY
+                    debugStateChanged )
 
 private:
     vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
@@ -108,7 +112,9 @@ private:
     bool m_noSound;
     bool m_crashRecoveryDisabled = false;
     bool m_vsyncDisabled = false;
+    bool m_enableDebug = false;
     int m_customTickRateMs = 20;
+    int m_debugState = 0;
 
     QUrl m_runtimePathUrl;
 
@@ -211,8 +217,10 @@ public:
     void mainEventLoop();
 
     bool crashRecoveryDisabled() const;
+    bool enableDebug() const;
     bool vsyncDisabled() const;
     int customTickRateMs() const;
+    int debugState() const;
 
 public slots:
     void renderOverlay();
@@ -228,14 +236,18 @@ public slots:
     void cancelAlarm01Sound();
 
     void setCrashRecoveryDisabled( bool value, bool notify = true );
+    void setEnableDebug( bool value, bool notify = true );
     void setVsyncDisabled( bool value, bool notify = true );
     void setCustomTickRateMs( int value, bool notify = true );
+    void setDebugState( int value, bool notify = true );
 
 signals:
     void keyBoardInputSignal( QString input, unsigned long userValue = 0 );
     void crashRecoveryDisabledChanged( bool value );
+    void enableDebugChanged( bool value );
     void vsyncDisabledChanged( bool value );
     void customTickRateMsChanged( int value );
+    void debugStateChanged( int value );
 
 private:
     static QSettings* _appSettings;

@@ -337,6 +337,16 @@ OverlayController::OverlayController( bool desktopMode,
     {
         m_crashRecoveryDisabled = value.toBool();
     }
+    value = appSettings()->value( "enableDebug", m_enableDebug );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_enableDebug = value.toBool();
+    }
+    value = appSettings()->value( "debugState", m_debugState );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_debugState = value.toInt();
+    }
     appSettings()->endGroup();
 }
 
@@ -481,7 +491,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
              this,
              SLOT( OnTimeoutPumpEvents() ) );
 
-    // Every 1ms we check if the current frame has advanced (for vysnc)
+    // Every 1ms we check if the current frame has advanced (for vsync)
     m_pPumpEventsTimer->setInterval( 1 );
 
     m_pPumpEventsTimer->start();
@@ -773,6 +783,50 @@ void OverlayController::setVsyncDisabled( bool value, bool notify )
     if ( notify )
     {
         emit vsyncDisabledChanged( m_vsyncDisabled );
+    }
+}
+
+bool OverlayController::enableDebug() const
+{
+    return m_enableDebug;
+}
+
+void OverlayController::setEnableDebug( bool value, bool notify )
+{
+    if ( m_enableDebug == value )
+    {
+        return;
+    }
+    m_enableDebug = value;
+    appSettings()->beginGroup( "applicationSettings" );
+    appSettings()->setValue( "enableDebug", m_enableDebug );
+    appSettings()->endGroup();
+    appSettings()->sync();
+    if ( notify )
+    {
+        emit enableDebugChanged( m_enableDebug );
+    }
+}
+
+int OverlayController::debugState() const
+{
+    return m_debugState;
+}
+
+void OverlayController::setDebugState( int value, bool notify )
+{
+    if ( m_debugState == value )
+    {
+        return;
+    }
+    m_debugState = value;
+    appSettings()->beginGroup( "applicationSettings" );
+    appSettings()->setValue( "debugState", m_debugState );
+    appSettings()->endGroup();
+    appSettings()->sync();
+    if ( notify )
+    {
+        emit debugStateChanged( m_debugState );
     }
 }
 
