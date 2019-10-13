@@ -89,7 +89,8 @@ MyStackViewPage {
         MyText {
             id: seatedDisableWarningText
             visible: false
-            text: "Settings Tab: 'Disable Motion in Seated Mode' checked"
+            wrapMode: Text.WordWrap
+            text: "Settings Tab: 'Enable Motion Features in Seated Mode' not checked"
         }
 
         ColumnLayout {
