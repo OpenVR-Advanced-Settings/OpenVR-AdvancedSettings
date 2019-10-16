@@ -272,7 +272,7 @@ These version are not stable and this should be considered for advanced users on
   - **Loop Audio**: Whether the audio alarm should only be played once or in a loop.
   - **Loop Audio**: Modify audio volume as a function of the user's distance to the chaperone.
 - **Open dashboard**: Opens the dashboard when the user's distance to the chaperone falls below the configured activation distance. The idea is to pause the game (most single-player games auto-pause when the dashboard is shown) to give the user time for reorientation.
-- **Velocity Dependent Fade/Activation Distance**: Dynamically modifies the chaperone's fade distance and the proximity warning's activation distance as a function of the player's speed. The used formula is: *distance = old_distance * ( 1 + distance_modifier * max(left_controller_speed, right_controller_speed, hmd_speed) )*
+- **Velocity Dependent Fade/Activation Distance**: (No longer supported)
 
 ## - Space Offset Page
 
@@ -388,8 +388,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Allow External App Chaperone Edits:** Incorporates changes to the chaperone and universe center made by other applications. These changes could come from anywhere, including apps with unpredictable interactions with Advanced Settings. Therefore, this option opens the potential for chaperone misalignment or corruption. However it also allows other chaperone tweaking tools to function in tandem with Advanced Settings. **This option should only be checked if required for compatibility with other apps.** *Note: Changes will only take effect when offsets and rotation are all zero.*
 - **Old-Style Motion:** Uses the old system of writing the chaperone universe center and bounds to disk every frame. Use this option only if you experience issues with playspace motion such as snapping back to reset position after releasing a space-drag. This old mode is smooth on most systems but is in theory less performant than the normal method.
 - **Universe-Centered Rotation:** Causes Rotation to be applied to Universe Center Rather than HMD (Disables offsets automatically compensating to pivot at the HMD).
-- **Enable Auto-set Seated Offsets During Seated Recenter:** Stops the Space Offsets tab offsets from moving you to the center during seated mode recentering. (In case the offset recentering interferes with position in some applications).
-- **Disable All Motion Features When in Seated Mode:** Use this if Advanced Settings causes strange positioning in a seated application. (Different apps handle seated mode in different ways, some are less compatible with Advanced Settings). Note: all Space Offsets and Motion tab features will be disabled.
+- **Enable Motion Features When in Seated Mode:** Uncheck this if Advanced Settings causes strange positioning in a seated application. (Different apps handle seated mode in different ways, some are less compatible with Advanced Settings). Note: if unchecked, all Space Offsets and Motion tab features will be disabled.
 - **Disable Automatic Crash Recovery of Chaperone Config:** This prevents applying of the last good autosaved chaperone profile when starting up after not shutting down properly.
 - **Disable App Vsync:** Allows setting a custom base update rate for Advanced Settings. (Might be useful on HMDs with very high or very low refresh rates).
 

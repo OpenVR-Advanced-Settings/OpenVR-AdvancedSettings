@@ -94,6 +94,7 @@ MyStackViewPage {
         }
 
         ColumnLayout {
+            id: profileSection
             Layout.bottomMargin: 32
             spacing: 18
             RowLayout {
@@ -504,7 +505,7 @@ MyStackViewPage {
                     visible: false
                     text: "Seated Recenter"
                     onClicked: {
-                        MoveCenterTabController.updateSeatedResetData()
+                        MoveCenterTabController.sendSeatedRecenter()
                     }
                 }
 
@@ -532,6 +533,7 @@ MyStackViewPage {
                 offsetsGroupBox.visible = MoveCenterTabController.enableSeatedMotion
                 rotationGroupBox.visible = MoveCenterTabController.enableSeatedMotion
                 resetButtonRow.visible = MoveCenterTabController.enableSeatedMotion
+                profileSection.visible = MoveCenterTabController.enableSeatedMotion
                 seatedDisableWarningText.visible = !MoveCenterTabController.enableSeatedMotion
 
             } else if (MoveCenterTabController.trackingUniverse === 1) {
@@ -540,12 +542,14 @@ MyStackViewPage {
                 offsetsGroupBox.visible = true
                 rotationGroupBox.visible = true
                 resetButtonRow.visible = true
+                profileSection.visible = true
                 seatedDisableWarningText.visible = false
             } else {
                 spaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
                 offsetsGroupBox.visible = false
                 rotationGroupBox.visible = false
                 resetButtonRow.visible = false
+                profileSection.visible = false
                 seatedDisableWarningText.visible = false
             }
             reloadOffsetProfiles()
@@ -588,6 +592,7 @@ MyStackViewPage {
                     offsetsGroupBox.visible = MoveCenterTabController.enableSeatedMotion
                     rotationGroupBox.visible = MoveCenterTabController.enableSeatedMotion
                     resetButtonRow.visible = MoveCenterTabController.enableSeatedMotion
+                    profileSection.visible = MoveCenterTabController.enableSeatedMotion
                     seatedDisableWarningText.visible = !MoveCenterTabController.enableSeatedMotion
                 }
             }
@@ -598,6 +603,7 @@ MyStackViewPage {
                     offsetsGroupBox.visible = MoveCenterTabController.enableSeatedMotion
                     rotationGroupBox.visible = MoveCenterTabController.enableSeatedMotion
                     resetButtonRow.visible = MoveCenterTabController.enableSeatedMotion
+                    profileSection.visible = MoveCenterTabController.enableSeatedMotion
                     seatedDisableWarningText.visible = !MoveCenterTabController.enableSeatedMotion
                 } else if (MoveCenterTabController.trackingUniverse === 1) {
                     spaceModeText.text = "Standing"
@@ -605,12 +611,14 @@ MyStackViewPage {
                     offsetsGroupBox.visible = true
                     rotationGroupBox.visible = true
                     resetButtonRow.visible = true
+                    profileSection.visible = true
                     seatedDisableWarningText.visible = false
                 } else {
                     spaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
                     offsetsGroupBox.visible = false
                     rotationGroupBox.visible = false
                     resetButtonRow.visible = false
+                    profileSection.visible = false
                     seatedDisableWarningText.visible = false
                 }
             }

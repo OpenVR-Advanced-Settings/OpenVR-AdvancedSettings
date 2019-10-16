@@ -23,6 +23,7 @@ MyStackViewPage {
             text: "Allow External App Chaperone Edits (Danger)"
             onCheckedChanged: {
                 MoveCenterTabController.setAllowExternalEdits(checked, true)
+                seatedOldExternalWarning.visible = checked && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
             }
         }
 
@@ -31,6 +32,7 @@ MyStackViewPage {
             text: "Old-Style Motion (per-frame disk writes)"
             onCheckedChanged: {
                 MoveCenterTabController.setOldStyleMotion(checked, true)
+                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && checked && MoveCenterTabController.enableSeatedMotion
             }
         }
 
@@ -47,26 +49,8 @@ MyStackViewPage {
             text: "Enable Motion Features When in Seated Mode (Experimental)"
             onCheckedChanged: {
                 MoveCenterTabController.setEnableSeatedMotion(checked, true)
-                seatedOffsetsRecenterRow.visible = checked
+                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && checked
             }
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            id: seatedOffsetsRecenterRow
-
-            Item {
-                Layout.preferredWidth: 50
-            }
-
-            MyToggleButton {
-                id: enableSeatedOffsetsRecenterToggle
-                text: "Enable Auto-set Seated Offsets During Seated Recenter"
-                onCheckedChanged: {
-                    MoveCenterTabController.setEnableSeatedOffsetsRecenter(checked, true)
-                }
-            }
-
         }
 
         MyToggleButton {
@@ -165,6 +149,18 @@ MyStackViewPage {
             }
         }
 
+        MyText {
+            id: seatedOldExternalWarning
+            wrapMode: Text.WordWrap
+            font.pointSize: 20
+            color: "#FFA500"
+            text: "WARNING: 'Allow External App Chaperone Edits' + 'Old-Style Motion' + 'Enable Motion Features When in Seated Mode' active together may cause space center misalignment. Load the «Autosaved Profile» in the 'Chaperone' tab to fix."
+            horizontalAlignment: Text.AlignHCenter
+            Layout.leftMargin: 20
+            Layout.rightMargin: 20
+            Layout.fillWidth: true
+        }
+
         Item {
             Layout.fillHeight: true
         }
@@ -176,9 +172,7 @@ MyStackViewPage {
             allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
             oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
             universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
-            enableSeatedOffsetsRecenterToggle.checked = MoveCenterTabController.enableSeatedOffsetsRecenter
             enableSeatedMotionToggle.checked = MoveCenterTabController.enableSeatedMotion
-            seatedOffsetsRecenterRow.visible = MoveCenterTabController.enableSeatedMotion
 
             disableCrashRecoveryToggle.checked = OverlayController.crashRecoveryDisabled
             customTickRateText.text = OverlayController.customTickRateMs
@@ -187,6 +181,9 @@ MyStackViewPage {
             customTickRateLabel.visible = vsyncDisabledToggle.checked
             customTickRateMsLabel.visible = vsyncDisabledToggle.checked
             debugStateRow.visible = OverlayController.enableDebug
+            debugStateText.text = OverlayController.debugState
+
+            seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
         }
 
         Connections {
@@ -200,19 +197,18 @@ MyStackViewPage {
             target: MoveCenterTabController
             onAllowExternalEditsChanged: {
                 allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
+                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
             }
             onOldStyleMotionChanged: {
                 oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
+                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
             }
             onUniverseCenteredRotationChanged: {
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
             }
-            onEnableSeatedOffsetsRecenterChanged: {
-                enableSeatedOffsetsRecenterToggle.checked = MoveCenterTabController.enableSeatedOffsetsRecenter
-            }
             onEnableSeatedMotionChanged: {
                 enableSeatedMotionToggle.checked = MoveCenterTabController.enableSeatedMotion
-                seatedOffsetsRecenterRow.visible = MoveCenterTabController.enableSeatedMotion
+                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
             }
         }
 
@@ -234,6 +230,10 @@ MyStackViewPage {
 
             onEnableDebugChanged: {
                 debugStateRow.visible = OverlayController.enableDebug
+            }
+
+            onDebugStateChanged: {
+                debugStateText.text = OverlayController.debugState
             }
         }
     }

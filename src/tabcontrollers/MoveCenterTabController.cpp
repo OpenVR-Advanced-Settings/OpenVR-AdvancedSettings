@@ -153,12 +153,6 @@ void MoveCenterTabController::initStage1()
     {
         m_universeCenteredRotation = value.toBool();
     }
-    value = settings->value( "enableSeatedOffsetsRecenter",
-                             m_enableSeatedOffsetsRecenter );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_enableSeatedOffsetsRecenter = value.toBool();
-    }
     value = settings->value( "enableSeatedMotion", m_enableSeatedMotion );
     if ( value.isValid() && !value.isNull() )
     {
@@ -352,10 +346,6 @@ void MoveCenterTabController::outputLogSettings()
     if ( m_universeCenteredRotation )
     {
         LOG( INFO ) << "LOADED SETTINGS: Universe-Centered Rotation Enabled";
-    }
-    if ( m_enableSeatedOffsetsRecenter )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Seated Offsets Recenter Enabled";
     }
     if ( m_enableSeatedMotion )
     {
@@ -1191,30 +1181,6 @@ void MoveCenterTabController::setUniverseCenteredRotation( bool value,
                 << m_universeCenteredRotation;
 }
 
-bool MoveCenterTabController::enableSeatedOffsetsRecenter() const
-{
-    return m_enableSeatedOffsetsRecenter;
-}
-
-void MoveCenterTabController::setEnableSeatedOffsetsRecenter( bool value,
-                                                              bool notify )
-{
-    m_enableSeatedOffsetsRecenter = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "enableSeatedOffsetsRecenter",
-                        m_enableSeatedOffsetsRecenter );
-    settings->endGroup();
-    settings->sync();
-    if ( notify )
-    {
-        emit enableSeatedOffsetsRecenterChanged(
-            m_enableSeatedOffsetsRecenter );
-    }
-    LOG( INFO ) << "CHANGED SETTINGS: Enable Seated Offsets Recenter Set: "
-                << m_enableSeatedOffsetsRecenter;
-}
-
 bool MoveCenterTabController::isInitComplete() const
 {
     return m_initComplete;
@@ -1285,11 +1251,6 @@ void MoveCenterTabController::shutdown()
 
 void MoveCenterTabController::incomingSeatedReset()
 {
-    if ( parent->enableDebug() && parent->debugState() == 2 )
-    {
-        return;
-    }
-
     if ( m_enableSeatedMotion )
     {
         updateSeatedResetData();
@@ -1303,6 +1264,12 @@ void MoveCenterTabController::reset()
         LOG( WARNING ) << "WARNING: Attempted reset offsets before chaperone "
                           "basis is acquired!";
         return;
+    }
+    if ( m_pendingSeatedRecenter )
+    {
+        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+            &m_seatedCenterForReset );
+        m_pendingSeatedRecenter = false;
     }
     vr::VRChaperoneSetup()->HideWorkingSetPreview();
     m_heightToggle = false;
@@ -1468,6 +1435,11 @@ void MoveCenterTabController::zeroOffsets()
     }
 }
 
+void MoveCenterTabController::sendSeatedRecenter()
+{
+    vr::VRSystem()->ResetSeatedZeroPose();
+}
+
 double MoveCenterTabController::getHmdYawTotal()
 {
     return m_hmdYawTotal;
@@ -1492,88 +1464,24 @@ void MoveCenterTabController::clampVelocity( double* velocity )
 
 void MoveCenterTabController::updateSeatedResetData()
 {
-    if ( !( parent->enableDebug() && parent->debugState() == 1 ) )
-    {
-        reset();
-    }
-    vr::VRChaperoneSetup()->RevertWorkingCopy();
-    vr::TrackedDevicePose_t devicePosesStanding[vr::k_unMaxTrackedDeviceCount];
-    vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
-        vr::TrackingUniverseStanding,
-        0.0f,
-        devicePosesStanding,
-        vr::k_unMaxTrackedDeviceCount );
-    vr::HmdMatrix34_t hmdMatrix
-        = devicePosesStanding[0].mDeviceToAbsoluteTracking;
-
-    vr::HmdQuaternion_t hmdQuat = quaternion::fromHmdMatrix34( hmdMatrix );
-    double hmdYaw = quaternion::getYaw( hmdQuat );
-    int hmdYawCentideg = static_cast<int>( hmdYaw * k_radiansToCentidegrees );
-    // Keep angle within -18000 ~ 18000 centidegrees
-    if ( hmdYawCentideg > 18000 )
-    {
-        hmdYawCentideg -= 36000;
-    }
-    else if ( hmdYawCentideg < -18000 )
-    {
-        hmdYawCentideg += 36000;
-    }
-
-    m_seatedCenterForReset = m_universeCenterForReset;
-    m_seatedHeight = hmdMatrix.m[1][3];
-    m_seatedCenterForReset.m[1][3] += m_seatedHeight;
-
-    if ( m_enableSeatedOffsetsRecenter )
-    {
-        m_offsetX = hmdMatrix.m[0][3];
-        m_offsetY = 0.0f;
-        m_offsetZ = hmdMatrix.m[2][3];
-        m_rotation = hmdYawCentideg;
-        emit offsetXChanged( m_offsetX );
-        emit offsetYChanged( m_offsetY );
-        emit offsetZChanged( m_offsetZ );
-        emit rotationChanged( m_rotation );
-    }
-
-    if ( parent->enableDebug() )
-    {
-        switch ( parent->debugState() )
-        {
-        case 3:
-        {
-            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-                &m_seatedCenterForReset );
-        }
-        break;
-        case 4:
-        {
-            vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
-                &m_seatedCenterForReset );
-        }
-        break;
-        case 5:
-        {
-            vr::VRChaperoneSetup()->GetLiveSeatedZeroPoseToRawTrackingPose(
-                &m_seatedCenterForReset );
-        }
-        break;
-        case 6:
-        {
-            m_seatedCenterForReset
-                = vr::VRSystem()
-                      ->GetSeatedZeroPoseToStandingAbsoluteTrackingPose();
-        }
-        break;
-        }
-    }
-
-    unsigned checkQuadCount = 0;
-    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
-                                                           &checkQuadCount );
-    if ( checkQuadCount > 0 )
-    {
-        parent->chaperoneUtils().loadChaperoneData( false );
-    }
+    m_heightToggle = false;
+    emit heightToggleChanged( m_heightToggle );
+    m_oldOffsetX = 0.0f;
+    m_oldOffsetY = 0.0f;
+    m_oldOffsetZ = 0.0f;
+    m_oldRotation = 0;
+    m_offsetX = 0.0f;
+    m_offsetY = 0.0f;
+    m_offsetZ = 0.0f;
+    m_rotation = 0;
+    emit offsetXChanged( m_offsetX );
+    emit offsetYChanged( m_offsetY );
+    emit offsetZChanged( m_offsetZ );
+    emit rotationChanged( m_rotation );
+    vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+    // set pending update here, will be processed on next instance of motion or
+    // running the reset() function.
+    m_pendingSeatedRecenter = true;
 }
 
 void MoveCenterTabController::updateChaperoneResetData()
@@ -1590,19 +1498,8 @@ void MoveCenterTabController::updateChaperoneResetData()
 
     vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
         &m_universeCenterForReset );
-
-    // update seated center to standing offset by current hmd Y value.
-    m_seatedCenterForReset = m_universeCenterForReset;
-    vr::TrackedDevicePose_t devicePosesStanding[vr::k_unMaxTrackedDeviceCount];
-    vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
-        vr::TrackingUniverseStanding,
-        0.0f,
-        devicePosesStanding,
-        vr::k_unMaxTrackedDeviceCount );
-    vr::HmdMatrix34_t hmdMatrix
-        = devicePosesStanding[0].mDeviceToAbsoluteTracking;
-    m_seatedHeight = hmdMatrix.m[1][3];
-    m_seatedCenterForReset.m[1][3] += m_seatedHeight;
+    vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+        &m_seatedCenterForReset );
 
     if ( m_collisionBoundsCountForReset > 0 )
     {
@@ -2506,7 +2403,23 @@ void MoveCenterTabController::updateHandDrag(
         return;
     }
 
-    vr::TrackedDevicePose_t* movePose = devicePoses + moveHandId;
+    vr::TrackedDevicePose_t* movePose;
+    if ( m_seatedModeDetected )
+    {
+        vr::TrackedDevicePose_t
+            seatedDevicePoses[vr::k_unMaxTrackedDeviceCount];
+        vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+            vr::TrackingUniverseSeated,
+            0.0f,
+            seatedDevicePoses,
+            vr::k_unMaxTrackedDeviceCount );
+        movePose = seatedDevicePoses + moveHandId;
+    }
+    else
+    {
+        movePose = devicePoses + moveHandId;
+    }
+
     if ( !movePose->bPoseIsValid || !movePose->bDeviceIsConnected
          || movePose->eTrackingResult != vr::TrackingResult_Running_OK )
     {
@@ -2783,6 +2696,17 @@ void MoveCenterTabController::updateSpace()
         updateChaperoneResetData();
     }
 
+    // do a late on-demand setting of seated center basis when we need it for
+    // motion. This gives the reload from disk a little more time to complete
+    // before we apply the new seated basis.
+    if ( m_pendingSeatedRecenter )
+    {
+        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+            &m_seatedCenterForReset );
+
+        m_pendingSeatedRecenter = false;
+    }
+
     vr::HmdMatrix34_t offsetUniverseCenter;
 
     // set offsetUniverseCenter to the current angle
@@ -2884,9 +2808,37 @@ void MoveCenterTabController::updateSpace()
     // keep the seated origin synced with offsets if in seated mode
     if ( m_trackingUniverse == vr::TrackingUniverseSeated )
     {
-        vr::HmdMatrix34_t offsetSeatedCenter = offsetUniverseCenter;
+        vr::HmdMatrix34_t offsetSeatedCenter;
 
-        offsetSeatedCenter.m[1][3] += m_seatedHeight;
+        // set offsetSeatedCenter to the current angle
+        utils::matMul33(
+            offsetSeatedCenter, rotationMatrix, m_seatedCenterForReset );
+        // fill in matrix coordinates for basis universe zero point
+        offsetSeatedCenter.m[0][3] = m_seatedCenterForReset.m[0][3];
+        offsetSeatedCenter.m[1][3] = m_seatedCenterForReset.m[1][3];
+        offsetSeatedCenter.m[2][3] = m_seatedCenterForReset.m[2][3];
+
+        // move offsetSeatedCenter to the current offsets
+        offsetSeatedCenter.m[0][3]
+            += m_seatedCenterForReset.m[0][0] * m_offsetX;
+        offsetSeatedCenter.m[1][3]
+            += m_seatedCenterForReset.m[1][0] * m_offsetX;
+        offsetSeatedCenter.m[2][3]
+            += m_seatedCenterForReset.m[2][0] * m_offsetX;
+
+        offsetSeatedCenter.m[0][3]
+            += m_seatedCenterForReset.m[0][1] * m_offsetY;
+        offsetSeatedCenter.m[1][3]
+            += m_seatedCenterForReset.m[1][1] * m_offsetY;
+        offsetSeatedCenter.m[2][3]
+            += m_seatedCenterForReset.m[2][1] * m_offsetY;
+
+        offsetSeatedCenter.m[0][3]
+            += m_seatedCenterForReset.m[0][2] * m_offsetZ;
+        offsetSeatedCenter.m[1][3]
+            += m_seatedCenterForReset.m[1][2] * m_offsetZ;
+        offsetSeatedCenter.m[2][3]
+            += m_seatedCenterForReset.m[2][2] * m_offsetZ;
 
         vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
             &offsetSeatedCenter );

@@ -98,10 +98,6 @@ class MoveCenterTabController : public QObject
     Q_PROPERTY(
         bool universeCenteredRotation READ universeCenteredRotation WRITE
             setUniverseCenteredRotation NOTIFY universeCenteredRotationChanged )
-    Q_PROPERTY(
-        bool enableSeatedOffsetsRecenter READ enableSeatedOffsetsRecenter WRITE
-            setEnableSeatedOffsetsRecenter NOTIFY
-                enableSeatedOffsetsRecenterChanged )
     Q_PROPERTY( bool enableSeatedMotion READ enableSeatedMotion WRITE
                     setEnableSeatedMotion NOTIFY enableSeatedMotionChanged )
 
@@ -178,6 +174,7 @@ private:
     bool m_gravityReversed = false;
     bool m_chaperoneCommitted = true;
     bool m_pendingZeroOffsets = true;
+    bool m_pendingSeatedRecenter = false;
     bool m_dashWasOpenPreviousFrame = false;
     bool m_roomSetupModeDetected = false;
     bool m_seatedModeDetected = false;
@@ -185,7 +182,6 @@ private:
     bool m_allowExternalEdits = false;
     bool m_oldStyleMotion = false;
     bool m_universeCenteredRotation = false;
-    bool m_enableSeatedOffsetsRecenter = false;
     bool m_enableSeatedMotion = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
@@ -257,7 +253,6 @@ public:
     bool allowExternalEdits() const;
     bool oldStyleMotion() const;
     bool universeCenteredRotation() const;
-    bool enableSeatedOffsetsRecenter() const;
     bool enableSeatedMotion() const;
     bool isInitComplete() const;
     double getHmdYawTotal();
@@ -332,7 +327,6 @@ public slots:
     void setAllowExternalEdits( bool value, bool notify = true );
     void setOldStyleMotion( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
-    void setEnableSeatedOffsetsRecenter( bool value, bool notify = true );
     void setEnableSeatedMotion( bool value, bool notify = true );
 
     void shutdown();
@@ -340,6 +334,7 @@ public slots:
     void updateSeatedResetData();
     void outputLogPoses();
     void zeroOffsets();
+    void sendSeatedRecenter();
 
     void addOffsetProfile( QString name );
     void applyOffsetProfile( unsigned index );
@@ -376,7 +371,6 @@ signals:
     void allowExternalEditsChanged( bool value );
     void oldStyleMotionChanged( bool value );
     void universeCenteredRotationChanged( bool value );
-    void enableSeatedOffsetsRecenterChanged( bool value );
     void enableSeatedMotionChanged( bool value );
 
     void offsetProfilesUpdated();
