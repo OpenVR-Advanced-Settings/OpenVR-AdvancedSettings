@@ -385,7 +385,7 @@ MyStackViewPage {
             MySlider {
                 id: chaperoneHeightSlider
                 from: 0.01
-                to: 15.0
+                to: 5.0
                 stepSize: 0.01
                 value: 2.0
                 Layout.fillWidth: true

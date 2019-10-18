@@ -1501,6 +1501,20 @@ void MoveCenterTabController::updateChaperoneResetData()
     vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
         &m_seatedCenterForReset );
 
+    updateCollisionBoundsForOffset();
+    parent->m_chaperoneTabController.updateHeight( getBoundsBasisMaxY() );
+
+    unsigned checkQuadCount = 0;
+    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
+                                                           &checkQuadCount );
+    if ( checkQuadCount > 0 )
+    {
+        parent->chaperoneUtils().loadChaperoneData( false );
+    }
+}
+
+void MoveCenterTabController::updateCollisionBoundsForOffset()
+{
     if ( m_collisionBoundsCountForReset > 0 )
     {
         float universeCenterForResetYaw
@@ -1531,14 +1545,6 @@ void MoveCenterTabController::updateChaperoneResetData()
             }
         }
     }
-
-    unsigned checkQuadCount = 0;
-    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
-                                                           &checkQuadCount );
-    if ( checkQuadCount > 0 )
-    {
-        parent->chaperoneUtils().loadChaperoneData( false );
-    }
 }
 
 void MoveCenterTabController::applyChaperoneResetData()
@@ -1564,6 +1570,50 @@ void MoveCenterTabController::applyChaperoneResetData()
     {
         parent->chaperoneUtils().loadChaperoneData( false );
     }
+}
+
+void MoveCenterTabController::setBoundsBasisHeight( float newHeight )
+{
+    if ( m_collisionBoundsCountForReset > 0 )
+    {
+        for ( unsigned b = 0; b < m_collisionBoundsCountForReset; b++ )
+        {
+            m_collisionBoundsForReset[b].vCorners[0].v[1] = 0.0;
+            m_collisionBoundsForReset[b].vCorners[1].v[1] = newHeight;
+            m_collisionBoundsForReset[b].vCorners[2].v[1] = newHeight;
+            m_collisionBoundsForReset[b].vCorners[3].v[1] = 0.0;
+        }
+
+        updateCollisionBoundsForOffset();
+        updateSpace( true );
+    }
+}
+
+float MoveCenterTabController::getBoundsBasisMaxY()
+{
+    float result = FP_NAN;
+    if ( m_collisionBoundsCountForReset > 0 )
+    {
+        for ( unsigned b = 0; b < m_collisionBoundsCountForReset; b++ )
+        {
+            int ci;
+            if ( m_collisionBoundsForReset[b].vCorners[1].v[1]
+                 >= m_collisionBoundsForReset[b].vCorners[2].v[1] )
+            {
+                ci = 1;
+            }
+            else
+            {
+                ci = 2;
+            }
+            if ( std::isnan( result )
+                 || result < m_collisionBoundsForReset[b].vCorners[ci].v[1] )
+            {
+                result = m_collisionBoundsForReset[b].vCorners[ci].v[1];
+            }
+        }
+    }
+    return result;
 }
 
 // START of drag bindings:
@@ -2677,11 +2727,12 @@ void MoveCenterTabController::updateGravity()
     m_velocity[2] = 0.0;
 }
 
-void MoveCenterTabController::updateSpace()
+void MoveCenterTabController::updateSpace( bool forceUpdate )
 {
     // Do nothing if all offsets and rotation are still the same...
     if ( m_offsetX == m_oldOffsetX && m_offsetY == m_oldOffsetY
-         && m_offsetZ == m_oldOffsetZ && m_rotation == m_oldRotation )
+         && m_offsetZ == m_oldOffsetZ && m_rotation == m_oldRotation
+         && !forceUpdate )
     {
         return;
     }

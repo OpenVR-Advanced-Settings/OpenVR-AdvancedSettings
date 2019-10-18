@@ -221,7 +221,6 @@ public:
     Q_INVOKABLE unsigned getChaperoneProfileCount();
     Q_INVOKABLE QString getChaperoneProfileName( unsigned index );
 
-    float getBoundsMaxY();
     std::pair<bool, unsigned>
         getChaperoneProfileIndexFromName( std::string name );
     void createNewAutosaveProfile();

@@ -201,13 +201,14 @@ private:
               { 0.0f, 1.0f, 0.0f, 0.0f },
               { 0.0f, 0.0f, 1.0f, 0.0f } } };
     vr::HmdQuad_t* m_collisionBoundsForOffset;
+    void updateCollisionBoundsForOffset();
 
     void updateHmdRotationCounter( vr::TrackedDevicePose_t hmdPose,
                                    double angle );
     void updateHandDrag( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateHandTurn( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateGravity();
-    void updateSpace();
+    void updateSpace( bool forceUpdate = false );
     void clampVelocity( double* velocity );
     void updateChaperoneResetData();
     void applyChaperoneResetData();
@@ -258,6 +259,8 @@ public:
     double getHmdYawTotal();
     void resetHmdYawTotal();
     void incomingSeatedReset();
+    void setBoundsBasisHeight( float newHeight );
+    float getBoundsBasisMaxY();
 
     void reloadOffsetProfiles();
     void saveOffsetProfiles();
