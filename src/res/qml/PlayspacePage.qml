@@ -530,11 +530,12 @@ MyStackViewPage {
             if (MoveCenterTabController.trackingUniverse === 0) {
                 spaceModeText.text = "Sitting"
                 spaceSeatedRecenter.visible = true
-                offsetsGroupBox.visible = MoveCenterTabController.enableSeatedMotion
-                rotationGroupBox.visible = MoveCenterTabController.enableSeatedMotion
-                resetButtonRow.visible = MoveCenterTabController.enableSeatedMotion
-                profileSection.visible = MoveCenterTabController.enableSeatedMotion
-                seatedDisableWarningText.visible = !MoveCenterTabController.enableSeatedMotion
+                var boolEnableSeatedMotion = MoveCenterTabController.enableSeatedMotion
+                offsetsGroupBox.visible = boolEnableSeatedMotion
+                rotationGroupBox.visible = boolEnableSeatedMotion
+                resetButtonRow.visible = boolEnableSeatedMotion
+                profileSection.visible = boolEnableSeatedMotion
+                seatedDisableWarningText.visible = !boolEnableSeatedMotion
 
             } else if (MoveCenterTabController.trackingUniverse === 1) {
                 spaceModeText.text = "Standing"
@@ -570,8 +571,9 @@ MyStackViewPage {
                 spaceRotationSlider.value = ( MoveCenterTabController.rotation / 100 )
             }
             onTempRotationChanged: {
-                spaceRotationSlider.value = ( MoveCenterTabController.tempRotation / 100 )
-                spaceRotationText.text = ( MoveCenterTabController.tempRotation / 100 ) + "°"
+                var intTempRotation = MoveCenterTabController.tempRotation
+                spaceRotationSlider.value = ( intTempRotation / 100 )
+                spaceRotationText.text = ( intTempRotation / 100 ) + "°"
             }
             onAdjustChaperoneChanged: {
                 spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
@@ -589,22 +591,24 @@ MyStackViewPage {
                 if (MoveCenterTabController.trackingUniverse === 0) {
                     spaceModeText.text = "Sitting"
                     spaceSeatedRecenter.visible = true
-                    offsetsGroupBox.visible = MoveCenterTabController.enableSeatedMotion
-                    rotationGroupBox.visible = MoveCenterTabController.enableSeatedMotion
-                    resetButtonRow.visible = MoveCenterTabController.enableSeatedMotion
-                    profileSection.visible = MoveCenterTabController.enableSeatedMotion
-                    seatedDisableWarningText.visible = !MoveCenterTabController.enableSeatedMotion
+                    var boolEnableSeatedMotion = MoveCenterTabController.enableSeatedMotion
+                    offsetsGroupBox.visible = boolEnableSeatedMotion
+                    rotationGroupBox.visible = boolEnableSeatedMotion
+                    resetButtonRow.visible = boolEnableSeatedMotion
+                    profileSection.visible = boolEnableSeatedMotion
+                    seatedDisableWarningText.visible = !boolEnableSeatedMotion
                 }
             }
             onTrackingUniverseChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {
                     spaceModeText.text = "Sitting"
                     spaceSeatedRecenter.visible = true
-                    offsetsGroupBox.visible = MoveCenterTabController.enableSeatedMotion
-                    rotationGroupBox.visible = MoveCenterTabController.enableSeatedMotion
-                    resetButtonRow.visible = MoveCenterTabController.enableSeatedMotion
-                    profileSection.visible = MoveCenterTabController.enableSeatedMotion
-                    seatedDisableWarningText.visible = !MoveCenterTabController.enableSeatedMotion
+                    var boolEnableSeatedMotion = MoveCenterTabController.enableSeatedMotion
+                    offsetsGroupBox.visible = boolEnableSeatedMotion
+                    rotationGroupBox.visible = boolEnableSeatedMotion
+                    resetButtonRow.visible = boolEnableSeatedMotion
+                    profileSection.visible = boolEnableSeatedMotion
+                    seatedDisableWarningText.visible = !boolEnableSeatedMotion
                 } else if (MoveCenterTabController.trackingUniverse === 1) {
                     spaceModeText.text = "Standing"
                     spaceSeatedRecenter.visible = false

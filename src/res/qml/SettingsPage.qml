@@ -165,6 +165,22 @@ MyStackViewPage {
             Layout.fillHeight: true
         }
 
+        RowLayout {
+            Layout.fillWidth: true
+
+            Item {
+                Layout.fillWidth: true
+            }
+
+            MyToggleButton {
+                id: debugToggle
+                text: "Debug"
+                onCheckedChanged: {
+                    OverlayController.setEnableDebug(checked, true)
+                }
+            }
+
+        }
 
         Component.onCompleted: {
             settingsAutoStartToggle.checked = SettingsTabController.autoStartEnabled
