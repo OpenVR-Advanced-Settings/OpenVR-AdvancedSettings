@@ -175,6 +175,7 @@ private:
     bool m_chaperoneCommitted = true;
     bool m_pendingZeroOffsets = true;
     bool m_pendingSeatedRecenter = false;
+    bool m_pendingSeatedReloadFromDisk = false;
     bool m_dashWasOpenPreviousFrame = false;
     bool m_roomSetupModeDetected = false;
     bool m_seatedModeDetected = false;
@@ -190,6 +191,7 @@ private:
     double m_velocity[3] = { 0.0, 0.0, 0.0 };
     std::chrono::steady_clock::time_point m_lastGravityUpdateTimePoint;
     std::chrono::steady_clock::time_point m_lastDragUpdateTimePoint;
+    std::chrono::steady_clock::time_point m_lastSeatedRecenterTimePoint;
     vr::HmdQuad_t* m_collisionBoundsForReset;
     uint32_t m_collisionBoundsCountForReset = 0;
     vr::HmdMatrix34_t m_universeCenterForReset

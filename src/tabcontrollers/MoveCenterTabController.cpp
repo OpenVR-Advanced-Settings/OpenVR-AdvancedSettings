@@ -1255,6 +1255,35 @@ void MoveCenterTabController::incomingSeatedReset()
     {
         updateSeatedResetData();
     }
+    else if ( parent->enableDebug() && parent->debugState() == 1 )
+    {
+        vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+    }
+    else if ( parent->enableDebug() && parent->debugState() == 2 )
+    {
+        Sleep( 20 );
+        vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+    }
+    else if ( parent->enableDebug() && parent->debugState() == 3 )
+    {
+        Sleep( 100 );
+        vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+    }
+    else if ( parent->enableDebug() && parent->debugState() == 4 )
+    {
+        Sleep( 200 );
+        vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+    }
+    else if ( parent->enableDebug() && parent->debugState() == 5 )
+    {
+        Sleep( 500 );
+        vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+    }
+    else if ( parent->enableDebug() && parent->debugState() == 6 )
+    {
+        Sleep( 1000 );
+        vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+    }
 }
 
 void MoveCenterTabController::reset()
@@ -1478,7 +1507,15 @@ void MoveCenterTabController::updateSeatedResetData()
     emit offsetYChanged( m_offsetY );
     emit offsetZChanged( m_offsetZ );
     emit rotationChanged( m_rotation );
-    vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+    if ( parent->enableDebug() && parent->debugState() >= 100 )
+    {
+        m_lastSeatedRecenterTimePoint = std::chrono::steady_clock::now();
+        m_pendingSeatedReloadFromDisk = true;
+    }
+    else
+    {
+        vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+    }
     // set pending update here, will be processed on next instance of motion or
     // running the reset() function.
     m_pendingSeatedRecenter = true;
@@ -3098,6 +3135,34 @@ void MoveCenterTabController::eventLoopTick(
         if ( m_seatedModeDetected && !m_enableSeatedMotion )
         {
             return;
+        }
+
+        if ( parent->enableDebug() && parent->debugState() >= 100 )
+        {
+            if ( m_pendingSeatedReloadFromDisk )
+            {
+                double secondsSinceLastRecenter
+                    = std::chrono::duration<double>(
+                          std::chrono::steady_clock::now()
+                          - m_lastSeatedRecenterTimePoint )
+                          .count();
+
+                if ( secondsSinceLastRecenter
+                     >= ( static_cast<double>( parent->debugState() ) - 100.0 )
+                            / 1000.0 )
+                {
+                    vr::VRChaperoneSetup()->ReloadFromDisk(
+                        vr::EChaperoneConfigFile_Live );
+                    m_pendingSeatedReloadFromDisk = false;
+                }
+                // stop for one loop tick even if it's time to
+                // ReloadFromDisk to give it a little extra time before we
+                // might process motion.
+
+                // if still m_pendingSeatedReloadFromDisk we'll remain waiting
+                // here until it's time, stopping before processing motion.
+                return;
+            }
         }
 
         // only update dynamic motion if the dash is closed
