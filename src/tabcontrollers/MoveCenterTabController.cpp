@@ -1261,27 +1261,27 @@ void MoveCenterTabController::incomingSeatedReset()
     }
     else if ( parent->enableDebug() && parent->debugState() == 2 )
     {
-        Sleep( 20 );
+        std::this_thread::sleep_for( std::chrono::milliseconds( 20 ) );
         vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
     }
     else if ( parent->enableDebug() && parent->debugState() == 3 )
     {
-        Sleep( 100 );
+        std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
         vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
     }
     else if ( parent->enableDebug() && parent->debugState() == 4 )
     {
-        Sleep( 200 );
+        std::this_thread::sleep_for( std::chrono::milliseconds( 200 ) );
         vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
     }
     else if ( parent->enableDebug() && parent->debugState() == 5 )
     {
-        Sleep( 500 );
+        std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
         vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
     }
     else if ( parent->enableDebug() && parent->debugState() == 6 )
     {
-        Sleep( 1000 );
+        std::this_thread::sleep_for( std::chrono::milliseconds( 1000 ) );
         vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
     }
 }
