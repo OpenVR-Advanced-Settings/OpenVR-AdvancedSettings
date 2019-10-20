@@ -272,13 +272,13 @@ These version are not stable and this should be considered for advanced users on
   - **Loop Audio**: Whether the audio alarm should only be played once or in a loop.
   - **Loop Audio**: Modify audio volume as a function of the user's distance to the chaperone.
 - **Open dashboard**: Opens the dashboard when the user's distance to the chaperone falls below the configured activation distance. The idea is to pause the game (most single-player games auto-pause when the dashboard is shown) to give the user time for reorientation.
-- **Velocity Dependent Fade/Activation Distance**: Dynamically modifies the chaperone's fade distance and the proximity warning's activation distance as a function of the player's speed. The used formula is: *distance = old_distance * ( 1 + distance_modifier * max(left_controller_speed, right_controller_speed, hmd_speed) )*
+- **Velocity Dependent Fade/Activation Distance**: (No longer supported)
 
 ## - Space Offset Page
 
 <img src="docs/screenshots/OffsetPage.png" width="600" alt="Space Offsets Page">
 
-Allows users to temporarily move and rotate the center of the playspace. This allows to reach interaction elements that are just outside our real-world walls or otherwise inaccessible (e.g. when your playspace is smaller than the recommended one). Can also be used to discover the terrors that lie outside of the intended playspace (ever wondered what's behind the door in The Lab?).
+Allows users to temporarily move and rotate the center of the playspace. This allows reaching interaction elements that are just outside our real-world walls or otherwise inaccessible (e.g. when your playspace is smaller than the recommended one). Can also be used to discover the terrors that lie outside of the intended playspace (ever wondered what's behind the door in The Lab?).
 
 - **Adjust Chaperone**: When enabled, the chaperone bounds stay accurate even when the playspace is moved or rotated (so noone gets hurt). Depending on chaperone mode this may or may not adjust with height.
 - **Seated Recenter**: When clicked, applies the current location and angle of the headset to the offsets such that the user is brought to a centered position. Also applies the current headset height to the default seated height (not visible in offsets). This action will also be activated automatically when a seated application sends a reset center command. *Note: This button is only visible when running seated applications.*
@@ -313,8 +313,8 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 
 - **Fix Floor** Allows you to fix the height of your floor. Just place one controller on your floor and press the button.
 - **Recenter Playspace** Besides fixing the floor height, also recenters the place space around the controller on the floor.
-- **Undo Fix** Removes last "fix" **(Temporarily disabled pending integration into new motion system.)**
 - **Apply Space Settings Offsets as Center** Takes current values from Offsets page and re-caliberates center/rotation. **Caution** The reset function will then refer to this location as the new zero location, overriding the old zero location.
+- **Revert All Changes from This Session** Reverts the chaperone config back to the state it was in when launching vr. (This applies the Autosaved Profile from the Chaperone Tab).
   
 ## - Audio Page
 
@@ -347,7 +347,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 
 <img src="docs/screenshots/UtilitiesPage.png" width="600" alt="Utilities Page">
 
-- **Keyboard Utilities:** Some applications (mostly 2D-monitor applications with tackled-on/modded-in VR support) do not support the VR keyboard but require an actual physical keyboard for text input. This utilities allow to send emulated key strokes from VR keyboard input to such application to overcome this limitation. Does not work in desktop mode. The "Keyboard Input" button works as described [here](docs/specs/Keyboard_Manager-Parser_Spec.md).
+- **Keyboard Utilities:** Some applications (mostly 2D-monitor applications with tackled-on/modded-in VR support) do not support the VR keyboard but require an actual physical keyboard for text input. This utilities allow to send emulated key strokes from VR keyboard input to such application to overcome this limitation. Does not work in desktop mode. Adding vrcDebug=true to [utilitiesSettings] in the OpenVRAdvancedSettings.ini will display some buttons for VRChat debug overlay keybinds. The "Keyboard Input" button works as described [here](docs/specs/Keyboard_Manager-Parser_Spec.md).
 
 - **Alarm Clock:** Just a simple alarm clock so you don't miss important appointments. VR can sure mess up perception of time. Does not work in desktop mode.
 
@@ -388,6 +388,9 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Allow External App Chaperone Edits:** Incorporates changes to the chaperone and universe center made by other applications. These changes could come from anywhere, including apps with unpredictable interactions with Advanced Settings. Therefore, this option opens the potential for chaperone misalignment or corruption. However it also allows other chaperone tweaking tools to function in tandem with Advanced Settings. **This option should only be checked if required for compatibility with other apps.** *Note: Changes will only take effect when offsets and rotation are all zero.*
 - **Old-Style Motion:** Uses the old system of writing the chaperone universe center and bounds to disk every frame. Use this option only if you experience issues with playspace motion such as snapping back to reset position after releasing a space-drag. This old mode is smooth on most systems but is in theory less performant than the normal method.
 - **Universe-Centered Rotation:** Causes Rotation to be applied to Universe Center Rather than HMD (Disables offsets automatically compensating to pivot at the HMD).
+- **Enable Motion Features When in Seated Mode:** Uncheck this if Advanced Settings causes strange positioning in a seated application. (Different apps handle seated mode in different ways, some are less compatible with Advanced Settings). Note: if unchecked, all Space Offsets and Motion tab features will be disabled.
+- **Disable Automatic Crash Recovery of Chaperone Config:** This prevents applying of the last good autosaved chaperone profile when starting up after not shutting down properly.
+- **Disable App Vsync:** Allows setting a custom base update rate for Advanced Settings. (Might be useful on HMDs with very high or very low refresh rates).
 
 # How to Compile
 

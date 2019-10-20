@@ -24,15 +24,16 @@ void AudioTabController::initStage1()
     m_recordingDevices = audioManager->getRecordingDevices();
     findPlaybackDeviceIndex( audioManager->getPlaybackDevId(), false );
     char deviceId[1024];
-    vr::VRSettings()->GetString( vr::k_pch_audio_Section,
-                                 vr::k_pch_audio_OnPlaybackMirrorDevice_String,
-                                 deviceId,
-                                 1024,
-                                 &vrSettingsError );
+    vr::VRSettings()->GetString(
+        vr::k_pch_audio_Section,
+        k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND,
+        deviceId,
+        1024,
+        &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
         LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_audio_OnPlaybackMirrorDevice_String
+                       << k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND
                        << "\" setting: "
                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                               vrSettingsError );
@@ -170,17 +171,18 @@ void AudioTabController::eventLoopTick()
         char mirrorDeviceId[1024];
         vr::VRSettings()->GetString(
             vr::k_pch_audio_Section,
-            vr::k_pch_audio_OnPlaybackMirrorDevice_String,
+            k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND,
             mirrorDeviceId,
             1024,
             &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_audio_OnPlaybackMirrorDevice_String
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
+            LOG( WARNING )
+                << "Could not read \""
+                << k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND
+                << "\" setting: "
+                << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                       vrSettingsError );
         }
         if ( lastMirrorDevId.compare( mirrorDeviceId ) != 0 )
         {
@@ -522,13 +524,13 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
             vr::EVRSettingsError vrSettingsError;
             vr::VRSettings()->RemoveKeyInSection(
                 vr::k_pch_audio_Section,
-                vr::k_pch_audio_OnPlaybackMirrorDevice_String,
+                k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND,
                 &vrSettingsError );
             if ( vrSettingsError != vr::VRSettingsError_None )
             {
                 LOG( WARNING )
                     << "Could not remove \""
-                    << vr::k_pch_audio_OnPlaybackMirrorDevice_String
+                    << k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND
                     << "\" setting: "
                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                            vrSettingsError );
@@ -547,14 +549,14 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
             vr::EVRSettingsError vrSettingsError;
             vr::VRSettings()->SetString(
                 vr::k_pch_audio_Section,
-                vr::k_pch_audio_OnPlaybackMirrorDevice_String,
+                k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND,
                 m_playbackDevices[static_cast<size_t>( index )].first.c_str(),
                 &vrSettingsError );
             if ( vrSettingsError != vr::VRSettingsError_None )
             {
                 LOG( WARNING )
                     << "Could not write \""
-                    << vr::k_pch_audio_OnPlaybackMirrorDevice_String
+                    << k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND
                     << "\" setting: "
                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                            vrSettingsError );
@@ -1101,15 +1103,16 @@ void AudioTabController::setDefaultMirror( int index, bool notify )
         vr::EVRSettingsError vrSettingsError;
         vr::VRSettings()->RemoveKeyInSection(
             vr::k_pch_audio_Section,
-            vr::k_pch_audio_OnPlaybackMirrorDevice_String,
+            k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND,
             &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
-            LOG( WARNING ) << "Could not remove \""
-                           << vr::k_pch_audio_OnPlaybackMirrorDevice_String
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
+            LOG( WARNING )
+                << "Could not remove \""
+                << k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND
+                << "\" setting: "
+                << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                       vrSettingsError );
         }
         else
         {
@@ -1122,16 +1125,17 @@ void AudioTabController::setDefaultMirror( int index, bool notify )
         vr::EVRSettingsError vrSettingsError;
         vr::VRSettings()->SetString(
             vr::k_pch_audio_Section,
-            vr::k_pch_audio_OnPlaybackMirrorDevice_String,
+            k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND,
             m_playbackDevices[static_cast<size_t>( index )].first.c_str(),
             &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
-            LOG( WARNING ) << "Could not write \""
-                           << vr::k_pch_audio_OnPlaybackMirrorDevice_String
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
+            LOG( WARNING )
+                << "Could not write \""
+                << k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND
+                << "\" setting: "
+                << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                       vrSettingsError );
         }
         else
         {

@@ -126,6 +126,11 @@ MyStackViewPage {
                             && !chaperoneNewProfileIncludeForceBounds.checked
                             && !chaperoneNewProfileIncludeProximityWarnings.checked) {
                     chaperoneMessageDialog.showMessage("Create New Profile", "ERROR: Nothing included.")
+                } else if ( Math.abs(MoveCenterTabController.offsetX) > 0.00000000001
+                           || Math.abs(MoveCenterTabController.offsetY) > 0.00000000001
+                           || Math.abs(MoveCenterTabController.offsetZ) > 0.00000000001
+                           || MoveCenterTabController.rotation !== 0) {
+                    chaperoneMessageDialog.showMessage("Create New Profile", "ERROR: Offsets not reset.")
                 } else {
                     ChaperoneTabController.addChaperoneProfile(chaperoneNewProfileName.text,
                                                                chaperoneNewProfileIncludeGeometry.checked,
@@ -380,7 +385,7 @@ MyStackViewPage {
             MySlider {
                 id: chaperoneHeightSlider
                 from: 0.01
-                to: 15.0
+                to: 5.0
                 stepSize: 0.01
                 value: 2.0
                 Layout.fillWidth: true

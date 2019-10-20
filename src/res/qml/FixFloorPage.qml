@@ -25,6 +25,17 @@ MyStackViewPage {
             Layout.fillWidth: true
         }
 
+        MyText {
+            text: "(Disabled in 'Seated' Universe Type)"
+            id: seatedWarningText
+            visible: false
+            wrapMode: Text.WordWrap
+            font.pointSize: 28
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            Layout.fillWidth: true
+        }
+
         Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
@@ -48,7 +59,7 @@ MyStackViewPage {
             id: fixButton
             Layout.fillWidth: true
             text: "Fix Floor"
-            Layout.preferredHeight: 100
+            Layout.preferredHeight: 80
             onClicked: {
                 FixFloorTabController.fixFloorClicked()
             }
@@ -58,7 +69,7 @@ MyStackViewPage {
             id: recenterButton
             Layout.fillWidth: true
             text: "Recenter Space"
-            Layout.preferredHeight: 100
+            Layout.preferredHeight: 80
             onClicked: {
                 FixFloorTabController.recenterClicked()
             }
@@ -80,9 +91,23 @@ MyStackViewPage {
             id: zeroSpaceButton
             Layout.fillWidth: true
             text: "Apply Space Settings Offsets as Center"
-            Layout.preferredHeight: 100
+            Layout.preferredHeight: 80
             onClicked: {
                 MoveCenterTabController.zeroOffsets()
+            }
+        }
+
+        Item {
+            Layout.preferredHeight: 32
+        }
+
+        MyPushButton {
+            id: revertButton
+            Layout.fillWidth: true
+            text: "Revert All Changes from This Session"
+            Layout.preferredHeight: 80
+            onClicked: {
+                ChaperoneTabController.applyAutosavedProfile()
             }
         }
 
@@ -94,6 +119,15 @@ MyStackViewPage {
             statusMessageText.text = ""
             //undoFixButton.enabled = FixFloorTabController.canUndo
             fixButton.enabled = true
+
+            if (MoveCenterTabController.trackingUniverse === 0) {
+                fixButton.enabled = false
+                recenterButton.enabled = false
+                zeroSpaceButton.enabled = false
+                revertButton.enabled = false
+                undoFixButton.enabled = false
+                seatedWarningText.visible = true
+            }
         }
 
         Timer {
@@ -126,6 +160,35 @@ MyStackViewPage {
                 //undoFixButton.enabled = FixFloorTabController.canUndo
                 // revert below to this -^
                 undoFixButton.enabled = false
+            }
+        }
+
+        Connections {
+            target: MoveCenterTabController
+            onTrackingUniverseChanged: {
+                if (MoveCenterTabController.trackingUniverse === 0) {
+                    fixButton.enabled = false
+                    recenterButton.enabled = false
+                    zeroSpaceButton.enabled = false
+                    revertButton.enabled = false
+                    undoFixButton.enabled = false
+                    seatedWarningText.visible = true
+                } else if (MoveCenterTabController.trackingUniverse === 1) {
+                    fixButton.enabled = true
+                    recenterButton.enabled = true
+                    zeroSpaceButton.enabled = true
+                    revertButton.enabled = true
+                    // undoFixButton.enabled = true
+                    // TODO Fix Undo Feature -^
+                    seatedWarningText.visible = false
+                } else {
+                    fixButton.enabled = false
+                    recenterButton.enabled = false
+                    zeroSpaceButton.enabled = false
+                    revertButton.enabled = false
+                    undoFixButton.enabled = false
+                    seatedWarningText.visible = false
+                }
             }
         }
 

@@ -300,7 +300,8 @@ OverlayController::OverlayController( bool desktopMode,
     }
     appSettings()->endGroup();
 
-    // Keep the settings for vsyncDisabled here in main overlaycontroller
+    // Keep the settings for vsyncDisabled and crash recovery here in main
+    // overlaycontroller
     appSettings()->beginGroup( "applicationSettings" );
     auto value = appSettings()->value( "vsyncDisabled", m_vsyncDisabled );
     if ( value.isValid() && !value.isNull() )
@@ -323,6 +324,28 @@ OverlayController::OverlayController( bool desktopMode,
         {
             m_customTickRateMs = value.toInt();
         }
+    }
+    value = appSettings()->value( "previousShutdownSafe",
+                                  m_previousShutdownSafe );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_previousShutdownSafe = value.toBool();
+    }
+    value = appSettings()->value( "crashRecoveryDisabled",
+                                  m_crashRecoveryDisabled );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_crashRecoveryDisabled = value.toBool();
+    }
+    value = appSettings()->value( "enableDebug", m_enableDebug );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_enableDebug = value.toBool();
+    }
+    value = appSettings()->value( "debugState", m_debugState );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_debugState = value.toInt();
     }
     appSettings()->endGroup();
 }
@@ -365,6 +388,9 @@ void OverlayController::Shutdown()
     m_pFbo.reset();
     m_pOpenGLContext.reset();
     m_pOffscreenSurface.reset();
+
+    // save to settings that shutdown was safe
+    setPreviousShutdownSafe( true );
 }
 
 void OverlayController::SetWidget( QQuickItem* quickItem,
@@ -465,7 +491,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
              this,
              SLOT( OnTimeoutPumpEvents() ) );
 
-    // Every 1ms we check if the current frame has advanced (for vysnc)
+    // Every 1ms we check if the current frame has advanced (for vsync)
     m_pPumpEventsTimer->setInterval( 1 );
 
     m_pPumpEventsTimer->start();
@@ -716,6 +742,28 @@ void OverlayController::processInputBindings()
     processKeyboardBindings();
 }
 
+bool OverlayController::crashRecoveryDisabled() const
+{
+    return m_crashRecoveryDisabled;
+}
+
+void OverlayController::setCrashRecoveryDisabled( bool value, bool notify )
+{
+    if ( m_crashRecoveryDisabled == value )
+    {
+        return;
+    }
+    m_crashRecoveryDisabled = value;
+    appSettings()->beginGroup( "applicationSettings" );
+    appSettings()->setValue( "crashRecoveryDisabled", m_crashRecoveryDisabled );
+    appSettings()->endGroup();
+    appSettings()->sync();
+    if ( notify )
+    {
+        emit crashRecoveryDisabledChanged( m_crashRecoveryDisabled );
+    }
+}
+
 bool OverlayController::vsyncDisabled() const
 {
     return m_vsyncDisabled;
@@ -736,6 +784,63 @@ void OverlayController::setVsyncDisabled( bool value, bool notify )
     {
         emit vsyncDisabledChanged( m_vsyncDisabled );
     }
+}
+
+bool OverlayController::enableDebug() const
+{
+    return m_enableDebug;
+}
+
+void OverlayController::setEnableDebug( bool value, bool notify )
+{
+    if ( m_enableDebug == value )
+    {
+        return;
+    }
+    m_enableDebug = value;
+    appSettings()->beginGroup( "applicationSettings" );
+    appSettings()->setValue( "enableDebug", m_enableDebug );
+    appSettings()->endGroup();
+    appSettings()->sync();
+    if ( notify )
+    {
+        emit enableDebugChanged( m_enableDebug );
+    }
+}
+
+int OverlayController::debugState() const
+{
+    return m_debugState;
+}
+
+void OverlayController::setDebugState( int value, bool notify )
+{
+    if ( m_debugState == value )
+    {
+        return;
+    }
+    m_debugState = value;
+    appSettings()->beginGroup( "applicationSettings" );
+    appSettings()->setValue( "debugState", m_debugState );
+    appSettings()->endGroup();
+    appSettings()->sync();
+    if ( notify )
+    {
+        emit debugStateChanged( m_debugState );
+    }
+}
+
+void OverlayController::setPreviousShutdownSafe( bool value )
+{
+    if ( m_previousShutdownSafe == value )
+    {
+        return;
+    }
+    m_previousShutdownSafe = value;
+    appSettings()->beginGroup( "applicationSettings" );
+    appSettings()->setValue( "previousShutdownSafe", m_previousShutdownSafe );
+    appSettings()->endGroup();
+    appSettings()->sync();
 }
 
 int OverlayController::customTickRateMs() const
@@ -978,6 +1083,31 @@ void OverlayController::mainEventLoop()
         // events during the same call of OnTimeoutPumpEvents() INFO Removed
         // logging on play space mover for possible crashing issues.
         case vr::VREvent_ChaperoneUniverseHasChanged:
+        {
+            uint64_t previousUniverseId
+                = vrEvent.data.chaperone.m_nPreviousUniverse;
+            uint64_t currentUniverseId
+                = vrEvent.data.chaperone.m_nCurrentUniverse;
+            LOG( INFO ) << "(VREvent) ChaperoneUniverseHasChanged... Previous:"
+                        << previousUniverseId
+                        << " Current:" << currentUniverseId;
+
+            if ( !chaperoneDataAlreadyUpdated )
+            {
+                // LOG(INFO) << "Re-loading chaperone data ...";
+                m_chaperoneUtils.loadChaperoneData();
+                // LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() <<
+                // " chaperone quads."; if
+                // (m_chaperoneUtils.isChaperoneWellFormed()) { LOG(INFO) <<
+                // "Chaperone data seems to be well-formed.";
+                //} else {
+                // LOG(INFO) << "Chaperone data is NOT well-formed.";
+                //}
+                chaperoneDataAlreadyUpdated = true;
+            }
+        }
+        break;
+
         case vr::VREvent_ChaperoneDataHasChanged:
         {
             if ( !chaperoneDataAlreadyUpdated )

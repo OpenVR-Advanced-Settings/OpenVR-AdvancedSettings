@@ -81,12 +81,15 @@ enum class Token
 
     // Misc tokens
     TOKEN_NEW_SEQUENCE,
+    TOKEN_NO_KEYUP_NEXT,
 
     // Modifiers
     MODIFIER_CTRL,
     MODIFIER_ALT,
     MODIFIER_SHIFT,
+    MODIFIER_RSHIFT,
     MODIFIER_SUPER,
+    MODIFIER_TILDE,
 };
 
 std::vector<Token>

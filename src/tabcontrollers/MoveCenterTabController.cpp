@@ -38,7 +38,6 @@ namespace advsettings
 {
 void MoveCenterTabController::initStage1()
 {
-    setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "playspaceSettings" );
     auto value = settings->value( "adjustChaperone", m_adjustChaperone );
@@ -154,7 +153,13 @@ void MoveCenterTabController::initStage1()
     {
         m_universeCenteredRotation = value.toBool();
     }
+    value = settings->value( "enableSeatedMotion", m_enableSeatedMotion );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_enableSeatedMotion = value.toBool();
+    }
     settings->endGroup();
+    reloadOffsetProfiles();
     m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
     m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
 }
@@ -164,6 +169,126 @@ void MoveCenterTabController::initStage2( OverlayController* var_parent )
     this->parent = var_parent;
     zeroOffsets();
     outputLogSettings();
+}
+
+void MoveCenterTabController::reloadOffsetProfiles()
+{
+    m_offsetProfiles.clear();
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    auto profileCount = settings->beginReadArray( "offsetProfiles" );
+    for ( int i = 0; i < profileCount; i++ )
+    {
+        settings->setArrayIndex( i );
+        m_offsetProfiles.emplace_back();
+        auto& entry = m_offsetProfiles[static_cast<size_t>( i )];
+        entry.profileName
+            = settings->value( "profileName" ).toString().toStdString();
+        entry.offsetX = settings->value( "offsetX", 0.0f ).toFloat();
+        entry.offsetY = settings->value( "offsetY", 0.0f ).toFloat();
+        entry.offsetZ = settings->value( "offsetZ", 0.0f ).toFloat();
+        entry.rotation = settings->value( "rotation", 0 ).toInt();
+    }
+    settings->endArray();
+    settings->endGroup();
+}
+
+void MoveCenterTabController::saveOffsetProfiles()
+{
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->beginWriteArray( "offsetProfiles" );
+    unsigned i = 0;
+    for ( auto& p : m_offsetProfiles )
+    {
+        settings->setArrayIndex( static_cast<int>( i ) );
+        settings->setValue( "profileName",
+                            QString::fromStdString( p.profileName ) );
+        settings->setValue( "offsetX", p.offsetX );
+        settings->setValue( "offsetY", p.offsetY );
+        settings->setValue( "offsetZ", p.offsetZ );
+        settings->setValue( "rotation", p.rotation );
+        i++;
+    }
+    settings->endArray();
+    settings->endGroup();
+}
+
+Q_INVOKABLE unsigned MoveCenterTabController::getOffsetProfileCount()
+{
+    return static_cast<unsigned int>( m_offsetProfiles.size() );
+}
+
+Q_INVOKABLE QString
+    MoveCenterTabController::getOffsetProfileName( unsigned index )
+{
+    if ( index >= m_offsetProfiles.size() )
+    {
+        return QString();
+    }
+    else
+    {
+        return QString::fromStdString( m_offsetProfiles[index].profileName );
+    }
+}
+
+void MoveCenterTabController::addOffsetProfile( QString name )
+{
+    OffsetProfile* profile = nullptr;
+    for ( auto& p : m_offsetProfiles )
+    {
+        if ( p.profileName.compare( name.toStdString() ) == 0 )
+        {
+            profile = &p;
+            break;
+        }
+    }
+    if ( !profile )
+    {
+        auto i = m_offsetProfiles.size();
+        m_offsetProfiles.emplace_back();
+        profile = &m_offsetProfiles[i];
+    }
+    profile->profileName = name.toStdString();
+    profile->offsetX = m_offsetX;
+    profile->offsetY = m_offsetY;
+    profile->offsetZ = m_offsetZ;
+    profile->rotation = m_rotation;
+    saveOffsetProfiles();
+    OverlayController::appSettings()->sync();
+    emit offsetProfilesUpdated();
+}
+
+void MoveCenterTabController::applyOffsetProfile( unsigned index )
+{
+    if ( index < m_offsetProfiles.size() )
+    {
+        auto& profile = m_offsetProfiles[index];
+        m_rotation = profile.rotation;
+        m_offsetX = profile.offsetX;
+        m_offsetY = profile.offsetY;
+        m_offsetZ = profile.offsetZ;
+        emit rotationChanged( m_rotation );
+        emit offsetXChanged( m_offsetX );
+        emit offsetYChanged( m_offsetY );
+        emit offsetZChanged( m_offsetZ );
+        LOG( INFO ) << "Applying Offset Profile:" << profile.profileName
+                    << " X:" << m_offsetX << " Y:" << m_offsetY
+                    << " Z:" << m_offsetZ << " Rotation:"
+                    << ( static_cast<float>( m_rotation ) / 100 );
+    }
+}
+
+void MoveCenterTabController::deleteOffsetProfile( unsigned index )
+{
+    if ( index < m_offsetProfiles.size() )
+    {
+        auto pos = m_offsetProfiles.begin() + index;
+        m_offsetProfiles.erase( pos );
+        saveOffsetProfiles();
+        OverlayController::appSettings()->sync();
+        emit offsetProfilesUpdated();
+    }
 }
 
 void MoveCenterTabController::outputLogSettings()
@@ -222,6 +347,10 @@ void MoveCenterTabController::outputLogSettings()
     {
         LOG( INFO ) << "LOADED SETTINGS: Universe-Centered Rotation Enabled";
     }
+    if ( m_enableSeatedMotion )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Seated Motion Enabled";
+    }
     if ( m_dragBounds )
     {
         LOG( INFO ) << "LOADED SETTINGS: Space Drag Force Bounds Enabled";
@@ -245,6 +374,9 @@ void MoveCenterTabController::outputLogPoses()
     vr::HmdMatrix34_t hmdStanding
         = devicePosesStanding[0].mDeviceToAbsoluteTracking;
 
+    LOG( INFO ) << "";
+    LOG( INFO ) << " ____Begin Matrices Log Ouput__________";
+    LOG( INFO ) << "|";
     LOG( INFO ) << "HMD POSE (standing universe)";
     outputLogHmdMatrix( hmdStanding );
 
@@ -306,6 +438,9 @@ void MoveCenterTabController::outputLogPoses()
 
     LOG( INFO ) << "m_seatedCenterForReset";
     outputLogHmdMatrix( m_seatedCenterForReset );
+
+    LOG( INFO ) << "|____End Matrices Log Ouput____________";
+    LOG( INFO ) << "";
 }
 
 void MoveCenterTabController::outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix )
@@ -1046,6 +1181,32 @@ void MoveCenterTabController::setUniverseCenteredRotation( bool value,
                 << m_universeCenteredRotation;
 }
 
+bool MoveCenterTabController::isInitComplete() const
+{
+    return m_initComplete;
+}
+
+bool MoveCenterTabController::enableSeatedMotion() const
+{
+    return m_enableSeatedMotion;
+}
+
+void MoveCenterTabController::setEnableSeatedMotion( bool value, bool notify )
+{
+    m_enableSeatedMotion = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "enableSeatedMotion", m_enableSeatedMotion );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit enableSeatedMotionChanged( m_enableSeatedMotion );
+    }
+    LOG( INFO ) << "CHANGED SETTINGS: Enable Seated Motion Set: "
+                << m_enableSeatedMotion;
+}
+
 void MoveCenterTabController::modOffsetX( float value, bool notify )
 {
     if ( !m_lockXToggle )
@@ -1090,11 +1251,26 @@ void MoveCenterTabController::shutdown()
 
 void MoveCenterTabController::incomingSeatedReset()
 {
-    updateSeatedResetData();
+    if ( m_enableSeatedMotion )
+    {
+        updateSeatedResetData();
+    }
 }
 
 void MoveCenterTabController::reset()
 {
+    if ( !m_chaperoneBasisAcquired )
+    {
+        LOG( WARNING ) << "WARNING: Attempted reset offsets before chaperone "
+                          "basis is acquired!";
+        return;
+    }
+    if ( m_pendingSeatedRecenter )
+    {
+        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+            &m_seatedCenterForReset );
+        m_pendingSeatedRecenter = false;
+    }
     vr::VRChaperoneSetup()->HideWorkingSetPreview();
     m_heightToggle = false;
     emit heightToggleChanged( m_heightToggle );
@@ -1115,6 +1291,83 @@ void MoveCenterTabController::reset()
 
 void MoveCenterTabController::zeroOffsets()
 {
+    // first we'll check if we're outside the max commit distance
+
+    vr::HmdMatrix34_t currentCenter;
+    vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+        &currentCenter );
+    double currentCenterYaw = static_cast<double>(
+        std::atan2( currentCenter.m[0][2], currentCenter.m[2][2] ) );
+    double currentCenterXyz[3]
+        = { static_cast<double>( currentCenter.m[0][3] ),
+            static_cast<double>( currentCenter.m[1][3] ),
+            static_cast<double>( currentCenter.m[2][3] ) };
+    // unrotate to get raw values of xyz
+    rotateCoordinates( currentCenterXyz,
+                       currentCenterYaw
+                           - ( m_rotation * k_centidegreesToRadians ) );
+    if ( abs( currentCenterXyz[0] ) > k_maxOpenvrCommitOffset )
+    {
+        LOG( INFO ) << "Attempted Zero Offsets out of commit bounds ( X: "
+                    << currentCenterXyz[0] << " )";
+        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        outputLogHmdMatrix( currentCenter );
+        // if reset happens before init is complete we set the universe center
+        // to the raw tracking zero point
+        reset();
+        if ( !m_chaperoneBasisAcquired )
+        {
+            LOG( WARNING )
+                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS ACQUIRED<[!]><[!]> "
+                   "Setting universe center to raw tracking zero point.";
+        }
+        else
+        {
+            LOG( INFO ) << "-Resetting offsets-";
+        }
+    }
+    else if ( abs( currentCenterXyz[1] ) > k_maxOpenvrCommitOffset )
+    {
+        LOG( INFO ) << "Attempted Zero Offsets out of commit bounds ( Y: "
+                    << currentCenterXyz[1] << " )";
+        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        outputLogHmdMatrix( currentCenter );
+        // if reset happens before init is complete we set the universe center
+        // to the raw tracking zero point
+        reset();
+        if ( !m_chaperoneBasisAcquired )
+        {
+            LOG( WARNING )
+                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS ACQUIRED<[!]><[!]> "
+                   "Setting universe center to raw tracking zero point.";
+        }
+        else
+        {
+            LOG( INFO ) << "-Resetting offsets-";
+        }
+    }
+    else if ( abs( currentCenterXyz[2] ) > k_maxOpenvrCommitOffset )
+    {
+        LOG( INFO ) << "Attempted Zero Offsets out of commit bounds ( Z: "
+                    << currentCenterXyz[2] << " )";
+        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        outputLogHmdMatrix( currentCenter );
+        // if reset happens before init is complete we set the universe
+        // center to the raw tracking zero point
+        reset();
+        if ( !m_chaperoneBasisAcquired )
+        {
+            LOG( WARNING )
+                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS ACQUIRED<[!]><[!]> "
+                   "Setting universe center to raw tracking zero point.";
+        }
+        else
+        {
+            LOG( INFO ) << "-Resetting offsets-";
+        }
+    }
+
+    // finished checking if out of bounds, proceed with normal zeroing offsets
     if ( vr::VRChaperone()->GetCalibrationState()
          == vr::ChaperoneCalibrationState_OK )
     {
@@ -1132,6 +1385,38 @@ void MoveCenterTabController::zeroOffsets()
         emit rotationChanged( m_rotation );
         updateChaperoneResetData();
         m_pendingZeroOffsets = false;
+        if ( !m_chaperoneBasisAcquired )
+        {
+            m_chaperoneBasisAcquired = true;
+            if ( !m_initComplete )
+            {
+                setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
+                if ( parent->isPreviousShutdownSafe() )
+                {
+                    // all init complete, safe to autosave chaperone profile
+                    parent->m_chaperoneTabController.createNewAutosaveProfile();
+                    m_initComplete = true;
+                }
+                else
+                {
+                    // shutdown was unsafe last session!
+                    LOG( WARNING )
+                        << "DETECTED UNSAFE SHUTDOWN FROM LAST SESSION";
+                    m_initComplete = true;
+                    if ( !parent->crashRecoveryDisabled() )
+                    {
+                        parent->m_chaperoneTabController
+                            .applyAutosavedProfile();
+                        LOG( INFO )
+                            << "Applying last good chaperone profile autosave";
+                    }
+                }
+                // Now mark previous shutdown as unsafe in case we crash some
+                // time during this session. Previous shutdown will be marked as
+                // being safe once more just before our app shuts down properly.
+                parent->setPreviousShutdownSafe( false );
+            }
+        }
         if ( m_roomSetupModeDetected )
         {
             LOG( INFO ) << "room setup EXIT detected";
@@ -1148,6 +1433,11 @@ void MoveCenterTabController::zeroOffsets()
         }
         m_pendingZeroOffsets = true;
     }
+}
+
+void MoveCenterTabController::sendSeatedRecenter()
+{
+    vr::VRSystem()->ResetSeatedZeroPose();
 }
 
 double MoveCenterTabController::getHmdYawTotal()
@@ -1174,54 +1464,28 @@ void MoveCenterTabController::clampVelocity( double* velocity )
 
 void MoveCenterTabController::updateSeatedResetData()
 {
-    reset();
-    vr::VRChaperoneSetup()->RevertWorkingCopy();
-    vr::TrackedDevicePose_t devicePosesStanding[vr::k_unMaxTrackedDeviceCount];
-    vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
-        vr::TrackingUniverseStanding,
-        0.0f,
-        devicePosesStanding,
-        vr::k_unMaxTrackedDeviceCount );
-    vr::HmdMatrix34_t hmdMatrix
-        = devicePosesStanding[0].mDeviceToAbsoluteTracking;
-
-    vr::HmdQuaternion_t hmdQuat = quaternion::fromHmdMatrix34( hmdMatrix );
-    double hmdYaw = quaternion::getYaw( hmdQuat );
-    int hmdYawCentideg = static_cast<int>( hmdYaw * k_radiansToCentidegrees );
-    // Keep angle within -18000 ~ 18000 centidegrees
-    if ( hmdYawCentideg > 18000 )
-    {
-        hmdYawCentideg -= 36000;
-    }
-    else if ( hmdYawCentideg < -18000 )
-    {
-        hmdYawCentideg += 36000;
-    }
-
-    m_seatedCenterForReset = m_universeCenterForReset;
-    m_seatedHeight = hmdMatrix.m[1][3];
-    m_seatedCenterForReset.m[1][3] += m_seatedHeight;
-
-    m_offsetX = hmdMatrix.m[0][3];
+    m_heightToggle = false;
+    emit heightToggleChanged( m_heightToggle );
+    m_oldOffsetX = 0.0f;
+    m_oldOffsetY = 0.0f;
+    m_oldOffsetZ = 0.0f;
+    m_oldRotation = 0;
+    m_offsetX = 0.0f;
     m_offsetY = 0.0f;
-    m_offsetZ = hmdMatrix.m[2][3];
-    m_rotation = hmdYawCentideg;
+    m_offsetZ = 0.0f;
+    m_rotation = 0;
     emit offsetXChanged( m_offsetX );
     emit offsetYChanged( m_offsetY );
     emit offsetZChanged( m_offsetZ );
     emit rotationChanged( m_rotation );
-    unsigned checkQuadCount = 0;
-    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
-                                                           &checkQuadCount );
-    if ( checkQuadCount > 0 )
-    {
-        parent->chaperoneUtils().loadChaperoneData( false );
-    }
+    vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+    // set pending update here, will be processed on next instance of motion or
+    // running the reset() function.
+    m_pendingSeatedRecenter = true;
 }
 
 void MoveCenterTabController::updateChaperoneResetData()
 {
-    vr::VRChaperoneSetup()->HideWorkingSetPreview();
     vr::VRChaperoneSetup()->RevertWorkingCopy();
     unsigned currentQuadCount = 0;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
@@ -1234,20 +1498,23 @@ void MoveCenterTabController::updateChaperoneResetData()
 
     vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
         &m_universeCenterForReset );
+    vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+        &m_seatedCenterForReset );
 
-    // update seated center to standing offset by current hmd Y value.
-    m_seatedCenterForReset = m_universeCenterForReset;
-    vr::TrackedDevicePose_t devicePosesStanding[vr::k_unMaxTrackedDeviceCount];
-    vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
-        vr::TrackingUniverseStanding,
-        0.0f,
-        devicePosesStanding,
-        vr::k_unMaxTrackedDeviceCount );
-    vr::HmdMatrix34_t hmdMatrix
-        = devicePosesStanding[0].mDeviceToAbsoluteTracking;
-    m_seatedHeight = hmdMatrix.m[1][3];
-    m_seatedCenterForReset.m[1][3] += m_seatedHeight;
+    updateCollisionBoundsForOffset();
+    parent->m_chaperoneTabController.updateHeight( getBoundsBasisMaxY() );
 
+    unsigned checkQuadCount = 0;
+    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
+                                                           &checkQuadCount );
+    if ( checkQuadCount > 0 )
+    {
+        parent->chaperoneUtils().loadChaperoneData( false );
+    }
+}
+
+void MoveCenterTabController::updateCollisionBoundsForOffset()
+{
     if ( m_collisionBoundsCountForReset > 0 )
     {
         float universeCenterForResetYaw
@@ -1278,14 +1545,6 @@ void MoveCenterTabController::updateChaperoneResetData()
             }
         }
     }
-
-    unsigned checkQuadCount = 0;
-    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
-                                                           &checkQuadCount );
-    if ( checkQuadCount > 0 )
-    {
-        parent->chaperoneUtils().loadChaperoneData( false );
-    }
 }
 
 void MoveCenterTabController::applyChaperoneResetData()
@@ -1311,6 +1570,50 @@ void MoveCenterTabController::applyChaperoneResetData()
     {
         parent->chaperoneUtils().loadChaperoneData( false );
     }
+}
+
+void MoveCenterTabController::setBoundsBasisHeight( float newHeight )
+{
+    if ( m_collisionBoundsCountForReset > 0 )
+    {
+        for ( unsigned b = 0; b < m_collisionBoundsCountForReset; b++ )
+        {
+            m_collisionBoundsForReset[b].vCorners[0].v[1] = 0.0;
+            m_collisionBoundsForReset[b].vCorners[1].v[1] = newHeight;
+            m_collisionBoundsForReset[b].vCorners[2].v[1] = newHeight;
+            m_collisionBoundsForReset[b].vCorners[3].v[1] = 0.0;
+        }
+
+        updateCollisionBoundsForOffset();
+        updateSpace( true );
+    }
+}
+
+float MoveCenterTabController::getBoundsBasisMaxY()
+{
+    float result = FP_NAN;
+    if ( m_collisionBoundsCountForReset > 0 )
+    {
+        for ( unsigned b = 0; b < m_collisionBoundsCountForReset; b++ )
+        {
+            int ci;
+            if ( m_collisionBoundsForReset[b].vCorners[1].v[1]
+                 >= m_collisionBoundsForReset[b].vCorners[2].v[1] )
+            {
+                ci = 1;
+            }
+            else
+            {
+                ci = 2;
+            }
+            if ( std::isnan( result )
+                 || result < m_collisionBoundsForReset[b].vCorners[ci].v[1] )
+            {
+                result = m_collisionBoundsForReset[b].vCorners[ci].v[1];
+            }
+        }
+    }
+    return result;
 }
 
 // START of drag bindings:
@@ -2062,14 +2365,9 @@ void MoveCenterTabController::saveUncommittedChaperone()
 {
     if ( !m_chaperoneCommitted )
     {
-        // double commit... once to ensure before we HideWorkingSetPreview the
-        // working set is synced. Commit a second time as a workaround for WMR
-        // and Rift not getting the commit during active ShowWorkingSetPreview
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
         vr::VRChaperoneSetup()->HideWorkingSetPreview();
-        vr::VRChaperoneSetup()->CommitWorkingCopy(
-            vr::EChaperoneConfigFile_Live );
         m_chaperoneCommitted = true;
         unsigned checkQuadCount = 0;
         vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
@@ -2155,7 +2453,23 @@ void MoveCenterTabController::updateHandDrag(
         return;
     }
 
-    vr::TrackedDevicePose_t* movePose = devicePoses + moveHandId;
+    vr::TrackedDevicePose_t* movePose;
+    if ( m_seatedModeDetected )
+    {
+        vr::TrackedDevicePose_t
+            seatedDevicePoses[vr::k_unMaxTrackedDeviceCount];
+        vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+            vr::TrackingUniverseSeated,
+            0.0f,
+            seatedDevicePoses,
+            vr::k_unMaxTrackedDeviceCount );
+        movePose = seatedDevicePoses + moveHandId;
+    }
+    else
+    {
+        movePose = devicePoses + moveHandId;
+    }
+
     if ( !movePose->bPoseIsValid || !movePose->bDeviceIsConnected
          || movePose->eTrackingResult != vr::TrackingResult_Running_OK )
     {
@@ -2413,29 +2727,17 @@ void MoveCenterTabController::updateGravity()
     m_velocity[2] = 0.0;
 }
 
-void MoveCenterTabController::updateSpace()
+void MoveCenterTabController::updateSpace( bool forceUpdate )
 {
-    // If all offsets and rotation are still the same...
+    // Do nothing if all offsets and rotation are still the same...
     if ( m_offsetX == m_oldOffsetX && m_offsetY == m_oldOffsetY
-         && m_offsetZ == m_oldOffsetZ && m_rotation == m_oldRotation )
+         && m_offsetZ == m_oldOffsetZ && m_rotation == m_oldRotation
+         && !forceUpdate )
     {
-        // ... wait for the comfort mode delay and commit chaperone
-        if ( m_dragComfortFactor >= m_turnComfortFactor )
-        {
-            if ( m_dragComfortFrameSkipCounter
-                 >= ( m_dragComfortFactor * m_dragComfortFactor ) )
-            {
-                saveUncommittedChaperone();
-            }
-        }
-        else if ( m_turnComfortFrameSkipCounter
-                  >= ( m_turnComfortFactor * m_turnComfortFactor ) )
-        {
-            saveUncommittedChaperone();
-        }
         return;
     }
 
+    // reload from disk if we're at zero offsets and allow external edits
     if ( m_allowExternalEdits && m_oldOffsetX == 0.0f && m_oldOffsetY == 0.0f
          && m_oldOffsetZ == 0.0f && m_oldRotation == 0 )
     {
@@ -2443,6 +2745,17 @@ void MoveCenterTabController::updateSpace()
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
         updateChaperoneResetData();
+    }
+
+    // do a late on-demand setting of seated center basis when we need it for
+    // motion. This gives the reload from disk a little more time to complete
+    // before we apply the new seated basis.
+    if ( m_pendingSeatedRecenter )
+    {
+        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+            &m_seatedCenterForReset );
+
+        m_pendingSeatedRecenter = false;
     }
 
     vr::HmdMatrix34_t offsetUniverseCenter;
@@ -2482,12 +2795,101 @@ void MoveCenterTabController::updateSpace()
     offsetUniverseCenter.m[2][3]
         += m_universeCenterForReset.m[2][2] * m_offsetZ;
 
+    // check if we just pushed offsetUniverseCenter out of bounds (40km)
+    // (we reuse offsetUniverseCenterYaw to rotate the chaperone also)
+    double offsetUniverseCenterYaw = static_cast<double>( std::atan2(
+        offsetUniverseCenter.m[0][2], offsetUniverseCenter.m[2][2] ) );
+    double offsetUniverseCenterXyz[3]
+        = { static_cast<double>( offsetUniverseCenter.m[0][3] ),
+            static_cast<double>( offsetUniverseCenter.m[1][3] ),
+            static_cast<double>( offsetUniverseCenter.m[2][3] ) };
+    // unrotate to get raw values of xyz
+    rotateCoordinates( offsetUniverseCenterXyz,
+                       offsetUniverseCenterYaw
+                           - ( m_rotation * k_centidegreesToRadians ) );
+    if ( abs( offsetUniverseCenterXyz[0] ) > k_maxOpenvrWorkingSetOffest
+         || ( abs( offsetUniverseCenterXyz[0] )
+                  > k_maxOvrasUniverseCenteredTurningOffset
+              && m_universeCenteredRotation ) )
+    {
+        LOG( INFO ) << "Raw universe center out of bounds ( X: "
+                    << offsetUniverseCenterXyz[0] << " )";
+        vr::HmdMatrix34_t standingZero;
+        vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+            &standingZero );
+        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        outputLogHmdMatrix( standingZero );
+        reset();
+        LOG( INFO ) << "-Resetting offsets-";
+        return;
+    }
+    if ( abs( offsetUniverseCenterXyz[1] ) > k_maxOpenvrWorkingSetOffest
+         || ( abs( offsetUniverseCenterXyz[1] )
+                  > k_maxOvrasUniverseCenteredTurningOffset
+              && m_universeCenteredRotation ) )
+    {
+        LOG( INFO ) << "Raw universe center out of bounds ( Y: "
+                    << offsetUniverseCenterXyz[1] << " )";
+        vr::HmdMatrix34_t standingZero;
+        vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+            &standingZero );
+        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        outputLogHmdMatrix( standingZero );
+        reset();
+        LOG( INFO ) << "-Resetting offsets-";
+        return;
+    }
+    if ( abs( offsetUniverseCenterXyz[2] ) > k_maxOpenvrWorkingSetOffest
+         || ( abs( offsetUniverseCenterXyz[2] )
+                  > k_maxOvrasUniverseCenteredTurningOffset
+              && m_universeCenteredRotation ) )
+    {
+        LOG( INFO ) << "Raw universe center out of bounds ( Z: "
+                    << offsetUniverseCenterXyz[2] << " )";
+        vr::HmdMatrix34_t standingZero;
+        vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+            &standingZero );
+        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        outputLogHmdMatrix( standingZero );
+        reset();
+        LOG( INFO ) << "-Resetting offsets-";
+        return;
+    }
+
     // keep the seated origin synced with offsets if in seated mode
     if ( m_trackingUniverse == vr::TrackingUniverseSeated )
     {
-        vr::HmdMatrix34_t offsetSeatedCenter = offsetUniverseCenter;
+        vr::HmdMatrix34_t offsetSeatedCenter;
 
-        offsetSeatedCenter.m[1][3] += m_seatedHeight;
+        // set offsetSeatedCenter to the current angle
+        utils::matMul33(
+            offsetSeatedCenter, rotationMatrix, m_seatedCenterForReset );
+        // fill in matrix coordinates for basis universe zero point
+        offsetSeatedCenter.m[0][3] = m_seatedCenterForReset.m[0][3];
+        offsetSeatedCenter.m[1][3] = m_seatedCenterForReset.m[1][3];
+        offsetSeatedCenter.m[2][3] = m_seatedCenterForReset.m[2][3];
+
+        // move offsetSeatedCenter to the current offsets
+        offsetSeatedCenter.m[0][3]
+            += m_seatedCenterForReset.m[0][0] * m_offsetX;
+        offsetSeatedCenter.m[1][3]
+            += m_seatedCenterForReset.m[1][0] * m_offsetX;
+        offsetSeatedCenter.m[2][3]
+            += m_seatedCenterForReset.m[2][0] * m_offsetX;
+
+        offsetSeatedCenter.m[0][3]
+            += m_seatedCenterForReset.m[0][1] * m_offsetY;
+        offsetSeatedCenter.m[1][3]
+            += m_seatedCenterForReset.m[1][1] * m_offsetY;
+        offsetSeatedCenter.m[2][3]
+            += m_seatedCenterForReset.m[2][1] * m_offsetY;
+
+        offsetSeatedCenter.m[0][3]
+            += m_seatedCenterForReset.m[0][2] * m_offsetZ;
+        offsetSeatedCenter.m[1][3]
+            += m_seatedCenterForReset.m[1][2] * m_offsetZ;
+        offsetSeatedCenter.m[2][3]
+            += m_seatedCenterForReset.m[2][2] * m_offsetZ;
 
         vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
             &offsetSeatedCenter );
@@ -2497,9 +2899,6 @@ void MoveCenterTabController::updateSpace()
     {
         // make a copy of our bounds and
         // reorient relative to new universe center
-
-        float offsetUniverseCenterYaw = std::atan2(
-            offsetUniverseCenter.m[0][2], offsetUniverseCenter.m[2][2] );
 
         vr::HmdQuad_t* updatedBounds
             = new vr::HmdQuad_t[m_collisionBoundsCountForReset];
@@ -2539,8 +2938,9 @@ void MoveCenterTabController::updateSpace()
                        - m_universeCenterForReset.m[2][3];
 
                 // rotate by universe center's yaw
-                rotateFloatCoordinates( updatedBounds[quad].vCorners[corner].v,
-                                        offsetUniverseCenterYaw );
+                rotateFloatCoordinates(
+                    updatedBounds[quad].vCorners[corner].v,
+                    static_cast<float>( offsetUniverseCenterYaw ) );
             }
         }
 
@@ -2554,6 +2954,49 @@ void MoveCenterTabController::updateSpace()
 
     if ( m_oldStyleMotion )
     {
+        // check if universe center is outside of OpenVR commit bounds (1km)
+        if ( abs( offsetUniverseCenterXyz[0] ) > k_maxOpenvrCommitOffset )
+        {
+            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of commit "
+                           "bounds ( X: "
+                        << offsetUniverseCenterXyz[0] << " )";
+            vr::HmdMatrix34_t standingZero;
+            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+                &standingZero );
+            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+            outputLogHmdMatrix( standingZero );
+            reset();
+            LOG( INFO ) << "-Resetting offsets-";
+            return;
+        }
+        if ( abs( offsetUniverseCenterXyz[1] ) > k_maxOpenvrCommitOffset )
+        {
+            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of commit "
+                           "bounds ( Y: "
+                        << offsetUniverseCenterXyz[1] << " )";
+            vr::HmdMatrix34_t standingZero;
+            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+                &standingZero );
+            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+            outputLogHmdMatrix( standingZero );
+            reset();
+            LOG( INFO ) << "-Resetting offsets-";
+            return;
+        }
+        if ( abs( offsetUniverseCenterXyz[2] ) > k_maxOpenvrCommitOffset )
+        {
+            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of commit "
+                           "bounds ( Z: "
+                        << offsetUniverseCenterXyz[2] << " )";
+            vr::HmdMatrix34_t standingZero;
+            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+                &standingZero );
+            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+            outputLogHmdMatrix( standingZero );
+            reset();
+            LOG( INFO ) << "-Resetting offsets-";
+            return;
+        }
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
         m_chaperoneCommitted = true;
@@ -2648,6 +3091,13 @@ void MoveCenterTabController::eventLoopTick(
         else
         {
             m_hmdRotationStatsUpdateCounter++;
+        }
+
+        // stop everything before processing motion if we're in seated mode and
+        // don't have seated motion enabled
+        if ( m_seatedModeDetected && !m_enableSeatedMotion )
+        {
+            return;
         }
 
         // only update dynamic motion if the dash is closed

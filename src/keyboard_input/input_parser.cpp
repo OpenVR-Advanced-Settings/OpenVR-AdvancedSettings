@@ -308,7 +308,11 @@ bool isModifier( const Token token ) noexcept
         [[fallthrough]];
     case Token::MODIFIER_SHIFT:
         [[fallthrough]];
+    case Token::MODIFIER_RSHIFT:
+        [[fallthrough]];
     case Token::MODIFIER_SUPER:
+        [[fallthrough]];
+    case Token::MODIFIER_TILDE:
         return true;
     default:
         return false;

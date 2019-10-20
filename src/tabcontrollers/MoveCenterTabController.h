@@ -16,8 +16,22 @@ constexpr double k_radiansToCentidegrees = 18000.0 / M_PI;
 constexpr double k_quaternionInvalidValue = -1000.0;
 constexpr double k_quaternionUnderIsInvalidValueThreshold = -900.0;
 constexpr double k_terminalVelocity_mps = 50.0;
+// give the max offset a buffer to avoid crossing when traveling at astronomical
+// velocities
+constexpr double k_maxOpenvrWorkingSetOffest = 39900.0;
+constexpr double k_maxOpenvrCommitOffset = 990.0;
+constexpr double k_maxOvrasUniverseCenteredTurningOffset = 25000.0;
 
 class OverlayController;
+
+struct OffsetProfile
+{
+    std::string profileName;
+    float offsetX = 0.0f;
+    float offsetY = 0.0f;
+    float offsetZ = 0.0f;
+    int rotation = 0;
+};
 
 class MoveCenterTabController : public QObject
 {
@@ -84,11 +98,15 @@ class MoveCenterTabController : public QObject
     Q_PROPERTY(
         bool universeCenteredRotation READ universeCenteredRotation WRITE
             setUniverseCenteredRotation NOTIFY universeCenteredRotationChanged )
+    Q_PROPERTY( bool enableSeatedMotion READ enableSeatedMotion WRITE
+                    setEnableSeatedMotion NOTIFY enableSeatedMotionChanged )
 
 private:
     OverlayController* parent;
 
     int m_trackingUniverse = static_cast<int>( vr::TrackingUniverseStanding );
+    bool m_chaperoneBasisAcquired = false;
+    bool m_initComplete = false;
     float m_offsetX = 0.0f;
     float m_offsetY = 0.0f;
     float m_offsetZ = 0.0f;
@@ -156,6 +174,7 @@ private:
     bool m_gravityReversed = false;
     bool m_chaperoneCommitted = true;
     bool m_pendingZeroOffsets = true;
+    bool m_pendingSeatedRecenter = false;
     bool m_dashWasOpenPreviousFrame = false;
     bool m_roomSetupModeDetected = false;
     bool m_seatedModeDetected = false;
@@ -163,6 +182,7 @@ private:
     bool m_allowExternalEdits = false;
     bool m_oldStyleMotion = false;
     bool m_universeCenteredRotation = false;
+    bool m_enableSeatedMotion = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
@@ -172,22 +192,31 @@ private:
     std::chrono::steady_clock::time_point m_lastDragUpdateTimePoint;
     vr::HmdQuad_t* m_collisionBoundsForReset;
     uint32_t m_collisionBoundsCountForReset = 0;
-    vr::HmdMatrix34_t m_universeCenterForReset;
-    vr::HmdMatrix34_t m_seatedCenterForReset;
+    vr::HmdMatrix34_t m_universeCenterForReset
+        = { { { 1.0f, 0.0f, 0.0f, 0.0f },
+              { 0.0f, 1.0f, 0.0f, 0.0f },
+              { 0.0f, 0.0f, 1.0f, 0.0f } } };
+    vr::HmdMatrix34_t m_seatedCenterForReset
+        = { { { 1.0f, 0.0f, 0.0f, 0.0f },
+              { 0.0f, 1.0f, 0.0f, 0.0f },
+              { 0.0f, 0.0f, 1.0f, 0.0f } } };
     vr::HmdQuad_t* m_collisionBoundsForOffset;
+    void updateCollisionBoundsForOffset();
 
     void updateHmdRotationCounter( vr::TrackedDevicePose_t hmdPose,
                                    double angle );
     void updateHandDrag( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateHandTurn( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateGravity();
-    void updateSpace();
+    void updateSpace( bool forceUpdate = false );
     void clampVelocity( double* velocity );
     void updateChaperoneResetData();
     void applyChaperoneResetData();
     void saveUncommittedChaperone();
     void outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix );
     void outputLogSettings();
+
+    std::vector<OffsetProfile> m_offsetProfiles;
 
 public:
     void initStage1();
@@ -225,9 +254,18 @@ public:
     bool allowExternalEdits() const;
     bool oldStyleMotion() const;
     bool universeCenteredRotation() const;
+    bool enableSeatedMotion() const;
+    bool isInitComplete() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
     void incomingSeatedReset();
+    void setBoundsBasisHeight( float newHeight );
+    float getBoundsBasisMaxY();
+
+    void reloadOffsetProfiles();
+    void saveOffsetProfiles();
+    Q_INVOKABLE unsigned getOffsetProfileCount();
+    Q_INVOKABLE QString getOffsetProfileName( unsigned index );
 
     // actions:
     void leftHandSpaceDrag( bool leftHandDragActive );
@@ -292,12 +330,18 @@ public slots:
     void setAllowExternalEdits( bool value, bool notify = true );
     void setOldStyleMotion( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
+    void setEnableSeatedMotion( bool value, bool notify = true );
 
     void shutdown();
     void reset();
     void updateSeatedResetData();
     void outputLogPoses();
     void zeroOffsets();
+    void sendSeatedRecenter();
+
+    void addOffsetProfile( QString name );
+    void applyOffsetProfile( unsigned index );
+    void deleteOffsetProfile( unsigned index );
 
 signals:
     void trackingUniverseChanged( int value );
@@ -330,6 +374,9 @@ signals:
     void allowExternalEditsChanged( bool value );
     void oldStyleMotionChanged( bool value );
     void universeCenteredRotationChanged( bool value );
+    void enableSeatedMotionChanged( bool value );
+
+    void offsetProfilesUpdated();
 };
 
 } // namespace advsettings

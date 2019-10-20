@@ -8,6 +8,69 @@ import "common"
 MyStackViewPage {
     headerText: "Space Offsets"
 
+    MyDialogOkPopup {
+        id: offsetMessageDialog
+        function showMessage(title, text) {
+            dialogTitle = title
+            dialogText = text
+            open()
+        }
+    }
+
+    MyDialogOkCancelPopup {
+        id: offsetDeleteProfileDialog
+        property int profileIndex: -1
+        dialogTitle: "Delete Profile"
+        dialogText: "Do you really want to delete this profile?"
+        onClosed: {
+            if (okClicked) {
+                MoveCenterTabController.deleteOffsetProfile(profileIndex)
+            }
+        }
+    }
+
+    MyDialogOkCancelPopup {
+        id: offsetNewProfileDialog
+        dialogTitle: "Create New Profile"
+        dialogWidth: 800
+        dialogHeight: 400
+        dialogContentItem: ColumnLayout {
+            RowLayout {
+                Layout.topMargin: 16
+                Layout.leftMargin: 16
+                Layout.rightMargin: 16
+                MyText {
+                    text: "Name: "
+                }
+                MyTextField {
+                    id: offsetNewProfileName
+                    keyBoardUID: 105
+                    color: "#cccccc"
+                    text: ""
+                    Layout.fillWidth: true
+                    font.pointSize: 20
+                    function onInputEvent(input) {
+                        offsetNewProfileName.text = input
+                    }
+                }
+            }
+        }
+        onClosed: {
+            if (okClicked) {
+                if (offsetNewProfileName.text == "") {
+                    offsetMessageDialog.showMessage("Create New Profile", "ERROR: Empty profile name.")
+                } else {
+                    MoveCenterTabController.addOffsetProfile(offsetNewProfileName.text)
+                }
+
+            }
+        }
+        function openPopup() {
+            offsetNewProfileName.text = ""
+            open()
+        }
+    }
+
     content: ColumnLayout {
         spacing: 18
 
@@ -23,8 +86,86 @@ MyStackViewPage {
             }
         }
 
+        MyText {
+            id: seatedDisableWarningText
+            visible: false
+            wrapMode: Text.WordWrap
+            text: "Settings Tab: 'Enable Motion Features in Seated Mode' not checked"
+        }
+
+        ColumnLayout {
+            id: profileSection
+            Layout.bottomMargin: 32
+            spacing: 18
+            RowLayout {
+                spacing: 18
+
+                MyText {
+                    text: "Profile:"
+                }
+
+                MyComboBox {
+                    id: offsetProfileComboBox
+                    Layout.maximumWidth: 799
+                    Layout.minimumWidth: 799
+                    Layout.preferredWidth: 799
+                    Layout.fillWidth: true
+                    model: [""]
+                    onCurrentIndexChanged: {
+                        if (currentIndex > 0) {
+                            offsetApplyProfileButton.enabled = true
+                            offsetDeleteProfileButton.enabled = true
+                        } else {
+                            offsetApplyProfileButton.enabled = false
+                            offsetDeleteProfileButton.enabled = false
+                        }
+                    }
+                }
+
+                MyPushButton {
+                    id: offsetApplyProfileButton
+                    enabled: false
+                    Layout.preferredWidth: 200
+                    text: "Apply"
+                    onClicked: {
+                        if (offsetProfileComboBox.currentIndex > 0) {
+                            MoveCenterTabController.applyOffsetProfile(offsetProfileComboBox.currentIndex - 1)
+                            offsetProfileComboBox.currentIndex = 0
+                        }
+                    }
+                }
+            }
+            RowLayout {
+                spacing: 18
+                Item {
+                    Layout.fillWidth: true
+                }
+                MyPushButton {
+                    id: offsetDeleteProfileButton
+                    enabled: false
+                    Layout.preferredWidth: 200
+                    text: "Delete Profile"
+                    onClicked: {
+                        if (offsetProfileComboBox.currentIndex > 0) {
+                            offsetDeleteProfileDialog.profileIndex = offsetProfileComboBox.currentIndex - 1
+                            offsetDeleteProfileDialog.open()
+                        }
+                    }
+                }
+                MyPushButton {
+                    Layout.preferredWidth: 200
+                    text: "New Profile"
+                    onClicked: {
+                        offsetNewProfileDialog.openPopup()
+                    }
+                }
+            }
+        }
+
         GroupBox {
             Layout.fillWidth: true
+            id: offsetsGroupBox
+            visible: true
 
             label: MyText {
                 leftPadding: 10
@@ -220,6 +361,8 @@ MyStackViewPage {
 
         GroupBox {
             Layout.fillWidth: true
+            id: rotationGroupBox
+            visible: true
 
             label: MyText {
                 leftPadding: 10
@@ -322,6 +465,8 @@ MyStackViewPage {
         ColumnLayout {
             RowLayout {
                 Layout.fillWidth: true
+                id: resetButtonRow
+                visible: true
 
                 MyPushButton {
                     id: spaceResetButton
@@ -360,7 +505,7 @@ MyStackViewPage {
                     visible: false
                     text: "Seated Recenter"
                     onClicked: {
-                        MoveCenterTabController.updateSeatedResetData()
+                        MoveCenterTabController.sendSeatedRecenter()
                     }
                 }
 
@@ -385,12 +530,29 @@ MyStackViewPage {
             if (MoveCenterTabController.trackingUniverse === 0) {
                 spaceModeText.text = "Sitting"
                 spaceSeatedRecenter.visible = true
+                offsetsGroupBox.visible = MoveCenterTabController.enableSeatedMotion
+                rotationGroupBox.visible = MoveCenterTabController.enableSeatedMotion
+                resetButtonRow.visible = MoveCenterTabController.enableSeatedMotion
+                profileSection.visible = MoveCenterTabController.enableSeatedMotion
+                seatedDisableWarningText.visible = !MoveCenterTabController.enableSeatedMotion
+
             } else if (MoveCenterTabController.trackingUniverse === 1) {
                 spaceModeText.text = "Standing"
                 spaceSeatedRecenter.visible = false
+                offsetsGroupBox.visible = true
+                rotationGroupBox.visible = true
+                resetButtonRow.visible = true
+                profileSection.visible = true
+                seatedDisableWarningText.visible = false
             } else {
                 spaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
+                offsetsGroupBox.visible = false
+                rotationGroupBox.visible = false
+                resetButtonRow.visible = false
+                profileSection.visible = false
+                seatedDisableWarningText.visible = false
             }
+            reloadOffsetProfiles()
         }
 
         Connections {
@@ -423,19 +585,56 @@ MyStackViewPage {
 			onLockZToggleChanged: {
 				lockZToggle.checked = MoveCenterTabController.lockZToggle
 			}
+            onEnableSeatedMotionChanged: {
+                if (MoveCenterTabController.trackingUniverse === 0) {
+                    spaceModeText.text = "Sitting"
+                    spaceSeatedRecenter.visible = true
+                    offsetsGroupBox.visible = MoveCenterTabController.enableSeatedMotion
+                    rotationGroupBox.visible = MoveCenterTabController.enableSeatedMotion
+                    resetButtonRow.visible = MoveCenterTabController.enableSeatedMotion
+                    profileSection.visible = MoveCenterTabController.enableSeatedMotion
+                    seatedDisableWarningText.visible = !MoveCenterTabController.enableSeatedMotion
+                }
+            }
             onTrackingUniverseChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {
                     spaceModeText.text = "Sitting"
                     spaceSeatedRecenter.visible = true
+                    offsetsGroupBox.visible = MoveCenterTabController.enableSeatedMotion
+                    rotationGroupBox.visible = MoveCenterTabController.enableSeatedMotion
+                    resetButtonRow.visible = MoveCenterTabController.enableSeatedMotion
+                    profileSection.visible = MoveCenterTabController.enableSeatedMotion
+                    seatedDisableWarningText.visible = !MoveCenterTabController.enableSeatedMotion
                 } else if (MoveCenterTabController.trackingUniverse === 1) {
                     spaceModeText.text = "Standing"
                     spaceSeatedRecenter.visible = false
+                    offsetsGroupBox.visible = true
+                    rotationGroupBox.visible = true
+                    resetButtonRow.visible = true
+                    profileSection.visible = true
+                    seatedDisableWarningText.visible = false
                 } else {
                     spaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
+                    offsetsGroupBox.visible = false
+                    rotationGroupBox.visible = false
+                    resetButtonRow.visible = false
+                    profileSection.visible = false
+                    seatedDisableWarningText.visible = false
                 }
+            }
+            onOffsetProfilesUpdated: {
+                reloadOffsetProfiles()
             }
         }
 
     }
-
+    function reloadOffsetProfiles() {
+        var profiles = [""]
+        var profileCount = MoveCenterTabController.getOffsetProfileCount()
+        for (var i = 0; i < profileCount; i++) {
+            profiles.push(MoveCenterTabController.getOffsetProfileName(i))
+        }
+        offsetProfileComboBox.currentIndex = 0
+        offsetProfileComboBox.model = profiles
+    }
 }

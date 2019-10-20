@@ -82,8 +82,12 @@ WORD convertToVirtualKeycode( const Token token )
         return VK_MENU;
     case Token::MODIFIER_SHIFT:
         return VK_SHIFT;
+    case Token::MODIFIER_RSHIFT:
+        return VK_RSHIFT;
     case Token::MODIFIER_SUPER:
         return VK_LWIN;
+    case Token::MODIFIER_TILDE:
+        return VK_OEM_3;
 
     default:
         return 0;
@@ -97,15 +101,32 @@ INPUT createInputStruct( const WORD virtualKeyCode,
 
     input.type = INPUT_KEYBOARD;
 
-    input.ki.wVk = virtualKeyCode;
+    if ( virtualKeyCode == VK_RSHIFT )
+    {
+        input.ki.wVk = VK_SHIFT;
+        input.ki.wScan = 0x36;
 
-    if ( keyStatus == KeyStatus::Up )
-    {
-        input.ki.dwFlags = KEYEVENTF_KEYUP;
+        if ( keyStatus == KeyStatus::Up )
+        {
+            input.ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_SCANCODE;
+        }
+        else if ( keyStatus == KeyStatus::Down )
+        {
+            input.ki.dwFlags = 0 | KEYEVENTF_SCANCODE;
+        }
     }
-    else if ( keyStatus == KeyStatus::Down )
+    else
     {
-        input.ki.dwFlags = 0;
+        input.ki.wVk = virtualKeyCode;
+
+        if ( keyStatus == KeyStatus::Up )
+        {
+            input.ki.dwFlags = KEYEVENTF_KEYUP;
+        }
+        else if ( keyStatus == KeyStatus::Down )
+        {
+            input.ki.dwFlags = 0;
+        }
     }
 
     return input;
@@ -146,13 +167,23 @@ void sendTokensAsInput( const std::vector<Token> tokens )
 {
     std::vector<INPUT> inputs = {};
     std::vector<Token> heldInputs = {};
+    bool noKeyUp = false;
     for ( const auto& token : tokens )
     {
+        if ( token == Token::TOKEN_NO_KEYUP_NEXT )
+        {
+            noKeyUp = true;
+            continue;
+        }
+
         if ( isModifier( token ) )
         {
             inputs.push_back( createInputStruct(
                 convertToVirtualKeycode( token ), KeyStatus::Down ) );
-            heldInputs.push_back( token );
+            if ( !noKeyUp )
+            {
+                heldInputs.push_back( token );
+            }
             continue;
         }
 
@@ -171,8 +202,16 @@ void sendTokensAsInput( const std::vector<Token> tokens )
         {
             inputs.push_back( createInputStruct(
                 convertToVirtualKeycode( token ), KeyStatus::Down ) );
-            inputs.push_back( createInputStruct(
-                convertToVirtualKeycode( token ), KeyStatus::Up ) );
+            if ( !noKeyUp )
+            {
+                inputs.push_back( createInputStruct(
+                    convertToVirtualKeycode( token ), KeyStatus::Up ) );
+            }
+            continue;
+        }
+        if ( token != Token::TOKEN_NO_KEYUP_NEXT )
+        {
+            noKeyUp = false;
             continue;
         }
     }
