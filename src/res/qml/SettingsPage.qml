@@ -165,6 +165,24 @@ MyStackViewPage {
             Layout.fillHeight: true
         }
 
+        RowLayout {
+            Layout.fillWidth: true
+            // set visible to true here in builds when we need a debug toggle checkbox, otherwise false when on master branch.
+            visible: false
+
+            Item {
+                Layout.fillWidth: true
+            }
+
+            MyToggleButton {
+                id: debugToggle
+                text: "Debug"
+                onCheckedChanged: {
+                    OverlayController.setEnableDebug(checked, true)
+                }
+            }
+
+        }
 
         Component.onCompleted: {
             settingsAutoStartToggle.checked = SettingsTabController.autoStartEnabled

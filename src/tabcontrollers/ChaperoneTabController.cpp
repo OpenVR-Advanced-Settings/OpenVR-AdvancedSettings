@@ -632,7 +632,7 @@ void ChaperoneTabController::eventLoopTick(
             if ( m_updateTicksChaperoneReload >= 500 )
             {
                 m_updateTicksChaperoneReload = 0;
-                LOG( WARNING ) << "Attempting to Reloading Chaperone Data";
+                LOG( WARNING ) << "Attempting to reload chaperone data";
                 parent->chaperoneUtils().loadChaperoneData();
             }
         }

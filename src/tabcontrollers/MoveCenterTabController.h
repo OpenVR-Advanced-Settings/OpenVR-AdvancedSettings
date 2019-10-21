@@ -100,6 +100,8 @@ class MoveCenterTabController : public QObject
             setUniverseCenteredRotation NOTIFY universeCenteredRotationChanged )
     Q_PROPERTY( bool enableSeatedMotion READ enableSeatedMotion WRITE
                     setEnableSeatedMotion NOTIFY enableSeatedMotionChanged )
+    Q_PROPERTY( bool simpleRecenter READ simpleRecenter WRITE setSimpleRecenter
+                    NOTIFY simpleRecenterChanged )
 
 private:
     OverlayController* parent;
@@ -136,7 +138,6 @@ private:
     float m_gravityFloor = 0.0f;
     float m_gravityStrength = 9.8f;
     float m_flingStrength = 1.0f;
-    float m_seatedHeight = 1.0f;
     bool m_momentumSave = false;
     bool m_lockXToggle = false;
     bool m_lockYToggle = false;
@@ -175,6 +176,7 @@ private:
     bool m_chaperoneCommitted = true;
     bool m_pendingZeroOffsets = true;
     bool m_pendingSeatedRecenter = false;
+    bool m_selfRequestedSeatedRecenter = false;
     bool m_dashWasOpenPreviousFrame = false;
     bool m_roomSetupModeDetected = false;
     bool m_seatedModeDetected = false;
@@ -183,6 +185,7 @@ private:
     bool m_oldStyleMotion = false;
     bool m_universeCenteredRotation = false;
     bool m_enableSeatedMotion = false;
+    bool m_simpleRecenter = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
@@ -255,6 +258,7 @@ public:
     bool oldStyleMotion() const;
     bool universeCenteredRotation() const;
     bool enableSeatedMotion() const;
+    bool simpleRecenter() const;
     bool isInitComplete() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
@@ -331,6 +335,7 @@ public slots:
     void setOldStyleMotion( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
     void setEnableSeatedMotion( bool value, bool notify = true );
+    void setSimpleRecenter( bool value, bool notify = true );
 
     void shutdown();
     void reset();
@@ -375,6 +380,7 @@ signals:
     void oldStyleMotionChanged( bool value );
     void universeCenteredRotationChanged( bool value );
     void enableSeatedMotionChanged( bool value );
+    void simpleRecenterChanged( bool value );
 
     void offsetProfilesUpdated();
 };

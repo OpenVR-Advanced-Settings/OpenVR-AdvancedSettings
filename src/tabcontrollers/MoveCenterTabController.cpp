@@ -158,6 +158,11 @@ void MoveCenterTabController::initStage1()
     {
         m_enableSeatedMotion = value.toBool();
     }
+    value = settings->value( "simpleRecenter", m_simpleRecenter );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_simpleRecenter = value.toBool();
+    }
     settings->endGroup();
     reloadOffsetProfiles();
     m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
@@ -350,6 +355,10 @@ void MoveCenterTabController::outputLogSettings()
     if ( m_enableSeatedMotion )
     {
         LOG( INFO ) << "LOADED SETTINGS: Seated Motion Enabled";
+    }
+    if ( m_simpleRecenter )
+    {
+        LOG( INFO ) << "LOADED SETTINGS: Simple Recenter Enabled";
     }
     if ( m_dragBounds )
     {
@@ -1207,6 +1216,27 @@ void MoveCenterTabController::setEnableSeatedMotion( bool value, bool notify )
                 << m_enableSeatedMotion;
 }
 
+bool MoveCenterTabController::simpleRecenter() const
+{
+    return m_simpleRecenter;
+}
+
+void MoveCenterTabController::setSimpleRecenter( bool value, bool notify )
+{
+    m_simpleRecenter = value;
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( "playspaceSettings" );
+    settings->setValue( "simpleRecenter", m_simpleRecenter );
+    settings->endGroup();
+    settings->sync();
+    if ( notify )
+    {
+        emit simpleRecenterChanged( m_simpleRecenter );
+    }
+    LOG( INFO ) << "CHANGED SETTINGS: Simple Recenter Set: "
+                << m_simpleRecenter;
+}
+
 void MoveCenterTabController::modOffsetX( float value, bool notify )
 {
     if ( !m_lockXToggle )
@@ -1253,7 +1283,18 @@ void MoveCenterTabController::incomingSeatedReset()
 {
     if ( m_enableSeatedMotion )
     {
-        updateSeatedResetData();
+        // if we didn't send the request from OVRAS, we need to send another
+        // ResetSeatedZeroPose(). It seems that only after this is sent from
+        // OVRAS does ReloadFromDisk return valid info on WMR.
+        if ( !m_selfRequestedSeatedRecenter && !m_simpleRecenter )
+        {
+            m_selfRequestedSeatedRecenter = true;
+            vr::VRSystem()->ResetSeatedZeroPose();
+        }
+        else
+        {
+            updateSeatedResetData();
+        }
     }
 }
 
@@ -1479,6 +1520,8 @@ void MoveCenterTabController::updateSeatedResetData()
     emit offsetZChanged( m_offsetZ );
     emit rotationChanged( m_rotation );
     vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+    // done with this recenter, so set self request back to false for next time.
+    m_selfRequestedSeatedRecenter = false;
     // set pending update here, will be processed on next instance of motion or
     // running the reset() function.
     m_pendingSeatedRecenter = true;
