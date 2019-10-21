@@ -176,6 +176,7 @@ private:
     bool m_pendingZeroOffsets = true;
     bool m_pendingSeatedRecenter = false;
     bool m_pendingSeatedReloadFromDisk = false;
+    bool m_selfRequestedSeatedRecenter = false;
     bool m_dashWasOpenPreviousFrame = false;
     bool m_roomSetupModeDetected = false;
     bool m_seatedModeDetected = false;

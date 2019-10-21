@@ -1253,7 +1253,15 @@ void MoveCenterTabController::incomingSeatedReset()
 {
     if ( m_enableSeatedMotion )
     {
-        updateSeatedResetData();
+        if ( !m_selfRequestedSeatedRecenter )
+        {
+            m_selfRequestedSeatedRecenter = true;
+            vr::VRSystem()->ResetSeatedZeroPose();
+        }
+        else
+        {
+            updateSeatedResetData();
+        }
     }
     else if ( parent->enableDebug() && parent->debugState() == 1 )
     {
@@ -1466,6 +1474,10 @@ void MoveCenterTabController::zeroOffsets()
 
 void MoveCenterTabController::sendSeatedRecenter()
 {
+    if ( parent->enableDebug() && parent->debugState() == 7 )
+    {
+        m_selfRequestedSeatedRecenter = true;
+    }
     vr::VRSystem()->ResetSeatedZeroPose();
 }
 
@@ -1516,6 +1528,8 @@ void MoveCenterTabController::updateSeatedResetData()
     {
         vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
     }
+    // done with this recenter, so set self request back to false for next time.
+    m_selfRequestedSeatedRecenter = false;
     // set pending update here, will be processed on next instance of motion or
     // running the reset() function.
     m_pendingSeatedRecenter = true;
