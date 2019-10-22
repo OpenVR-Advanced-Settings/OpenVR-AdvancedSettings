@@ -35,6 +35,11 @@ void ChaperoneTabController::initStage1()
     m_fadeDistanceRemembered
         = settings->value( "fadeDistanceRemembered", 0.5f ).toFloat();
     settings->endGroup();
+
+    if ( m_disableChaperone )
+    {
+        setFadeDistance( 0.0f, true );
+    }
     reloadChaperoneProfiles();
 
     eventLoopTick( nullptr );
