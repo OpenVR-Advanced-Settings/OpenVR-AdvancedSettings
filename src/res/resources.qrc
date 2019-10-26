@@ -17,4 +17,7 @@
     <file alias="previous">img/audio/media_keys/outline_skip_previous_white_24dp.svg</file>
     <file alias="stop">img/audio/media_keys/outline_stop_white_24dp.svg</file>
 </qresource>
+<qresource prefix="/bindings">
+    <file alias="bindings">img/bindings/bindings.png</file>
+</qresource>
 </RCC>
