@@ -142,6 +142,17 @@ MyStackViewPage {
                    }
 
                    MyPushButton {
+                       id: bindingsButton
+                       activationSoundEnabled: false
+                       text: "Bindings"
+                       Layout.fillWidth: true
+                       onClicked: {
+                           MyResources.playFocusChangedSound()
+                           mainView.push(bindingsPage)
+                       }
+                   }
+
+                   MyPushButton {
                        id: settingsButton
                        activationSoundEnabled: false
                        text: "Settings"

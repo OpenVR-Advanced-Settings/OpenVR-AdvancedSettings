@@ -1323,6 +1323,11 @@ void MoveCenterTabController::reset()
     m_offsetY = 0.0f;
     m_offsetZ = 0.0f;
     m_rotation = 0;
+    m_lastControllerPosition[0] = 0.0f;
+    m_lastControllerPosition[1] = 0.0f;
+    m_lastControllerPosition[2] = 0.0f;
+    m_lastMoveHand = vr::TrackedControllerRole_Invalid;
+    m_lastRotateHand = vr::TrackedControllerRole_Invalid;
     applyChaperoneResetData();
     emit offsetXChanged( m_offsetX );
     emit offsetYChanged( m_offsetY );
@@ -2546,6 +2551,14 @@ void MoveCenterTabController::updateHandDrag(
 
         // offset is un-rotated coordinates
 
+        // prevent positional glitches from exceeding max openvr offset clamps.
+        // We do this by detecting a drag larger than 100m in a single frame.
+        if ( abs( diff[0] ) > 100.0 || abs( diff[1] ) > 100.0
+             || abs( diff[2] ) > 100.0 )
+        {
+            reset();
+        }
+
         // prevents updating if axis movement is locked
         if ( !m_lockXToggle )
         {
@@ -2863,7 +2876,8 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
         outputLogHmdMatrix( standingZero );
         reset();
-        LOG( INFO ) << "-Resetting offsets-";
+        parent->m_chaperoneTabController.applyAutosavedProfile();
+        LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
         return;
     }
     if ( abs( offsetUniverseCenterXyz[1] ) > k_maxOpenvrWorkingSetOffest
@@ -2879,7 +2893,8 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
         outputLogHmdMatrix( standingZero );
         reset();
-        LOG( INFO ) << "-Resetting offsets-";
+        parent->m_chaperoneTabController.applyAutosavedProfile();
+        LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
         return;
     }
     if ( abs( offsetUniverseCenterXyz[2] ) > k_maxOpenvrWorkingSetOffest
@@ -2895,7 +2910,8 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
         outputLogHmdMatrix( standingZero );
         reset();
-        LOG( INFO ) << "-Resetting offsets-";
+        parent->m_chaperoneTabController.applyAutosavedProfile();
+        LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
         return;
     }
 
@@ -3009,7 +3025,8 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
             outputLogHmdMatrix( standingZero );
             reset();
-            LOG( INFO ) << "-Resetting offsets-";
+            parent->m_chaperoneTabController.applyAutosavedProfile();
+            LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
             return;
         }
         if ( abs( offsetUniverseCenterXyz[1] ) > k_maxOpenvrCommitOffset )
@@ -3023,7 +3040,8 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
             outputLogHmdMatrix( standingZero );
             reset();
-            LOG( INFO ) << "-Resetting offsets-";
+            parent->m_chaperoneTabController.applyAutosavedProfile();
+            LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
             return;
         }
         if ( abs( offsetUniverseCenterXyz[2] ) > k_maxOpenvrCommitOffset )
@@ -3037,7 +3055,8 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
             outputLogHmdMatrix( standingZero );
             reset();
-            LOG( INFO ) << "-Resetting offsets-";
+            parent->m_chaperoneTabController.applyAutosavedProfile();
+            LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
             return;
         }
         vr::VRChaperoneSetup()->CommitWorkingCopy(

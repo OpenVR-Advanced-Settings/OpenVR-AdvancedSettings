@@ -80,6 +80,11 @@ Rectangle {
         visible: false
     }
 
+    property BindingsPage bindingsPage: BindingsPage {
+        stackView: mainView
+        visible: false
+    }
+
     StackView {
         id: mainView
         anchors.fill: parent

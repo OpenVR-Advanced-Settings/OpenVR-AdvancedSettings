@@ -27,6 +27,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
     + [Other Controllers](#other-controllers)
   * [SteamVR Input Guide](#steamvr-input-guide)
   * [Command Line Arguments](#command-line-arguments)
+  * [INI File Options](#ini-file-options)
   * [Preview builds](#preview-builds)
 - [Documentation](#documentation)
   * [Top Page](#top-page)
@@ -41,6 +42,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
   * [- Utilities Page](#--utilities-page)
   * [- Desktop Overlay Page](#--desktop-overlay-page)
   * [- Statistics Page](#--statistics-page)
+  * [- Bindings Page](#--bindings-page)
   * [- Settings Page](#--settings-page)
 - [How to Compile](#how-to-compile)
   * [Building on Windows](#building-on-windows)
@@ -217,6 +219,22 @@ The application (`AdvancedSettings.exe`) can be run with the following optional 
 
 `"--force-remove-manifest"`: Force uninstalls the `.vrmanifest`. This should be done every time the application is uninstalled. On Windows it is automatically done by the uninstaller. The program will exit early when this flag is set.
 
+## INI File Options
+
+There are some features that can only be enabled by directly specifying them in the .ini file. On windows the .ini file can be found at `Users\username\AppData\Roaming\AdvancedSettings-Team\OpenVRAdvancedSettings.ini`.
+
+When adding options to the .ini file, they must be added under the correct section to function.
+
+Currently the following ini-file-only settings exist:
+
+Under `[playspaceSettings]` adding `showLogMatricesButton=true` will enable a button in the Offsets Tab that when pressed will write a section to the log file containing the current pose matrix data for tracked devices and universe settings.
+
+Also under `[playspaceSettings]` adding `simpleRecenter=true` will disable a workaround that allows seated recenter to function on non-lighthouse devices. The workaround instantly applies a second seated recenter whenever a seated recenter is executed. Because simpleRecenter=true will break non-lighthouse seated mode, and true/false behavior is indistinguishable on lighthouse devices, usage of simpleRecenter=true is not recommended.
+
+Under `[utilitiesSettings]` adding `vrcDebug=true` will enable some buttons in the Utilities Tab to toggle debug panels in VRChat.
+
+Under `[applicationSettings]` adding `enableDebug=true` will show a "Debug State" text box in the Settings Tab. Changing the debug state number may be used for in-dev branch builds. At this time, it doesn't do anything on the master build.
+
 ## Preview builds
 
 If you want to try latest and greatest unreleased features, you can download the latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master). The Linux CI does not provide binary artifacts.
@@ -378,6 +396,12 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Reprojected Frames**: Number of frames reprojected in the currently running application.
 - **Timed Out**: Number of times the currently running application timed out.
 - **Reprojection Ratio**: Ratio of presented frames to reprojected frames.
+
+## - Bindings Page
+
+<img src="docs/screenshots/BindingsPage.png" width="600" alt="Bindings Page">
+
+- **Bindings Guide**: Shows users how to access the SteamVR input bindings configuration for Advanced Settings. Unfortunately we can't provide a button to directly open this, so users must navigate there themselves. The sole purpose of this page is to make the navigation to the actual bindings config more obvious for users who missed the instruction in this readme (This was a very common support issue). The intended reading of this image is: Click on the SteamVR Settings dash button, then click on "Controller Settings", then click on "Show More Applications" then find "Advanced Settings" by scrolling to the bottom, and click on it.
 
 ## - Settings Page
 
