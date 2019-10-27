@@ -12,7 +12,8 @@ MyStackViewPage {
             source: "qrc:/bindings/bindings"
             sourceSize.width: 1120
             sourceSize.height: 659
-            anchors.fill: parent
+            Layout.fillHeight: true
+            Layout.fillWidth: true
         }
     }
 }
