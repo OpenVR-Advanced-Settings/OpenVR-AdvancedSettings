@@ -225,7 +225,7 @@ There are some features that can only be enabled by directly specifying them in 
 
 When adding options to the .ini file, they must be added under the correct section to function.
 
-Currently the follow ini-file-only settings exist:
+Currently the following ini-file-only settings exist:
 
 Under `[playspaceSettings]` adding `showLogMatricesButton=true` will enable a button in the Offsets Tab that when pressed will write a section to the log file containing the current pose matrix data for tracked devices and universe settings.
 
