@@ -2,6 +2,7 @@
 #pragma once
 
 #include <QObject>
+#include "../utils/FrameRateUtils.h"
 
 class QQuickWindow;
 // application namespace
@@ -49,6 +50,8 @@ private:
     bool m_cameraDashboard = false;
 
     unsigned settingsUpdateCounter = 0;
+
+    unsigned int m_k_steamVrSettingsUpdateCounter = 97;
 
 public:
     void initStage1();

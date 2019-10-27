@@ -2,6 +2,7 @@
 #pragma once
 
 #include <QObject>
+#include "../utils/FrameRateUtils.h"
 
 class QQuickWindow;
 // application namespace
@@ -22,6 +23,8 @@ private:
     unsigned settingsUpdateCounter = 0;
 
     bool m_autoStartEnabled = false;
+
+    unsigned int m_k_settingsTabSettingsUpdateCounter = 157;
 
 public:
     void initStage1();
