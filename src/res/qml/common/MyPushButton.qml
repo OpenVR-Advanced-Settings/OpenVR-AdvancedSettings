@@ -3,6 +3,10 @@ import QtQuick.Controls 2.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 
 Button {
+    // Overload this
+    // Empty string = no icon
+    property string iconPath: ""
+
     property bool activationSoundEnabled: true
 	hoverEnabled: true
 	contentItem: MyText {
@@ -13,6 +17,12 @@ Button {
 	}
 	background: Rectangle {
         color: parent.down ? "#406288" : (parent.activeFocus ? "#365473" : "#2c435d")
+    }
+
+    Image {
+        source: iconPath
+        height: parent.height
+        width: height
     }
 
     onHoveredChanged: {
