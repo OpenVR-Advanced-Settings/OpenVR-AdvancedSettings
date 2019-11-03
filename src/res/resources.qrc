@@ -20,4 +20,17 @@
 <qresource prefix="/bindings">
     <file alias="bindings">img/bindings/bindings.png</file>
 </qresource>
+<qresource prefix="/main_menu_icons">
+    <file alias="audio_tab_icon">img/main_menu_icons/audio_tab_icon.svg</file>
+    <file alias="bindings_tab_icon">img/main_menu_icons/bindings_tab_icon.svg</file>
+    <file alias="chaperone_tab_icon">img/main_menu_icons/chaperone_tab_icon.svg</file>
+    <file alias="motion_tab_icon">img/main_menu_icons/motion_tab_icon.svg</file>
+    <file alias="offsets_tab_icon">img/main_menu_icons/offsets_tab_icon.svg</file>
+    <file alias="settings_tab_icon">img/main_menu_icons/settings_tab_icon.svg</file>
+    <file alias="space_fix_tab_icon">img/main_menu_icons/space_fix_tab_icon.svg</file>
+    <file alias="statistics_tab_icon">img/main_menu_icons/statistics_tab_icon.svg</file>
+    <file alias="steamvr_tab_icon">img/main_menu_icons/steamvr_tab_icon.svg</file>
+    <file alias="utilities_tab_icon">img/main_menu_icons/utilities_tab_icon.svg</file>
+    <file alias="video_tab_icon">img/main_menu_icons/video_tab_icon.svg</file>
+</qresource>
 </RCC>
