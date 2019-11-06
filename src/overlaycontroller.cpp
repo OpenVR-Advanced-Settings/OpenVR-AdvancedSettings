@@ -1638,12 +1638,15 @@ void OverlayController::OnNetworkReply( QNetworkReply* reply )
                     << "." << m_remoteVersionMinor << "."
                     << m_remoteVersionPatch << ") available.";
             }
-            else if ( m_optionalMessage.length() > 0 )
+            else
             {
+                if ( m_optionalMessage.length() > 0 )
+                {
+                    setVersionCheckText( m_optionalMessage );
+                }
                 setNewVersionDetected( false );
                 LOG( INFO )
                     << "Version Check: Installed version is latest release.";
-                setVersionCheckText( m_optionalMessage );
             }
         }
         else
