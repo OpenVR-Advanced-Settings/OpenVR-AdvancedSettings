@@ -21,6 +21,9 @@
 #include <QQuickItem>
 #include <QQuickRenderControl>
 #include <QSoundEffect>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <memory>
 #include <easylogging++.h>
 
@@ -47,6 +50,9 @@ constexpr auto applicationOrganizationName = "AdvancedSettings-Team";
 constexpr auto applicationName = "OpenVRAdvancedSettings";
 constexpr const char* applicationKey = "OVRAS-Team.AdvancedSettings";
 constexpr const char* applicationDisplayName = "Advanced Settings";
+constexpr const char* versionCheckUrl
+    = "https://raw.githubusercontent.com/OpenVR-Advanced-Settings/"
+      "OpenVR-AdvancedSettings/master/ver/versioncheck.json";
 
 constexpr const char* applicationVersionString = APPLICATION_VERSION;
 
@@ -84,6 +90,12 @@ class OverlayController : public QObject
                     NOTIFY vsyncDisabledChanged )
     Q_PROPERTY( bool enableDebug READ enableDebug WRITE setEnableDebug NOTIFY
                     enableDebugChanged )
+    Q_PROPERTY( bool disableVersionCheck READ disableVersionCheck WRITE
+                    setDisableVersionCheck NOTIFY disableVersionCheckChanged )
+    Q_PROPERTY( bool newVersionDetected READ newVersionDetected WRITE
+                    setNewVersionDetected NOTIFY newVersionDetectedChanged )
+    Q_PROPERTY( QString versionCheckText READ versionCheckText WRITE
+                    setVersionCheckText NOTIFY versionCheckTextChanged )
     Q_PROPERTY( int customTickRateMs READ customTickRateMs WRITE
                     setCustomTickRateMs NOTIFY customTickRateMsChanged )
     Q_PROPERTY( int debugState READ debugState WRITE setDebugState NOTIFY
@@ -113,8 +125,19 @@ private:
     bool m_crashRecoveryDisabled = false;
     bool m_vsyncDisabled = false;
     bool m_enableDebug = false;
+    bool m_disableVersionCheck = false;
+    bool m_newVersionDetected = false;
     int m_customTickRateMs = 20;
     int m_debugState = 0;
+    int m_remoteVersionMajor = -1;
+    int m_remoteVersionMinor = -1;
+    int m_remoteVersionPatch = -1;
+    int m_localVersionMajor = -1;
+    int m_localVersionMinor = -1;
+    int m_localVersionPatch = -1;
+    QString m_updateMessage = "";
+    QString m_optionalMessage = "";
+    QString m_versionCheckText = "";
 
     QUrl m_runtimePathUrl;
 
@@ -130,6 +153,10 @@ private:
     int m_customTickRateCounter = 0;
 
     input::SteamIVRInput m_actions;
+
+    QNetworkAccessManager* netManager = new QNetworkAccessManager( this );
+    QJsonDocument m_remoteVersionJsonDocument = QJsonDocument();
+    QJsonObject m_remoteVersionJsonObject;
 
 public: // I know it's an ugly hack to make them public to enable external
         // access, but I am too lazy to implement getters.
@@ -218,7 +245,10 @@ public:
 
     bool crashRecoveryDisabled() const;
     bool enableDebug() const;
+    bool disableVersionCheck() const;
+    bool newVersionDetected() const;
     bool vsyncDisabled() const;
+    QString versionCheckText() const;
     int customTickRateMs() const;
     int debugState() const;
 
@@ -226,6 +256,7 @@ public slots:
     void renderOverlay();
     void OnRenderRequest();
     void OnTimeoutPumpEvents();
+    void OnNetworkReply( QNetworkReply* reply );
 
     void showKeyboard( QString existingText, unsigned long userValue = 0 );
 
@@ -237,6 +268,9 @@ public slots:
 
     void setCrashRecoveryDisabled( bool value, bool notify = true );
     void setEnableDebug( bool value, bool notify = true );
+    void setDisableVersionCheck( bool value, bool notify = true );
+    void setNewVersionDetected( bool value, bool notify = true );
+    void setVersionCheckText( QString value, bool notify = true );
     void setVsyncDisabled( bool value, bool notify = true );
     void setCustomTickRateMs( int value, bool notify = true );
     void setDebugState( int value, bool notify = true );
@@ -245,6 +279,9 @@ signals:
     void keyBoardInputSignal( QString input, unsigned long userValue = 0 );
     void crashRecoveryDisabledChanged( bool value );
     void enableDebugChanged( bool value );
+    void disableVersionCheckChanged( bool value );
+    void newVersionDetectedChanged( bool value );
+    void versionCheckTextChanged( QString value );
     void vsyncDisabledChanged( bool value );
     void customTickRateMsChanged( int value );
     void debugStateChanged( int value );

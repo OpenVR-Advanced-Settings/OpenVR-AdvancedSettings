@@ -342,12 +342,43 @@ OverlayController::OverlayController( bool desktopMode,
     {
         m_enableDebug = value.toBool();
     }
+    value
+        = appSettings()->value( "disableVersionCheck", m_disableVersionCheck );
+    if ( value.isValid() && !value.isNull() )
+    {
+        m_disableVersionCheck = value.toBool();
+    }
     value = appSettings()->value( "debugState", m_debugState );
     if ( value.isValid() && !value.isNull() )
     {
         m_debugState = value.toInt();
     }
     appSettings()->endGroup();
+
+    // Grab local version number
+    QStringList verNumericalString
+        = QString( application_strings::applicationVersionString ).split( "-" );
+    QStringList verMajorMinorPatchString = verNumericalString[0].split( "." );
+    m_localVersionMajor = verMajorMinorPatchString[0].toInt();
+    m_localVersionMinor = verMajorMinorPatchString[1].toInt();
+    m_localVersionPatch = verMajorMinorPatchString[2].toInt();
+
+    // Init network manager
+    connect( netManager,
+             SIGNAL( finished( QNetworkReply* ) ),
+             this,
+             SLOT( OnNetworkReply( QNetworkReply* ) ) );
+
+    if ( !m_disableVersionCheck )
+    {
+        QNetworkRequest netRequest;
+        netRequest.setUrl( QUrl( application_strings::versionCheckUrl ) );
+        netManager->get( netRequest );
+    }
+    else
+    {
+        LOG( INFO ) << "Version Check: Feature disabled. Not checking version.";
+    }
 }
 
 OverlayController::~OverlayController()
@@ -805,6 +836,67 @@ void OverlayController::setEnableDebug( bool value, bool notify )
     if ( notify )
     {
         emit enableDebugChanged( m_enableDebug );
+    }
+}
+
+bool OverlayController::disableVersionCheck() const
+{
+    return m_disableVersionCheck;
+}
+
+void OverlayController::setDisableVersionCheck( bool value, bool notify )
+{
+    if ( m_disableVersionCheck == value )
+    {
+        return;
+    }
+    m_disableVersionCheck = value;
+    if ( !m_disableVersionCheck )
+    {
+        QNetworkRequest netRequest;
+        netRequest.setUrl( QUrl( application_strings::versionCheckUrl ) );
+        netManager->get( netRequest );
+    }
+    appSettings()->beginGroup( "applicationSettings" );
+    appSettings()->setValue( "disableVersionCheck", m_disableVersionCheck );
+    appSettings()->endGroup();
+    appSettings()->sync();
+    if ( notify )
+    {
+        emit disableVersionCheckChanged( m_disableVersionCheck );
+    }
+}
+
+bool OverlayController::newVersionDetected() const
+{
+    return m_newVersionDetected;
+}
+
+void OverlayController::setNewVersionDetected( bool value, bool notify )
+{
+    if ( m_newVersionDetected == value )
+    {
+        return;
+    }
+    m_newVersionDetected = value;
+    if ( notify )
+    {
+        emit newVersionDetectedChanged( m_newVersionDetected );
+    }
+}
+
+QString OverlayController::versionCheckText() const
+{
+    return m_versionCheckText;
+}
+
+void OverlayController::setVersionCheckText( QString value, bool notify )
+{
+    m_versionCheckText = value;
+    LOG( INFO ) << "m_versionCheckText = " << m_versionCheckText;
+    if ( notify )
+    {
+        emit versionCheckTextChanged( m_versionCheckText );
     }
 }
 
@@ -1491,6 +1583,84 @@ void OverlayController::setAlarm01SoundVolume( float vol )
 void OverlayController::cancelAlarm01Sound()
 {
     m_alarm01SoundEffect.stop();
+}
+
+void OverlayController::OnNetworkReply( QNetworkReply* reply )
+{
+    if ( reply->error() == QNetworkReply::NoError )
+    {
+        QByteArray replyByteData = reply->readAll();
+        LOG( INFO ) << "Version Check: Recieved Data: " << replyByteData;
+        QJsonParseError parseError;
+        m_remoteVersionJsonDocument
+            = QJsonDocument::fromJson( replyByteData, &parseError );
+        if ( parseError.error == QJsonParseError::NoError )
+        {
+            m_remoteVersionJsonObject = m_remoteVersionJsonDocument.object();
+            m_remoteVersionMajor
+                = m_remoteVersionJsonObject.value( "major" ).toInt();
+            m_remoteVersionMinor
+                = m_remoteVersionJsonObject.value( "minor" ).toInt();
+            m_remoteVersionPatch
+                = m_remoteVersionJsonObject.value( "patch" ).toInt();
+            m_updateMessage
+                = m_remoteVersionJsonObject.value( "updateMessage" ).toString();
+            m_optionalMessage
+                = m_remoteVersionJsonObject.value( "optionalMessage" )
+                      .toString();
+
+            // this is a little convoluted to ensure if our local version is
+            // somehow higher than remote, it doesn't detect an update from just
+            // higher remote "minor" or "patch" values.
+            if ( ( m_remoteVersionMajor > m_localVersionMajor )
+                 || ( m_remoteVersionMajor == m_localVersionMajor
+                      && m_remoteVersionMinor > m_localVersionMinor )
+                 || ( m_remoteVersionMajor == m_localVersionMajor
+                      && m_remoteVersionMinor == m_localVersionMinor
+                      && m_remoteVersionPatch > m_localVersionPatch ) )
+            {
+                setNewVersionDetected( true );
+                if ( m_updateMessage.length() > 0 )
+                {
+                    setVersionCheckText( m_updateMessage );
+                }
+                else
+                {
+                    setVersionCheckText(
+                        "Newer version ("
+                        + QString::number( m_remoteVersionMajor ) + "."
+                        + QString::number( m_remoteVersionMinor ) + "."
+                        + QString::number( m_remoteVersionPatch )
+                        + ") available." );
+                }
+                LOG( INFO )
+                    << "Version Check: Newer version (" << m_remoteVersionMajor
+                    << "." << m_remoteVersionMinor << "."
+                    << m_remoteVersionPatch << ") available.";
+            }
+            else if ( m_optionalMessage.length() > 0 )
+            {
+                setNewVersionDetected( false );
+                LOG( INFO )
+                    << "Version Check: Installed version is latest release.";
+                setVersionCheckText( m_optionalMessage );
+            }
+        }
+        else
+        {
+            LOG( ERROR )
+                << "Version Check: Error parsing json. QJsonParseError = "
+                << parseError.error;
+        }
+    }
+    else
+    {
+        LOG( ERROR ) << "Version Check: Error connecting to network. "
+                        "QNetworkReply::NetworkError = "
+                     << reply->error();
+    }
+    reply->request().~QNetworkRequest();
+    reply->~QNetworkReply();
 }
 
 } // namespace advsettings
