@@ -28,8 +28,9 @@ MyStackViewPage {
                    spacing: 10
                    MyPushButton {
                        id: steamVRButton
+                       iconPath: "qrc:/main_menu_icons/steamvr_tab_icon"
                        activationSoundEnabled: false
-                       text: "SteamVR"
+                       text: "   SteamVR"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -39,8 +40,9 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: chaperoneButton
+                       iconPath: "qrc:/main_menu_icons/chaperone_tab_icon"
                        activationSoundEnabled: false
-                       text: "Chaperone"
+                       text: "   Chaperone"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -50,8 +52,9 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: playSpaceButton
+                       iconPath: "qrc:/main_menu_icons/offsets_tab_icon"
                        activationSoundEnabled: false
-                       text: "Offsets"
+                       text: "   Offsets"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -61,8 +64,9 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: motionButton
+                       iconPath: "qrc:/main_menu_icons/motion_tab_icon"
                        activationSoundEnabled: false
-                       text: "Motion"
+                       text: "   Motion"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -72,8 +76,9 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: fixFloorButton
+                       iconPath: "qrc:/main_menu_icons/space_fix_tab_icon"
                        activationSoundEnabled: false
-                       text: "Space Fix"
+                       text: "   Space Fix"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -83,8 +88,9 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: audioButton
+                       iconPath: "qrc:/main_menu_icons/audio_tab_icon"
                        activationSoundEnabled: false
-                       text: "Audio"
+                       text: "   Audio"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -94,8 +100,9 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: videoButton
+                       iconPath: "qrc:/main_menu_icons/video_tab_icon"
                        activationSoundEnabled: false
-                       text: "Video"
+                       text: "   Video"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -105,8 +112,9 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: utilitiesButton
+                       iconPath: "qrc:/main_menu_icons/utilities_tab_icon"
                        activationSoundEnabled: false
-                       text: "Utilities"
+                       text: "   Utilities"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -127,8 +135,9 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: statisticsButton
+                       iconPath: "qrc:/main_menu_icons/statistics_tab_icon"
                        activationSoundEnabled: false
-                       text: "Statistics"
+                       text: "   Statistics"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
@@ -142,9 +151,22 @@ MyStackViewPage {
                    }
 
                    MyPushButton {
-                       id: settingsButton
+                       id: bindingsButton
+                       iconPath: "qrc:/main_menu_icons/bindings_tab_icon"
                        activationSoundEnabled: false
-                       text: "Settings"
+                       text: "   Bindings"
+                       Layout.fillWidth: true
+                       onClicked: {
+                           MyResources.playFocusChangedSound()
+                           mainView.push(bindingsPage)
+                       }
+                   }
+
+                   MyPushButton {
+                       id: settingsButton
+                       iconPath: "qrc:/main_menu_icons/settings_tab_icon"
+                       activationSoundEnabled: false
+                       text: "   Settings"
                        Layout.fillWidth: true
                        onClicked: {
                            MyResources.playFocusChangedSound()
