@@ -19,10 +19,6 @@ void VideoTabController::initStage1()
     m_overlayInit = true;
     reloadVideoConfig();
     reloadVideoProfiles();
-
-    LOG( ERROR ) << "opacity value is: " << colorOverlayOpacity();
-    // Force the color Settings to apply to proper method
-    // setColor( colorRed(), colorGreen(), colorBlue(), true, true );
 }
 
 void VideoTabController::initBrightnessOverlay()

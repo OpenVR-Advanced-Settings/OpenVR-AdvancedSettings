@@ -114,7 +114,7 @@ GroupBox {
                 from: 0.01
                 to: 1.0
                 stepSize: 0.01
-                value: 0.0
+                value: 0.01
                 Layout.fillWidth: true
                 onPositionChanged: {
                     var val = (this.position * 100)
@@ -122,13 +122,13 @@ GroupBox {
                 }
                 onValueChanged: {
 
-                    VideoTabController.setColorOverlayOpacity(value.toFixed(2), true)
+                    VideoTabController.setColorOverlayOpacity(this.value.toFixed(2), true)
                 }
             }
 
             MyTextField {
                 id: opacityValueText
-                text: "100%"
+                text: "1%"
                 keyBoardUID: 903
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
@@ -294,7 +294,6 @@ GroupBox {
         brightnessToggle.checked = VideoTabController.brightnessEnabled
         colorToggle.checked = VideoTabController.colorOverlayEnabled
         opacitySlider.value = VideoTabController.colorOverlayOpacity
-        //opacityValueText.text = Math.round(VideoTabController.colorOverlayOpacity * 100) + "%"
         colorRedSlider.value = VideoTabController.colorRed
         colorGreenSlider.value = VideoTabController.colorGreen
         colorBlueSlider.value = VideoTabController.colorBlue
