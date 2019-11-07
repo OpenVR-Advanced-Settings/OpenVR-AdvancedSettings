@@ -5,12 +5,12 @@ import ovras.advsettings 1.0
 import "../../common"
 
 GroupBox {
-    id: brightnessGroupBox
+    id: overlayMethodGroupBox
     Layout.fillWidth: true
 
     label: MyText {
         leftPadding: 10
-        text: "Color Adjustment"
+        text: "Brightness and Color (via overlay)"
         bottomPadding: -10
     }
     background: Rectangle {
@@ -27,6 +27,126 @@ GroupBox {
             height: 1
             Layout.fillWidth: true
             Layout.bottomMargin: 5
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+
+            MyToggleButton {
+                id: brightnessToggle
+                text: "Toggle On/Off"
+                onCheckedChanged: {
+                    VideoTabController.setBrightnessEnabled(this.checked, true)                }
+            }
+
+            Item {
+                Layout.preferredWidth: 150
+            }
+
+            MyText {
+                text: "Brightness:"
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 10
+            }
+
+            MySlider {
+                id: brightnessSlider
+                from: 0.01
+                to: 1.0
+                stepSize: 0.01
+                value: 1.0
+                Layout.fillWidth: true
+                onPositionChanged: {
+                    var val = (this.position * 100)
+                    brightnessValueText.text = Math.round(val) + "%"
+                }
+                onValueChanged: {
+
+                    VideoTabController.setBrightnessValue(value.toFixed(2), true)
+                }
+            }
+
+            MyTextField {
+                id: brightnessValueText
+                text: "100%"
+                keyBoardUID: 902
+                Layout.preferredWidth: 100
+                Layout.leftMargin: 10
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val2 = parseFloat(input)
+                    if (!isNaN(val2)) {
+                        if (val2 < 5) {
+                            val2 = 5
+                        } else if (val2 > 100.0) {
+                            val2 = 100.0
+                        }
+                        var v2 = (val2/100).toFixed(2)
+                            brightnessSlider.value = v
+                    }
+                    text = Math.round(VideoTabController.brightnessValue * 100) + "%"
+                }
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+
+            MyToggleButton {
+                id: colorToggle
+                text: "Toggle On/Off"
+                onCheckedChanged: {
+                    VideoTabController.setColorOverlayEnabled(this.checked, true)                }
+            }
+
+            Item {
+                Layout.preferredWidth: 150
+            }
+
+            MyText {
+                text: "Opacity:"
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 10
+            }
+
+            MySlider {
+                id: opacitySlider
+                from: 0.01
+                to: 1.0
+                stepSize: 0.01
+                value: 0.0
+                Layout.fillWidth: true
+                onPositionChanged: {
+                    var val = (this.position * 100)
+                    opacityValueText.text = Math.round(val) + "%"
+                }
+                onValueChanged: {
+
+                    VideoTabController.setColorOverlayOpacity(value.toFixed(2), true)
+                }
+            }
+
+            MyTextField {
+                id: opacityValueText
+                text: "100%"
+                keyBoardUID: 903
+                Layout.preferredWidth: 100
+                Layout.leftMargin: 10
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < 5) {
+                            val = 5
+                        } else if (val > 100.0) {
+                            val = 100.0
+                        }
+                        var v = (val/100).toFixed(2)
+                            opacitySlider.value = v
+                    }
+                    text = Math.round(VideoTabController.colorOverlayOpacity * 100) + "%"
+                }
+            }
         }
 
         RowLayout {
@@ -58,7 +178,7 @@ GroupBox {
             MyTextField {
                 id: colorRedText
                 text: "100%"
-                keyBoardUID: 912
+                keyBoardUID: 915
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
                 horizontalAlignment: Text.AlignHCenter
@@ -102,7 +222,7 @@ GroupBox {
             MyTextField {
                 id: colorGreenText
                 text: "100%"
-                keyBoardUID: 913
+                keyBoardUID: 916
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
                 horizontalAlignment: Text.AlignHCenter
@@ -147,7 +267,7 @@ GroupBox {
                 MyTextField {
                     id: colorBlueText
                     text: "100%"
-                    keyBoardUID: 914
+                    keyBoardUID: 917
                     Layout.preferredWidth: 100
                     Layout.leftMargin: 10
                     horizontalAlignment: Text.AlignHCenter
@@ -167,10 +287,14 @@ GroupBox {
                 }
 
         }
-
     }
 
     Component.onCompleted: {
+        brightnessSlider.value = VideoTabController.brightnessValue
+        brightnessToggle.checked = VideoTabController.brightnessEnabled
+        colorToggle.checked = VideoTabController.colorOverlayEnabled
+        opacitySlider.value = VideoTabController.colorOverlayOpacity
+        //opacityValueText.text = Math.round(VideoTabController.colorOverlayOpacity * 100) + "%"
         colorRedSlider.value = VideoTabController.colorRed
         colorGreenSlider.value = VideoTabController.colorGreen
         colorBlueSlider.value = VideoTabController.colorBlue
@@ -178,6 +302,20 @@ GroupBox {
 
     Connections {
         target: VideoTabController
+
+        onBrightnessValueChanged: {
+            brightnessSlider.value = VideoTabController.brightnessValue
+        }
+        onBrightnessEnabledChanged: {
+            brightnessToggle.checked = VideoTabController.brightnessEnabled
+        }
+        onColorOverlayOpacityChanged:{
+            opacitySlider.value = VideoTabController.colorOverlayOpacity
+        }
+        onColorOverlayEnabledChanged:{
+            colorToggle.checked = VideoTabController.colorOverlayEnabled
+        }
+
         onColorRedChanged:{
             colorRedSlider.value = VideoTabController.colorRed
         }

@@ -36,7 +36,7 @@ GroupBox {
                 id: brightnessToggle
                 text: "Toggle On/Off"
                 onCheckedChanged: {
-                    VideoTabController.setBrightnessEnabled(this.checked, false)                }
+                    VideoTabController.setBrightnessEnabled(this.checked, true)                }
             }
 
             Item {
@@ -62,7 +62,7 @@ GroupBox {
                 }
                 onValueChanged: {
 
-                    VideoTabController.setBrightnessValue(value.toFixed(2), false)
+                    VideoTabController.setBrightnessValue(value.toFixed(2), true)
                 }
             }
 

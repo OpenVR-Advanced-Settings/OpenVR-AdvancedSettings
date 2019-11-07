@@ -34,6 +34,7 @@ unsigned int adjustUpdateRate( const unsigned int baseRefreshKey )
     {
         return baseRefreshKey;
     }
+
     return adjustedRefreshKey;
 }
 
