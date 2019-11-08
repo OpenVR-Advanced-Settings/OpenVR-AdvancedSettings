@@ -404,13 +404,38 @@ MyStackViewPage {
                        Layout.fillWidth: true
                    }
 
-                   MyText {
-                       id: summaryVersionText
-                       text: "v0.0.0"
-                       font.pointSize: 16
-                       Layout.fillWidth: true
-                       horizontalAlignment: Text.AlignRight
+                   RowLayout {
+
+                           Rectangle {
+                               id: summaryVersionCheckTextRect
+                               visible: true
+                               color: "#1b2939"
+                               MyText {
+                                   id: summaryVersionCheckText
+                                   text: ""
+                                   color: "#fffec8"
+                                   font.pointSize: 22
+                                   minimumPointSize: 11
+                                   fontSizeMode: Text.Fit
+                                   leftPadding: 8
+                                   rightPadding: 8
+                                   horizontalAlignment: Text.AlignHCenter
+                                   width: parent.width
+                                   wrapMode: Text.Wrap
+                               }
+                               height: 40
+                               Layout.fillWidth: true
+                           }
+
+                       MyText {
+                           id: summaryVersionText
+                           text: "v0.0.0"
+                           font.pointSize: 16
+                           horizontalAlignment: Text.AlignRight
+                       }
                    }
+
+
                }
            }
        }
@@ -421,6 +446,13 @@ MyStackViewPage {
        reloadVideoProfiles()
 
        summaryVersionText.text = applicationVersion
+       summaryVersionCheckText.text = OverlayController.versionCheckText
+       if (OverlayController.newVersionDetected)
+       {
+           summaryVersionCheckTextRect.color = "#ff0000"
+       } else {
+           summaryVersionCheckTextRect.color = "#1b2939"
+       }
 
 
        if (MoveCenterTabController.trackingUniverse === 0) {
@@ -437,6 +469,36 @@ MyStackViewPage {
        summaryMicVolumeSlider.value = AudioTabController.micVolume
        summaryMicMuteToggle.checked = AudioTabController.micMuted
        summaryPttToggle.checked = AudioTabController.pttEnabled
+   }
+
+   Connections {
+       target: OverlayController
+       onNewVersionDetectedChanged: {
+           if (OverlayController.newVersionDetected)
+           {
+               summaryVersionCheckTextRect.color = "#ff0000"
+           } else {
+               summaryVersionCheckTextRect.color = "#1b2939"
+           }
+       }
+       onVersionCheckTextChanged: {
+           summaryVersionCheckText.text = OverlayController.versionCheckText
+       }
+       onDisableVersionCheckChanged: {
+           if (OverlayController.disableVersionCheck)
+           {
+               summaryVersionCheckText.visible = false
+               summaryVersionCheckTextRect.color = "#1b2939"
+           } else {
+               summaryVersionCheckText.visible = true
+               if (OverlayController.newVersionDetected)
+               {
+                   summaryVersionCheckTextRect.color = "#ff0000"
+               } else {
+                   summaryVersionCheckTextRect.color = "#1b2939"
+               }
+           }
+       }
    }
 
    Connections {
