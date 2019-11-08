@@ -61,6 +61,14 @@ MyStackViewPage {
             }
         }
 
+        MyToggleButton {
+            id: disableVersionCheckToggle
+            text: "Disable Notification of Newer Version Availability"
+            onCheckedChanged: {
+                OverlayController.setDisableVersionCheck(checked, true)
+            }
+        }
+
         RowLayout {
             Layout.fillWidth: true
 
@@ -200,6 +208,7 @@ MyStackViewPage {
             customTickRateMsLabel.visible = vsyncDisabledToggle.checked
             debugStateRow.visible = OverlayController.enableDebug
             debugStateText.text = OverlayController.debugState
+            disableVersionCheckToggle.checked = OverlayController.disableVersionCheck
 
             seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
         }
@@ -252,6 +261,9 @@ MyStackViewPage {
 
             onDebugStateChanged: {
                 debugStateText.text = OverlayController.debugState
+            }
+            onDisableVersionCheckChanged: {
+                disableVersionCheckToggle.checked = OverlayController.disableVersionCheck
             }
         }
     }
