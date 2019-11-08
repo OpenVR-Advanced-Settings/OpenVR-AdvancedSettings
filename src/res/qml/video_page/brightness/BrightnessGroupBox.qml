@@ -57,7 +57,7 @@ GroupBox {
                 value: 1.0
                 Layout.fillWidth: true
                 onPositionChanged: {
-                    var val = (this.position * 100)
+                    var val = (this.value * 100)
                     brightnessValueText.text = Math.round(val) + "%"
                 }
                 onValueChanged: {

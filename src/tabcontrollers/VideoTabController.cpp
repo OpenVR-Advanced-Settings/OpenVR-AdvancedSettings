@@ -405,7 +405,14 @@ void VideoTabController::setIsOverlayMethodActive( bool value, bool notify )
 {
     resetGain();
     m_isOverlayMethodActive = value;
-    setColorOverlayEnabled( colorOverlayEnabled(), true, true );
+    if ( value )
+    {
+        setColorOverlayEnabled( colorOverlayEnabled(), true, false );
+    }
+    else
+    {
+        setColorOverlayEnabled( false, true, false );
+    }
     setColor( colorRed(), colorGreen(), colorBlue(), true, true );
 
     saveVideoConfig();
@@ -452,12 +459,18 @@ void VideoTabController::setColorOverlayEnabled( bool value,
 
 void VideoTabController::setColorOverlayOpacity( float value, bool notify )
 {
-    if ( value != m_colorOverlayOpacity )
+    if ( fabs( static_cast<double>( value - m_colorOverlayOpacity ) ) > .005 )
     {
         vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
             m_colorOverlayHandle, m_colorOverlayOpacity );
-
-        m_colorOverlayOpacity = value;
+        if ( value > .85f )
+        {
+            m_colorOverlayOpacity = 0.85f;
+        }
+        else
+        {
+            m_colorOverlayOpacity = value;
+        }
 
         if ( overlayError != vr::VROverlayError_None )
         {

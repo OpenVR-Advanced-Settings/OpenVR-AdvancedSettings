@@ -36,7 +36,8 @@ GroupBox {
                 id: brightnessToggle
                 text: "Toggle On/Off"
                 onCheckedChanged: {
-                    VideoTabController.setBrightnessEnabled(this.checked, true)                }
+                    VideoTabController.setBrightnessEnabled(this.checked, true)
+                }
             }
 
             Item {
@@ -57,7 +58,7 @@ GroupBox {
                 value: 1.0
                 Layout.fillWidth: true
                 onPositionChanged: {
-                    var val = (this.position * 100)
+                    var val = (this.value * 100)
                     brightnessValueText.text = Math.round(val) + "%"
                 }
                 onValueChanged: {
@@ -112,12 +113,12 @@ GroupBox {
             MySlider {
                 id: opacitySlider
                 from: 0.01
-                to: 1.0
+                to: 0.85
                 stepSize: 0.01
                 value: 0.01
                 Layout.fillWidth: true
                 onPositionChanged: {
-                    var val = (this.position * 100)
+                    var val = (this.value * 100)
                     opacityValueText.text = Math.round(val) + "%"
                 }
                 onValueChanged: {
@@ -138,8 +139,8 @@ GroupBox {
                     if (!isNaN(val)) {
                         if (val < 5) {
                             val = 5
-                        } else if (val > 100.0) {
-                            val = 100.0
+                        } else if (val > 85.0) {
+                            val = 85.0
                         }
                         var v = (val/100).toFixed(2)
                             opacitySlider.value = v
