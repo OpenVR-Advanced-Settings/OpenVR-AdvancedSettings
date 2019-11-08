@@ -11,9 +11,6 @@ class QQuickWindow;
 namespace advsettings
 {
 // forward declaration
-// the following key used to be "onPlaybackMirrorDevice" using a workaround:
-static const char* const k_pch_audio_OnPlaybackMirrorDevice_String_WORKAROUND
-    = "playbackMirrorDevice";
 class OverlayController;
 
 struct AudioProfile
