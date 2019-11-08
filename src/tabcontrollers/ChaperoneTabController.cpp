@@ -35,8 +35,15 @@ void ChaperoneTabController::initStage1()
     m_fadeDistanceRemembered
         = settings->value( "fadeDistanceRemembered", 0.5f ).toFloat();
     settings->endGroup();
-    reloadChaperoneProfiles();
 
+    if ( m_disableChaperone )
+    {
+        setFadeDistance( 0.0f, true );
+    }
+
+    reloadChaperoneProfiles();
+    m_k_chaperoneSettingsUpdateCounter
+        = utils::adjustUpdateRate( k_chaperoneSettingsUpdateCounter );
     eventLoopTick( nullptr );
 }
 
@@ -638,7 +645,7 @@ void ChaperoneTabController::eventLoopTick(
         }
     }
 
-    if ( settingsUpdateCounter >= k_chaperoneSettingsUpdateCounter )
+    if ( settingsUpdateCounter >= m_k_chaperoneSettingsUpdateCounter )
     {
         if ( parent->isDashboardVisible() )
         {

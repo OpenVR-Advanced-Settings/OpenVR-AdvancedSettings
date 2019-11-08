@@ -7,6 +7,7 @@
 #include <thread>
 #include <openvr.h>
 #include <cmath>
+#include "../utils/FrameRateUtils.h"
 
 class QQuickWindow;
 // application namespace
@@ -169,6 +170,8 @@ private:
     bool m_autosaveComplete = false;
 
     int m_updateTicksChaperoneReload = 0;
+
+    unsigned int m_k_chaperoneSettingsUpdateCounter = 101;
 
     vr::VRActionHandle_t m_rightActionHandle;
     vr::VRActionHandle_t m_leftActionHandle;

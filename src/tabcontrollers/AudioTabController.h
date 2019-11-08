@@ -4,6 +4,7 @@
 #include "AudioManager.h"
 #include "PttController.h"
 #include <memory>
+#include "../utils/FrameRateUtils.h"
 
 class QQuickWindow;
 // application namespace
@@ -78,6 +79,8 @@ private:
     bool m_isDefaultAudioProfile = false;
     bool m_isPlaybackOverride = false;
     bool m_isRecordingOverride = false;
+
+    unsigned int m_k_audioSettingsUpdateCounter = 90;
 
     int m_defaultProfileIndex = -1;
 
