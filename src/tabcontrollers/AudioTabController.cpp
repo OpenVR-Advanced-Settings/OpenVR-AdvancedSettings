@@ -22,6 +22,7 @@ void AudioTabController::initStage1()
     audioManager->init( this );
     m_k_audioSettingsUpdateCounter
         = utils::adjustUpdateRate( k_audioSettingsUpdateCounter );
+    initOverride();
     m_playbackDevices = audioManager->getPlaybackDevices();
     m_recordingDevices = audioManager->getRecordingDevices();
     findPlaybackDeviceIndex( audioManager->getPlaybackDevId(), false );
@@ -1010,7 +1011,7 @@ void AudioTabController::setPlaybackOverride( bool value, bool notify )
         }
     }
 }
-void AudioTabController::setRecordingOverride( float value, bool notify )
+void AudioTabController::setRecordingOverride( bool value, bool notify )
 {
     if ( value != m_isRecordingOverride )
     {
@@ -1029,6 +1030,39 @@ void AudioTabController::setRecordingOverride( float value, bool notify )
         {
             emit playbackOverrideChanged();
         }
+    }
+}
+
+void AudioTabController::initOverride()
+{
+    vr::EVRSettingsError vrSettingsError;
+    auto temp = vr::VRSettings()->GetBool(
+        vr::k_pch_audio_Section,
+        vr::k_pch_audio_EnableRecordingDeviceOverride_Bool,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( ERROR ) << "Could not get recording override setting: "
+                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                            vrSettingsError );
+    }
+    else
+    {
+        setRecordingOverride( temp );
+    }
+    temp = vr::VRSettings()->GetBool(
+        vr::k_pch_audio_Section,
+        vr::k_pch_audio_EnablePlaybackDeviceOverride_Bool,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( ERROR ) << "Could not get playback override setting: "
+                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                            vrSettingsError );
+    }
+    else
+    {
+        setPlaybackOverride( temp );
     }
 }
 //********************

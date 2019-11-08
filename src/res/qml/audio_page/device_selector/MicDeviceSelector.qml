@@ -17,6 +17,17 @@ RowLayout {
         text: deviceText
         Layout.preferredWidth: 260
     }
+    MyToggleButton {
+        id: recordingOverrideToggle
+        Layout.preferredWidth: 200
+        text: "Toggle Override"
+        onClicked: {
+            AudioTabController.setRecordingOverride(this.checked, false)
+        }
+        onCheckedChanged: {
+            selector.enabled = this.checked
+        }
+    }
     MyComboBox {
         id: selector
         Layout.maximumWidth: 850
@@ -50,6 +61,7 @@ RowLayout {
     Component.onCompleted: {
         devices = getAudioDeviceList()
         setShownAudioDevice(AudioTabController.micDeviceIndex)
+        recordingOverrideToggle.checked = AudioTabController.recordingOverride
     }
     Connections {
         target: AudioTabController
@@ -59,6 +71,9 @@ RowLayout {
         onRecordingDeviceListChanged: {
             devices = getAudioDeviceList()
             setShownAudioDevice(AudioTabController.micDeviceIndex)
+        }
+        onRecordingOverrideChanged: {
+            recordingOverrideToggle.value = AudioTabController.recordingOverride
         }
     }
 }

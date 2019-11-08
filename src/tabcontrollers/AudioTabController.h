@@ -123,6 +123,8 @@ private:
     void setDefaultMirror( int index, bool notify = true );
     void setDefaultMic( int index, bool notify = true );
 
+    void initOverride();
+
     std::vector<AudioProfile> audioProfiles;
 
 public:

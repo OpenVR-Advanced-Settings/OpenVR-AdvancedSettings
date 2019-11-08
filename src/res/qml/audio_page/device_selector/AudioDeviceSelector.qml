@@ -14,6 +14,19 @@ RowLayout {
         text: deviceText
         Layout.preferredWidth: 260
     }
+
+    MyToggleButton {
+        id: playbackOverrideToggle
+        Layout.preferredWidth: 200
+        text: "Toggle Override"
+        onClicked: {
+            AudioTabController.setPlaybackOverride(this.checked, false)
+        }
+        onCheckedChanged: {
+            selector.enabled = this.checked
+        }
+    }
+
     MyComboBox {
         id: selector
         Layout.maximumWidth: 850
@@ -28,6 +41,7 @@ RowLayout {
     Component.onCompleted: {
         audioPlaybackNameCombo.devices = getAudioDeviceList()
         setShownAudioDevice(AudioTabController.playbackDeviceIndex)
+        playbackOverrideToggle.checked = AudioTabController.playbackOverride
     }
 
     Connections {
@@ -38,6 +52,9 @@ RowLayout {
         onPlaybackDeviceListChanged: {
             audioPlaybackNameCombo.devices = getAudioDeviceList()
             setShownAudioDevice(AudioTabController.playbackDeviceIndex)
+        }
+        onPlaybackOverrideChanged: {
+            playbackOverrideToggle.value = AudioTabController.playbackOverride
         }
     }
     function getAudioDeviceList() {
