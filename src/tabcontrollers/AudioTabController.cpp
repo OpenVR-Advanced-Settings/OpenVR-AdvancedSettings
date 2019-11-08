@@ -975,6 +975,62 @@ void AudioTabController::deleteAudioProfile( unsigned index )
     }
 }
 
+// 1.8.19 changes
+//********************
+
+bool AudioTabController::playbackOverride() const
+{
+    return m_isPlaybackOverride;
+}
+
+bool AudioTabController::recordingOverride() const
+{
+    return m_isRecordingOverride;
+}
+void AudioTabController::setPlaybackOverride( bool value, bool notify )
+{
+    if ( value != m_isPlaybackOverride )
+    {
+        vr::EVRSettingsError vrSettingsError;
+        vr::VRSettings()->SetBool(
+            vr::k_pch_audio_Section,
+            vr::k_pch_audio_EnablePlaybackDeviceOverride_Bool,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( ERROR ) << "Could not set playback override setting: "
+                         << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                vrSettingsError );
+        }
+        if ( notify )
+        {
+            emit playbackOverrideChanged();
+        }
+    }
+}
+void AudioTabController::setRecordingOverride( float value, bool notify )
+{
+    if ( value != m_isRecordingOverride )
+    {
+        vr::EVRSettingsError vrSettingsError;
+        vr::VRSettings()->SetBool(
+            vr::k_pch_audio_Section,
+            vr::k_pch_audio_EnableRecordingDeviceOverride_Bool,
+            &vrSettingsError );
+        if ( vrSettingsError != vr::VRSettingsError_None )
+        {
+            LOG( ERROR ) << "Could not set recording override setting: "
+                         << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                vrSettingsError );
+        }
+        if ( notify )
+        {
+            emit playbackOverrideChanged();
+        }
+    }
+}
+//********************
+
 unsigned AudioTabController::getAudioProfileCount()
 {
     return static_cast<unsigned int>( audioProfiles.size() );

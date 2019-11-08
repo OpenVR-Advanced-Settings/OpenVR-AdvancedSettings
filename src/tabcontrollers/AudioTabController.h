@@ -55,6 +55,10 @@ class AudioTabController : public PttController
                     NOTIFY micReversePttChanged )
     Q_PROPERTY( bool audioProfileDefault READ audioProfileDefault WRITE
                     setAudioProfileDefault NOTIFY audioProfileDefaultChanged )
+    Q_PROPERTY( bool playbackOverride READ playbackOverride WRITE
+                    setPlaybackOverride NOTIFY playbackOverrideChanged )
+    Q_PROPERTY( bool recordingOverride READ recordingOverride WRITE
+                    setRecordingOverride NOTIFY recordingOverrideChanged )
 
 private:
     vr::VROverlayHandle_t m_ulNotificationOverlayHandle
@@ -72,6 +76,8 @@ private:
     bool m_micProximitySensorCanMute = false;
     bool m_micReversePtt = false;
     bool m_isDefaultAudioProfile = false;
+    bool m_isPlaybackOverride = false;
+    bool m_isRecordingOverride = false;
 
     int m_defaultProfileIndex = -1;
 
@@ -139,6 +145,8 @@ public:
     bool micProximitySensorCanMute() const;
     bool micReversePtt() const;
     bool audioProfileDefault() const;
+    bool playbackOverride() const;
+    bool recordingOverride() const;
 
     void reloadAudioProfiles();
     void saveAudioProfiles();
@@ -177,6 +185,9 @@ public slots:
     void applyAudioProfile( unsigned index );
     void deleteAudioProfile( unsigned index );
 
+    void setPlaybackOverride( bool value, bool notify = true );
+    void setRecordingOverride( bool value, bool notify = true );
+
     void setAudioProfileDefault( bool value, bool notify = true );
 
 signals:
@@ -198,6 +209,9 @@ signals:
     void audioProfilesUpdated();
     void audioProfileAdded();
     void audioProfileDefaultChanged( bool value );
+
+    void playbackOverrideChanged();
+    void recordingOverrideChanged();
 
     void defaultProfileDisplay();
 };
