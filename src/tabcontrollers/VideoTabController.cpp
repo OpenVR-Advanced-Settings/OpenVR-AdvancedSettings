@@ -8,8 +8,12 @@ namespace advsettings
 {
 void VideoTabController::initStage1()
 {
+    // In order to ensure gain is "normal" before applying to either overlay or
+    // gain.
+    resetGain();
+
     initBrightnessOverlay();
-    initColorGain();
+    initColorOverlay();
     initMotionSmoothing();
     initSupersampleOverride();
     m_overlayInit = true;
@@ -55,6 +59,70 @@ void VideoTabController::initBrightnessOverlay()
                      << vr::VROverlay()->GetOverlayErrorNameFromEnum(
                             overlayError );
     }
+}
+
+void VideoTabController::initColorOverlay()
+{
+    std::string notifKey
+        = std::string( application_strings::applicationKey ) + ".coloroverlay";
+
+    vr::VROverlayError overlayError = vr::VROverlay()->CreateOverlay(
+        notifKey.c_str(), notifKey.c_str(), &m_colorOverlayHandle );
+    if ( overlayError == vr::VROverlayError_None )
+    {
+        const auto notifIconPath = paths::binaryDirectoryFindFile(
+            video_keys::k_colorOverlayFilename );
+        if ( notifIconPath.has_value() )
+        {
+            vr::VROverlay()->SetOverlayFromFile( m_colorOverlayHandle,
+                                                 notifIconPath->c_str() );
+            vr::VROverlay()->SetOverlayWidthInMeters( m_colorOverlayHandle,
+                                                      k_overlayWidth );
+            // position it just slightly further out so we don't have to worry
+            // about render order.
+            vr::HmdMatrix34_t notificationTransform
+                = { { { 1.0f, 0.0f, 0.0f, 0.00f },
+                      { 0.0f, 1.0f, 0.0f, 0.00f },
+                      { 0.0f, 0.0f, 1.0f, ( k_hmdDistance - 0.01f ) } } };
+            vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
+                m_colorOverlayHandle,
+                vr::k_unTrackedDeviceIndex_Hmd,
+                &notificationTransform );
+        }
+        else
+        {
+            LOG( ERROR ) << "Could not find Base color overlay: \""
+                         << video_keys::k_colorOverlayFilename << "\"";
+        }
+    }
+    else
+    {
+        LOG( ERROR ) << "Could not create color overlay: "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                            overlayError );
+    }
+}
+
+void VideoTabController::loadColorOverlay()
+{
+    vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayColor(
+        m_colorOverlayHandle, m_colorRed, m_colorGreen, m_colorBlue );
+    if ( overlayError != vr::VROverlayError_None )
+    {
+        LOG( ERROR ) << "Could not set Colors for color overlay: "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                            overlayError );
+    }
+
+    overlayError = vr::VROverlay()->SetOverlayAlpha( m_colorOverlayHandle,
+                                                     m_colorOverlayOpacity );
+    if ( overlayError != vr::VROverlayError_None )
+    {
+        LOG( ERROR ) << "Could not set alpha: "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                            overlayError );
+    }
+    emit colorOverlayOpacityChanged( true );
 }
 
 void VideoTabController::eventLoopTick() {}
@@ -158,9 +226,19 @@ void VideoTabController::reloadVideoConfig()
     m_brightnessOpacityValue
         = settings->value( "brightnessOpacityValue", 0.0f ).toFloat();
     m_brightnessValue = settings->value( "brightnessValue", 1.0f ).toFloat();
+    setColorOverlayEnabled(
+        settings->value( "colorOverlayEnabled", false ).toBool(), true );
+    setColorOverlayOpacity(
+        settings->value( "colorOverlayOpacity", 0.0f ).toFloat(), true );
+    setIsOverlayMethodActive(
+        settings->value( "isOverlayMethodActive", false ).toBool(), true );
+    setColorRed( settings->value( "colorRed", 1.0f ).toFloat() );
+    setColorGreen( settings->value( "colorGreen", 1.0f ).toFloat() );
+    setColorBlue( settings->value( "colorBlue", 1.0f ).toFloat() );
 
     settings->endGroup();
     setBrightnessOpacityValue();
+    loadColorOverlay();
     settings->sync();
 }
 
@@ -171,6 +249,12 @@ void VideoTabController::saveVideoConfig()
     settings->setValue( "brightnessEnabled", brightnessEnabled() );
     settings->setValue( "brightnessOpacityValue", brightnessOpacityValue() );
     settings->setValue( "brightnessValue", brightnessValue() );
+    settings->setValue( "colorOverlayEnabled", colorOverlayEnabled() );
+    settings->setValue( "colorOverlayOpacity", colorOverlayOpacity() );
+    settings->setValue( "colorRed", colorRed() );
+    settings->setValue( "colorGreen", colorGreen() );
+    settings->setValue( "colorBlue", colorBlue() );
+    settings->setValue( "isOverlayMethodActive", isOverlayMethodActive() );
 
     settings->endGroup();
     settings->sync();
@@ -191,11 +275,16 @@ bool VideoTabController::brightnessEnabled() const
     return m_brightnessEnabled;
 }
 
-void VideoTabController::setBrightnessEnabled( bool value, bool notify )
+void VideoTabController::setBrightnessEnabled( bool value,
+                                               bool notify,
+                                               bool keepValue )
 {
-    if ( value != m_brightnessEnabled )
+    if ( value != m_brightnessEnabled || keepValue )
     {
-        m_brightnessEnabled = value;
+        if ( !keepValue )
+        {
+            m_brightnessEnabled = value;
+        }
         auto overlayHandle = getBrightnessOverlayHandle();
         if ( value )
         {
@@ -280,6 +369,16 @@ void VideoTabController::setBrightnessOpacityValue()
 
 // getters
 
+bool VideoTabController::colorOverlayEnabled() const
+{
+    return m_colorOverlayEnabled;
+}
+
+float VideoTabController::colorOverlayOpacity() const
+{
+    return m_colorOverlayOpacity;
+}
+
 float VideoTabController::colorRed() const
 {
     return m_colorRed;
@@ -295,27 +394,138 @@ float VideoTabController::colorBlue() const
     return m_colorBlue;
 }
 
+bool VideoTabController::isOverlayMethodActive() const
+{
+    return m_isOverlayMethodActive;
+}
+
 // setters
 
-void VideoTabController::setColorRed( float value, bool notify )
+void VideoTabController::setIsOverlayMethodActive( bool value, bool notify )
 {
-    if ( fabs( static_cast<double>( value - m_colorRed ) ) > .005 )
+    resetGain();
+    m_isOverlayMethodActive = value;
+    if ( value )
     {
-        m_colorRed = value;
-        vr::EVRSettingsError vrSettingsError;
-        vr::VRSettings()->SetFloat(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_HmdDisplayColorGainR_Float,
-            m_colorRed,
-            &vrSettingsError );
+        setColorOverlayEnabled( colorOverlayEnabled(), true, false );
+    }
+    else
+    {
+        setColorOverlayEnabled( false, true, false );
+    }
+    setColor( colorRed(), colorGreen(), colorBlue(), true, true );
 
-        if ( vrSettingsError != vr::VRSettingsError_None )
+    saveVideoConfig();
+    if ( notify )
+    {
+        emit isOverlayMethodActiveChanged( value );
+    }
+}
+
+void VideoTabController::setColorOverlayEnabled( bool value,
+                                                 bool notify,
+                                                 bool keepValue )
+{
+    if ( value != m_colorOverlayEnabled || keepValue )
+    {
+        if ( !keepValue )
         {
-            LOG( ERROR ) << "could not set Red Gain Value, Error: "
-                         << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                vrSettingsError );
+            m_colorOverlayEnabled = value;
         }
-        LOG( DEBUG ) << "Changed Red Gain to: " << m_colorRed;
+        auto overlayHandle = getColorOverlayHandle();
+        if ( value )
+        {
+            if ( overlayHandle != vr::k_ulOverlayHandleInvalid )
+            {
+                vr::VROverlay()->ShowOverlay( getColorOverlayHandle() );
+                LOG( INFO ) << "Color Overlay toggled on";
+            }
+        }
+        else
+        {
+            if ( overlayHandle != vr::k_ulOverlayHandleInvalid )
+            {
+                vr::VROverlay()->HideOverlay( getColorOverlayHandle() );
+                LOG( INFO ) << "Color Overlay toggled off";
+            }
+        }
+        saveVideoConfig();
+        if ( notify )
+        {
+            emit colorOverlayEnabledChanged( value );
+        }
+    }
+}
+
+void VideoTabController::setColorOverlayOpacity( float value, bool notify )
+{
+    if ( fabs( static_cast<double>( value - m_colorOverlayOpacity ) ) > .005 )
+    {
+        vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
+            m_colorOverlayHandle, m_colorOverlayOpacity );
+        if ( value > .85f )
+        {
+            m_colorOverlayOpacity = 0.85f;
+        }
+        else
+        {
+            m_colorOverlayOpacity = value;
+        }
+
+        if ( overlayError != vr::VROverlayError_None )
+        {
+            LOG( ERROR ) << "Could not set alpha for color overlay: "
+                         << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                                overlayError );
+        }
+        saveVideoConfig();
+        if ( notify )
+        {
+            emit colorOverlayOpacityChanged( m_colorOverlayOpacity );
+        }
+    }
+}
+
+void VideoTabController::setColorRed( float value, bool notify, bool keepValue )
+{
+    if ( ( fabs( static_cast<double>( value - m_colorRed ) ) > .005 )
+         || keepValue )
+    {
+        if ( !keepValue )
+        {
+            m_colorRed = value;
+        }
+
+        if ( isOverlayMethodActive() )
+        {
+            vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayColor(
+                m_colorOverlayHandle, m_colorRed, m_colorGreen, m_colorBlue );
+            if ( overlayError != vr::VROverlayError_None )
+            {
+                LOG( ERROR ) << "Could not set Red for color overlay: "
+                             << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                                    overlayError );
+            }
+        }
+        else
+        {
+            vr::EVRSettingsError vrSettingsError;
+            vr::VRSettings()->SetFloat(
+                vr::k_pch_SteamVR_Section,
+                vr::k_pch_SteamVR_HmdDisplayColorGainR_Float,
+                m_colorRed,
+                &vrSettingsError );
+
+            if ( vrSettingsError != vr::VRSettingsError_None )
+            {
+                LOG( ERROR ) << "could not set Red Gain Value, Error: "
+                             << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                    vrSettingsError );
+            }
+        }
+
+        LOG( DEBUG ) << "Changed Red Value to: " << m_colorRed;
+        saveVideoConfig();
         vr::VRSettings()->Sync();
         if ( notify )
         {
@@ -324,25 +534,48 @@ void VideoTabController::setColorRed( float value, bool notify )
     }
 }
 
-void VideoTabController::setColorGreen( float value, bool notify )
+void VideoTabController::setColorGreen( float value,
+                                        bool notify,
+                                        bool keepValue )
 {
-    if ( fabs( static_cast<double>( value - m_colorGreen ) ) > .005 )
+    if ( ( fabs( static_cast<double>( value - m_colorGreen ) ) > .005 )
+         || keepValue )
     {
-        m_colorGreen = value;
-        vr::EVRSettingsError vrSettingsError;
-        vr::VRSettings()->SetFloat(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_HmdDisplayColorGainG_Float,
-            m_colorGreen,
-            &vrSettingsError );
-
-        if ( vrSettingsError != vr::VRSettingsError_None )
+        if ( !keepValue )
         {
-            LOG( ERROR ) << "could not set Green Gain Value, Error: "
-                         << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                vrSettingsError );
+            m_colorGreen = value;
         }
-        LOG( DEBUG ) << "Changed Green Gain to: " << m_colorGreen;
+
+        if ( isOverlayMethodActive() )
+        {
+            vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayColor(
+                m_colorOverlayHandle, m_colorRed, m_colorGreen, m_colorBlue );
+            if ( overlayError != vr::VROverlayError_None )
+            {
+                LOG( ERROR ) << "Could not set Green for color overlay: "
+                             << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                                    overlayError );
+            }
+        }
+        else
+        {
+            vr::EVRSettingsError vrSettingsError;
+            vr::VRSettings()->SetFloat(
+                vr::k_pch_SteamVR_Section,
+                vr::k_pch_SteamVR_HmdDisplayColorGainG_Float,
+                m_colorGreen,
+                &vrSettingsError );
+
+            if ( vrSettingsError != vr::VRSettingsError_None )
+            {
+                LOG( ERROR ) << "could not set Green Gain Value, Error: "
+                             << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                    vrSettingsError );
+            }
+        }
+
+        LOG( DEBUG ) << "Changed Green Value to: " << m_colorGreen;
+        saveVideoConfig();
         vr::VRSettings()->Sync();
         if ( notify )
         {
@@ -351,25 +584,47 @@ void VideoTabController::setColorGreen( float value, bool notify )
     }
 }
 
-void VideoTabController::setColorBlue( float value, bool notify )
+void VideoTabController::setColorBlue( float value,
+                                       bool notify,
+                                       bool keepValue )
 {
-    if ( fabs( static_cast<double>( value - m_colorBlue ) ) > .005 )
+    if ( ( fabs( static_cast<double>( value - m_colorBlue ) ) > .005 )
+         || keepValue )
     {
-        m_colorBlue = value;
-        vr::EVRSettingsError vrSettingsError;
-        vr::VRSettings()->SetFloat(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_HmdDisplayColorGainB_Float,
-            m_colorBlue,
-            &vrSettingsError );
-
-        if ( vrSettingsError != vr::VRSettingsError_None )
+        if ( !keepValue )
         {
-            LOG( ERROR ) << "could not set Blue Gain Value, Error: "
-                         << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                vrSettingsError );
+            m_colorBlue = value;
         }
-        LOG( DEBUG ) << "Changed Blue Gain to: " << m_colorBlue;
+        if ( isOverlayMethodActive() )
+        {
+            vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayColor(
+                m_colorOverlayHandle, m_colorRed, m_colorGreen, m_colorBlue );
+            if ( overlayError != vr::VROverlayError_None )
+            {
+                LOG( ERROR ) << "Could not set Blue for color overlay: "
+                             << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                                    overlayError );
+            }
+        }
+        else
+        {
+            vr::EVRSettingsError vrSettingsError;
+            vr::VRSettings()->SetFloat(
+                vr::k_pch_SteamVR_Section,
+                vr::k_pch_SteamVR_HmdDisplayColorGainB_Float,
+                m_colorBlue,
+                &vrSettingsError );
+
+            if ( vrSettingsError != vr::VRSettingsError_None )
+            {
+                LOG( ERROR ) << "could not set Blue Gain Value, Error: "
+                             << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                    vrSettingsError );
+            }
+        }
+
+        LOG( DEBUG ) << "Changed Blue Value to: " << m_colorBlue;
+        saveVideoConfig();
         vr::VRSettings()->Sync();
         if ( notify )
         {
@@ -378,58 +633,54 @@ void VideoTabController::setColorBlue( float value, bool notify )
     }
 }
 
-void VideoTabController::initColorGain()
+void VideoTabController::resetGain()
 {
-    float temporary = 0.0f;
     vr::EVRSettingsError vrSettingsError;
-    temporary = vr::VRSettings()->GetFloat(
-        vr::k_pch_SteamVR_Section,
-        vr::k_pch_SteamVR_HmdDisplayColorGainR_Float,
-        &vrSettingsError );
+    vr::VRSettings()->SetFloat( vr::k_pch_SteamVR_Section,
+                                vr::k_pch_SteamVR_HmdDisplayColorGainR_Float,
+                                1.0f,
+                                &vrSettingsError );
 
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
-        LOG( ERROR ) << "Could not get Red Gain Value ERROR: "
+        LOG( ERROR ) << "could not set Red Gain Value, Error: "
                      << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                             vrSettingsError );
     }
-    else
-    {
-        m_colorRed = temporary;
-        setColorRed( temporary );
-    }
+    vr::VRSettings()->SetFloat( vr::k_pch_SteamVR_Section,
+                                vr::k_pch_SteamVR_HmdDisplayColorGainG_Float,
+                                1.0f,
+                                &vrSettingsError );
 
-    temporary = vr::VRSettings()->GetFloat(
-        vr::k_pch_SteamVR_Section,
-        vr::k_pch_SteamVR_HmdDisplayColorGainG_Float,
-        &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
-        LOG( ERROR ) << "Could not get Green Gain Value ERROR: "
+        LOG( ERROR ) << "could not set Green Gain Value, Error: "
                      << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                             vrSettingsError );
-    }
-    else
-    {
-        m_colorGreen = temporary;
-        setColorGreen( temporary );
     }
 
-    temporary = vr::VRSettings()->GetFloat(
-        vr::k_pch_SteamVR_Section,
-        vr::k_pch_SteamVR_HmdDisplayColorGainB_Float,
-        &vrSettingsError );
+    vr::VRSettings()->SetFloat( vr::k_pch_SteamVR_Section,
+                                vr::k_pch_SteamVR_HmdDisplayColorGainB_Float,
+                                1.0f,
+                                &vrSettingsError );
+
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
-        LOG( ERROR ) << "Could not get Blue Gain Value ERROR: "
+        LOG( ERROR ) << "could not set Blue Gain Value, Error: "
                      << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                             vrSettingsError );
     }
-    else
-    {
-        m_colorBlue = temporary;
-        setColorBlue( temporary );
-    }
+}
+
+void VideoTabController::setColor( float R,
+                                   float G,
+                                   float B,
+                                   bool notify,
+                                   bool keepValue )
+{
+    setColorRed( R, notify, keepValue );
+    setColorGreen( G, notify, keepValue );
+    setColorBlue( B, notify, keepValue );
 }
 
 /*
@@ -621,6 +872,8 @@ void VideoTabController::addVideoProfile( const QString name )
     profile->colorBlue = m_colorBlue;
     profile->brightnessToggle = m_brightnessEnabled;
     profile->brightnessValue = m_brightnessValue;
+    profile->opacity = m_colorOverlayOpacity;
+    profile->overlayMethodState = m_isOverlayMethodActive;
 
     saveVideoProfiles();
     OverlayController::appSettings()->sync();
@@ -638,11 +891,13 @@ void VideoTabController::applyVideoProfile( const unsigned index )
         setSuperSampling( profile.supersampling );
         setAllowSupersampleFiltering( profile.anisotropicFiltering );
         setMotionSmoothing( profile.motionSmooth );
+        setIsOverlayMethodActive( profile.overlayMethodState );
         setColorRed( profile.colorRed );
         setColorBlue( profile.colorBlue );
         setColorGreen( profile.colorGreen );
         setBrightnessEnabled( profile.brightnessToggle );
         setBrightnessValue( profile.brightnessValue );
+        setColorOverlayOpacity( profile.opacity );
         vr::VRSettings()->Sync( true );
     }
 }
@@ -663,8 +918,8 @@ void VideoTabController::reloadVideoProfiles()
 {
     videoProfiles.clear();
     auto settings = OverlayController::appSettings();
-    settings->beginGroup( "steamVRSettings" );
-    auto profileCount = settings->beginReadArray( "steamVRProfiles" );
+    settings->beginGroup( "VideoSettings" );
+    auto profileCount = settings->beginReadArray( "videoProfiles" );
     for ( int i = 0; i < profileCount; i++ )
     {
         settings->setArrayIndex( i );
@@ -689,6 +944,9 @@ void VideoTabController::reloadVideoProfiles()
             = settings->value( "brightnessToggle", false ).toBool();
         entry.brightnessValue
             = settings->value( "brightnessValue", 1.0f ).toFloat();
+        entry.opacity = settings->value( "opacity", 0.0f ).toFloat();
+        entry.overlayMethodState
+            = settings->value( "overlayMethodState", false ).toBool();
     }
     settings->endArray();
     settings->endGroup();
@@ -717,6 +975,9 @@ void VideoTabController::saveVideoProfiles()
 
         settings->setValue( "brightnessToggle", p.brightnessToggle );
         settings->setValue( "brightnessValue", p.brightnessValue );
+
+        settings->setValue( "opacity", p.opacity );
+        settings->setValue( "overlayMethodState", p.overlayMethodState );
 
         i++;
     }

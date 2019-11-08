@@ -50,6 +50,17 @@ GroupBox {
                     VideoTabController.setAllowSupersampleFiltering(this.checked, false)
                 }
             }
+            Item {
+                Layout.preferredWidth: 20
+            }
+
+            MyToggleButton {
+                id: videoUseOverlayToggle
+                text: "Use Overlay For Color"
+                onCheckedChanged: {
+                    VideoTabController.setIsOverlayMethodActive(this.checked, true)
+                }
+            }
         }
 
     }
@@ -57,7 +68,7 @@ GroupBox {
     Component.onCompleted: {
         videoAllowSupersampleFilteringToggle.checked = VideoTabController.allowSupersampleFiltering
         videoMotionSmoothingToggle.checked = VideoTabController.motionSmoothing
-
+        videoUseOverlayToggle.checked = VideoTabController.isOverlayMethodActive
     }
 
     Connections {
@@ -68,6 +79,9 @@ GroupBox {
 
         onMotionSmoothingChanged: {
             videoMotionSmoothingToggle.checked = VideoTabController.motionSmoothing
+        }
+        onIsOverlayMethodActiveChanged:{
+            videoUseOverlayToggle.checked = VideoTabController.isOverlayMethodActive
         }
 
     }

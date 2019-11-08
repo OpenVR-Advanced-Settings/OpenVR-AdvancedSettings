@@ -7,6 +7,7 @@
 #include <memory>
 #include "src/keyboard_input/keyboard_input.h"
 #include "src/media_keys/media_keys.h"
+#include "../utils/FrameRateUtils.h"
 
 class QQuickWindow;
 // application namespace
@@ -44,6 +45,8 @@ private:
         = { 0 };
     int m_batteryState[vr::k_unMaxTrackedDeviceCount];
     bool m_batteryVisible[vr::k_unMaxTrackedDeviceCount];
+
+    unsigned int m_k_utilitiesSettingsUpdateCounter = 19;
 
 public:
     void initStage1();

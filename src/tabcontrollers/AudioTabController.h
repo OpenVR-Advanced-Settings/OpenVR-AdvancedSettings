@@ -4,6 +4,7 @@
 #include "AudioManager.h"
 #include "PttController.h"
 #include <memory>
+#include "../utils/FrameRateUtils.h"
 
 class QQuickWindow;
 // application namespace
@@ -72,6 +73,8 @@ private:
     bool m_micProximitySensorCanMute = false;
     bool m_micReversePtt = false;
     bool m_isDefaultAudioProfile = false;
+
+    unsigned int m_k_audioSettingsUpdateCounter = 90;
 
     int m_defaultProfileIndex = -1;
 

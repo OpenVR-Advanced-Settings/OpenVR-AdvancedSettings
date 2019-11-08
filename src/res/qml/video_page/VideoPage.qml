@@ -8,14 +8,17 @@ import "color"
 import "supersampling"
 import "miscvid"
 import "profiles"
+import "overlaycolorbright"
 
 MyStackViewPage {
     width: 1200
     headerText: "Video Settings"
-
     content: ColumnLayout {
         spacing: 10
 
+        OverlayMethodGroupBox{
+        id: overlayMethodGroupBox
+        }
         BrightnessGroupBox {
         id: brightnessGroupBox}
         ColorGroupBox {
@@ -36,4 +39,20 @@ MyStackViewPage {
         }
 
     }
+    Component.onCompleted: {
+        overlayMethodGroupBox.visible = VideoTabController.isOverlayMethodActive
+        brightnessGroupBox.visible = !(VideoTabController.isOverlayMethodActive);
+        colorGroupBox.visible = !(VideoTabController.isOverlayMethodActive);
+    }
+
+    Connections {
+        target: VideoTabController
+            onIsOverlayMethodActiveChanged:{
+                overlayMethodGroupBox.visible = VideoTabController.isOverlayMethodActive
+                brightnessGroupBox.visible = !(VideoTabController.isOverlayMethodActive);
+                colorGroupBox.visible = !(VideoTabController.isOverlayMethodActive);
+            }
+
+    }
+
 }
