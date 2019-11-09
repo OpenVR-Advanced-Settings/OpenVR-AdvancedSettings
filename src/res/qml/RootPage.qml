@@ -147,8 +147,7 @@ MyStackViewPage {
                        text: "   Bindings"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(bindingsPage)
+                            SteamVRTabController.launchBindingUI()
                        }
                    }
 
