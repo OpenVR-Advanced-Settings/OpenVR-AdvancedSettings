@@ -95,6 +95,13 @@ GroupBox {
                 Layout.preferredWidth: 20
                 text: " "
             }
+            MyPushButton{
+                id:bindingLaunchButton
+                text: "Go to Bindings Page"
+                onClicked: {
+                    SteamVRTabController.launchBindingUI()
+                }
+            }
 
         }
 

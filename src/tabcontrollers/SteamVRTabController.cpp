@@ -350,6 +350,26 @@ bool SteamVRTabController::cameraDashboard() const
     return m_cameraDashboard;
 }
 
+void SteamVRTabController::launchBindingUI()
+{
+    vr::VRActionSetHandle_t actionHandle = 0;
+    vr::VRInputValueHandle_t inputHandle = 0;
+
+    auto error2 = vr::VRInput()->GetInputSourceHandle( "/user/hand/right",
+                                                       &inputHandle );
+    if ( error2 != vr::VRInputError_None )
+    {
+        LOG( ERROR )
+            << "failed to get input handle? is your right controller on?";
+    }
+    auto error = vr::VRInput()->OpenBindingUI(
+        application_strings::applicationKey, actionHandle, inputHandle, false );
+    if ( error != vr::VRInputError_None )
+    {
+        LOG( ERROR ) << "Input Error: " << error;
+    }
+}
+
 void SteamVRTabController::setCameraDashboard( const bool value,
                                                const bool notify )
 {
