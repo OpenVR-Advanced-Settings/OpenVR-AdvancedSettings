@@ -122,16 +122,6 @@ MyStackViewPage {
                        }
                    }
 
-                   MyPushButton {
-                       id: desktopOverlayButton
-                       activationSoundEnabled: false
-                       text: "Desktop Overlay"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(desktopOverlayPage)
-                       }
-                   }
 
                    MyPushButton {
                        id: statisticsButton
