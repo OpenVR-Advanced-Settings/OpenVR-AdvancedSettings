@@ -53,7 +53,8 @@ void AudioTabController::initStage1()
     m_micMuted = audioManager->getMicMuted();
     reloadPttProfiles();
     reloadPttConfig();
-    reloadAudioProfiles();
+    // Temporarily disabled audio profiles for 1.8.19 until api is clear.
+    // reloadAudioProfiles();
     reloadAudioSettings();
 
     eventLoopTick();
@@ -994,10 +995,12 @@ void AudioTabController::setPlaybackOverride( bool value, bool notify )
 {
     if ( value != m_isPlaybackOverride )
     {
+        m_isPlaybackOverride = value;
         vr::EVRSettingsError vrSettingsError;
         vr::VRSettings()->SetBool(
             vr::k_pch_audio_Section,
             vr::k_pch_audio_EnablePlaybackDeviceOverride_Bool,
+            m_isPlaybackOverride,
             &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
@@ -1015,10 +1018,12 @@ void AudioTabController::setRecordingOverride( bool value, bool notify )
 {
     if ( value != m_isRecordingOverride )
     {
+        m_isRecordingOverride = value;
         vr::EVRSettingsError vrSettingsError;
         vr::VRSettings()->SetBool(
             vr::k_pch_audio_Section,
             vr::k_pch_audio_EnableRecordingDeviceOverride_Bool,
+            m_isRecordingOverride,
             &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {

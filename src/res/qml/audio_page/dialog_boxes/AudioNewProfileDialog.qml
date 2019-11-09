@@ -58,12 +58,6 @@ MyDialogOkCancelPopup {
             }
         }
     }
-    Connections {
-        target: AudioTabController
-        onAudioProfileDefaultChanged: {
-            defaultProfileToggle = AudioTabController.audioProfileDefault
-        }
-    }
 
     function openPopup() {
         audioNewProfileName.text = ""

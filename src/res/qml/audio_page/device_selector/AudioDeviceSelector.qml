@@ -12,12 +12,12 @@ RowLayout {
     property alias deviceIndex: selector.currentIndex
     MyText {
         text: deviceText
-        Layout.preferredWidth: 260
+        Layout.preferredWidth: 200
     }
 
     MyToggleButton {
         id: playbackOverrideToggle
-        Layout.preferredWidth: 200
+        Layout.preferredWidth: 250
         text: "Toggle Override"
         onClicked: {
             AudioTabController.setPlaybackOverride(this.checked, false)
@@ -29,9 +29,7 @@ RowLayout {
 
     MyComboBox {
         id: selector
-        Layout.maximumWidth: 850
-        Layout.minimumWidth: 850
-        Layout.preferredWidth: 850
+        Layout.fillWidth: true
         onActivated: {
             if (deviceIndex >= 0) {
                 AudioTabController.setPlaybackDeviceIndex(deviceIndex)
