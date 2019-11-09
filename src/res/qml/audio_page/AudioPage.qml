@@ -14,7 +14,6 @@ MyStackViewPage {
 
     content: ColumnLayout {
         spacing: 24
-
         AudioDeviceSelector {
         }
 

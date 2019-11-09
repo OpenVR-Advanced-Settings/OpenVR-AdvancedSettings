@@ -5,6 +5,7 @@ import ovras.advsettings 1.0
 import "../../common"
 import "../dialog_boxes"
 
+//Audio Profiles temporarily disabled.
 ColumnLayout {
     AudioMessageDialog {
         id: audioMessageDialog
@@ -30,6 +31,7 @@ ColumnLayout {
             id: audioProfileComboBox
             Layout.preferredWidth: 250
             model: [""]
+            enabled: false
             onCurrentIndexChanged: {
                 if (currentIndex > 0) {
                     audioApplyProfileButton.enabled = true
@@ -43,7 +45,7 @@ ColumnLayout {
 
         MyPushButton {
             id: audioApplyProfileButton
-            enabled: true
+            enabled: false
             Layout.preferredWidth: 150
             text: "Apply"
             onClicked: {
@@ -63,7 +65,7 @@ ColumnLayout {
 
         MyPushButton {
             id: audioDeleteProfileButton
-            enabled: true
+            enabled: false
             Layout.preferredWidth: 200
             text: "Delete Profile"
             onClicked: {
@@ -74,6 +76,7 @@ ColumnLayout {
             }
         }
         MyPushButton {
+            enabled: false
             Layout.preferredWidth: 200
             text: "New Profile"
             onClicked: {
@@ -86,7 +89,7 @@ ColumnLayout {
         }
     }
     Component.onCompleted: {
-        reloadAudioProfiles()
+        //reloadAudioProfiles()
     }
     Connections {
         target: AudioTabController

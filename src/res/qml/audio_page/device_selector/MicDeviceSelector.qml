@@ -15,13 +15,22 @@ RowLayout {
     property alias deviceIndex: selector.currentIndex
     MyText {
         text: deviceText
-        Layout.preferredWidth: 260
+        Layout.preferredWidth: 200
+    }
+    MyToggleButton {
+        id: recordingOverrideToggle
+        Layout.preferredWidth: 250
+        text: "Toggle Override"
+        onClicked: {
+            AudioTabController.setRecordingOverride(this.checked, false)
+        }
+        onCheckedChanged: {
+            selector.enabled = this.checked
+        }
     }
     MyComboBox {
         id: selector
-        Layout.maximumWidth: 850
-        Layout.minimumWidth: 850
-        Layout.preferredWidth: 850
+        Layout.fillWidth: true
         onActivated: {
             if (deviceIndex >= 0) {
                 AudioTabController.setMicDeviceIndex(currentIndex)
@@ -50,6 +59,7 @@ RowLayout {
     Component.onCompleted: {
         devices = getAudioDeviceList()
         setShownAudioDevice(AudioTabController.micDeviceIndex)
+        recordingOverrideToggle.checked = AudioTabController.recordingOverride
     }
     Connections {
         target: AudioTabController
@@ -59,6 +69,9 @@ RowLayout {
         onRecordingDeviceListChanged: {
             devices = getAudioDeviceList()
             setShownAudioDevice(AudioTabController.micDeviceIndex)
+        }
+        onRecordingOverrideChanged: {
+            recordingOverrideToggle.value = AudioTabController.recordingOverride
         }
     }
 }
