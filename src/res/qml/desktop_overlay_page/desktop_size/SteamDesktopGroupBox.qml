@@ -5,7 +5,7 @@ import ovras.advsettings 1.0
 import "../../common"
 
 FullWidthSliderBox {
-    headerMessage: "Overlay Width"
+    headerMessage: "Desktop Overlay Width: (refresh dashboard to apply)"
 
     lowerLimit: 0.0
     upperLimit: 32.0
