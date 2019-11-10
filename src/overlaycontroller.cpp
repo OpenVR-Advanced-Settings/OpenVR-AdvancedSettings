@@ -379,6 +379,9 @@ OverlayController::OverlayController( bool desktopMode,
     {
         LOG( INFO ) << "Version Check: Feature disabled. Not checking version.";
     }
+
+    LOG( INFO ) << "OPENSSL VERSION: "
+                << QSslSocket::sslLibraryBuildVersionString();
 }
 
 OverlayController::~OverlayController()
