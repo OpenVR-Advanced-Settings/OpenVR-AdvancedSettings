@@ -113,6 +113,7 @@ Section "Install" SecInstall
     File "${BASEDIR}\LICENSE"
     File "${BASEDIR}\LICENSE-MIT"
     File "${BASEDIR}\LICENSE-VALVE"
+    File "${BASEDIR}\LICENSE-OPENSSL"
     
 	File "${BASEDIR}\*.exe"
     ;Any action manifests
