@@ -70,6 +70,15 @@ win32:openvrApiCopy.files = third-party/openvr/bin/win64/openvr_api.dll
 unix:openvrApiCopy.files = third-party/openvr/lib/linux64/libopenvr_api.so
 openvrApiCopy.path = $$COPY_DEST_DIR
 
+# Deploy openssl when on win32
+win32 {
+    COPIES += opensslCopy
+    opensslCopy.files = third-party/openssl/libcrypto-1_1-x64.dll
+    opensslCopy.files += third-party/openssl/libssl-1_1-x64.dll
+    opensslCopy.files += third-party/openssl/LICENSE-OPENSSL
+    opensslCopy.path = $$COPY_DEST_DIR
+}
+
 # Deploy resources and DLLs to exe dir on Windows
 win32 {
     WINDEPLOYQT_LOCATION = $$dirname(QMAKE_QMAKE)/windeployqt.exe
