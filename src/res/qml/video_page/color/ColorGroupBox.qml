@@ -48,9 +48,6 @@ GroupBox {
                 onPositionChanged: {
                     var val = (this.value * 100)
                     colorRedText.text = Math.round(val) + "%"
-                }
-                onValueChanged: {
-
                     VideoTabController.setColorRed(value.toFixed(2), true)
                 }
             }
@@ -65,13 +62,20 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 5) {
-                            val = 5
-                        } else if (val > 100.0) {
-                            val = 100.0
+                        if (val < 1) {
+                            val = 1
+                        } else if (val > 9999.0) {
+                            val = 9999.0
                         }
-                        var v = (val/100).toFixed(2)
+
+                        var v = (val/100)
+                        VideoTabController.setColorRed(v.toFixed(2), true)
+                        if (v > 1)
+                        {
+                            colorRedSlider.value = 1
+                        } else {
                             colorRedSlider.value = v
+                        }
                     }
                     text = Math.round(VideoTabController.colorRed * 100) + "%"
                 }
@@ -92,9 +96,6 @@ GroupBox {
                 onPositionChanged: {
                     var val = (this.value * 100)
                     colorGreenText.text = Math.round(val) + "%"
-                }
-                onValueChanged: {
-
                     VideoTabController.setColorGreen(value.toFixed(2), true)
                 }
             }
@@ -109,13 +110,20 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 5) {
-                            val = 5
-                        } else if (val > 100.0) {
-                            val = 100.0
+                        if (val < 1) {
+                            val = 1
+                        } else if (val > 9999.0) {
+                            val = 9999.0
                         }
-                        var v = (val/100).toFixed(2)
+
+                        var v = (val/100)
+                        VideoTabController.setColorGreen(v.toFixed(2), true)
+                        if (v > 1)
+                        {
+                            colorGreenSlider.value = 1
+                        } else {
                             colorGreenSlider.value = v
+                        }
                     }
                     text = Math.round(VideoTabController.colorGreen * 100) + "%"
                 }
@@ -137,9 +145,6 @@ GroupBox {
                     onPositionChanged: {
                         var val = (this.value * 100)
                         colorBlueText.text = Math.round(val) + "%"
-                    }
-                    onValueChanged: {
-
                         VideoTabController.setColorBlue(value.toFixed(2), true)
                     }
                 }
@@ -154,13 +159,20 @@ GroupBox {
                     function onInputEvent(input) {
                         var val = parseFloat(input)
                         if (!isNaN(val)) {
-                            if (val < 5) {
-                                val = 5
-                            } else if (val > 100.0) {
-                                val = 100.0
+                            if (val < 1) {
+                                val = 1
+                            } else if (val > 9999.0) {
+                                val = 9999.0
                             }
-                            var v = (val/100).toFixed(2)
+
+                            var v = (val/100)
+                            VideoTabController.setColorBlue(v.toFixed(2), true)
+                            if (v > 1)
+                            {
+                                colorBlueSlider.value = 1
+                            } else {
                                 colorBlueSlider.value = v
+                            }
                         }
                         text = Math.round(VideoTabController.colorBlue * 100) + "%"
                     }
@@ -171,21 +183,34 @@ GroupBox {
     }
 
     Component.onCompleted: {
-        colorRedSlider.value = VideoTabController.colorRed
-        colorGreenSlider.value = VideoTabController.colorGreen
-        colorBlueSlider.value = VideoTabController.colorBlue
+        // set up var here to prevent double call to c++ from qml
+        var redValue = VideoTabController.colorRed
+        var greenValue = VideoTabController.colorGreen
+        var blueValue = VideoTabController.colorBlue
+        colorRedText.text = Math.round(redValue * 100) + "%"
+        colorGreenText.text = Math.round(greenValue * 100) + "%"
+        colorBlueText.text = Math.round(blueValue * 100) + "%"
+        colorRedSlider.value = redValue
+        colorGreenSlider.value = greenValue
+        colorBlueSlider.value = blueValue
     }
 
     Connections {
         target: VideoTabController
         onColorRedChanged:{
-            colorRedSlider.value = VideoTabController.colorRed
+            var redValue = VideoTabController.colorRed
+            colorRedText.text = Math.round(redValue * 100) + "%"
+            colorRedSlider.value = redValue
         }
         onColorGreenChanged:{
-            colorGreenSlider.value = VideoTabController.colorGreen
+            var greenValue = VideoTabController.colorGreen
+            colorGreenText.text = Math.round(greenValue * 100) + "%"
+            colorGreenSlider.value = greenValue
         }
         onColorBlueChanged:{
-            colorBlueSlider.value = VideoTabController.colorBlue
+            var blueValue = VideoTabController.colorBlue
+            colorBlueText.text = Math.round(blueValue * 100) + "%"
+            colorBlueSlider.value = blueValue
         }
     }
 }

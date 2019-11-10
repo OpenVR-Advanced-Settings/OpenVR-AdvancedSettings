@@ -169,9 +169,6 @@ GroupBox {
                 onPositionChanged: {
                     var val = (this.value * 100)
                     colorRedText.text = Math.round(val) + "%"
-                }
-                onValueChanged: {
-
                     VideoTabController.setColorRed(value.toFixed(2), true)
                 }
             }
@@ -193,6 +190,7 @@ GroupBox {
                         }
                         var v = (val/100).toFixed(2)
                             colorRedSlider.value = v
+                            VideoTabController.setColorRed(v.toFixed(2), true)
                     }
                     text = Math.round(VideoTabController.colorRed * 100) + "%"
                 }
@@ -213,9 +211,6 @@ GroupBox {
                 onPositionChanged: {
                     var val = (this.value * 100)
                     colorGreenText.text = Math.round(val) + "%"
-                }
-                onValueChanged: {
-
                     VideoTabController.setColorGreen(value.toFixed(2), true)
                 }
             }
@@ -237,6 +232,7 @@ GroupBox {
                         }
                         var v = (val/100).toFixed(2)
                             colorGreenSlider.value = v
+                            VideoTabController.setColorGreen(v.toFixed(2), true)
                     }
                     text = Math.round(VideoTabController.colorGreen * 100) + "%"
                 }
@@ -258,9 +254,6 @@ GroupBox {
                     onPositionChanged: {
                         var val = (this.value * 100)
                         colorBlueText.text = Math.round(val) + "%"
-                    }
-                    onValueChanged: {
-
                         VideoTabController.setColorBlue(value.toFixed(2), true)
                     }
                 }
@@ -282,6 +275,7 @@ GroupBox {
                             }
                             var v = (val/100).toFixed(2)
                                 colorBlueSlider.value = v
+                                VideoTabController.setColorBlue(v.toFixed(2), true)
                         }
                         text = Math.round(VideoTabController.colorBlue * 100) + "%"
                     }
@@ -295,9 +289,15 @@ GroupBox {
         brightnessToggle.checked = VideoTabController.brightnessEnabled
         colorToggle.checked = VideoTabController.colorOverlayEnabled
         opacitySlider.value = VideoTabController.colorOverlayOpacity
-        colorRedSlider.value = VideoTabController.colorRed
-        colorGreenSlider.value = VideoTabController.colorGreen
-        colorBlueSlider.value = VideoTabController.colorBlue
+        var redValue = VideoTabController.colorRed
+        var greenValue = VideoTabController.colorGreen
+        var blueValue = VideoTabController.colorBlue
+        colorRedText.text = Math.round(redValue * 100) + "%"
+        colorGreenText.text = Math.round(greenValue * 100) + "%"
+        colorBlueText.text = Math.round(blueValue * 100) + "%"
+        colorRedSlider.value = redValue
+        colorGreenSlider.value = greenValue
+        colorBlueSlider.value = blueValue
     }
 
     Connections {
@@ -317,13 +317,19 @@ GroupBox {
         }
 
         onColorRedChanged:{
-            colorRedSlider.value = VideoTabController.colorRed
+            var redValue = VideoTabController.colorRed
+            colorRedText.text = Math.round(redValue * 100) + "%"
+            colorRedSlider.value = redValue
         }
         onColorGreenChanged:{
-            colorGreenSlider.value = VideoTabController.colorGreen
+            var greenValue = VideoTabController.colorGreen
+            colorGreenText.text = Math.round(greenValue * 100) + "%"
+            colorGreenSlider.value = greenValue
         }
         onColorBlueChanged:{
-            colorBlueSlider.value = VideoTabController.colorBlue
+            var blueValue = VideoTabController.colorBlue
+            colorBlueText.text = Math.round(blueValue * 100) + "%"
+            colorBlueSlider.value = blueValue
         }
     }
 }
