@@ -75,16 +75,6 @@ Rectangle {
         visible:false
     }
 
-    property DesktopOverlayPage desktopOverlayPage: DesktopOverlayPage {
-        stackView: mainView
-        visible: false
-    }
-
-    property BindingsPage bindingsPage: BindingsPage {
-        stackView: mainView
-        visible: false
-    }
-
     StackView {
         id: mainView
         anchors.fill: parent
