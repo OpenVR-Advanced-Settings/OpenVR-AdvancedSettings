@@ -71,6 +71,8 @@ public:
     bool cameraRoom() const;
     bool cameraDashboard() const;
 
+    Q_INVOKABLE void launchBindingUI();
+
 public slots:
 
     void setPerformanceGraph( bool value, bool notify = true );

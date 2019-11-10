@@ -5,6 +5,7 @@ import ovras.advsettings 1.0
 import "../common"
 import "camera"
 import "steamvrmisc"
+import "../desktop_overlay_page/desktop_size"
 
 MyStackViewPage {
     width: 1200
@@ -17,6 +18,9 @@ MyStackViewPage {
         id: steamVRMiscGroupBox}
         CameraGroupBox {
         id:  cameraGroupBox}
+
+        SteamDesktopGroupBox {
+        }
 
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
 

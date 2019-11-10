@@ -25,6 +25,7 @@ ColumnLayout {
         MyText {
             Layout.preferredWidth: 150
             text: "Audio Profile:"
+            visible: false
         }
 
         MyComboBox {
@@ -32,6 +33,7 @@ ColumnLayout {
             Layout.preferredWidth: 250
             model: [""]
             enabled: false
+            visible: false
             onCurrentIndexChanged: {
                 if (currentIndex > 0) {
                     audioApplyProfileButton.enabled = true
@@ -46,6 +48,7 @@ ColumnLayout {
         MyPushButton {
             id: audioApplyProfileButton
             enabled: false
+            visible: false
             Layout.preferredWidth: 150
             text: "Apply"
             onClicked: {
@@ -66,6 +69,7 @@ ColumnLayout {
         MyPushButton {
             id: audioDeleteProfileButton
             enabled: false
+            visible: false
             Layout.preferredWidth: 200
             text: "Delete Profile"
             onClicked: {
@@ -77,6 +81,7 @@ ColumnLayout {
         }
         MyPushButton {
             enabled: false
+            visible: false
             Layout.preferredWidth: 200
             text: "New Profile"
             onClicked: {

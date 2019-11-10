@@ -153,12 +153,14 @@ Actions that don't have a clear category.
 
 ### Haptics.
 
-Actions to be handled by the system.
+Actions that cause Vibration.
 
 |    Action     |     Type      |  Explanation  |
 | ------------- | ------------- |  ------------ |
-| Haptics Left | Vibration | Handle for haptic events on the Left Controller. |
-| Haptics Right | Vibration | Handle for haptic events on the Right Controller. |
+| Add Left Haptic Click | Binary/Button | simulates a "click" with controller haptics. (left hand)
+| Add Right Haptic Click | Binary/Button | simulates a "click" with controller haptics. (right hand)
+| Haptics Left | Vibration | Handle for haptic events on the Left Controller. **Do not "bind" this action**|
+| Haptics Right | Vibration | Handle for haptic events on the Right Controller. **Do not "bind" this action**|
 | Proximity Sensor | Binary/Button | Connects Automatically to your HMD's proximity sensor. **Do not "bind" this action**, it will cause un-predictable behavior. |
 
 
@@ -247,7 +249,7 @@ These version are not stable and this should be considered for advanced users on
 
 <img src="docs/screenshots/RootPage.png" width="600" alt="Root Page">
 
-- **Supersampling Profile**: Allows to apply supersampling profiles. Profiles can be created on the SteamVR page
+- **Video Profile**: Allows to apply Video profiles. Profiles can be created on the Video page
 - **Chaperone Profile**: Allows to apply chaperone profiles. Profiles can be created on the Chaperone page
 - **Microphone**: Allows to set the microphone volume and to mute/unmute it.
 - **Push-to-Talk**: Enable/disable push-to-talk.
@@ -256,22 +258,28 @@ These version are not stable and this should be considered for advanced users on
 
 <img src="docs/screenshots/SteamVRPage.png" width="600" alt="SteamVR Page">
 
-- **Profile**: Allows to apply/define/delete supersampling profiles that save supersampling and reprojection settings.
-- **Application Supersampling**: Supersampling setting for OpenVR applications/games. Application supersampling [now behaves linearly](https://steamcommunity.com/games/250820/announcements/detail/1256913672017664045) where 2.0 means twice the number of pixel.
-  - **Note**: Manual Supersampling Override be checked.
-  - **Note**: Some apps will require restarting for changes of Super-Sampling to take effect.
-- **Enable Manual Supersampling Override**: Enables user control of Supersampling, instead of SteamVR auto profiles.
-- **Enable Motion Smoothing**: Enables Motion Smoothing, and disables asynchronous reprojection.
-- **Enable Timing Overlay**: Enables a simple Timing overlay, locked to HMD currently.
+- **Misc**
+  - **Enable Timing Overlay**: Enables a simple Timing overlay, locked to HMD currently.
+  - **Allow Multiple Drivers**: Allows multiple Drivers to be loaded allowing multi-device setups (i.e. rift with vive trackers).
+  - **Disable Notifications**: Disables Notifications (pop-ups) while in VR.
+  - **Enable System Button Binding**: Allows System Button to be bound and used in any app. (you will probably want to change the bindings in "VR Compositor")
+  - **No Fade to Grid**: When app goes non-responsive, you will not fade to grid.
+- **Camera** (all checkboxes require restart)
+  - **Enable Camera**: Enables Camera Features
+  - **Camera for Bounds**: Your camera view will replace your vr view as you near/exit chaperone
+  - **Camera for Dashboard**: You will have a small camera view attached to your controller when you have the dashboard active.
+  - **Camera for Room View**: You will have a Tron/Shadow version of the room when double-clicking system button.
+- **Desktop Overlay Width**: Adjusts teh width of Steam's desktop overlay.
 - **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
+
 ## - Chaperone Page
 
 <img src="docs/screenshots/ChaperonePage.png" width="600" alt="Chaperone Page">
 
-- **Profile**: Allows to apply/define/delete chaperone profiles that save geometry info, style info or other chaperone settings (What exactly is saved in a chaperone profile can be selected when a profile is created).
-- **Visibility**: Allows to configure the visibility of the chaperone bounds. 50% to 100% opacity.
-- **Fade Distance**: Allows to configure the distance at which the chaperone bounds are shown. When set to 0 chaperone bounds are completely invisible.
-- **Height**: Allows to configure the height of the chaperone bounds. **(Temporarily disabled pending integration into new motion system.)**
+- **Profile**: Allows to apply/define/delete chaperone profiles that save geometry info, style info or other chaperone settings.
+- **Visibility**: Allows to configure the visibility of the chaperone bounds. 30% to 100% opacity.
+- **Fade Distance**: Allows to configure the distance at which the chaperone bounds are shown. (When set to 0 chaperone bounds are completely invisible.)
+- **Height**: Allows to configure the height of the chaperone bounds.
 - **Center Marker**: Displays a marker that represents the center of the playspace.
 - **Play Space Maker**: Displays the outlines of the rectangle representing the playspace.
 - **Force Bounds**: Force chaperone bounds always on.
@@ -290,7 +298,6 @@ These version are not stable and this should be considered for advanced users on
   - **Loop Audio**: Whether the audio alarm should only be played once or in a loop.
   - **Loop Audio**: Modify audio volume as a function of the user's distance to the chaperone.
 - **Open dashboard**: Opens the dashboard when the user's distance to the chaperone falls below the configured activation distance. The idea is to pause the game (most single-player games auto-pause when the dashboard is shown) to give the user time for reorientation.
-- **Velocity Dependent Fade/Activation Distance**: (No longer supported)
 
 ## - Space Offset Page
 
@@ -339,14 +346,16 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 <img src="docs/screenshots/AudioPage.png" width="600" alt="Audio Page">
 
 - **Playback Device**: Allows to select the playback device.
+  - **Toggle Override**: Allows you to select a playback device instead of HMD's audio.
 - **Mirror Device**: Allows to select the mirror device, set its volume and to mute/unmute it.
 - **Microphone**: Allows to select the microphone device, set its volume and to mute/unmute it.
+  - **Toggle Override**: Allows you to select a recording device instead of HMD's microphone.
 - **Proximity Sensor Mutes/Unmutes Microphone**: Uses the HMD's proximity Sensor to mute the mic when it is removed from your head, PTT works with this feature, But you will be un-able to manually mute/un-mute your mic via icon.
 - **Push-to-Talk**: Enable/disable push-to-talk. When push-to-talk is activated the microphone gets muted unless the Push To Talk action is activated.
 - **Show Notification**: Shows a notification icon in the headset when the Push To Talk action is activated.
 - **Push-to-Mute**: Inverse push-to-talk. The Microphone is unmuted by default and muted when the keybind is pressed.
   - **NOTE**: The Push-to-talk box must be enabled for this feature to work.
-- **Audio Profile**: Allows you to apply/define/delete audio profiles that save playback devices, mute state, and volume.
+- **Audio Profile**: **Disabled for 4.0.0 / OpenVR 1.8.19 due to bugs in API** ~~Allows you to apply/define/delete audio profiles that save playback devices, mute state, and volume.~~
 
 ## - Video Page
 
@@ -357,9 +366,21 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **Brightness**: The amount of dimming.
   - **Note**: Does not necessarily reduce light output of HMD will vary based on panel type etc.
 - **Color Adjustment**: Allows Adjusting of the Color of your display.
-  - **On/Off**: Toggles adjustment on/off.
-  - **Opacity**: The amount of color applied.
-  - **Color Options**: Adjusts percentage of each of the respective colors.
+  - **<Color>**: Adjusts the Gain to adjust color. (This works for Valve Index, Vive, and Vive Pro) If your headset does not support gain adjustment please see **Use Overlay For Color**.
+- **SuperSampling**: Adjusts application super sampling values (requires refresh of dashboard, and/or restart of SteamVR/OpenVR).
+ - **Toggle Override**: allows user configureable amount different than recommended value.
+- **Video Profiles**: allows Users to save their settings and apply quickly via a drop down menu.
+- **Misc**:
+  - **Motion Smoothing**: Enables/Disables Motion Smoothing.
+  - **Advanced SS Filtering**: Enables/Disables Texture filtering to allow better textures at long distances. (default is on)
+  - **Use Overlay for Color**: Use an Overlay for Color Adjustment rather than Gain (works with all HMD's, replaces Brightness and Color Adjustment)
+
+<img src="docs/screenshots/VideoOverlay.png" width="600" alt="Overlay Override">
+
+- **Brightness**: Same as regular.
+- **Opacity**: Adjusts opacity of color overlay.
+  - **Toggle On/Off**: Turns on/off Color Adjustment Overlay.
+- **<Color>**: Adjusts the overlay to adjust the color.
 
 ## - Utilities Page
 
@@ -370,18 +391,6 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Alarm Clock:** Just a simple alarm clock so you don't miss important appointments. VR can sure mess up perception of time. Does not work in desktop mode.
 
 - **Media Control Keys:** Allows controlling a media player through the media keys. This is the same as having a keyboard with media keys and then pressing them. Should support most common media players.
-
-## - Desktop Overlay Page
-
-<img src="docs/screenshots/DesktopOverlayPage.png" width="600" alt="Desktop Overlay Page">
-
-- **Overlay Width:** The width of the overlay in meters. Multi screen setups need larger values to see any difference.
-
-- **Up/Down Translation:** Moves the overlay up and down.
-
-- **Forwards/Backwards Translation:** Moves the overlay forwards and backwards.
-
-- **Left/Right Translation:** Moves the overlay left or right.
 
 ## - Statistics Page
 
@@ -397,23 +406,17 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Timed Out**: Number of times the currently running application timed out.
 - **Reprojection Ratio**: Ratio of presented frames to reprojected frames.
 
-## - Bindings Page
-
-<img src="docs/screenshots/BindingsPage.png" width="600" alt="Bindings Page">
-
-- **Bindings Guide**: Shows users how to access the SteamVR input bindings configuration for Advanced Settings. Unfortunately we can't provide a button to directly open this, so users must navigate there themselves. The sole purpose of this page is to make the navigation to the actual bindings config more obvious for users who missed the instruction in this readme (This was a very common support issue). The intended reading of this image is: Click on the SteamVR Settings dash button, then click on "Controller Settings", then click on "Show More Applications" then find "Advanced Settings" by scrolling to the bottom, and click on it.
-
 ## - Settings Page
 
 <img src="docs/screenshots/SettingsPage.png" width="600" alt="Settings Page">
 
 - **Autostart:** Allows you to enable/disable auto start.
-- **Force Revive Page:** No Longer Supported Does Nothing.
 - **Allow External App Chaperone Edits:** Incorporates changes to the chaperone and universe center made by other applications. These changes could come from anywhere, including apps with unpredictable interactions with Advanced Settings. Therefore, this option opens the potential for chaperone misalignment or corruption. However it also allows other chaperone tweaking tools to function in tandem with Advanced Settings. **This option should only be checked if required for compatibility with other apps.** *Note: Changes will only take effect when offsets and rotation are all zero.*
 - **Old-Style Motion:** Uses the old system of writing the chaperone universe center and bounds to disk every frame. Use this option only if you experience issues with playspace motion such as snapping back to reset position after releasing a space-drag. This old mode is smooth on most systems but is in theory less performant than the normal method.
 - **Universe-Centered Rotation:** Causes Rotation to be applied to Universe Center Rather than HMD (Disables offsets automatically compensating to pivot at the HMD).
 - **Enable Motion Features When in Seated Mode:** Uncheck this if Advanced Settings causes strange positioning in a seated application. (Different apps handle seated mode in different ways, some are less compatible with Advanced Settings). Note: if unchecked, all Space Offsets and Motion tab features will be disabled.
 - **Disable Automatic Crash Recovery of Chaperone Config:** This prevents applying of the last good autosaved chaperone profile when starting up after not shutting down properly.
+- **Disable Notification of Newer Version Availability**: This turns off the on start-up check for a new version. (You can refresh this to do a manual check.)
 - **Disable App Vsync:** Allows setting a custom base update rate for Advanced Settings. (Might be useful on HMDs with very high or very low refresh rates).
 
 # How to Compile
@@ -448,4 +451,4 @@ Full build instructions can be found [here](docs/building_for_linux.md).
 
 # License
 
-This software is released under GPL 3.0.
+This software is released under GPL 3.0, and other third-party Licenses
