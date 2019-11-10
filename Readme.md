@@ -153,12 +153,14 @@ Actions that don't have a clear category.
 
 ### Haptics.
 
-Actions to be handled by the system.
+Actions that cause Vibration.
 
 |    Action     |     Type      |  Explanation  |
 | ------------- | ------------- |  ------------ |
-| Haptics Left | Vibration | Handle for haptic events on the Left Controller. |
-| Haptics Right | Vibration | Handle for haptic events on the Right Controller. |
+| Add Left Haptic Click | Binary/Button | simulates a "click" with controller haptics. (left hand)
+| Add Right Haptic Click | Binary/Button | simulates a "click" with controller haptics. (right hand)
+| Haptics Left | Vibration | Handle for haptic events on the Left Controller. **Do not "bind" this action**|
+| Haptics Right | Vibration | Handle for haptic events on the Right Controller. **Do not "bind" this action**|
 | Proximity Sensor | Binary/Button | Connects Automatically to your HMD's proximity sensor. **Do not "bind" this action**, it will cause un-predictable behavior. |
 
 
