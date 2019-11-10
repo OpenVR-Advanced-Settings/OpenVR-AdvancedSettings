@@ -232,9 +232,9 @@ void VideoTabController::reloadVideoConfig()
         settings->value( "colorOverlayOpacity", 0.0f ).toFloat(), true );
     setIsOverlayMethodActive(
         settings->value( "isOverlayMethodActive", false ).toBool(), true );
-    setColorRed( settings->value( "colorRed", 1.0f ).toFloat() );
-    setColorGreen( settings->value( "colorGreen", 1.0f ).toFloat() );
-    setColorBlue( settings->value( "colorBlue", 1.0f ).toFloat() );
+    setColorRed( settings->value( "colorRedNew", 1.0f ).toFloat() );
+    setColorGreen( settings->value( "colorGreenNew", 1.0f ).toFloat() );
+    setColorBlue( settings->value( "colorBlueNew", 1.0f ).toFloat() );
 
     settings->endGroup();
     setBrightnessOpacityValue();
@@ -251,9 +251,9 @@ void VideoTabController::saveVideoConfig()
     settings->setValue( "brightnessValue", brightnessValue() );
     settings->setValue( "colorOverlayEnabled", colorOverlayEnabled() );
     settings->setValue( "colorOverlayOpacity", colorOverlayOpacity() );
-    settings->setValue( "colorRed", colorRed() );
-    settings->setValue( "colorGreen", colorGreen() );
-    settings->setValue( "colorBlue", colorBlue() );
+    settings->setValue( "colorRedNew", colorRed() );
+    settings->setValue( "colorGreenNew", colorGreen() );
+    settings->setValue( "colorBlueNew", colorBlue() );
     settings->setValue( "isOverlayMethodActive", isOverlayMethodActive() );
 
     settings->endGroup();
@@ -936,9 +936,9 @@ void VideoTabController::reloadVideoProfiles()
             = settings->value( "anisotropicFiltering", true ).toBool();
         entry.motionSmooth = settings->value( "motionSmooth", true ).toBool();
 
-        entry.colorRed = settings->value( "colorRed", 1.0f ).toFloat();
-        entry.colorBlue = settings->value( "colorBlue", 1.0f ).toFloat();
-        entry.colorGreen = settings->value( "colorGreen", 1.0f ).toFloat();
+        entry.colorRed = settings->value( "colorRedNew", 1.0f ).toFloat();
+        entry.colorBlue = settings->value( "colorBlueNew", 1.0f ).toFloat();
+        entry.colorGreen = settings->value( "colorGreenNew", 1.0f ).toFloat();
 
         entry.brightnessToggle
             = settings->value( "brightnessToggle", false ).toBool();
@@ -969,9 +969,9 @@ void VideoTabController::saveVideoProfiles()
         settings->setValue( "anisotropicFiltering", p.anisotropicFiltering );
         settings->setValue( "motionSmooth", p.motionSmooth );
 
-        settings->setValue( "colorRed", p.colorRed );
-        settings->setValue( "colorBlue", p.colorBlue );
-        settings->setValue( "colorGreen", p.colorGreen );
+        settings->setValue( "colorRedNew", p.colorRed );
+        settings->setValue( "colorBlueNew", p.colorBlue );
+        settings->setValue( "colorGreenNew", p.colorGreen );
 
         settings->setValue( "brightnessToggle", p.brightnessToggle );
         settings->setValue( "brightnessValue", p.brightnessValue );
