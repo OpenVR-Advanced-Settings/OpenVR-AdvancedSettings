@@ -42,7 +42,6 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
   * [- Utilities Page](#--utilities-page)
   * [- Desktop Overlay Page](#--desktop-overlay-page)
   * [- Statistics Page](#--statistics-page)
-  * [- Bindings Page](#--bindings-page)
   * [- Settings Page](#--settings-page)
 - [How to Compile](#how-to-compile)
   * [Building on Windows](#building-on-windows)
