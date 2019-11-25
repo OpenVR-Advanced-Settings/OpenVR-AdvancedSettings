@@ -417,7 +417,6 @@ void OverlayController::Shutdown()
         m_pRenderTimer->stop();
         m_pRenderTimer.reset();
     }
-    m_pWindow.reset();
     m_pFbo.reset();
     m_pOpenGLContext.reset();
     m_pOffscreenSurface.reset();
@@ -492,13 +491,12 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             static_cast<int>( quickItem->height() ),
             fboFormat ) );
 
-        m_pWindow.reset( new QQuickWindow( &m_renderControl ) );
-        m_pWindow->setRenderTarget( m_pFbo.get() );
-        quickItem->setParentItem( m_pWindow->contentItem() );
-        m_pWindow->setGeometry( 0,
-                                0,
-                                static_cast<int>( quickItem->width() ),
-                                static_cast<int>( quickItem->height() ) );
+        m_window.setRenderTarget( m_pFbo.get() );
+        quickItem->setParentItem( m_window.contentItem() );
+        m_window.setGeometry( 0,
+                              0,
+                              static_cast<int>( quickItem->width() ),
+                              static_cast<int>( quickItem->height() ) );
         m_renderControl.initialize( m_pOpenGLContext.get() );
 
         vr::HmdVector2_t vecWindowSize
@@ -1047,12 +1045,12 @@ void OverlayController::mainEventLoop()
             {
                 QMouseEvent mouseEvent( QEvent::MouseMove,
                                         ptNewMouse,
-                                        m_pWindow->mapToGlobal( ptNewMouse ),
+                                        m_window.mapToGlobal( ptNewMouse ),
                                         Qt::NoButton,
                                         m_lastMouseButtons,
                                         nullptr );
                 m_ptLastMouse = ptNewMouse;
-                QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
+                QCoreApplication::sendEvent( &m_window, &mouseEvent );
                 OnRenderRequest();
             }
         }
@@ -1068,11 +1066,11 @@ void OverlayController::mainEventLoop()
             m_lastMouseButtons |= button;
             QMouseEvent mouseEvent( QEvent::MouseButtonPress,
                                     ptNewMouse,
-                                    m_pWindow->mapToGlobal( ptNewMouse ),
+                                    m_window.mapToGlobal( ptNewMouse ),
                                     button,
                                     m_lastMouseButtons,
                                     nullptr );
-            QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
+            QCoreApplication::sendEvent( &m_window, &mouseEvent );
         }
         break;
 
@@ -1086,11 +1084,11 @@ void OverlayController::mainEventLoop()
             m_lastMouseButtons &= ~button;
             QMouseEvent mouseEvent( QEvent::MouseButtonRelease,
                                     ptNewMouse,
-                                    m_pWindow->mapToGlobal( ptNewMouse ),
+                                    m_window.mapToGlobal( ptNewMouse ),
                                     button,
                                     m_lastMouseButtons,
                                     nullptr );
-            QCoreApplication::sendEvent( m_pWindow.get(), &mouseEvent );
+            QCoreApplication::sendEvent( &m_window, &mouseEvent );
         }
         break;
 
@@ -1099,7 +1097,7 @@ void OverlayController::mainEventLoop()
             // Wheel speed is defined as 1/8 of a degree
             QWheelEvent wheelEvent(
                 m_ptLastMouse,
-                m_pWindow->mapToGlobal( m_ptLastMouse ),
+                m_window.mapToGlobal( m_ptLastMouse ),
                 QPoint(),
                 QPoint( static_cast<int>( vrEvent.data.scroll.xdelta
                                           * ( 360.0f * 8.0f ) ),
@@ -1109,13 +1107,13 @@ void OverlayController::mainEventLoop()
                 Qt::Vertical,
                 m_lastMouseButtons,
                 nullptr );
-            QCoreApplication::sendEvent( m_pWindow.get(), &wheelEvent );
+            QCoreApplication::sendEvent( &m_window, &wheelEvent );
         }
         break;
 
         case vr::VREvent_OverlayShown:
         {
-            m_pWindow->update();
+            m_window.update();
         }
         break;
 
@@ -1279,7 +1277,7 @@ void OverlayController::mainEventLoop()
             {
             case vr::VREvent_OverlayShown:
             {
-                m_pWindow->update();
+                m_window.update();
             }
             break;
             }

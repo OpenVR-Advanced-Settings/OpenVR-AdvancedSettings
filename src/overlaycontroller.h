@@ -107,7 +107,7 @@ private:
         = vr::k_ulOverlayHandleInvalid;
 
     QQuickRenderControl m_renderControl;
-    std::unique_ptr<QQuickWindow> m_pWindow;
+    QQuickWindow m_window{ &m_renderControl };
     std::unique_ptr<QOpenGLFramebufferObject> m_pFbo;
     std::unique_ptr<QOpenGLContext> m_pOpenGLContext;
     std::unique_ptr<QOffscreenSurface> m_pOffscreenSurface;
