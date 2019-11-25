@@ -111,18 +111,17 @@ OverlayController::OverlayController( bool desktopMode,
     format.setStencilBufferSize( 8 );
     format.setSamples( 16 );
 
-    m_pOpenGLContext.reset( new QOpenGLContext() );
-    m_pOpenGLContext->setFormat( format );
-    if ( !m_pOpenGLContext->create() )
+    m_openGLContext.setFormat( format );
+    if ( !m_openGLContext.create() )
     {
         throw std::runtime_error( "Could not create OpenGL context" );
     }
 
     // create an offscreen surface to attach the context and FBO to
     m_pOffscreenSurface.reset( new QOffscreenSurface() );
-    m_pOffscreenSurface->setFormat( m_pOpenGLContext->format() );
+    m_pOffscreenSurface->setFormat( m_openGLContext.format() );
     m_pOffscreenSurface->create();
-    m_pOpenGLContext->makeCurrent( m_pOffscreenSurface.get() );
+    m_openGLContext.makeCurrent( m_pOffscreenSurface.get() );
 
     if ( !vr::VROverlay() )
     {
@@ -418,7 +417,6 @@ void OverlayController::Shutdown()
         m_pRenderTimer.reset();
     }
     m_pFbo.reset();
-    m_pOpenGLContext.reset();
     m_pOffscreenSurface.reset();
 
     // save to settings that shutdown was safe
@@ -497,7 +495,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                               0,
                               static_cast<int>( quickItem->width() ),
                               static_cast<int>( quickItem->height() ) );
-        m_renderControl.initialize( m_pOpenGLContext.get() );
+        m_renderControl.initialize( &m_openGLContext );
 
         vr::HmdVector2_t vecWindowSize
             = { static_cast<float>( quickItem->width() ),
@@ -575,8 +573,8 @@ void OverlayController::renderOverlay()
 #endif
             vr::VROverlay()->SetOverlayTexture( m_ulOverlayHandle, &texture );
         }
-        m_pOpenGLContext->functions()->glFlush(); // We need to flush otherwise
-                                                  // the texture may be empty.*/
+        m_openGLContext.functions()->glFlush(); // We need to flush otherwise
+                                                // the texture may be empty.*/
     }
 }
 
