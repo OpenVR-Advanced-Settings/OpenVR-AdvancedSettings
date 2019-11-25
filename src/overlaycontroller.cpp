@@ -389,15 +389,12 @@ OverlayController::~OverlayController()
 
 void OverlayController::Shutdown()
 {
-    if ( m_pPumpEventsTimer )
-    {
-        disconnect( m_pPumpEventsTimer.get(),
-                    SIGNAL( timeout() ),
-                    this,
-                    SLOT( OnTimeoutPumpEvents() ) );
-        m_pPumpEventsTimer->stop();
-        m_pPumpEventsTimer.reset();
-    }
+    disconnect( &m_pumpEventsTimer,
+                SIGNAL( timeout() ),
+                this,
+                SLOT( OnTimeoutPumpEvents() ) );
+    m_pumpEventsTimer.stop();
+
     if ( m_pRenderTimer )
     {
         disconnect( &m_renderControl,
@@ -511,16 +508,15 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                  SLOT( OnRenderRequest() ) );
     }
 
-    m_pPumpEventsTimer.reset( new QTimer() );
-    connect( m_pPumpEventsTimer.get(),
+    connect( &m_pumpEventsTimer,
              SIGNAL( timeout() ),
              this,
              SLOT( OnTimeoutPumpEvents() ) );
 
     // Every 1ms we check if the current frame has advanced (for vsync)
-    m_pPumpEventsTimer->setInterval( 1 );
+    m_pumpEventsTimer.setInterval( 1 );
 
-    m_pPumpEventsTimer->start();
+    m_pumpEventsTimer.start();
 
     m_steamVRTabController.initStage2( this );
     m_chaperoneTabController.initStage2( this );

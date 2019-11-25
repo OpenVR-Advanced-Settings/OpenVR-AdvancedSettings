@@ -112,7 +112,7 @@ private:
     QOpenGLContext m_openGLContext;
     QOffscreenSurface m_offscreenSurface;
 
-    std::unique_ptr<QTimer> m_pPumpEventsTimer;
+    QTimer m_pumpEventsTimer;
     std::unique_ptr<QTimer> m_pRenderTimer;
     bool m_dashboardVisible = false;
 
