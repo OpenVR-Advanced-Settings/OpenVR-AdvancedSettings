@@ -402,11 +402,11 @@ void OverlayController::Shutdown()
     }
     if ( m_pRenderTimer )
     {
-        disconnect( m_pRenderControl.get(),
+        disconnect( &m_renderControl,
                     SIGNAL( renderRequested() ),
                     this,
                     SLOT( OnRenderRequest() ) );
-        disconnect( m_pRenderControl.get(),
+        disconnect( &m_renderControl,
                     SIGNAL( sceneChanged() ),
                     this,
                     SLOT( OnRenderRequest() ) );
@@ -418,7 +418,6 @@ void OverlayController::Shutdown()
         m_pRenderTimer.reset();
     }
     m_pWindow.reset();
-    m_pRenderControl.reset();
     m_pFbo.reset();
     m_pOpenGLContext.reset();
     m_pOffscreenSurface.reset();
@@ -493,15 +492,14 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             static_cast<int>( quickItem->height() ),
             fboFormat ) );
 
-        m_pRenderControl.reset( new QQuickRenderControl() );
-        m_pWindow.reset( new QQuickWindow( m_pRenderControl.get() ) );
+        m_pWindow.reset( new QQuickWindow( &m_renderControl ) );
         m_pWindow->setRenderTarget( m_pFbo.get() );
         quickItem->setParentItem( m_pWindow->contentItem() );
         m_pWindow->setGeometry( 0,
                                 0,
                                 static_cast<int>( quickItem->width() ),
                                 static_cast<int>( quickItem->height() ) );
-        m_pRenderControl->initialize( m_pOpenGLContext.get() );
+        m_renderControl.initialize( m_pOpenGLContext.get() );
 
         vr::HmdVector2_t vecWindowSize
             = { static_cast<float>( quickItem->width() ),
@@ -509,11 +507,11 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         vr::VROverlay()->SetOverlayMouseScale( m_ulOverlayHandle,
                                                &vecWindowSize );
 
-        connect( m_pRenderControl.get(),
+        connect( &m_renderControl,
                  SIGNAL( renderRequested() ),
                  this,
                  SLOT( OnRenderRequest() ) );
-        connect( m_pRenderControl.get(),
+        connect( &m_renderControl,
                  SIGNAL( sceneChanged() ),
                  this,
                  SLOT( OnRenderRequest() ) );
@@ -558,9 +556,9 @@ void OverlayController::renderOverlay()
                   && !vr::VROverlay()->IsOverlayVisible(
                       m_ulOverlayThumbnailHandle ) ) )
             return;
-        m_pRenderControl->polishItems();
-        m_pRenderControl->sync();
-        m_pRenderControl->render();
+        m_renderControl.polishItems();
+        m_renderControl.sync();
+        m_renderControl.render();
 
         GLuint unTexture = m_pFbo->texture();
         if ( unTexture != 0 )

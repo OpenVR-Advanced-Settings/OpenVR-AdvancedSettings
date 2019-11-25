@@ -106,7 +106,7 @@ private:
     vr::VROverlayHandle_t m_ulOverlayThumbnailHandle
         = vr::k_ulOverlayHandleInvalid;
 
-    std::unique_ptr<QQuickRenderControl> m_pRenderControl;
+    QQuickRenderControl m_renderControl;
     std::unique_ptr<QQuickWindow> m_pWindow;
     std::unique_ptr<QOpenGLFramebufferObject> m_pFbo;
     std::unique_ptr<QOpenGLContext> m_pOpenGLContext;
