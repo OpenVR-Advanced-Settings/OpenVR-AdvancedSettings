@@ -110,7 +110,7 @@ private:
     QQuickWindow m_window{ &m_renderControl };
     std::unique_ptr<QOpenGLFramebufferObject> m_pFbo;
     QOpenGLContext m_openGLContext;
-    std::unique_ptr<QOffscreenSurface> m_pOffscreenSurface;
+    QOffscreenSurface m_offscreenSurface;
 
     std::unique_ptr<QTimer> m_pPumpEventsTimer;
     std::unique_ptr<QTimer> m_pRenderTimer;

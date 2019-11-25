@@ -118,10 +118,9 @@ OverlayController::OverlayController( bool desktopMode,
     }
 
     // create an offscreen surface to attach the context and FBO to
-    m_pOffscreenSurface.reset( new QOffscreenSurface() );
-    m_pOffscreenSurface->setFormat( m_openGLContext.format() );
-    m_pOffscreenSurface->create();
-    m_openGLContext.makeCurrent( m_pOffscreenSurface.get() );
+    m_offscreenSurface.setFormat( m_openGLContext.format() );
+    m_offscreenSurface.create();
+    m_openGLContext.makeCurrent( &m_offscreenSurface );
 
     if ( !vr::VROverlay() )
     {
@@ -417,7 +416,6 @@ void OverlayController::Shutdown()
         m_pRenderTimer.reset();
     }
     m_pFbo.reset();
-    m_pOffscreenSurface.reset();
 
     // save to settings that shutdown was safe
     setPreviousShutdownSafe( true );
