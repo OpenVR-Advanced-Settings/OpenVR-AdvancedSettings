@@ -590,7 +590,7 @@ QPoint OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
 {
     float y = mouse.y;
 #ifdef __linux__
-    float h = static_cast<float>( m_window->height() );
+    float h = static_cast<float>( m_window.height() );
     y = h - y;
 #endif
     return QPoint( static_cast<int>( mouse.x ), static_cast<int>( y ) );
