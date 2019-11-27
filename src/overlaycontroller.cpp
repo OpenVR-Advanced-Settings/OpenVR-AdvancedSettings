@@ -22,6 +22,7 @@
 #include "utils/Matrix.h"
 #include "openvr/overlay_utils.h"
 #include "keyboard_input/input_sender.h"
+#include "settings/settings.h"
 
 // application namespace
 namespace advsettings
@@ -1114,6 +1115,9 @@ void OverlayController::mainEventLoop()
             LOG( INFO ) << "Received quit request.";
             vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some
                                                        // time just in case
+
+            settings::saveAllSettings();
+
             m_moveCenterTabController.shutdown();
             // Un-mute mic before Exiting VR, as it is set at system level Not
             // Vr level.
@@ -1140,6 +1144,7 @@ void OverlayController::mainEventLoop()
         {
             LOG( DEBUG ) << "Dashboard deactivated";
             m_dashboardVisible = false;
+            settings::saveChangedSettings();
         }
         break;
 

@@ -1,4 +1,5 @@
 #include "utils/setup.h"
+#include "settings/settings.h"
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -40,7 +41,7 @@ int main( int argc, char* argv[] )
                                mainEventLoop.applicationName() );
         advsettings::OverlayController::setAppSettings( &appSettings );
         LOG( INFO ) << "Settings File: "
-                    << appSettings.fileName().toStdString();
+                    << settings::initializeAndGetSettingsPath();
 
         QQmlEngine qmlEngine;
 
