@@ -1,0 +1,90 @@
+#pragma once
+#include <QSettings>
+#include <string>
+#include <type_traits>
+#include "../overlaycontroller.h"
+
+namespace settings
+{
+enum class SettingCategory
+{
+    Utility,
+    KeyboardShortcut,
+    Playspace,
+    Application,
+    Video,
+    Chaperone,
+    ChaperoneProfiles,
+};
+
+struct QtInfo
+{
+    const std::string settingName;
+};
+
+[[nodiscard]] QSettings& getQSettings()
+{
+    static QSettings s( QSettings::IniFormat,
+                        QSettings::UserScope,
+                        application_strings::applicationOrganizationName,
+                        application_strings::applicationName );
+
+    return s;
+}
+
+[[nodiscard]] std::string getQtCategoryName( const SettingCategory category )
+{
+    switch ( category )
+    {
+    case SettingCategory::Utility:
+        return "utilitiesSettings";
+    case SettingCategory::KeyboardShortcut:
+        return "keyboardShortcuts";
+    case SettingCategory::Playspace:
+        return "playspaceSettings";
+    case SettingCategory::Application:
+        return "applicationSettings";
+    case SettingCategory::Video:
+        return "videoSettings";
+    case SettingCategory::Chaperone:
+        return "chaperoneSettings";
+    case SettingCategory::ChaperoneProfiles:
+        return "chaperoneProfiles";
+    }
+    return "no-value";
+}
+
+[[nodiscard]] QVariant getQtSetting( const SettingCategory category,
+                                     const std::string qtSettingName )
+{
+    getQSettings().beginGroup( getQtCategoryName( category ).c_str() );
+
+    const auto v = getQSettings().value( qtSettingName.c_str() );
+
+    getQSettings().endGroup();
+
+    return v;
+}
+
+void saveQtSetting( const SettingCategory category,
+                    const std::string qtSettingName,
+                    const QVariant value )
+{
+    getQSettings().beginGroup( getQtCategoryName( category ).c_str() );
+    getQSettings().setValue( qtSettingName.c_str(), value );
+    getQSettings().endGroup();
+}
+
+[[nodiscard]] bool isValidQVariant( const QVariant v,
+                                    const QMetaType::Type type )
+{
+    const auto savedSettingIsValid
+        = v.isValid() && !v.isNull() && ( v.userType() == type );
+    if ( savedSettingIsValid )
+    {
+        return true;
+    }
+    return false;
+}
+
+} // namespace settings

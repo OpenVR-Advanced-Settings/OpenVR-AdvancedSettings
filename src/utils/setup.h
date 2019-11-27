@@ -17,6 +17,7 @@ enum ReturnErrorCode
     SUCCESS = 0,
     GENERAL_FAILURE = -1,
     OPENVR_INIT_ERROR = -2,
+    SETTING_INCORRECT_INDEX = -3,
 };
 
 struct CommandLineOptions
