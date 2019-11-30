@@ -20,6 +20,8 @@ enum class BoolSetting
     PLAYSPACE_universeCenteredRotation,
     PLAYSPACE_enableSeatedMotion,
     PLAYSPACE_adjustChaperone,
+    PLAYSPACE_showLogMatricesButton,
+    PLAYSPACE_simpleRecenter,
 
     APPLICATION_disableVersionCheck,
     APPLICATION_previousShutdownSafe,
@@ -35,6 +37,10 @@ enum class BoolSetting
 
 enum class DoubleSetting
 {
+    PLAYSPACE_heightToggleOffset,
+    PLAYSPACE_gravityStrength,
+    PLAYSPACE_flingStrength,
+
     UTILITY_desktopWidth,
 
     VIDEO_brightnessOpacityValue,

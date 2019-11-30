@@ -210,6 +210,14 @@ private:
                           SettingCategory::Playspace,
                           QtInfo{ "adjustChaperone" },
                           true },
+        BoolSettingValue{ BoolSetting::PLAYSPACE_showLogMatricesButton,
+                          SettingCategory::Playspace,
+                          QtInfo{ "showLogMatricesButton" },
+                          false },
+        BoolSettingValue{ BoolSetting::PLAYSPACE_simpleRecenter,
+                          SettingCategory::Playspace,
+                          QtInfo{ "simpleRecenter" },
+                          false },
 
         BoolSettingValue{ BoolSetting::APPLICATION_disableVersionCheck,
                           SettingCategory::Application,
@@ -242,6 +250,18 @@ private:
     constexpr static auto doubleSettingSize
         = static_cast<int>( DoubleSetting::LAST_ENUMERATOR ) + 1;
     std::array<DoubleSettingValue, doubleSettingSize> m_doubleSettings{
+        DoubleSettingValue{ DoubleSetting::PLAYSPACE_heightToggleOffset,
+                            SettingCategory::Playspace,
+                            QtInfo{ "heightToggleOffset" },
+                            -1.0 },
+        DoubleSettingValue{ DoubleSetting::PLAYSPACE_gravityStrength,
+                            SettingCategory::Playspace,
+                            QtInfo{ "gravityStrength" },
+                            9.8 },
+        DoubleSettingValue{ DoubleSetting::PLAYSPACE_flingStrength,
+                            SettingCategory::Playspace,
+                            QtInfo{ "flingStrength" },
+                            1.0 },
         DoubleSettingValue{ DoubleSetting::UTILITY_desktopWidth,
                             SettingCategory::Utility,
                             QtInfo{ "desktopWidth" },
