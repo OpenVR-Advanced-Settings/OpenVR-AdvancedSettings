@@ -39,9 +39,6 @@ namespace advsettings
 {
 void MoveCenterTabController::initStage1()
 {
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-
     m_adjustChaperone = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_adjustChaperone );
 
@@ -58,26 +55,15 @@ void MoveCenterTabController::initStage1()
     m_turnBounds
         = settings::getSetting( settings::BoolSetting::PLAYSPACE_turnBounds );
 
-    auto value = settings->value( "dragComfortFactor", m_dragComfortFactor );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_dragComfortFactor = value.toUInt();
-    }
-    value = settings->value( "turnComfortFactor", m_turnComfortFactor );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_turnComfortFactor = value.toUInt();
-    }
-    value = settings->value( "snapTurnAngle", m_snapTurnAngle );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_snapTurnAngle = value.toInt();
-    }
-    value = settings->value( "smoothTurnRate", m_smoothTurnRate );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_smoothTurnRate = value.toInt();
-    }
+    m_dragComfortFactor = static_cast<unsigned int>( settings::getSetting(
+        settings::IntSetting::PLAYSPACE_dragComfortFactor ) );
+    m_turnComfortFactor = static_cast<unsigned int>( settings::getSetting(
+        settings::IntSetting::PLAYSPACE_turnComfortFactor ) );
+
+    m_snapTurnAngle
+        = settings::getSetting( settings::IntSetting::PLAYSPACE_snapTurnAngle );
+    m_smoothTurnRate = settings::getSetting(
+        settings::IntSetting::PLAYSPACE_smoothTurnRate );
 
     m_heightToggleOffset = static_cast<float>( settings::getSetting(
         settings::DoubleSetting::PLAYSPACE_heightToggleOffset ) );
@@ -107,7 +93,6 @@ void MoveCenterTabController::initStage1()
     m_simpleRecenter = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_simpleRecenter );
 
-    settings->endGroup();
     reloadOffsetProfiles();
     m_k_moveCenterSettingsUpdateCounter
         = utils::adjustUpdateRate( k_moveCenterSettingsUpdateCounter );

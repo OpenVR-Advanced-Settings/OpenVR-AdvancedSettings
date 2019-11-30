@@ -347,6 +347,23 @@ private:
     constexpr static auto intSettingsSize
         = static_cast<int>( IntSetting::LAST_ENUMERATOR ) + 1;
     std::array<IntSettingValue, intSettingsSize> m_intSettings{
+        IntSettingValue{ IntSetting::PLAYSPACE_snapTurnAngle,
+                         SettingCategory::Playspace,
+                         QtInfo{ "snapTurnAngle" },
+                         4500 },
+        IntSettingValue{ IntSetting::PLAYSPACE_smoothTurnRate,
+                         SettingCategory::Playspace,
+                         QtInfo{ "smoothTurnRate" },
+                         100 },
+        IntSettingValue{ IntSetting::PLAYSPACE_dragComfortFactor,
+                         SettingCategory::Playspace,
+                         QtInfo{ "dragComfortFactor" },
+                         0 },
+        IntSettingValue{ IntSetting::PLAYSPACE_turnComfortFactor,
+                         SettingCategory::Playspace,
+                         QtInfo{ "turnComfortFactor" },
+                         0 },
+
         IntSettingValue{ IntSetting::UTILITY_alarmHour,
                          SettingCategory::Utility,
                          QtInfo{ "alarmHour" },
