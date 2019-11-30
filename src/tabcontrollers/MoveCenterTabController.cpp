@@ -78,21 +78,13 @@ void MoveCenterTabController::initStage1()
     {
         m_smoothTurnRate = value.toInt();
     }
-    value = settings->value( "heightToggleOffset", m_heightToggleOffset );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_heightToggleOffset = value.toFloat();
-    }
-    value = settings->value( "gravityStrength", m_gravityStrength );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_gravityStrength = value.toFloat();
-    }
-    value = settings->value( "flingStrength", m_flingStrength );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_flingStrength = value.toFloat();
-    }
+
+    m_heightToggleOffset = static_cast<float>( settings::getSetting(
+        settings::DoubleSetting::PLAYSPACE_heightToggleOffset ) );
+    m_gravityStrength = static_cast<float>( settings::getSetting(
+        settings::DoubleSetting::PLAYSPACE_gravityStrength ) );
+    m_flingStrength = static_cast<float>( settings::getSetting(
+        settings::DoubleSetting::PLAYSPACE_flingStrength ) );
 
     m_momentumSave
         = settings::getSetting( settings::BoolSetting::PLAYSPACE_momentumSave );
@@ -102,13 +94,8 @@ void MoveCenterTabController::initStage1()
         = settings::getSetting( settings::BoolSetting::PLAYSPACE_lockYToggle );
     m_lockZToggle
         = settings::getSetting( settings::BoolSetting::PLAYSPACE_lockZToggle );
-
-    value = settings->value( "showLogMatricesButton", m_showLogMatricesButton );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_showLogMatricesButton = value.toBool();
-    }
-
+    m_showLogMatricesButton = settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_showLogMatricesButton );
     m_allowExternalEdits = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_allowExternalEdits );
     m_oldStyleMotion = settings::getSetting(
@@ -117,12 +104,9 @@ void MoveCenterTabController::initStage1()
         settings::BoolSetting::PLAYSPACE_universeCenteredRotation );
     m_enableSeatedMotion = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_enableSeatedMotion );
+    m_simpleRecenter = settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_simpleRecenter );
 
-    value = settings->value( "simpleRecenter", m_simpleRecenter );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_simpleRecenter = value.toBool();
-    }
     settings->endGroup();
     reloadOffsetProfiles();
     m_k_moveCenterSettingsUpdateCounter
