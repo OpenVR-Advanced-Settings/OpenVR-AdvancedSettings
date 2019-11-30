@@ -75,11 +75,20 @@ void saveQtSetting( const SettingCategory category,
     getQSettings().endGroup();
 }
 
-[[nodiscard]] bool isValidQVariant( const QVariant v,
-                                    const QMetaType::Type type )
+template <typename Value>[[nodiscard]] bool isValidQVariant( const QVariant v )
 {
-    const auto savedSettingIsValid
-        = v.isValid() && !v.isNull() && ( v.userType() == type );
+    auto savedSettingIsValid = v.isValid() && !v.isNull();
+
+    if constexpr ( std::is_same<Value, std::string>::value )
+    {
+        // Special case for std::string because Qt refuses to recognize it
+        savedSettingIsValid = savedSettingIsValid && v.canConvert<QString>();
+    }
+    else
+    {
+        savedSettingIsValid = savedSettingIsValid && v.canConvert<Value>();
+    }
+
     if ( savedSettingIsValid )
     {
         return true;
