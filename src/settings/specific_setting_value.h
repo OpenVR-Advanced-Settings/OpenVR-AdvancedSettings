@@ -26,25 +26,7 @@ public:
         const auto v = getQtSetting( SettingValue::category(),
                                      SettingValue::qtInfo().settingName );
 
-        QMetaType::Type type;
-        if constexpr ( std::is_same<Value, bool>::value )
-        {
-            type = QMetaType::Bool;
-        }
-        else if constexpr ( std::is_same<Value, double>::value )
-        {
-            type = QMetaType::Double;
-        }
-        else if constexpr ( std::is_same<Value, std::string>::value )
-        {
-            type = QMetaType::QString;
-        }
-        else if constexpr ( std::is_same<Value, int>::value )
-        {
-            type = QMetaType::Int;
-        }
-
-        if ( isValidQVariant( v, type ) )
+        if ( isValidQVariant<Value>( v ) )
         {
             if constexpr ( std::is_same<Value, bool>::value )
             {
