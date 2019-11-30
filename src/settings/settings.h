@@ -73,6 +73,11 @@ enum class StringSetting
 
 enum class IntSetting
 {
+    PLAYSPACE_snapTurnAngle,
+    PLAYSPACE_smoothTurnRate,
+    PLAYSPACE_dragComfortFactor,
+    PLAYSPACE_turnComfortFactor,
+
     UTILITY_alarmHour,
     UTILITY_alarmMinute,
     // LAST_ENUMERATOR must always be set to the last value
