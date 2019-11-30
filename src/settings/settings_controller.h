@@ -206,6 +206,10 @@ private:
                           SettingCategory::Playspace,
                           QtInfo{ "enableSeatedMotion" },
                           false },
+        BoolSettingValue{ BoolSetting::PLAYSPACE_adjustChaperone,
+                          SettingCategory::Playspace,
+                          QtInfo{ "adjustChaperone" },
+                          true },
 
         BoolSettingValue{ BoolSetting::APPLICATION_disableVersionCheck,
                           SettingCategory::Application,

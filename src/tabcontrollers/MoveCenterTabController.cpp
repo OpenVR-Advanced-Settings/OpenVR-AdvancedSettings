@@ -42,11 +42,8 @@ void MoveCenterTabController::initStage1()
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "playspaceSettings" );
 
-    auto value = settings->value( "adjustChaperone", m_adjustChaperone );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_adjustChaperone = value.toBool();
-    }
+    m_adjustChaperone = settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_adjustChaperone );
 
     m_settingsRightHandDragEnabled = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_moveShortcutRight );
@@ -61,7 +58,7 @@ void MoveCenterTabController::initStage1()
     m_turnBounds
         = settings::getSetting( settings::BoolSetting::PLAYSPACE_turnBounds );
 
-    value = settings->value( "dragComfortFactor", m_dragComfortFactor );
+    auto value = settings->value( "dragComfortFactor", m_dragComfortFactor );
     if ( value.isValid() && !value.isNull() )
     {
         m_dragComfortFactor = value.toUInt();
