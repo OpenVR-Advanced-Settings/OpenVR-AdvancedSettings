@@ -1,8 +1,14 @@
 #include "overlay_utils.h"
 #include "../overlaycontroller.h"
+#include "../settings/settings.h"
 
 namespace overlay
 {
+namespace strings
+{
+    constexpr auto overlaykey = "valve.steam.desktop";
+} // namespace strings
+
 vr::VROverlayHandle_t getOverlayHandle()
 {
     vr::VROverlayHandle_t pOverlayHandle;
@@ -23,33 +29,10 @@ void setDesktopOverlayWidth( double width )
     }
 }
 
-void setSettingsToValue( const std::string setting, const double value )
-{
-    QSettings settings( QSettings::Format::IniFormat,
-                        QSettings::Scope::UserScope,
-                        application_strings::applicationOrganizationName,
-                        application_strings::applicationName );
-    settings.beginGroup( strings::settingsGroupName );
-    settings.setValue( setting.c_str(), value );
-    settings.endGroup();
-}
-
-overlay::DesktopOverlay::DesktopOverlay()
-{
-    QSettings settings( QSettings::Format::IniFormat,
-                        QSettings::Scope::UserScope,
-                        application_strings::applicationOrganizationName,
-                        application_strings::applicationName );
-
-    settings.beginGroup( strings::settingsGroupName );
-    m_width = settings.value( strings::widthSettingsName, defaultOverlayWidth )
-                  .toDouble();
-    settings.endGroup();
-}
-
 void DesktopOverlay::update()
 {
-    setDesktopOverlayWidth( m_width );
+    setDesktopOverlayWidth(
+        settings::getSetting( settings::DoubleSetting::UTILITY_desktopWidth ) );
 }
 
 bool DesktopOverlay::isAvailable() const
@@ -74,13 +57,14 @@ void overlay::DesktopOverlay::setWidth( double width )
         width = 0.01;
     }
 
-    setSettingsToValue( strings::widthSettingsName, width );
-    m_width = width;
+    settings::setSetting( settings::DoubleSetting::UTILITY_desktopWidth,
+                          width );
 }
 
 double DesktopOverlay::getCurrentWidth() const noexcept
 {
-    return m_width;
+    return settings::getSetting(
+        settings::DoubleSetting::UTILITY_desktopWidth );
 }
 
 } // namespace overlay
