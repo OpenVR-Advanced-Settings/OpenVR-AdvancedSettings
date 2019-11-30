@@ -3,6 +3,7 @@
 #include "../overlaycontroller.h"
 #include "../utils/Matrix.h"
 #include "../quaternion/quaternion.h"
+#include "../settings/settings.h"
 
 void rotateCoordinates( double coordinates[3], double angle )
 {
@@ -40,43 +41,26 @@ void MoveCenterTabController::initStage1()
 {
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "playspaceSettings" );
+
     auto value = settings->value( "adjustChaperone", m_adjustChaperone );
     if ( value.isValid() && !value.isNull() )
     {
         m_adjustChaperone = value.toBool();
     }
-    value = settings->value( "moveShortcutRight",
-                             m_settingsRightHandDragEnabled );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_settingsRightHandDragEnabled = value.toBool();
-    }
-    value
-        = settings->value( "moveShortcutLeft", m_settingsLeftHandDragEnabled );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_settingsLeftHandDragEnabled = value.toBool();
-    }
-    value = settings->value( "turnBindLeft", m_settingsLeftHandTurnEnabled );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_settingsLeftHandTurnEnabled = value.toBool();
-    }
-    value = settings->value( "turnBindRight", m_settingsRightHandTurnEnabled );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_settingsRightHandTurnEnabled = value.toBool();
-    }
-    value = settings->value( "dragBounds", m_dragBounds );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_dragBounds = value.toBool();
-    }
-    value = settings->value( "turnBounds", m_turnBounds );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_turnBounds = value.toBool();
-    }
+
+    m_settingsRightHandDragEnabled = settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_moveShortcutRight );
+    m_settingsLeftHandDragEnabled = settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_moveShortcutLeft );
+    m_settingsLeftHandTurnEnabled
+        = settings::getSetting( settings::BoolSetting::PLAYSPACE_turnBindLeft );
+    m_settingsRightHandTurnEnabled = settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_turnBindRight );
+    m_dragBounds
+        = settings::getSetting( settings::BoolSetting::PLAYSPACE_dragBounds );
+    m_turnBounds
+        = settings::getSetting( settings::BoolSetting::PLAYSPACE_turnBounds );
+
     value = settings->value( "dragComfortFactor", m_dragComfortFactor );
     if ( value.isValid() && !value.isNull() )
     {
@@ -112,52 +96,31 @@ void MoveCenterTabController::initStage1()
     {
         m_flingStrength = value.toFloat();
     }
-    value = settings->value( "momentumSave", m_momentumSave );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_momentumSave = value.toBool();
-    }
-    value = settings->value( "lockXToggle", m_lockXToggle );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_lockXToggle = value.toBool();
-    }
-    value = settings->value( "lockYToggle", m_lockYToggle );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_lockYToggle = value.toBool();
-    }
-    value = settings->value( "lockZToggle", m_lockZToggle );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_lockZToggle = value.toBool();
-    }
+
+    m_momentumSave
+        = settings::getSetting( settings::BoolSetting::PLAYSPACE_momentumSave );
+    m_lockXToggle
+        = settings::getSetting( settings::BoolSetting::PLAYSPACE_lockXToggle );
+    m_lockYToggle
+        = settings::getSetting( settings::BoolSetting::PLAYSPACE_lockYToggle );
+    m_lockZToggle
+        = settings::getSetting( settings::BoolSetting::PLAYSPACE_lockZToggle );
+
     value = settings->value( "showLogMatricesButton", m_showLogMatricesButton );
     if ( value.isValid() && !value.isNull() )
     {
         m_showLogMatricesButton = value.toBool();
     }
-    value = settings->value( "allowExternalEdits", m_allowExternalEdits );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_allowExternalEdits = value.toBool();
-    }
-    value = settings->value( "oldStyleMotion", m_oldStyleMotion );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_oldStyleMotion = value.toBool();
-    }
-    value = settings->value( "universeCenteredRotation",
-                             m_universeCenteredRotation );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_universeCenteredRotation = value.toBool();
-    }
-    value = settings->value( "enableSeatedMotion", m_enableSeatedMotion );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_enableSeatedMotion = value.toBool();
-    }
+
+    m_allowExternalEdits = settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_allowExternalEdits );
+    m_oldStyleMotion = settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_oldStyleMotion );
+    m_universeCenteredRotation = settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_universeCenteredRotation );
+    m_enableSeatedMotion = settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_enableSeatedMotion );
+
     value = settings->value( "simpleRecenter", m_simpleRecenter );
     if ( value.isValid() && !value.isNull() )
     {
