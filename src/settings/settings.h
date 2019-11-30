@@ -19,6 +19,7 @@ enum class BoolSetting
     PLAYSPACE_oldStyleMotion,
     PLAYSPACE_universeCenteredRotation,
     PLAYSPACE_enableSeatedMotion,
+    PLAYSPACE_adjustChaperone,
 
     APPLICATION_disableVersionCheck,
     APPLICATION_previousShutdownSafe,
