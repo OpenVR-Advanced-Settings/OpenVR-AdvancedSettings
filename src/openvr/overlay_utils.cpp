@@ -71,7 +71,6 @@ overlay::DesktopOverlay::DesktopOverlay()
                         application_strings::applicationOrganizationName,
                         application_strings::applicationName );
 
-    LOG( INFO ) << settings.fileName();
     settings.beginGroup( strings::settingsGroupName );
     m_width = settings.value( strings::widthSettingsName, defaultOverlayWidth )
                   .toDouble();
