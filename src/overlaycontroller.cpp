@@ -298,12 +298,6 @@ OverlayController::OverlayController( bool desktopMode,
             m_customTickRateMs = value.toInt();
         }
     }
-    value
-        = appSettings()->value( "disableVersionCheck", m_disableVersionCheck );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_disableVersionCheck = value.toBool();
-    }
     value = appSettings()->value( "debugState", m_debugState );
     if ( value.isValid() && !value.isNull() )
     {
@@ -325,7 +319,7 @@ OverlayController::OverlayController( bool desktopMode,
              this,
              SLOT( OnNetworkReply( QNetworkReply* ) ) );
 
-    if ( !m_disableVersionCheck )
+    if ( !disableVersionCheck() )
     {
         QNetworkRequest netRequest;
         netRequest.setUrl( QUrl( application_strings::versionCheckUrl ) );
@@ -772,29 +766,23 @@ void OverlayController::setEnableDebug( bool value, bool notify )
 
 bool OverlayController::disableVersionCheck() const
 {
-    return m_disableVersionCheck;
+    return settings::getSetting(
+        settings::BoolSetting::APPLICATION_disableVersionCheck );
 }
 
 void OverlayController::setDisableVersionCheck( bool value, bool notify )
 {
-    if ( m_disableVersionCheck == value )
-    {
-        return;
-    }
-    m_disableVersionCheck = value;
-    if ( !m_disableVersionCheck )
+    if ( !value )
     {
         QNetworkRequest netRequest;
         netRequest.setUrl( QUrl( application_strings::versionCheckUrl ) );
         netManager->get( netRequest );
     }
-    appSettings()->beginGroup( "applicationSettings" );
-    appSettings()->setValue( "disableVersionCheck", m_disableVersionCheck );
-    appSettings()->endGroup();
-    appSettings()->sync();
+    settings::setSetting(
+        settings::BoolSetting::APPLICATION_disableVersionCheck, value );
     if ( notify )
     {
-        emit disableVersionCheckChanged( m_disableVersionCheck );
+        emit disableVersionCheckChanged( value );
     }
 }
 
