@@ -76,8 +76,6 @@ void MoveCenterTabController::initStage1()
         = settings::getSetting( settings::BoolSetting::PLAYSPACE_momentumSave );
     m_lockYToggle
         = settings::getSetting( settings::BoolSetting::PLAYSPACE_lockYToggle );
-    m_lockZToggle
-        = settings::getSetting( settings::BoolSetting::PLAYSPACE_lockZToggle );
     m_showLogMatricesButton = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_showLogMatricesButton );
     m_allowExternalEdits = settings::getSetting(
@@ -260,10 +258,6 @@ void MoveCenterTabController::outputLogSettings()
     if ( m_lockYToggle )
     {
         LOG( INFO ) << "LOADED SETTINGS: Y Axis Locked";
-    }
-    if ( m_lockZToggle )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Z Axis Locked";
     }
     if ( m_allowExternalEdits )
     {
@@ -1003,20 +997,15 @@ void MoveCenterTabController::setLockY( bool value, bool notify )
 
 bool MoveCenterTabController::lockZToggle() const
 {
-    return m_lockZToggle;
+    return settings::getSetting( settings::BoolSetting::PLAYSPACE_lockZToggle );
 }
 
 void MoveCenterTabController::setLockZ( bool value, bool notify )
 {
-    m_lockZToggle = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "lockZToggle", m_lockZToggle );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_lockZToggle, value );
     if ( notify )
     {
-        emit requireLockZChanged( m_lockZToggle );
+        emit requireLockZChanged( value );
     }
 }
 
@@ -1184,7 +1173,7 @@ void MoveCenterTabController::modOffsetY( float value, bool notify )
 
 void MoveCenterTabController::modOffsetZ( float value, bool notify )
 {
-    if ( !m_lockZToggle )
+    if ( !settings::getSetting( settings::BoolSetting::PLAYSPACE_lockZToggle ) )
     {
         m_offsetZ += value;
         if ( notify )
@@ -2318,7 +2307,7 @@ void MoveCenterTabController::zAxisLockToggle( bool zAxisLockToggleJustPressed )
         return;
     }
 
-    if ( !m_lockZToggle )
+    if ( !settings::getSetting( settings::BoolSetting::PLAYSPACE_lockZToggle ) )
     {
         setLockZ( true );
     }
@@ -2490,7 +2479,8 @@ void MoveCenterTabController::updateHandDrag(
         {
             m_offsetY += static_cast<float>( diff[1] );
         }
-        if ( !m_lockZToggle )
+        if ( !settings::getSetting(
+                 settings::BoolSetting::PLAYSPACE_lockZToggle ) )
         {
             m_offsetZ += static_cast<float>( diff[2] );
         }
@@ -2625,7 +2615,7 @@ void MoveCenterTabController::updateGravity()
     {
         m_velocity[1] = 0.0;
     }
-    if ( m_lockZToggle )
+    if ( settings::getSetting( settings::BoolSetting::PLAYSPACE_lockZToggle ) )
     {
         m_velocity[2] = 0.0;
     }
