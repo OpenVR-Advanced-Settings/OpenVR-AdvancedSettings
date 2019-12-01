@@ -298,11 +298,6 @@ OverlayController::OverlayController( bool desktopMode,
             m_customTickRateMs = value.toInt();
         }
     }
-    value = appSettings()->value( "enableDebug", m_enableDebug );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_enableDebug = value.toBool();
-    }
     value
         = appSettings()->value( "disableVersionCheck", m_disableVersionCheck );
     if ( value.isValid() && !value.isNull() )
@@ -761,23 +756,17 @@ void OverlayController::setVsyncDisabled( bool value, bool notify )
 
 bool OverlayController::enableDebug() const
 {
-    return m_enableDebug;
+    return settings::getSetting(
+        settings::BoolSetting::APPLICATION_enableDebug );
 }
 
 void OverlayController::setEnableDebug( bool value, bool notify )
 {
-    if ( m_enableDebug == value )
-    {
-        return;
-    }
-    m_enableDebug = value;
-    appSettings()->beginGroup( "applicationSettings" );
-    appSettings()->setValue( "enableDebug", m_enableDebug );
-    appSettings()->endGroup();
-    appSettings()->sync();
+    settings::setSetting( settings::BoolSetting::APPLICATION_enableDebug,
+                          value );
     if ( notify )
     {
-        emit enableDebugChanged( m_enableDebug );
+        emit enableDebugChanged( value );
     }
 }
 
