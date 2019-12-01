@@ -81,6 +81,8 @@ enum class IntSetting
     PLAYSPACE_dragComfortFactor,
     PLAYSPACE_turnComfortFactor,
 
+    APPLICATION_debugState,
+
     UTILITY_alarmHour,
     UTILITY_alarmMinute,
     // LAST_ENUMERATOR must always be set to the last value
