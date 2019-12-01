@@ -249,6 +249,11 @@ private:
                           QtInfo{ "micReversePtt" },
                           false },
 
+        BoolSettingValue{ BoolSetting::UTILITY_alarmEnabled,
+                          SettingCategory::Utility,
+                          QtInfo{ "alarmEnabled" },
+                          false },
+
         BoolSettingValue{ BoolSetting::VIDEO_brightnessEnabled,
                           SettingCategory::Video,
                           QtInfo{ "brightnessEnabled" },

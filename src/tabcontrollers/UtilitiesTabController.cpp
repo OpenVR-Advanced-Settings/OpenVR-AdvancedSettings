@@ -3,6 +3,7 @@
 #include <QApplication>
 #include "../overlaycontroller.h"
 #include "../keyboard_input/input_sender.h"
+#include "../settings/settings.h"
 #include <chrono>
 #include <thread>
 
@@ -13,13 +14,11 @@ void UtilitiesTabController::initStage1()
 {
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "utilitiesSettings" );
-    auto qAlarmEnabled = settings->value( "alarmEnabled", m_alarmEnabled );
     auto qAlarmIsModal = settings->value( "alarmIsModal", m_alarmIsModal );
     auto qVrcDebug = settings->value( "vrcDebug", m_vrcDebug );
     auto qAlarmHour = settings->value( "alarmHour", 0 );
     auto qAlarmMinute = settings->value( "alarmMinute", 0 );
     settings->endGroup();
-    m_alarmEnabled = qAlarmEnabled.toBool();
     m_alarmIsModal = qAlarmIsModal.toBool();
     m_vrcDebug = qVrcDebug.toBool();
     m_alarmTime = QTime( qAlarmHour.toInt(), qAlarmMinute.toInt() );
@@ -221,7 +220,7 @@ void UtilitiesTabController::sendKeyboardThree()
 
 bool UtilitiesTabController::alarmEnabled() const
 {
-    return m_alarmEnabled;
+    return settings::getSetting( settings::BoolSetting::UTILITY_alarmEnabled );
 }
 
 bool UtilitiesTabController::alarmIsModal() const
@@ -246,19 +245,14 @@ int UtilitiesTabController::alarmTimeMinute() const
 
 void UtilitiesTabController::setAlarmEnabled( bool enabled, bool notify )
 {
-    if ( m_alarmEnabled != enabled )
+    settings::setSetting( settings::BoolSetting::UTILITY_alarmEnabled,
+                          enabled );
+
+    m_alarmLastCheckTime = QTime();
+
+    if ( notify )
     {
-        m_alarmEnabled = enabled;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "utilitiesSettings" );
-        settings->setValue( "alarmEnabled", m_alarmEnabled );
-        settings->endGroup();
-        settings->sync();
-        m_alarmLastCheckTime = QTime();
-        if ( notify )
-        {
-            emit alarmEnabledChanged( m_alarmEnabled );
-        }
+        emit alarmEnabledChanged( enabled );
     }
 }
 
@@ -466,7 +460,7 @@ void UtilitiesTabController::eventLoopTick()
 {
     if ( settingsUpdateCounter >= m_k_utilitiesSettingsUpdateCounter )
     {
-        if ( m_alarmEnabled && m_alarmTime.isValid() )
+        if ( alarmEnabled() && m_alarmTime.isValid() )
         {
             auto now = QTime::currentTime();
             if ( m_alarmLastCheckTime.isValid()
