@@ -56,8 +56,6 @@ void MoveCenterTabController::initStage1()
     m_flingStrength = static_cast<float>( settings::getSetting(
         settings::DoubleSetting::PLAYSPACE_flingStrength ) );
 
-    m_showLogMatricesButton = settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_showLogMatricesButton );
     m_allowExternalEdits = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_allowExternalEdits );
     m_oldStyleMotion = settings::getSetting(
@@ -875,21 +873,18 @@ void MoveCenterTabController::setLockZ( bool value, bool notify )
 
 bool MoveCenterTabController::showLogMatricesButton() const
 {
-    return m_showLogMatricesButton;
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_showLogMatricesButton );
 }
 
 void MoveCenterTabController::setShowLogMatricesButton( bool value,
                                                         bool notify )
 {
-    m_showLogMatricesButton = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "showLogMatricesButton", m_showLogMatricesButton );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting(
+        settings::BoolSetting::PLAYSPACE_showLogMatricesButton, value );
     if ( notify )
     {
-        emit showLogMatricesButtonChanged( m_showLogMatricesButton );
+        emit showLogMatricesButtonChanged( value );
     }
 }
 
