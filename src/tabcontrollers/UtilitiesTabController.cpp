@@ -14,12 +14,10 @@ void UtilitiesTabController::initStage1()
 {
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "utilitiesSettings" );
-    auto qAlarmIsModal = settings->value( "alarmIsModal", m_alarmIsModal );
     auto qVrcDebug = settings->value( "vrcDebug", m_vrcDebug );
     auto qAlarmHour = settings->value( "alarmHour", 0 );
     auto qAlarmMinute = settings->value( "alarmMinute", 0 );
     settings->endGroup();
-    m_alarmIsModal = qAlarmIsModal.toBool();
     m_vrcDebug = qVrcDebug.toBool();
     m_alarmTime = QTime( qAlarmHour.toInt(), qAlarmMinute.toInt() );
 
@@ -225,7 +223,7 @@ bool UtilitiesTabController::alarmEnabled() const
 
 bool UtilitiesTabController::alarmIsModal() const
 {
-    return m_alarmIsModal;
+    return settings::getSetting( settings::BoolSetting::UTILITY_alarmIsModal );
 }
 
 bool UtilitiesTabController::vrcDebug() const
@@ -258,18 +256,10 @@ void UtilitiesTabController::setAlarmEnabled( bool enabled, bool notify )
 
 void UtilitiesTabController::setAlarmIsModal( bool modal, bool notify )
 {
-    if ( m_alarmIsModal != modal )
+    settings::setSetting( settings::BoolSetting::UTILITY_alarmIsModal, modal );
+    if ( notify )
     {
-        m_alarmIsModal = modal;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "utilitiesSettings" );
-        settings->setValue( "alarmIsModal", m_alarmIsModal );
-        settings->endGroup();
-        settings->sync();
-        if ( notify )
-        {
-            emit alarmIsModalChanged( m_alarmIsModal );
-        }
+        emit alarmIsModalChanged( modal );
     }
 }
 
@@ -473,7 +463,7 @@ void UtilitiesTabController::eventLoopTick()
                                "The alarm at %02i:%02i went off.",
                                alarmTimeHour(),
                                alarmTimeMinute() );
-                if ( m_alarmIsModal )
+                if ( alarmIsModal() )
                 {
                     std::thread messageThread(
                         []( UtilitiesTabController* parent,
