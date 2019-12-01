@@ -125,7 +125,6 @@ private:
     bool m_moveShortcutLeftPressed = false;
     vr::TrackedDeviceIndex_t m_activeMoveController;
     float m_lastControllerPosition[3];
-    bool m_settingsRightHandDragEnabled = false;
     bool m_settingsLeftHandDragEnabled = false;
     bool m_settingsLeftHandTurnEnabled = false;
     bool m_settingsRightHandTurnEnabled = false;
