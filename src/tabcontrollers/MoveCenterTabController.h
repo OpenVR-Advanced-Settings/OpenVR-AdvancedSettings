@@ -127,7 +127,6 @@ private:
     float m_lastControllerPosition[3];
     unsigned m_dragComfortFactor = 0;
     unsigned m_turnComfortFactor = 0;
-    bool m_dragBounds = false;
     bool m_turnBounds = false;
     bool m_heightToggle = false;
     float m_heightToggleOffset = -1.0f;
