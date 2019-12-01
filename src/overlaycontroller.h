@@ -121,7 +121,6 @@ private:
 
     bool m_desktopMode;
     bool m_noSound;
-    bool m_crashRecoveryDisabled = false;
     bool m_enableDebug = false;
     bool m_disableVersionCheck = false;
     bool m_newVersionDetected = false;

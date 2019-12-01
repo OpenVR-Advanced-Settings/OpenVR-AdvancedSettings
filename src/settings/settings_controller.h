@@ -231,6 +231,10 @@ private:
                           SettingCategory::Application,
                           QtInfo{ "vsyncDisabled" },
                           false },
+        BoolSettingValue{ BoolSetting::APPLICATION_crashRecoveryDisabled,
+                          SettingCategory::Application,
+                          QtInfo{ "crashRecoveryDisabled" },
+                          false },
 
         BoolSettingValue{ BoolSetting::VIDEO_brightnessEnabled,
                           SettingCategory::Video,
