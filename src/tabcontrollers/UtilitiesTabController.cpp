@@ -12,12 +12,12 @@ namespace advsettings
 {
 void UtilitiesTabController::initStage1()
 {
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "utilitiesSettings" );
-    auto qAlarmHour = settings->value( "alarmHour", 0 );
-    auto qAlarmMinute = settings->value( "alarmMinute", 0 );
-    settings->endGroup();
-    m_alarmTime = QTime( qAlarmHour.toInt(), qAlarmMinute.toInt() );
+    auto qAlarmHour
+        = settings::getSetting( settings::IntSetting::UTILITY_alarmHour );
+    auto qAlarmMinute
+        = settings::getSetting( settings::IntSetting::UTILITY_alarmMinute );
+
+    m_alarmTime = QTime( qAlarmHour, qAlarmMinute );
 
     m_k_utilitiesSettingsUpdateCounter
         = utils::adjustUpdateRate( k_utilitiesSettingsUpdateCounter );
@@ -260,27 +260,30 @@ void UtilitiesTabController::setVrcDebug( bool value, bool notify )
 
 void UtilitiesTabController::setAlarmTimeHour( int hour, bool notify )
 {
-    if ( m_alarmTime.hour() != hour )
+    if ( m_alarmTime.hour() == hour )
     {
-        if ( m_alarmTime.isValid() )
-        {
-            m_alarmTime = QTime( hour, m_alarmTime.minute() );
-        }
-        else
-        {
-            m_alarmTime = QTime( hour, 0 );
-        }
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "utilitiesSettings" );
-        settings->setValue( "alarmHour", m_alarmTime.hour() );
-        settings->setValue( "alarmMinute", m_alarmTime.minute() );
-        settings->endGroup();
-        settings->sync();
-        m_alarmLastCheckTime = QTime();
-        if ( notify )
-        {
-            emit alarmTimeHourChanged( hour );
-        }
+        return;
+    }
+
+    if ( m_alarmTime.isValid() )
+    {
+        m_alarmTime = QTime( hour, m_alarmTime.minute() );
+    }
+    else
+    {
+        m_alarmTime = QTime( hour, 0 );
+    }
+
+    settings::setSetting( settings::IntSetting::UTILITY_alarmHour,
+                          m_alarmTime.hour() );
+    settings::setSetting( settings::IntSetting::UTILITY_alarmMinute,
+                          m_alarmTime.minute() );
+
+    m_alarmLastCheckTime = QTime();
+
+    if ( notify )
+    {
+        emit alarmTimeHourChanged( hour );
     }
 }
 
@@ -296,12 +299,12 @@ void UtilitiesTabController::setAlarmTimeMinute( int min, bool notify )
         {
             m_alarmTime = QTime( 0, min );
         }
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "utilitiesSettings" );
-        settings->setValue( "alarmHour", m_alarmTime.hour() );
-        settings->setValue( "alarmMinute", m_alarmTime.minute() );
-        settings->endGroup();
-        settings->sync();
+
+        settings::setSetting( settings::IntSetting::UTILITY_alarmHour,
+                              m_alarmTime.hour() );
+        settings::setSetting( settings::IntSetting::UTILITY_alarmMinute,
+                              m_alarmTime.minute() );
+
         m_alarmLastCheckTime = QTime();
         if ( notify )
         {
@@ -321,12 +324,12 @@ void UtilitiesTabController::modAlarmTimeHour( int value, bool notify )
 {
     auto h = m_alarmTime.hour();
     m_alarmTime = m_alarmTime.addSecs( value * 60 * 60 );
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "utilitiesSettings" );
-    settings->setValue( "alarmHour", m_alarmTime.hour() );
-    settings->setValue( "alarmMinute", m_alarmTime.minute() );
-    settings->endGroup();
-    settings->sync();
+
+    settings::setSetting( settings::IntSetting::UTILITY_alarmHour,
+                          m_alarmTime.hour() );
+    settings::setSetting( settings::IntSetting::UTILITY_alarmMinute,
+                          m_alarmTime.minute() );
+
     if ( h != m_alarmTime.hour() )
     {
         m_alarmLastCheckTime = QTime();
@@ -342,12 +345,12 @@ void UtilitiesTabController::modAlarmTimeMinute( int value, bool notify )
     auto h = m_alarmTime.hour();
     auto m = m_alarmTime.minute();
     m_alarmTime = m_alarmTime.addSecs( value * 60 );
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "utilitiesSettings" );
-    settings->setValue( "alarmHour", m_alarmTime.hour() );
-    settings->setValue( "alarmMinute", m_alarmTime.minute() );
-    settings->endGroup();
-    settings->sync();
+
+    settings::setSetting( settings::IntSetting::UTILITY_alarmHour,
+                          m_alarmTime.hour() );
+    settings::setSetting( settings::IntSetting::UTILITY_alarmMinute,
+                          m_alarmTime.minute() );
+
     if ( m != m_alarmTime.minute() || h != m_alarmTime.hour() )
     {
         m_alarmLastCheckTime = QTime();
