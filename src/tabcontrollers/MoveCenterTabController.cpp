@@ -56,8 +56,6 @@ void MoveCenterTabController::initStage1()
     m_flingStrength = static_cast<float>( settings::getSetting(
         settings::DoubleSetting::PLAYSPACE_flingStrength ) );
 
-    m_oldStyleMotion = settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_oldStyleMotion );
     m_universeCenteredRotation = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_universeCenteredRotation );
     m_enableSeatedMotion = settings::getSetting(
@@ -905,29 +903,25 @@ void MoveCenterTabController::setAllowExternalEdits( bool value, bool notify )
 
 bool MoveCenterTabController::oldStyleMotion() const
 {
-    return m_oldStyleMotion;
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_oldStyleMotion );
 }
 
 void MoveCenterTabController::setOldStyleMotion( bool value, bool notify )
 {
     // detect incoming change to old style, and hide working set
-    if ( value && !m_oldStyleMotion )
+    if ( value && !oldStyleMotion() )
     {
         vr::VRChaperoneSetup()->HideWorkingSetPreview();
     }
 
-    m_oldStyleMotion = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "oldStyleMotion", m_oldStyleMotion );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_oldStyleMotion,
+                          value );
+
     if ( notify )
     {
-        emit oldStyleMotionChanged( m_oldStyleMotion );
+        emit oldStyleMotionChanged( value );
     }
-    LOG( INFO ) << "CHANGED SETTINGS: Old-Style Motion Set: "
-                << m_oldStyleMotion;
 }
 
 bool MoveCenterTabController::universeCenteredRotation() const
@@ -2774,7 +2768,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &offsetUniverseCenter );
 
-    if ( m_oldStyleMotion )
+    if ( oldStyleMotion() )
     {
         // check if universe center is outside of OpenVR commit bounds (1km)
         if ( abs( offsetUniverseCenterXyz[0] ) > k_maxOpenvrCommitOffset )
