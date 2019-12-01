@@ -145,7 +145,7 @@ bool AudioTabController::micProximitySensorCanMute() const
 
 bool AudioTabController::micReversePtt() const
 {
-    return m_micReversePtt;
+    return settings::getSetting( settings::BoolSetting::AUDIO_micReversePtt );
 }
 
 bool AudioTabController::audioProfileDefault() const
@@ -211,7 +211,7 @@ bool AudioTabController::pttChangeValid()
 
 void AudioTabController::onPttStart()
 {
-    if ( m_micReversePtt )
+    if ( micReversePtt() )
     {
         setMicMuted( true );
     }
@@ -223,7 +223,7 @@ void AudioTabController::onPttStart()
 
 void AudioTabController::onPttEnabled()
 {
-    if ( m_micReversePtt )
+    if ( micReversePtt() )
     {
         setMicMuted( false );
     }
@@ -235,7 +235,7 @@ void AudioTabController::onPttEnabled()
 
 void AudioTabController::onPttStop()
 {
-    if ( m_micReversePtt )
+    if ( micReversePtt() )
     {
         setMicMuted( false );
     }
@@ -335,24 +335,23 @@ void AudioTabController::setMicProximitySensorCanMute( bool value, bool notify )
 void AudioTabController::setMicReversePtt( bool value, bool notify )
 {
     std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
-    if ( value != m_micReversePtt )
+
+    settings::setSetting( settings::BoolSetting::AUDIO_micReversePtt, value );
+
+    if ( m_pttEnabled )
     {
-        m_micReversePtt = value;
-        if ( m_pttEnabled )
+        if ( m_pttActive )
         {
-            if ( m_pttActive )
-            {
-                setMicMuted( value );
-            }
-            else
-            {
-                setMicMuted( !value );
-            }
+            setMicMuted( value );
         }
-        if ( notify )
+        else
         {
-            emit micReversePttChanged( value );
+            setMicMuted( !value );
         }
+    }
+    if ( notify )
+    {
+        emit micReversePttChanged( value );
     }
 }
 
