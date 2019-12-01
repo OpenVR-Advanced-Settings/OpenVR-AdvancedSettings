@@ -29,6 +29,8 @@ enum class BoolSetting
     APPLICATION_crashRecoveryDisabled,
     APPLICATION_enableDebug,
 
+    AUDIO_micProximitySensorCanMute,
+
     VIDEO_brightnessEnabled,
     VIDEO_isOverlayMethodActive,
     VIDEO_colorOverlayEnabled,

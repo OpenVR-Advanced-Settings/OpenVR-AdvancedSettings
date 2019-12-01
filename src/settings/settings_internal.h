@@ -8,6 +8,7 @@ namespace settings
 {
 enum class SettingCategory
 {
+    Audio,
     Utility,
     KeyboardShortcut,
     Playspace,
@@ -36,6 +37,8 @@ struct QtInfo
 {
     switch ( category )
     {
+    case SettingCategory::Audio:
+        return "audioSettings";
     case SettingCategory::Utility:
         return "utilitiesSettings";
     case SettingCategory::KeyboardShortcut:
