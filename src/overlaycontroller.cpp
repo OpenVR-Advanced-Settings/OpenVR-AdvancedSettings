@@ -298,12 +298,6 @@ OverlayController::OverlayController( bool desktopMode,
             m_customTickRateMs = value.toInt();
         }
     }
-    value = appSettings()->value( "previousShutdownSafe",
-                                  m_previousShutdownSafe );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_previousShutdownSafe = value.toBool();
-    }
     value = appSettings()->value( "crashRecoveryDisabled",
                                   m_crashRecoveryDisabled );
     if ( value.isValid() && !value.isNull() )
@@ -884,15 +878,8 @@ void OverlayController::setDebugState( int value, bool notify )
 
 void OverlayController::setPreviousShutdownSafe( bool value )
 {
-    if ( m_previousShutdownSafe == value )
-    {
-        return;
-    }
-    m_previousShutdownSafe = value;
-    appSettings()->beginGroup( "applicationSettings" );
-    appSettings()->setValue( "previousShutdownSafe", m_previousShutdownSafe );
-    appSettings()->endGroup();
-    appSettings()->sync();
+    settings::setSetting(
+        settings::BoolSetting::APPLICATION_previousShutdownSafe, value );
 }
 
 int OverlayController::customTickRateMs() const
@@ -1466,6 +1453,12 @@ void OverlayController::RotateCollisionBounds( float angle, bool commit )
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
     }
+}
+
+bool OverlayController::isPreviousShutdownSafe()
+{
+    return settings::getSetting(
+        settings::BoolSetting::APPLICATION_previousShutdownSafe );
 }
 
 QString OverlayController::getVersionString()

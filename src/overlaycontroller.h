@@ -120,7 +120,6 @@ private:
     Qt::MouseButtons m_lastMouseButtons = nullptr;
 
     bool m_desktopMode;
-    bool m_previousShutdownSafe = true;
     bool m_noSound;
     bool m_crashRecoveryDisabled = false;
     bool m_enableDebug = false;
@@ -219,10 +218,7 @@ public:
         return m_desktopMode;
     }
 
-    bool isPreviousShutdownSafe()
-    {
-        return m_previousShutdownSafe;
-    }
+    bool isPreviousShutdownSafe();
     void setPreviousShutdownSafe( bool value );
 
     utils::ChaperoneUtils& chaperoneUtils() noexcept
