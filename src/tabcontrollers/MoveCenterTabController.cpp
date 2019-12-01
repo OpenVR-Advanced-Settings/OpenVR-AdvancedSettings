@@ -56,8 +56,6 @@ void MoveCenterTabController::initStage1()
     m_flingStrength = static_cast<float>( settings::getSetting(
         settings::DoubleSetting::PLAYSPACE_flingStrength ) );
 
-    m_universeCenteredRotation = settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_universeCenteredRotation );
     m_enableSeatedMotion = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_enableSeatedMotion );
     m_simpleRecenter = settings::getSetting(
@@ -382,7 +380,7 @@ void MoveCenterTabController::setRotation( int value, bool notify )
 {
     if ( m_rotation != value )
     {
-        if ( m_universeCenteredRotation )
+        if ( universeCenteredRotation() )
         {
             m_rotation = value;
             if ( notify )
@@ -926,25 +924,20 @@ void MoveCenterTabController::setOldStyleMotion( bool value, bool notify )
 
 bool MoveCenterTabController::universeCenteredRotation() const
 {
-    return m_universeCenteredRotation;
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_universeCenteredRotation );
 }
 
 void MoveCenterTabController::setUniverseCenteredRotation( bool value,
                                                            bool notify )
 {
-    m_universeCenteredRotation = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "universeCenteredRotation",
-                        m_universeCenteredRotation );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting(
+        settings::BoolSetting::PLAYSPACE_universeCenteredRotation, value );
+
     if ( notify )
     {
-        emit universeCenteredRotationChanged( m_universeCenteredRotation );
+        emit universeCenteredRotationChanged( value );
     }
-    LOG( INFO ) << "CHANGED SETTINGS: Universe-Centered Rotation Set: "
-                << m_universeCenteredRotation;
 }
 
 bool MoveCenterTabController::isInitComplete() const
@@ -2623,7 +2616,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     if ( abs( offsetUniverseCenterXyz[0] ) > k_maxOpenvrWorkingSetOffest
          || ( abs( offsetUniverseCenterXyz[0] )
                   > k_maxOvrasUniverseCenteredTurningOffset
-              && m_universeCenteredRotation ) )
+              && universeCenteredRotation() ) )
     {
         LOG( INFO ) << "Raw universe center out of bounds ( X: "
                     << offsetUniverseCenterXyz[0] << " )";
@@ -2640,7 +2633,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     if ( abs( offsetUniverseCenterXyz[1] ) > k_maxOpenvrWorkingSetOffest
          || ( abs( offsetUniverseCenterXyz[1] )
                   > k_maxOvrasUniverseCenteredTurningOffset
-              && m_universeCenteredRotation ) )
+              && universeCenteredRotation() ) )
     {
         LOG( INFO ) << "Raw universe center out of bounds ( Y: "
                     << offsetUniverseCenterXyz[1] << " )";
@@ -2657,7 +2650,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     if ( abs( offsetUniverseCenterXyz[2] ) > k_maxOpenvrWorkingSetOffest
          || ( abs( offsetUniverseCenterXyz[2] )
                   > k_maxOvrasUniverseCenteredTurningOffset
-              && m_universeCenteredRotation ) )
+              && universeCenteredRotation() ) )
     {
         LOG( INFO ) << "Raw universe center out of bounds ( Z: "
                     << offsetUniverseCenterXyz[2] << " )";
