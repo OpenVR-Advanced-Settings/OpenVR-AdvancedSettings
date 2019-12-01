@@ -125,7 +125,6 @@ private:
     float m_lastControllerPosition[3];
     bool m_heightToggle = false;
     float m_gravityFloor = 0.0f;
-    float m_flingStrength = 1.0f;
     // Set lastHandQuaternion.w to -1000.0 when last hand is invalid.
     vr::HmdQuaternion_t m_lastHandQuaternion
         = { k_quaternionInvalidValue, 0.0, 0.0, 0.0 };
