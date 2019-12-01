@@ -107,31 +107,23 @@ void AudioTabController::initStage2()
 void AudioTabController::reloadAudioSettings()
 {
     std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( getSettingsName() );
 
     setMicProximitySensorCanMute(
         settings::getSetting(
             settings::BoolSetting::AUDIO_micProximitySensorCanMute ),
         false );
 
-    setMicReversePtt( settings->value( "micReversePtt", false ).toBool(),
-                      false );
-    settings->endGroup();
+    setMicReversePtt(
+        settings::getSetting( settings::BoolSetting::AUDIO_micReversePtt ) );
 }
 
 void AudioTabController::saveAudioSettings()
 {
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( getSettingsName() );
-
     settings::setSetting(
         settings::BoolSetting::AUDIO_micProximitySensorCanMute,
         micProximitySensorCanMute() );
-
-    settings->setValue( "micReversePtt", micReversePtt() );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::BoolSetting::AUDIO_micReversePtt,
+                          micReversePtt() );
 }
 
 float AudioTabController::mirrorVolume() const

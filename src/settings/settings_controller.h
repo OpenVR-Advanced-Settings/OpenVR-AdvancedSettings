@@ -244,6 +244,10 @@ private:
                           SettingCategory::Audio,
                           QtInfo{ "micProximitySensorCanMute" },
                           false },
+        BoolSettingValue{ BoolSetting::AUDIO_micReversePtt,
+                          SettingCategory::Audio,
+                          QtInfo{ "micReversePtt" },
+                          false },
 
         BoolSettingValue{ BoolSetting::VIDEO_brightnessEnabled,
                           SettingCategory::Video,
