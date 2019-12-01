@@ -39,8 +39,6 @@ namespace advsettings
 {
 void MoveCenterTabController::initStage1()
 {
-    m_settingsLeftHandDragEnabled = settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_moveShortcutLeft );
     m_settingsLeftHandTurnEnabled
         = settings::getSetting( settings::BoolSetting::PLAYSPACE_turnBindLeft );
     m_settingsRightHandTurnEnabled = settings::getSetting(
@@ -218,7 +216,8 @@ void MoveCenterTabController::deleteOffsetProfile( unsigned index )
 
 void MoveCenterTabController::outputLogSettings()
 {
-    if ( m_settingsLeftHandDragEnabled )
+    if ( settings::getSetting(
+             settings::BoolSetting::PLAYSPACE_moveShortcutLeft ) )
     {
         LOG( INFO ) << "LOADED SETTINGS: Left Hand Space-Drag Bind Enabled";
     }
@@ -618,23 +617,19 @@ void MoveCenterTabController::setMoveShortcutRight( bool value, bool notify )
 
 bool MoveCenterTabController::moveShortcutLeft() const
 {
-    return m_settingsLeftHandDragEnabled;
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_moveShortcutLeft );
 }
 
 void MoveCenterTabController::setMoveShortcutLeft( bool value, bool notify )
 {
-    m_settingsLeftHandDragEnabled = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "moveShortcutLeft", m_settingsLeftHandDragEnabled );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_moveShortcutLeft,
+                          value );
+
     if ( notify )
     {
-        emit moveShortcutLeftChanged( m_settingsLeftHandDragEnabled );
+        emit moveShortcutLeftChanged( value );
     }
-    LOG( INFO ) << "CHANGED SETTINGS: Left Hand Space-Drag Bind Enable Set: "
-                << m_settingsLeftHandDragEnabled;
 }
 
 bool MoveCenterTabController::turnBindLeft() const
@@ -1535,7 +1530,8 @@ float MoveCenterTabController::getBoundsBasisMaxY()
 
 void MoveCenterTabController::leftHandSpaceDrag( bool leftHandDragActive )
 {
-    if ( !m_settingsLeftHandDragEnabled )
+    if ( !settings::getSetting(
+             settings::BoolSetting::PLAYSPACE_moveShortcutLeft ) )
     {
         return;
     }
@@ -1643,7 +1639,8 @@ void MoveCenterTabController::rightHandSpaceDrag( bool rightHandDragActive )
 void MoveCenterTabController::optionalOverrideLeftHandSpaceDrag(
     bool overrideLeftHandDragActive )
 {
-    if ( !m_settingsLeftHandDragEnabled )
+    if ( !settings::getSetting(
+             settings::BoolSetting::PLAYSPACE_moveShortcutLeft ) )
     {
         return;
     }
@@ -1748,7 +1745,8 @@ void MoveCenterTabController::optionalOverrideRightHandSpaceDrag(
 void MoveCenterTabController::swapSpaceDragToLeftHandOverride(
     bool swapDragToLeftHand )
 {
-    if ( !m_settingsLeftHandDragEnabled )
+    if ( !settings::getSetting(
+             settings::BoolSetting::PLAYSPACE_moveShortcutLeft ) )
     {
         return;
     }
