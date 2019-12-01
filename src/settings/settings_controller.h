@@ -257,6 +257,10 @@ private:
                           SettingCategory::Utility,
                           QtInfo{ "alarmIsModal" },
                           true },
+        BoolSettingValue{ BoolSetting::UTILITY_vrcDebug,
+                          SettingCategory::Utility,
+                          QtInfo{ "vrcDebug" },
+                          false },
 
         BoolSettingValue{ BoolSetting::VIDEO_brightnessEnabled,
                           SettingCategory::Video,

@@ -35,7 +35,6 @@ private:
 
     unsigned settingsUpdateCounter = 0;
 
-    bool m_vrcDebug = false;
     QTime m_alarmTime;
     QTime m_alarmLastCheckTime;
 
