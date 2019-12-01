@@ -278,28 +278,6 @@ OverlayController::OverlayController( bool desktopMode,
             return obj;
         } );
 
-    // Keep the settings for vsyncDisabled and crash recovery here in main
-    // overlaycontroller
-    appSettings()->beginGroup( "applicationSettings" );
-    auto value = appSettings()->value( "customTickRateMs", m_customTickRateMs );
-    if ( value.isValid() && !value.isNull() )
-    {
-        // keep sane tickrate (between 1~k_maxCustomTickRate)
-        if ( value.toInt() < 1 )
-        {
-            m_customTickRateMs = 1;
-        }
-        else if ( value.toInt() > k_maxCustomTickRate )
-        {
-            m_customTickRateMs = k_maxCustomTickRate;
-        }
-        else
-        {
-            m_customTickRateMs = value.toInt();
-        }
-    }
-    appSettings()->endGroup();
-
     // Grab local version number
     QStringList verNumericalString
         = QString( application_strings::applicationVersionString ).split( "-" );
@@ -835,38 +813,36 @@ void OverlayController::setPreviousShutdownSafe( bool value )
         settings::BoolSetting::APPLICATION_previousShutdownSafe, value );
 }
 
+int verifyCustomTickRate( const int tickRate )
+{
+    if ( tickRate < 1 )
+    {
+        return 1;
+    }
+    else if ( tickRate > k_maxCustomTickRate )
+    {
+        return k_maxCustomTickRate;
+    }
+
+    return tickRate;
+}
+
 int OverlayController::customTickRateMs() const
 {
-    return m_customTickRateMs;
+    const auto tickRate = settings::getSetting(
+        settings::IntSetting::APPLICATION_customTickRateMs );
+    return verifyCustomTickRate( tickRate );
 }
 
 void OverlayController::setCustomTickRateMs( int value, bool notify )
 {
-    if ( m_customTickRateMs == value )
-    {
-        return;
-    }
-    // keep m_customTickRateMs sane (between 1~k_maxCustomTickRate)
-    if ( value < 1 )
-    {
-        m_customTickRateMs = 1;
-    }
-    else if ( value > k_maxCustomTickRate )
-    {
-        m_customTickRateMs = k_maxCustomTickRate;
-    }
-    else
-    {
-        m_customTickRateMs = value;
-    }
+    const auto verifiedTickRate = verifyCustomTickRate( value );
 
-    appSettings()->beginGroup( "applicationSettings" );
-    appSettings()->setValue( "customTickRateMs", m_customTickRateMs );
-    appSettings()->endGroup();
-    appSettings()->sync();
+    settings::setSetting( settings::IntSetting::APPLICATION_customTickRateMs,
+                          verifiedTickRate );
     if ( notify )
     {
-        emit customTickRateMsChanged( m_customTickRateMs );
+        emit customTickRateMsChanged( verifiedTickRate );
     }
 }
 
@@ -879,7 +855,7 @@ void OverlayController::OnTimeoutPumpEvents()
     if ( vsyncDisabled() )
     {
         // check if it's time for a custom tick rate tick
-        if ( m_customTickRateCounter > m_customTickRateMs )
+        if ( m_customTickRateCounter > customTickRateMs() )
         {
             mainEventLoop();
             m_customTickRateCounter = 0;

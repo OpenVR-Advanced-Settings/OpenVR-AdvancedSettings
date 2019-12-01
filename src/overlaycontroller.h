@@ -122,7 +122,6 @@ private:
     bool m_desktopMode;
     bool m_noSound;
     bool m_newVersionDetected = false;
-    int m_customTickRateMs = 20;
     int m_remoteVersionMajor = -1;
     int m_remoteVersionMinor = -1;
     int m_remoteVersionPatch = -1;
