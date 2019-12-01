@@ -182,34 +182,22 @@ void UtilitiesTabController::sendMediaStopSong()
 
 void UtilitiesTabController::sendKeyboardOne()
 {
-    m_parent->appSettings()->beginGroup( "keyboardShortcuts" );
-    const auto commands = m_parent->appSettings()
-                              ->value( "keyboardOne" )
-                              .toString()
-                              .toStdString();
-    m_parent->appSettings()->endGroup();
+    const auto commands = settings::getSetting(
+        settings::StringSetting::KEYBOARDSHORTCUT_keyboardOne );
 
     sendStringAsInput( commands );
 }
 void UtilitiesTabController::sendKeyboardTwo()
 {
-    m_parent->appSettings()->beginGroup( "keyboardShortcuts" );
-    const auto commands = m_parent->appSettings()
-                              ->value( "keyboardTwo" )
-                              .toString()
-                              .toStdString();
-    m_parent->appSettings()->endGroup();
+    const auto commands = settings::getSetting(
+        settings::StringSetting::KEYBOARDSHORTCUT_keyboardTwo );
 
     sendStringAsInput( commands );
 }
 void UtilitiesTabController::sendKeyboardThree()
 {
-    m_parent->appSettings()->beginGroup( "keyboardShortcuts" );
-    const auto commands = m_parent->appSettings()
-                              ->value( "keyboardThree" )
-                              .toString()
-                              .toStdString();
-    m_parent->appSettings()->endGroup();
+    const auto commands = settings::getSetting(
+        settings::StringSetting::KEYBOARDSHORTCUT_keyboardThree );
 
     sendStringAsInput( commands );
 }
