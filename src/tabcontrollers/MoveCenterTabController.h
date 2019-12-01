@@ -141,7 +141,6 @@ private:
     float m_flingStrength = 1.0f;
     bool m_momentumSave = false;
     bool m_lockYToggle = false;
-    bool m_lockZToggle = false;
     // Set lastHandQuaternion.w to -1000.0 when last hand is invalid.
     vr::HmdQuaternion_t m_lastHandQuaternion
         = { k_quaternionInvalidValue, 0.0, 0.0, 0.0 };
