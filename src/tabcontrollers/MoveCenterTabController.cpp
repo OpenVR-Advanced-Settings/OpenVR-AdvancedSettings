@@ -56,8 +56,6 @@ void MoveCenterTabController::initStage1()
     m_flingStrength = static_cast<float>( settings::getSetting(
         settings::DoubleSetting::PLAYSPACE_flingStrength ) );
 
-    m_allowExternalEdits = settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_allowExternalEdits );
     m_oldStyleMotion = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_oldStyleMotion );
     m_universeCenteredRotation = settings::getSetting(
@@ -890,23 +888,19 @@ void MoveCenterTabController::setShowLogMatricesButton( bool value,
 
 bool MoveCenterTabController::allowExternalEdits() const
 {
-    return m_allowExternalEdits;
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_allowExternalEdits );
 }
 
 void MoveCenterTabController::setAllowExternalEdits( bool value, bool notify )
 {
-    m_allowExternalEdits = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "allowExternalEdits", m_allowExternalEdits );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_allowExternalEdits,
+                          value );
+
     if ( notify )
     {
-        emit allowExternalEditsChanged( m_allowExternalEdits );
+        emit allowExternalEditsChanged( value );
     }
-    LOG( INFO ) << "CHANGED SETTINGS: Allow External Edits Set: "
-                << m_allowExternalEdits;
 }
 
 bool MoveCenterTabController::oldStyleMotion() const
@@ -2563,7 +2557,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     }
 
     // reload from disk if we're at zero offsets and allow external edits
-    if ( m_allowExternalEdits && m_oldOffsetX == 0.0f && m_oldOffsetY == 0.0f
+    if ( allowExternalEdits() && m_oldOffsetX == 0.0f && m_oldOffsetY == 0.0f
          && m_oldOffsetZ == 0.0f && m_oldRotation == 0 )
     {
         vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
