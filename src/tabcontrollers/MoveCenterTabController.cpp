@@ -39,8 +39,6 @@ namespace advsettings
 {
 void MoveCenterTabController::initStage1()
 {
-    m_dragComfortFactor = static_cast<unsigned int>( settings::getSetting(
-        settings::IntSetting::PLAYSPACE_dragComfortFactor ) );
     m_turnComfortFactor = static_cast<unsigned int>( settings::getSetting(
         settings::IntSetting::PLAYSPACE_turnComfortFactor ) );
 
@@ -616,23 +614,20 @@ void MoveCenterTabController::setTurnBounds( bool value, bool notify )
     }
 }
 
-unsigned MoveCenterTabController::dragComfortFactor() const
+int MoveCenterTabController::dragComfortFactor() const
 {
-    return m_dragComfortFactor;
+    return settings::getSetting(
+        settings::IntSetting::PLAYSPACE_dragComfortFactor );
 }
 
-void MoveCenterTabController::setDragComfortFactor( unsigned value,
-                                                    bool notify )
+void MoveCenterTabController::setDragComfortFactor( int value, bool notify )
 {
-    m_dragComfortFactor = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "dragComfortFactor", m_dragComfortFactor );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::IntSetting::PLAYSPACE_dragComfortFactor,
+                          value );
+
     if ( notify )
     {
-        emit dragComfortFactorChanged( m_dragComfortFactor );
+        emit dragComfortFactorChanged( value );
     }
 }
 
@@ -2931,8 +2926,8 @@ void MoveCenterTabController::eventLoopTick(
             // Smooth drag motion can cause sim-sickness so we check if the user
             // wants to skip frames to reduce vection. We use the factor squared
             // because of logarithmic human perception.
-            if ( m_dragComfortFrameSkipCounter
-                 >= ( m_dragComfortFactor * m_dragComfortFactor ) )
+            if ( m_dragComfortFrameSkipCounter >= static_cast<unsigned>(
+                     ( dragComfortFactor() * dragComfortFactor() ) ) )
             {
                 updateHandDrag( devicePoses, angle );
                 m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
