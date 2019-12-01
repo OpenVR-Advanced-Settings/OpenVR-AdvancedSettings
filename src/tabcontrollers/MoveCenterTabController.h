@@ -123,7 +123,6 @@ private:
     bool m_moveShortcutLeftPressed = false;
     vr::TrackedDeviceIndex_t m_activeMoveController;
     float m_lastControllerPosition[3];
-    unsigned m_dragComfortFactor = 0;
     unsigned m_turnComfortFactor = 0;
     bool m_heightToggle = false;
     float m_heightToggleOffset = -1.0f;
@@ -226,7 +225,7 @@ public:
     bool turnBindLeft() const;
     bool dragBounds() const;
     bool turnBounds() const;
-    unsigned dragComfortFactor() const;
+    int dragComfortFactor() const;
     unsigned turnComfortFactor() const;
     bool heightToggle() const;
     float heightToggleOffset() const;
@@ -296,7 +295,7 @@ public slots:
     void setMoveShortcutLeft( bool value, bool notify = true );
     void setTurnBindRight( bool value, bool notify = true );
     void setTurnBindLeft( bool value, bool notify = true );
-    void setDragComfortFactor( unsigned value, bool notify = true );
+    void setDragComfortFactor( int value, bool notify = true );
     void setTurnComfortFactor( unsigned value, bool notify = true );
     void setDragBounds( bool value, bool notify = true );
     void setTurnBounds( bool value, bool notify = true );
@@ -348,7 +347,7 @@ signals:
     void turnBindLeftChanged( bool value );
     void dragBoundsChanged( bool value );
     void turnBoundsChanged( bool value );
-    void dragComfortFactorChanged( unsigned value );
+    void dragComfortFactorChanged( int value );
     void turnComfortFactorChanged( unsigned value );
     void heightToggleChanged( bool value );
     void heightToggleOffsetChanged( float value );
