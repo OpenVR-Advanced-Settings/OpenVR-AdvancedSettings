@@ -170,7 +170,6 @@ private:
     bool m_dashWasOpenPreviousFrame = false;
     bool m_roomSetupModeDetected = false;
     bool m_seatedModeDetected = false;
-    bool m_oldStyleMotion = false;
     bool m_universeCenteredRotation = false;
     bool m_enableSeatedMotion = false;
     bool m_simpleRecenter = false;
