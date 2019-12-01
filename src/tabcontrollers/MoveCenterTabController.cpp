@@ -39,8 +39,6 @@ namespace advsettings
 {
 void MoveCenterTabController::initStage1()
 {
-    m_settingsRightHandTurnEnabled = settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_turnBindRight );
     m_dragBounds
         = settings::getSetting( settings::BoolSetting::PLAYSPACE_dragBounds );
     m_turnBounds
@@ -218,10 +216,6 @@ void MoveCenterTabController::outputLogSettings()
              settings::BoolSetting::PLAYSPACE_moveShortcutLeft ) )
     {
         LOG( INFO ) << "LOADED SETTINGS: Left Hand Space-Drag Bind Enabled";
-    }
-    if ( m_settingsRightHandTurnEnabled )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Right Hand Space-Turn Bind Enabled";
     }
     if ( settings::getSetting( settings::BoolSetting::PLAYSPACE_turnBindLeft ) )
     {
@@ -649,23 +643,18 @@ void MoveCenterTabController::setTurnBindLeft( bool value, bool notify )
 
 bool MoveCenterTabController::turnBindRight() const
 {
-    return m_settingsRightHandTurnEnabled;
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_turnBindRight );
 }
 
 void MoveCenterTabController::setTurnBindRight( bool value, bool notify )
 {
-    m_settingsRightHandTurnEnabled = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "turnBindRight", m_settingsRightHandTurnEnabled );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_turnBindRight,
+                          value );
     if ( notify )
     {
-        emit turnBindRightChanged( m_settingsRightHandTurnEnabled );
+        emit turnBindRightChanged( value );
     }
-    LOG( INFO ) << "CHANGED SETTINGS: Right Hand Space-Turn Bind Enable Set: "
-                << m_settingsRightHandTurnEnabled;
 }
 
 bool MoveCenterTabController::dragBounds() const
@@ -1946,7 +1935,8 @@ void MoveCenterTabController::leftHandSpaceTurn( bool leftHandTurnActive )
 
 void MoveCenterTabController::rightHandSpaceTurn( bool rightHandTurnActive )
 {
-    if ( !m_settingsRightHandTurnEnabled )
+    if ( !settings::getSetting(
+             settings::BoolSetting::PLAYSPACE_turnBindRight ) )
     {
         return;
     }
@@ -2033,7 +2023,8 @@ void MoveCenterTabController::optionalOverrideLeftHandSpaceTurn(
 void MoveCenterTabController::optionalOverrideRightHandSpaceTurn(
     bool overrideRightHandTurnActive )
 {
-    if ( !m_settingsRightHandTurnEnabled )
+    if ( !settings::getSetting(
+             settings::BoolSetting::PLAYSPACE_turnBindRight ) )
     {
         return;
     }
