@@ -39,8 +39,6 @@ namespace advsettings
 {
 void MoveCenterTabController::initStage1()
 {
-    m_gravityStrength = static_cast<float>( settings::getSetting(
-        settings::DoubleSetting::PLAYSPACE_gravityStrength ) );
     m_flingStrength = static_cast<float>( settings::getSetting(
         settings::DoubleSetting::PLAYSPACE_flingStrength ) );
 
@@ -699,20 +697,17 @@ void MoveCenterTabController::setHeightToggleOffset( float value, bool notify )
 
 float MoveCenterTabController::gravityStrength() const
 {
-    return m_gravityStrength;
+    return static_cast<float>( settings::getSetting(
+        settings::DoubleSetting::PLAYSPACE_gravityStrength ) );
 }
 
 void MoveCenterTabController::setGravityStrength( float value, bool notify )
 {
-    m_gravityStrength = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "gravityStrength", m_gravityStrength );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::DoubleSetting::PLAYSPACE_gravityStrength,
+                          static_cast<double>( value ) );
     if ( notify )
     {
-        emit gravityStrengthChanged( m_gravityStrength );
+        emit gravityStrengthChanged( value );
     }
     m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
 }
@@ -1943,7 +1938,7 @@ void MoveCenterTabController::gravityReverseAction( bool gravityReverseHeld )
     if ( ( gravityReverseHeld && !m_gravityReversed )
          || ( !gravityReverseHeld && m_gravityReversed ) )
     {
-        setGravityStrength( m_gravityStrength * -1.0f );
+        setGravityStrength( gravityStrength() * -1.0f );
     }
     m_gravityReversed = gravityReverseHeld;
 }
@@ -2423,7 +2418,7 @@ void MoveCenterTabController::updateGravity()
     // are we falling?
     // note: up is negative y
     // note: set to always fall if gravity reversed (strength < 0)
-    if ( ( m_offsetY < m_gravityFloor ) || ( m_gravityStrength < 0 ) )
+    if ( ( m_offsetY < m_gravityFloor ) || ( gravityStrength() < 0 ) )
     {
         // check if we're about to land
         // note: we don't land if gravity is reversed (strength < 0)
@@ -2431,7 +2426,7 @@ void MoveCenterTabController::updateGravity()
                    + static_cast<float>( m_velocity[1]
                                          * secondsSinceLastGravityUpdate )
                >= m_gravityFloor )
-             && m_gravityStrength >= 0 )
+             && gravityStrength() >= 0 )
         {
             // get ratio of how much from y velocity applied to overcome y
             // offset and get down to ground.
@@ -2472,7 +2467,7 @@ void MoveCenterTabController::updateGravity()
             // accelerate downward velocity for the next update
             // note: downward is positive y
             m_velocity[1] = m_velocity[1]
-                            + ( static_cast<double>( m_gravityStrength )
+                            + ( static_cast<double>( gravityStrength() )
                                 * secondsSinceLastGravityUpdate );
             return;
         }
