@@ -123,7 +123,6 @@ private:
     bool m_previousShutdownSafe = true;
     bool m_noSound;
     bool m_crashRecoveryDisabled = false;
-    bool m_vsyncDisabled = false;
     bool m_enableDebug = false;
     bool m_disableVersionCheck = false;
     bool m_newVersionDetected = false;

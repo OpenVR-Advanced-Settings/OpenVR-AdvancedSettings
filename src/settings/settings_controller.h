@@ -227,6 +227,10 @@ private:
                           SettingCategory::Application,
                           QtInfo{ "previousShutdownSafe" },
                           true },
+        BoolSettingValue{ BoolSetting::APPLICATION_vsyncDisabled,
+                          SettingCategory::Application,
+                          QtInfo{ "vsyncDisabled" },
+                          false },
 
         BoolSettingValue{ BoolSetting::VIDEO_brightnessEnabled,
                           SettingCategory::Video,

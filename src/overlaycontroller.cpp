@@ -281,12 +281,7 @@ OverlayController::OverlayController( bool desktopMode,
     // Keep the settings for vsyncDisabled and crash recovery here in main
     // overlaycontroller
     appSettings()->beginGroup( "applicationSettings" );
-    auto value = appSettings()->value( "vsyncDisabled", m_vsyncDisabled );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_vsyncDisabled = value.toBool();
-    }
-    value = appSettings()->value( "customTickRateMs", m_customTickRateMs );
+    auto value = appSettings()->value( "customTickRateMs", m_customTickRateMs );
     if ( value.isValid() && !value.isNull() )
     {
         // keep sane tickrate (between 1~k_maxCustomTickRate)
@@ -768,23 +763,17 @@ void OverlayController::setCrashRecoveryDisabled( bool value, bool notify )
 
 bool OverlayController::vsyncDisabled() const
 {
-    return m_vsyncDisabled;
+    return settings::getSetting(
+        settings::BoolSetting::APPLICATION_vsyncDisabled );
 }
 
 void OverlayController::setVsyncDisabled( bool value, bool notify )
 {
-    if ( m_vsyncDisabled == value )
-    {
-        return;
-    }
-    m_vsyncDisabled = value;
-    appSettings()->beginGroup( "applicationSettings" );
-    appSettings()->setValue( "vsyncDisabled", m_vsyncDisabled );
-    appSettings()->endGroup();
-    appSettings()->sync();
+    settings::setSetting( settings::BoolSetting::APPLICATION_vsyncDisabled,
+                          value );
     if ( notify )
     {
-        emit vsyncDisabledChanged( m_vsyncDisabled );
+        emit vsyncDisabledChanged( value );
     }
 }
 
@@ -947,7 +936,7 @@ void OverlayController::setCustomTickRateMs( int value, bool notify )
 // mainEventLoop() or not.
 void OverlayController::OnTimeoutPumpEvents()
 {
-    if ( m_vsyncDisabled )
+    if ( vsyncDisabled() )
     {
         // check if it's time for a custom tick rate tick
         if ( m_customTickRateCounter > m_customTickRateMs )
