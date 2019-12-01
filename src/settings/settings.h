@@ -27,6 +27,7 @@ enum class BoolSetting
     APPLICATION_previousShutdownSafe,
     APPLICATION_vsyncDisabled,
     APPLICATION_crashRecoveryDisabled,
+    APPLICATION_enableDebug,
 
     VIDEO_brightnessEnabled,
     VIDEO_isOverlayMethodActive,

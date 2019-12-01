@@ -235,6 +235,10 @@ private:
                           SettingCategory::Application,
                           QtInfo{ "crashRecoveryDisabled" },
                           false },
+        BoolSettingValue{ BoolSetting::APPLICATION_enableDebug,
+                          SettingCategory::Application,
+                          QtInfo{ "enableDebug" },
+                          false },
 
         BoolSettingValue{ BoolSetting::VIDEO_brightnessEnabled,
                           SettingCategory::Video,
