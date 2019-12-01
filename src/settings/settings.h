@@ -33,6 +33,7 @@ enum class BoolSetting
     AUDIO_micReversePtt,
 
     UTILITY_alarmEnabled,
+    UTILITY_alarmIsModal,
 
     VIDEO_brightnessEnabled,
     VIDEO_isOverlayMethodActive,

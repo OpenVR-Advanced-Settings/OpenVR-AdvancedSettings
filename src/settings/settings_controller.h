@@ -253,6 +253,10 @@ private:
                           SettingCategory::Utility,
                           QtInfo{ "alarmEnabled" },
                           false },
+        BoolSettingValue{ BoolSetting::UTILITY_alarmIsModal,
+                          SettingCategory::Utility,
+                          QtInfo{ "alarmIsModal" },
+                          true },
 
         BoolSettingValue{ BoolSetting::VIDEO_brightnessEnabled,
                           SettingCategory::Video,
