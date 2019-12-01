@@ -124,7 +124,6 @@ private:
     vr::TrackedDeviceIndex_t m_activeMoveController;
     float m_lastControllerPosition[3];
     bool m_heightToggle = false;
-    float m_heightToggleOffset = -1.0f;
     float m_gravityFloor = 0.0f;
     float m_gravityStrength = 9.8f;
     float m_flingStrength = 1.0f;
