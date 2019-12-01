@@ -213,7 +213,6 @@ private:
     void applyChaperoneResetData();
     void saveUncommittedChaperone();
     void outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix );
-    void outputLogSettings();
 
     std::vector<OffsetProfile> m_offsetProfiles;
 

@@ -87,7 +87,6 @@ void MoveCenterTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
     zeroOffsets();
-    outputLogSettings();
 }
 
 void MoveCenterTabController::reloadOffsetProfiles()
@@ -207,57 +206,6 @@ void MoveCenterTabController::deleteOffsetProfile( unsigned index )
         saveOffsetProfiles();
         OverlayController::appSettings()->sync();
         emit offsetProfilesUpdated();
-    }
-}
-
-void MoveCenterTabController::outputLogSettings()
-{
-    if ( settings::getSetting(
-             settings::BoolSetting::PLAYSPACE_moveShortcutLeft ) )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Left Hand Space-Drag Bind Enabled";
-    }
-    if ( settings::getSetting( settings::BoolSetting::PLAYSPACE_turnBindLeft ) )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Left Hand Space-Turn Bind Enabled";
-    }
-    if ( m_dragComfortFactor > 0 )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Space-Drag Comfort Factor = "
-                    << m_dragComfortFactor;
-    }
-    if ( m_turnComfortFactor > 0 )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Space-Turn Comfort Factor = "
-                    << m_turnComfortFactor;
-    }
-    if ( m_allowExternalEdits )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Allow External Edits Enabled";
-    }
-    if ( m_oldStyleMotion )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Old-Style Motion Enabled";
-    }
-    if ( m_universeCenteredRotation )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Universe-Centered Rotation Enabled";
-    }
-    if ( m_enableSeatedMotion )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Seated Motion Enabled";
-    }
-    if ( m_simpleRecenter )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Simple Recenter Enabled";
-    }
-    if ( m_dragBounds )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Space Drag Force Bounds Enabled";
-    }
-    if ( m_turnBounds )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Space Turn Force Bounds Enabled";
     }
 }
 
