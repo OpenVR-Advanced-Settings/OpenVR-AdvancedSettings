@@ -56,8 +56,6 @@ void MoveCenterTabController::initStage1()
     m_flingStrength = static_cast<float>( settings::getSetting(
         settings::DoubleSetting::PLAYSPACE_flingStrength ) );
 
-    m_enableSeatedMotion = settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_enableSeatedMotion );
     m_simpleRecenter = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_simpleRecenter );
 
@@ -947,23 +945,19 @@ bool MoveCenterTabController::isInitComplete() const
 
 bool MoveCenterTabController::enableSeatedMotion() const
 {
-    return m_enableSeatedMotion;
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_enableSeatedMotion );
 }
 
 void MoveCenterTabController::setEnableSeatedMotion( bool value, bool notify )
 {
-    m_enableSeatedMotion = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "enableSeatedMotion", m_enableSeatedMotion );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_enableSeatedMotion,
+                          value );
+
     if ( notify )
     {
-        emit enableSeatedMotionChanged( m_enableSeatedMotion );
+        emit enableSeatedMotionChanged( value );
     }
-    LOG( INFO ) << "CHANGED SETTINGS: Enable Seated Motion Set: "
-                << m_enableSeatedMotion;
 }
 
 bool MoveCenterTabController::simpleRecenter() const
@@ -1031,7 +1025,7 @@ void MoveCenterTabController::shutdown()
 
 void MoveCenterTabController::incomingSeatedReset()
 {
-    if ( m_enableSeatedMotion )
+    if ( enableSeatedMotion() )
     {
         // if we didn't send the request from OVRAS, we need to send another
         // ResetSeatedZeroPose(). It seems that only after this is sent from
@@ -2907,7 +2901,7 @@ void MoveCenterTabController::eventLoopTick(
 
         // stop everything before processing motion if we're in seated mode and
         // don't have seated motion enabled
-        if ( m_seatedModeDetected && !m_enableSeatedMotion )
+        if ( m_seatedModeDetected && !enableSeatedMotion() )
         {
             return;
         }
