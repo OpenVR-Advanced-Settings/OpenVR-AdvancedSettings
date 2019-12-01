@@ -1025,7 +1025,7 @@ void MoveCenterTabController::setSimpleRecenter( bool value, bool notify )
 
 void MoveCenterTabController::modOffsetX( float value, bool notify )
 {
-    if ( !settings::getSetting( settings::BoolSetting::PLAYSPACE_lockXToggle ) )
+    if ( !lockXToggle() )
     {
         m_offsetX += value;
         if ( notify )
@@ -1037,7 +1037,7 @@ void MoveCenterTabController::modOffsetX( float value, bool notify )
 
 void MoveCenterTabController::modOffsetY( float value, bool notify )
 {
-    if ( !settings::getSetting( settings::BoolSetting::PLAYSPACE_lockYToggle ) )
+    if ( !lockYToggle() )
     {
         m_offsetY += value;
         if ( notify )
@@ -1049,7 +1049,7 @@ void MoveCenterTabController::modOffsetY( float value, bool notify )
 
 void MoveCenterTabController::modOffsetZ( float value, bool notify )
 {
-    if ( !settings::getSetting( settings::BoolSetting::PLAYSPACE_lockZToggle ) )
+    if ( !lockZToggle() )
     {
         m_offsetZ += value;
         if ( notify )
@@ -1454,8 +1454,7 @@ float MoveCenterTabController::getBoundsBasisMaxY()
 
 void MoveCenterTabController::leftHandSpaceDrag( bool leftHandDragActive )
 {
-    if ( !settings::getSetting(
-             settings::BoolSetting::PLAYSPACE_moveShortcutLeft ) )
+    if ( !moveShortcutLeft() )
     {
         return;
     }
@@ -1508,8 +1507,7 @@ void MoveCenterTabController::leftHandSpaceDrag( bool leftHandDragActive )
 
 void MoveCenterTabController::rightHandSpaceDrag( bool rightHandDragActive )
 {
-    if ( !settings::getSetting(
-             settings::BoolSetting::PLAYSPACE_moveShortcutRight ) )
+    if ( !moveShortcutRight() )
     {
         return;
     }
@@ -1563,8 +1561,7 @@ void MoveCenterTabController::rightHandSpaceDrag( bool rightHandDragActive )
 void MoveCenterTabController::optionalOverrideLeftHandSpaceDrag(
     bool overrideLeftHandDragActive )
 {
-    if ( !settings::getSetting(
-             settings::BoolSetting::PLAYSPACE_moveShortcutLeft ) )
+    if ( !moveShortcutLeft() )
     {
         return;
     }
@@ -1616,8 +1613,7 @@ void MoveCenterTabController::optionalOverrideLeftHandSpaceDrag(
 void MoveCenterTabController::optionalOverrideRightHandSpaceDrag(
     bool overrideRightHandDragActive )
 {
-    if ( !settings::getSetting(
-             settings::BoolSetting::PLAYSPACE_moveShortcutRight ) )
+    if ( !moveShortcutRight() )
     {
         return;
     }
@@ -1669,8 +1665,7 @@ void MoveCenterTabController::optionalOverrideRightHandSpaceDrag(
 void MoveCenterTabController::swapSpaceDragToLeftHandOverride(
     bool swapDragToLeftHand )
 {
-    if ( !settings::getSetting(
-             settings::BoolSetting::PLAYSPACE_moveShortcutLeft ) )
+    if ( !moveShortcutLeft() )
     {
         return;
     }
@@ -1748,8 +1743,7 @@ void MoveCenterTabController::swapSpaceDragToLeftHandOverride(
 void MoveCenterTabController::swapSpaceDragToRightHandOverride(
     bool swapDragToRightHand )
 {
-    if ( !settings::getSetting(
-             settings::BoolSetting::PLAYSPACE_moveShortcutRight ) )
+    if ( !moveShortcutRight() )
     {
         return;
     }
@@ -1832,8 +1826,7 @@ void MoveCenterTabController::swapSpaceDragToRightHandOverride(
 
 void MoveCenterTabController::leftHandSpaceTurn( bool leftHandTurnActive )
 {
-    if ( !settings::getSetting(
-             settings::BoolSetting::PLAYSPACE_turnBindLeft ) )
+    if ( !turnBindLeft() )
     {
         return;
     }
@@ -1876,8 +1869,7 @@ void MoveCenterTabController::leftHandSpaceTurn( bool leftHandTurnActive )
 
 void MoveCenterTabController::rightHandSpaceTurn( bool rightHandTurnActive )
 {
-    if ( !settings::getSetting(
-             settings::BoolSetting::PLAYSPACE_turnBindRight ) )
+    if ( !turnBindRight() )
     {
         return;
     }
@@ -1921,8 +1913,7 @@ void MoveCenterTabController::rightHandSpaceTurn( bool rightHandTurnActive )
 void MoveCenterTabController::optionalOverrideLeftHandSpaceTurn(
     bool overrideLeftHandTurnActive )
 {
-    if ( !settings::getSetting(
-             settings::BoolSetting::PLAYSPACE_turnBindLeft ) )
+    if ( !turnBindLeft() )
     {
         return;
     }
@@ -1964,8 +1955,7 @@ void MoveCenterTabController::optionalOverrideLeftHandSpaceTurn(
 void MoveCenterTabController::optionalOverrideRightHandSpaceTurn(
     bool overrideRightHandTurnActive )
 {
-    if ( !settings::getSetting(
-             settings::BoolSetting::PLAYSPACE_turnBindRight ) )
+    if ( !turnBindRight() )
     {
         return;
     }
@@ -2159,7 +2149,7 @@ void MoveCenterTabController::xAxisLockToggle( bool xAxisLockToggleJustPressed )
         return;
     }
 
-    if ( !settings::getSetting( settings::BoolSetting::PLAYSPACE_lockXToggle ) )
+    if ( !lockXToggle() )
     {
         setLockX( true );
     }
@@ -2176,7 +2166,7 @@ void MoveCenterTabController::yAxisLockToggle( bool yAxisLockToggleJustPressed )
         return;
     }
 
-    if ( !settings::getSetting( settings::BoolSetting::PLAYSPACE_lockYToggle ) )
+    if ( !lockYToggle() )
     {
         setLockY( true );
     }
@@ -2193,7 +2183,7 @@ void MoveCenterTabController::zAxisLockToggle( bool zAxisLockToggleJustPressed )
         return;
     }
 
-    if ( !settings::getSetting( settings::BoolSetting::PLAYSPACE_lockZToggle ) )
+    if ( !lockZToggle() )
     {
         setLockZ( true );
     }
@@ -2356,18 +2346,15 @@ void MoveCenterTabController::updateHandDrag(
         }
 
         // prevents updating if axis movement is locked
-        if ( !settings::getSetting(
-                 settings::BoolSetting::PLAYSPACE_lockXToggle ) )
+        if ( !lockXToggle() )
         {
             m_offsetX += static_cast<float>( diff[0] );
         }
-        if ( !settings::getSetting(
-                 settings::BoolSetting::PLAYSPACE_lockYToggle ) )
+        if ( !lockYToggle() )
         {
             m_offsetY += static_cast<float>( diff[1] );
         }
-        if ( !settings::getSetting(
-                 settings::BoolSetting::PLAYSPACE_lockZToggle ) )
+        if ( !lockZToggle() )
         {
             m_offsetZ += static_cast<float>( diff[2] );
         }
@@ -2494,15 +2481,15 @@ void MoveCenterTabController::updateGravity()
     clampVelocity( m_velocity );
 
     // make axis lock checkboxes lock velocity on that axis
-    if ( settings::getSetting( settings::BoolSetting::PLAYSPACE_lockXToggle ) )
+    if ( lockXToggle() )
     {
         m_velocity[0] = 0.0;
     }
-    if ( settings::getSetting( settings::BoolSetting::PLAYSPACE_lockYToggle ) )
+    if ( lockYToggle() )
     {
         m_velocity[1] = 0.0;
     }
-    if ( settings::getSetting( settings::BoolSetting::PLAYSPACE_lockZToggle ) )
+    if ( lockZToggle() )
     {
         m_velocity[2] = 0.0;
     }
@@ -2753,8 +2740,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             &offsetSeatedCenter );
     }
 
-    if ( settings::getSetting(
-             settings::BoolSetting::PLAYSPACE_adjustChaperone ) )
+    if ( adjustChaperone() )
     {
         // make a copy of our bounds and
         // reorient relative to new universe center
