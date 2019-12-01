@@ -240,6 +240,11 @@ private:
                           QtInfo{ "enableDebug" },
                           false },
 
+        BoolSettingValue{ BoolSetting::AUDIO_micProximitySensorCanMute,
+                          SettingCategory::Audio,
+                          QtInfo{ "micProximitySensorCanMute" },
+                          false },
+
         BoolSettingValue{ BoolSetting::VIDEO_brightnessEnabled,
                           SettingCategory::Video,
                           QtInfo{ "brightnessEnabled" },

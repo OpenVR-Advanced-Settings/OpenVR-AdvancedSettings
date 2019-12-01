@@ -2,6 +2,7 @@
 #include <QQuickWindow>
 #include <QApplication>
 #include "../overlaycontroller.h"
+#include "../settings/settings.h"
 #ifdef _WIN32
 #    include "audiomanager/AudioManagerWindows.h"
 #else
@@ -108,8 +109,12 @@ void AudioTabController::reloadAudioSettings()
     std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
     auto settings = OverlayController::appSettings();
     settings->beginGroup( getSettingsName() );
+
     setMicProximitySensorCanMute(
-        settings->value( "micProximitySensorCanMute", false ).toBool(), false );
+        settings::getSetting(
+            settings::BoolSetting::AUDIO_micProximitySensorCanMute ),
+        false );
+
     setMicReversePtt( settings->value( "micReversePtt", false ).toBool(),
                       false );
     settings->endGroup();
@@ -119,8 +124,11 @@ void AudioTabController::saveAudioSettings()
 {
     auto settings = OverlayController::appSettings();
     settings->beginGroup( getSettingsName() );
-    settings->setValue( "micProximitySensorCanMute",
-                        micProximitySensorCanMute() );
+
+    settings::setSetting(
+        settings::BoolSetting::AUDIO_micProximitySensorCanMute,
+        micProximitySensorCanMute() );
+
     settings->setValue( "micReversePtt", micReversePtt() );
     settings->endGroup();
     settings->sync();
