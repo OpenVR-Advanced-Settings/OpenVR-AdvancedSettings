@@ -39,8 +39,6 @@ namespace advsettings
 {
 void MoveCenterTabController::initStage1()
 {
-    m_dragBounds
-        = settings::getSetting( settings::BoolSetting::PLAYSPACE_dragBounds );
     m_turnBounds
         = settings::getSetting( settings::BoolSetting::PLAYSPACE_turnBounds );
 
@@ -607,30 +605,25 @@ void MoveCenterTabController::setTurnBindRight( bool value, bool notify )
 
 bool MoveCenterTabController::dragBounds() const
 {
-    return m_dragBounds;
+    return settings::getSetting( settings::BoolSetting::PLAYSPACE_dragBounds );
 }
 
 void MoveCenterTabController::setDragBounds( bool value, bool notify )
 {
     // detect deactivate
-    if ( m_dragBounds && !value )
+    if ( dragBounds() && !value )
     {
         // set force bounds back to default on deactivate
         vr::VRChaperone()->ForceBoundsVisible(
             parent->m_chaperoneTabController.forceBounds() );
     }
-    m_dragBounds = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "dragBounds", m_dragBounds );
-    settings->endGroup();
-    settings->sync();
+
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_dragBounds, value );
+
     if ( notify )
     {
-        emit dragBoundsChanged( m_dragBounds );
+        emit dragBoundsChanged( value );
     }
-    LOG( INFO ) << "CHANGED SETTINGS: Space Drag Force Bounds set: "
-                << m_dragBounds;
 }
 
 bool MoveCenterTabController::turnBounds() const
@@ -2982,7 +2975,7 @@ void MoveCenterTabController::eventLoopTick(
             }
 
             // force chaperone bounds visible if turn or drag settings require
-            if ( m_dragBounds
+            if ( dragBounds()
                  && m_activeDragHand != vr::TrackedControllerRole_Invalid )
             {
                 vr::VRChaperone()->ForceBoundsVisible( true );
@@ -2993,7 +2986,7 @@ void MoveCenterTabController::eventLoopTick(
                 vr::VRChaperone()->ForceBoundsVisible( true );
             }
             // only set back to default every frame if setting is enabled
-            else if ( m_turnBounds || m_dragBounds )
+            else if ( m_turnBounds || dragBounds() )
             {
                 vr::VRChaperone()->ForceBoundsVisible(
                     parent->m_chaperoneTabController.forceBounds() );
