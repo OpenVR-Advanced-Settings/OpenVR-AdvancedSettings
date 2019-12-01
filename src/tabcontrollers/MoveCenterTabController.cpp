@@ -56,9 +56,6 @@ void MoveCenterTabController::initStage1()
     m_flingStrength = static_cast<float>( settings::getSetting(
         settings::DoubleSetting::PLAYSPACE_flingStrength ) );
 
-    m_simpleRecenter = settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_simpleRecenter );
-
     reloadOffsetProfiles();
     m_k_moveCenterSettingsUpdateCounter
         = utils::adjustUpdateRate( k_moveCenterSettingsUpdateCounter );
@@ -962,23 +959,19 @@ void MoveCenterTabController::setEnableSeatedMotion( bool value, bool notify )
 
 bool MoveCenterTabController::simpleRecenter() const
 {
-    return m_simpleRecenter;
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_simpleRecenter );
 }
 
 void MoveCenterTabController::setSimpleRecenter( bool value, bool notify )
 {
-    m_simpleRecenter = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "simpleRecenter", m_simpleRecenter );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_simpleRecenter,
+                          value );
+
     if ( notify )
     {
-        emit simpleRecenterChanged( m_simpleRecenter );
+        emit simpleRecenterChanged( value );
     }
-    LOG( INFO ) << "CHANGED SETTINGS: Simple Recenter Set: "
-                << m_simpleRecenter;
 }
 
 void MoveCenterTabController::modOffsetX( float value, bool notify )
@@ -1030,7 +1023,7 @@ void MoveCenterTabController::incomingSeatedReset()
         // if we didn't send the request from OVRAS, we need to send another
         // ResetSeatedZeroPose(). It seems that only after this is sent from
         // OVRAS does ReloadFromDisk return valid info on WMR.
-        if ( !m_selfRequestedSeatedRecenter && !m_simpleRecenter )
+        if ( !m_selfRequestedSeatedRecenter && !simpleRecenter() )
         {
             m_selfRequestedSeatedRecenter = true;
             vr::VRSystem()->ResetSeatedZeroPose();
