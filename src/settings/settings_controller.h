@@ -380,6 +380,10 @@ private:
                          SettingCategory::Application,
                          QtInfo{ "debugState" },
                          0 },
+        IntSettingValue{ IntSetting::APPLICATION_customTickRateMs,
+                         SettingCategory::Application,
+                         QtInfo{ "customTickRateMs" },
+                         20 },
 
         IntSettingValue{ IntSetting::UTILITY_alarmHour,
                          SettingCategory::Utility,

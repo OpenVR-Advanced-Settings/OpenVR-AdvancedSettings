@@ -82,6 +82,7 @@ enum class IntSetting
     PLAYSPACE_turnComfortFactor,
 
     APPLICATION_debugState,
+    APPLICATION_customTickRateMs,
 
     UTILITY_alarmHour,
     UTILITY_alarmMinute,
