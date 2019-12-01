@@ -74,8 +74,6 @@ void MoveCenterTabController::initStage1()
 
     m_momentumSave
         = settings::getSetting( settings::BoolSetting::PLAYSPACE_momentumSave );
-    m_lockXToggle
-        = settings::getSetting( settings::BoolSetting::PLAYSPACE_lockXToggle );
     m_lockYToggle
         = settings::getSetting( settings::BoolSetting::PLAYSPACE_lockYToggle );
     m_lockZToggle
@@ -258,10 +256,6 @@ void MoveCenterTabController::outputLogSettings()
     {
         LOG( INFO ) << "LOADED SETTINGS: Space-Turn Comfort Factor = "
                     << m_turnComfortFactor;
-    }
-    if ( m_lockXToggle )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: X Axis Locked";
     }
     if ( m_lockYToggle )
     {
@@ -975,20 +969,16 @@ void MoveCenterTabController::setMomentumSave( bool value, bool notify )
 
 bool MoveCenterTabController::lockXToggle() const
 {
-    return m_lockXToggle;
+    return settings::getSetting( settings::BoolSetting::PLAYSPACE_lockXToggle );
 }
 
 void MoveCenterTabController::setLockX( bool value, bool notify )
 {
-    m_lockXToggle = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "lockXToggle", m_lockXToggle );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_lockXToggle, value );
+
     if ( notify )
     {
-        emit requireLockXChanged( m_lockXToggle );
+        emit requireLockXChanged( value );
     }
 }
 
@@ -1170,7 +1160,7 @@ void MoveCenterTabController::setSimpleRecenter( bool value, bool notify )
 
 void MoveCenterTabController::modOffsetX( float value, bool notify )
 {
-    if ( !m_lockXToggle )
+    if ( !settings::getSetting( settings::BoolSetting::PLAYSPACE_lockXToggle ) )
     {
         m_offsetX += value;
         if ( notify )
@@ -2294,7 +2284,7 @@ void MoveCenterTabController::xAxisLockToggle( bool xAxisLockToggleJustPressed )
         return;
     }
 
-    if ( !m_lockXToggle )
+    if ( !settings::getSetting( settings::BoolSetting::PLAYSPACE_lockXToggle ) )
     {
         setLockX( true );
     }
@@ -2491,7 +2481,8 @@ void MoveCenterTabController::updateHandDrag(
         }
 
         // prevents updating if axis movement is locked
-        if ( !m_lockXToggle )
+        if ( !settings::getSetting(
+                 settings::BoolSetting::PLAYSPACE_lockXToggle ) )
         {
             m_offsetX += static_cast<float>( diff[0] );
         }
@@ -2626,7 +2617,7 @@ void MoveCenterTabController::updateGravity()
     clampVelocity( m_velocity );
 
     // make axis lock checkboxes lock velocity on that axis
-    if ( m_lockXToggle )
+    if ( settings::getSetting( settings::BoolSetting::PLAYSPACE_lockXToggle ) )
     {
         m_velocity[0] = 0.0;
     }

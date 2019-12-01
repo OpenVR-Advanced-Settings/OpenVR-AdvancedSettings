@@ -140,7 +140,6 @@ private:
     float m_gravityStrength = 9.8f;
     float m_flingStrength = 1.0f;
     bool m_momentumSave = false;
-    bool m_lockXToggle = false;
     bool m_lockYToggle = false;
     bool m_lockZToggle = false;
     // Set lastHandQuaternion.w to -1000.0 when last hand is invalid.
