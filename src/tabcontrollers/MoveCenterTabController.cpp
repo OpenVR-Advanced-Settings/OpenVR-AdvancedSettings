@@ -39,9 +39,6 @@ namespace advsettings
 {
 void MoveCenterTabController::initStage1()
 {
-    m_flingStrength = static_cast<float>( settings::getSetting(
-        settings::DoubleSetting::PLAYSPACE_flingStrength ) );
-
     reloadOffsetProfiles();
     m_k_moveCenterSettingsUpdateCounter
         = utils::adjustUpdateRate( k_moveCenterSettingsUpdateCounter );
@@ -714,20 +711,18 @@ void MoveCenterTabController::setGravityStrength( float value, bool notify )
 
 float MoveCenterTabController::flingStrength() const
 {
-    return m_flingStrength;
+    return static_cast<float>( settings::getSetting(
+        settings::DoubleSetting::PLAYSPACE_flingStrength ) );
 }
 
 void MoveCenterTabController::setFlingStrength( float value, bool notify )
 {
-    m_flingStrength = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "flingStrength", m_flingStrength );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::DoubleSetting::PLAYSPACE_flingStrength,
+                          static_cast<double>( value ) );
+
     if ( notify )
     {
-        emit flingStrengthChanged( m_flingStrength );
+        emit flingStrengthChanged( value );
     }
 }
 
@@ -2281,11 +2276,11 @@ void MoveCenterTabController::updateHandDrag(
                   .count();
 
         m_velocity[0] = ( diff[0] / secondsSinceLastDragUpdate )
-                        * static_cast<double>( m_flingStrength );
+                        * static_cast<double>( flingStrength() );
         m_velocity[1] = ( diff[1] / secondsSinceLastDragUpdate )
-                        * static_cast<double>( m_flingStrength );
+                        * static_cast<double>( flingStrength() );
         m_velocity[2] = ( diff[2] / secondsSinceLastDragUpdate )
-                        * static_cast<double>( m_flingStrength );
+                        * static_cast<double>( flingStrength() );
     }
     m_lastControllerPosition[0] = absoluteControllerPosition[0];
     m_lastControllerPosition[1] = absoluteControllerPosition[1];
