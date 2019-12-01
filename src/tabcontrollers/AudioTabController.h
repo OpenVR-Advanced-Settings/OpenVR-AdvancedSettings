@@ -71,7 +71,6 @@ private:
     int m_recordingDeviceIndex = -1;
     float m_micVolume = 1.0;
     bool m_micMuted = false;
-    bool m_micReversePtt = false;
     bool m_isDefaultAudioProfile = false;
     bool m_isPlaybackOverride = false;
     bool m_isRecordingOverride = false;
