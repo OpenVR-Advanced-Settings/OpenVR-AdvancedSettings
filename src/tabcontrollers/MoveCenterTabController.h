@@ -119,7 +119,6 @@ private:
     int m_rotation = 0;
     int m_oldRotation = 0;
     int m_tempRotation = 0;
-    int m_snapTurnAngle = 4500;
     int m_smoothTurnRate = 100;
     bool m_moveShortcutRightPressed = false;
     bool m_moveShortcutLeftPressed = false;

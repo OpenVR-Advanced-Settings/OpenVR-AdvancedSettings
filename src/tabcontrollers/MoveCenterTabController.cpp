@@ -44,8 +44,6 @@ void MoveCenterTabController::initStage1()
     m_turnComfortFactor = static_cast<unsigned int>( settings::getSetting(
         settings::IntSetting::PLAYSPACE_turnComfortFactor ) );
 
-    m_snapTurnAngle
-        = settings::getSetting( settings::IntSetting::PLAYSPACE_snapTurnAngle );
     m_smoothTurnRate = settings::getSetting(
         settings::IntSetting::PLAYSPACE_smoothTurnRate );
 
@@ -460,23 +458,18 @@ void MoveCenterTabController::setTempRotation( int value, bool notify )
 
 int MoveCenterTabController::snapTurnAngle() const
 {
-    return m_snapTurnAngle;
+    return settings::getSetting(
+        settings::IntSetting::PLAYSPACE_snapTurnAngle );
 }
 
 void MoveCenterTabController::setSnapTurnAngle( int value, bool notify )
 {
-    if ( m_snapTurnAngle != value )
+    settings::setSetting( settings::IntSetting::PLAYSPACE_snapTurnAngle,
+                          value );
+
+    if ( notify )
     {
-        m_snapTurnAngle = value;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "playspaceSettings" );
-        settings->setValue( "snapTurnAngle", m_snapTurnAngle );
-        settings->endGroup();
-        settings->sync();
-        if ( notify )
-        {
-            emit snapTurnAngleChanged( m_snapTurnAngle );
-        }
+        emit snapTurnAngleChanged( value );
     }
 }
 
@@ -2010,7 +2003,7 @@ void MoveCenterTabController::snapTurnLeft( bool snapTurnLeftJustPressed )
         return;
     }
 
-    int newRotationAngleDeg = m_rotation - m_snapTurnAngle;
+    int newRotationAngleDeg = m_rotation - snapTurnAngle();
     // Keep angle within -18000 ~ 18000 centidegrees
     if ( newRotationAngleDeg > 18000 )
     {
@@ -2031,7 +2024,7 @@ void MoveCenterTabController::snapTurnRight( bool snapTurnRightJustPressed )
         return;
     }
 
-    int newRotationAngleDeg = m_rotation + m_snapTurnAngle;
+    int newRotationAngleDeg = m_rotation + snapTurnAngle();
     // Keep angle within -18000 ~ 18000 centidegrees
     if ( newRotationAngleDeg > 18000 )
     {
