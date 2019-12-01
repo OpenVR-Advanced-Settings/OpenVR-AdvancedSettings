@@ -14,11 +14,9 @@ void UtilitiesTabController::initStage1()
 {
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "utilitiesSettings" );
-    auto qVrcDebug = settings->value( "vrcDebug", m_vrcDebug );
     auto qAlarmHour = settings->value( "alarmHour", 0 );
     auto qAlarmMinute = settings->value( "alarmMinute", 0 );
     settings->endGroup();
-    m_vrcDebug = qVrcDebug.toBool();
     m_alarmTime = QTime( qAlarmHour.toInt(), qAlarmMinute.toInt() );
 
     m_k_utilitiesSettingsUpdateCounter
@@ -228,7 +226,7 @@ bool UtilitiesTabController::alarmIsModal() const
 
 bool UtilitiesTabController::vrcDebug() const
 {
-    return m_vrcDebug;
+    return settings::getSetting( settings::BoolSetting::UTILITY_vrcDebug );
 }
 
 int UtilitiesTabController::alarmTimeHour() const
@@ -265,18 +263,10 @@ void UtilitiesTabController::setAlarmIsModal( bool modal, bool notify )
 
 void UtilitiesTabController::setVrcDebug( bool value, bool notify )
 {
-    if ( m_vrcDebug != value )
+    settings::setSetting( settings::BoolSetting::UTILITY_vrcDebug, value );
+    if ( notify )
     {
-        m_vrcDebug = value;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "utilitiesSettings" );
-        settings->setValue( "vrcDebug", m_vrcDebug );
-        settings->endGroup();
-        settings->sync();
-        if ( notify )
-        {
-            emit vrcDebugChanged( m_vrcDebug );
-        }
+        emit vrcDebugChanged( value );
     }
 }
 
