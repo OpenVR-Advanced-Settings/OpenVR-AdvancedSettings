@@ -39,9 +39,6 @@ namespace advsettings
 {
 void MoveCenterTabController::initStage1()
 {
-    m_adjustChaperone = settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_adjustChaperone );
-
     m_settingsRightHandDragEnabled = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_moveShortcutRight );
     m_settingsLeftHandDragEnabled = settings::getSetting(
@@ -223,10 +220,6 @@ void MoveCenterTabController::deleteOffsetProfile( unsigned index )
 
 void MoveCenterTabController::outputLogSettings()
 {
-    if ( !m_adjustChaperone )
-    {
-        LOG( WARNING ) << "LOADED SETTINGS: Adjust Chaperone DISABLED";
-    }
     if ( m_settingsRightHandDragEnabled )
     {
         LOG( INFO ) << "LOADED SETTINGS: Right Hand Space-Drag Bind Enabled";
@@ -598,32 +591,18 @@ void MoveCenterTabController::setSmoothTurnRate( int value, bool notify )
 
 bool MoveCenterTabController::adjustChaperone() const
 {
-    return m_adjustChaperone;
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_adjustChaperone );
 }
 
 void MoveCenterTabController::setAdjustChaperone( bool value, bool notify )
 {
-    if ( m_adjustChaperone != value )
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_adjustChaperone,
+                          value );
+
+    if ( notify )
     {
-        m_adjustChaperone = value;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "playspaceSettings" );
-        settings->setValue( "adjustChaperone", m_adjustChaperone );
-        settings->endGroup();
-        settings->sync();
-        if ( notify )
-        {
-            emit adjustChaperoneChanged( m_adjustChaperone );
-        }
-        if ( !m_adjustChaperone )
-        {
-            LOG( WARNING ) << "CHANGED SETTINGS: Adjust Chaperone DISABLED";
-        }
-        else
-        {
-            LOG( INFO ) << "CHANGED SETTINGS: Adjust Chaperone Set: "
-                        << m_adjustChaperone;
-        }
+        emit adjustChaperoneChanged( value );
     }
 }
 
@@ -2856,7 +2835,8 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             &offsetSeatedCenter );
     }
 
-    if ( m_adjustChaperone )
+    if ( settings::getSetting(
+             settings::BoolSetting::PLAYSPACE_adjustChaperone ) )
     {
         // make a copy of our bounds and
         // reorient relative to new universe center

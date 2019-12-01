@@ -121,7 +121,6 @@ private:
     int m_tempRotation = 0;
     int m_snapTurnAngle = 4500;
     int m_smoothTurnRate = 100;
-    bool m_adjustChaperone = true;
     bool m_moveShortcutRightPressed = false;
     bool m_moveShortcutLeftPressed = false;
     vr::TrackedDeviceIndex_t m_activeMoveController;
