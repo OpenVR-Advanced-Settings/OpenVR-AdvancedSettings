@@ -376,6 +376,11 @@ private:
                          QtInfo{ "turnComfortFactor" },
                          0 },
 
+        IntSettingValue{ IntSetting::APPLICATION_debugState,
+                         SettingCategory::Application,
+                         QtInfo{ "debugState" },
+                         0 },
+
         IntSettingValue{ IntSetting::UTILITY_alarmHour,
                          SettingCategory::Utility,
                          QtInfo{ "alarmHour" },

@@ -298,11 +298,6 @@ OverlayController::OverlayController( bool desktopMode,
             m_customTickRateMs = value.toInt();
         }
     }
-    value = appSettings()->value( "debugState", m_debugState );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_debugState = value.toInt();
-    }
     appSettings()->endGroup();
 
     // Grab local version number
@@ -821,23 +816,16 @@ void OverlayController::setVersionCheckText( QString value, bool notify )
 
 int OverlayController::debugState() const
 {
-    return m_debugState;
+    return settings::getSetting( settings::IntSetting::APPLICATION_debugState );
 }
 
 void OverlayController::setDebugState( int value, bool notify )
 {
-    if ( m_debugState == value )
-    {
-        return;
-    }
-    m_debugState = value;
-    appSettings()->beginGroup( "applicationSettings" );
-    appSettings()->setValue( "debugState", m_debugState );
-    appSettings()->endGroup();
-    appSettings()->sync();
+    settings::setSetting( settings::IntSetting::APPLICATION_debugState, value );
+
     if ( notify )
     {
-        emit debugStateChanged( m_debugState );
+        emit debugStateChanged( value );
     }
 }
 
