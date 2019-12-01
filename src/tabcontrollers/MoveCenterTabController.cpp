@@ -56,8 +56,6 @@ void MoveCenterTabController::initStage1()
     m_flingStrength = static_cast<float>( settings::getSetting(
         settings::DoubleSetting::PLAYSPACE_flingStrength ) );
 
-    m_momentumSave
-        = settings::getSetting( settings::BoolSetting::PLAYSPACE_momentumSave );
     m_showLogMatricesButton = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_showLogMatricesButton );
     m_allowExternalEdits = settings::getSetting(
@@ -798,7 +796,7 @@ void MoveCenterTabController::setGravityActive( bool value, bool notify )
     if ( !m_gravityActive && value )
     {
         // zero out velocity if we aren't saving previous momentum
-        if ( !m_momentumSave )
+        if ( !momentumSave() )
         {
             m_velocity[0] = 0.0;
             m_velocity[1] = 0.0;
@@ -817,20 +815,18 @@ void MoveCenterTabController::setGravityActive( bool value, bool notify )
 
 bool MoveCenterTabController::momentumSave() const
 {
-    return m_momentumSave;
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_momentumSave );
 }
 
 void MoveCenterTabController::setMomentumSave( bool value, bool notify )
 {
-    m_momentumSave = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "momentumSave", m_momentumSave );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_momentumSave,
+                          value );
+
     if ( notify )
     {
-        emit momentumSaveChanged( m_momentumSave );
+        emit momentumSaveChanged( value );
     }
 }
 
