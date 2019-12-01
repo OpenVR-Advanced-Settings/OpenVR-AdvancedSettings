@@ -39,9 +39,6 @@ namespace advsettings
 {
 void MoveCenterTabController::initStage1()
 {
-    m_turnComfortFactor = static_cast<unsigned int>( settings::getSetting(
-        settings::IntSetting::PLAYSPACE_turnComfortFactor ) );
-
     m_heightToggleOffset = static_cast<float>( settings::getSetting(
         settings::DoubleSetting::PLAYSPACE_heightToggleOffset ) );
     m_gravityStrength = static_cast<float>( settings::getSetting(
@@ -631,23 +628,20 @@ void MoveCenterTabController::setDragComfortFactor( int value, bool notify )
     }
 }
 
-unsigned MoveCenterTabController::turnComfortFactor() const
+int MoveCenterTabController::turnComfortFactor() const
 {
-    return m_turnComfortFactor;
+    return settings::getSetting(
+        settings::IntSetting::PLAYSPACE_turnComfortFactor );
 }
 
-void MoveCenterTabController::setTurnComfortFactor( unsigned value,
-                                                    bool notify )
+void MoveCenterTabController::setTurnComfortFactor( int value, bool notify )
 {
-    m_turnComfortFactor = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "turnComfortFactor", m_turnComfortFactor );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::IntSetting::PLAYSPACE_turnComfortFactor,
+                          value );
+
     if ( notify )
     {
-        emit turnComfortFactorChanged( m_turnComfortFactor );
+        emit turnComfortFactorChanged( value );
     }
 }
 
@@ -2912,8 +2906,8 @@ void MoveCenterTabController::eventLoopTick(
             // Smooth turn motion can cause sim-sickness so we check if the user
             // wants to skip frames to reduce vection. We use the factor squared
             // because of logarithmic human perception.
-            if ( m_turnComfortFrameSkipCounter
-                 >= ( m_turnComfortFactor * m_turnComfortFactor ) )
+            if ( m_turnComfortFrameSkipCounter >= static_cast<unsigned>(
+                     ( turnComfortFactor() * turnComfortFactor() ) ) )
             {
                 updateHandTurn( devicePoses, angle );
                 m_turnComfortFrameSkipCounter = 0;
