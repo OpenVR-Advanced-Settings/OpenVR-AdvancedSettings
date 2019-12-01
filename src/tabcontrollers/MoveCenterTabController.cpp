@@ -74,8 +74,6 @@ void MoveCenterTabController::initStage1()
 
     m_momentumSave
         = settings::getSetting( settings::BoolSetting::PLAYSPACE_momentumSave );
-    m_lockYToggle
-        = settings::getSetting( settings::BoolSetting::PLAYSPACE_lockYToggle );
     m_showLogMatricesButton = settings::getSetting(
         settings::BoolSetting::PLAYSPACE_showLogMatricesButton );
     m_allowExternalEdits = settings::getSetting(
@@ -254,10 +252,6 @@ void MoveCenterTabController::outputLogSettings()
     {
         LOG( INFO ) << "LOADED SETTINGS: Space-Turn Comfort Factor = "
                     << m_turnComfortFactor;
-    }
-    if ( m_lockYToggle )
-    {
-        LOG( INFO ) << "LOADED SETTINGS: Y Axis Locked";
     }
     if ( m_allowExternalEdits )
     {
@@ -978,20 +972,15 @@ void MoveCenterTabController::setLockX( bool value, bool notify )
 
 bool MoveCenterTabController::lockYToggle() const
 {
-    return m_lockYToggle;
+    return settings::getSetting( settings::BoolSetting::PLAYSPACE_lockYToggle );
 }
 
 void MoveCenterTabController::setLockY( bool value, bool notify )
 {
-    m_lockYToggle = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "lockYToggle", m_lockYToggle );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_lockYToggle, value );
     if ( notify )
     {
-        emit requireLockYChanged( m_lockYToggle );
+        emit requireLockYChanged( value );
     }
 }
 
@@ -1161,7 +1150,7 @@ void MoveCenterTabController::modOffsetX( float value, bool notify )
 
 void MoveCenterTabController::modOffsetY( float value, bool notify )
 {
-    if ( !m_lockYToggle )
+    if ( !settings::getSetting( settings::BoolSetting::PLAYSPACE_lockYToggle ) )
     {
         m_offsetY += value;
         if ( notify )
@@ -2290,7 +2279,7 @@ void MoveCenterTabController::yAxisLockToggle( bool yAxisLockToggleJustPressed )
         return;
     }
 
-    if ( !m_lockYToggle )
+    if ( !settings::getSetting( settings::BoolSetting::PLAYSPACE_lockYToggle ) )
     {
         setLockY( true );
     }
@@ -2475,7 +2464,8 @@ void MoveCenterTabController::updateHandDrag(
         {
             m_offsetX += static_cast<float>( diff[0] );
         }
-        if ( !m_lockYToggle )
+        if ( !settings::getSetting(
+                 settings::BoolSetting::PLAYSPACE_lockYToggle ) )
         {
             m_offsetY += static_cast<float>( diff[1] );
         }
@@ -2611,7 +2601,7 @@ void MoveCenterTabController::updateGravity()
     {
         m_velocity[0] = 0.0;
     }
-    if ( m_lockYToggle )
+    if ( settings::getSetting( settings::BoolSetting::PLAYSPACE_lockYToggle ) )
     {
         m_velocity[1] = 0.0;
     }
