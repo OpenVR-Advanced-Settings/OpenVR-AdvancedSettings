@@ -170,7 +170,6 @@ private:
     bool m_dashWasOpenPreviousFrame = false;
     bool m_roomSetupModeDetected = false;
     bool m_seatedModeDetected = false;
-    bool m_simpleRecenter = false;
     unsigned settingsUpdateCounter = 0;
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
