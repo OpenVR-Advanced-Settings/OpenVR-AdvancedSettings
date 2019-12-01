@@ -298,12 +298,6 @@ OverlayController::OverlayController( bool desktopMode,
             m_customTickRateMs = value.toInt();
         }
     }
-    value = appSettings()->value( "crashRecoveryDisabled",
-                                  m_crashRecoveryDisabled );
-    if ( value.isValid() && !value.isNull() )
-    {
-        m_crashRecoveryDisabled = value.toBool();
-    }
     value = appSettings()->value( "enableDebug", m_enableDebug );
     if ( value.isValid() && !value.isNull() )
     {
@@ -735,23 +729,17 @@ void OverlayController::processInputBindings()
 
 bool OverlayController::crashRecoveryDisabled() const
 {
-    return m_crashRecoveryDisabled;
+    return settings::getSetting(
+        settings::BoolSetting::APPLICATION_crashRecoveryDisabled );
 }
 
 void OverlayController::setCrashRecoveryDisabled( bool value, bool notify )
 {
-    if ( m_crashRecoveryDisabled == value )
-    {
-        return;
-    }
-    m_crashRecoveryDisabled = value;
-    appSettings()->beginGroup( "applicationSettings" );
-    appSettings()->setValue( "crashRecoveryDisabled", m_crashRecoveryDisabled );
-    appSettings()->endGroup();
-    appSettings()->sync();
+    settings::setSetting(
+        settings::BoolSetting::APPLICATION_crashRecoveryDisabled, value );
     if ( notify )
     {
-        emit crashRecoveryDisabledChanged( m_crashRecoveryDisabled );
+        emit crashRecoveryDisabledChanged( value );
     }
 }
 
