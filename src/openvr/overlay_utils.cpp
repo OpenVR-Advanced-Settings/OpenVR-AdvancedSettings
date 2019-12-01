@@ -31,8 +31,7 @@ void setDesktopOverlayWidth( double width )
 
 void DesktopOverlay::update()
 {
-    setDesktopOverlayWidth(
-        settings::getSetting( settings::DoubleSetting::UTILITY_desktopWidth ) );
+    setDesktopOverlayWidth( getCurrentWidth() );
 }
 
 bool DesktopOverlay::isAvailable() const
