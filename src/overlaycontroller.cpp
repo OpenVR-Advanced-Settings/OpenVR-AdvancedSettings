@@ -640,34 +640,26 @@ void OverlayController::processPushToTalkBindings()
 
 void OverlayController::processKeyboardBindings()
 {
-    constexpr auto settingsKeyboardName = "keyboardShortcuts";
-
     if ( m_actions.keyboardOne() )
     {
-        appSettings()->beginGroup( settingsKeyboardName );
-        const auto commands
-            = appSettings()->value( "keyboardOne" ).toString().toStdString();
-        appSettings()->endGroup();
+        const auto commands = settings::getSetting(
+            settings::StringSetting::KEYBOARDSHORTCUT_keyboardOne );
 
         sendStringAsInput( commands );
     }
 
     if ( m_actions.keyboardTwo() )
     {
-        appSettings()->beginGroup( settingsKeyboardName );
-        const auto commands
-            = appSettings()->value( "keyboardTwo" ).toString().toStdString();
-        appSettings()->endGroup();
+        const auto commands = settings::getSetting(
+            settings::StringSetting::KEYBOARDSHORTCUT_keyboardTwo );
 
         sendStringAsInput( commands );
     }
 
     if ( m_actions.keyboardThree() )
     {
-        appSettings()->beginGroup( settingsKeyboardName );
-        const auto commands
-            = appSettings()->value( "keyboardThree" ).toString().toStdString();
-        appSettings()->endGroup();
+        const auto commands = settings::getSetting(
+            settings::StringSetting::KEYBOARDSHORTCUT_keyboardThree );
 
         sendStringAsInput( commands );
     }
