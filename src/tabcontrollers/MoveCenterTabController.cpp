@@ -39,8 +39,6 @@ namespace advsettings
 {
 void MoveCenterTabController::initStage1()
 {
-    m_heightToggleOffset = static_cast<float>( settings::getSetting(
-        settings::DoubleSetting::PLAYSPACE_heightToggleOffset ) );
     m_gravityStrength = static_cast<float>( settings::getSetting(
         settings::DoubleSetting::PLAYSPACE_gravityStrength ) );
     m_flingStrength = static_cast<float>( settings::getSetting(
@@ -658,10 +656,10 @@ void MoveCenterTabController::setHeightToggle( bool value, bool notify )
         // Don't move bump around on y axis if gravity is active
         if ( !m_gravityActive )
         {
-            m_offsetY += m_heightToggleOffset;
+            m_offsetY += heightToggleOffset();
             emit offsetYChanged( m_offsetY );
         }
-        m_gravityFloor = m_heightToggleOffset;
+        m_gravityFloor = heightToggleOffset();
     }
     // detect new deactivate
     else if ( m_heightToggle && !value )
@@ -669,7 +667,7 @@ void MoveCenterTabController::setHeightToggle( bool value, bool notify )
         // Don't move bump around on y axis if gravity is active
         if ( !m_gravityActive )
         {
-            m_offsetY -= m_heightToggleOffset;
+            m_offsetY -= heightToggleOffset();
             emit offsetYChanged( m_offsetY );
         }
         m_gravityFloor = 0.0f;
@@ -684,20 +682,18 @@ void MoveCenterTabController::setHeightToggle( bool value, bool notify )
 
 float MoveCenterTabController::heightToggleOffset() const
 {
-    return m_heightToggleOffset;
+    return static_cast<float>( settings::getSetting(
+        settings::DoubleSetting::PLAYSPACE_heightToggleOffset ) );
 }
 
 void MoveCenterTabController::setHeightToggleOffset( float value, bool notify )
 {
-    m_heightToggleOffset = value;
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "playspaceSettings" );
-    settings->setValue( "heightToggleOffset", m_heightToggleOffset );
-    settings->endGroup();
-    settings->sync();
+    settings::setSetting( settings::DoubleSetting::PLAYSPACE_heightToggleOffset,
+                          static_cast<double>( value ) );
+
     if ( notify )
     {
-        emit heightToggleOffsetChanged( m_heightToggleOffset );
+        emit heightToggleOffsetChanged( value );
     }
 }
 
