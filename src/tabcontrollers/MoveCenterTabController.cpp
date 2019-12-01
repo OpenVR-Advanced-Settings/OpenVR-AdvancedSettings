@@ -44,9 +44,6 @@ void MoveCenterTabController::initStage1()
     m_turnComfortFactor = static_cast<unsigned int>( settings::getSetting(
         settings::IntSetting::PLAYSPACE_turnComfortFactor ) );
 
-    m_smoothTurnRate = settings::getSetting(
-        settings::IntSetting::PLAYSPACE_smoothTurnRate );
-
     m_heightToggleOffset = static_cast<float>( settings::getSetting(
         settings::DoubleSetting::PLAYSPACE_heightToggleOffset ) );
     m_gravityStrength = static_cast<float>( settings::getSetting(
@@ -475,23 +472,18 @@ void MoveCenterTabController::setSnapTurnAngle( int value, bool notify )
 
 int MoveCenterTabController::smoothTurnRate() const
 {
-    return m_smoothTurnRate;
+    return settings::getSetting(
+        settings::IntSetting::PLAYSPACE_smoothTurnRate );
 }
 
 void MoveCenterTabController::setSmoothTurnRate( int value, bool notify )
 {
-    if ( m_smoothTurnRate != value )
+    settings::setSetting( settings::IntSetting::PLAYSPACE_smoothTurnRate,
+                          value );
+
+    if ( notify )
     {
-        m_smoothTurnRate = value;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "playspaceSettings" );
-        settings->setValue( "smoothTurnRate", m_smoothTurnRate );
-        settings->endGroup();
-        settings->sync();
-        if ( notify )
-        {
-            emit smoothTurnRateChanged( m_smoothTurnRate );
-        }
+        emit smoothTurnRateChanged( value );
     }
 }
 
@@ -2045,10 +2037,10 @@ void MoveCenterTabController::smoothTurnLeft( bool smoothTurnLeftActive )
         return;
     }
 
-    // Activates every tick. m_smoothTurnRate effectively becomes a percentage
+    // Activates every tick. smoothTurnRate() effectively becomes a percentage
     // of a degree per tick. A setting of 100 would equal 90 degrees/sec or 15
     // RPM with a framerate of 90fps
-    int newRotationAngleDeg = m_rotation - m_smoothTurnRate;
+    int newRotationAngleDeg = m_rotation - smoothTurnRate();
     // Keep angle within -18000 ~ 18000 centidegrees
     if ( newRotationAngleDeg > 18000 )
     {
@@ -2069,10 +2061,10 @@ void MoveCenterTabController::smoothTurnRight( bool smoothTurnRightActive )
         return;
     }
 
-    // Activates every tick. m_smoothTurnRate effectively becomes a percentage
+    // Activates every tick. smoothTurnRate() effectively becomes a percentage
     // of a degree per tick. A setting of 100 would equal 90 degrees/sec or 15
     // RPM with a framerate of 90fps
-    int newRotationAngleDeg = m_rotation + m_smoothTurnRate;
+    int newRotationAngleDeg = m_rotation + smoothTurnRate();
     // Keep angle within -18000 ~ 18000 centidegrees
     if ( newRotationAngleDeg > 18000 )
     {
