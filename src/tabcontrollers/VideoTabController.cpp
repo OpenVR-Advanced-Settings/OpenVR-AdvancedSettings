@@ -223,8 +223,7 @@ void VideoTabController::reloadVideoConfig()
     auto settings = OverlayController::appSettings();
     settings->beginGroup( getSettingsName() );
     setBrightnessEnabled( brightnessEnabled(), true );
-    setColorOverlayEnabled(
-        settings->value( "colorOverlayEnabled", false ).toBool(), true );
+    setColorOverlayEnabled( colorOverlayEnabled(), true );
     setIsOverlayMethodActive(
         settings->value( "isOverlayMethodActive", false ).toBool(), true );
     setColorRed( colorRed() );
@@ -241,7 +240,6 @@ void VideoTabController::saveVideoConfig()
 {
     auto settings = OverlayController::appSettings();
     settings->beginGroup( getSettingsName() );
-    settings->setValue( "colorOverlayEnabled", colorOverlayEnabled() );
     settings->setValue( "isOverlayMethodActive", isOverlayMethodActive() );
 
     settings->endGroup();
@@ -370,7 +368,8 @@ void VideoTabController::setBrightnessOpacityValue()
 
 bool VideoTabController::colorOverlayEnabled() const
 {
-    return m_colorOverlayEnabled;
+    return settings::getSetting(
+        settings::BoolSetting::VIDEO_colorOverlayEnabled );
 }
 
 float VideoTabController::colorOverlayOpacity() const
@@ -429,11 +428,12 @@ void VideoTabController::setColorOverlayEnabled( bool value,
                                                  bool notify,
                                                  bool keepValue )
 {
-    if ( value != m_colorOverlayEnabled || keepValue )
+    if ( value != colorOverlayEnabled() || keepValue )
     {
         if ( !keepValue )
         {
-            m_colorOverlayEnabled = value;
+            settings::setSetting(
+                settings::BoolSetting::VIDEO_colorOverlayEnabled, value );
         }
         auto overlayHandle = getColorOverlayHandle();
         if ( value )
@@ -452,7 +452,7 @@ void VideoTabController::setColorOverlayEnabled( bool value,
                 LOG( INFO ) << "Color Overlay toggled off";
             }
         }
-        saveVideoConfig();
+
         if ( notify )
         {
             emit colorOverlayEnabledChanged( value );

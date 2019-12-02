@@ -85,8 +85,6 @@ private:
     bool m_overlayInit = false;
     bool m_isOverlayMethodActive = false;
 
-    bool m_colorOverlayEnabled = false;
-
     float m_superSampling = 1.0;
     bool m_allowSupersampleOverride = false;
     bool m_motionSmoothing = true;
