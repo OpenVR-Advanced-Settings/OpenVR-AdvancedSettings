@@ -11,8 +11,6 @@ void ChaperoneTabController::initStage1()
 {
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "chaperoneSettings" );
-    m_chaperoneShowDashboardDistance
-        = settings->value( "chaperoneShowDashboardDistance", 0.5f ).toFloat();
     m_fadeDistanceRemembered
         = settings->value( "fadeDistanceRemembered", 0.5f ).toFloat();
     settings->endGroup();
@@ -515,7 +513,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     // Show Dashboard
     if ( isChaperoneShowDashboardEnabled() )
     {
-        float activationDistance = m_chaperoneShowDashboardDistance;
+        float activationDistance = chaperoneShowDashboardDistance();
         if ( distance <= activationDistance && !m_chaperoneShowDashboardActive )
         {
             if ( !vr::VROverlay()->IsDashboardVisible() )
@@ -885,7 +883,8 @@ bool ChaperoneTabController::isChaperoneShowDashboardEnabled() const
 
 float ChaperoneTabController::chaperoneShowDashboardDistance() const
 {
-    return m_chaperoneShowDashboardDistance;
+    return static_cast<float>( settings::getSetting(
+        settings::DoubleSetting::CHAPERONE_showDashboardDistance ) );
 }
 
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount()
@@ -1119,20 +1118,16 @@ void ChaperoneTabController::setChaperoneShowDashboardEnabled( bool value,
 void ChaperoneTabController::setChaperoneShowDashboardDistance( float value,
                                                                 bool notify )
 {
-    if ( fabs( static_cast<double>( m_chaperoneShowDashboardDistance - value ) )
+    if ( fabs( static_cast<double>( chaperoneShowDashboardDistance() - value ) )
          > 0.005 )
     {
-        m_chaperoneShowDashboardDistance = value;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "chaperoneSettings" );
-        settings->setValue( "chaperoneShowDashboardDistance",
-                            m_chaperoneShowDashboardDistance );
-        settings->endGroup();
-        settings->sync();
+        settings::setSetting(
+            settings::DoubleSetting::CHAPERONE_showDashboardDistance,
+            static_cast<double>( value ) );
+
         if ( notify )
         {
-            emit chaperoneShowDashboardDistanceChanged(
-                m_chaperoneShowDashboardDistance );
+            emit chaperoneShowDashboardDistanceChanged( value );
         }
     }
 }
@@ -1350,7 +1345,7 @@ void ChaperoneTabController::addChaperoneProfile(
         profile->enableChaperoneShowDashboard
             = isChaperoneShowDashboardEnabled();
         profile->chaperoneShowDashboardDistance
-            = m_chaperoneShowDashboardDistance;
+            = chaperoneShowDashboardDistance();
     }
     saveChaperoneProfiles();
     OverlayController::appSettings()->sync();

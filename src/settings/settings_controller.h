@@ -378,7 +378,7 @@ private:
                             0.5 },
         DoubleSettingValue{ DoubleSetting::CHAPERONE_showDashboardDistance,
                             SettingCategory::Video,
-                            QtInfo{ "showDashboardDistance" },
+                            QtInfo{ "chaperoneShowDashboardDistance" },
                             0.5 },
         DoubleSettingValue{ DoubleSetting::CHAPERONE_fadeDistanceRemembered,
                             SettingCategory::Chaperone,
