@@ -224,7 +224,6 @@ void VideoTabController::reloadVideoConfig()
     settings->beginGroup( getSettingsName() );
     setBrightnessEnabled(
         settings->value( "brightnessEnabled", false ).toBool(), true );
-    m_brightnessValue = settings->value( "brightnessValue", 1.0f ).toFloat();
     setColorOverlayEnabled(
         settings->value( "colorOverlayEnabled", false ).toBool(), true );
     setColorOverlayOpacity(
@@ -246,7 +245,6 @@ void VideoTabController::saveVideoConfig()
     auto settings = OverlayController::appSettings();
     settings->beginGroup( getSettingsName() );
     settings->setValue( "brightnessEnabled", brightnessEnabled() );
-    settings->setValue( "brightnessValue", brightnessValue() );
     settings->setValue( "colorOverlayEnabled", colorOverlayEnabled() );
     settings->setValue( "colorOverlayOpacity", colorOverlayOpacity() );
     settings->setValue( "colorRedNew", colorRed() );
@@ -266,7 +264,8 @@ float VideoTabController::brightnessOpacityValue() const
 
 float VideoTabController::brightnessValue() const
 {
-    return m_brightnessValue;
+    return static_cast<float>( settings::getSetting(
+        settings::DoubleSetting::VIDEO_brightnessValue ) );
 }
 
 bool VideoTabController::brightnessEnabled() const
@@ -319,7 +318,9 @@ void VideoTabController::setBrightnessValue( float percvalue, bool notify )
     if ( fabs( static_cast<double>( realvalue - brightnessOpacityValue() ) )
          > .005 )
     {
-        m_brightnessValue = percvalue;
+        settings::setSetting( settings::DoubleSetting::VIDEO_brightnessValue,
+                              static_cast<double>( percvalue ) );
+
         if ( realvalue <= 1.0f && realvalue >= 0.0f )
         {
             settings::setSetting(
@@ -361,7 +362,7 @@ void VideoTabController::setBrightnessOpacityValue()
                      << vr::VROverlay()->GetOverlayErrorNameFromEnum(
                             overlayError );
     }
-    emit brightnessValueChanged( m_brightnessValue );
+    emit brightnessValueChanged( brightnessValue() );
 }
 
 /*
@@ -874,7 +875,7 @@ void VideoTabController::addVideoProfile( const QString name )
     profile->colorGreen = m_colorGreen;
     profile->colorBlue = m_colorBlue;
     profile->brightnessToggle = m_brightnessEnabled;
-    profile->brightnessValue = m_brightnessValue;
+    profile->brightnessValue = brightnessValue();
     profile->opacity = m_colorOverlayOpacity;
     profile->overlayMethodState = m_isOverlayMethodActive;
 
