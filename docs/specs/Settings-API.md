@@ -124,7 +124,7 @@ The function is used as a means of controlling when the API will be initialized,
 ## Implementation
 
 The public imperative API is an abstraction for the implementation, which is contained in a `SettingsController`.
-The `SettingsController` object is a `static` object inside the `getSettingsController()` function.
+The `SettingsController` object is a `static` object inside the `settings.cpp` compilation unit.
 
 This is done to remove the limitations that an object oriented design would bring, namely lifetime and scope management.
 Since the API is supposed to be globally available throughout the lifetime of the program, creating it as an object in the `OverlayController` and passing it to subcontrollers would only introduce unnecessary parameter passing.
