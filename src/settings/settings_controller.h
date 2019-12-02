@@ -370,7 +370,7 @@ private:
                             0.5 },
         DoubleSettingValue{ DoubleSetting::CHAPERONE_hapticFeedbackDistance,
                             SettingCategory::Video,
-                            QtInfo{ "hapticFeedbackDistance" },
+                            QtInfo{ "chaperoneHapticFeedbackDistance" },
                             0.5 },
         DoubleSettingValue{ DoubleSetting::CHAPERONE_alarmSoundDistance,
                             SettingCategory::Video,
