@@ -148,7 +148,6 @@ private:
     float m_chaperoneAlarmSoundDistance = 0.5f;
     bool m_chaperoneAlarmSoundActive = false;
 
-    bool m_enableChaperoneShowDashboard = false;
     float m_chaperoneShowDashboardDistance = 0.5f;
     bool m_chaperoneShowDashboardActive = false;
 

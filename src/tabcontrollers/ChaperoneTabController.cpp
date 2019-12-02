@@ -18,8 +18,6 @@ void ChaperoneTabController::initStage1()
         = settings->value( "chaperoneHapticFeedbackDistance", 0.5f ).toFloat();
     m_chaperoneAlarmSoundDistance
         = settings->value( "chaperoneAlarmSoundDistance", 0.5f ).toFloat();
-    m_enableChaperoneShowDashboard
-        = settings->value( "chaperoneShowDashboardEnabled", false ).toBool();
     m_chaperoneShowDashboardDistance
         = settings->value( "chaperoneShowDashboardDistance", 0.5f ).toFloat();
     m_disableChaperone = settings->value( "disableChaperone", false ).toBool();
@@ -523,7 +521,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     }
 
     // Show Dashboard
-    if ( m_enableChaperoneShowDashboard )
+    if ( isChaperoneShowDashboardEnabled() )
     {
         float activationDistance = m_chaperoneShowDashboardDistance;
         if ( distance <= activationDistance && !m_chaperoneShowDashboardActive )
@@ -885,7 +883,8 @@ float ChaperoneTabController::chaperoneAlarmSoundDistance() const
 
 bool ChaperoneTabController::isChaperoneShowDashboardEnabled() const
 {
-    return m_enableChaperoneShowDashboard;
+    return settings::getSetting(
+        settings::BoolSetting::CHAPERONE_chaperoneShowDashboardEnabled );
 }
 
 float ChaperoneTabController::chaperoneShowDashboardDistance() const
@@ -1118,20 +1117,17 @@ void ChaperoneTabController::setChaperoneAlarmSoundDistance( float value,
 void ChaperoneTabController::setChaperoneShowDashboardEnabled( bool value,
                                                                bool notify )
 {
-    if ( m_enableChaperoneShowDashboard != value )
+    if ( isChaperoneShowDashboardEnabled() != value )
     {
-        m_enableChaperoneShowDashboard = value;
         m_chaperoneShowDashboardActive = false;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "chaperoneSettings" );
-        settings->setValue( "chaperoneShowDashboardEnabled",
-                            m_enableChaperoneShowDashboard );
-        settings->endGroup();
-        settings->sync();
+
+        settings::setSetting(
+            settings::BoolSetting::CHAPERONE_chaperoneShowDashboardEnabled,
+            value );
+
         if ( notify )
         {
-            emit chaperoneShowDashboardEnabledChanged(
-                m_enableChaperoneShowDashboard );
+            emit chaperoneShowDashboardEnabledChanged( value );
         }
     }
 }
@@ -1365,7 +1361,8 @@ void ChaperoneTabController::addChaperoneProfile(
         profile->chaperoneAlarmSoundAdjustVolume
             = isChaperoneAlarmSoundAdjustVolume();
         profile->chaperoneAlarmSoundDistance = m_chaperoneAlarmSoundDistance;
-        profile->enableChaperoneShowDashboard = m_enableChaperoneShowDashboard;
+        profile->enableChaperoneShowDashboard
+            = isChaperoneShowDashboardEnabled();
         profile->chaperoneShowDashboardDistance
             = m_chaperoneShowDashboardDistance;
     }
