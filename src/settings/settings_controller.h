@@ -292,6 +292,11 @@ private:
                           SettingCategory::Chaperone,
                           QtInfo{ "chaperoneAlarmSoundLooping" },
                           true },
+        BoolSettingValue{
+            BoolSetting::CHAPERONE_chaperoneAlarmSoundAdjustVolume,
+            SettingCategory::Chaperone,
+            QtInfo{ "chaperoneAlarmSoundAdjustVolume" },
+            false },
         BoolSettingValue{ BoolSetting::CHAPERONE_disableChaperone,
                           SettingCategory::Chaperone,
                           QtInfo{ "disableChaperone" },
