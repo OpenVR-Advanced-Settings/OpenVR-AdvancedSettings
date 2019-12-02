@@ -116,7 +116,7 @@ void VideoTabController::loadColorOverlay()
     }
 
     overlayError = vr::VROverlay()->SetOverlayAlpha( m_colorOverlayHandle,
-                                                     m_colorOverlayOpacity );
+                                                     colorOverlayOpacity() );
     if ( overlayError != vr::VROverlayError_None )
     {
         LOG( ERROR ) << "Could not set alpha: "
@@ -226,8 +226,6 @@ void VideoTabController::reloadVideoConfig()
         settings->value( "brightnessEnabled", false ).toBool(), true );
     setColorOverlayEnabled(
         settings->value( "colorOverlayEnabled", false ).toBool(), true );
-    setColorOverlayOpacity(
-        settings->value( "colorOverlayOpacity", 0.0f ).toFloat(), true );
     setIsOverlayMethodActive(
         settings->value( "isOverlayMethodActive", false ).toBool(), true );
     setColorRed( settings->value( "colorRedNew", 1.0f ).toFloat() );
@@ -246,7 +244,6 @@ void VideoTabController::saveVideoConfig()
     settings->beginGroup( getSettingsName() );
     settings->setValue( "brightnessEnabled", brightnessEnabled() );
     settings->setValue( "colorOverlayEnabled", colorOverlayEnabled() );
-    settings->setValue( "colorOverlayOpacity", colorOverlayOpacity() );
     settings->setValue( "colorRedNew", colorRed() );
     settings->setValue( "colorGreenNew", colorGreen() );
     settings->setValue( "colorBlueNew", colorBlue() );
@@ -380,7 +377,8 @@ bool VideoTabController::colorOverlayEnabled() const
 
 float VideoTabController::colorOverlayOpacity() const
 {
-    return m_colorOverlayOpacity;
+    return static_cast<float>( settings::getSetting(
+        settings::DoubleSetting::VIDEO_colorOverlayOpacity ) );
 }
 
 float VideoTabController::colorRed() const
@@ -463,29 +461,29 @@ void VideoTabController::setColorOverlayEnabled( bool value,
 
 void VideoTabController::setColorOverlayOpacity( float value, bool notify )
 {
-    if ( fabs( static_cast<double>( value - m_colorOverlayOpacity ) ) > .005 )
+    if ( fabs( static_cast<double>( value - colorOverlayOpacity() ) ) > .005 )
     {
-        vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
-            m_colorOverlayHandle, m_colorOverlayOpacity );
         if ( value > .85f )
         {
-            m_colorOverlayOpacity = 0.85f;
-        }
-        else
-        {
-            m_colorOverlayOpacity = value;
+            value = 0.85f;
         }
 
+        settings::setSetting(
+            settings::DoubleSetting::VIDEO_colorOverlayOpacity,
+            static_cast<double>( value ) );
+
+        vr::VROverlayError overlayError
+            = vr::VROverlay()->SetOverlayAlpha( m_colorOverlayHandle, value );
         if ( overlayError != vr::VROverlayError_None )
         {
             LOG( ERROR ) << "Could not set alpha for color overlay: "
                          << vr::VROverlay()->GetOverlayErrorNameFromEnum(
                                 overlayError );
         }
-        saveVideoConfig();
+
         if ( notify )
         {
-            emit colorOverlayOpacityChanged( m_colorOverlayOpacity );
+            emit colorOverlayOpacityChanged( value );
         }
     }
 }
@@ -876,7 +874,7 @@ void VideoTabController::addVideoProfile( const QString name )
     profile->colorBlue = m_colorBlue;
     profile->brightnessToggle = m_brightnessEnabled;
     profile->brightnessValue = brightnessValue();
-    profile->opacity = m_colorOverlayOpacity;
+    profile->opacity = colorOverlayOpacity();
     profile->overlayMethodState = m_isOverlayMethodActive;
 
     saveVideoProfiles();
