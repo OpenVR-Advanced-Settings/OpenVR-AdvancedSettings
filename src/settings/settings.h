@@ -65,9 +65,6 @@ enum class DoubleSetting
     VIDEO_colorRed,
     VIDEO_colorGreen,
     VIDEO_colorBlue,
-    VIDEO_colorRedNew,
-    VIDEO_colorGreenNew,
-    VIDEO_colorBlueNew,
 
     CHAPERONE_switchToBeginnerDistance,
     CHAPERONE_hapticFeedbackDistance,
