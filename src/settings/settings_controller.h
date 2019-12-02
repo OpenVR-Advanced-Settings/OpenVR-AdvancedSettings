@@ -374,7 +374,7 @@ private:
                             0.5 },
         DoubleSettingValue{ DoubleSetting::CHAPERONE_alarmSoundDistance,
                             SettingCategory::Video,
-                            QtInfo{ "alarmSoundDistance" },
+                            QtInfo{ "chaperoneAlarmSoundDistance" },
                             0.5 },
         DoubleSettingValue{ DoubleSetting::CHAPERONE_showDashboardDistance,
                             SettingCategory::Video,

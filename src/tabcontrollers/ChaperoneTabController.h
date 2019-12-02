@@ -142,7 +142,6 @@ private:
     bool m_chaperoneHapticFeedbackActive = false;
     std::thread m_chaperoneHapticFeedbackThread;
 
-    float m_chaperoneAlarmSoundDistance = 0.5f;
     bool m_chaperoneAlarmSoundActive = false;
 
     float m_chaperoneShowDashboardDistance = 0.5f;
