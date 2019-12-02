@@ -82,7 +82,6 @@ private:
 
     vr::VROverlayHandle_t m_colorOverlayHandle = vr::k_ulOverlayHandleInvalid;
 
-    float m_colorBlue = 0.0f;
     bool m_overlayInit = false;
     bool m_isOverlayMethodActive = false;
 
