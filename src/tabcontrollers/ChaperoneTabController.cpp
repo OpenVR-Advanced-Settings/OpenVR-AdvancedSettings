@@ -16,8 +16,6 @@ void ChaperoneTabController::initStage1()
               .toFloat();
     m_chaperoneHapticFeedbackDistance
         = settings->value( "chaperoneHapticFeedbackDistance", 0.5f ).toFloat();
-    m_chaperoneAlarmSoundLooping
-        = settings->value( "chaperoneAlarmSoundLooping", true ).toBool();
     m_chaperoneAlarmSoundAdjustVolume
         = settings->value( "chaperoneAlarmSoundAdjustVolume", false ).toBool();
     m_chaperoneAlarmSoundDistance
@@ -500,10 +498,10 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
         {
             if ( !m_chaperoneAlarmSoundActive )
             {
-                parent->playAlarm01Sound( m_chaperoneAlarmSoundLooping );
+                parent->playAlarm01Sound( isChaperoneAlarmSoundLooping() );
                 m_chaperoneAlarmSoundActive = true;
             }
-            if ( m_chaperoneAlarmSoundLooping
+            if ( isChaperoneAlarmSoundLooping()
                  && m_chaperoneAlarmSoundAdjustVolume )
             {
                 float vol = 1.1f - distance / activationDistance;
@@ -867,7 +865,8 @@ bool ChaperoneTabController::isChaperoneAlarmSoundEnabled() const
 
 bool ChaperoneTabController::isChaperoneAlarmSoundLooping() const
 {
-    return m_chaperoneAlarmSoundLooping;
+    return settings::getSetting(
+        settings::BoolSetting::CHAPERONE_chaperoneAlarmSoundLooping );
 }
 
 bool ChaperoneTabController::isChaperoneAlarmSoundAdjustVolume() const
@@ -1055,30 +1054,27 @@ void ChaperoneTabController::setChaperoneAlarmSoundEnabled( bool value,
 void ChaperoneTabController::setChaperoneAlarmSoundLooping( bool value,
                                                             bool notify )
 {
-    if ( m_chaperoneAlarmSoundLooping != value )
+    if ( isChaperoneAlarmSoundLooping() != value )
     {
-        m_chaperoneAlarmSoundLooping = value;
         if ( isChaperoneAlarmSoundEnabled() && m_chaperoneAlarmSoundActive )
         {
-            if ( m_chaperoneAlarmSoundLooping )
+            if ( isChaperoneAlarmSoundLooping() )
             {
-                parent->playAlarm01Sound( m_chaperoneAlarmSoundLooping );
+                parent->playAlarm01Sound( isChaperoneAlarmSoundLooping() );
             }
             else
             {
                 parent->cancelAlarm01Sound();
             }
         }
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "chaperoneSettings" );
-        settings->setValue( "chaperoneAlarmSoundLooping",
-                            m_chaperoneAlarmSoundLooping );
-        settings->endGroup();
-        settings->sync();
+
+        settings::setSetting(
+            settings::BoolSetting::CHAPERONE_chaperoneAlarmSoundLooping,
+            value );
+
         if ( notify )
         {
-            emit chaperoneAlarmSoundLoopingChanged(
-                m_chaperoneAlarmSoundLooping );
+            emit chaperoneAlarmSoundLoopingChanged( value );
         }
     }
 }
@@ -1370,7 +1366,7 @@ void ChaperoneTabController::addChaperoneProfile(
         profile->chaperoneHapticFeedbackDistance
             = m_chaperoneHapticFeedbackDistance;
         profile->enableChaperoneAlarmSound = isChaperoneAlarmSoundEnabled();
-        profile->chaperoneAlarmSoundLooping = m_chaperoneAlarmSoundLooping;
+        profile->chaperoneAlarmSoundLooping = isChaperoneAlarmSoundLooping();
         profile->chaperoneAlarmSoundAdjustVolume
             = m_chaperoneAlarmSoundAdjustVolume;
         profile->chaperoneAlarmSoundDistance = m_chaperoneAlarmSoundDistance;
