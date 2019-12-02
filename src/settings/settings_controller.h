@@ -366,7 +366,7 @@ private:
 
         DoubleSettingValue{ DoubleSetting::CHAPERONE_switchToBeginnerDistance,
                             SettingCategory::Video,
-                            QtInfo{ "switchToBeginnerDistance" },
+                            QtInfo{ "chaperoneSwitchToBeginnerDistance" },
                             0.5 },
         DoubleSettingValue{ DoubleSetting::CHAPERONE_hapticFeedbackDistance,
                             SettingCategory::Video,
