@@ -11,8 +11,6 @@ void ChaperoneTabController::initStage1()
 {
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "chaperoneSettings" );
-    m_chaperoneAlarmSoundDistance
-        = settings->value( "chaperoneAlarmSoundDistance", 0.5f ).toFloat();
     m_chaperoneShowDashboardDistance
         = settings->value( "chaperoneShowDashboardDistance", 0.5f ).toFloat();
     m_fadeDistanceRemembered
@@ -482,7 +480,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     if ( isChaperoneAlarmSoundEnabled() )
     {
         // LOG(WARNING) << "In alarm";
-        float activationDistance = m_chaperoneAlarmSoundDistance;
+        float activationDistance = chaperoneAlarmSoundDistance();
 
         if ( distance <= activationDistance && proxSensorOverrideState )
         {
@@ -875,7 +873,8 @@ bool ChaperoneTabController::disableChaperone() const
 
 float ChaperoneTabController::chaperoneAlarmSoundDistance() const
 {
-    return m_chaperoneAlarmSoundDistance;
+    return static_cast<float>( settings::getSetting(
+        settings::DoubleSetting::CHAPERONE_alarmSoundDistance ) );
 }
 
 bool ChaperoneTabController::isChaperoneShowDashboardEnabled() const
@@ -1085,20 +1084,16 @@ void ChaperoneTabController::setChaperoneAlarmSoundAdjustVolume( bool value,
 void ChaperoneTabController::setChaperoneAlarmSoundDistance( float value,
                                                              bool notify )
 {
-    if ( fabs( static_cast<double>( m_chaperoneAlarmSoundDistance - value ) )
+    if ( fabs( static_cast<double>( chaperoneAlarmSoundDistance() - value ) )
          > 0.005 )
     {
-        m_chaperoneAlarmSoundDistance = value;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "chaperoneSettings" );
-        settings->setValue( "chaperoneAlarmSoundDistance",
-                            m_chaperoneAlarmSoundDistance );
-        settings->endGroup();
-        settings->sync();
+        settings::setSetting(
+            settings::DoubleSetting::CHAPERONE_alarmSoundDistance,
+            static_cast<double>( value ) );
+
         if ( notify )
         {
-            emit chaperoneAlarmSoundDistanceChanged(
-                m_chaperoneAlarmSoundDistance );
+            emit chaperoneAlarmSoundDistanceChanged( value );
         }
     }
 }
@@ -1351,7 +1346,7 @@ void ChaperoneTabController::addChaperoneProfile(
         profile->chaperoneAlarmSoundLooping = isChaperoneAlarmSoundLooping();
         profile->chaperoneAlarmSoundAdjustVolume
             = isChaperoneAlarmSoundAdjustVolume();
-        profile->chaperoneAlarmSoundDistance = m_chaperoneAlarmSoundDistance;
+        profile->chaperoneAlarmSoundDistance = chaperoneAlarmSoundDistance();
         profile->enableChaperoneShowDashboard
             = isChaperoneShowDashboardEnabled();
         profile->chaperoneShowDashboardDistance
