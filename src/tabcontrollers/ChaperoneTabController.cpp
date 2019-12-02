@@ -20,12 +20,11 @@ void ChaperoneTabController::initStage1()
         = settings->value( "chaperoneAlarmSoundDistance", 0.5f ).toFloat();
     m_chaperoneShowDashboardDistance
         = settings->value( "chaperoneShowDashboardDistance", 0.5f ).toFloat();
-    m_disableChaperone = settings->value( "disableChaperone", false ).toBool();
     m_fadeDistanceRemembered
         = settings->value( "fadeDistanceRemembered", 0.5f ).toFloat();
     settings->endGroup();
 
-    if ( m_disableChaperone )
+    if ( disableChaperone() )
     {
         setFadeDistance( 0.0f, true );
     }
@@ -873,7 +872,8 @@ bool ChaperoneTabController::isChaperoneAlarmSoundAdjustVolume() const
 
 bool ChaperoneTabController::disableChaperone() const
 {
-    return m_disableChaperone;
+    return settings::getSetting(
+        settings::BoolSetting::CHAPERONE_disableChaperone );
 }
 
 float ChaperoneTabController::chaperoneAlarmSoundDistance() const
@@ -1155,10 +1155,9 @@ void ChaperoneTabController::setChaperoneShowDashboardDistance( float value,
 
 void ChaperoneTabController::setDisableChaperone( bool value, bool notify )
 {
-    if ( m_disableChaperone != value )
+    if ( disableChaperone() != value )
     {
-        m_disableChaperone = value;
-        if ( m_disableChaperone )
+        if ( value )
         {
             m_fadeDistanceRemembered = m_fadeDistance;
             setFadeDistance( 0.0f, true );
@@ -1167,16 +1166,19 @@ void ChaperoneTabController::setDisableChaperone( bool value, bool notify )
         {
             setFadeDistance( m_fadeDistanceRemembered, true );
         }
+
         auto settings = OverlayController::appSettings();
         settings->beginGroup( "chaperoneSettings" );
         settings->setValue( "fadeDistanceRemembered",
                             m_fadeDistanceRemembered );
-        settings->setValue( "disableChaperone", m_disableChaperone );
         settings->endGroup();
         settings->sync();
+        settings::setSetting( settings::BoolSetting::CHAPERONE_disableChaperone,
+                              value );
+
         if ( notify )
         {
-            emit disableChaperoneChanged( m_disableChaperone );
+            emit disableChaperoneChanged( value );
         }
     }
 }
