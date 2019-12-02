@@ -1,7 +1,7 @@
 #pragma once
 #include <type_traits>
 #include "setting_value.h"
-#include "settings.h"
+#include "../settings.h"
 
 namespace settings
 {
