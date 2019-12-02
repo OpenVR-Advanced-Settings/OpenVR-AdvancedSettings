@@ -14,8 +14,6 @@ void ChaperoneTabController::initStage1()
     m_chaperoneSwitchToBeginnerDistance
         = settings->value( "chaperoneSwitchToBeginnerDistance", 0.5f )
               .toFloat();
-    m_enableChaperoneHapticFeedback
-        = settings->value( "chaperoneHapticFeedbackEnabled", false ).toBool();
     m_chaperoneHapticFeedbackDistance
         = settings->value( "chaperoneHapticFeedbackDistance", 0.5f ).toFloat();
     m_enableChaperoneAlarmSound
@@ -429,7 +427,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
 
     // Haptic Feedback
 
-    if ( m_enableChaperoneHapticFeedback )
+    if ( isChaperoneHapticFeedbackEnabled() )
     {
         float activationDistance = m_chaperoneHapticFeedbackDistance;
 
@@ -854,7 +852,8 @@ float ChaperoneTabController::chaperoneSwitchToBeginnerDistance() const
 
 bool ChaperoneTabController::isChaperoneHapticFeedbackEnabled() const
 {
-    return m_enableChaperoneHapticFeedback;
+    return settings::getSetting(
+        settings::BoolSetting::CHAPERONE_chaperoneHapticFeedbackEnabled );
 }
 
 float ChaperoneTabController::chaperoneHapticFeedbackDistance() const
@@ -991,24 +990,21 @@ void ChaperoneTabController::setChaperoneSwitchToBeginnerDistance( float value,
 void ChaperoneTabController::setChaperoneHapticFeedbackEnabled( bool value,
                                                                 bool notify )
 {
-    if ( m_enableChaperoneHapticFeedback != value )
+    if ( isChaperoneHapticFeedbackEnabled() != value )
     {
         m_chaperoneHapticFeedbackActive = false;
         if ( m_chaperoneHapticFeedbackThread.joinable() )
         {
             m_chaperoneHapticFeedbackThread.join();
         }
-        m_enableChaperoneHapticFeedback = value;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "chaperoneSettings" );
-        settings->setValue( "chaperoneHapticFeedbackEnabled",
-                            m_enableChaperoneHapticFeedback );
-        settings->endGroup();
-        settings->sync();
+
+        settings::setSetting(
+            settings::BoolSetting::CHAPERONE_chaperoneHapticFeedbackEnabled,
+            value );
+
         if ( notify )
         {
-            emit chaperoneHapticFeedbackEnabledChanged(
-                m_enableChaperoneHapticFeedback );
+            emit chaperoneHapticFeedbackEnabledChanged( value );
         }
     }
 }
@@ -1374,7 +1370,7 @@ void ChaperoneTabController::addChaperoneProfile(
         profile->chaperoneSwitchToBeginnerDistance
             = m_chaperoneSwitchToBeginnerDistance;
         profile->enableChaperoneHapticFeedback
-            = m_enableChaperoneHapticFeedback;
+            = isChaperoneHapticFeedbackEnabled();
         profile->chaperoneHapticFeedbackDistance
             = m_chaperoneHapticFeedbackDistance;
         profile->enableChaperoneAlarmSound = m_enableChaperoneAlarmSound;

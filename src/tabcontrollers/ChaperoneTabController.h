@@ -141,7 +141,6 @@ private:
     bool m_chaperoneSwitchToBeginnerActive = false;
     int32_t m_chaperoneSwitchToBeginnerLastStyle = 0;
 
-    bool m_enableChaperoneHapticFeedback = true;
     float m_chaperoneHapticFeedbackDistance = 0.5f;
     bool m_chaperoneHapticFeedbackActive = false;
     std::thread m_chaperoneHapticFeedbackThread;
