@@ -134,7 +134,6 @@ private:
     bool m_centerMarker = false;
     bool m_playSpaceMarker = false;
     bool m_forceBounds = false;
-    float m_fadeDistanceRemembered = 0.0f;
 
     bool m_chaperoneSwitchToBeginnerActive = false;
     int32_t m_chaperoneSwitchToBeginnerLastStyle = 0;
