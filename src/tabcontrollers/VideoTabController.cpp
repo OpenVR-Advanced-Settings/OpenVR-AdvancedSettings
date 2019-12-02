@@ -224,8 +224,7 @@ void VideoTabController::reloadVideoConfig()
     settings->beginGroup( getSettingsName() );
     setBrightnessEnabled( brightnessEnabled(), true );
     setColorOverlayEnabled( colorOverlayEnabled(), true );
-    setIsOverlayMethodActive(
-        settings->value( "isOverlayMethodActive", false ).toBool(), true );
+    setIsOverlayMethodActive( isOverlayMethodActive(), true );
     setColorRed( colorRed() );
     setColorGreen( colorGreen() );
     setColorBlue( colorBlue() );
@@ -233,16 +232,6 @@ void VideoTabController::reloadVideoConfig()
     settings->endGroup();
     setBrightnessOpacityValue();
     loadColorOverlay();
-    settings->sync();
-}
-
-void VideoTabController::saveVideoConfig()
-{
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( getSettingsName() );
-    settings->setValue( "isOverlayMethodActive", isOverlayMethodActive() );
-
-    settings->endGroup();
     settings->sync();
 }
 
@@ -328,8 +317,6 @@ void VideoTabController::setBrightnessValue( float percvalue, bool notify )
                              << vr::VROverlay()->GetOverlayErrorNameFromEnum(
                                     overlayError );
             }
-            // only saves if opacity Value is valid. [1-0]
-            saveVideoConfig();
         }
         else
         {
@@ -398,7 +385,8 @@ float VideoTabController::colorBlue() const
 
 bool VideoTabController::isOverlayMethodActive() const
 {
-    return m_isOverlayMethodActive;
+    return settings::getSetting(
+        settings::BoolSetting::VIDEO_isOverlayMethodActive );
 }
 
 // setters
@@ -406,7 +394,9 @@ bool VideoTabController::isOverlayMethodActive() const
 void VideoTabController::setIsOverlayMethodActive( bool value, bool notify )
 {
     resetGain();
-    m_isOverlayMethodActive = value;
+    settings::setSetting( settings::BoolSetting::VIDEO_isOverlayMethodActive,
+                          value );
+
     if ( value )
     {
         setColorOverlayEnabled( colorOverlayEnabled(), true, false );
@@ -417,7 +407,6 @@ void VideoTabController::setIsOverlayMethodActive( bool value, bool notify )
     }
     setColor( colorRed(), colorGreen(), colorBlue(), true, true );
 
-    saveVideoConfig();
     if ( notify )
     {
         emit isOverlayMethodActiveChanged( value );
@@ -879,7 +868,7 @@ void VideoTabController::addVideoProfile( const QString name )
     profile->brightnessToggle = brightnessEnabled();
     profile->brightnessValue = brightnessValue();
     profile->opacity = colorOverlayOpacity();
-    profile->overlayMethodState = m_isOverlayMethodActive;
+    profile->overlayMethodState = isOverlayMethodActive();
 
     saveVideoProfiles();
     OverlayController::appSettings()->sync();

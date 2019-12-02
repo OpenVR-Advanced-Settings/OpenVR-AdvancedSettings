@@ -83,7 +83,6 @@ private:
     vr::VROverlayHandle_t m_colorOverlayHandle = vr::k_ulOverlayHandleInvalid;
 
     bool m_overlayInit = false;
-    bool m_isOverlayMethodActive = false;
 
     float m_superSampling = 1.0;
     bool m_allowSupersampleOverride = false;
@@ -104,7 +103,6 @@ private:
     void loadColorOverlay();
 
     void reloadVideoConfig();
-    void saveVideoConfig();
     void setBrightnessOpacityValue();
 
     void initBrightnessOverlay();
