@@ -1,6 +1,7 @@
 #include "VideoTabController.h"
 #include <QQuickWindow>
 #include <QApplication>
+#include "../settings/settings.h"
 #include "../overlaycontroller.h"
 #include <cmath>
 
@@ -223,8 +224,6 @@ void VideoTabController::reloadVideoConfig()
     settings->beginGroup( getSettingsName() );
     setBrightnessEnabled(
         settings->value( "brightnessEnabled", false ).toBool(), true );
-    m_brightnessOpacityValue
-        = settings->value( "brightnessOpacityValue", 0.0f ).toFloat();
     m_brightnessValue = settings->value( "brightnessValue", 1.0f ).toFloat();
     setColorOverlayEnabled(
         settings->value( "colorOverlayEnabled", false ).toBool(), true );
@@ -247,7 +246,6 @@ void VideoTabController::saveVideoConfig()
     auto settings = OverlayController::appSettings();
     settings->beginGroup( getSettingsName() );
     settings->setValue( "brightnessEnabled", brightnessEnabled() );
-    settings->setValue( "brightnessOpacityValue", brightnessOpacityValue() );
     settings->setValue( "brightnessValue", brightnessValue() );
     settings->setValue( "colorOverlayEnabled", colorOverlayEnabled() );
     settings->setValue( "colorOverlayOpacity", colorOverlayOpacity() );
@@ -262,7 +260,8 @@ void VideoTabController::saveVideoConfig()
 
 float VideoTabController::brightnessOpacityValue() const
 {
-    return m_brightnessOpacityValue;
+    return static_cast<float>( settings::getSetting(
+        settings::DoubleSetting::VIDEO_brightnessOpacityValue ) );
 }
 
 float VideoTabController::brightnessValue() const
@@ -317,13 +316,16 @@ void VideoTabController::setBrightnessValue( float percvalue, bool notify )
     float realvalue = static_cast<float>(
         std::pow( static_cast<double>( 1.0f - percvalue ), 1 / 3. ) );
 
-    if ( fabs( static_cast<double>( realvalue - m_brightnessOpacityValue ) )
+    if ( fabs( static_cast<double>( realvalue - brightnessOpacityValue() ) )
          > .005 )
     {
         m_brightnessValue = percvalue;
         if ( realvalue <= 1.0f && realvalue >= 0.0f )
         {
-            m_brightnessOpacityValue = realvalue;
+            settings::setSetting(
+                settings::DoubleSetting::VIDEO_brightnessOpacityValue,
+                static_cast<double>( realvalue ) );
+
             vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
                 m_brightnessOverlayHandle, realvalue );
             if ( overlayError != vr::VROverlayError_None )
@@ -338,7 +340,8 @@ void VideoTabController::setBrightnessValue( float percvalue, bool notify )
         else
         {
             LOG( WARNING ) << "alpha value is invalid setting to 1.0";
-            m_brightnessOpacityValue = 0.0f;
+            settings::setSetting(
+                settings::DoubleSetting::VIDEO_brightnessOpacityValue, 0.0 );
         }
 
         if ( notify )
@@ -351,7 +354,7 @@ void VideoTabController::setBrightnessValue( float percvalue, bool notify )
 void VideoTabController::setBrightnessOpacityValue()
 {
     vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
-        m_brightnessOverlayHandle, m_brightnessOpacityValue );
+        m_brightnessOverlayHandle, brightnessOpacityValue() );
     if ( overlayError != vr::VROverlayError_None )
     {
         LOG( ERROR ) << "Could not set alpha: "

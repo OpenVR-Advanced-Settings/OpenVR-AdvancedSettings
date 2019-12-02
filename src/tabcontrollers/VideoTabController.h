@@ -82,7 +82,6 @@ private:
 
     vr::VROverlayHandle_t m_colorOverlayHandle = vr::k_ulOverlayHandleInvalid;
 
-    float m_brightnessOpacityValue = 0.0f;
     float m_brightnessValue = 1.0f;
     bool m_brightnessEnabled = false;
 
