@@ -137,7 +137,6 @@ private:
     bool m_disableChaperone = false;
     float m_fadeDistanceRemembered = 0.0f;
 
-    bool m_enableChaperoneSwitchToBeginner = false;
     float m_chaperoneSwitchToBeginnerDistance = 0.5f;
     bool m_chaperoneSwitchToBeginnerActive = false;
     int32_t m_chaperoneSwitchToBeginnerLastStyle = 0;
