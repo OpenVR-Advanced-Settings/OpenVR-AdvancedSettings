@@ -11,9 +11,6 @@ void ChaperoneTabController::initStage1()
 {
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "chaperoneSettings" );
-    m_chaperoneSwitchToBeginnerDistance
-        = settings->value( "chaperoneSwitchToBeginnerDistance", 0.5f )
-              .toFloat();
     m_chaperoneHapticFeedbackDistance
         = settings->value( "chaperoneHapticFeedbackDistance", 0.5f ).toFloat();
     m_chaperoneAlarmSoundDistance
@@ -351,7 +348,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     // Switch to Beginner Mode
     if ( isChaperoneSwitchToBeginnerEnabled() )
     {
-        float activationDistance = m_chaperoneSwitchToBeginnerDistance;
+        float activationDistance = chaperoneSwitchToBeginnerDistance();
 
         if ( distance <= activationDistance && m_isHMDActive
              && !m_chaperoneSwitchToBeginnerActive )
@@ -838,7 +835,8 @@ bool ChaperoneTabController::isChaperoneSwitchToBeginnerEnabled() const
 
 float ChaperoneTabController::chaperoneSwitchToBeginnerDistance() const
 {
-    return m_chaperoneSwitchToBeginnerDistance;
+    return static_cast<float>( settings::getSetting(
+        settings::DoubleSetting::CHAPERONE_switchToBeginnerDistance ) );
 }
 
 bool ChaperoneTabController::isChaperoneHapticFeedbackEnabled() const
@@ -964,21 +962,17 @@ void ChaperoneTabController::setChaperoneSwitchToBeginnerEnabled( bool value,
 void ChaperoneTabController::setChaperoneSwitchToBeginnerDistance( float value,
                                                                    bool notify )
 {
-    if ( fabs( static_cast<double>( m_chaperoneSwitchToBeginnerDistance
+    if ( fabs( static_cast<double>( chaperoneSwitchToBeginnerDistance()
                                     - value ) )
          > 0.005 )
     {
-        m_chaperoneSwitchToBeginnerDistance = value;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "chaperoneSettings" );
-        settings->setValue( "chaperoneSwitchToBeginnerDistance",
-                            m_chaperoneSwitchToBeginnerDistance );
-        settings->endGroup();
-        settings->sync();
+        settings::setSetting(
+            settings::DoubleSetting::CHAPERONE_switchToBeginnerDistance,
+            static_cast<double>( value ) );
+
         if ( notify )
         {
-            emit chaperoneSwitchToBeginnerDistanceChanged(
-                m_chaperoneSwitchToBeginnerDistance );
+            emit chaperoneSwitchToBeginnerDistanceChanged( value );
         }
     }
 }
@@ -1353,7 +1347,7 @@ void ChaperoneTabController::addChaperoneProfile(
         profile->enableChaperoneSwitchToBeginner
             = isChaperoneSwitchToBeginnerEnabled();
         profile->chaperoneSwitchToBeginnerDistance
-            = m_chaperoneSwitchToBeginnerDistance;
+            = chaperoneSwitchToBeginnerDistance();
         profile->enableChaperoneHapticFeedback
             = isChaperoneHapticFeedbackEnabled();
         profile->chaperoneHapticFeedbackDistance
