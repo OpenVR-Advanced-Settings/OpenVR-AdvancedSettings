@@ -275,6 +275,11 @@ private:
                           QtInfo{ "colorOverlayEnabled" },
                           false },
 
+        BoolSettingValue{
+            BoolSetting::CHAPERONE_chaperoneSwitchToBeginnerEnabled,
+            SettingCategory::Chaperone,
+            QtInfo{ "chaperoneSwitchToBeginnerEnabled" },
+            false },
         BoolSettingValue{ BoolSetting::CHAPERONE_disableChaperone,
                           SettingCategory::Chaperone,
                           QtInfo{ "disableChaperone" },

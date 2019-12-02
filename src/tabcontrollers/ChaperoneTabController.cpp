@@ -1,6 +1,7 @@
 #include "ChaperoneTabController.h"
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
+#include "../settings/settings.h"
 #include <cmath>
 
 // application namespace
@@ -10,8 +11,6 @@ void ChaperoneTabController::initStage1()
 {
     auto settings = OverlayController::appSettings();
     settings->beginGroup( "chaperoneSettings" );
-    m_enableChaperoneSwitchToBeginner
-        = settings->value( "chaperoneSwitchToBeginnerEnabled", false ).toBool();
     m_chaperoneSwitchToBeginnerDistance
         = settings->value( "chaperoneSwitchToBeginnerDistance", 0.5f )
               .toFloat();
@@ -361,7 +360,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                  : ( proxSensorOverrideState = m_isHMDActive );
 
     // Switch to Beginner Mode
-    if ( m_enableChaperoneSwitchToBeginner )
+    if ( isChaperoneSwitchToBeginnerEnabled() )
     {
         float activationDistance = m_chaperoneSwitchToBeginnerDistance;
 
@@ -844,7 +843,8 @@ bool ChaperoneTabController::forceBounds() const
 
 bool ChaperoneTabController::isChaperoneSwitchToBeginnerEnabled() const
 {
-    return m_enableChaperoneSwitchToBeginner;
+    return settings::getSetting(
+        settings::BoolSetting::CHAPERONE_chaperoneSwitchToBeginnerEnabled );
 }
 
 float ChaperoneTabController::chaperoneSwitchToBeginnerDistance() const
@@ -931,7 +931,7 @@ void ChaperoneTabController::setForceBounds( bool value, bool notify )
 void ChaperoneTabController::setChaperoneSwitchToBeginnerEnabled( bool value,
                                                                   bool notify )
 {
-    if ( m_enableChaperoneSwitchToBeginner != value )
+    if ( isChaperoneSwitchToBeginnerEnabled() != value )
     {
         if ( !value && m_chaperoneSwitchToBeginnerActive )
         {
@@ -953,18 +953,15 @@ void ChaperoneTabController::setChaperoneSwitchToBeginnerEnabled( bool value,
                 vr::VRSettings()->Sync( true );
             }
         }
-        m_enableChaperoneSwitchToBeginner = value;
+
         m_chaperoneSwitchToBeginnerActive = false;
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "chaperoneSettings" );
-        settings->setValue( "chaperoneSwitchToBeginnerEnabled",
-                            m_enableChaperoneSwitchToBeginner );
-        settings->endGroup();
-        settings->sync();
+
+        settings::setSetting(
+            settings::BoolSetting::CHAPERONE_chaperoneSwitchToBeginnerEnabled,
+            value );
         if ( notify )
         {
-            emit chaperoneSwitchToBeginnerEnabledChanged(
-                m_enableChaperoneSwitchToBeginner );
+            emit chaperoneSwitchToBeginnerEnabledChanged( value );
         }
     }
 }
@@ -1373,7 +1370,7 @@ void ChaperoneTabController::addChaperoneProfile(
     if ( includesProximityWarningSettings )
     {
         profile->enableChaperoneSwitchToBeginner
-            = m_enableChaperoneSwitchToBeginner;
+            = isChaperoneSwitchToBeginnerEnabled();
         profile->chaperoneSwitchToBeginnerDistance
             = m_chaperoneSwitchToBeginnerDistance;
         profile->enableChaperoneHapticFeedback
@@ -1736,7 +1733,7 @@ void ChaperoneTabController::setProxState( bool value )
 
 void ChaperoneTabController::shutdown()
 {
-    if ( m_enableChaperoneSwitchToBeginner
+    if ( isChaperoneSwitchToBeginnerEnabled()
          && m_chaperoneSwitchToBeginnerActive )
     {
         vr::EVRSettingsError vrSettingsError;
