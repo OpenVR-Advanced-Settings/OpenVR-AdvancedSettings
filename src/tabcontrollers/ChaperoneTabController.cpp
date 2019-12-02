@@ -9,12 +9,6 @@ namespace advsettings
 {
 void ChaperoneTabController::initStage1()
 {
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "chaperoneSettings" );
-    m_fadeDistanceRemembered
-        = settings->value( "fadeDistanceRemembered", 0.5f ).toFloat();
-    settings->endGroup();
-
     if ( disableChaperone() )
     {
         setFadeDistance( 0.0f, true );
@@ -1138,20 +1132,20 @@ void ChaperoneTabController::setDisableChaperone( bool value, bool notify )
     {
         if ( value )
         {
-            m_fadeDistanceRemembered = m_fadeDistance;
+            settings::setSetting(
+                settings::DoubleSetting::CHAPERONE_fadeDistanceRemembered,
+                static_cast<double>( value ) );
+
             setFadeDistance( 0.0f, true );
         }
         else
         {
-            setFadeDistance( m_fadeDistanceRemembered, true );
+            setFadeDistance( static_cast<float>( settings::getSetting(
+                                 settings::DoubleSetting::
+                                     CHAPERONE_fadeDistanceRemembered ) ),
+                             true );
         }
 
-        auto settings = OverlayController::appSettings();
-        settings->beginGroup( "chaperoneSettings" );
-        settings->setValue( "fadeDistanceRemembered",
-                            m_fadeDistanceRemembered );
-        settings->endGroup();
-        settings->sync();
         settings::setSetting( settings::BoolSetting::CHAPERONE_disableChaperone,
                               value );
 
