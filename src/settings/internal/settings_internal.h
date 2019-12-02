@@ -2,7 +2,7 @@
 #include <QSettings>
 #include <string>
 #include <type_traits>
-#include "../overlaycontroller.h"
+#include "../../overlaycontroller.h"
 
 namespace settings
 {

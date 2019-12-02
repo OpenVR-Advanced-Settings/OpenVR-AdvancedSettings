@@ -52,10 +52,10 @@ HEADERS += src/overlaycontroller.h \
     src/keyboard_input/input_parser.h \
     src/keyboard_input/input_sender.h \
     src/settings/settings.h \
-    src/settings/setting_value.h \
-    src/settings/settings_internal.h \
-    src/settings/settings_controller.h \
-    src/settings/specific_setting_value.h
+    src/settings/internal/setting_value.h \
+    src/settings/internal/settings_internal.h \
+    src/settings/internal/settings_controller.h \
+    src/settings/internal/specific_setting_value.h
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \

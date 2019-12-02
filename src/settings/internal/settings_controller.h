@@ -3,9 +3,9 @@
 #include <array>
 #include <vector>
 #include <easylogging++.h>
-#include "settings.h"
+#include "../settings.h"
 #include "setting_value.h"
-#include "../utils/setup.h"
+#include "../../utils/setup.h"
 #include "specific_setting_value.h"
 
 namespace settings

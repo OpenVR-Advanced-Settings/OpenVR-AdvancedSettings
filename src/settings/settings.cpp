@@ -2,7 +2,7 @@
 #include <QSettings>
 #include <easylogging++.h>
 #include "../overlaycontroller.h"
-#include "settings_controller.h"
+#include "internal/settings_controller.h"
 
 namespace settings
 {
