@@ -144,7 +144,6 @@ private:
 
     bool m_chaperoneAlarmSoundActive = false;
 
-    float m_chaperoneShowDashboardDistance = 0.5f;
     bool m_chaperoneShowDashboardActive = false;
 
     unsigned settingsUpdateCounter = 0;
