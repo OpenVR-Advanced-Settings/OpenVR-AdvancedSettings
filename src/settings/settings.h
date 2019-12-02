@@ -44,6 +44,7 @@ enum class BoolSetting
     CHAPERONE_chaperoneHapticFeedbackEnabled,
     CHAPERONE_chaperoneAlarmSoundEnabled,
     CHAPERONE_chaperoneAlarmSoundLooping,
+    CHAPERONE_chaperoneAlarmSoundAdjustVolume,
     CHAPERONE_disableChaperone,
     // LAST_ENUMERATOR must always be set to the last value
     LAST_ENUMERATOR = CHAPERONE_disableChaperone,
