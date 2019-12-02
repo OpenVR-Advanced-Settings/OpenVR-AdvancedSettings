@@ -341,7 +341,7 @@ private:
                             0.0 },
         DoubleSettingValue{ DoubleSetting::VIDEO_colorRed,
                             SettingCategory::Video,
-                            QtInfo{ "colorRed" },
+                            QtInfo{ "colorRedNew" },
                             1.0 },
         DoubleSettingValue{ DoubleSetting::VIDEO_colorGreen,
                             SettingCategory::Video,
