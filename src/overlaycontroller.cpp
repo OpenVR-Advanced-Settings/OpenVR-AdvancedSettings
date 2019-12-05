@@ -29,10 +29,27 @@ namespace advsettings
 {
 QSettings* OverlayController::_appSettings = nullptr;
 
+int verifyCustomTickRate( const int tickRate )
+{
+    if ( tickRate < 1 )
+    {
+        return 1;
+    }
+    else if ( tickRate > k_maxCustomTickRate )
+    {
+        return k_maxCustomTickRate;
+    }
+
+    return tickRate;
+}
+
 OverlayController::OverlayController( bool desktopMode,
                                       bool noSound,
                                       QQmlEngine& qmlEngine )
-    : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ), m_actions()
+    : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ),
+      m_verifiedCustomTickRateMs( verifyCustomTickRate( settings::getSetting(
+          settings::IntSetting::APPLICATION_customTickRateMs ) ) ),
+      m_actions()
 {
     // Arbitrarily chosen Max Length of Directory path, should be sufficient for
     // Any set-up
@@ -805,25 +822,9 @@ void OverlayController::setPreviousShutdownSafe( bool value )
         settings::BoolSetting::APPLICATION_previousShutdownSafe, value );
 }
 
-int verifyCustomTickRate( const int tickRate )
-{
-    if ( tickRate < 1 )
-    {
-        return 1;
-    }
-    else if ( tickRate > k_maxCustomTickRate )
-    {
-        return k_maxCustomTickRate;
-    }
-
-    return tickRate;
-}
-
 int OverlayController::customTickRateMs() const
 {
-    const auto tickRate = settings::getSetting(
-        settings::IntSetting::APPLICATION_customTickRateMs );
-    return verifyCustomTickRate( tickRate );
+    return m_verifiedCustomTickRateMs;
 }
 
 void OverlayController::setCustomTickRateMs( int value, bool notify )
@@ -832,6 +833,8 @@ void OverlayController::setCustomTickRateMs( int value, bool notify )
 
     settings::setSetting( settings::IntSetting::APPLICATION_customTickRateMs,
                           verifiedTickRate );
+    m_verifiedCustomTickRateMs = verifiedTickRate;
+
     if ( notify )
     {
         emit customTickRateMsChanged( verifiedTickRate );
