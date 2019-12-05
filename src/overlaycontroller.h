@@ -144,6 +144,7 @@ private:
     uint64_t m_lastFrame = 0;
     int m_vsyncTooLateCounter = 0;
     int m_customTickRateCounter = 0;
+    int m_verifiedCustomTickRateMs = 0;
 
     input::SteamIVRInput m_actions;
 
