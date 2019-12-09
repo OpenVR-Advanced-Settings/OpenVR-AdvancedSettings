@@ -10,6 +10,38 @@
 
 namespace settings
 {
+template <typename Value> std::string valueToString( Value value )
+{
+    using std::is_same;
+    if constexpr ( is_same<bool, Value>::value )
+    {
+        return value ? "true" : "false";
+    }
+    else if constexpr ( is_same<double, Value>::value
+                        || is_same<int, Value>::value )
+    {
+        return std::to_string( value );
+    }
+    if constexpr ( is_same<std::string, Value>::value )
+    {
+        return value;
+    }
+}
+
+template <int ArraySize, typename Value>
+[[nodiscard]] std::string
+    returnSettingsAndValues( std::array<Value, ArraySize> v )
+{
+    std::string s = "default";
+
+    for ( const auto& setting : v )
+    {
+        s += setting.qtInfo().settingName + ": '"
+             + valueToString( setting.value() ) + "' | ";
+    }
+
+    return s;
+}
 template <typename Enum, int ArraySize, typename Value>
 void verifySettings( std::array<Value, ArraySize> v ) noexcept
 {
@@ -40,8 +72,6 @@ void verifySettings( std::array<Value, ArraySize> v ) noexcept
             exit( ReturnErrorCode::SETTING_INCORRECT_INDEX );
         }
     }
-
-    LOG( DEBUG ) << "Settings for '" << typeid( Enum ).name() << "' verified.";
 }
 
 class SettingsController
@@ -56,6 +86,20 @@ public:
         verifySettings<StringSetting, stringSettingsSize>( m_stringSettings );
 
         verifySettings<IntSetting, intSettingsSize>( m_intSettings );
+    }
+
+    std::string getSettingsAndValues() const noexcept
+    {
+        std::string s;
+        s += returnSettingsAndValues<boolSettingSize>( m_boolSettings );
+
+        s += returnSettingsAndValues<doubleSettingSize>( m_doubleSettings );
+
+        s += returnSettingsAndValues<stringSettingsSize>( m_stringSettings );
+
+        s += returnSettingsAndValues<intSettingsSize>( m_intSettings );
+
+        return s;
     }
 
     std::string getSettingsFileName() const noexcept

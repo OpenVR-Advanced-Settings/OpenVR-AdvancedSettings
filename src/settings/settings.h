@@ -102,6 +102,8 @@ enum class IntSetting
 
 std::string initializeAndGetSettingsPath();
 
+std::string getSettingsAndValues();
+
 void saveChangedSettings();
 
 void saveAllSettings();

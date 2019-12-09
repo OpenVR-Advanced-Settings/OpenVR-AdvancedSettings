@@ -68,4 +68,9 @@ std::string initializeAndGetSettingsPath()
     return settingController.getSettingsFileName();
 }
 
+std::string getSettingsAndValues()
+{
+    return settingController.getSettingsAndValues();
+}
+
 } // namespace settings

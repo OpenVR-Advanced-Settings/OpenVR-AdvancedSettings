@@ -7,6 +7,11 @@ int main( int argc, char* argv[] )
 {
     setUpLogging();
 
+    LOG( INFO ) << "Settings File: "
+                << settings::initializeAndGetSettingsPath();
+
+    LOG( INFO ) << settings::getSettingsAndValues();
+
     MyQApplication mainEventLoop( argc, argv );
     mainEventLoop.setOrganizationName(
         application_strings::applicationOrganizationName );
@@ -40,8 +45,6 @@ int main( int argc, char* argv[] )
                                mainEventLoop.organizationName(),
                                mainEventLoop.applicationName() );
         advsettings::OverlayController::setAppSettings( &appSettings );
-        LOG( INFO ) << "Settings File: "
-                    << settings::initializeAndGetSettingsPath();
 
         QQmlEngine qmlEngine;
 
