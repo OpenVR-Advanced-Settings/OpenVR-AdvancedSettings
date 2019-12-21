@@ -15,8 +15,6 @@ void ChaperoneTabController::initStage1()
     }
 
     reloadChaperoneProfiles();
-    m_k_chaperoneSettingsUpdateCounter
-        = utils::adjustUpdateRate( k_chaperoneSettingsUpdateCounter );
     eventLoopTick( nullptr );
 }
 
@@ -618,7 +616,7 @@ void ChaperoneTabController::eventLoopTick(
         }
     }
 
-    if ( settingsUpdateCounter >= m_k_chaperoneSettingsUpdateCounter )
+    if ( settingsUpdateCounter >= k_chaperoneSettingsUpdateCounter )
     {
         if ( parent->isDashboardVisible() )
         {

@@ -18,9 +18,6 @@ void UtilitiesTabController::initStage1()
         = settings::getSetting( settings::IntSetting::UTILITY_alarmMinute );
 
     m_alarmTime = QTime( qAlarmHour, qAlarmMinute );
-
-    m_k_utilitiesSettingsUpdateCounter
-        = utils::adjustUpdateRate( k_utilitiesSettingsUpdateCounter );
 }
 
 void UtilitiesTabController::initStage2( OverlayController* var_parent )
@@ -429,7 +426,7 @@ vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index )
 
 void UtilitiesTabController::eventLoopTick()
 {
-    if ( settingsUpdateCounter >= m_k_utilitiesSettingsUpdateCounter )
+    if ( settingsUpdateCounter >= k_utilitiesSettingsUpdateCounter )
     {
         if ( alarmEnabled() && m_alarmTime.isValid() )
         {

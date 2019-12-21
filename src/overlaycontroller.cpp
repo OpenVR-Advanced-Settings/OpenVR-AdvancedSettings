@@ -146,6 +146,19 @@ OverlayController::OverlayController( bool desktopMode,
             nullptr, "OpenVR Advanced Settings Overlay", "Is OpenVR running?" );
         throw std::runtime_error( std::string( "No Overlay interface" ) );
     }
+    // init Update Rates
+    k_audioSettingsUpdateCounter
+        = utils::adjustUpdateRate( k_audioSettingsUpdateCounter );
+    k_chaperoneSettingsUpdateCounter
+        = utils::adjustUpdateRate( k_chaperoneSettingsUpdateCounter );
+    k_moveCenterSettingsUpdateCounter
+        = utils::adjustUpdateRate( k_moveCenterSettingsUpdateCounter );
+    k_settingsTabSettingsUpdateCounter
+        = utils::adjustUpdateRate( k_settingsTabSettingsUpdateCounter );
+    k_steamVrSettingsUpdateCounter
+        = utils::adjustUpdateRate( k_steamVrSettingsUpdateCounter );
+    k_utilitiesSettingsUpdateCounter
+        = utils::adjustUpdateRate( k_utilitiesSettingsUpdateCounter );
 
     // Init controllers
     m_steamVRTabController.initStage1();

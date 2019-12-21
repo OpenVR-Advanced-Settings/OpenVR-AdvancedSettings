@@ -21,8 +21,6 @@ void AudioTabController::initStage1()
     audioManager.reset( new AudioManagerDummy() );
 #endif
     audioManager->init( this );
-    m_k_audioSettingsUpdateCounter
-        = utils::adjustUpdateRate( k_audioSettingsUpdateCounter );
     initOverride();
     m_playbackDevices = audioManager->getPlaybackDevices();
     m_recordingDevices = audioManager->getRecordingDevices();
@@ -160,7 +158,7 @@ void AudioTabController::eventLoopTick()
         return;
     }
 
-    if ( settingsUpdateCounter >= m_k_audioSettingsUpdateCounter )
+    if ( settingsUpdateCounter >= k_audioSettingsUpdateCounter )
     {
         vr::EVRSettingsError vrSettingsError;
         char mirrorDeviceId[1024];

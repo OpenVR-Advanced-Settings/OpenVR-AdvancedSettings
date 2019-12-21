@@ -30,6 +30,7 @@
 #include "openvr/openvr_init.h"
 
 #include "utils/ChaperoneUtils.h"
+#include "utils/FrameRateUtils.h"
 
 #include "tabcontrollers/SteamVRTabController.h"
 #include "tabcontrollers/ChaperoneTabController.h"
@@ -64,15 +65,15 @@ namespace advsettings
 // These counters set timing for refreshing settings changes in tab ui
 // SettingsUpdateCounter values are set as prime numbers to reduce overlap
 // of simultaneous settings updates.
-// Actual rates of updates are counter * vsync (~11ms)
-// Values chosen based on update speed priority
-// Avoid setting values to the same numbers.
-constexpr int k_audioSettingsUpdateCounter = 89;
-constexpr int k_chaperoneSettingsUpdateCounter = 101;
-constexpr int k_moveCenterSettingsUpdateCounter = 83;
-constexpr int k_settingsTabSettingsUpdateCounter = 157;
-constexpr int k_steamVrSettingsUpdateCounter = 97;
-constexpr int k_utilitiesSettingsUpdateCounter = 19;
+// updates are counter * vsync (~11ms) But are modified based on refresh rate
+// assuming 90 hz base Values chosen based on update speed priority Avoid
+// setting values to the same numbers.
+static unsigned int k_audioSettingsUpdateCounter = 89;
+static unsigned int k_chaperoneSettingsUpdateCounter = 101;
+static unsigned int k_moveCenterSettingsUpdateCounter = 83;
+static unsigned int k_settingsTabSettingsUpdateCounter = 157;
+static unsigned int k_steamVrSettingsUpdateCounter = 97;
+static unsigned int k_utilitiesSettingsUpdateCounter = 19;
 // k_nonVsyncTickRate determines number of ms we wait to force the next event
 // loop tick when vsync is too late due to dropped frames.
 constexpr int k_nonVsyncTickRate = 20;

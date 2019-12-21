@@ -40,8 +40,6 @@ namespace advsettings
 void MoveCenterTabController::initStage1()
 {
     reloadOffsetProfiles();
-    m_k_moveCenterSettingsUpdateCounter
-        = utils::adjustUpdateRate( k_moveCenterSettingsUpdateCounter );
     m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
     m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
 }
