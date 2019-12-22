@@ -168,7 +168,7 @@ private:
     unsigned m_dragComfortFrameSkipCounter = 0;
     unsigned m_turnComfortFrameSkipCounter = 0;
 
-    unsigned int m_k_moveCenterSettingsUpdateCounter = 83;
+    unsigned int m_moveCenterSettingsUpdateCounter = 83;
 
     double m_velocity[3] = { 0.0, 0.0, 0.0 };
     std::chrono::steady_clock::time_point m_lastGravityUpdateTimePoint;

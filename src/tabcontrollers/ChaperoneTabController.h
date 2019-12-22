@@ -159,7 +159,7 @@ private:
 
     int m_updateTicksChaperoneReload = 0;
 
-    unsigned int m_k_chaperoneSettingsUpdateCounter = 101;
+    unsigned int m_chaperoneSettingsUpdateCounter = 101;
 
     vr::VRActionHandle_t m_rightActionHandle;
     vr::VRActionHandle_t m_leftActionHandle;

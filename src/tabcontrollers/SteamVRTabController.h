@@ -51,7 +51,7 @@ private:
 
     unsigned settingsUpdateCounter = 0;
 
-    unsigned int m_k_steamVrSettingsUpdateCounter = 97;
+    unsigned int m_steamVrSettingsUpdateCounter = 97;
 
 public:
     void initStage1();
