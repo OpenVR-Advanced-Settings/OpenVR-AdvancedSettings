@@ -24,7 +24,7 @@ private:
 
     bool m_autoStartEnabled = false;
 
-    unsigned int m_k_settingsTabSettingsUpdateCounter = 157;
+    unsigned int m_settingsTabSettingsUpdateCounter = 157;
 
 public:
     void initStage1();

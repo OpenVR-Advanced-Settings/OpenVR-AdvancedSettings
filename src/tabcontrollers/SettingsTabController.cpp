@@ -9,7 +9,7 @@ void SettingsTabController::initStage1()
 {
     m_autoStartEnabled = vr::VRApplications()->GetApplicationAutoLaunch(
         application_strings::applicationKey );
-    m_k_settingsTabSettingsUpdateCounter
+    m_settingsTabSettingsUpdateCounter
         = utils::adjustUpdateRate( k_settingsTabSettingsUpdateCounter );
 }
 
@@ -20,7 +20,7 @@ void SettingsTabController::initStage2( OverlayController* var_parent )
 
 void SettingsTabController::dashboardLoopTick()
 {
-    if ( settingsUpdateCounter >= m_k_settingsTabSettingsUpdateCounter )
+    if ( settingsUpdateCounter >= m_settingsTabSettingsUpdateCounter )
     {
         setAutoStartEnabled( vr::VRApplications()->GetApplicationAutoLaunch(
             application_strings::applicationKey ) );

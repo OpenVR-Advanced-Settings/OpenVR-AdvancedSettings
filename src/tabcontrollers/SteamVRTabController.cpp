@@ -7,7 +7,7 @@ namespace advsettings
 {
 void SteamVRTabController::initStage1()
 {
-    m_k_steamVrSettingsUpdateCounter
+    m_steamVrSettingsUpdateCounter
         = utils::adjustUpdateRate( k_steamVrSettingsUpdateCounter );
     dashboardLoopTick();
 }
@@ -19,7 +19,7 @@ void SteamVRTabController::initStage2( OverlayController* var_parent )
 
 void SteamVRTabController::dashboardLoopTick()
 {
-    if ( settingsUpdateCounter >= m_k_steamVrSettingsUpdateCounter )
+    if ( settingsUpdateCounter >= m_steamVrSettingsUpdateCounter )
     {
         vr::EVRSettingsError vrSettingsError;
 
