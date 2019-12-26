@@ -1,5 +1,6 @@
 #include "utils/setup.h"
 #include "settings/settings.h"
+#include "settings/settings_object.h"
 
 INITIALIZE_EASYLOGGINGPP
 
