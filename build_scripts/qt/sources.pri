@@ -19,7 +19,9 @@ SOURCES += src/main.cpp\
     src/openvr/overlay_utils.cpp \
     src/keyboard_input/keyboard_input.cpp \
     src/keyboard_input/input_parser.cpp \
-    src/settings/settings.cpp
+    src/settings/settings.cpp \
+    src/settings/settings_object.cpp \
+
 
 HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/AudioTabController.h \
@@ -55,7 +57,9 @@ HEADERS += src/overlaycontroller.h \
     src/settings/internal/setting_value.h \
     src/settings/internal/settings_internal.h \
     src/settings/internal/settings_controller.h \
-    src/settings/internal/specific_setting_value.h
+    src/settings/internal/specific_setting_value.h \
+    src/settings/settings_object.h \
+    src/settings/internal/settings_object_data.h
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
