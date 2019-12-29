@@ -1,5 +1,4 @@
 #include <utility>
-#include <QSettings>
 #include <easylogging++.h>
 #include "../overlaycontroller.h"
 #include "internal/settings_controller.h"
