@@ -5,7 +5,6 @@
 #include <QQuickView>
 #include <QQmlEngine>
 #include <QQmlComponent>
-#include <QSettings>
 #include <QStandardPaths>
 #include <openvr.h>
 #include <iostream>
