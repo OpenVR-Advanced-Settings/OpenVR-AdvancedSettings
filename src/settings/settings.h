@@ -90,6 +90,7 @@ enum class IntSetting
     PLAYSPACE_smoothTurnRate,
     PLAYSPACE_dragComfortFactor,
     PLAYSPACE_turnComfortFactor,
+    PLAYSPACE_frictionPercent,
 
     APPLICATION_debugState,
     APPLICATION_customTickRateMs,
