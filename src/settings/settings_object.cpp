@@ -4,8 +4,7 @@
 namespace settings
 {
 [[nodiscard]] QSettings& getQSettings();
-
-}
+} // namespace settings
 
 namespace
 {
