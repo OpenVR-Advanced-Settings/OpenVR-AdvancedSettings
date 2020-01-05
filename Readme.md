@@ -77,19 +77,35 @@ Do all this without leaving VR:
 
 # Usage
 
-## Installer
+## Windows
 
-Download the newest installer from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and execute it.
+### Installer
+
+Download the newest installer from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and run it.
 
 If you have an older standalone version installed, the installer will automatically uninstall the old version and install the new version.
 
-## Standalone
+### Standalone
 
 Download the newest standalone archive from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and unpack the archive.
 
 To install for the first time simply start AdvancedSettings.exe once while SteamVR is running. It will register with SteamVR and automatically starts whenever SteamVR starts (Can be disabled in the settings).
 
 To upgrade an existing installation first stop SteamVR and delete the old application folder (or override it). Then start SteamVR and run AdvancedSettings.exe once.
+
+## Linux
+
+### AppImage
+
+The AppImage can be found in the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and should run on most common Linux distributions.
+
+Simply double click the AppImage once downloaded to run it. Depending on your distribution you may need to make it executable with `chmod +x OpenVR_Advanced_Settings*`.
+
+If the AppImage doesn't work for whatever reason, please create an issue [here](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/issues/new/choose) describing the problem and try compiling from source.
+
+### Building from Source
+
+Detailed instructions are available [here](docs/building_for_linux.md).
 
 ## Bindings
 
