@@ -87,14 +87,14 @@ You will need at least `qt512-meta-minimal qt512multimedia qt512declarative qt51
 
 For Ubuntu 16.04
 ```bash
-sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-xenial
+sudo add-apt-repository ppa:beineri/opt-qt-5.12.6-xenial
 sudo apt-get update
 sudo apt install qt512-meta-full
 ```
 
 For Ubuntu 18.04
 ```bash
-sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-bionic
+sudo add-apt-repository ppa:beineri/opt-qt-5.12.6-bionic
 sudo apt-get update
 sudo apt install qt512-meta-full
 ```
@@ -180,7 +180,7 @@ sudo apt install bear clang-tidy
 ## Ubuntu 16.04 Xenial
 ```bash
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-xenial
+sudo add-apt-repository ppa:beineri/opt-qt-5.12.6-xenial
 sudo apt update
 sudo apt install g++-7
 sudo apt-get install build-essential libgl1-mesa-dev
@@ -192,7 +192,7 @@ export QT_SELECT=opt-qt512
 
 ## Ubuntu 18.04 Bionic
 ```bash
-sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-bionic
+sudo add-apt-repository ppa:beineri/opt-qt-5.12.6-bionic
 sudo apt update
 sudo apt install g++-7
 sudo apt-get install build-essential libgl1-mesa-dev
