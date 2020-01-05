@@ -214,10 +214,16 @@ cd OpenVR-AdvancedSettings
 # Install build tools
 sudo apt-get -y install g++-7
 sudo apt-get -y install build-essential libgl1-mesa-dev
+# Install Qt
 sudo apt-get -y install qt512-meta-full
+# Install additional features
 sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
+# Set up qtchooser
 qtchooser -install opt-qt512 /opt/qt512/bin/qmake
 export QT_SELECT=opt-qt512
+# Compile
+qmake
+make -j2
 ```
 
 ## Ubuntu 18.04 Bionic
@@ -233,10 +239,16 @@ cd OpenVR-AdvancedSettings
 # Install build tools
 sudo apt-get -y install g++-7
 sudo apt-get -y install build-essential libgl1-mesa-dev
+# Install Qt
 sudo apt-get -y install qt512-meta-full
+# Install additional features
 sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
+# Set up qtchooser
 qtchooser -install opt-qt512 /opt/qt512/bin/qmake
 export QT_SELECT=opt-qt512
+# Compile
+qmake
+make -j2
 ```
 
 ## Ubuntu 19.04 Disco and newer
@@ -249,10 +261,16 @@ git clone https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings --
 cd OpenVR-AdvancedSettings
 # Install build tools
 sudo apt-get -y install build-essential libgl1-mesa-dev
-sudo apt-get -y install qt5-default qtmultimedia5-dev libqt5multimediawidgets5 libqt5multimedia5-plugins libqt5multimedia5 qml-module-qtquick-extras qml-module-qtquick-controls2 qml-module-qtquick-dialogs qtdeclarative5-dev
+# Install Qt
+sudo apt-get -y install qt5-default qtmultimedia5-dev libqt5multimediawidgets5 libqt5multimedia5-plugins libqt5multimedia5 qml-module-qtquick-extras qml-module-qtquick-controls2 qml-module-qtquick-dialogs qtdeclarative5-dev qtchooser
+# Install additional features
 sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
+# Set up qtchooser
+export QT_SELECT=5
+# Compile
+qmake
+make -j2
 ```
-You should not need to use `qtchooser` to set the Qt version on 19.04.
 
 ## Arch/Manjaro
 
