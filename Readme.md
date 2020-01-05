@@ -254,7 +254,7 @@ Under `[applicationSettings]` adding `enableDebug=true` will show a "Debug State
 
 ## Preview builds
 
-If you want to try latest and greatest unreleased features, you can download the latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master). The Linux CI does not provide binary artifacts.
+If you want to try latest and greatest unreleased features, you can download the latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master) and [Linux](https://circleci.com/gh/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings) (`gcc` build, CircleCI issue requires login to see artifact tab).
 
 These version are not stable and this should be considered for advanced users only.
 
