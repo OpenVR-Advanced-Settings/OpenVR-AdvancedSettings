@@ -16,6 +16,7 @@
   * [qtchooser and versions](#qtchooser-and-versions)
   * [X11](#x11)
   * [DBUS](#dbus)
+  * [SteamVR](#steamvr)
   * [clang-tidy and bear](#clang-tidy-and-bear)
 * [TL;DRs](#tldrs)
   * [Ubuntu 16.04 Xenial](#ubuntu-1604-xenial)
@@ -187,6 +188,14 @@ DBUS is  needed for controlling media players from VR.
 
 This feature and dependency can be disabled during compilation.
 
+## SteamVR
+
+On a completely fresh Ubuntu install the program also requires the following libraries to run.
+
+```bash
+sudo apt-get -y install libsdl2-dev libvulkan-dev
+```
+
 ## `clang-tidy` and `bear`
 
 This is only relevant for building on CI servers.
@@ -218,6 +227,8 @@ sudo apt-get -y install build-essential libgl1-mesa-dev
 sudo apt-get -y install qt512-meta-full qtchooser
 # Install additional features
 sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
+# Install necessary SteamVR libraries
+sudo apt-get -y install libsdl2-dev libvulkan-dev
 # Set up qtchooser
 qtchooser -install opt-qt512 /opt/qt512/bin/qmake
 export QT_SELECT=opt-qt512
@@ -243,6 +254,8 @@ sudo apt-get -y install build-essential libgl1-mesa-dev
 sudo apt-get -y install qt512-meta-full qtchooser
 # Install additional features
 sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
+# Install necessary SteamVR libraries
+sudo apt-get -y install libsdl2-dev libvulkan-dev
 # Set up qtchooser
 qtchooser -install opt-qt512 /opt/qt512/bin/qmake
 export QT_SELECT=opt-qt512
@@ -265,6 +278,8 @@ sudo apt-get -y install build-essential libgl1-mesa-dev
 sudo apt-get -y install qt5-default qtmultimedia5-dev libqt5multimediawidgets5 libqt5multimedia5-plugins libqt5multimedia5 qml-module-qtquick-extras qml-module-qtquick-controls2 qml-module-qtquick-dialogs qtdeclarative5-dev qtchooser
 # Install additional features
 sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
+# Install necessary SteamVR libraries
+sudo apt-get -y install libsdl2-dev libvulkan-dev
 # Set up qtchooser
 export QT_SELECT=5
 # Compile
