@@ -215,7 +215,7 @@ cd OpenVR-AdvancedSettings
 sudo apt-get -y install g++-7
 sudo apt-get -y install build-essential libgl1-mesa-dev
 # Install Qt
-sudo apt-get -y install qt512-meta-full
+sudo apt-get -y install qt512-meta-full qtchooser
 # Install additional features
 sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
 # Set up qtchooser
@@ -240,7 +240,7 @@ cd OpenVR-AdvancedSettings
 sudo apt-get -y install g++-7
 sudo apt-get -y install build-essential libgl1-mesa-dev
 # Install Qt
-sudo apt-get -y install qt512-meta-full
+sudo apt-get -y install qt512-meta-full qtchooser
 # Install additional features
 sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
 # Set up qtchooser
