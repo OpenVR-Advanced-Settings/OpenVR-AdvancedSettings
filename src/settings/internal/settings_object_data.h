@@ -37,6 +37,16 @@ public:
         return !list.empty();
     }
 
+    template <typename Value> void consumeDeprecatedValue()
+    {
+        getNextValueOrDefault( Value{} );
+    }
+
+    template <typename Value> void addDeprecatedValue( const Value value )
+    {
+        addValue( value );
+    }
+
 private:
     template <typename Value> std::list<Value>& getListObject()
     {
