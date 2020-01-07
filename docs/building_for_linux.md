@@ -306,6 +306,9 @@ qmake
 make -j2
 ```
 
+A stable version can also be found on the [Arch User Repository](https://wiki.archlinux.org/index.php/Arch_User_Repository) as `ovras`.
+It can be installed with `pamac build ovras`.
+
 # Building
 
 You will need the requirements above.

@@ -19,6 +19,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
      * [Standalone](#standalone)
   * [Linux](#linux)
      * [AppImage](#appimage)
+     * [Arch/Manjaro](#archmanjaro)
      * [Building from Source](#building-from-source)
   * [Bindings](#bindings)
      * [Music](#music)
@@ -106,6 +107,11 @@ The AppImage can be found in the [release section](https://github.com/OpenVR-Adv
 Simply double click the AppImage once downloaded to run it. Depending on your distribution you may need to make it executable with `chmod +x OpenVR_Advanced_Settings*`.
 
 If the AppImage doesn't work for whatever reason, please create an issue [here](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/issues/new/choose) describing the problem and try compiling from source.
+
+### Arch/Manjaro
+
+OpenVR Advanced Settings is on the [Arch User Repository](https://wiki.archlinux.org/index.php/Arch_User_Repository) as `ovras`.
+Manjaro users can [enable](https://wiki.manjaro.org/index.php/Arch_User_Repository) the AUR and install this package using `pamac build ovras`.
 
 ### Building from Source
 
