@@ -290,10 +290,20 @@ make -j2
 ## Arch/Manjaro
 
 ```bash
-sudo pacman -S base-devel mesa
-sudo pacman -S qt5-declarative qt5-multimedia
-sudo pacman -S xorg-server
-sudo pacman -S dbus
+# Install git
+sudo pacman --noconfirm -S git
+# Clone repo and change directory
+git clone https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings --depth=1
+cd OpenVR-AdvancedSettings
+# Install build tools
+sudo pacman --noconfirm -S base-devel mesa
+# Install Qt
+sudo pacman --noconfirm -S qt5-declarative qt5-multimedia
+# Install additional features
+sudo pacman --noconfirm -S xorg-server dbus
+# Compile
+qmake
+make -j2
 ```
 
 # Building
