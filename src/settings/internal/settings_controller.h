@@ -455,6 +455,10 @@ private:
                          SettingCategory::Playspace,
                          QtInfo{ "turnComfortFactor" },
                          0 },
+        IntSettingValue{ IntSetting::PLAYSPACE_frictionPercent,
+                         SettingCategory::Playspace,
+                         QtInfo{ "frictionPercent" },
+                         0 },
 
         IntSettingValue{ IntSetting::APPLICATION_debugState,
                          SettingCategory::Application,

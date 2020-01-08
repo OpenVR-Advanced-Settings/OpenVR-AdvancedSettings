@@ -114,6 +114,43 @@ GroupBox {
             }
 
             Item {
+                Layout.preferredWidth: 40
+            }
+
+            MyText {
+                text: "Friction:"
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 2
+            }
+
+            MyTextField {
+                id: frictionPercentText
+                text: "0%"
+                keyBoardUID: 156
+                Layout.preferredWidth: 130
+                Layout.leftMargin: 5
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseInt(input)
+                    if (!isNaN(val)) {
+                        if ( val > 999 )
+                        {
+                            val = 999
+                        }
+                        if ( val < 0 )
+                        {
+                            val = 0
+                        }
+
+                        MoveCenterTabController.frictionPercent = val
+                        text = MoveCenterTabController.frictionPercent + "%"
+                    } else {
+                        text = MoveCenterTabController.frictionPercent + "%"
+                    }
+                }
+            }
+
+            Item {
                 Layout.fillWidth: true
             }
 
@@ -166,14 +203,6 @@ GroupBox {
                 }
             }
 
-            MyPushButton2 {
-                Layout.preferredWidth: 50
-                text: "4x"
-                onClicked: {
-                    MoveCenterTabController.flingStrength = 4.0
-                }
-            }
-
 
         }
     }
@@ -183,6 +212,7 @@ GroupBox {
         gravityStrengthText.text = MoveCenterTabController.gravityStrength.toFixed(2)
         momentumToggleButton.checked = MoveCenterTabController.momentumSave
         flingStrengthText.text = MoveCenterTabController.flingStrength.toFixed(2)
+        frictionPercentText.text = MoveCenterTabController.frictionPercent + "%"
     }
 
     Connections {
@@ -199,6 +229,9 @@ GroupBox {
         }
         onFlingStrengthChanged: {
             flingStrengthText.text = MoveCenterTabController.flingStrength.toFixed(2)
+        }
+        onFrictionPercentChanged: {
+            frictionPercentText.text = MoveCenterTabController.frictionPercent + "%"
         }
     }
 }

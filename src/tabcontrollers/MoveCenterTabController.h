@@ -17,6 +17,9 @@ constexpr double k_radiansToCentidegrees = 18000.0 / M_PI;
 constexpr double k_quaternionInvalidValue = -1000.0;
 constexpr double k_quaternionUnderIsInvalidValueThreshold = -900.0;
 constexpr double k_terminalVelocity_mps = 50.0;
+// k_frictionHalt_mps must be sufficiently small to allow a single tick of
+// gravity through
+constexpr double k_frictionHalt_mps = 0.0000001;
 // give the max offset a buffer to avoid crossing when traveling at astronomical
 // velocities
 constexpr double k_maxOpenvrWorkingSetOffest = 39900.0;
@@ -53,6 +56,8 @@ class MoveCenterTabController : public QObject
                     NOTIFY snapTurnAngleChanged )
     Q_PROPERTY( int smoothTurnRate READ smoothTurnRate WRITE setSmoothTurnRate
                     NOTIFY smoothTurnRateChanged )
+    Q_PROPERTY( int frictionPercent READ frictionPercent WRITE
+                    setFrictionPercent NOTIFY frictionPercentChanged )
     Q_PROPERTY( bool adjustChaperone READ adjustChaperone WRITE
                     setAdjustChaperone NOTIFY adjustChaperoneChanged )
     Q_PROPERTY( bool moveShortcutRight READ moveShortcutRight WRITE
@@ -214,6 +219,7 @@ public:
     int tempRotation() const;
     int snapTurnAngle() const;
     int smoothTurnRate() const;
+    int frictionPercent() const;
     bool adjustChaperone() const;
     bool moveShortcutRight() const;
     bool moveShortcutLeft() const;
@@ -285,6 +291,7 @@ public slots:
     void setTempRotation( int value, bool notify = true );
     void setSnapTurnAngle( int value, bool notify = true );
     void setSmoothTurnRate( int value, bool notify = true );
+    void setFrictionPercent( int value, bool notify = true );
 
     void setAdjustChaperone( bool value, bool notify = true );
     void setMoveShortcutRight( bool value, bool notify = true );
@@ -336,6 +343,7 @@ signals:
     void tempRotationChanged( int value );
     void snapTurnAngleChanged( int value );
     void smoothTurnRateChanged( int value );
+    void frictionPercentChanged( int value );
     void adjustChaperoneChanged( bool value );
     void moveShortcutRightChanged( bool value );
     void moveShortcutLeftChanged( bool value );

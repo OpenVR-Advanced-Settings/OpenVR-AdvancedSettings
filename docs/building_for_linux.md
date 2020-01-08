@@ -1,30 +1,54 @@
-- [Requirements](#requirements)
-    * [Compiler and Build Essentials](#compiler-and-build-essentials)
-        + [Ubuntu](#ubuntu)
-        + [Arch/Manjaro](#arch-manjaro)
-    * [Qt](#qt)
-        * [Package Manager](#package-manager)
-        + [Ubuntu](#ubuntu-1)
-        + [Arch/Manjaro](#arch-manjaro-1)
-    * [Official Qt Installer](#official-qt-installer)
-    + [`qtchooser`](#-qtchooser-)
-    * [Unofficial Ubuntu Packages](#unofficial-ubuntu-packages)
-    + [Arch/Manjaro](#arch-manjaro-2)
-    * [`qtchooser` and versions](#-qtchooser--and-versions)
-    * [X11](#x11)
-    * [DBUS](#dbus)
-    * [`clang-tidy` and `bear`](#-clang-tidy--and--bear-)
-- [TL;DRs](#tl-drs)
-    * [Ubuntu 16.04 Xenial](#ubuntu-1604-xenial)
-    * [Ubuntu 18.04 Bionic](#ubuntu-1804-bionic)
-    * [Ubuntu 19.04 Disco](#ubuntu-1904-disco)
-    * [Arch/Manjaro](#arch-manjaro-3)
-- [Building](#building)
-- [Configuring](#configuring)
-- [Installing](#installing)
-- [Contributing](#contributing)
+* [Requirements](#requirements)
+  * [Git](#git)
+     * [Ubuntu](#ubuntu)
+     * [Arch/Manjaro](#archmanjaro)
+  * [Compiler and Build Essentials](#compiler-and-build-essentials)
+     * [Ubuntu](#ubuntu-1)
+     * [Arch/Manjaro](#archmanjaro-1)
+  * [Qt](#qt)
+  * [Package Manager](#package-manager)
+     * [Ubuntu](#ubuntu-2)
+     * [Arch/Manjaro](#archmanjaro-2)
+  * [Official Qt Installer](#official-qt-installer)
+     * [qtchooser](#qtchooser)
+  * [Unofficial Ubuntu Packages](#unofficial-ubuntu-packages)
+     * [Arch/Manjaro](#archmanjaro-3)
+  * [qtchooser and versions](#qtchooser-and-versions)
+  * [X11](#x11)
+  * [DBUS](#dbus)
+  * [SteamVR](#steamvr)
+  * [clang-tidy and bear](#clang-tidy-and-bear)
+* [TL;DRs](#tldrs)
+  * [Ubuntu 16.04 Xenial](#ubuntu-1604-xenial)
+  * [Ubuntu 18.04 Bionic](#ubuntu-1804-bionic)
+  * [Ubuntu 19.04 Disco and newer](#ubuntu-1904-disco-and-newer)
+  * [Arch/Manjaro](#archmanjaro-4)
+* [Building](#building)
+* [Configuring](#configuring)
+* [Installing](#installing)
+* [Contributing](#contributing)
+
+
+Unless you have a good reason not to, just copy and paste the correct TL;DR section into your terminal.
 
 # Requirements
+
+## Git
+
+You will need `git` to clone the repo.
+
+### Ubuntu
+
+```bash
+sudo apt-get -y install git
+```
+
+### Arch/Manjaro
+
+```bash
+sudo pacman -S git
+```
+
 ## Compiler and Build Essentials
 
 You will need either `clang` version `>=5.0` or `gcc` version `>=7` due to C++17 support.
@@ -35,13 +59,13 @@ You will additionally need the basic build packages for your distro and OpenGL d
 For Ubuntu versions older than 18.04 (only 16.04 is officially tested) you'll need to get a backported `gcc`:
 ```bash
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-sudo apt update
-sudo apt install build-essential g++-7 libgl1-mesa-dev
+sudo apt-get -y update
+sudo apt-get -y install build-essential g++-7 libgl1-mesa-dev
 ```
 
 For Ubuntu versions of 18.04 or newer `build-essential` will contain an appropriate `gcc` version:
 ```bash
-sudo apt install build-essential libgl1-mesa-dev
+sudo apt-get -y install build-essential libgl1-mesa-dev
 ```
 
 ### Arch/Manjaro
@@ -63,7 +87,7 @@ Ubuntu newer than than 19.04 and Arch/Manjaro will have up to date Qt packages i
 ### Ubuntu
 
 ```bash
-sudo apt install qt5-default qtmultimedia5-dev qtdeclarative5-dev
+sudo apt-get -y install qt5-default qtmultimedia5-dev qtdeclarative5-dev
 ```
 
 ### Arch/Manjaro
@@ -87,16 +111,16 @@ You will need at least `qt512-meta-minimal qt512multimedia qt512declarative qt51
 
 For Ubuntu 16.04
 ```bash
-sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-xenial
+sudo add-apt-repository ppa:beineri/opt-qt-5.12.6-xenial
 sudo apt-get update
-sudo apt install qt512-meta-full
+sudo apt-get -y install qt512-meta-full
 ```
 
 For Ubuntu 18.04
 ```bash
-sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-bionic
+sudo add-apt-repository ppa:beineri/opt-qt-5.12.6-bionic
 sudo apt-get update
-sudo apt install qt512-meta-full
+sudo apt-get -y install qt512-meta-full
 ```
 
 If you choose the wrong Ubuntu version you will get an error from `apt` about there not being a `Release` file. Try the other one instead.
@@ -154,7 +178,7 @@ export QT_SELECT=opt-qt512
 ## X11
 
 X11 packages are currently needed for sending keystrokes to the desktop from VR.
-Install the packages on Ubuntu with `sudo apt-get install libx11-dev libxt-dev libxtst-dev`.
+Install the packages on Ubuntu with `sudo apt-get -y install libx11-dev libxt-dev libxtst-dev`.
 
 This feature and dependency can be disabled during compilation.
 
@@ -163,6 +187,14 @@ This feature and dependency can be disabled during compilation.
 DBUS is  needed for controlling media players from VR. 
 
 This feature and dependency can be disabled during compilation.
+
+## SteamVR
+
+On a completely fresh Ubuntu install the program also requires the following libraries to run.
+
+```bash
+sudo apt-get -y install libsdl2-dev libvulkan-dev
+```
 
 ## `clang-tidy` and `bear`
 
@@ -173,51 +205,105 @@ In order to use `clang-tidy` you will need `bear clang-tidy` in addition to the 
 You will only need this if you're going to make contributions to the codebase.
 
 ```bash
-sudo apt install bear clang-tidy
+sudo apt-get -y install bear clang-tidy
 ```
 
 # TL;DRs
 ## Ubuntu 16.04 Xenial
 ```bash
+# Add repos and update
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-xenial
-sudo apt update
-sudo apt install g++-7
-sudo apt-get install build-essential libgl1-mesa-dev
-sudo apt-get install qt512-meta-full
-sudo apt-get install libx11-dev libxt-dev libxtst-dev
+sudo add-apt-repository ppa:beineri/opt-qt-5.12.6-xenial
+sudo apt-get update
+# Install git
+sudo apt-get -y install git
+# Clone repo and change directory
+git clone https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings --depth=1
+cd OpenVR-AdvancedSettings
+# Install build tools
+sudo apt-get -y install g++-7
+sudo apt-get -y install build-essential libgl1-mesa-dev
+# Install Qt
+sudo apt-get -y install qt512-meta-full qtchooser
+# Install additional features
+sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
+# Install necessary SteamVR libraries
+sudo apt-get -y install libsdl2-dev libvulkan-dev
+# Set up qtchooser
 qtchooser -install opt-qt512 /opt/qt512/bin/qmake
 export QT_SELECT=opt-qt512
+# Compile
+qmake
+make -j2
 ```
 
 ## Ubuntu 18.04 Bionic
 ```bash
-sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-bionic
-sudo apt update
-sudo apt install g++-7
-sudo apt-get install build-essential libgl1-mesa-dev
-sudo apt-get install qt512-meta-full
-sudo apt-get install libx11-dev libxt-dev libxtst-dev
+# Add repos and update
+sudo add-apt-repository ppa:beineri/opt-qt-5.12.6-bionic
+sudo apt-get update
+# Install git
+sudo apt-get -y install git
+# Clone repo and change directory
+git clone https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings --depth=1
+cd OpenVR-AdvancedSettings
+# Install build tools
+sudo apt-get -y install g++-7
+sudo apt-get -y install build-essential libgl1-mesa-dev
+# Install Qt
+sudo apt-get -y install qt512-meta-full qtchooser
+# Install additional features
+sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
+# Install necessary SteamVR libraries
+sudo apt-get -y install libsdl2-dev libvulkan-dev
+# Set up qtchooser
 qtchooser -install opt-qt512 /opt/qt512/bin/qmake
 export QT_SELECT=opt-qt512
+# Compile
+qmake
+make -j2
 ```
 
-## Ubuntu 19.04 Disco
+## Ubuntu 19.04 Disco and newer
 
 ```bash
-sudo apt install build-essential libgl1-mesa-dev
-sudo apt install qt5-default qtmultimedia5-dev libqt5multimediawidgets5 libqt5multimedia5-plugins libqt5multimedia5 qml-module-qtquick-extras qml-module-qtquick-controls2 qml-module-qtquick-dialogs qtdeclarative5-dev
-sudo apt-get install libx11-dev libxt-dev libxtst-dev
+# Install git
+sudo apt-get -y install git
+# Clone repo and change directory
+git clone https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings --depth=1
+cd OpenVR-AdvancedSettings
+# Install build tools
+sudo apt-get -y install build-essential libgl1-mesa-dev
+# Install Qt
+sudo apt-get -y install qt5-default qtmultimedia5-dev libqt5multimediawidgets5 libqt5multimedia5-plugins libqt5multimedia5 qml-module-qtquick-extras qml-module-qtquick-controls2 qml-module-qtquick-dialogs qtdeclarative5-dev qtchooser
+# Install additional features
+sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
+# Install necessary SteamVR libraries
+sudo apt-get -y install libsdl2-dev libvulkan-dev
+# Set up qtchooser
+export QT_SELECT=5
+# Compile
+qmake
+make -j2
 ```
-You should not need to use `qtchooser` to set the Qt version on 19.04.
 
 ## Arch/Manjaro
 
 ```bash
-sudo pacman -S base-devel mesa
-sudo pacman -S qt5-declarative qt5-multimedia
-sudo pacman -S xorg-server
-sudo pacman -S dbus
+# Install git
+sudo pacman --noconfirm -S git
+# Clone repo and change directory
+git clone https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings --depth=1
+cd OpenVR-AdvancedSettings
+# Install build tools
+sudo pacman --noconfirm -S base-devel mesa
+# Install Qt
+sudo pacman --noconfirm -S qt5-declarative qt5-multimedia
+# Install additional features
+sudo pacman --noconfirm -S xorg-server dbus
+# Compile
+qmake
+make -j2
 ```
 
 # Building
