@@ -1,4 +1,9 @@
 #include "setup.h"
+#ifdef ENABLE_DEBUG_LOGGING
+constexpr auto debugLoggingEnabled = true;
+#else
+constexpr auto debugLoggingEnabled = false;
+#endif
 
 // The default Qt message handler prints to stdout on X11 and to the debugger on
 // Windows. That is borderline useless for us, therefore we create our own
@@ -317,7 +322,15 @@ void setUpLogging()
 
     constexpr auto confDisabled = "false";
     conf.set( Level::Trace, ConfigurationType::Enabled, confDisabled );
-    conf.set( Level::Debug, ConfigurationType::Enabled, confDisabled );
+
+    if constexpr ( debugLoggingEnabled )
+    {
+        conf.set( Level::Debug, ConfigurationType::Enabled, confEnabled );
+    }
+    else
+    {
+        conf.set( Level::Debug, ConfigurationType::Enabled, confDisabled );
+    }
 
     const auto appDataLocation
         = std::string( "/" ) + application_strings::applicationOrganizationName
