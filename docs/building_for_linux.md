@@ -334,6 +334,7 @@ The following values can be appended to the `CONFIG` internal variable in order 
 | ----- | ------- |
 | `noX11` | Disables X11 specific features (VR to keyboard input). |
 | `noDBUS` | Disables DBUS specific features (control media players). |
+| `debugSymbolsAndLogs` | Enables debug symbols and debug logging calls (while still having release optimizations). |
 
 The values are case sensitive.
 
