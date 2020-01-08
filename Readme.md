@@ -12,24 +12,29 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
 
 ![Example Screenshot](docs/screenshots/InVRScreenshot.png)
 
-- [Features](#features)
-- [Usage](#usage)
-  * [Installer](#installer)
-  * [Standalone](#standalone)
+* [Features](#features)
+* [Usage](#usage)
+  * [Windows](#windows)
+     * [Installer](#installer)
+     * [Standalone](#standalone)
+  * [Linux](#linux)
+     * [AppImage](#appimage)
+     * [Building from Source](#building-from-source)
   * [Bindings](#bindings)
-    + [Music](#music)
-    + [Motion](#motion)
-    + [Misc.](#misc)
-    + [Haptics.](#haptics)
+     * [Music](#music)
+     * [Motion](#motion)
+     * [Misc.](#misc)
+     * [Haptics.](#haptics)
   * [Default Bindings](#default-bindings)
-    + [Vive Wands](#vive-wands)
-    + [Knuckles](#knuckles)
-    + [Other Controllers](#other-controllers)
+     * [Vive Wands](#vive-wands)
+     * [Valve Index Controllers (Knuckles)](#valve-index-controllers-knuckles)
+     * [WMR](#wmr)
+     * [Other Controllers](#other-controllers)
   * [SteamVR Input Guide](#steamvr-input-guide)
   * [Command Line Arguments](#command-line-arguments)
   * [INI File Options](#ini-file-options)
   * [Preview builds](#preview-builds)
-- [Documentation](#documentation)
+* [Documentation](#documentation)
   * [Top Page](#top-page)
   * [- SteamVR Page](#--steamvr-page)
   * [- Chaperone Page](#--chaperone-page)
@@ -40,15 +45,14 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
   * [- Audio Page](#--audio-page)
   * [- Video Page](#--video-page)
   * [- Utilities Page](#--utilities-page)
-  * [- Desktop Overlay Page](#--desktop-overlay-page)
   * [- Statistics Page](#--statistics-page)
   * [- Settings Page](#--settings-page)
-- [How to Compile](#how-to-compile)
+* [How to Compile](#how-to-compile)
   * [Building on Windows](#building-on-windows)
   * [Building on Linux](#building-on-linux)
-- [Notes:](#notes-)
-- [Common Issues](#common-issues)
-- [License](#license)
+* [Notes:](#notes)
+* [Common Issues:](#common-issues)
+* [License](#license)
 
 # Features
 
@@ -77,19 +81,35 @@ Do all this without leaving VR:
 
 # Usage
 
-## Installer
+## Windows
 
-Download the newest installer from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and execute it.
+### Installer
+
+Download the newest installer from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and run it.
 
 If you have an older standalone version installed, the installer will automatically uninstall the old version and install the new version.
 
-## Standalone
+### Standalone
 
 Download the newest standalone archive from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and unpack the archive.
 
 To install for the first time simply start AdvancedSettings.exe once while SteamVR is running. It will register with SteamVR and automatically starts whenever SteamVR starts (Can be disabled in the settings).
 
 To upgrade an existing installation first stop SteamVR and delete the old application folder (or override it). Then start SteamVR and run AdvancedSettings.exe once.
+
+## Linux
+
+### AppImage
+
+The AppImage can be found in the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and should run on most common Linux distributions.
+
+Simply double click the AppImage once downloaded to run it. Depending on your distribution you may need to make it executable with `chmod +x OpenVR_Advanced_Settings*`.
+
+If the AppImage doesn't work for whatever reason, please create an issue [here](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/issues/new/choose) describing the problem and try compiling from source.
+
+### Building from Source
+
+Detailed instructions are available [here](docs/building_for_linux.md).
 
 ## Bindings
 
@@ -238,7 +258,7 @@ Under `[applicationSettings]` adding `enableDebug=true` will show a "Debug State
 
 ## Preview builds
 
-If you want to try latest and greatest unreleased features, you can download the latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master). The Linux CI does not provide binary artifacts.
+If you want to try latest and greatest unreleased features, you can download the latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master) and [Linux](https://circleci.com/gh/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings) (`gcc` build, CircleCI issue requires login to see artifact tab).
 
 These version are not stable and this should be considered for advanced users only.
 
