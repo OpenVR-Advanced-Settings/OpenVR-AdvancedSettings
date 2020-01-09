@@ -13,8 +13,6 @@ DEFINES += _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 # Enables Whole Program Optimization
 QMAKE_CXXFLAGS += /Gw
 
-# 'identfier': conversion from 'type1' to 'type1', possible loss of data
-QMAKE_CXXFLAGS += /w14242
 # 'operator': conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data
 QMAKE_CXXFLAGS += /w14254
 # 'function': member function does not override any base class virtual member function
