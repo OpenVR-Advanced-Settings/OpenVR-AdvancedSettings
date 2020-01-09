@@ -296,7 +296,7 @@ sudo pacman --noconfirm -S git
 git clone https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings --depth=1
 cd OpenVR-AdvancedSettings
 # Install build tools
-sudo pacman --noconfirm -S base-devel mesa
+sudo pacman --noconfirm -S base-devel mesa libudev0-shim
 # Install Qt
 sudo pacman --noconfirm -S qt5-declarative qt5-multimedia
 # Install additional features
