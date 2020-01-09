@@ -48,8 +48,8 @@ include($$include_dir/resources.pri)
 COPIES += resCopy readmeCopy licenseCopy packageFoldersCopy openvrApiCopy packageFilesCopy
 COPY_DEST_DIR = $$OUT_PWD/$$DESTDIR
 
-resCopy.files = src/res/*
-resCopy.path = $$COPY_DEST_DIR/res
+resCopy.files = $$files(src/res)
+resCopy.path = $$COPY_DEST_DIR
 
 readmeCopy.files = Readme.md
 readmeCopy.path = $$COPY_DEST_DIR
