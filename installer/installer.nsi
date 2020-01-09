@@ -161,7 +161,7 @@ Section "Uninstall"
 	nsExec::ExecToLog '"$INSTDIR\AdvancedSettings.exe" --force-remove-manifest'
 
 	; Delete installed files
-	!include uninstallFiles.list
+	RMDIR /r "$INSTDIR"
 
 	DeleteRegKey HKLM "Software\OpenVR-AdvancedSettings"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRAdvancedSettings"
