@@ -1543,8 +1543,7 @@ void OverlayController::OnNetworkReply( QNetworkReply* reply )
                         "QNetworkReply::NetworkError = "
                      << reply->error();
     }
-    reply->request().~QNetworkRequest();
-    reply->~QNetworkReply();
+    reply->deleteLater();
 }
 
 } // namespace advsettings
