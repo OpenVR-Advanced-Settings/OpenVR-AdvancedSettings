@@ -1316,4 +1316,108 @@ void AudioTabController::shutdown()
     LOG( INFO ) << "Audio Tab Controller Has Shut Down";
 }
 
+bool AudioTabController::pttEnabled() const
+{
+    return m_pttEnabled;
+}
+
+bool AudioTabController::pttActive() const
+{
+    return m_pttActive;
+}
+
+bool AudioTabController::pttShowNotification() const
+{
+    return m_pttShowNotification;
+}
+
+void AudioTabController::reloadPttConfig()
+{
+    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( getSettingsName() );
+    setPttEnabled(
+        settings->value( "pttEnabled", false ).toBool(), true, false );
+    setPttShowNotification(
+        settings->value( "pttShowNotification", true ).toBool(), true, false );
+    settings->endGroup();
+}
+
+void AudioTabController::savePttConfig()
+{
+    auto settings = OverlayController::appSettings();
+    settings->beginGroup( getSettingsName() );
+    settings->setValue( "pttEnabled", pttEnabled() );
+    settings->setValue( "pttShowNotification", pttShowNotification() );
+    settings->endGroup();
+}
+
+void AudioTabController::startPtt()
+{
+    m_pttActive = true;
+    onPttStart();
+    if ( m_pttShowNotification
+         && getNotificationOverlayHandle() != vr::k_ulOverlayHandleInvalid )
+    {
+        vr::VROverlay()->ShowOverlay( getNotificationOverlayHandle() );
+    }
+    emit pttActiveChanged( m_pttActive );
+}
+
+void AudioTabController::stopPtt()
+{
+    m_pttActive = false;
+    onPttStop();
+    if ( m_pttShowNotification
+         && getNotificationOverlayHandle() != vr::k_ulOverlayHandleInvalid )
+    {
+        vr::VROverlay()->HideOverlay( getNotificationOverlayHandle() );
+    }
+    emit pttActiveChanged( m_pttActive );
+}
+
+void AudioTabController::setPttEnabled( bool value, bool notify, bool save )
+{
+    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    if ( value != m_pttEnabled )
+    {
+        m_pttEnabled = value;
+        if ( value )
+        {
+            onPttEnabled();
+        }
+        else
+        {
+            onPttDisabled();
+        }
+        if ( notify )
+        {
+            emit pttEnabledChanged( value );
+        }
+        if ( save )
+        {
+            savePttConfig();
+        }
+    }
+}
+
+void AudioTabController::setPttShowNotification( bool value,
+                                                 bool notify,
+                                                 bool save )
+{
+    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    if ( value != m_pttShowNotification )
+    {
+        m_pttShowNotification = value;
+        if ( notify )
+        {
+            emit pttShowNotificationChanged( value );
+        }
+        if ( save )
+        {
+            savePttConfig();
+        }
+    }
+}
+
 } // namespace advsettings

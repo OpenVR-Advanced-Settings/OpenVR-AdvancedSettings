@@ -8,7 +8,6 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/StatisticsTabController.cpp \
     src/tabcontrollers/SteamVRTabController.cpp \
     src/tabcontrollers/UtilitiesTabController.cpp \
-    src/tabcontrollers/PttController.cpp \
     src/tabcontrollers/VideoTabController.cpp \
     src/utils/ChaperoneUtils.cpp \
     src/openvr/openvr_init.cpp \
@@ -33,7 +32,6 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/UtilitiesTabController.h \
     src/tabcontrollers/VideoTabController.h \
     src/tabcontrollers/AudioManager.h \
-    src/tabcontrollers/PttController.h \
     src/keyboard_input/keyboard_input.h \
     src/media_keys/media_keys.h \
     src/utils/Matrix.h \

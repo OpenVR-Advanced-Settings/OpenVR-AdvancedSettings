@@ -1,9 +1,9 @@
-
 #pragma once
 
+#include <QObject>
+#include <mutex>
+
 #include "AudioManager.h"
-#include "PttController.h"
-#include <memory>
 #include "../utils/FrameRateUtils.h"
 
 class QQuickWindow;
@@ -29,7 +29,7 @@ struct AudioProfile
     bool defaultProfile = false;
 };
 
-class AudioTabController : public PttController
+class AudioTabController : public QObject
 {
     Q_OBJECT
     Q_PROPERTY( int playbackDeviceIndex READ playbackDeviceIndex WRITE
@@ -58,6 +58,12 @@ class AudioTabController : public PttController
     Q_PROPERTY( bool recordingOverride READ recordingOverride WRITE
                     setRecordingOverride NOTIFY recordingOverrideChanged )
 
+    Q_PROPERTY( bool pttEnabled READ pttEnabled WRITE setPttEnabled NOTIFY
+                    pttEnabledChanged )
+    Q_PROPERTY( bool pttActive READ pttActive NOTIFY pttActiveChanged )
+    Q_PROPERTY( bool pttShowNotification READ pttShowNotification WRITE
+                    setPttShowNotification NOTIFY pttShowNotificationChanged )
+
 private:
     vr::VROverlayHandle_t m_ulNotificationOverlayHandle
         = vr::k_ulOverlayHandleInvalid;
@@ -81,21 +87,27 @@ private:
 
     unsigned settingsUpdateCounter = 0;
 
+    bool m_pttEnabled = false;
+    bool m_pttActive = false;
+    bool m_pttShowNotification = false;
+
     std::unique_ptr<AudioManager> audioManager;
     std::vector<std::pair<std::string, std::string>> m_recordingDevices;
     std::vector<std::pair<std::string, std::string>> m_playbackDevices;
     std::string lastMirrorDevId;
 
-    QString getSettingsName() override
+    std::recursive_mutex eventLoopMutex;
+
+    QString getSettingsName()
     {
         return "audioSettings";
     }
-    void onPttStart() override;
-    void onPttStop() override;
-    void onPttEnabled() override;
-    void onPttDisabled() override;
+    void onPttStart();
+    void onPttStop();
+    void onPttEnabled();
+    void onPttDisabled();
 
-    virtual vr::VROverlayHandle_t getNotificationOverlayHandle() override
+    virtual vr::VROverlayHandle_t getNotificationOverlayHandle()
     {
         return m_ulNotificationOverlayHandle;
     }
@@ -167,6 +179,16 @@ public:
     void onDeviceStateChanged();
     void shutdown();
 
+    bool pttEnabled() const;
+    bool pttActive() const;
+    bool pttShowNotification() const;
+
+    void startPtt();
+    void stopPtt();
+
+    void reloadPttConfig();
+    void savePttConfig();
+
 public slots:
     void setMirrorVolume( float value, bool notify = true );
     void setMirrorMuted( bool value, bool notify = true );
@@ -188,6 +210,11 @@ public slots:
     void setRecordingOverride( bool value, bool notify = true );
 
     void setAudioProfileDefault( bool value, bool notify = true );
+
+    void setPttEnabled( bool value, bool notify = true, bool save = true );
+    void setPttShowNotification( bool value,
+                                 bool notify = true,
+                                 bool save = true );
 
 signals:
     void playbackDeviceIndexChanged( int index );
@@ -213,5 +240,9 @@ signals:
     void recordingOverrideChanged();
 
     void defaultProfileDisplay();
+
+    void pttEnabledChanged( bool value );
+    void pttActiveChanged( bool value );
+    void pttShowNotificationChanged( bool value );
 };
 } // namespace advsettings
