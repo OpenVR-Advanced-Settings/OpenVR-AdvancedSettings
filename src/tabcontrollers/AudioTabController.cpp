@@ -336,7 +336,7 @@ void AudioTabController::setMicReversePtt( bool value, bool notify )
 
     settings::setSetting( settings::BoolSetting::AUDIO_micReversePtt, value );
 
-    if ( m_pttEnabled )
+    if ( pttEnabled() )
     {
         if ( m_pttActive )
         {
@@ -1318,7 +1318,7 @@ void AudioTabController::shutdown()
 
 bool AudioTabController::pttEnabled() const
 {
-    return m_pttEnabled;
+    return settings::getSetting( settings::BoolSetting::AUDIO_pttEnabled );
 }
 
 bool AudioTabController::pttActive() const
@@ -1336,8 +1336,6 @@ void AudioTabController::reloadPttConfig()
     std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
     auto settings = OverlayController::appSettings();
     settings->beginGroup( getSettingsName() );
-    setPttEnabled(
-        settings->value( "pttEnabled", false ).toBool(), true, false );
     setPttShowNotification(
         settings->value( "pttShowNotification", true ).toBool(), true, false );
     settings->endGroup();
@@ -1347,7 +1345,6 @@ void AudioTabController::savePttConfig()
 {
     auto settings = OverlayController::appSettings();
     settings->beginGroup( getSettingsName() );
-    settings->setValue( "pttEnabled", pttEnabled() );
     settings->setValue( "pttShowNotification", pttShowNotification() );
     settings->endGroup();
 }
@@ -1379,25 +1376,26 @@ void AudioTabController::stopPtt()
 void AudioTabController::setPttEnabled( bool value, bool notify, bool save )
 {
     std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
-    if ( value != m_pttEnabled )
+
+    settings::setSetting( settings::BoolSetting::AUDIO_pttEnabled, value );
+
+    if ( value )
     {
-        m_pttEnabled = value;
-        if ( value )
-        {
-            onPttEnabled();
-        }
-        else
-        {
-            onPttDisabled();
-        }
-        if ( notify )
-        {
-            emit pttEnabledChanged( value );
-        }
-        if ( save )
-        {
-            savePttConfig();
-        }
+        onPttEnabled();
+    }
+    else
+    {
+        onPttDisabled();
+    }
+
+    if ( notify )
+    {
+        emit pttEnabledChanged( value );
+    }
+
+    if ( save )
+    {
+        savePttConfig();
     }
 }
 
