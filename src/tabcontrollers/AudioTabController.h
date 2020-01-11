@@ -130,7 +130,7 @@ public:
 
     void eventLoopTick();
 
-    bool pttChangeValid() override;
+    bool pttChangeValid();
 
     int playbackDeviceIndex() const;
 

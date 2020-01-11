@@ -52,7 +52,6 @@ void AudioTabController::initStage1()
     findMicDeviceIndex( audioManager->getMicDevId(), false );
     m_micVolume = audioManager->getMicVolume();
     m_micMuted = audioManager->getMicMuted();
-    reloadPttProfiles();
     reloadPttConfig();
     // Temporarily disabled audio profiles for 1.8.19 until api is clear.
     // reloadAudioProfiles();
@@ -200,7 +199,6 @@ void AudioTabController::eventLoopTick()
     {
         settingsUpdateCounter++;
     }
-    checkPttStatus();
     eventLoopMutex.unlock();
 }
 
