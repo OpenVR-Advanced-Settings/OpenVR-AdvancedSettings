@@ -42,7 +42,6 @@
 #include "tabcontrollers/VideoTabController.h"
 
 #include "openvr/ivrinput.h"
-#include "openvr/overlay_utils.h"
 
 namespace application_strings
 {
@@ -163,7 +162,6 @@ public: // I know it's an ugly hack to make them public to enable external
     SettingsTabController m_settingsTabController;
     UtilitiesTabController m_utilitiesTabController;
     VideoTabController m_videoTabController;
-    overlay::DesktopOverlay m_desktopOverlay;
 
 private:
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
