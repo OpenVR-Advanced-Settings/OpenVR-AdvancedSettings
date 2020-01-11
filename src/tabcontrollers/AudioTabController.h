@@ -88,7 +88,6 @@ private:
     unsigned settingsUpdateCounter = 0;
 
     bool m_pttActive = false;
-    bool m_pttShowNotification = false;
 
     std::unique_ptr<AudioManager> audioManager;
     std::vector<std::pair<std::string, std::string>> m_recordingDevices;
@@ -185,9 +184,6 @@ public:
     void startPtt();
     void stopPtt();
 
-    void reloadPttConfig();
-    void savePttConfig();
-
 public slots:
     void setMirrorVolume( float value, bool notify = true );
     void setMirrorMuted( bool value, bool notify = true );
@@ -210,10 +206,8 @@ public slots:
 
     void setAudioProfileDefault( bool value, bool notify = true );
 
-    void setPttEnabled( bool value, bool notify = true, bool save = true );
-    void setPttShowNotification( bool value,
-                                 bool notify = true,
-                                 bool save = true );
+    void setPttEnabled( bool value, bool notify = true );
+    void setPttShowNotification( bool value, bool notify = true );
 
 signals:
     void playbackDeviceIndexChanged( int index );

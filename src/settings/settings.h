@@ -30,6 +30,7 @@ enum class BoolSetting
     APPLICATION_enableDebug,
 
     AUDIO_pttEnabled,
+    AUDIO_pttShowNotification,
     AUDIO_micProximitySensorCanMute,
     AUDIO_micReversePtt,
 
