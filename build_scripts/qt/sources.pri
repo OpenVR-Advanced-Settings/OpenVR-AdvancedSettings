@@ -16,7 +16,6 @@ SOURCES += src/main.cpp\
     src/utils/setup.cpp \
     src/utils/paths.cpp \
     src/utils/FrameRateUtils.cpp \
-    src/openvr/overlay_utils.cpp \
     src/keyboard_input/keyboard_input.cpp \
     src/keyboard_input/input_parser.cpp \
     src/settings/settings.cpp \
@@ -50,7 +49,6 @@ HEADERS += src/overlaycontroller.h \
     src/utils/setup.h \
     src/utils/paths.h \
     src/utils/FrameRateUtils.h \
-    src/openvr/overlay_utils.h \
     src/keyboard_input/input_parser.h \
     src/keyboard_input/input_sender.h \
     src/settings/settings.h \

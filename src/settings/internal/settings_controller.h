@@ -366,10 +366,6 @@ private:
                             SettingCategory::Playspace,
                             QtInfo{ "flingStrength" },
                             1.0 },
-        DoubleSettingValue{ DoubleSetting::UTILITY_desktopWidth,
-                            SettingCategory::Utility,
-                            QtInfo{ "desktopWidth" },
-                            4.0 },
 
         DoubleSettingValue{ DoubleSetting::VIDEO_brightnessOpacityValue,
                             SettingCategory::Video,

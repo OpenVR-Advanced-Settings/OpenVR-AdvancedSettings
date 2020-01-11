@@ -35,7 +35,6 @@ DISTFILES += \
     src/res/qml/utilities_page/* \
     src/res/qml/utilities_page/media_keys/* \
     src/res/qml/utilities_page/keyboard_utils/* \
-    src/res/qml/desktop_overlay_page/desktop_size/* \
     src/res/qml/utilities_page/alarm_clock/* \
     src/res/qml/audio_page/dialog_boxes/* \
     src/res/qml/audio_page/device_selector/* \
@@ -50,7 +49,6 @@ DISTFILES += \
     src/res/qml/video_page/profiles/* \
     src/res/qml/video_page/dialogboxes/* \
     src/res/qml/video_page/overlaycolorbright/* \
-    src/res/qml/common/* \
-    src/res/qml/desktop_overlay_page/* \
+    src/res/qml/common/*
 
 win32:RC_ICONS += src/res/img/icons/advicon256px.ico
