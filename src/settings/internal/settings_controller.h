@@ -284,6 +284,10 @@ private:
                           QtInfo{ "enableDebug" },
                           false },
 
+        BoolSettingValue{ BoolSetting::AUDIO_pttEnabled,
+                          SettingCategory::Audio,
+                          QtInfo{ "pttEnabled" },
+                          false },
         BoolSettingValue{ BoolSetting::AUDIO_micProximitySensorCanMute,
                           SettingCategory::Audio,
                           QtInfo{ "micProximitySensorCanMute" },

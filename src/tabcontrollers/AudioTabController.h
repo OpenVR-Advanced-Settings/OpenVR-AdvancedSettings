@@ -87,7 +87,6 @@ private:
 
     unsigned settingsUpdateCounter = 0;
 
-    bool m_pttEnabled = false;
     bool m_pttActive = false;
     bool m_pttShowNotification = false;
 

@@ -29,6 +29,7 @@ enum class BoolSetting
     APPLICATION_crashRecoveryDisabled,
     APPLICATION_enableDebug,
 
+    AUDIO_pttEnabled,
     AUDIO_micProximitySensorCanMute,
     AUDIO_micReversePtt,
 
