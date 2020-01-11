@@ -52,7 +52,6 @@ void AudioTabController::initStage1()
     findMicDeviceIndex( audioManager->getMicDevId(), false );
     m_micVolume = audioManager->getMicVolume();
     m_micMuted = audioManager->getMicMuted();
-    reloadPttConfig();
     // Temporarily disabled audio profiles for 1.8.19 until api is clear.
     // reloadAudioProfiles();
     reloadAudioSettings();
@@ -1328,32 +1327,15 @@ bool AudioTabController::pttActive() const
 
 bool AudioTabController::pttShowNotification() const
 {
-    return m_pttShowNotification;
-}
-
-void AudioTabController::reloadPttConfig()
-{
-    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( getSettingsName() );
-    setPttShowNotification(
-        settings->value( "pttShowNotification", true ).toBool(), true, false );
-    settings->endGroup();
-}
-
-void AudioTabController::savePttConfig()
-{
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( getSettingsName() );
-    settings->setValue( "pttShowNotification", pttShowNotification() );
-    settings->endGroup();
+    return settings::getSetting(
+        settings::BoolSetting::AUDIO_pttShowNotification );
 }
 
 void AudioTabController::startPtt()
 {
     m_pttActive = true;
     onPttStart();
-    if ( m_pttShowNotification
+    if ( pttShowNotification()
          && getNotificationOverlayHandle() != vr::k_ulOverlayHandleInvalid )
     {
         vr::VROverlay()->ShowOverlay( getNotificationOverlayHandle() );
@@ -1365,7 +1347,7 @@ void AudioTabController::stopPtt()
 {
     m_pttActive = false;
     onPttStop();
-    if ( m_pttShowNotification
+    if ( pttShowNotification()
          && getNotificationOverlayHandle() != vr::k_ulOverlayHandleInvalid )
     {
         vr::VROverlay()->HideOverlay( getNotificationOverlayHandle() );
@@ -1373,7 +1355,7 @@ void AudioTabController::stopPtt()
     emit pttActiveChanged( m_pttActive );
 }
 
-void AudioTabController::setPttEnabled( bool value, bool notify, bool save )
+void AudioTabController::setPttEnabled( bool value, bool notify )
 {
     std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
 
@@ -1392,29 +1374,18 @@ void AudioTabController::setPttEnabled( bool value, bool notify, bool save )
     {
         emit pttEnabledChanged( value );
     }
-
-    if ( save )
-    {
-        savePttConfig();
-    }
 }
 
-void AudioTabController::setPttShowNotification( bool value,
-                                                 bool notify,
-                                                 bool save )
+void AudioTabController::setPttShowNotification( bool value, bool notify )
 {
     std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
-    if ( value != m_pttShowNotification )
+
+    settings::setSetting( settings::BoolSetting::AUDIO_pttShowNotification,
+                          value );
+
+    if ( notify )
     {
-        m_pttShowNotification = value;
-        if ( notify )
-        {
-            emit pttShowNotificationChanged( value );
-        }
-        if ( save )
-        {
-            savePttConfig();
-        }
+        emit pttShowNotificationChanged( value );
     }
 }
 
