@@ -4,6 +4,7 @@
 #include <mutex>
 
 #include "AudioManager.h"
+#include <memory>
 #include "../utils/FrameRateUtils.h"
 
 class QQuickWindow;
