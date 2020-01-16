@@ -1,7 +1,7 @@
 #ifndef AUDIOMANAGERLINUX_H
 #define AUDIOMANAGERLINUX_H
 
-#include "../AudioManager.h"
+#include "AudioManager.h"
 
 // application namespace
 namespace advsettings

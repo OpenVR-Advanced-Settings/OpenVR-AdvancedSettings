@@ -31,7 +31,7 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/SteamVRTabController.h \
     src/tabcontrollers/UtilitiesTabController.h \
     src/tabcontrollers/VideoTabController.h \
-    src/tabcontrollers/AudioManager.h \
+    src/tabcontrollers/audiomanager/AudioManager.h \
     src/keyboard_input/keyboard_input.h \
     src/media_keys/media_keys.h \
     src/utils/Matrix.h \

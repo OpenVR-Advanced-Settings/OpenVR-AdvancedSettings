@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../AudioManager.h"
+#include "AudioManager.h"
 
 #include <mmdeviceapi.h>
 #include <functiondiscoverykeys_devpkey.h>
