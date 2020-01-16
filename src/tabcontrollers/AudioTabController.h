@@ -3,7 +3,7 @@
 #include <QObject>
 #include <mutex>
 
-#include "AudioManager.h"
+#include "audiomanager/AudioManager.h"
 #include <memory>
 #include "../utils/FrameRateUtils.h"
 
