@@ -91,8 +91,8 @@ private:
     bool m_pttActive = false;
 
     std::unique_ptr<AudioManager> audioManager;
-    std::vector<std::pair<std::string, std::string>> m_recordingDevices;
-    std::vector<std::pair<std::string, std::string>> m_playbackDevices;
+    std::vector<AudioDevice> m_recordingDevices;
+    std::vector<AudioDevice> m_playbackDevices;
     std::string lastMirrorDevId;
 
     std::recursive_mutex eventLoopMutex;

@@ -56,10 +56,8 @@ public:
     virtual bool getMicMuted() override;
     virtual bool setMicMuted( bool value ) override;
 
-    virtual std::vector<std::pair<std::string, std::string>>
-        getRecordingDevices() override;
-    virtual std::vector<std::pair<std::string, std::string>>
-        getPlaybackDevices() override;
+    virtual std::vector<AudioDevice> getRecordingDevices() override;
+    virtual std::vector<AudioDevice> getPlaybackDevices() override;
 
     void deleteMirrorDevice();
 
@@ -91,8 +89,8 @@ private:
     IAudioEndpointVolume* getAudioEndpointVolume( IMMDevice* device );
     std::string getDeviceName( IMMDevice* device );
     std::string getDeviceId( IMMDevice* device );
-    std::vector<std::pair<std::string, std::string>>
-        getDevices( IMMDeviceEnumerator* deviceEnumerator, EDataFlow dataFlow );
+    std::vector<AudioDevice> getDevices( IMMDeviceEnumerator* deviceEnumerator,
+                                         EDataFlow dataFlow );
 };
 
 } // namespace advsettings
