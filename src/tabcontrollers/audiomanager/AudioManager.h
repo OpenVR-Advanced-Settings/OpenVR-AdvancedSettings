@@ -8,6 +8,29 @@ namespace advsettings
 {
 class AudioTabController;
 
+class AudioDevice
+{
+public:
+    AudioDevice( const std::string id, const std::string name )
+        : m_id( id ), m_name( name )
+    {
+    }
+
+    [[nodiscard]] std::string id() const noexcept
+    {
+        return m_id;
+    }
+
+    [[nodiscard]] std::string name() const noexcept
+    {
+        return m_name;
+    }
+
+private:
+    const std::string m_id;
+    const std::string m_name;
+};
+
 class AudioManager
 {
 public:
@@ -39,10 +62,8 @@ public:
     virtual bool getMicMuted() = 0;
     virtual bool setMicMuted( bool value ) = 0;
 
-    virtual std::vector<std::pair<std::string, std::string>>
-        getRecordingDevices() = 0;
-    virtual std::vector<std::pair<std::string, std::string>>
-        getPlaybackDevices() = 0;
+    virtual std::vector<AudioDevice> getRecordingDevices() = 0;
+    virtual std::vector<AudioDevice> getPlaybackDevices() = 0;
 };
 
 } // namespace advsettings

@@ -1,7 +1,7 @@
 #ifndef AUDIOMANAGERLINUX_H
 #define AUDIOMANAGERLINUX_H
 
-#include "../AudioManager.h"
+#include "AudioManager.h"
 
 // application namespace
 namespace advsettings
@@ -36,10 +36,8 @@ public:
     virtual bool getMicMuted() override;
     virtual bool setMicMuted( bool value ) override;
 
-    virtual std::vector<std::pair<std::string, std::string>>
-        getRecordingDevices() override;
-    virtual std::vector<std::pair<std::string, std::string>>
-        getPlaybackDevices() override;
+    virtual std::vector<AudioDevice> getRecordingDevices() override;
+    virtual std::vector<AudioDevice> getPlaybackDevices() override;
 };
 
 } // namespace advsettings

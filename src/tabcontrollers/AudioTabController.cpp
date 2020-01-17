@@ -412,7 +412,7 @@ QString AudioTabController::getPlaybackDeviceName( int index )
     if ( index >= 0 && static_cast<size_t>( index ) < m_playbackDevices.size() )
     {
         return QString::fromStdString(
-            m_playbackDevices[static_cast<size_t>( index )].second );
+            m_playbackDevices[static_cast<size_t>( index )].name() );
     }
     else
     {
@@ -424,7 +424,7 @@ std::string AudioTabController::getPlaybackDeviceID( int index )
 {
     if ( index >= 0 && static_cast<size_t>( index ) < m_playbackDevices.size() )
     {
-        return m_playbackDevices[static_cast<size_t>( index )].first;
+        return m_playbackDevices[static_cast<size_t>( index )].id();
     }
     else
     {
@@ -447,7 +447,7 @@ std::string AudioTabController::getRecordingDeviceID( int index )
 {
     if ( index >= 0 && static_cast<size_t>( index ) < m_playbackDevices.size() )
     {
-        return m_recordingDevices[static_cast<size_t>( index )].first;
+        return m_recordingDevices[static_cast<size_t>( index )].id();
     }
     else
     {
@@ -461,7 +461,7 @@ QString AudioTabController::getRecordingDeviceName( int index )
     if ( index >= 0 && static_cast<size_t>( index ) < m_playbackDevices.size() )
     {
         return QString::fromStdString(
-            m_recordingDevices[static_cast<size_t>( index )].second );
+            m_recordingDevices[static_cast<size_t>( index )].name() );
     }
     else
     {
@@ -494,7 +494,7 @@ void AudioTabController::setPlaybackDeviceIndex( int index, bool notify )
         {
             // Code to only change the Device and not apply changes to SteamVR
             audioManager->setPlaybackDevice(
-                m_playbackDevices[static_cast<size_t>( index )].first, notify );
+                m_playbackDevices[static_cast<size_t>( index )].id(), notify );
         }
         else if ( notify )
         {
@@ -525,7 +525,6 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
             }
             else
             {
-                vr::VRSettings()->Sync();
                 audioManager->setMirrorDevice( "", notify );
             }
         }
@@ -538,7 +537,7 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
             vr::VRSettings()->SetString(
                 vr::k_pch_audio_Section,
                 vr::k_pch_audio_PlaybackMirrorDevice_String,
-                m_playbackDevices[static_cast<size_t>( index )].first.c_str(),
+                m_playbackDevices[static_cast<size_t>( index )].id().c_str(),
                 &vrSettingsError );
             if ( vrSettingsError != vr::VRSettingsError_None )
             {
@@ -551,9 +550,8 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
             }
             else
             {
-                vr::VRSettings()->Sync();
                 audioManager->setMirrorDevice(
-                    m_playbackDevices[static_cast<size_t>( index )].first,
+                    m_playbackDevices[static_cast<size_t>( index )].id(),
                     notify );
             }
         }
@@ -583,8 +581,7 @@ void AudioTabController::setMicDeviceIndex( int index, bool notify )
             setMicMuted( false, true );
             // code to just change Mic
             audioManager->setMicDevice(
-                m_recordingDevices[static_cast<size_t>( index )].first,
-                notify );
+                m_recordingDevices[static_cast<size_t>( index )].id(), notify );
             if ( tempProx )
             {
                 setMicProximitySensorCanMute( true );
@@ -603,7 +600,7 @@ void AudioTabController::findPlaybackDeviceIndex( std::string id, bool notify )
     bool deviceFound = false;
     for ( auto d : m_playbackDevices )
     {
-        if ( d.first.compare( id ) == 0 )
+        if ( d.id().compare( id ) == 0 )
         {
             deviceFound = true;
             break;
@@ -629,7 +626,7 @@ void AudioTabController::findMirrorDeviceIndex( std::string id, bool notify )
     bool deviceFound = false;
     for ( auto d : m_playbackDevices )
     {
-        if ( d.first.compare( id ) == 0 )
+        if ( d.id().compare( id ) == 0 )
         {
             deviceFound = true;
             break;
@@ -655,7 +652,7 @@ void AudioTabController::findMicDeviceIndex( std::string id, bool notify )
     bool deviceFound = false;
     for ( auto d : m_recordingDevices )
     {
-        if ( d.first.compare( id ) == 0 )
+        if ( d.id().compare( id ) == 0 )
         {
             deviceFound = true;
             break;
@@ -935,10 +932,6 @@ void AudioTabController::deleteAudioProfile( unsigned index )
                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                            vrSettingsError );
             }
-            else
-            {
-                vr::VRSettings()->Sync();
-            }
 
             vr::VRSettings()->RemoveKeyInSection(
                 vr::k_pch_audio_Section,
@@ -952,10 +945,6 @@ void AudioTabController::deleteAudioProfile( unsigned index )
                     << "\" setting: "
                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                            vrSettingsError );
-            }
-            else
-            {
-                vr::VRSettings()->Sync();
             }
         }
         audioProfiles.erase( pos );
@@ -1085,7 +1074,7 @@ int AudioTabController::getPlaybackIndex( std::string str )
     // increment it.
     for ( unsigned int i = 0; i < m_playbackDevices.size(); i++ )
     {
-        if ( str.compare( m_playbackDevices[i].first ) == 0 )
+        if ( str.compare( m_playbackDevices[i].id() ) == 0 )
         {
             return static_cast<int>( i );
         }
@@ -1099,7 +1088,7 @@ int AudioTabController::getRecordingIndex( std::string str )
     // increment it.
     for ( unsigned int i = 0; i < m_recordingDevices.size(); i++ )
     {
-        if ( str.compare( m_recordingDevices[i].first ) == 0 )
+        if ( str.compare( m_recordingDevices[i].id() ) == 0 )
         {
             return static_cast<int>( i );
         }
@@ -1113,7 +1102,7 @@ int AudioTabController::getMirrorIndex( std::string str )
     // increment it.
     for ( unsigned int i = 0; i < m_playbackDevices.size(); i++ )
     {
-        if ( str.compare( m_playbackDevices[i].first ) == 0 )
+        if ( str.compare( m_playbackDevices[i].id() ) == 0 )
         {
             return static_cast<int>( i );
         }
@@ -1137,7 +1126,7 @@ void AudioTabController::setDefaultPlayback( int index, bool notify )
     vr::VRSettings()->SetString(
         vr::k_pch_audio_Section,
         vr::k_pch_audio_PlaybackDeviceOverrideName_String,
-        m_playbackDevices[static_cast<size_t>( index )].first.c_str(),
+        m_playbackDevices[static_cast<size_t>( index )].id().c_str(),
         &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
@@ -1149,9 +1138,8 @@ void AudioTabController::setDefaultPlayback( int index, bool notify )
     }
     else
     {
-        vr::VRSettings()->Sync();
         audioManager->setPlaybackDevice(
-            m_playbackDevices[static_cast<size_t>( index )].first, notify );
+            m_playbackDevices[static_cast<size_t>( index )].id(), notify );
     }
 }
 
@@ -1161,7 +1149,7 @@ void AudioTabController::setDefaultMic( int index, bool notify )
     vr::VRSettings()->SetString(
         vr::k_pch_audio_Section,
         vr::k_pch_audio_RecordingDeviceOverrideName_String,
-        m_recordingDevices[static_cast<size_t>( index )].first.c_str(),
+        m_recordingDevices[static_cast<size_t>( index )].id().c_str(),
         &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
@@ -1173,9 +1161,8 @@ void AudioTabController::setDefaultMic( int index, bool notify )
     }
     else
     {
-        vr::VRSettings()->Sync();
         audioManager->setMicDevice(
-            m_recordingDevices[static_cast<size_t>( index )].first, notify );
+            m_recordingDevices[static_cast<size_t>( index )].id(), notify );
     }
 }
 
@@ -1198,7 +1185,6 @@ void AudioTabController::setDefaultMirror( int index, bool notify )
         }
         else
         {
-            vr::VRSettings()->Sync();
             audioManager->setMirrorDevice( "", notify );
         }
     }
@@ -1208,7 +1194,7 @@ void AudioTabController::setDefaultMirror( int index, bool notify )
         vr::VRSettings()->SetString(
             vr::k_pch_audio_Section,
             vr::k_pch_audio_PlaybackMirrorDevice_String,
-            m_playbackDevices[static_cast<size_t>( index )].first.c_str(),
+            m_playbackDevices[static_cast<size_t>( index )].id().c_str(),
             &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
@@ -1220,9 +1206,8 @@ void AudioTabController::setDefaultMirror( int index, bool notify )
         }
         else
         {
-            vr::VRSettings()->Sync();
             audioManager->setMirrorDevice(
-                m_playbackDevices[static_cast<size_t>( index )].first, notify );
+                m_playbackDevices[static_cast<size_t>( index )].id(), notify );
         }
     }
 }

@@ -372,7 +372,6 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                 }
                 else
                 {
-                    vr::VRSettings()->Sync( true );
                     m_chaperoneSwitchToBeginnerActive = true;
                 }
             }
@@ -395,7 +394,6 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
             }
             else
             {
-                vr::VRSettings()->Sync( true );
                 m_chaperoneSwitchToBeginnerActive = false;
             }
         }
@@ -707,7 +705,6 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
             vr::k_pch_CollisionBounds_ColorGammaA_Int32,
             static_cast<int32_t>( 255 * m_visibility ) );
 
-        vr::VRSettings()->Sync();
         if ( notify )
         {
             emit boundsVisibilityChanged( m_visibility );
@@ -729,7 +726,6 @@ void ChaperoneTabController::setFadeDistance( float value, bool notify )
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_FadeDistance_Float,
             m_fadeDistance );
-        vr::VRSettings()->Sync();
         if ( notify )
         {
             emit fadeDistanceChanged( m_fadeDistance );
@@ -781,7 +777,6 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
             m_centerMarker );
-        vr::VRSettings()->Sync();
         if ( notify )
         {
             emit centerMarkerChanged( m_centerMarker );
@@ -802,7 +797,6 @@ void ChaperoneTabController::setPlaySpaceMarker( bool value, bool notify )
         vr::VRSettings()->SetBool( vr::k_pch_CollisionBounds_Section,
                                    vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
                                    m_playSpaceMarker );
-        vr::VRSettings()->Sync();
         if ( notify )
         {
             emit playSpaceMarkerChanged( m_playSpaceMarker );
@@ -931,10 +925,6 @@ void ChaperoneTabController::setChaperoneSwitchToBeginnerEnabled( bool value,
                     << vr::k_pch_CollisionBounds_Style_Int32 << "\" setting: "
                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                            vrSettingsError );
-            }
-            else
-            {
-                vr::VRSettings()->Sync( true );
             }
         }
 
@@ -1436,7 +1426,6 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
             setChaperoneShowDashboardEnabled(
                 profile.enableChaperoneShowDashboard );
         }
-        vr::VRSettings()->Sync( true );
     }
 }
 
@@ -1595,7 +1584,6 @@ void ChaperoneTabController::reset()
 
     setForceBounds( false );
 
-    vr::VRSettings()->Sync();
     settingsUpdateCounter = 999; // Easiest way to get default values
 }
 
@@ -1703,10 +1691,6 @@ void ChaperoneTabController::shutdown()
                            << "\" setting: "
                            << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                                   vrSettingsError );
-        }
-        else
-        {
-            vr::VRSettings()->Sync( true );
         }
     }
 }

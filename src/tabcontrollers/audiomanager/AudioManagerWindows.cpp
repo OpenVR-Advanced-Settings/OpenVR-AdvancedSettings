@@ -354,14 +354,12 @@ bool AudioManagerWindows::setMicMuted( bool value )
     return false;
 }
 
-std::vector<std::pair<std::string, std::string>>
-    AudioManagerWindows::getRecordingDevices()
+std::vector<AudioDevice> AudioManagerWindows::getRecordingDevices()
 {
     return getDevices( audioDeviceEnumerator, eCapture );
 }
 
-std::vector<std::pair<std::string, std::string>>
-    AudioManagerWindows::getPlaybackDevices()
+std::vector<AudioDevice> AudioManagerWindows::getPlaybackDevices()
 {
     return getDevices( audioDeviceEnumerator, eRender );
 }
@@ -505,11 +503,11 @@ std::string AudioManagerWindows::getDeviceId( IMMDevice* device )
     return "";
 }
 
-std::vector<std::pair<std::string, std::string>>
+std::vector<AudioDevice>
     AudioManagerWindows::getDevices( IMMDeviceEnumerator* deviceEnumerator,
                                      EDataFlow dataFlow )
 {
-    std::vector<std::pair<std::string, std::string>> retval;
+    std::vector<AudioDevice> retval;
     IMMDeviceCollection* ppDevices = nullptr;
     if ( deviceEnumerator->EnumAudioEndpoints(
              dataFlow, DEVICE_STATE_ACTIVE, &ppDevices )
@@ -523,8 +521,8 @@ std::vector<std::pair<std::string, std::string>>
             ppDevices->Item( i, &device );
             if ( device )
             {
-                retval.emplace_back( getDeviceId( device ),
-                                     getDeviceName( device ) );
+                retval.emplace_back( AudioDevice( getDeviceId( device ),
+                                                  getDeviceName( device ) ) );
             }
         }
         ppDevices->Release();
