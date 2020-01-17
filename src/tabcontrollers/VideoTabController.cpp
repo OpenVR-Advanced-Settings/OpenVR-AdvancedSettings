@@ -11,7 +11,11 @@ void VideoTabController::initStage1()
 {
     // In order to ensure gain is "normal" before applying to either overlay or
     // gain.
+
     resetGain();
+
+    m_videoDashboardUpdateCounter
+        = utils::adjustUpdateRate( k_videoDashboardUpdateCounter );
 
     initBrightnessOverlay();
     initColorOverlay();
@@ -130,8 +134,7 @@ void VideoTabController::eventLoopTick() {}
 
 void VideoTabController::dashboardLoopTick()
 {
-    // TODO different key
-    if ( settingsUpdateCounter >= k_steamVrSettingsUpdateCounter )
+    if ( settingsUpdateCounter >= m_videoDashboardUpdateCounter )
     {
         vr::EVRSettingsError vrSettingsError;
 

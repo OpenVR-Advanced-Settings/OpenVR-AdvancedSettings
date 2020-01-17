@@ -72,6 +72,11 @@ constexpr int k_moveCenterSettingsUpdateCounter = 83;
 constexpr int k_settingsTabSettingsUpdateCounter = 157;
 constexpr int k_steamVrSettingsUpdateCounter = 97;
 constexpr int k_utilitiesSettingsUpdateCounter = 19;
+
+// Dashboard Updates These can be faster as they should only be running while
+// Dashboard is active.
+constexpr int k_videoDashboardUpdateCounter = 47;
+
 // k_nonVsyncTickRate determines number of ms we wait to force the next event
 // loop tick when vsync is too late due to dropped frames.
 constexpr int k_nonVsyncTickRate = 20;

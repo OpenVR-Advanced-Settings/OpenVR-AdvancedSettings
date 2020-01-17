@@ -4,6 +4,7 @@
 #include <QString>
 #include <QVariant>
 #include <openvr.h>
+#include "../utils/FrameRateUtils.h"
 
 class QQuickWindow;
 
@@ -88,6 +89,8 @@ private:
     bool m_allowSupersampleOverride = false;
     bool m_motionSmoothing = true;
     bool m_allowSupersampleFiltering = true;
+
+    unsigned int m_videoDashboardUpdateCounter = 47;
 
     void setColor( float R,
                    float G,
