@@ -57,7 +57,7 @@ install:
   - sudo apt-get update -qq
   - sudo apt-get install build-essential libgl1-mesa-dev
   - sudo apt-get install qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2  qt512tools  qt512base
-  - sudo apt-get install libx11-dev libxt-dev libxtst-dev
+  - sudo apt-get install libx11-dev libxt-dev libxtst-dev libpulse-dev
   - sudo apt-get install bear clang-tidy
   - qtchooser -install opt-qt512 /opt/qt512/bin/qmake
 
