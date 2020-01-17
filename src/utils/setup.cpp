@@ -141,7 +141,6 @@ void installApplicationManifest( const std::string manifestPath )
                     vr::VRApplications()->GetApplicationsErrorNameFromEnum(
                         app_error ) ) );
         }
-        vr::VRSettings()->Sync( true );
     }
 }
 
@@ -153,7 +152,6 @@ void removeApplicationManifest( const std::string manifestPath )
     {
         vr::VRApplications()->RemoveApplicationManifest( manifestPath.c_str() );
         LOG( INFO ) << "Attempting to Remove Manifest At:  " << manifestPath;
-        vr::VRSettings()->Sync( true );
     }
     if ( vr::VRApplications()->IsApplicationInstalled(
              application_strings::applicationKey ) )
@@ -270,8 +268,6 @@ void forceRemoveApplicationManifest()
         {
             throw std::runtime_error( "Could not find application manifest." );
         }
-        // Keep Settings Clean
-        vr::VRSettings()->Sync( true );
         if ( installManifest )
         {
             reinstallApplicationManifest( *manifestPath );

@@ -519,7 +519,6 @@ void VideoTabController::setColorRed( float value, bool notify, bool keepValue )
 
         LOG( DEBUG ) << "Changed Red Value to: " << colorRed();
 
-        vr::VRSettings()->Sync();
         if ( notify )
         {
             emit colorRedChanged( colorRed() );
@@ -570,7 +569,6 @@ void VideoTabController::setColorGreen( float value,
 
         LOG( DEBUG ) << "Changed Green Value to: " << colorGreen();
 
-        vr::VRSettings()->Sync();
         if ( notify )
         {
             emit colorGreenChanged( colorGreen() );
@@ -620,7 +618,6 @@ void VideoTabController::setColorBlue( float value,
 
         LOG( DEBUG ) << "Changed Blue Value to: " << colorBlue();
 
-        vr::VRSettings()->Sync();
         if ( notify )
         {
             emit colorBlueChanged( colorBlue() );
@@ -712,7 +709,6 @@ void VideoTabController::initSupersampleOverride()
                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                               vrSettingsError );
     }
-    vr::VRSettings()->Sync();
     setAllowSupersampleOverride( temporary, true );
 }
 
@@ -737,7 +733,6 @@ void VideoTabController::setSuperSampling( float value, const bool notify )
         vr::VRSettings()->SetFloat( vr::k_pch_SteamVR_Section,
                                     vr::k_pch_SteamVR_SupersampleScale_Float,
                                     m_superSampling );
-        vr::VRSettings()->Sync();
         if ( notify )
         {
             emit superSamplingChanged( m_superSampling );
@@ -755,7 +750,6 @@ void VideoTabController::setAllowSupersampleOverride( const bool value,
             vr::k_pch_SteamVR_Section,
             vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
             m_allowSupersampleOverride );
-        vr::VRSettings()->Sync();
         if ( notify )
         {
             emit allowSupersampleOverrideChanged( m_allowSupersampleOverride );
@@ -783,7 +777,6 @@ void VideoTabController::setMotionSmoothing( const bool value,
         vr::VRSettings()->SetBool( vr::k_pch_SteamVR_Section,
                                    vr::k_pch_SteamVR_MotionSmoothing_Bool,
                                    m_motionSmoothing );
-        vr::VRSettings()->Sync();
         if ( notify )
         {
             emit motionSmoothingChanged( m_motionSmoothing );
@@ -807,7 +800,6 @@ void VideoTabController::initMotionSmoothing()
                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                               vrSettingsError );
     }
-    vr::VRSettings()->Sync();
     setMotionSmoothing( temporary, true );
 }
 
@@ -826,7 +818,6 @@ void VideoTabController::setAllowSupersampleFiltering( const bool value,
             vr::k_pch_SteamVR_Section,
             vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
             m_allowSupersampleFiltering );
-        vr::VRSettings()->Sync();
         if ( notify )
         {
             emit allowSupersampleFilteringChanged(
@@ -893,7 +884,6 @@ void VideoTabController::applyVideoProfile( const unsigned index )
         setBrightnessEnabled( profile.brightnessToggle );
         setBrightnessValue( profile.brightnessValue );
         setColorOverlayOpacity( profile.opacity );
-        vr::VRSettings()->Sync( true );
     }
 }
 

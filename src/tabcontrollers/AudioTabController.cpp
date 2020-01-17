@@ -525,7 +525,6 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
             }
             else
             {
-                vr::VRSettings()->Sync();
                 audioManager->setMirrorDevice( "", notify );
             }
         }
@@ -551,7 +550,6 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
             }
             else
             {
-                vr::VRSettings()->Sync();
                 audioManager->setMirrorDevice(
                     m_playbackDevices[static_cast<size_t>( index )].id(),
                     notify );
@@ -934,10 +932,6 @@ void AudioTabController::deleteAudioProfile( unsigned index )
                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                            vrSettingsError );
             }
-            else
-            {
-                vr::VRSettings()->Sync();
-            }
 
             vr::VRSettings()->RemoveKeyInSection(
                 vr::k_pch_audio_Section,
@@ -951,10 +945,6 @@ void AudioTabController::deleteAudioProfile( unsigned index )
                     << "\" setting: "
                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                            vrSettingsError );
-            }
-            else
-            {
-                vr::VRSettings()->Sync();
             }
         }
         audioProfiles.erase( pos );
@@ -1148,7 +1138,6 @@ void AudioTabController::setDefaultPlayback( int index, bool notify )
     }
     else
     {
-        vr::VRSettings()->Sync();
         audioManager->setPlaybackDevice(
             m_playbackDevices[static_cast<size_t>( index )].id(), notify );
     }
@@ -1172,7 +1161,6 @@ void AudioTabController::setDefaultMic( int index, bool notify )
     }
     else
     {
-        vr::VRSettings()->Sync();
         audioManager->setMicDevice(
             m_recordingDevices[static_cast<size_t>( index )].id(), notify );
     }
@@ -1197,7 +1185,6 @@ void AudioTabController::setDefaultMirror( int index, bool notify )
         }
         else
         {
-            vr::VRSettings()->Sync();
             audioManager->setMirrorDevice( "", notify );
         }
     }
@@ -1219,7 +1206,6 @@ void AudioTabController::setDefaultMirror( int index, bool notify )
         }
         else
         {
-            vr::VRSettings()->Sync();
             audioManager->setMirrorDevice(
                 m_playbackDevices[static_cast<size_t>( index )].id(), notify );
         }
