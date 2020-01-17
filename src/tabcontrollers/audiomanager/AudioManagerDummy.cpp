@@ -118,14 +118,12 @@ bool AudioManagerDummy::setMicMuted( bool value )
     return false;
 }
 
-std::vector<std::pair<std::string, std::string>>
-    AudioManagerDummy::getRecordingDevices()
+std::vector<AudioDevice> AudioManagerDummy::getRecordingDevices()
 {
     return {};
 }
 
-std::vector<std::pair<std::string, std::string>>
-    AudioManagerDummy::getPlaybackDevices()
+std::vector<AudioDevice> AudioManagerDummy::getPlaybackDevices()
 {
     return {};
 }
