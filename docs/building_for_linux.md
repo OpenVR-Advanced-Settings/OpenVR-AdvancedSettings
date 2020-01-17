@@ -16,6 +16,7 @@
   * [qtchooser and versions](#qtchooser-and-versions)
   * [X11](#x11)
   * [DBUS](#dbus)
+  * [PulseAudio](#pulseaudio)
   * [SteamVR](#steamvr)
   * [clang-tidy and bear](#clang-tidy-and-bear)
 * [TL;DRs](#tldrs)
@@ -188,6 +189,12 @@ DBUS is  needed for controlling media players from VR.
 
 This feature and dependency can be disabled during compilation.
 
+## PulseAudio
+
+PulseAudio is needed for controlling audio devices through the Audio tab.
+
+This feature and dependency can be disabled during compilation.
+
 ## SteamVR
 
 On a completely fresh Ubuntu install the program also requires the following libraries to run.
@@ -226,7 +233,7 @@ sudo apt-get -y install build-essential libgl1-mesa-dev
 # Install Qt
 sudo apt-get -y install qt512-meta-full qtchooser
 # Install additional features
-sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
+sudo apt-get -y install libx11-dev libxt-dev libxtst-dev libpulse-dev
 # Install necessary SteamVR libraries
 sudo apt-get -y install libsdl2-dev libvulkan-dev
 # Set up qtchooser
@@ -253,7 +260,7 @@ sudo apt-get -y install build-essential libgl1-mesa-dev
 # Install Qt
 sudo apt-get -y install qt512-meta-full qtchooser
 # Install additional features
-sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
+sudo apt-get -y install libx11-dev libxt-dev libxtst-dev libpulse-dev
 # Install necessary SteamVR libraries
 sudo apt-get -y install libsdl2-dev libvulkan-dev
 # Set up qtchooser
@@ -277,7 +284,7 @@ sudo apt-get -y install build-essential libgl1-mesa-dev
 # Install Qt
 sudo apt-get -y install qt5-default qtmultimedia5-dev libqt5multimediawidgets5 libqt5multimedia5-plugins libqt5multimedia5 qml-module-qtquick-extras qml-module-qtquick-controls2 qml-module-qtquick-dialogs qtdeclarative5-dev qtchooser
 # Install additional features
-sudo apt-get -y install libx11-dev libxt-dev libxtst-dev
+sudo apt-get -y install libx11-dev libxt-dev libxtst-dev libpulse-dev
 # Install necessary SteamVR libraries
 sudo apt-get -y install libsdl2-dev libvulkan-dev
 # Set up qtchooser
@@ -300,7 +307,7 @@ sudo pacman --noconfirm -S base-devel mesa libudev0-shim
 # Install Qt
 sudo pacman --noconfirm -S qt5-declarative qt5-multimedia
 # Install additional features
-sudo pacman --noconfirm -S xorg-server dbus
+sudo pacman --noconfirm -S xorg-server dbus libpulse-dev
 # Compile
 qmake
 make -j2
@@ -334,6 +341,7 @@ The following values can be appended to the `CONFIG` internal variable in order 
 | ----- | ------- |
 | `noX11` | Disables X11 specific features (VR to keyboard input). |
 | `noDBUS` | Disables DBUS specific features (control media players). |
+| `noPulse` | Disables PulseAudio specific features (change audio devices). |
 | `debugSymbolsAndLogs` | Enables debug symbols and debug logging calls (while still having release optimizations). |
 
 The values are case sensitive.
@@ -346,6 +354,11 @@ qmake CONFIG+=noX11
 If you want to disable both X11 and DBUS features you would type
 ```bash
 qmake CONFIG+=noX11 CONFIG+=noDBUS
+```
+
+If you want to disable X11, DBUS and PulseAudio features you would type
+```bash
+qmake CONFIG+=noX11 CONFIG+=noDBUS CONFIG+=noPulse
 ```
 
 The location for `make install` can be configured in the `qmake` step.
