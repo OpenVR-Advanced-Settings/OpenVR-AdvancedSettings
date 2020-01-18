@@ -110,6 +110,8 @@ private:
 
     void initBrightnessOverlay();
 
+    void synchGain();
+
     std::vector<VideoProfile> videoProfiles;
 
     QString getSettingsName()

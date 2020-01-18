@@ -12,6 +12,7 @@ void VideoTabController::initStage1()
     // In order to ensure gain is "normal" before applying to either overlay or
     // gain.
 
+    synchGain();
     resetGain();
 
     m_videoDashboardUpdateCounter
@@ -212,6 +213,16 @@ void VideoTabController::dashboardLoopTick()
                                   vrSettingsError );
         }
         setMotionSmoothing( ms );
+
+        // Synch's our saved Values of gain to the SteamVR's version
+        // This will allow other apps to modify Gain.
+        // Gain Values should be re-synched when not using overlay
+        // however double color correction is possible if external apps are
+        // adjusted while color overlay is active
+        if ( !colorOverlayEnabled() )
+        {
+            synchGain();
+        }
 
         settingsUpdateCounter = 0;
     }
@@ -477,6 +488,72 @@ void VideoTabController::setColorOverlayOpacity( float value, bool notify )
         if ( notify )
         {
             emit colorOverlayOpacityChanged( value );
+        }
+    }
+}
+
+void VideoTabController::synchGain()
+{
+    vr::EVRSettingsError vrSettingsError;
+
+    auto red = vr::VRSettings()->GetFloat(
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_HmdDisplayColorGainR_Float,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_SteamVR_HmdDisplayColorGainR_Float
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    else
+    {
+        if ( static_cast<float>( fabs( red - colorRed() ) ) > 0.005f )
+        {
+            settings::setSetting( settings::DoubleSetting::VIDEO_colorRed,
+                                  static_cast<double>( red ) );
+        }
+    }
+    auto blue = vr::VRSettings()->GetFloat(
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_HmdDisplayColorGainB_Float,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_SteamVR_HmdDisplayColorGainB_Float
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    else
+    {
+        if ( static_cast<float>( fabs( blue - colorBlue() ) ) > 0.005f )
+        {
+            settings::setSetting( settings::DoubleSetting::VIDEO_colorBlue,
+                                  static_cast<double>( blue ) );
+        }
+    }
+    auto green = vr::VRSettings()->GetFloat(
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_HmdDisplayColorGainG_Float,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_SteamVR_HmdDisplayColorGainG_Float
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    else
+    {
+        if ( static_cast<float>( fabs( green - colorGreen() ) ) > 0.005f )
+        {
+            settings::setSetting( settings::DoubleSetting::VIDEO_colorGreen,
+                                  static_cast<double>( green ) );
         }
     }
 }
