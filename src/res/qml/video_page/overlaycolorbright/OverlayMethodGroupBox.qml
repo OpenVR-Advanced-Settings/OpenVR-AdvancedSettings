@@ -63,7 +63,7 @@ GroupBox {
                 }
                 onValueChanged: {
 
-                    VideoTabController.setBrightnessValue(value.toFixed(2), true)
+                    VideoTabController.setBrightnessOpacityValue(value.toFixed(2), true)
                 }
             }
 
@@ -85,7 +85,7 @@ GroupBox {
                         var v2 = (val2/100).toFixed(2)
                             brightnessSlider.value = v
                     }
-                    text = Math.round(VideoTabController.brightnessValue * 100) + "%"
+                    text = Math.round(VideoTabController.brightnessOpacityValue * 100) + "%"
                 }
             }
         }
@@ -285,7 +285,7 @@ GroupBox {
     }
 
     Component.onCompleted: {
-        brightnessSlider.value = VideoTabController.brightnessValue
+        brightnessSlider.value = VideoTabController.brightnessOpacityValue
         brightnessToggle.checked = VideoTabController.brightnessEnabled
         colorToggle.checked = VideoTabController.colorOverlayEnabled
         opacitySlider.value = VideoTabController.colorOverlayOpacity
@@ -303,8 +303,8 @@ GroupBox {
     Connections {
         target: VideoTabController
 
-        onBrightnessValueChanged: {
-            brightnessSlider.value = VideoTabController.brightnessValue
+        onBrightnessOpacityValueChanged: {
+            brightnessSlider.value = VideoTabController.brightnessOpacityValue
         }
         onBrightnessEnabledChanged: {
             brightnessToggle.checked = VideoTabController.brightnessEnabled

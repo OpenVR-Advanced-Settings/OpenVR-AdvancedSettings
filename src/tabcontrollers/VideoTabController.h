@@ -32,9 +32,9 @@ struct VideoProfile
     float colorGreen = 1.0f;
     float colorBlue = 1.0f;
     bool brightnessToggle = false;
-    float brightnessValue = 1.0f;
+    float brightnessOpacityValue = 1.0f;
     bool overlayMethodState = false;
-    float opacity = 0.0f;
+    float opacity = 0.0f; // TODO check
 };
 
 class VideoTabController : public QObject
@@ -42,8 +42,9 @@ class VideoTabController : public QObject
     Q_OBJECT
     Q_PROPERTY( bool brightnessEnabled READ brightnessEnabled WRITE
                     setBrightnessEnabled NOTIFY brightnessEnabledChanged )
-    Q_PROPERTY( float brightnessValue READ brightnessValue WRITE
-                    setBrightnessValue NOTIFY brightnessValueChanged )
+    Q_PROPERTY(
+        float brightnessOpacityValue READ brightnessOpacityValue WRITE
+            setBrightnessOpacityValue NOTIFY brightnessOpacityValueChanged )
     Q_PROPERTY(
         float colorRed READ colorRed WRITE setColorRed NOTIFY colorRedChanged )
     Q_PROPERTY( float colorGreen READ colorGreen WRITE setColorGreen NOTIFY
@@ -106,11 +107,10 @@ private:
     void loadColorOverlay();
 
     void reloadVideoConfig();
-    void setBrightnessOpacityValue();
 
     void initBrightnessOverlay();
 
-    void synchGain();
+    void synchGain( bool setValue = false );
 
     std::vector<VideoProfile> videoProfiles;
 
@@ -131,8 +131,6 @@ private:
 
 public:
     float brightnessOpacityValue() const;
-    // inverse of brightnessValue
-    float brightnessValue() const;
     bool brightnessEnabled() const;
 
     // Color overlay Getters
@@ -163,7 +161,7 @@ public slots:
     void setBrightnessEnabled( bool value,
                                bool notify = true,
                                bool keepValue = false );
-    void setBrightnessValue( float percvalue, bool notify = true );
+    void setBrightnessOpacityValue( float percvalue, bool notify = true );
 
     void setSuperSampling( float value, bool notify = true );
     void setAllowSupersampleOverride( bool value, bool notify = true );
@@ -191,7 +189,7 @@ public slots:
 
 signals:
     void brightnessEnabledChanged( bool value );
-    void brightnessValueChanged( float value );
+    void brightnessOpacityValueChanged( float value );
     void colorRedChanged( float value );
     void colorGreenChanged( float value );
     void colorBlueChanged( float value );

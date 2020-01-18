@@ -12,7 +12,7 @@ void VideoTabController::initStage1()
     // In order to ensure gain is "normal" before applying to either overlay or
     // gain.
 
-    synchGain();
+    synchGain( true );
     resetGain();
 
     m_videoDashboardUpdateCounter
@@ -25,6 +25,11 @@ void VideoTabController::initStage1()
     m_overlayInit = true;
     reloadVideoConfig();
     reloadVideoProfiles();
+
+    if ( brightnessEnabled() )
+    {
+        setBrightnessEnabled( true, false, true );
+    }
 }
 
 void VideoTabController::initBrightnessOverlay()
@@ -216,13 +221,13 @@ void VideoTabController::dashboardLoopTick()
 
         // Synch's our saved Values of gain to the SteamVR's version
         // This will allow other apps to modify Gain.
-        // Gain Values should be re-synched when not using overlay
-        // however double color correction is possible if external apps are
-        // adjusted while color overlay is active
-        if ( !colorOverlayEnabled() )
+
+        bool valueAdjust = true;
+        if ( isOverlayMethodActive() )
         {
-            synchGain();
+            valueAdjust = false;
         }
+        synchGain( valueAdjust );
 
         settingsUpdateCounter = 0;
     }
@@ -244,7 +249,14 @@ void VideoTabController::reloadVideoConfig()
     setColorBlue( colorBlue() );
 
     settings->endGroup();
-    setBrightnessOpacityValue();
+    vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
+        m_brightnessOverlayHandle, brightnessOpacityValue() );
+    if ( overlayError != vr::VROverlayError_None )
+    {
+        LOG( ERROR ) << "Could not set alpha for Brightness Overlay: "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                            overlayError );
+    }
     loadColorOverlay();
     settings->sync();
 }
@@ -253,12 +265,6 @@ float VideoTabController::brightnessOpacityValue() const
 {
     return static_cast<float>( settings::getSetting(
         settings::DoubleSetting::VIDEO_brightnessOpacityValue ) );
-}
-
-float VideoTabController::brightnessValue() const
-{
-    return static_cast<float>( settings::getSetting(
-        settings::DoubleSetting::VIDEO_brightnessValue ) );
 }
 
 bool VideoTabController::brightnessEnabled() const
@@ -304,30 +310,28 @@ void VideoTabController::setBrightnessEnabled( bool value,
     }
 }
 
-void VideoTabController::setBrightnessValue( float percvalue, bool notify )
+void VideoTabController::setBrightnessOpacityValue( float percvalue,
+                                                    bool notify )
 {
     // This takes the Perceived value, and converts it to allow more accurate
     // linear positioning. (human perception logarithmic)
     float realvalue = static_cast<float>(
         std::pow( static_cast<double>( 1.0f - percvalue ), 1 / 3. ) );
 
-    if ( fabs( static_cast<double>( realvalue - brightnessOpacityValue() ) )
+    if ( fabs( static_cast<double>( percvalue - brightnessOpacityValue() ) )
          > .005 )
     {
-        settings::setSetting( settings::DoubleSetting::VIDEO_brightnessValue,
-                              static_cast<double>( percvalue ) );
+        settings::setSetting(
+            settings::DoubleSetting::VIDEO_brightnessOpacityValue,
+            static_cast<double>( percvalue ) );
 
-        if ( realvalue <= 1.0f && realvalue >= 0.0f )
+        if ( realvalue <= 1.0f && realvalue >= 0.00f )
         {
-            settings::setSetting(
-                settings::DoubleSetting::VIDEO_brightnessOpacityValue,
-                static_cast<double>( realvalue ) );
-
             vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
                 m_brightnessOverlayHandle, realvalue );
             if ( overlayError != vr::VROverlayError_None )
             {
-                LOG( ERROR ) << "Could not set alpha: "
+                LOG( ERROR ) << "Could not set alpha for brightness overlay: "
                              << vr::VROverlay()->GetOverlayErrorNameFromEnum(
                                     overlayError );
             }
@@ -341,22 +345,9 @@ void VideoTabController::setBrightnessValue( float percvalue, bool notify )
 
         if ( notify )
         {
-            emit brightnessValueChanged( percvalue );
+            emit brightnessOpacityValueChanged( percvalue );
         }
     }
-}
-
-void VideoTabController::setBrightnessOpacityValue()
-{
-    vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
-        m_brightnessOverlayHandle, brightnessOpacityValue() );
-    if ( overlayError != vr::VROverlayError_None )
-    {
-        LOG( ERROR ) << "Could not set alpha: "
-                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                            overlayError );
-    }
-    emit brightnessValueChanged( brightnessValue() );
 }
 
 /*
@@ -492,7 +483,7 @@ void VideoTabController::setColorOverlayOpacity( float value, bool notify )
     }
 }
 
-void VideoTabController::synchGain()
+void VideoTabController::synchGain( bool setValue )
 {
     vr::EVRSettingsError vrSettingsError;
 
@@ -510,7 +501,8 @@ void VideoTabController::synchGain()
     }
     else
     {
-        if ( static_cast<float>( fabs( red - colorRed() ) ) > 0.005f )
+        if ( static_cast<float>( fabs( red - colorRed() ) ) > 0.005f
+             && setValue )
         {
             settings::setSetting( settings::DoubleSetting::VIDEO_colorRed,
                                   static_cast<double>( red ) );
@@ -530,7 +522,8 @@ void VideoTabController::synchGain()
     }
     else
     {
-        if ( static_cast<float>( fabs( blue - colorBlue() ) ) > 0.005f )
+        if ( static_cast<float>( fabs( blue - colorBlue() ) ) > 0.005f
+             && setValue )
         {
             settings::setSetting( settings::DoubleSetting::VIDEO_colorBlue,
                                   static_cast<double>( blue ) );
@@ -550,7 +543,8 @@ void VideoTabController::synchGain()
     }
     else
     {
-        if ( static_cast<float>( fabs( green - colorGreen() ) ) > 0.005f )
+        if ( static_cast<float>( fabs( green - colorGreen() ) ) > 0.005f
+             && setValue )
         {
             settings::setSetting( settings::DoubleSetting::VIDEO_colorGreen,
                                   static_cast<double>( green ) );
@@ -937,7 +931,7 @@ void VideoTabController::addVideoProfile( const QString name )
     profile->colorGreen = colorGreen();
     profile->colorBlue = colorBlue();
     profile->brightnessToggle = brightnessEnabled();
-    profile->brightnessValue = brightnessValue();
+    profile->brightnessOpacityValue = brightnessOpacityValue();
     profile->opacity = colorOverlayOpacity();
     profile->overlayMethodState = isOverlayMethodActive();
 
@@ -962,7 +956,7 @@ void VideoTabController::applyVideoProfile( const unsigned index )
         setColorBlue( profile.colorBlue );
         setColorGreen( profile.colorGreen );
         setBrightnessEnabled( profile.brightnessToggle );
-        setBrightnessValue( profile.brightnessValue );
+        setBrightnessOpacityValue( profile.brightnessOpacityValue );
         setColorOverlayOpacity( profile.opacity );
     }
 }
@@ -1007,8 +1001,8 @@ void VideoTabController::reloadVideoProfiles()
 
         entry.brightnessToggle
             = settings->value( "brightnessToggle", false ).toBool();
-        entry.brightnessValue
-            = settings->value( "brightnessValue", 1.0f ).toFloat();
+        entry.brightnessOpacityValue
+            = settings->value( "brightnessOpacityValue", 1.0f ).toFloat();
         entry.opacity = settings->value( "opacity", 0.0f ).toFloat();
         entry.overlayMethodState
             = settings->value( "overlayMethodState", false ).toBool();
@@ -1039,7 +1033,8 @@ void VideoTabController::saveVideoProfiles()
         settings->setValue( "colorGreenNew", p.colorGreen );
 
         settings->setValue( "brightnessToggle", p.brightnessToggle );
-        settings->setValue( "brightnessValue", p.brightnessValue );
+        settings->setValue( "brightnessOpacityValue",
+                            p.brightnessOpacityValue );
 
         settings->setValue( "opacity", p.opacity );
         settings->setValue( "overlayMethodState", p.overlayMethodState );
