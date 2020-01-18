@@ -501,7 +501,7 @@ void VideoTabController::synchGain( bool setValue )
     }
     else
     {
-        if ( static_cast<float>( fabs( red - colorRed() ) ) > 0.005f
+        if ( fabs( static_cast<double>( red - colorRed() ) ) > 0.005
              && setValue )
         {
             settings::setSetting( settings::DoubleSetting::VIDEO_colorRed,
@@ -522,7 +522,7 @@ void VideoTabController::synchGain( bool setValue )
     }
     else
     {
-        if ( static_cast<float>( fabs( blue - colorBlue() ) ) > 0.005f
+        if ( fabs( static_cast<double>( blue - colorBlue() ) ) > 0.005
              && setValue )
         {
             settings::setSetting( settings::DoubleSetting::VIDEO_colorBlue,
@@ -543,7 +543,7 @@ void VideoTabController::synchGain( bool setValue )
     }
     else
     {
-        if ( static_cast<float>( fabs( green - colorGreen() ) ) > 0.005f
+        if ( fabs( static_cast<double>( green - colorGreen() ) ) > 0.005
              && setValue )
         {
             settings::setSetting( settings::DoubleSetting::VIDEO_colorGreen,
