@@ -12,7 +12,7 @@ MyStackViewPage {
     id: rootPage
     width: 1200
     height: 800
-    headerText: "OpenVR Advanced Settings"
+    headerText: "OVR Advanced Settings"
     headerShowBackButton: false
     stackView: mainView
     content: Item {
