@@ -6,6 +6,7 @@
 #include "audiomanager/AudioManager.h"
 #include <memory>
 #include "../utils/FrameRateUtils.h"
+#include "../settings/settings_object.h"
 
 class QQuickWindow;
 // application namespace
@@ -14,7 +15,7 @@ namespace advsettings
 // forward declaration
 class OverlayController;
 
-struct AudioProfile
+struct AudioProfile : settings::ISettingsObject
 {
     std::string profileName;
     std::string playbackName;
@@ -24,10 +25,54 @@ struct AudioProfile
     std::string playbackID;
     std::string mirrorID;
     float mirrorVol = 0.0;
-    float micVol = 0.0;
+    float micVol = 1.0;
     bool micMute = false;
     bool mirrorMute = false;
     bool defaultProfile = false;
+
+    virtual settings::SettingsObjectData saveSettings() const
+    {
+        settings::SettingsObjectData o;
+
+        o.addValue( profileName );
+        o.addValue( playbackName );
+        o.addValue( mirrorName );
+        o.addValue( micName );
+        o.addValue( recordingID );
+        o.addValue( playbackID );
+        o.addValue( mirrorID );
+
+        o.addValue( static_cast<double>( mirrorVol ) );
+        o.addValue( static_cast<double>( micVol ) );
+
+        o.addValue( micMute );
+        o.addValue( mirrorMute );
+        o.addValue( defaultProfile );
+
+        return o;
+    }
+
+    virtual void loadSettings( settings::SettingsObjectData& obj )
+    {
+        profileName = obj.getNextValueOrDefault( "" );
+        playbackName = obj.getNextValueOrDefault( "" );
+        mirrorName = obj.getNextValueOrDefault( "" );
+        micName = obj.getNextValueOrDefault( "" );
+        recordingID = obj.getNextValueOrDefault( "" );
+        playbackID = obj.getNextValueOrDefault( "" );
+        mirrorID = obj.getNextValueOrDefault( "" );
+
+        mirrorVol = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
+        micVol = static_cast<float>( obj.getNextValueOrDefault( 1.0 ) );
+        micMute = obj.getNextValueOrDefault( false );
+        mirrorMute = obj.getNextValueOrDefault( false );
+        defaultProfile = obj.getNextValueOrDefault( false );
+    }
+
+    virtual std::string settingsName() const
+    {
+        return "AudioTabController::AudioProfile";
+    }
 };
 
 class AudioTabController : public QObject
@@ -97,10 +142,6 @@ private:
 
     std::recursive_mutex eventLoopMutex;
 
-    QString getSettingsName()
-    {
-        return "audioSettings";
-    }
     void onPttStart();
     void onPttStop();
     void onPttEnabled();

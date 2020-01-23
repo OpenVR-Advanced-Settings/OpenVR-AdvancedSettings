@@ -3,6 +3,7 @@
 #include <QApplication>
 #include "../overlaycontroller.h"
 #include "../settings/settings.h"
+#include "../settings/settings_object.h"
 #ifdef _WIN32
 #    include "audiomanager/AudioManagerWindows.h"
 #else
@@ -672,111 +673,14 @@ void AudioTabController::findMicDeviceIndex( std::string id, bool notify )
     }
 }
 
-/*AUDIO PROFILE FUNCTIONS
-The following section includes the code required to save and load Audio
-Profiles.
-
-Saved Settings Include:
-Playback Device
-Mirror Device
-Mirror Vol
-Microphone
-Microphone Volume
-Profile Name
-
-*/
-
-/*
-    Name:  reloadAudioProfiles
-
-    Inputs: args: none
-            other: Reads audioProfiles setting from file
-
-
-    Output: return:none
-            other:none
-
-    Description: Clears working copy, and reloads from Settings file.
-
-*/
 void AudioTabController::reloadAudioProfiles()
 {
-    audioProfiles.clear();
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( getSettingsName() );
-    auto profileCount = settings->beginReadArray( "audioProfiles" );
-    for ( int i = 0; i < profileCount; i++ )
-    {
-        settings->setArrayIndex( i );
-        audioProfiles.emplace_back();
-        auto& entry = audioProfiles[static_cast<size_t>( i )];
-        entry.profileName
-            = settings->value( "profileName" ).toString().toStdString();
-        entry.playbackName
-            = settings->value( "playbackName" ).toString().toStdString();
-        entry.micName = settings->value( "micName" ).toString().toStdString();
-        entry.mirrorName
-            = settings->value( "mirrorName" ).toString().toStdString();
-        entry.micMute = settings->value( "micMute", false ).toBool();
-        entry.mirrorMute = settings->value( "mirrorMute", false ).toBool();
-        entry.mirrorVol = settings->value( "mirrorVol", 0.0 ).toFloat();
-        entry.micVol = settings->value( "micVol", 1.0 ).toFloat();
-        entry.defaultProfile
-            = settings->value( "defaultProfile", false ).toBool();
-        entry.mirrorID = settings->value( "mirrorID" ).toString().toStdString();
-        entry.recordingID
-            = settings->value( "recordingID" ).toString().toStdString();
-        entry.playbackID
-            = settings->value( "playbackID" ).toString().toStdString();
-    }
-    settings->endArray();
-    settings->endGroup();
+    settings::loadAllObjects( audioProfiles );
 }
 
-/*
-Name: saveAudioProfile
-
-Inputs: args: none
-other: none
-
-
-Output: return: none
-other: Writes audioProfiles setting to file
-
-Description: saves a copy of the audio profiles from working to Settings file.
-
-*/
 void AudioTabController::saveAudioProfiles()
 {
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( getSettingsName() );
-    settings->beginWriteArray( "audioProfiles" );
-    int i = 0;
-    for ( auto& p : audioProfiles )
-    {
-        settings->setArrayIndex( i );
-        settings->setValue( "profileName",
-                            QString::fromStdString( p.profileName ) );
-        settings->setValue( "playbackName",
-                            QString::fromStdString( p.playbackName ) );
-        settings->setValue( "micName", QString::fromStdString( p.micName ) );
-        settings->setValue( "mirrorName",
-                            QString::fromStdString( p.mirrorName ) );
-        settings->setValue( "micMute", p.micMute );
-        settings->setValue( "mirrorMute", p.mirrorMute );
-        settings->setValue( "micVol", p.micVol );
-        settings->setValue( "mirrorVol", p.mirrorVol );
-        settings->setValue( "defaultProfile", p.defaultProfile );
-
-        settings->setValue( "playbackID",
-                            QString::fromStdString( p.playbackID ) );
-        settings->setValue( "mirrorID", QString::fromStdString( p.mirrorID ) );
-        settings->setValue( "recordingID",
-                            QString::fromStdString( p.recordingID ) );
-        i++;
-    }
-    settings->endArray();
-    settings->endGroup();
+    settings::saveAllObjects( audioProfiles );
 }
 
 /*
@@ -838,7 +742,6 @@ void AudioTabController::addAudioProfile( QString name )
         setAudioProfileDefault( false );
     }
     saveAudioProfiles();
-    OverlayController::appSettings()->sync();
     emit audioProfilesUpdated();
     emit audioProfileAdded();
 }
@@ -949,7 +852,6 @@ void AudioTabController::deleteAudioProfile( unsigned index )
         }
         audioProfiles.erase( pos );
         saveAudioProfiles();
-        OverlayController::appSettings()->sync();
         emit audioProfilesUpdated();
     }
 }
