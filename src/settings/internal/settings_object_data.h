@@ -9,30 +9,35 @@ class SettingsObjectData
 public:
     template <typename Value> void addValue( const Value value )
     {
-        std::list<Value>& list = getListObject<Value>();
+        auto& list = getListObject<Value>();
 
         list.push_back( value );
     }
 
     template <typename Value>
-    Value getNextValueOrDefault( const Value defaultValue )
+    auto getNextValueOrDefault( const Value defaultValue )
     {
-        Value returnedValue = defaultValue;
-
-        std::list<Value>& list = getListObject<Value>();
+        auto& list = getListObject<Value>();
 
         if ( hasValuesOfType<Value>() )
         {
-            returnedValue = list.front();
+            auto returnedValue = list.front();
             list.pop_front();
+            return returnedValue;
         }
-
-        return returnedValue;
+        if constexpr ( std::is_same<const char*, Value>::value )
+        {
+            return std::string( defaultValue );
+        }
+        else
+        {
+            return defaultValue;
+        }
     }
 
     template <typename Value> bool hasValuesOfType()
     {
-        std::list<Value>& list = getListObject<Value>();
+        auto& list = getListObject<Value>();
 
         return !list.empty();
     }
@@ -48,13 +53,14 @@ public:
     }
 
 private:
-    template <typename Value> std::list<Value>& getListObject()
+    template <typename Value> auto& getListObject()
     {
         using std::is_same;
         const auto isBool = is_same<bool, Value>::value;
         const auto isInt = is_same<int, Value>::value;
         const auto isDouble = is_same<double, Value>::value;
-        const auto isString = is_same<std::string, Value>::value;
+        const auto isString = is_same<std::string, Value>::value
+                              || is_same<const char*, Value>::value;
 
         static_assert( isBool || isInt || isDouble || isString,
                        "Type is not supported for the settings object." );
