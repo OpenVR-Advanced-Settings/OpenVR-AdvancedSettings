@@ -92,6 +92,54 @@ void loadObject( ISettingsObject& obj );
 void saveNumberedObject( const ISettingsObject& obj, const int slot );
 
 /*!
+   \brief Saves \a vec of \c ISettingsObject.
+   \param vec Vector of \c ISettingsObject derived objects.
+
+   Saves the objects starting from \c slot 1 to \c slot \c{1 + vec.size()}.
+*/
+template <class T> void saveAllObjects( const std::vector<T> vec )
+{
+    static_assert(
+        std::is_base_of<ISettingsObject, T>::value,
+        "Only objects that inherit from ISettingsObject can be saved." );
+
+    auto i = 1;
+    for ( auto& p : vec )
+    {
+        saveNumberedObject( p, i );
+        ++i;
+    }
+}
+
+/*!
+   \brief Loads \a vec of \c ISettingsObject.
+   \param vec Vector of \c ISettingsObject derived objects.
+
+   Loads the objects starting from \c slot 1 to the last contiguous object.
+*/
+template <class T> void loadAllObjects( std::vector<T>& vec )
+{
+    static_assert(
+        std::is_base_of<ISettingsObject, T>::value,
+        "Only objects that inherit from ISettingsObject can be loaded." );
+
+    vec.clear();
+
+    // We'll need to know which name the object is saved under.
+    // We could check vec.at(0), but it's not guaranteed to exist.
+    auto o = T{};
+    auto profileCount = getAmountOfSavedObjects( o );
+    for ( int profileNumber = 1; profileNumber < profileCount; ++profileNumber )
+    {
+        vec.emplace_back();
+
+        const auto index = static_cast<size_t>( profileNumber - 1 );
+
+        loadNumberedObject( vec.at( index ), profileNumber );
+    }
+}
+
+/*!
    \brief Loads \a obj from permanent storage in a numbered \a slot.
    \param obj Object to load.
    \param slot Specific object to load.
