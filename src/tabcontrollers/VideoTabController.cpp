@@ -932,7 +932,6 @@ void VideoTabController::addVideoProfile( const QString name )
     profile->overlayMethodState = isOverlayMethodActive();
 
     saveVideoProfiles();
-    OverlayController::appSettings()->sync();
     emit videoProfilesUpdated();
     emit videoProfileAdded();
 }
@@ -964,81 +963,18 @@ void VideoTabController::deleteVideoProfile( const unsigned index )
         auto pos = videoProfiles.begin() + index;
         videoProfiles.erase( pos );
         saveVideoProfiles();
-        OverlayController::appSettings()->sync();
         emit videoProfilesUpdated();
     }
 }
 
 void VideoTabController::reloadVideoProfiles()
 {
-    videoProfiles.clear();
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "VideoSettings" );
-    auto profileCount = settings->beginReadArray( "videoProfiles" );
-    for ( int i = 0; i < profileCount; i++ )
-    {
-        settings->setArrayIndex( i );
-        videoProfiles.emplace_back();
-        auto& entry = videoProfiles[static_cast<size_t>( i )];
-        entry.profileName
-            = settings->value( "profileName" ).toString().toStdString();
-
-        entry.supersampleOverride
-            = settings->value( "supersamplingOverride", false ).toBool();
-        entry.supersampling
-            = settings->value( "supersampling", 1.0f ).toFloat();
-        entry.anisotropicFiltering
-            = settings->value( "anisotropicFiltering", true ).toBool();
-        entry.motionSmooth = settings->value( "motionSmooth", true ).toBool();
-
-        entry.colorRed = settings->value( "colorRedNew", 1.0f ).toFloat();
-        entry.colorBlue = settings->value( "colorBlueNew", 1.0f ).toFloat();
-        entry.colorGreen = settings->value( "colorGreenNew", 1.0f ).toFloat();
-
-        entry.brightnessToggle
-            = settings->value( "brightnessToggle", false ).toBool();
-        entry.brightnessOpacityValue
-            = settings->value( "brightnessOpacityValue", 1.0f ).toFloat();
-        entry.opacity = settings->value( "opacity", 0.0f ).toFloat();
-        entry.overlayMethodState
-            = settings->value( "overlayMethodState", false ).toBool();
-    }
-    settings->endArray();
-    settings->endGroup();
+    settings::loadAllObjects( videoProfiles );
 }
 
 void VideoTabController::saveVideoProfiles()
 {
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "VideoSettings" );
-    settings->beginWriteArray( "videoProfiles" );
-    unsigned i = 0;
-    for ( auto& p : videoProfiles )
-    {
-        settings->setArrayIndex( static_cast<int>( i ) );
-        settings->setValue( "profileName",
-                            QString::fromStdString( p.profileName ) );
-
-        settings->setValue( "supersamplingOverride", p.supersampleOverride );
-        settings->setValue( "supersampling", p.supersampling );
-        settings->setValue( "anisotropicFiltering", p.anisotropicFiltering );
-        settings->setValue( "motionSmooth", p.motionSmooth );
-
-        settings->setValue( "colorRedNew", p.colorRed );
-        settings->setValue( "colorBlueNew", p.colorBlue );
-        settings->setValue( "colorGreenNew", p.colorGreen );
-
-        settings->setValue( "brightnessToggle", p.brightnessToggle );
-        settings->setValue( "brightnessOpacityValue",
-                            p.brightnessOpacityValue );
-
-        settings->setValue( "opacity", p.opacity );
-        settings->setValue( "overlayMethodState", p.overlayMethodState );
-
-        i++;
-    }
-    settings->endArray();
-    settings->endGroup();
+    settings::saveAllObjects( videoProfiles );
 }
 
 int VideoTabController::getVideoProfileCount()

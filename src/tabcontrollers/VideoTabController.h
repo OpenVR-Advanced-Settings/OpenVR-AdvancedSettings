@@ -5,6 +5,7 @@
 #include <QVariant>
 #include <openvr.h>
 #include "../utils/FrameRateUtils.h"
+#include "../settings/settings_object.h"
 
 class QQuickWindow;
 
@@ -20,7 +21,7 @@ namespace advsettings
 // forward declaration
 class OverlayController;
 
-struct VideoProfile
+struct VideoProfile : settings::ISettingsObject
 {
     std::string profileName;
 
@@ -35,6 +36,58 @@ struct VideoProfile
     float brightnessOpacityValue = 1.0f;
     bool overlayMethodState = false;
     float opacity = 0.0f; // TODO check
+
+    virtual settings::SettingsObjectData saveSettings() const override
+    {
+        settings::SettingsObjectData o;
+
+        o.addValue( static_cast<double>( supersampling ) );
+
+        o.addValue( anisotropicFiltering );
+        o.addValue( motionSmooth );
+        o.addValue( supersampleOverride );
+
+        o.addValue( static_cast<double>( colorRed ) );
+        o.addValue( static_cast<double>( colorGreen ) );
+        o.addValue( static_cast<double>( colorBlue ) );
+
+        o.addValue( brightnessToggle );
+
+        o.addValue( static_cast<double>( brightnessOpacityValue ) );
+
+        o.addValue( overlayMethodState );
+
+        o.addValue( static_cast<double>( opacity ) );
+
+        return o;
+    }
+
+    virtual void loadSettings( settings::SettingsObjectData& obj ) override
+    {
+        supersampling = static_cast<float>( obj.getNextValueOrDefault( 1.0 ) );
+
+        anisotropicFiltering = obj.getNextValueOrDefault( false );
+        motionSmooth = obj.getNextValueOrDefault( false );
+        supersampleOverride = obj.getNextValueOrDefault( false );
+
+        colorRed = static_cast<float>( obj.getNextValueOrDefault( 1.0 ) );
+        colorGreen = static_cast<float>( obj.getNextValueOrDefault( 1.0 ) );
+        colorBlue = static_cast<float>( obj.getNextValueOrDefault( 1.0 ) );
+
+        brightnessToggle = obj.getNextValueOrDefault( false );
+
+        brightnessOpacityValue
+            = static_cast<float>( obj.getNextValueOrDefault( 1.0 ) );
+
+        overlayMethodState = obj.getNextValueOrDefault( false );
+
+        opacity = static_cast<float>( obj.getNextValueOrDefault( 1.0 ) );
+    }
+
+    virtual std::string settingsName() const override
+    {
+        return "VideoTabController::VideoProfile";
+    }
 };
 
 class VideoTabController : public QObject
