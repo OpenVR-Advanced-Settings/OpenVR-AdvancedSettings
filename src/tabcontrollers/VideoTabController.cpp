@@ -239,8 +239,6 @@ void VideoTabController::dashboardLoopTick()
 
 void VideoTabController::reloadVideoConfig()
 {
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( getSettingsName() );
     setBrightnessEnabled( brightnessEnabled(), true );
     setColorOverlayEnabled( colorOverlayEnabled(), true );
     setIsOverlayMethodActive( isOverlayMethodActive(), true );
@@ -248,7 +246,6 @@ void VideoTabController::reloadVideoConfig()
     setColorGreen( colorGreen() );
     setColorBlue( colorBlue() );
 
-    settings->endGroup();
     vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
         m_brightnessOverlayHandle, brightnessOpacityValue() );
     if ( overlayError != vr::VROverlayError_None )
@@ -258,7 +255,6 @@ void VideoTabController::reloadVideoConfig()
                             overlayError );
     }
     loadColorOverlay();
-    settings->sync();
 }
 
 float VideoTabController::brightnessOpacityValue() const
