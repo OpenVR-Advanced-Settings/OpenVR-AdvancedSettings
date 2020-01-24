@@ -6,6 +6,7 @@
 #include <chrono>
 #include <qmath.h>
 #include "../utils/FrameRateUtils.h"
+#include "../settings/settings_object.h"
 
 class QQuickWindow;
 // application namespace
@@ -28,13 +29,40 @@ constexpr double k_maxOvrasUniverseCenteredTurningOffset = 25000.0;
 
 class OverlayController;
 
-struct OffsetProfile
+struct OffsetProfile : settings::ISettingsObject
 {
     std::string profileName;
     float offsetX = 0.0f;
     float offsetY = 0.0f;
     float offsetZ = 0.0f;
     int rotation = 0;
+
+    virtual std::string settingsName() const override
+    {
+        return "MoveCenterTabController::OffsetProfile";
+    }
+
+    virtual settings::SettingsObjectData saveSettings() const override
+    {
+        settings::SettingsObjectData o;
+
+        o.addValue( static_cast<double>( offsetX ) );
+        o.addValue( static_cast<double>( offsetY ) );
+        o.addValue( static_cast<double>( offsetZ ) );
+
+        o.addValue( rotation );
+
+        return o;
+    }
+
+    virtual void loadSettings( settings::SettingsObjectData& obj ) override
+    {
+        offsetX = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
+        offsetY = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
+        offsetZ = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
+
+        rotation = obj.getNextValueOrDefault( 0 );
+    }
 };
 
 class MoveCenterTabController : public QObject
