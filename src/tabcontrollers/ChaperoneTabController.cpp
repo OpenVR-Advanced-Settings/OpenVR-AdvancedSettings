@@ -36,285 +36,12 @@ ChaperoneTabController::~ChaperoneTabController()
 
 void ChaperoneTabController::reloadChaperoneProfiles()
 {
-    chaperoneProfiles.clear();
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "chaperoneSettings" );
-    auto profileCount = settings->beginReadArray( "chaperoneProfiles" );
-    for ( int i = 0; i < profileCount; i++ )
-    {
-        settings->setArrayIndex( i );
-        chaperoneProfiles.emplace_back();
-        auto& entry = chaperoneProfiles[static_cast<size_t>( i )];
-        entry.profileName
-            = settings->value( "profileName" ).toString().toStdString();
-        entry.includesChaperoneGeometry
-            = settings->value( "includesChaperoneGeometry", false ).toBool();
-        if ( entry.includesChaperoneGeometry )
-        {
-            entry.chaperoneGeometryQuadCount
-                = settings->value( "chaperoneGeometryQuadCount", 0 ).toUInt();
-            entry.chaperoneGeometryQuads.reset(
-                new vr::HmdQuad_t[entry.chaperoneGeometryQuadCount] );
-            unsigned qi = 0;
-            for ( auto q :
-                  settings->value( "chaperoneGeometryQuads" ).toList() )
-            {
-                unsigned ci = 0;
-                for ( auto c : q.toList() )
-                {
-                    unsigned cci = 0;
-                    for ( auto cc : c.toList() )
-                    {
-                        entry.chaperoneGeometryQuads.get()[qi]
-                            .vCorners[ci]
-                            .v[cci]
-                            = cc.toFloat();
-                        cci++;
-                    }
-                    ci++;
-                }
-                qi++;
-            }
-            unsigned i1 = 0;
-            for ( auto l1 : settings->value( "standingCenter" ).toList() )
-            {
-                unsigned i2 = 0;
-                for ( auto l2 : l1.toList() )
-                {
-                    entry.standingCenter.m[i1][i2] = l2.toFloat();
-                    i2++;
-                }
-                i1++;
-            }
-            entry.playSpaceAreaX
-                = settings->value( "playSpaceAreaX", 0.0f ).toFloat();
-            entry.playSpaceAreaZ
-                = settings->value( "playSpaceAreaZ", 0.0f ).toFloat();
-        }
-        entry.includesVisibility
-            = settings->value( "includesVisibility", false ).toBool();
-        if ( entry.includesVisibility )
-        {
-            entry.visibility = settings->value( "visibility", 0.6 ).toFloat();
-        }
-        entry.includesFadeDistance
-            = settings->value( "includesFadeDistance", false ).toBool();
-        if ( entry.includesFadeDistance )
-        {
-            entry.fadeDistance
-                = settings->value( "fadeDistance", 0.7 ).toFloat();
-        }
-        entry.includesCenterMarker
-            = settings->value( "includesCenterMarker", false ).toBool();
-        if ( entry.includesCenterMarker )
-        {
-            entry.centerMarker
-                = settings->value( "centerMarker", false ).toBool();
-        }
-        entry.includesPlaySpaceMarker
-            = settings->value( "includesPlaySpaceMarker", false ).toBool();
-        if ( entry.includesPlaySpaceMarker )
-        {
-            entry.playSpaceMarker
-                = settings->value( "playSpaceMarker", false ).toBool();
-        }
-        entry.includesFloorBoundsMarker
-            = settings->value( "includesFloorBoundsMarker", false ).toBool();
-        if ( entry.includesFloorBoundsMarker )
-        {
-            entry.floorBoundsMarker
-                = settings->value( "floorBoundsMarker", false ).toBool();
-        }
-        entry.includesBoundsColor
-            = settings->value( "includesBoundsColor", false ).toBool();
-        if ( entry.includesBoundsColor )
-        {
-            auto color = settings->value( "boundsColor" ).toList();
-            entry.boundsColor[0] = color[0].toInt();
-            entry.boundsColor[1] = color[1].toInt();
-            entry.boundsColor[2] = color[2].toInt();
-        }
-        entry.includesChaperoneStyle
-            = settings->value( "includesChaperoneStyle", false ).toBool();
-        if ( entry.includesChaperoneStyle )
-        {
-            entry.chaperoneStyle
-                = settings->value( "chaperoneStyle", 0 ).toInt();
-        }
-        entry.includesForceBounds
-            = settings->value( "includesForceBounds", false ).toBool();
-        if ( entry.includesForceBounds )
-        {
-            entry.forceBounds
-                = settings->value( "forceBounds", false ).toBool();
-        }
-        entry.includesProximityWarningSettings
-            = settings->value( "includesProximityWarningSettings", false )
-                  .toBool();
-        if ( entry.includesProximityWarningSettings )
-        {
-            entry.enableChaperoneSwitchToBeginner
-                = settings->value( "chaperoneSwitchToBeginnerEnabled", false )
-                      .toBool();
-            entry.chaperoneSwitchToBeginnerDistance
-                = settings->value( "chaperoneSwitchToBeginnerDistance", 0.5f )
-                      .toFloat();
-            entry.enableChaperoneHapticFeedback
-                = settings->value( "chaperoneHapticFeedbackEnabled", false )
-                      .toBool();
-            entry.chaperoneHapticFeedbackDistance
-                = settings->value( "chaperoneHapticFeedbackDistance", 0.5f )
-                      .toFloat();
-            entry.enableChaperoneAlarmSound
-                = settings->value( "chaperoneAlarmSoundEnabled", false )
-                      .toBool();
-            entry.chaperoneAlarmSoundLooping
-                = settings->value( "chaperoneAlarmSoundLooping", true )
-                      .toBool();
-            entry.chaperoneAlarmSoundAdjustVolume
-                = settings->value( "chaperoneAlarmSoundAdjustVolume", false )
-                      .toBool();
-            entry.chaperoneAlarmSoundDistance
-                = settings->value( "chaperoneAlarmSoundDistance", 0.5f )
-                      .toFloat();
-            entry.enableChaperoneShowDashboard
-                = settings->value( "chaperoneShowDashboardEnabled", false )
-                      .toBool();
-            entry.chaperoneShowDashboardDistance
-                = settings->value( "chaperoneShowDashboardDistance", 0.5f )
-                      .toFloat();
-        }
-    }
-    settings->endArray();
-    settings->endGroup();
+    settings::loadAllObjects( chaperoneProfiles );
 }
 
 void ChaperoneTabController::saveChaperoneProfiles()
 {
-    auto settings = OverlayController::appSettings();
-    settings->beginGroup( "chaperoneSettings" );
-    settings->beginWriteArray( "chaperoneProfiles" );
-    unsigned i = 0;
-    for ( auto& p : chaperoneProfiles )
-    {
-        settings->setArrayIndex( static_cast<int>( i ) );
-        settings->setValue( "profileName",
-                            QString::fromStdString( p.profileName ) );
-        settings->setValue( "includesChaperoneGeometry",
-                            p.includesChaperoneGeometry );
-        if ( p.includesChaperoneGeometry )
-        {
-            settings->setValue( "chaperoneGeometryQuadCount",
-                                p.chaperoneGeometryQuadCount );
-            QVariantList quadList;
-            for ( unsigned qi = 0; qi < p.chaperoneGeometryQuadCount; qi++ )
-            {
-                QVariantList cornerList;
-                for ( unsigned ci = 0; ci < 4; ci++ )
-                {
-                    QVariantList coordVector;
-                    for ( unsigned cci = 0; cci < 3; cci++ )
-                    {
-                        coordVector.push_back(
-                            p.chaperoneGeometryQuads.get()[qi]
-                                .vCorners[ci]
-                                .v[cci] );
-                    }
-                    cornerList.push_back( coordVector );
-                }
-                quadList.push_back( cornerList );
-            }
-            settings->setValue( "chaperoneGeometryQuads", quadList );
-            QVariantList l1;
-            for ( unsigned i1 = 0; i1 < 3; i1++ )
-            {
-                QVariantList l2;
-                for ( unsigned i2 = 0; i2 < 4; i2++ )
-                {
-                    l2.push_back( p.standingCenter.m[i1][i2] );
-                }
-                l1.push_back( l2 );
-            }
-            settings->setValue( "standingCenter", l1 );
-            settings->setValue( "playSpaceAreaX", p.playSpaceAreaX );
-            settings->setValue( "playSpaceAreaZ", p.playSpaceAreaZ );
-        }
-        settings->setValue( "includesVisibility", p.includesVisibility );
-        if ( p.includesVisibility )
-        {
-            settings->setValue( "visibility", p.visibility );
-        }
-        settings->setValue( "includesFadeDistance", p.includesFadeDistance );
-        if ( p.includesFadeDistance )
-        {
-            settings->setValue( "fadeDistance", p.fadeDistance );
-        }
-        settings->setValue( "includesCenterMarker", p.includesCenterMarker );
-        if ( p.includesCenterMarker )
-        {
-            settings->setValue( "centerMarker", p.centerMarker );
-        }
-        settings->setValue( "includesPlaySpaceMarker",
-                            p.includesPlaySpaceMarker );
-        if ( p.includesPlaySpaceMarker )
-        {
-            settings->setValue( "playSpaceMarker", p.playSpaceMarker );
-        }
-        settings->setValue( "includesFloorBoundsMarker",
-                            p.includesFloorBoundsMarker );
-        if ( p.includesFloorBoundsMarker )
-        {
-            settings->setValue( "floorBoundsMarker", p.floorBoundsMarker );
-        }
-        settings->setValue( "includesBoundsColor", p.includesBoundsColor );
-        if ( p.includesBoundsColor )
-        {
-            QVariantList color;
-            color.push_back( p.boundsColor[0] );
-            color.push_back( p.boundsColor[1] );
-            color.push_back( p.boundsColor[2] );
-            settings->setValue( "boundsColor", color );
-        }
-        settings->setValue( "includesChaperoneStyle",
-                            p.includesChaperoneStyle );
-        if ( p.includesChaperoneStyle )
-        {
-            settings->setValue( "chaperoneStyle", p.chaperoneStyle );
-        }
-        settings->setValue( "includesForceBounds", p.includesForceBounds );
-        if ( p.includesForceBounds )
-        {
-            settings->setValue( "forceBounds", p.forceBounds );
-        }
-        settings->setValue( "includesProximityWarningSettings",
-                            p.includesProximityWarningSettings );
-        if ( p.includesProximityWarningSettings )
-        {
-            settings->setValue( "chaperoneSwitchToBeginnerEnabled",
-                                p.enableChaperoneSwitchToBeginner );
-            settings->setValue( "chaperoneSwitchToBeginnerDistance",
-                                p.chaperoneSwitchToBeginnerDistance );
-            settings->setValue( "chaperoneHapticFeedbackEnabled",
-                                p.enableChaperoneHapticFeedback );
-            settings->setValue( "chaperoneHapticFeedbackDistance",
-                                p.chaperoneHapticFeedbackDistance );
-            settings->setValue( "chaperoneAlarmSoundEnabled",
-                                p.enableChaperoneAlarmSound );
-            settings->setValue( "chaperoneAlarmSoundLooping",
-                                p.chaperoneAlarmSoundLooping );
-            settings->setValue( "chaperoneAlarmSoundAdjustVolume",
-                                p.chaperoneAlarmSoundAdjustVolume );
-            settings->setValue( "chaperoneAlarmSoundDistance",
-                                p.chaperoneAlarmSoundDistance );
-            settings->setValue( "chaperoneShowDashboardEnabled",
-                                p.enableChaperoneShowDashboard );
-            settings->setValue( "chaperoneShowDashboardDistance",
-                                p.chaperoneShowDashboardDistance );
-        }
-        i++;
-    }
-    settings->endArray();
-    settings->endGroup();
+    settings::saveAllObjects( chaperoneProfiles );
 }
 
 void ChaperoneTabController::handleChaperoneWarnings( float distance )
@@ -1204,9 +931,13 @@ void ChaperoneTabController::addChaperoneProfile(
         vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo( nullptr,
                                                             &quadCount );
         profile->chaperoneGeometryQuadCount = quadCount;
-        profile->chaperoneGeometryQuads.reset( new vr::HmdQuad_t[quadCount] );
+        for ( int i = 0; i < static_cast<int>( quadCount ); ++i )
+        {
+            profile->chaperoneGeometryQuads.emplace_back();
+        }
+
         vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo(
-            profile->chaperoneGeometryQuads.get(), &quadCount );
+            profile->chaperoneGeometryQuads.data(), &quadCount );
         vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
             &profile->standingCenter );
         vr::VRChaperoneSetup()->GetWorkingPlayAreaSize(
@@ -1332,7 +1063,6 @@ void ChaperoneTabController::addChaperoneProfile(
             = chaperoneShowDashboardDistance();
     }
     saveChaperoneProfiles();
-    OverlayController::appSettings()->sync();
     emit chaperoneProfilesUpdated();
 }
 
@@ -1347,7 +1077,7 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
             vr::VRChaperoneSetup()->HideWorkingSetPreview();
             vr::VRChaperoneSetup()->RevertWorkingCopy();
             vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
-                profile.chaperoneGeometryQuads.get(),
+                profile.chaperoneGeometryQuads.data(),
                 profile.chaperoneGeometryQuadCount );
             vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
                 &profile.standingCenter );
@@ -1436,7 +1166,6 @@ void ChaperoneTabController::deleteChaperoneProfile( unsigned index )
         auto pos = chaperoneProfiles.begin() + index;
         chaperoneProfiles.erase( pos );
         saveChaperoneProfiles();
-        OverlayController::appSettings()->sync();
         emit chaperoneProfilesUpdated();
     }
 }
@@ -1485,7 +1214,6 @@ void ChaperoneTabController::createNewAutosaveProfile()
         chaperoneProfiles[currentAutosaveIndexLookup.second].profileName
             = "«Autosaved Profile (previous)»";
         saveChaperoneProfiles();
-        OverlayController::appSettings()->sync();
         emit chaperoneProfilesUpdated();
     }
     else
