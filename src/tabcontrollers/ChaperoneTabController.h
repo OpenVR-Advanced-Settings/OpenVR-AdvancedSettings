@@ -8,6 +8,7 @@
 #include <openvr.h>
 #include <cmath>
 #include "../utils/FrameRateUtils.h"
+#include "../settings/settings_object.h"
 
 class QQuickWindow;
 // application namespace
@@ -16,13 +17,13 @@ namespace advsettings
 // forward declaration
 class OverlayController;
 
-struct ChaperoneProfile
+struct ChaperoneProfile : settings::ISettingsObject
 {
     std::string profileName;
 
     bool includesChaperoneGeometry = false;
     unsigned chaperoneGeometryQuadCount = 0;
-    std::unique_ptr<vr::HmdQuad_t> chaperoneGeometryQuads = nullptr;
+    std::vector<vr::HmdQuad_t> chaperoneGeometryQuads;
     vr::HmdMatrix34_t standingCenter;
     float playSpaceAreaX = 0.0f;
     float playSpaceAreaZ = 0.0f;
@@ -62,6 +63,177 @@ struct ChaperoneProfile
     float chaperoneAlarmSoundDistance = 0.0f;
     bool enableChaperoneShowDashboard = false;
     float chaperoneShowDashboardDistance = 0.0f;
+
+    virtual settings::SettingsObjectData saveSettings() const override
+    {
+        settings::SettingsObjectData o;
+
+        o.addValue( profileName );
+
+        o.addValue( includesChaperoneGeometry );
+        o.addValue( static_cast<int>( chaperoneGeometryQuadCount ) );
+
+        if ( chaperoneGeometryQuadCount > 0 )
+        {
+            for ( auto& arrayMember : chaperoneGeometryQuads )
+            {
+                for ( auto& corner : arrayMember.vCorners )
+                {
+                    for ( auto& vector : corner.v )
+                    {
+                        o.addValue( static_cast<double>( vector ) );
+                    }
+                }
+            }
+        }
+
+        for ( int i = 0; i < 3; ++i )
+        {
+            for ( int j = 0; j < 4; ++j )
+            {
+                o.addValue( static_cast<double>( standingCenter.m[i][j] ) );
+            }
+        }
+
+        o.addValue( static_cast<double>( playSpaceAreaX ) );
+        o.addValue( static_cast<double>( playSpaceAreaZ ) );
+
+        o.addValue( includesVisibility );
+        o.addValue( static_cast<double>( visibility ) );
+
+        o.addValue( includesFadeDistance );
+        o.addValue( static_cast<double>( fadeDistance ) );
+
+        o.addValue( includesCenterMarker );
+        o.addValue( centerMarker );
+
+        o.addValue( includesPlaySpaceMarker );
+        o.addValue( playSpaceMarker );
+
+        o.addValue( includesFloorBoundsMarker );
+        o.addValue( floorBoundsMarker );
+
+        o.addValue( includesBoundsColor );
+
+        for ( const auto& c : boundsColor )
+        {
+            o.addValue( c );
+        }
+
+        o.addValue( includesChaperoneStyle );
+        o.addValue( chaperoneStyle );
+
+        o.addValue( includesForceBounds );
+        o.addValue( forceBounds );
+
+        o.addValue( includesProximityWarningSettings );
+        o.addValue( enableChaperoneSwitchToBeginner );
+        o.addValue( static_cast<double>( chaperoneSwitchToBeginnerDistance ) );
+        o.addValue( enableChaperoneHapticFeedback );
+        o.addValue( static_cast<double>( chaperoneHapticFeedbackDistance ) );
+        o.addValue( enableChaperoneAlarmSound );
+        o.addValue( chaperoneAlarmSoundLooping );
+        o.addValue( chaperoneAlarmSoundAdjustVolume );
+        o.addValue( static_cast<double>( chaperoneAlarmSoundDistance ) );
+        o.addValue( enableChaperoneShowDashboard );
+        o.addValue( static_cast<double>( chaperoneShowDashboardDistance ) );
+
+        return o;
+    }
+
+    virtual void loadSettings( settings::SettingsObjectData& obj ) override
+    {
+        profileName = obj.getNextValueOrDefault( "" );
+
+        includesChaperoneGeometry = obj.getNextValueOrDefault( false );
+        chaperoneGeometryQuadCount
+            = static_cast<unsigned>( obj.getNextValueOrDefault( 0 ) );
+
+        // chaperoneGeometryQuads = nullptr;
+        const auto chaperoneGeometryQuadsValid
+            = obj.getNextValueOrDefault( false );
+        if ( chaperoneGeometryQuadsValid )
+        {
+            for ( int i = 0; i < static_cast<int>( chaperoneGeometryQuadCount );
+                  ++i )
+            {
+                chaperoneGeometryQuads.emplace_back();
+            }
+
+            for ( auto& arrayMember : chaperoneGeometryQuads )
+            {
+                for ( auto& corner : arrayMember.vCorners )
+                {
+                    for ( auto& vector : corner.v )
+                    {
+                        vector = static_cast<float>(
+                            obj.getNextValueOrDefault( 0.0 ) );
+                    }
+                }
+            }
+        }
+
+        for ( int i = 0; i < 3; ++i )
+        {
+            for ( int j = 0; j < 4; ++j )
+            {
+                standingCenter.m[i][j]
+                    = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
+            }
+        }
+
+        playSpaceAreaX = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
+        playSpaceAreaZ = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
+
+        includesVisibility = obj.getNextValueOrDefault( false );
+        visibility = static_cast<float>( obj.getNextValueOrDefault( 0.6 ) );
+
+        includesFadeDistance = obj.getNextValueOrDefault( false );
+        fadeDistance = static_cast<float>( obj.getNextValueOrDefault( 0.7 ) );
+
+        includesCenterMarker = obj.getNextValueOrDefault( false );
+        centerMarker = obj.getNextValueOrDefault( false );
+
+        includesPlaySpaceMarker = obj.getNextValueOrDefault( false );
+        playSpaceMarker = obj.getNextValueOrDefault( false );
+
+        includesFloorBoundsMarker = obj.getNextValueOrDefault( false );
+        floorBoundsMarker = obj.getNextValueOrDefault( false );
+
+        includesBoundsColor = obj.getNextValueOrDefault( false );
+
+        for ( auto& c : boundsColor )
+        {
+            c = obj.getNextValueOrDefault( 0 );
+        }
+
+        includesChaperoneStyle = obj.getNextValueOrDefault( false );
+        chaperoneStyle = obj.getNextValueOrDefault( 0 );
+
+        includesForceBounds = obj.getNextValueOrDefault( false );
+        forceBounds = obj.getNextValueOrDefault( false );
+
+        includesProximityWarningSettings = obj.getNextValueOrDefault( false );
+        enableChaperoneSwitchToBeginner = obj.getNextValueOrDefault( false );
+        chaperoneSwitchToBeginnerDistance
+            = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
+        enableChaperoneHapticFeedback = obj.getNextValueOrDefault( false );
+        chaperoneHapticFeedbackDistance
+            = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
+        enableChaperoneAlarmSound = obj.getNextValueOrDefault( false );
+        chaperoneAlarmSoundLooping = obj.getNextValueOrDefault( true );
+        chaperoneAlarmSoundAdjustVolume = obj.getNextValueOrDefault( false );
+        chaperoneAlarmSoundDistance
+            = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
+        enableChaperoneShowDashboard = obj.getNextValueOrDefault( false );
+        chaperoneShowDashboardDistance
+            = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
+    }
+
+    virtual std::string settingsName() const override
+    {
+        return "ChaperoneTabController::ChaperoneProfile";
+    }
 };
 
 class ChaperoneTabController : public QObject
