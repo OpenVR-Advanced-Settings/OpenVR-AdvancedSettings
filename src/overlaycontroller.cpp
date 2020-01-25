@@ -26,8 +26,6 @@
 // application namespace
 namespace advsettings
 {
-QSettings* OverlayController::_appSettings = nullptr;
-
 int verifyCustomTickRate( const int tickRate )
 {
     if ( tickRate < 1 )

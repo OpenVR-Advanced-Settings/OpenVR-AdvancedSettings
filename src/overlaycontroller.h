@@ -11,7 +11,6 @@
 #include <QVector2D>
 #include <QVector3D>
 #include <QObject>
-#include <QSettings>
 #include <QQmlEngine>
 #include <QtGui/QOpenGLContext>
 #include <QtWidgets/QGraphicsScene>
@@ -279,20 +278,6 @@ signals:
     void vsyncDisabledChanged( bool value );
     void customTickRateMsChanged( int value );
     void debugStateChanged( int value );
-
-private:
-    static QSettings* _appSettings;
-
-public:
-    static QSettings* appSettings()
-    {
-        return _appSettings;
-    }
-
-    static void setAppSettings( QSettings* settings )
-    {
-        _appSettings = settings;
-    }
 };
 
 } // namespace advsettings

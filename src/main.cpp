@@ -40,12 +40,6 @@ int main( int argc, char* argv[] )
 
     try
     {
-        QSettings appSettings( QSettings::IniFormat,
-                               QSettings::UserScope,
-                               mainEventLoop.organizationName(),
-                               mainEventLoop.applicationName() );
-        advsettings::OverlayController::setAppSettings( &appSettings );
-
         QQmlEngine qmlEngine;
 
         advsettings::OverlayController controller( commandLineArgs.desktopMode,
