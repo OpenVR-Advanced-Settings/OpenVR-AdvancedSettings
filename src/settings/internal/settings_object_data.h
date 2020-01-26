@@ -59,8 +59,12 @@ private:
         const auto isBool = is_same<bool, Value>::value;
         const auto isInt = is_same<int, Value>::value;
         const auto isDouble = is_same<double, Value>::value;
+        const auto isFloat = is_same<float, Value>::value;
         const auto isString = is_same<std::string, Value>::value
                               || is_same<const char*, Value>::value;
+
+        static_assert( !isFloat,
+                       "'float' is not supported. Use 'double' instead." );
 
         static_assert( isBool || isInt || isDouble || isString,
                        "Type is not supported for the settings object." );
