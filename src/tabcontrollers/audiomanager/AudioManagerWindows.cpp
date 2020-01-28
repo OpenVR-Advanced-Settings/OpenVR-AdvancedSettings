@@ -485,6 +485,11 @@ std::string AudioManagerWindows::getDeviceName( IMMDevice* device )
     if ( device->OpenPropertyStore( STGM_READ, &pProps ) >= 0
          && pProps->GetValue( PKEY_Device_FriendlyName, &varString ) >= 0 )
     {
+        if ( varString.pwszVal == nullptr )
+        {
+            return "INVALID-NAME";
+        }
+
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         std::string name = converter.to_bytes( varString.pwszVal );
         return name;
@@ -497,6 +502,11 @@ std::string AudioManagerWindows::getDeviceId( IMMDevice* device )
     LPWSTR ppstrId;
     if ( device->GetId( &ppstrId ) >= 0 )
     {
+        if ( ppstrId == nullptr )
+        {
+            return "INVALID-ID";
+        }
+
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         return converter.to_bytes( ppstrId );
     }
