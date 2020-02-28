@@ -111,8 +111,12 @@ class AudioTabController : public QObject
                     setPttShowNotification NOTIFY pttShowNotificationChanged )
 
 private:
-    vr::VROverlayHandle_t m_ulNotificationOverlayHandle
-        = vr::k_ulOverlayHandleInvalid;
+    struct
+    {
+        vr::VROverlayHandle_t overlayHandle = vr::k_ulOverlayHandleInvalid;
+        std::string pushToTalkPath;
+        std::string pushToMutePath;
+    } m_pushToTalkValues;
 
     int m_playbackDeviceIndex = -1;
 
@@ -149,7 +153,7 @@ private:
 
     virtual vr::VROverlayHandle_t getNotificationOverlayHandle()
     {
-        return m_ulNotificationOverlayHandle;
+        return m_pushToTalkValues.overlayHandle;
     }
 
     void findPlaybackDeviceIndex( std::string id, bool notify = true );
