@@ -60,46 +60,73 @@ void AudioTabController::initStage1()
     eventLoopTick();
 }
 
+std::optional<std::string> verifyIconFilePath( std::string filename )
+{
+    const auto notifIconPath = paths::binaryDirectoryFindFile( filename );
+    if ( !notifIconPath.has_value() )
+    {
+        LOG( ERROR ) << "Could not find push to talk icon \"" << filename
+                     << "\"";
+    }
+
+    return notifIconPath;
+}
+
 void AudioTabController::initStage2()
 {
-    std::string notifKey = std::string( application_strings::applicationKey )
-                           + ".pptnotification";
+    const auto pushToTalkOverlayKey
+        = std::string( application_strings::applicationKey )
+          + ".pptnotification";
 
-    vr::VROverlayError overlayError = vr::VROverlay()->CreateOverlay(
-        notifKey.c_str(), notifKey.c_str(), &m_ulNotificationOverlayHandle );
-    if ( overlayError == vr::VROverlayError_None )
-    {
-        constexpr auto notificationIconFilename
-            = "/res/img/audio/microphone/ptt_notification.png";
-        const auto notifIconPath
-            = paths::binaryDirectoryFindFile( notificationIconFilename );
-        if ( notifIconPath.has_value() )
-        {
-            vr::VROverlay()->SetOverlayFromFile( m_ulNotificationOverlayHandle,
-                                                 notifIconPath->c_str() );
-            vr::VROverlay()->SetOverlayWidthInMeters(
-                m_ulNotificationOverlayHandle, 0.02f );
-            vr::HmdMatrix34_t notificationTransform
-                = { { { 1.0f, 0.0f, 0.0f, 0.12f },
-                      { 0.0f, 1.0f, 0.0f, 0.08f },
-                      { 0.0f, 0.0f, 1.0f, -0.3f } } };
-            vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
-                m_ulNotificationOverlayHandle,
-                vr::k_unTrackedDeviceIndex_Hmd,
-                &notificationTransform );
-        }
-        else
-        {
-            LOG( ERROR ) << "Could not find notification icon \""
-                         << notificationIconFilename << "\"";
-        }
-    }
-    else
+    const auto overlayError
+        = vr::VROverlay()->CreateOverlay( pushToTalkOverlayKey.c_str(),
+                                          pushToTalkOverlayKey.c_str(),
+                                          &m_pushToTalkValues.overlayHandle );
+    if ( overlayError != vr::VROverlayError_None )
     {
         LOG( ERROR ) << "Could not create ptt notification overlay: "
                      << vr::VROverlay()->GetOverlayErrorNameFromEnum(
                             overlayError );
+
+        emit defaultProfileDisplay();
+
+        return;
     }
+
+    constexpr auto pushToTalkIconFilepath
+        = "/res/img/audio/microphone/ptt_notification.png";
+    constexpr auto pushToMuteIconFilepath
+        = "/res/img/audio/microphone/ptm_notification.png";
+
+    const auto pushToTalkIconFilePath
+        = verifyIconFilePath( pushToTalkIconFilepath );
+    const auto pushToMuteIconFilePath
+        = verifyIconFilePath( pushToMuteIconFilepath );
+
+    if ( !pushToTalkIconFilePath.has_value()
+         || !pushToMuteIconFilePath.has_value() )
+    {
+        emit defaultProfileDisplay();
+        return;
+    }
+
+    m_pushToTalkValues.pushToTalkPath = *pushToTalkIconFilePath;
+    m_pushToTalkValues.pushToMutePath = *pushToMuteIconFilePath;
+
+    vr::VROverlay()->SetOverlayFromFile(
+        m_pushToTalkValues.overlayHandle,
+        m_pushToTalkValues.pushToTalkPath.c_str() );
+    vr::VROverlay()->SetOverlayWidthInMeters( m_pushToTalkValues.overlayHandle,
+                                              0.02f );
+    vr::HmdMatrix34_t notificationTransform
+        = { { { 1.0f, 0.0f, 0.0f, 0.12f },
+              { 0.0f, 1.0f, 0.0f, 0.08f },
+              { 0.0f, 0.0f, 1.0f, -0.3f } } };
+    vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
+        m_pushToTalkValues.overlayHandle,
+        vr::k_unTrackedDeviceIndex_Hmd,
+        &notificationTransform );
+
     emit defaultProfileDisplay();
 }
 
@@ -335,6 +362,19 @@ void AudioTabController::setMicReversePtt( bool value, bool notify )
     std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
 
     settings::setSetting( settings::BoolSetting::AUDIO_micReversePtt, value );
+
+    if ( value )
+    {
+        vr::VROverlay()->SetOverlayFromFile(
+            m_pushToTalkValues.overlayHandle,
+            m_pushToTalkValues.pushToMutePath.c_str() );
+    }
+    else
+    {
+        vr::VROverlay()->SetOverlayFromFile(
+            m_pushToTalkValues.overlayHandle,
+            m_pushToTalkValues.pushToTalkPath.c_str() );
+    }
 
     if ( pttEnabled() )
     {
