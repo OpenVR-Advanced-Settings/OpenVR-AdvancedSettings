@@ -4,11 +4,12 @@
 
 namespace utils
 {
-float ChaperoneUtils::_getDistanceToChaperone(
+
+void ChaperoneUtils::_getDistancesToChaperone(
     const vr::HmdVector3_t& x,
-    vr::HmdVector3_t* projectedPoint )
+    float* distances,
+    vr::HmdVector3_t* projectedPoints )
 {
-    float distance = NAN;
     vr::HmdVector3_t* _cornersPtr = _corners.get();
     for ( uint32_t i = 0; i < _quadsCount; i++ )
     {
@@ -60,18 +61,14 @@ float ChaperoneUtils::_getDistanceToChaperone(
             d = static_cast<float>(
                 sqrt( static_cast<double>( d_x * d_x + d_z * d_z ) ) );
         }
-        if ( std::isnan( distance ) || d < distance )
+        distances[i]  = d;
+        if ( projectedPoints )
         {
-            distance = d;
-            if ( projectedPoint )
-            {
-                projectedPoint->v[0] = x1_x;
-                projectedPoint->v[1] = x.v[1];
-                projectedPoint->v[2] = x1_z;
-            }
+            projectedPoints[i].v[0] = x1_x;
+            projectedPoints[i].v[1] = x.v[1];
+            projectedPoints[i].v[2] = x1_z;
         }
     }
-    return distance;
 }
 
 void ChaperoneUtils::loadChaperoneData( bool fromLiveBounds )

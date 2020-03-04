@@ -2,6 +2,8 @@
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
 #include "../settings/settings.h"
+#include "../utils/Matrix.h"
+#include "../quaternion/quaternion.h"
 #include <cmath>
 
 // application namespace
@@ -60,6 +62,8 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     m_HMDHasProx ? ( proxSensorOverrideState = m_isProxActive )
                  : ( proxSensorOverrideState = m_isHMDActive );
 
+    
+
     // Switch to Beginner Mode
     if ( isChaperoneSwitchToBeginnerEnabled() )
     {
@@ -111,6 +115,8 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                                         vr::k_pch_CollisionBounds_Style_Int32,
                                         m_chaperoneSwitchToBeginnerLastStyle,
                                         &vrSettingsError );
+            //LOG( INFO ) << "Attempting to snap-turn.";
+            //parent->m_moveCenterTabController.snapTurnRight(true);
             if ( vrSettingsError != vr::VRSettingsError_None )
             {
                 LOG( WARNING )
@@ -341,7 +347,97 @@ void ChaperoneTabController::eventLoopTick(
                 parent->chaperoneUtils().loadChaperoneData();
             }
         }
+
+        // Infinite-walk mode
+	// TODO: if (infinite_walk_enabled) 	
+	if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
+             && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK )
+        {
+            if(!m_chaperoneDistances) m_chaperoneDistances.reset(new float[parent->chaperoneUtils().quadsCount()]);
+            if(!m_chaperoneNearestPoints) m_chaperoneNearestPoints.reset(new vr::HmdVector3_t[parent->chaperoneUtils().quadsCount()]);
+            if(!m_chaperoneSnapTurnActive) m_chaperoneSnapTurnActive.reset(new bool[parent->chaperoneUtils().quadsCount()]);
+	    
+            parent->chaperoneUtils().getDistancesToChaperone(
+                { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
+                  poseHmd.mDeviceToAbsoluteTracking.m[1][3],
+                  poseHmd.mDeviceToAbsoluteTracking.m[2][3] },
+		  m_chaperoneDistances.get(),
+		  m_chaperoneNearestPoints.get());
+            float activationDistance = chaperoneSwitchToBeginnerDistance();
+    	    float deactivateDistance = 0.2f;
+            
+            for(size_t i = 0; i < parent->chaperoneUtils().quadsCount(); i++)
+            {
+		auto distance = m_chaperoneDistances[i];
+                if ( distance <= activationDistance && m_isHMDActive
+                 && !m_chaperoneSnapTurnActive[i] )
+         	{
+		    // ------------------
+		    // Set up (un)rotation matrix
+		    vr::HmdMatrix34_t hmdMatrixRotMat;
+		    vr::HmdMatrix34_t hmdMatrixAbsolute;
+		    utils::initRotationMatrix(
+		        hmdMatrixRotMat, 1, 0.0f );
+
+		    // Get hmdMatrixAbsolute in un-rotated coordinates.
+		    utils::matMul33( hmdMatrixAbsolute, hmdMatrixRotMat, poseHmd.mDeviceToAbsoluteTracking );
+
+		    // Convert pose matrix to quaternion
+		    auto hmdQuaternion = quaternion::fromHmdMatrix34( hmdMatrixAbsolute );
+
+		    // Get HMD raw yaw
+	            double hmdYaw = quaternion::getYaw( hmdQuaternion );
+
+		    // Get HMD to wall yaw
+		    double hmdToWallYaw = static_cast<double>( std::atan2(
+			poseHmd.mDeviceToAbsoluteTracking.m[0][3] - m_chaperoneNearestPoints[i].v[0],
+			poseHmd.mDeviceToAbsoluteTracking.m[2][3] - m_chaperoneNearestPoints[i].v[2]
+		    ) );
+
+		    // Get the closest wall that ISN'T this one
+		    size_t idx = 0;
+		    for (size_t j = 0; j < parent->chaperoneUtils().quadsCount(); j++)
+		    {
+			if ( j == i ) continue;
+			if(m_chaperoneDistances[j] < m_chaperoneDistances[idx]) 
+			{
+			    idx = j;
+			}
+		    }
+		    
+		    // Get HMD to wall yaw
+		    double hmdToOpposingWallYaw = static_cast<double>( std::atan2(
+			poseHmd.mDeviceToAbsoluteTracking.m[0][3] - m_chaperoneNearestPoints[idx].v[0],
+			poseHmd.mDeviceToAbsoluteTracking.m[2][3] - m_chaperoneNearestPoints[idx].v[2]
+		    ) );
+
+		    LOG( INFO ) << "hmd yaw " << hmdYaw << ", hmd to wall yaw " << hmdToWallYaw;
+		    LOG( INFO ) << "hmd to wall angle " << (hmdYaw - hmdToWallYaw) << ", to opposing wall angle " << (hmdYaw - hmdToOpposingWallYaw);
+		    // Positive hmd-to-wall is facing left, negative is facing right (relative to the wall)
+		    double delta_degrees = ( - (hmdYaw - hmdToWallYaw) - (((hmdYaw - hmdToOpposingWallYaw) > 0.0) ? - M_PI/2 : M_PI/2)) * k_radiansToCentidegrees;
+		    //double delta_degrees = ( - (hmdYaw - hmdToWallYaw) - (- M_PI/2)) * k_radiansToCentidegrees;
+		    LOG( INFO ) << "rotating space " << (delta_degrees/100) << " degrees";
+		    //LOG( INFO ) << "total rotation " << parent->m_moveCenterTabController.getHmdYawTotal();
+		    // TODO: Account for overall yaw, have an upper limit to rotation
+                    //parent->m_moveCenterTabController.snapTurnRight(true);
+		    int newRotationAngleDeg = static_cast<int>(parent->m_moveCenterTabController.rotation() + delta_degrees) % 36000;
+		    parent->m_moveCenterTabController.setRotation(newRotationAngleDeg);
+		    
+
+		    // -----------------
+
+        	    m_chaperoneSnapTurnActive[i] = true;
+        	}
+        	else if ((distance > (activationDistance + deactivateDistance) || !m_isHMDActive)
+                     && m_chaperoneSnapTurnActive[i] )
+        	{
+        	    m_chaperoneSnapTurnActive[i] = false;
+        	}
+             }
+
+        }    
     }
+
 
     if ( settingsUpdateCounter >= m_chaperoneSettingsUpdateCounter )
     {
