@@ -4,9 +4,31 @@
 #include <mutex>
 #include <openvr.h>
 #include <cmath>
+#include <vector>
+#include <algorithm>
 
 namespace utils
 {
+struct ChaperoneQuadData
+{
+    float distance;
+    vr::HmdVector3_t nearestPoint;
+    vr::HmdVector3_t corners[2];
+
+    const vr::HmdVector3_t& closestCorner( const vr::HmdVector3_t& point ) const
+    {
+        auto cornerDistanceA = std::sqrt(
+            std::pow(point.v[0] - corners[0].v[0], 2.0) +
+            std::pow(point.v[2] - corners[0].v[2], 2.0)
+            );
+        auto cornerDistanceB = std::sqrt(
+            std::pow(point.v[0] - corners[1].v[0], 2.0) +
+            std::pow(point.v[2] - corners[1].v[2], 2.0)
+            );
+        return (cornerDistanceA < cornerDistanceB) ? corners[0]: corners[1];
+    }
+};
+
 class ChaperoneUtils
 {
 private:
@@ -14,9 +36,7 @@ private:
     uint32_t _quadsCount = 0;
     std::unique_ptr<vr::HmdVector3_t> _corners;
     bool _chaperoneWellFormed = true;
-    void _getDistancesToChaperone( const vr::HmdVector3_t& point,
-		    		  float* distances,
-		    		  vr::HmdVector3_t* projectedPoints);
+    std::vector<ChaperoneQuadData> _getDistancesToChaperone( const vr::HmdVector3_t& point );
 
 public:
     uint32_t quadsCount() const noexcept
@@ -35,37 +55,28 @@ public:
 
     void loadChaperoneData( bool fromLiveBounds = true );
 
-    void getDistancesToChaperone( const vr::HmdVector3_t& point,
-		    		  float* distances,
-		    		  vr::HmdVector3_t* projectedPoints = nullptr,
+    std::vector<ChaperoneQuadData> getDistancesToChaperone( const vr::HmdVector3_t& point,
 				  bool doLock = false )
     {
         if ( doLock )
         {
             std::lock_guard<std::recursive_mutex> lock( _mutex );
-            return _getDistancesToChaperone( point, distances, projectedPoints );
+            return _getDistancesToChaperone( point );
         }
         else
         {
-            return _getDistancesToChaperone( point, distances, projectedPoints );
+            return _getDistancesToChaperone( point );
         }
     }
 
-    float getDistanceToChaperone( const vr::HmdVector3_t& point,
-                                  vr::HmdVector3_t* projectedPoint = nullptr,
+    ChaperoneQuadData getDistanceToChaperone( const vr::HmdVector3_t& point,
                                   bool doLock = false )
     {
-	 std::unique_ptr<vr::HmdVector3_t[]> points(new vr::HmdVector3_t[_quadsCount]);
-	 std::unique_ptr<float[]> distances(new float[_quadsCount]);
-	 getDistancesToChaperone( point, distances.get(), points.get(), doLock);
-	 size_t idx = 0;
-	 for(size_t i = 0; i < _quadsCount; i++)
-	 {
-	    if(std::isnan(distances[i]) || (distances[i] < distances[idx])) idx = i;
-	 }
-	 if(projectedPoint) *projectedPoint = points[idx];
-	 
-	 return distances[idx];
+	 auto distances = getDistancesToChaperone( point, doLock);
+     return *std::min_element(distances.begin(), distances.end(), [] (const ChaperoneQuadData& quadA, const ChaperoneQuadData& quadB)
+     {
+        return std::isnan(quadA.distance) || (quadA.distance < quadB.distance);
+     });
     }
 };
 

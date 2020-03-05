@@ -307,10 +307,7 @@ private:
     bool m_playSpaceMarker = false;
     bool m_forceBounds = false;
 
-    double m_chaperoneSnapLastHmdToWallYaw = 0.0;
-    std::unique_ptr<bool[]> m_chaperoneSnapTurnActive;
-    std::unique_ptr<float[]> m_chaperoneDistances;
-    std::unique_ptr<vr::HmdVector3_t[]> m_chaperoneNearestPoints;
+    std::vector<bool> m_chaperoneSnapTurnActive;
 
     bool m_chaperoneSwitchToBeginnerActive = false;
     int32_t m_chaperoneSwitchToBeginnerLastStyle = 0;

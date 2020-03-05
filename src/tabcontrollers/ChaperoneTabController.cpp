@@ -62,8 +62,6 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     m_HMDHasProx ? ( proxSensorOverrideState = m_isProxActive )
                  : ( proxSensorOverrideState = m_isHMDActive );
 
-    
-
     // Switch to Beginner Mode
     if ( isChaperoneSwitchToBeginnerEnabled() )
     {
@@ -115,8 +113,6 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                                         vr::k_pch_CollisionBounds_Style_Int32,
                                         m_chaperoneSwitchToBeginnerLastStyle,
                                         &vrSettingsError );
-            //LOG( INFO ) << "Attempting to snap-turn.";
-            //parent->m_moveCenterTabController.snapTurnRight(true);
             if ( vrSettingsError != vr::VRSettingsError_None )
             {
                 LOG( WARNING )
@@ -284,9 +280,9 @@ void ChaperoneTabController::eventLoopTick(
                 { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
                   poseHmd.mDeviceToAbsoluteTracking.m[1][3],
                   poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
-            if ( !std::isnan( distanceHmd ) )
+            if ( !std::isnan( distanceHmd.distance ) )
             {
-                minDistance = distanceHmd;
+                minDistance = distanceHmd.distance;
             }
         }
         auto leftIndex = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
@@ -302,11 +298,11 @@ void ChaperoneTabController::eventLoopTick(
                         { poseLeft.mDeviceToAbsoluteTracking.m[0][3],
                           poseLeft.mDeviceToAbsoluteTracking.m[1][3],
                           poseLeft.mDeviceToAbsoluteTracking.m[2][3] } );
-                if ( !std::isnan( distanceLeft )
+                if ( !std::isnan( distanceLeft.distance )
                      && ( std::isnan( minDistance )
-                          || distanceLeft < minDistance ) )
+                          || distanceLeft.distance < minDistance ) )
                 {
-                    minDistance = distanceLeft;
+                    minDistance = distanceLeft.distance;
                 }
             }
         }
@@ -324,11 +320,11 @@ void ChaperoneTabController::eventLoopTick(
                         { poseRight.mDeviceToAbsoluteTracking.m[0][3],
                           poseRight.mDeviceToAbsoluteTracking.m[1][3],
                           poseRight.mDeviceToAbsoluteTracking.m[2][3] } );
-                if ( !std::isnan( distanceRight )
+                if ( !std::isnan( distanceRight.distance )
                      && ( std::isnan( minDistance )
-                          || distanceRight < minDistance ) )
+                          || distanceRight.distance < minDistance ) )
                 {
-                    minDistance = distanceRight;
+                    minDistance = distanceRight.distance;
                 }
             }
         }
@@ -353,25 +349,25 @@ void ChaperoneTabController::eventLoopTick(
 	if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK )
         {
-            if(!m_chaperoneDistances) m_chaperoneDistances.reset(new float[parent->chaperoneUtils().quadsCount()]);
-            if(!m_chaperoneNearestPoints) m_chaperoneNearestPoints.reset(new vr::HmdVector3_t[parent->chaperoneUtils().quadsCount()]);
-            if(!m_chaperoneSnapTurnActive) m_chaperoneSnapTurnActive.reset(new bool[parent->chaperoneUtils().quadsCount()]);
-	    
-            parent->chaperoneUtils().getDistancesToChaperone(
+            auto chaperoneDistances = parent->chaperoneUtils().getDistancesToChaperone(
                 { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
                   poseHmd.mDeviceToAbsoluteTracking.m[1][3],
-                  poseHmd.mDeviceToAbsoluteTracking.m[2][3] },
-		  m_chaperoneDistances.get(),
-		  m_chaperoneNearestPoints.get());
+                  poseHmd.mDeviceToAbsoluteTracking.m[2][3] });
+            if(m_chaperoneSnapTurnActive.size() != chaperoneDistances.size())
+            {
+                // Chaperone changed
+                m_chaperoneSnapTurnActive.clear();
+                m_chaperoneSnapTurnActive.resize(chaperoneDistances.size(), true);
+            }
             float activationDistance = chaperoneSwitchToBeginnerDistance();
     	    float deactivateDistance = 0.2f;
             
-            for(size_t i = 0; i < parent->chaperoneUtils().quadsCount(); i++)
+            for(size_t i = 0; i < chaperoneDistances.size(); i++)
             {
-		auto distance = m_chaperoneDistances[i];
-                if ( distance <= activationDistance && m_isHMDActive
-                 && !m_chaperoneSnapTurnActive[i] )
-         	{
+                const auto& chaperoneQuad = chaperoneDistances[i];
+                if ( chaperoneQuad.distance <= activationDistance && m_isHMDActive
+                        && !m_chaperoneSnapTurnActive[i] )
+                {
 		    // ------------------
 		    // Set up (un)rotation matrix
 		    vr::HmdMatrix34_t hmdMatrixRotMat;
@@ -386,29 +382,27 @@ void ChaperoneTabController::eventLoopTick(
 		    auto hmdQuaternion = quaternion::fromHmdMatrix34( hmdMatrixAbsolute );
 
 		    // Get HMD raw yaw
-	            double hmdYaw = quaternion::getYaw( hmdQuaternion );
+	        double hmdYaw = quaternion::getYaw( hmdQuaternion );
 
 		    // Get HMD to wall yaw
 		    double hmdToWallYaw = static_cast<double>( std::atan2(
-			poseHmd.mDeviceToAbsoluteTracking.m[0][3] - m_chaperoneNearestPoints[i].v[0],
-			poseHmd.mDeviceToAbsoluteTracking.m[2][3] - m_chaperoneNearestPoints[i].v[2]
+			poseHmd.mDeviceToAbsoluteTracking.m[0][3] - chaperoneQuad.nearestPoint.v[0],
+			poseHmd.mDeviceToAbsoluteTracking.m[2][3] - chaperoneQuad.nearestPoint.v[2]
 		    ) );
 
-		    // Get the closest wall that ISN'T this one
-		    size_t idx = 0;
-		    for (size_t j = 0; j < parent->chaperoneUtils().quadsCount(); j++)
-		    {
-			if ( j == i ) continue;
-			if(m_chaperoneDistances[j] < m_chaperoneDistances[idx]) 
-			{
-			    idx = j;
-			}
-		    }
+            // TODO: ignore if the wall we encountered is behind us?
+
+		    // Get the closest corner on this wall
+            const auto& closestCorner = chaperoneQuad.closestCorner({
+                    poseHmd.mDeviceToAbsoluteTracking.m[0][3],
+                    poseHmd.mDeviceToAbsoluteTracking.m[1][3],
+                    poseHmd.mDeviceToAbsoluteTracking.m[2][3]
+            });
 		    
-		    // Get HMD to wall yaw
+		    // Get HMD to closest corner yaw
 		    double hmdToOpposingWallYaw = static_cast<double>( std::atan2(
-			poseHmd.mDeviceToAbsoluteTracking.m[0][3] - m_chaperoneNearestPoints[idx].v[0],
-			poseHmd.mDeviceToAbsoluteTracking.m[2][3] - m_chaperoneNearestPoints[idx].v[2]
+			poseHmd.mDeviceToAbsoluteTracking.m[0][3] - closestCorner.v[0],
+			poseHmd.mDeviceToAbsoluteTracking.m[2][3] - closestCorner.v[2]
 		    ) );
 
 		    LOG( INFO ) << "hmd yaw " << hmdYaw << ", hmd to wall yaw " << hmdToWallYaw;
@@ -419,7 +413,6 @@ void ChaperoneTabController::eventLoopTick(
 		    LOG( INFO ) << "rotating space " << (delta_degrees/100) << " degrees";
 		    //LOG( INFO ) << "total rotation " << parent->m_moveCenterTabController.getHmdYawTotal();
 		    // TODO: Account for overall yaw, have an upper limit to rotation
-                    //parent->m_moveCenterTabController.snapTurnRight(true);
 		    int newRotationAngleDeg = static_cast<int>(parent->m_moveCenterTabController.rotation() + delta_degrees) % 36000;
 		    parent->m_moveCenterTabController.setRotation(newRotationAngleDeg);
 		    
@@ -428,7 +421,7 @@ void ChaperoneTabController::eventLoopTick(
 
         	    m_chaperoneSnapTurnActive[i] = true;
         	}
-        	else if ((distance > (activationDistance + deactivateDistance) || !m_isHMDActive)
+        	else if ((chaperoneQuad.distance > (activationDistance + deactivateDistance) || !m_isHMDActive)
                      && m_chaperoneSnapTurnActive[i] )
         	{
         	    m_chaperoneSnapTurnActive[i] = false;
@@ -437,7 +430,6 @@ void ChaperoneTabController::eventLoopTick(
 
         }    
     }
-
 
     if ( settingsUpdateCounter >= m_chaperoneSettingsUpdateCounter )
     {
