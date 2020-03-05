@@ -17,15 +17,13 @@ struct ChaperoneQuadData
 
     const vr::HmdVector3_t& closestCorner( const vr::HmdVector3_t& point ) const
     {
-        auto cornerDistanceA = std::sqrt(
-            std::pow(point.v[0] - corners[0].v[0], 2.0) +
-            std::pow(point.v[2] - corners[0].v[2], 2.0)
-            );
-        auto cornerDistanceB = std::sqrt(
-            std::pow(point.v[0] - corners[1].v[0], 2.0) +
-            std::pow(point.v[2] - corners[1].v[2], 2.0)
-            );
-        return (cornerDistanceA < cornerDistanceB) ? corners[0]: corners[1];
+        auto cornerDistanceA
+            = std::sqrt( std::pow( point.v[0] - corners[0].v[0], 2.0 )
+                         + std::pow( point.v[2] - corners[0].v[2], 2.0 ) );
+        auto cornerDistanceB
+            = std::sqrt( std::pow( point.v[0] - corners[1].v[0], 2.0 )
+                         + std::pow( point.v[2] - corners[1].v[2], 2.0 ) );
+        return ( cornerDistanceA < cornerDistanceB ) ? corners[0] : corners[1];
     }
 };
 
@@ -36,7 +34,8 @@ private:
     uint32_t _quadsCount = 0;
     std::unique_ptr<vr::HmdVector3_t> _corners;
     bool _chaperoneWellFormed = true;
-    std::vector<ChaperoneQuadData> _getDistancesToChaperone( const vr::HmdVector3_t& point );
+    std::vector<ChaperoneQuadData>
+        _getDistancesToChaperone( const vr::HmdVector3_t& point );
 
 public:
     uint32_t quadsCount() const noexcept
@@ -55,8 +54,9 @@ public:
 
     void loadChaperoneData( bool fromLiveBounds = true );
 
-    std::vector<ChaperoneQuadData> getDistancesToChaperone( const vr::HmdVector3_t& point,
-				  bool doLock = false )
+    std::vector<ChaperoneQuadData>
+        getDistancesToChaperone( const vr::HmdVector3_t& point,
+                                 bool doLock = false )
     {
         if ( doLock )
         {
@@ -70,13 +70,17 @@ public:
     }
 
     ChaperoneQuadData getDistanceToChaperone( const vr::HmdVector3_t& point,
-                                  bool doLock = false )
+                                              bool doLock = false )
     {
-	 auto distances = getDistancesToChaperone( point, doLock);
-     return *std::min_element(distances.begin(), distances.end(), [] (const ChaperoneQuadData& quadA, const ChaperoneQuadData& quadB)
-     {
-        return std::isnan(quadA.distance) || (quadA.distance < quadB.distance);
-     });
+        auto distances = getDistancesToChaperone( point, doLock );
+        return *std::min_element( distances.begin(),
+                                  distances.end(),
+                                  []( const ChaperoneQuadData& quadA,
+                                      const ChaperoneQuadData& quadB ) {
+                                      return std::isnan( quadA.distance )
+                                             || ( quadA.distance
+                                                  < quadB.distance );
+                                  } );
     }
 };
 

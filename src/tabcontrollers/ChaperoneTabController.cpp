@@ -345,90 +345,114 @@ void ChaperoneTabController::eventLoopTick(
         }
 
         // Infinite-walk mode
-	// TODO: if (infinite_walk_enabled) 	
-	if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
+        // TODO: if (infinite_walk_enabled)
+        if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK )
         {
-            auto chaperoneDistances = parent->chaperoneUtils().getDistancesToChaperone(
-                { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
-                  poseHmd.mDeviceToAbsoluteTracking.m[1][3],
-                  poseHmd.mDeviceToAbsoluteTracking.m[2][3] });
-            if(m_chaperoneSnapTurnActive.size() != chaperoneDistances.size())
+            auto chaperoneDistances
+                = parent->chaperoneUtils().getDistancesToChaperone(
+                    { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
+                      poseHmd.mDeviceToAbsoluteTracking.m[1][3],
+                      poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
+            if ( m_chaperoneSnapTurnActive.size() != chaperoneDistances.size() )
             {
                 // Chaperone changed
                 m_chaperoneSnapTurnActive.clear();
-                m_chaperoneSnapTurnActive.resize(chaperoneDistances.size(), true);
+                m_chaperoneSnapTurnActive.resize( chaperoneDistances.size(),
+                                                  true );
             }
             float activationDistance = chaperoneSwitchToBeginnerDistance();
-    	    float deactivateDistance = 0.2f;
-            
-            for(size_t i = 0; i < chaperoneDistances.size(); i++)
+            float deactivateDistance = 0.2f;
+
+            for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
             {
                 const auto& chaperoneQuad = chaperoneDistances[i];
-                if ( chaperoneQuad.distance <= activationDistance && m_isHMDActive
-                        && !m_chaperoneSnapTurnActive[i] )
+                if ( chaperoneQuad.distance <= activationDistance
+                     && m_isHMDActive && !m_chaperoneSnapTurnActive[i] )
                 {
-		    // ------------------
-		    // Set up (un)rotation matrix
-		    vr::HmdMatrix34_t hmdMatrixRotMat;
-		    vr::HmdMatrix34_t hmdMatrixAbsolute;
-		    utils::initRotationMatrix(
-		        hmdMatrixRotMat, 1, 0.0f );
+                    // ------------------
+                    // Set up (un)rotation matrix
+                    vr::HmdMatrix34_t hmdMatrixRotMat;
+                    vr::HmdMatrix34_t hmdMatrixAbsolute;
+                    utils::initRotationMatrix( hmdMatrixRotMat, 1, 0.0f );
 
-		    // Get hmdMatrixAbsolute in un-rotated coordinates.
-		    utils::matMul33( hmdMatrixAbsolute, hmdMatrixRotMat, poseHmd.mDeviceToAbsoluteTracking );
+                    // Get hmdMatrixAbsolute in un-rotated coordinates.
+                    utils::matMul33( hmdMatrixAbsolute,
+                                     hmdMatrixRotMat,
+                                     poseHmd.mDeviceToAbsoluteTracking );
 
-		    // Convert pose matrix to quaternion
-		    auto hmdQuaternion = quaternion::fromHmdMatrix34( hmdMatrixAbsolute );
+                    // Convert pose matrix to quaternion
+                    auto hmdQuaternion
+                        = quaternion::fromHmdMatrix34( hmdMatrixAbsolute );
 
-		    // Get HMD raw yaw
-	        double hmdYaw = quaternion::getYaw( hmdQuaternion );
+                    // Get HMD raw yaw
+                    double hmdYaw = quaternion::getYaw( hmdQuaternion );
 
-		    // Get HMD to wall yaw
-		    double hmdToWallYaw = static_cast<double>( std::atan2(
-			poseHmd.mDeviceToAbsoluteTracking.m[0][3] - chaperoneQuad.nearestPoint.v[0],
-			poseHmd.mDeviceToAbsoluteTracking.m[2][3] - chaperoneQuad.nearestPoint.v[2]
-		    ) );
+                    // Get HMD to wall yaw
+                    double hmdToWallYaw = static_cast<double>(
+                        std::atan2( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                                        - chaperoneQuad.nearestPoint.v[0],
+                                    poseHmd.mDeviceToAbsoluteTracking.m[2][3]
+                                        - chaperoneQuad.nearestPoint.v[2] ) );
 
-            // TODO: ignore if the wall we encountered is behind us?
+                    // TODO: ignore if the wall we encountered is behind us?
 
-		    // Get the closest corner on this wall
-            const auto& closestCorner = chaperoneQuad.closestCorner({
-                    poseHmd.mDeviceToAbsoluteTracking.m[0][3],
-                    poseHmd.mDeviceToAbsoluteTracking.m[1][3],
-                    poseHmd.mDeviceToAbsoluteTracking.m[2][3]
-            });
-		    
-		    // Get HMD to closest corner yaw
-		    double hmdToOpposingWallYaw = static_cast<double>( std::atan2(
-			poseHmd.mDeviceToAbsoluteTracking.m[0][3] - closestCorner.v[0],
-			poseHmd.mDeviceToAbsoluteTracking.m[2][3] - closestCorner.v[2]
-		    ) );
+                    // Get the closest corner on this wall
+                    const auto& closestCorner = chaperoneQuad.closestCorner(
+                        { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
+                          poseHmd.mDeviceToAbsoluteTracking.m[1][3],
+                          poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
 
-		    LOG( INFO ) << "hmd yaw " << hmdYaw << ", hmd to wall yaw " << hmdToWallYaw;
-		    LOG( INFO ) << "hmd to wall angle " << (hmdYaw - hmdToWallYaw) << ", to opposing wall angle " << (hmdYaw - hmdToOpposingWallYaw);
-		    // Positive hmd-to-wall is facing left, negative is facing right (relative to the wall)
-		    double delta_degrees = ( - (hmdYaw - hmdToWallYaw) - (((hmdYaw - hmdToOpposingWallYaw) > 0.0) ? - M_PI/2 : M_PI/2)) * k_radiansToCentidegrees;
-		    //double delta_degrees = ( - (hmdYaw - hmdToWallYaw) - (- M_PI/2)) * k_radiansToCentidegrees;
-		    LOG( INFO ) << "rotating space " << (delta_degrees/100) << " degrees";
-		    //LOG( INFO ) << "total rotation " << parent->m_moveCenterTabController.getHmdYawTotal();
-		    // TODO: Account for overall yaw, have an upper limit to rotation
-		    int newRotationAngleDeg = static_cast<int>(parent->m_moveCenterTabController.rotation() + delta_degrees) % 36000;
-		    parent->m_moveCenterTabController.setRotation(newRotationAngleDeg);
-		    
+                    // Get HMD to closest corner yaw
+                    double hmdToOpposingWallYaw = static_cast<double>(
+                        std::atan2( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                                        - closestCorner.v[0],
+                                    poseHmd.mDeviceToAbsoluteTracking.m[2][3]
+                                        - closestCorner.v[2] ) );
 
-		    // -----------------
+                    LOG( INFO ) << "hmd yaw " << hmdYaw << ", hmd to wall yaw "
+                                << hmdToWallYaw;
+                    LOG( INFO )
+                        << "hmd to wall angle " << ( hmdYaw - hmdToWallYaw )
+                        << ", to opposing wall angle "
+                        << ( hmdYaw - hmdToOpposingWallYaw );
+                    // Positive hmd-to-wall is facing left, negative is facing
+                    // right (relative to the wall)
+                    double delta_degrees
+                        = ( -( hmdYaw - hmdToWallYaw )
+                            - ( ( ( hmdYaw - hmdToOpposingWallYaw ) > 0.0 )
+                                    ? -M_PI / 2
+                                    : M_PI / 2 ) )
+                          * k_radiansToCentidegrees;
+                    // double delta_degrees = ( - (hmdYaw - hmdToWallYaw) - (-
+                    // M_PI/2)) * k_radiansToCentidegrees;
+                    LOG( INFO ) << "rotating space " << ( delta_degrees / 100 )
+                                << " degrees";
+                    // LOG( INFO ) << "total rotation " <<
+                    // parent->m_moveCenterTabController.getHmdYawTotal();
+                    // TODO: Account for overall yaw, have an upper limit to
+                    // rotation
+                    int newRotationAngleDeg
+                        = static_cast<int>(
+                              parent->m_moveCenterTabController.rotation()
+                              + delta_degrees )
+                          % 36000;
+                    parent->m_moveCenterTabController.setRotation(
+                        newRotationAngleDeg );
 
-        	    m_chaperoneSnapTurnActive[i] = true;
-        	}
-        	else if ((chaperoneQuad.distance > (activationDistance + deactivateDistance) || !m_isHMDActive)
-                     && m_chaperoneSnapTurnActive[i] )
-        	{
-        	    m_chaperoneSnapTurnActive[i] = false;
-        	}
-             }
+                    // -----------------
 
-        }    
+                    m_chaperoneSnapTurnActive[i] = true;
+                }
+                else if ( ( chaperoneQuad.distance
+                                > ( activationDistance + deactivateDistance )
+                            || !m_isHMDActive )
+                          && m_chaperoneSnapTurnActive[i] )
+                {
+                    m_chaperoneSnapTurnActive[i] = false;
+                }
+            }
+        }
     }
 
     if ( settingsUpdateCounter >= m_chaperoneSettingsUpdateCounter )

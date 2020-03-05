@@ -4,8 +4,8 @@
 
 namespace utils
 {
-
-std::vector<ChaperoneQuadData> ChaperoneUtils::_getDistancesToChaperone( const vr::HmdVector3_t& x )
+std::vector<ChaperoneQuadData>
+    ChaperoneUtils::_getDistancesToChaperone( const vr::HmdVector3_t& x )
 {
     std::vector<ChaperoneQuadData> result;
     vr::HmdVector3_t* _cornersPtr = _corners.get();
@@ -61,10 +61,10 @@ std::vector<ChaperoneQuadData> ChaperoneUtils::_getDistancesToChaperone( const v
         }
         ChaperoneQuadData computedQuad;
         computedQuad.distance = d;
-        computedQuad.nearestPoint = {x1_x, x.v[1], x1_z};
-        computedQuad.corners[0] = r0; 
+        computedQuad.nearestPoint = { x1_x, x.v[1], x1_z };
+        computedQuad.corners[0] = r0;
         computedQuad.corners[1] = r1;
-        result.push_back(computedQuad);
+        result.push_back( computedQuad );
     }
     return result;
 }
