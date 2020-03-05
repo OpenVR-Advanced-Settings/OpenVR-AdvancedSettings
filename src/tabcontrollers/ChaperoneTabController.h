@@ -8,6 +8,7 @@
 #include <openvr.h>
 #include <cmath>
 #include "../utils/FrameRateUtils.h"
+#include "../utils/ChaperoneUtils.h"
 #include "../settings/settings_object.h"
 
 class QQuickWindow;
@@ -307,6 +308,7 @@ private:
     bool m_playSpaceMarker = false;
     bool m_forceBounds = false;
 
+    size_t m_chaperoneLastWallTurned;
     std::vector<bool> m_chaperoneSnapTurnActive;
 
     bool m_chaperoneSwitchToBeginnerActive = false;

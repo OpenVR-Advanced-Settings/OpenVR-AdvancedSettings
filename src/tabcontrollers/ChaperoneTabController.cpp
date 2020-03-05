@@ -358,6 +358,8 @@ void ChaperoneTabController::eventLoopTick(
             {
                 // Chaperone changed
                 m_chaperoneSnapTurnActive.clear();
+                // Initialize all to 'true' so we don't rotate on startup if the
+                // user is outside of the play area.
                 m_chaperoneSnapTurnActive.resize( chaperoneDistances.size(),
                                                   true );
             }
@@ -371,19 +373,9 @@ void ChaperoneTabController::eventLoopTick(
                      && m_isHMDActive && !m_chaperoneSnapTurnActive[i] )
                 {
                     // ------------------
-                    // Set up (un)rotation matrix
-                    vr::HmdMatrix34_t hmdMatrixRotMat;
-                    vr::HmdMatrix34_t hmdMatrixAbsolute;
-                    utils::initRotationMatrix( hmdMatrixRotMat, 1, 0.0f );
-
-                    // Get hmdMatrixAbsolute in un-rotated coordinates.
-                    utils::matMul33( hmdMatrixAbsolute,
-                                     hmdMatrixRotMat,
-                                     poseHmd.mDeviceToAbsoluteTracking );
-
                     // Convert pose matrix to quaternion
-                    auto hmdQuaternion
-                        = quaternion::fromHmdMatrix34( hmdMatrixAbsolute );
+                    auto hmdQuaternion = quaternion::fromHmdMatrix34(
+                        poseHmd.mDeviceToAbsoluteTracking );
 
                     // Get HMD raw yaw
                     double hmdYaw = quaternion::getYaw( hmdQuaternion );
@@ -397,39 +389,50 @@ void ChaperoneTabController::eventLoopTick(
 
                     // TODO: ignore if the wall we encountered is behind us?
 
-                    // Get the closest corner on this wall
-                    const auto& closestCorner = chaperoneQuad.closestCorner(
-                        { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
-                          poseHmd.mDeviceToAbsoluteTracking.m[1][3],
-                          poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
+                    // If the closest corner shares a wall with the last wall we
+                    // turned at, turn relative to that corner
+                    bool cornerShared
+                        = ( i
+                            == ( m_chaperoneLastWallTurned
+                                 + 1 % chaperoneDistances.size() ) )
+                          || ( i
+                               == ( m_chaperoneLastWallTurned
+                                    - 1 % chaperoneDistances.size() ) );
 
-                    // Get HMD to closest corner yaw
-                    double hmdToOpposingWallYaw = static_cast<double>(
-                        std::atan2( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                        - closestCorner.v[0],
-                                    poseHmd.mDeviceToAbsoluteTracking.m[2][3]
-                                        - closestCorner.v[2] ) );
+                    bool turnLeft = true;
+                    if ( cornerShared )
+                    {
+                        // Turn left or right depending on which corner it is.
+                        // If we go based on yaw, we could end up turning the
+                        // wrong way if it's large obtuse angle and we're facing
+                        // more towards the previous wall than the left.
+                        turnLeft = i
+                                   == ( m_chaperoneLastWallTurned
+                                        + 1 % chaperoneDistances.size() );
+                        LOG( INFO ) << "turning away from shared corner";
+                    }
+                    else
+                    {
+                        turnLeft = ( hmdYaw - hmdToWallYaw ) > 0.0;
+                        LOG( INFO ) << "turning to closest angle to wall";
+                    }
 
                     LOG( INFO ) << "hmd yaw " << hmdYaw << ", hmd to wall yaw "
                                 << hmdToWallYaw;
                     LOG( INFO )
-                        << "hmd to wall angle " << ( hmdYaw - hmdToWallYaw )
-                        << ", to opposing wall angle "
-                        << ( hmdYaw - hmdToOpposingWallYaw );
+                        << "hmd to wall angle " << ( hmdYaw - hmdToWallYaw );
+                    //<< ", to opposing wall angle "
+                    //<< ( hmdYaw - hmdToClosestCornerYaw );
                     // Positive hmd-to-wall is facing left, negative is facing
                     // right (relative to the wall)
                     double delta_degrees
                         = ( -( hmdYaw - hmdToWallYaw )
-                            - ( ( ( hmdYaw - hmdToOpposingWallYaw ) > 0.0 )
-                                    ? -M_PI / 2
-                                    : M_PI / 2 ) )
+                            - ( turnLeft ? -M_PI / 2 : M_PI / 2 ) )
                           * k_radiansToCentidegrees;
                     // double delta_degrees = ( - (hmdYaw - hmdToWallYaw) - (-
                     // M_PI/2)) * k_radiansToCentidegrees;
                     LOG( INFO ) << "rotating space " << ( delta_degrees / 100 )
                                 << " degrees";
-                    // LOG( INFO ) << "total rotation " <<
-                    // parent->m_moveCenterTabController.getHmdYawTotal();
                     // TODO: Account for overall yaw, have an upper limit to
                     // rotation
                     int newRotationAngleDeg
@@ -441,7 +444,7 @@ void ChaperoneTabController::eventLoopTick(
                         newRotationAngleDeg );
 
                     // -----------------
-
+                    m_chaperoneLastWallTurned = i;
                     m_chaperoneSnapTurnActive[i] = true;
                 }
                 else if ( ( chaperoneQuad.distance
