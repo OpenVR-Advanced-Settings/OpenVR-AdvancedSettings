@@ -364,7 +364,7 @@ void ChaperoneTabController::eventLoopTick(
                                                   true );
             }
             float activationDistance = chaperoneSwitchToBeginnerDistance();
-            float deactivateDistance = 0.2f;
+            const float deactivateDistance = 0.2f;
 
             for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
             {
@@ -411,8 +411,6 @@ void ChaperoneTabController::eventLoopTick(
 
                     bool turnLeft = true;
                     if ( cornerShared
-                         //&& ( cornerTurnDirectionLeft
-                         //     == m_chaperoneLastDirectionLeft )
                          && m_chaperoneSnapTurnActive
                              [m_chaperoneLastWallTurned] )
                     {
@@ -424,8 +422,6 @@ void ChaperoneTabController::eventLoopTick(
                         LOG( INFO ) << "turning away from shared corner "
                                        "(cornerTurnDirection Left: "
                                     << cornerTurnDirectionLeft
-                                    << ", m_chaperoneLastDirectionLeft: "
-                                    << m_chaperoneLastDirectionLeft
                                     << ", last wall still active: "
                                     << m_chaperoneSnapTurnActive
                                            [m_chaperoneLastWallTurned]
@@ -437,8 +433,6 @@ void ChaperoneTabController::eventLoopTick(
                         LOG( INFO ) << "turning closest angle to wall "
                                        "(cornerTurnDirection Left: "
                                     << cornerTurnDirectionLeft
-                                    << ", m_chaperoneLastDirectionLeft: "
-                                    << m_chaperoneLastDirectionLeft
                                     << ", last wall still active: "
                                     << m_chaperoneSnapTurnActive
                                            [m_chaperoneLastWallTurned]
@@ -446,8 +440,10 @@ void ChaperoneTabController::eventLoopTick(
                     }
 
                     // Limit maximum overall turns to 2
-                    const double max_turns = 2 * ( 2 * M_PI );
-                    bool exceeededTurning
+                    // const double max_turns = 2 * ( 2 * M_PI );
+                    /*
+                    // TODO: Turn change wall color if you turn too far?
+                    bool exceededTurning
                         = ( parent->m_moveCenterTabController.getHmdYawTotal()
                                 >= max_turns
                             && !turnLeft )
@@ -455,25 +451,17 @@ void ChaperoneTabController::eventLoopTick(
                                        .getHmdYawTotal()
                                    <= -max_turns
                                && turnLeft );
-                    // TODO: does this work well?
-                    if ( exceededTurning )
-                    {
-                        turnLeft = !turnLeft
-                    }
+                    */
                     LOG( INFO ) << "hmd yaw " << hmdYaw << ", hmd to wall yaw "
                                 << hmdToWallYaw;
                     LOG( INFO )
                         << "hmd to wall angle " << ( hmdYaw - hmdToWallYaw );
-                    //<< ", to opposing wall angle "
-                    //<< ( hmdYaw - hmdToClosestCornerYaw );
                     // Positive hmd-to-wall is facing left, negative is
                     // facing right (relative to the wall)
                     double delta_degrees
                         = ( -( hmdYaw - hmdToWallYaw )
                             - ( turnLeft ? -M_PI / 2 : M_PI / 2 ) )
                           * k_radiansToCentidegrees;
-                    // double delta_degrees = ( - (hmdYaw - hmdToWallYaw) -
-                    // (- M_PI/2)) * k_radiansToCentidegrees;
                     LOG( INFO ) << "rotating space " << ( delta_degrees / 100 )
                                 << " degrees";
                     int newRotationAngleDeg
@@ -485,7 +473,6 @@ void ChaperoneTabController::eventLoopTick(
                         newRotationAngleDeg );
 
                     m_chaperoneLastWallTurned = i;
-                    m_chaperoneLastDirectionLeft = turnLeft;
                     m_chaperoneSnapTurnActive[i] = true;
                 }
                 else if ( ( chaperoneQuad.distance
