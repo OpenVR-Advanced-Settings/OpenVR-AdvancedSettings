@@ -399,16 +399,25 @@ void ChaperoneTabController::eventLoopTick(
                                == ( m_chaperoneLastWallTurned
                                     - 1 % chaperoneDistances.size() ) );
 
+                    // Only do 'shared corner' turns if it'll continue going the
+                    // same direction
+                    bool cornerTurnDirectionLeft
+                        = i
+                          == ( m_chaperoneLastWallTurned
+                               + 1 % chaperoneDistances.size() );
+
+                    // TODO: Also take into account how far from the corner we
+                    // are?
                     bool turnLeft = true;
-                    if ( cornerShared )
+                    if ( cornerShared
+                         && ( cornerTurnDirectionLeft
+                              == m_chaperoneLastDirectionLeft ) )
                     {
                         // Turn left or right depending on which corner it is.
                         // If we go based on yaw, we could end up turning the
                         // wrong way if it's large obtuse angle and we're facing
                         // more towards the previous wall than the left.
-                        turnLeft = i
-                                   == ( m_chaperoneLastWallTurned
-                                        + 1 % chaperoneDistances.size() );
+                        turnLeft = cornerTurnDirectionLeft;
                         LOG( INFO ) << "turning away from shared corner";
                     }
                     else
@@ -417,34 +426,49 @@ void ChaperoneTabController::eventLoopTick(
                         LOG( INFO ) << "turning to closest angle to wall";
                     }
 
-                    LOG( INFO ) << "hmd yaw " << hmdYaw << ", hmd to wall yaw "
-                                << hmdToWallYaw;
-                    LOG( INFO )
-                        << "hmd to wall angle " << ( hmdYaw - hmdToWallYaw );
-                    //<< ", to opposing wall angle "
-                    //<< ( hmdYaw - hmdToClosestCornerYaw );
-                    // Positive hmd-to-wall is facing left, negative is facing
-                    // right (relative to the wall)
-                    double delta_degrees
-                        = ( -( hmdYaw - hmdToWallYaw )
-                            - ( turnLeft ? -M_PI / 2 : M_PI / 2 ) )
-                          * k_radiansToCentidegrees;
-                    // double delta_degrees = ( - (hmdYaw - hmdToWallYaw) - (-
-                    // M_PI/2)) * k_radiansToCentidegrees;
-                    LOG( INFO ) << "rotating space " << ( delta_degrees / 100 )
-                                << " degrees";
-                    // TODO: Account for overall yaw, have an upper limit to
-                    // rotation
-                    int newRotationAngleDeg
-                        = static_cast<int>(
-                              parent->m_moveCenterTabController.rotation()
-                              + delta_degrees )
-                          % 36000;
-                    parent->m_moveCenterTabController.setRotation(
-                        newRotationAngleDeg );
+                    // Limit maximum overall turns to 3
+                    const double max_turns = 2 * ( 2 * M_PI );
+                    if ( !( parent->m_moveCenterTabController.getHmdYawTotal()
+                                >= max_turns
+                            && !turnLeft )
+                         && !(
+                             parent->m_moveCenterTabController.getHmdYawTotal()
+                                 <= -max_turns
+                             && turnLeft ) )
+                    {
+                        LOG( INFO ) << "hmd yaw " << hmdYaw
+                                    << ", hmd to wall yaw " << hmdToWallYaw;
+                        LOG( INFO ) << "hmd to wall angle "
+                                    << ( hmdYaw - hmdToWallYaw );
+                        //<< ", to opposing wall angle "
+                        //<< ( hmdYaw - hmdToClosestCornerYaw );
+                        // Positive hmd-to-wall is facing left, negative is
+                        // facing right (relative to the wall)
+                        double delta_degrees
+                            = ( -( hmdYaw - hmdToWallYaw )
+                                - ( turnLeft ? -M_PI / 2 : M_PI / 2 ) )
+                              * k_radiansToCentidegrees;
+                        // double delta_degrees = ( - (hmdYaw - hmdToWallYaw) -
+                        // (- M_PI/2)) * k_radiansToCentidegrees;
+                        LOG( INFO ) << "rotating space "
+                                    << ( delta_degrees / 100 ) << " degrees";
+                        int newRotationAngleDeg
+                            = static_cast<int>(
+                                  parent->m_moveCenterTabController.rotation()
+                                  + delta_degrees )
+                              % 36000;
+                        parent->m_moveCenterTabController.setRotation(
+                            newRotationAngleDeg );
 
-                    // -----------------
-                    m_chaperoneLastWallTurned = i;
+                        m_chaperoneLastWallTurned = i;
+                        m_chaperoneLastDirectionLeft = turnLeft;
+                    }
+                    else
+                    {
+                        LOG( INFO ) << "Exceeded max turns "
+                                    << ( turnLeft ? "left" : "right" )
+                                    << ", refusing to turn";
+                    }
                     m_chaperoneSnapTurnActive[i] = true;
                 }
                 else if ( ( chaperoneQuad.distance

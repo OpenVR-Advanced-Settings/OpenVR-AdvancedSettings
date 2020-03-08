@@ -308,6 +308,7 @@ private:
     bool m_playSpaceMarker = false;
     bool m_forceBounds = false;
 
+    bool m_chaperoneLastDirectionLeft;
     size_t m_chaperoneLastWallTurned;
     std::vector<bool> m_chaperoneSnapTurnActive;
 
