@@ -389,30 +389,26 @@ void ChaperoneTabController::eventLoopTick(
 
                     // TODO: ignore if the wall we encountered is behind us?
 
-                    // TODO: 'shared corner' turns are ugly, find a cleaner
-                    // solution
-
                     // If the closest corner shares a wall with the last wall we
                     // turned at, turn relative to that corner
                     bool cornerShared
                         = ( i
-                            == ( m_chaperoneLastWallTurned
-                                 + 1 % chaperoneDistances.size() ) )
+                            == ( m_chaperoneSnapTurnActive
+                                     [i + 1 % chaperoneDistances.size()] ) )
                           || ( i
-                               == ( m_chaperoneLastWallTurned
-                                    - 1 % chaperoneDistances.size() ) );
+                               == ( m_chaperoneSnapTurnActive
+                                        [i - 1 % chaperoneDistances.size()] ) );
 
                     // Only do 'shared corner' turns if it'll continue going the
                     // same direction
                     bool cornerTurnDirectionLeft
                         = i
-                          == ( m_chaperoneLastWallTurned
-                               + 1 % chaperoneDistances.size() );
+                          == ( m_chaperoneSnapTurnActive
+                                   [i + 1 % chaperoneDistances.size()] );
 
                     bool turnLeft = true;
-                    if ( cornerShared
-                         && m_chaperoneSnapTurnActive
-                             [m_chaperoneLastWallTurned] )
+                    // Turn away from corner
+                    if ( cornerShared )
                     {
                         // Turn left or right depending on which corner it is.
                         // If we go based on yaw, we could end up turning the
@@ -421,22 +417,26 @@ void ChaperoneTabController::eventLoopTick(
                         turnLeft = cornerTurnDirectionLeft;
                         LOG( INFO ) << "turning away from shared corner "
                                        "(cornerTurnDirection Left: "
-                                    << cornerTurnDirectionLeft
-                                    << ", last wall still active: "
-                                    << m_chaperoneSnapTurnActive
-                                           [m_chaperoneLastWallTurned]
-                                    << ")";
+                                    << cornerTurnDirectionLeft << ")";
+                    }
+                    // If within 5 degrees of 'straight at a wall', start in
+                    // whatever direction will start untangling your cord
+                    // TODO: this needs to be an configurable for non-corded
+                    // setups
+                    else if ( std::abs( hmdYaw - hmdToWallYaw )
+                              <= ( M_PI * 0.03 ) )
+                    {
+                        turnLeft = ( parent->m_moveCenterTabController
+                                         .getHmdYawTotal()
+                                     > 0.0 );
+                        LOG( INFO ) << "turning to detangle cord";
                     }
                     else
                     {
                         turnLeft = ( hmdYaw - hmdToWallYaw ) > 0.0;
                         LOG( INFO ) << "turning closest angle to wall "
                                        "(cornerTurnDirection Left: "
-                                    << cornerTurnDirectionLeft
-                                    << ", last wall still active: "
-                                    << m_chaperoneSnapTurnActive
-                                           [m_chaperoneLastWallTurned]
-                                    << ")";
+                                    << cornerTurnDirectionLeft << ")";
                     }
 
                     // Limit maximum overall turns to 2
@@ -472,7 +472,6 @@ void ChaperoneTabController::eventLoopTick(
                     parent->m_moveCenterTabController.setRotation(
                         newRotationAngleDeg );
 
-                    m_chaperoneLastWallTurned = i;
                     m_chaperoneSnapTurnActive[i] = true;
                 }
                 else if ( ( chaperoneQuad.distance
