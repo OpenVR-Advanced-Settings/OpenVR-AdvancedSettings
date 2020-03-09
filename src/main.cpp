@@ -12,6 +12,7 @@ int main( int argc, char* argv[] )
 
     LOG( INFO ) << settings::getSettingsAndValues();
 
+    QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
     MyQApplication mainEventLoop( argc, argv );
     mainEventLoop.setOrganizationName(
         application_strings::applicationOrganizationName );
