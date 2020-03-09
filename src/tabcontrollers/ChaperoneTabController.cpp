@@ -364,7 +364,8 @@ void ChaperoneTabController::eventLoopTick(
                                                   true );
             }
             float activationDistance = chaperoneSwitchToBeginnerDistance();
-            const float deactivateDistance = 0.2f;
+            const float deactivateDistance = 0.3f;
+            const double cordDetanglingAngle = M_PI * 0.03;
 
             for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
             {
@@ -387,90 +388,98 @@ void ChaperoneTabController::eventLoopTick(
                                     poseHmd.mDeviceToAbsoluteTracking.m[2][3]
                                         - chaperoneQuad.nearestPoint.v[2] ) );
 
-                    // TODO: ignore if the wall we encountered is behind us?
-
-                    // If the closest corner shares a wall with the last wall we
-                    // turned at, turn relative to that corner
-                    bool cornerShared
-                        = ( i
-                            == ( m_chaperoneSnapTurnActive
-                                     [i + 1 % chaperoneDistances.size()] ) )
-                          || ( i
-                               == ( m_chaperoneSnapTurnActive
-                                        [i - 1 % chaperoneDistances.size()] ) );
-
-                    // Only do 'shared corner' turns if it'll continue going the
-                    // same direction
-                    bool cornerTurnDirectionLeft
-                        = i
-                          == ( m_chaperoneSnapTurnActive
-                                   [i + 1 % chaperoneDistances.size()] );
-
-                    bool turnLeft = true;
-                    // Turn away from corner
-                    if ( cornerShared )
+                    do
                     {
-                        // Turn left or right depending on which corner it is.
-                        // If we go based on yaw, we could end up turning the
-                        // wrong way if it's large obtuse angle and we're facing
-                        // more towards the previous wall than the left.
-                        turnLeft = cornerTurnDirectionLeft;
-                        LOG( INFO ) << "turning away from shared corner "
-                                       "(cornerTurnDirection Left: "
-                                    << cornerTurnDirectionLeft << ")";
-                    }
-                    // If within 5 degrees of 'straight at a wall', start in
-                    // whatever direction will start untangling your cord
-                    // TODO: this needs to be an configurable for non-corded
-                    // setups
-                    else if ( std::abs( hmdYaw - hmdToWallYaw )
-                              <= ( M_PI * 0.03 ) )
-                    {
-                        turnLeft = ( parent->m_moveCenterTabController
-                                         .getHmdYawTotal()
-                                     > 0.0 );
-                        LOG( INFO ) << "turning to detangle cord";
-                    }
-                    else
-                    {
-                        turnLeft = ( hmdYaw - hmdToWallYaw ) > 0.0;
-                        LOG( INFO ) << "turning closest angle to wall "
-                                       "(cornerTurnDirection Left: "
-                                    << cornerTurnDirectionLeft << ")";
-                    }
+                        // Ignore if the wall we encountered is behind us
+                        if ( std::abs( hmdYaw - hmdToWallYaw ) >= M_PI / 2 )
+                        {
+                            LOG( INFO )
+                                << "Ignoring turn in opposite direction";
+                            break;
+                        }
 
-                    // Limit maximum overall turns to 2
-                    // const double max_turns = 2 * ( 2 * M_PI );
-                    /*
-                    // TODO: Turn change wall color if you turn too far?
-                    bool exceededTurning
-                        = ( parent->m_moveCenterTabController.getHmdYawTotal()
-                                >= max_turns
-                            && !turnLeft )
-                          || ( parent->m_moveCenterTabController
-                                       .getHmdYawTotal()
-                                   <= -max_turns
-                               && turnLeft );
-                    */
-                    LOG( INFO ) << "hmd yaw " << hmdYaw << ", hmd to wall yaw "
-                                << hmdToWallYaw;
-                    LOG( INFO )
-                        << "hmd to wall angle " << ( hmdYaw - hmdToWallYaw );
-                    // Positive hmd-to-wall is facing left, negative is
-                    // facing right (relative to the wall)
-                    double delta_degrees
-                        = ( -( hmdYaw - hmdToWallYaw )
-                            - ( turnLeft ? -M_PI / 2 : M_PI / 2 ) )
-                          * k_radiansToCentidegrees;
-                    LOG( INFO ) << "rotating space " << ( delta_degrees / 100 )
-                                << " degrees";
-                    int newRotationAngleDeg
-                        = static_cast<int>(
-                              parent->m_moveCenterTabController.rotation()
-                              + delta_degrees )
-                          % 36000;
-                    parent->m_moveCenterTabController.setRotation(
-                        newRotationAngleDeg );
+                        // If the closest corner shares a wall with the last
+                        // wall we turned at, turn relative to that corner
+                        bool cornerShared
+                            = ( m_chaperoneSnapTurnActive
+                                    [i + 1 % chaperoneDistances.size()] )
+                              || ( m_chaperoneSnapTurnActive
+                                       [i == 0 ? chaperoneDistances.size()
+                                               : i - 1] );
+
+                        bool turnLeft = true;
+                        // Turn away from corner
+                        if ( cornerShared )
+                        {
+                            // Turn left or right depending on which corner it
+                            // is. If we go based on yaw, we could end up
+                            // turning the wrong way if it's large obtuse angle
+                            // and we're facing more towards the previous wall
+                            // than the left.
+                            turnLeft = !m_chaperoneSnapTurnActive
+                                           [i + 1 % chaperoneDistances.size()];
+                            LOG( INFO ) << "turning away from shared corner";
+                        }
+                        // If within 5 degrees of 'straight at a wall', start in
+                        // whatever direction will start untangling your cord
+                        // TODO: this needs to be an configurable for non-corded
+                        // setups
+                        else if ( std::abs( hmdYaw - hmdToWallYaw )
+                                  <= cordDetanglingAngle )
+                        {
+                            turnLeft = ( parent->m_moveCenterTabController
+                                             .getHmdYawTotal()
+                                         < 0.0 );
+                            LOG( INFO ) << "turning to detangle cord";
+                        }
+                        // Turn the closest angle to the wall
+                        else
+                        {
+                            turnLeft = ( hmdYaw - hmdToWallYaw ) > 0.0;
+                            LOG( INFO ) << "turning closest angle to wall";
+                        }
+
+                        // Limit maximum overall turns to 2
+                        // const double max_turns = 2 * ( 2 * M_PI );
+                        /*
+                        // TODO: Turn change wall color if you turn too far?
+                        bool exceededTurning
+                            = (
+                        parent->m_moveCenterTabController.getHmdYawTotal()
+                                    >= max_turns
+                                && !turnLeft )
+                              || ( parent->m_moveCenterTabController
+                                           .getHmdYawTotal()
+                                       <= -max_turns
+                                   && turnLeft );
+                        */
+                        LOG( INFO ) << "hmd yaw " << hmdYaw
+                                    << ", hmd to wall yaw " << hmdToWallYaw;
+                        LOG( INFO ) << "hmd to wall angle "
+                                    << ( hmdYaw - hmdToWallYaw );
+                        // Positive hmd-to-wall is facing left, negative is
+                        // facing right (relative to the wall)
+                        double delta_degrees
+                            = ( -( hmdYaw - hmdToWallYaw )
+                                - ( turnLeft ? -M_PI / 2 : M_PI / 2 ) )
+                              * k_radiansToCentidegrees;
+                        LOG( INFO ) << "rotating space "
+                                    << ( delta_degrees / 100 ) << " degrees";
+                        int newRotationAngleDeg = static_cast<int>(
+                            parent->m_moveCenterTabController.rotation()
+                            + delta_degrees );
+                        if ( newRotationAngleDeg >= 360000 )
+                        {
+                            newRotationAngleDeg -= 360000;
+                        }
+                        else if ( newRotationAngleDeg <= 0 )
+                        {
+                            newRotationAngleDeg += 360000;
+                        }
+
+                        parent->m_moveCenterTabController.setRotation(
+                            newRotationAngleDeg );
+                    } while ( false );
 
                     m_chaperoneSnapTurnActive[i] = true;
                 }
