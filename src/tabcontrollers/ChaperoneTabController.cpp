@@ -404,7 +404,7 @@ void ChaperoneTabController::eventLoopTick(
                             = ( m_chaperoneSnapTurnActive
                                     [i + 1 % chaperoneDistances.size()] )
                               || ( m_chaperoneSnapTurnActive
-                                       [i == 0 ? chaperoneDistances.size()
+                                       [i == 0 ? chaperoneDistances.size() - 1
                                                : i - 1] );
 
                         bool turnLeft = true;
