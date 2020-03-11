@@ -381,17 +381,20 @@ void ChaperoneTabController::eventLoopTick(
                     // Get HMD raw yaw
                     double hmdYaw = quaternion::getYaw( hmdQuaternion );
 
-                    // Get HMD to wall yaw
-                    double hmdToWallYaw = static_cast<double>(
+                    // Get angle between HMD position and nearest point on wall
+                    double hmdPositionToWallYaw = static_cast<double>(
                         std::atan2( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
                                         - chaperoneQuad.nearestPoint.v[0],
                                     poseHmd.mDeviceToAbsoluteTracking.m[2][3]
                                         - chaperoneQuad.nearestPoint.v[2] ) );
 
+                    // Get angle between HMD and wall
+                    double hmdToWallYaw = hmdYaw - hmdPositionToWallYaw;
+
                     do
                     {
                         // Ignore if the wall we encountered is behind us
-                        if ( std::abs( hmdYaw - hmdToWallYaw ) >= M_PI / 2 )
+                        if ( std::abs( hmdToWallYaw ) >= M_PI / 2 )
                         {
                             LOG( INFO )
                                 << "Ignoring turn in opposite direction";
@@ -424,7 +427,7 @@ void ChaperoneTabController::eventLoopTick(
                         // whatever direction will start untangling your cord
                         // TODO: this needs to be an configurable for non-corded
                         // setups
-                        else if ( std::abs( hmdYaw - hmdToWallYaw )
+                        else if ( std::abs( hmdToWallYaw )
                                   <= cordDetanglingAngle )
                         {
                             turnLeft = ( parent->m_moveCenterTabController
@@ -435,7 +438,7 @@ void ChaperoneTabController::eventLoopTick(
                         // Turn the closest angle to the wall
                         else
                         {
-                            turnLeft = ( hmdYaw - hmdToWallYaw ) > 0.0;
+                            turnLeft = hmdToWallYaw > 0.0;
                             LOG( INFO ) << "turning closest angle to wall";
                         }
 
@@ -454,14 +457,14 @@ void ChaperoneTabController::eventLoopTick(
                                    && turnLeft );
                         */
                         LOG( INFO ) << "hmd yaw " << hmdYaw
-                                    << ", hmd to wall yaw " << hmdToWallYaw;
-                        LOG( INFO ) << "hmd to wall angle "
-                                    << ( hmdYaw - hmdToWallYaw );
+                                    << ", hmd position to wall angle "
+                                    << hmdPositionToWallYaw;
+                        LOG( INFO ) << "hmd to wall angle " << hmdToWallYaw;
                         // Positive hmd-to-wall is facing left, negative is
                         // facing right (relative to the wall)
                         double delta_degrees
-                            = ( -( hmdYaw - hmdToWallYaw )
-                                - ( turnLeft ? -M_PI / 2 : M_PI / 2 ) )
+                            = ( ( turnLeft ? M_PI / 2 : -M_PI / 2 )
+                                - hmdToWallYaw )
                               * k_radiansToCentidegrees;
                         LOG( INFO ) << "rotating space "
                                     << ( delta_degrees / 100 ) << " degrees";
