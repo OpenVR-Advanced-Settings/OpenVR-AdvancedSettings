@@ -346,7 +346,7 @@ void ChaperoneTabController::eventLoopTick(
 
         // Infinite-walk mode
         // TODO: if (infinite_walk_enabled)
-        if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
+        if ( m_isHMDActive && poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK )
         {
             auto chaperoneDistances
@@ -364,14 +364,14 @@ void ChaperoneTabController::eventLoopTick(
                                                   true );
             }
             float activationDistance = chaperoneSwitchToBeginnerDistance();
-            const float deactivateDistance = 0.3f;
+            const float deactivateDistance = 0.2f;
             const double cordDetanglingAngle = M_PI * 0.03;
 
             for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
             {
                 const auto& chaperoneQuad = chaperoneDistances[i];
                 if ( chaperoneQuad.distance <= activationDistance
-                     && m_isHMDActive && !m_chaperoneSnapTurnActive[i] )
+                     && !m_chaperoneSnapTurnActive[i] )
                 {
                     // ------------------
                     // Convert pose matrix to quaternion
@@ -484,13 +484,16 @@ void ChaperoneTabController::eventLoopTick(
                     m_chaperoneSnapTurnActive[i] = true;
                 }
                 else if ( ( chaperoneQuad.distance
-                                > ( activationDistance + deactivateDistance )
-                            || !m_isHMDActive )
+                            > ( activationDistance + deactivateDistance ) )
                           && m_chaperoneSnapTurnActive[i] )
                 {
                     m_chaperoneSnapTurnActive[i] = false;
                 }
             }
+        }
+        else
+        {
+            m_chaperoneSnapTurnActive.clear();
         }
     }
 
