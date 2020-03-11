@@ -347,7 +347,8 @@ void ChaperoneTabController::eventLoopTick(
         // Infinite-walk mode
         // TODO: if (infinite_walk_enabled)
         if ( m_isHMDActive && poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
-             && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK )
+             && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK
+             && !std::isnan( minDistance ) )
         {
             auto chaperoneDistances
                 = parent->chaperoneUtils().getDistancesToChaperone(

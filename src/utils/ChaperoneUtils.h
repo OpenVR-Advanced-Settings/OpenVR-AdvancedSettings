@@ -73,6 +73,13 @@ public:
                                               bool doLock = false )
     {
         auto distances = getDistancesToChaperone( point, doLock );
+        if ( distances.empty() )
+        {
+            ChaperoneQuadData ret;
+            ret.distance = NAN;
+            return ret;
+        }
+
         return *std::min_element( distances.begin(),
                                   distances.end(),
                                   []( const ChaperoneQuadData& quadA,
