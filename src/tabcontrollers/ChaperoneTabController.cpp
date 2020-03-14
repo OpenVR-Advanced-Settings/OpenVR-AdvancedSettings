@@ -364,8 +364,8 @@ void ChaperoneTabController::eventLoopTick(
                 m_chaperoneSnapTurnActive.resize( chaperoneDistances.size(),
                                                   true );
             }
-            float activationDistance = chaperoneSwitchToBeginnerDistance();
-            const float deactivateDistance = 0.2f;
+            float activationDistance = 0.4f; // TODO: Have some indicator in UI that lower values are more walking space
+            const float deactivateDistance = 0.15f;
             const double cordDetanglingAngle = M_PI * 0.03;
 
             for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
@@ -391,6 +391,13 @@ void ChaperoneTabController::eventLoopTick(
 
                     // Get angle between HMD and wall
                     double hmdToWallYaw = hmdYaw - hmdPositionToWallYaw;
+                    if(hmdToWallYaw >= M_PI)
+                    {
+                        hmdToWallYaw -= M_PI;
+                    } else if (hmdToWallYaw <= -M_PI)
+                    {
+                        hmdToWallYaw += M_PI;
+                    }
 
                     do
                     {
@@ -398,7 +405,7 @@ void ChaperoneTabController::eventLoopTick(
                         if ( std::abs( hmdToWallYaw ) >= M_PI / 2 )
                         {
                             LOG( INFO )
-                                << "Ignoring turn in opposite direction";
+                                << "Ignoring turn in opposite direction (angle " << std::abs( hmdToWallYaw ) << ")";
                             break;
                         }
 
