@@ -350,7 +350,9 @@ void ChaperoneTabController::eventLoopTick(
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK
              && !std::isnan( minDistance ) )
         {
-            const float activationDistance = 0.4f; // TODO: Have some indicator in UI that lower values are more walking space
+            const float activationDistance
+                = 0.4f; // TODO: Have some indicator in UI that lower values are
+                        // more walking space
             const float deactivateDistance = 0.15f;
             const double cordDetanglingAngle = M_PI * 0.03;
             const int autoturnLinearTurnSpeed = 9000; // centidegrees/sec
@@ -367,22 +369,29 @@ void ChaperoneTabController::eventLoopTick(
                 m_autoturnWallActive.clear();
                 // Initialize all to 'true' so we don't rotate on startup if the
                 // user is outside of the play area.
-                m_autoturnWallActive.resize( chaperoneDistances.size(),
-                                                  true );
+                m_autoturnWallActive.resize( chaperoneDistances.size(), true );
                 m_autoturnLastUpdate = currentTime;
             }
 
-            if ( m_autoturnMode == AutoturnModes::LINEAR_SMOOTH_TURN && m_autoturnLinearSmoothTurnRemaining != 0)
+            if ( m_autoturnMode == AutoturnModes::LINEAR_SMOOTH_TURN
+                 && m_autoturnLinearSmoothTurnRemaining != 0 )
             {
-                auto deltaMillis = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - m_autoturnLastUpdate).count();
-                auto miniDeltaAngle = static_cast<int>(std::abs((deltaMillis * autoturnLinearTurnSpeed) / 1000) * (m_autoturnLinearSmoothTurnRemaining < 0 ? -1: 1));
-                if(std::abs(m_autoturnLinearSmoothTurnRemaining) < std::abs(miniDeltaAngle))
+                // TODO: implement angular acceleration max?
+                auto deltaMillis
+                    = std::chrono::duration_cast<std::chrono::milliseconds>(
+                          currentTime - m_autoturnLastUpdate )
+                          .count();
+                auto miniDeltaAngle = static_cast<int>(
+                    std::abs( ( deltaMillis * autoturnLinearTurnSpeed ) / 1000 )
+                    * ( m_autoturnLinearSmoothTurnRemaining < 0 ? -1 : 1 ) );
+                if ( std::abs( m_autoturnLinearSmoothTurnRemaining )
+                     < std::abs( miniDeltaAngle ) )
                 {
                     miniDeltaAngle = m_autoturnLinearSmoothTurnRemaining;
                 }
                 int newRotationAngleDeg = static_cast<int>(
-                        parent->m_moveCenterTabController.rotation()
-                        + miniDeltaAngle);
+                    parent->m_moveCenterTabController.rotation()
+                    + miniDeltaAngle );
                 if ( newRotationAngleDeg >= 360000 )
                 {
                     newRotationAngleDeg -= 360000;
@@ -393,7 +402,7 @@ void ChaperoneTabController::eventLoopTick(
                 }
 
                 parent->m_moveCenterTabController.setRotation(
-                        newRotationAngleDeg );
+                    newRotationAngleDeg );
                 m_autoturnLinearSmoothTurnRemaining -= miniDeltaAngle;
             }
 
@@ -420,10 +429,11 @@ void ChaperoneTabController::eventLoopTick(
 
                     // Get angle between HMD and wall
                     double hmdToWallYaw = hmdYaw - hmdPositionToWallYaw;
-                    if(hmdToWallYaw >= M_PI)
+                    if ( hmdToWallYaw >= M_PI )
                     {
                         hmdToWallYaw -= 2 * M_PI;
-                    } else if (hmdToWallYaw <= -M_PI)
+                    }
+                    else if ( hmdToWallYaw <= -M_PI )
                     {
                         hmdToWallYaw += 2 * M_PI;
                     }
@@ -434,7 +444,8 @@ void ChaperoneTabController::eventLoopTick(
                         if ( std::abs( hmdToWallYaw ) >= M_PI / 2 )
                         {
                             LOG( INFO )
-                                << "Ignoring turn in opposite direction (angle " << std::abs( hmdToWallYaw ) << ")";
+                                << "Ignoring turn in opposite direction (angle "
+                                << std::abs( hmdToWallYaw ) << ")";
                             break;
                         }
 
@@ -442,10 +453,11 @@ void ChaperoneTabController::eventLoopTick(
                         // wall we turned at, turn relative to that corner
                         bool cornerShared
                             = ( m_autoturnWallActive
-                                    [i + 1 % chaperoneDistances.size()] )
+                                    [( i + 1 ) % chaperoneDistances.size()] )
                               || ( m_autoturnWallActive
-                                       [(i == 0) ? (chaperoneDistances.size() - 1)
-                                               : (i - 1)] );
+                                       [( i == 0 )
+                                            ? ( chaperoneDistances.size() - 1 )
+                                            : ( i - 1 )] );
 
                         bool turnLeft = true;
                         // Turn away from corner
@@ -456,8 +468,9 @@ void ChaperoneTabController::eventLoopTick(
                             // turning the wrong way if it's large obtuse angle
                             // and we're facing more towards the previous wall
                             // than the left.
-                            turnLeft = !m_autoturnWallActive
-                                           [i + 1 % chaperoneDistances.size()];
+                            turnLeft
+                                = !m_autoturnWallActive
+                                      [( i + 1 ) % chaperoneDistances.size()];
                             LOG( INFO ) << "turning away from shared corner";
                         }
                         // If within 5 degrees of 'straight at a wall', start in
@@ -505,11 +518,11 @@ void ChaperoneTabController::eventLoopTick(
                               * k_radiansToCentidegrees;
                         LOG( INFO ) << "rotating space "
                                     << ( delta_degrees / 100 ) << " degrees";
-                        if(m_autoturnMode == AutoturnModes::SNAP)
+                        if ( m_autoturnMode == AutoturnModes::SNAP )
                         {
                             int newRotationAngleDeg = static_cast<int>(
-                                    parent->m_moveCenterTabController.rotation()
-                                    + delta_degrees );
+                                parent->m_moveCenterTabController.rotation()
+                                + delta_degrees );
                             if ( newRotationAngleDeg >= 360000 )
                             {
                                 newRotationAngleDeg -= 360000;
@@ -520,10 +533,13 @@ void ChaperoneTabController::eventLoopTick(
                             }
 
                             parent->m_moveCenterTabController.setRotation(
-                                    newRotationAngleDeg );
-                        } else if (m_autoturnMode == AutoturnModes::LINEAR_SMOOTH_TURN)
+                                newRotationAngleDeg );
+                        }
+                        else if ( m_autoturnMode
+                                  == AutoturnModes::LINEAR_SMOOTH_TURN )
                         {
-                            m_autoturnLinearSmoothTurnRemaining += static_cast<int>(delta_degrees);
+                            m_autoturnLinearSmoothTurnRemaining
+                                += static_cast<int>( delta_degrees );
                         }
                     } while ( false );
 

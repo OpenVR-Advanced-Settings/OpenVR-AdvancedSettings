@@ -308,12 +308,14 @@ private:
     bool m_playSpaceMarker = false;
     bool m_forceBounds = false;
 
-    enum class AutoturnModes {
+    enum class AutoturnModes
+    {
         SNAP,
         LINEAR_SMOOTH_TURN,
         DELTA_X_LINEAR,
         DELTA_X_DYNAMIC
-    } m_autoturnMode = AutoturnModes::LINEAR_SMOOTH_TURN;
+    } m_autoturnMode
+        = AutoturnModes::LINEAR_SMOOTH_TURN;
     int m_autoturnLinearSmoothTurnRemaining = 0;
     std::chrono::steady_clock::time_point m_autoturnLastUpdate;
     std::vector<bool> m_autoturnWallActive;
