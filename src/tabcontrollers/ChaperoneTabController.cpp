@@ -350,29 +350,58 @@ void ChaperoneTabController::eventLoopTick(
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK
              && !std::isnan( minDistance ) )
         {
+            const float activationDistance = 0.4f; // TODO: Have some indicator in UI that lower values are more walking space
+            const float deactivateDistance = 0.15f;
+            const double cordDetanglingAngle = M_PI * 0.03;
+            const int autoturnLinearTurnSpeed = 9000; // centidegrees/sec
+            auto currentTime = std::chrono::steady_clock::now();
+
             auto chaperoneDistances
                 = parent->chaperoneUtils().getDistancesToChaperone(
                     { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
                       poseHmd.mDeviceToAbsoluteTracking.m[1][3],
                       poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
-            if ( m_chaperoneSnapTurnActive.size() != chaperoneDistances.size() )
+            if ( m_autoturnWallActive.size() != chaperoneDistances.size() )
             {
                 // Chaperone changed
-                m_chaperoneSnapTurnActive.clear();
+                m_autoturnWallActive.clear();
                 // Initialize all to 'true' so we don't rotate on startup if the
                 // user is outside of the play area.
-                m_chaperoneSnapTurnActive.resize( chaperoneDistances.size(),
+                m_autoturnWallActive.resize( chaperoneDistances.size(),
                                                   true );
+                m_autoturnLastUpdate = currentTime;
             }
-            float activationDistance = 0.4f; // TODO: Have some indicator in UI that lower values are more walking space
-            const float deactivateDistance = 0.15f;
-            const double cordDetanglingAngle = M_PI * 0.03;
+
+            if ( m_autoturnMode == AutoturnModes::LINEAR_SMOOTH_TURN && m_autoturnLinearSmoothTurnRemaining != 0)
+            {
+                auto deltaMillis = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - m_autoturnLastUpdate).count();
+                auto miniDeltaAngle = static_cast<int>(std::abs((deltaMillis * autoturnLinearTurnSpeed) / 1000) * (m_autoturnLinearSmoothTurnRemaining < 0 ? -1: 1));
+                if(std::abs(m_autoturnLinearSmoothTurnRemaining) < std::abs(miniDeltaAngle))
+                {
+                    miniDeltaAngle = m_autoturnLinearSmoothTurnRemaining;
+                }
+                int newRotationAngleDeg = static_cast<int>(
+                        parent->m_moveCenterTabController.rotation()
+                        + miniDeltaAngle);
+                if ( newRotationAngleDeg >= 360000 )
+                {
+                    newRotationAngleDeg -= 360000;
+                }
+                else if ( newRotationAngleDeg <= 0 )
+                {
+                    newRotationAngleDeg += 360000;
+                }
+
+                parent->m_moveCenterTabController.setRotation(
+                        newRotationAngleDeg );
+                m_autoturnLinearSmoothTurnRemaining -= miniDeltaAngle;
+            }
 
             for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
             {
                 const auto& chaperoneQuad = chaperoneDistances[i];
                 if ( chaperoneQuad.distance <= activationDistance
-                     && !m_chaperoneSnapTurnActive[i] )
+                     && !m_autoturnWallActive[i] )
                 {
                     // ------------------
                     // Convert pose matrix to quaternion
@@ -393,10 +422,10 @@ void ChaperoneTabController::eventLoopTick(
                     double hmdToWallYaw = hmdYaw - hmdPositionToWallYaw;
                     if(hmdToWallYaw >= M_PI)
                     {
-                        hmdToWallYaw -= M_PI;
+                        hmdToWallYaw -= 2 * M_PI;
                     } else if (hmdToWallYaw <= -M_PI)
                     {
-                        hmdToWallYaw += M_PI;
+                        hmdToWallYaw += 2 * M_PI;
                     }
 
                     do
@@ -412,11 +441,11 @@ void ChaperoneTabController::eventLoopTick(
                         // If the closest corner shares a wall with the last
                         // wall we turned at, turn relative to that corner
                         bool cornerShared
-                            = ( m_chaperoneSnapTurnActive
+                            = ( m_autoturnWallActive
                                     [i + 1 % chaperoneDistances.size()] )
-                              || ( m_chaperoneSnapTurnActive
-                                       [i == 0 ? chaperoneDistances.size() - 1
-                                               : i - 1] );
+                              || ( m_autoturnWallActive
+                                       [(i == 0) ? (chaperoneDistances.size() - 1)
+                                               : (i - 1)] );
 
                         bool turnLeft = true;
                         // Turn away from corner
@@ -427,7 +456,7 @@ void ChaperoneTabController::eventLoopTick(
                             // turning the wrong way if it's large obtuse angle
                             // and we're facing more towards the previous wall
                             // than the left.
-                            turnLeft = !m_chaperoneSnapTurnActive
+                            turnLeft = !m_autoturnWallActive
                                            [i + 1 % chaperoneDistances.size()];
                             LOG( INFO ) << "turning away from shared corner";
                         }
@@ -476,35 +505,42 @@ void ChaperoneTabController::eventLoopTick(
                               * k_radiansToCentidegrees;
                         LOG( INFO ) << "rotating space "
                                     << ( delta_degrees / 100 ) << " degrees";
-                        int newRotationAngleDeg = static_cast<int>(
-                            parent->m_moveCenterTabController.rotation()
-                            + delta_degrees );
-                        if ( newRotationAngleDeg >= 360000 )
+                        if(m_autoturnMode == AutoturnModes::SNAP)
                         {
-                            newRotationAngleDeg -= 360000;
-                        }
-                        else if ( newRotationAngleDeg <= 0 )
-                        {
-                            newRotationAngleDeg += 360000;
-                        }
+                            int newRotationAngleDeg = static_cast<int>(
+                                    parent->m_moveCenterTabController.rotation()
+                                    + delta_degrees );
+                            if ( newRotationAngleDeg >= 360000 )
+                            {
+                                newRotationAngleDeg -= 360000;
+                            }
+                            else if ( newRotationAngleDeg <= 0 )
+                            {
+                                newRotationAngleDeg += 360000;
+                            }
 
-                        parent->m_moveCenterTabController.setRotation(
-                            newRotationAngleDeg );
+                            parent->m_moveCenterTabController.setRotation(
+                                    newRotationAngleDeg );
+                        } else if (m_autoturnMode == AutoturnModes::LINEAR_SMOOTH_TURN)
+                        {
+                            m_autoturnLinearSmoothTurnRemaining += static_cast<int>(delta_degrees);
+                        }
                     } while ( false );
 
-                    m_chaperoneSnapTurnActive[i] = true;
+                    m_autoturnWallActive[i] = true;
                 }
                 else if ( ( chaperoneQuad.distance
                             > ( activationDistance + deactivateDistance ) )
-                          && m_chaperoneSnapTurnActive[i] )
+                          && m_autoturnWallActive[i] )
                 {
-                    m_chaperoneSnapTurnActive[i] = false;
+                    m_autoturnWallActive[i] = false;
                 }
+                m_autoturnLastUpdate = currentTime;
             }
         }
         else
         {
-            m_chaperoneSnapTurnActive.clear();
+            m_autoturnWallActive.clear();
         }
     }
 

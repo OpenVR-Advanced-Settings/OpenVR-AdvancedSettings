@@ -308,7 +308,15 @@ private:
     bool m_playSpaceMarker = false;
     bool m_forceBounds = false;
 
-    std::vector<bool> m_chaperoneSnapTurnActive;
+    enum class AutoturnModes {
+        SNAP,
+        LINEAR_SMOOTH_TURN,
+        DELTA_X_LINEAR,
+        DELTA_X_DYNAMIC
+    } m_autoturnMode = AutoturnModes::LINEAR_SMOOTH_TURN;
+    int m_autoturnLinearSmoothTurnRemaining = 0;
+    std::chrono::steady_clock::time_point m_autoturnLastUpdate;
+    std::vector<bool> m_autoturnWallActive;
 
     bool m_chaperoneSwitchToBeginnerActive = false;
     int32_t m_chaperoneSwitchToBeginnerLastStyle = 0;
