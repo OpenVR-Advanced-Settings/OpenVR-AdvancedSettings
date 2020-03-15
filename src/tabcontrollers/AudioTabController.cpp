@@ -967,6 +967,8 @@ void AudioTabController::initOverride()
         LOG( ERROR ) << "Could not get recording override setting: "
                      << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                             vrSettingsError );
+        LOG( INFO ) << "Setting recording override to false";
+        setRecordingOverride( false );
     }
     else
     {
@@ -981,6 +983,8 @@ void AudioTabController::initOverride()
         LOG( ERROR ) << "Could not get playback override setting: "
                      << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                             vrSettingsError );
+        LOG( INFO ) << "Setting playback override to false";
+        setPlaybackOverride( false );
     }
     else
     {
