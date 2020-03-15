@@ -17,7 +17,7 @@ update_and_install_prereqs: &update_and_install_prereqs
         name: Get wget and apt-key
         command: |
             apt-get install wget -y
-            apt-get install software-properties-common -y
+            apt-get install software-properties-common apt-transport-https -y
     - run:
         name: Set up LLVM-8 repo
         command: |
@@ -86,7 +86,7 @@ jobs:
                 name: Get apt-key
                 # Required for LLVM
                 command: |
-                    sudo apt-get install software-properties-common -y
+                    sudo apt-get install software-properties-common apt-transport-https -y
             - run:
                 name: Get LLVM repos
                 command: |
