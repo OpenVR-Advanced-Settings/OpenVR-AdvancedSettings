@@ -350,12 +350,6 @@ void ChaperoneTabController::eventLoopTick(
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK
              && !std::isnan( minDistance ) )
         {
-            const float activationDistance
-                = 0.4f; // TODO: Have some indicator in UI that lower values are
-                        // more walking space
-            const float deactivateDistance = 0.15f;
-            const double cordDetanglingAngle = M_PI * 0.03;
-            const int autoturnLinearTurnSpeed = 9000; // centidegrees/sec
             auto currentTime = std::chrono::steady_clock::now();
 
             auto chaperoneDistances
@@ -371,6 +365,7 @@ void ChaperoneTabController::eventLoopTick(
                 // user is outside of the play area.
                 m_autoturnWallActive.resize( chaperoneDistances.size(), true );
                 m_autoturnLastUpdate = currentTime;
+                m_autoturnLinearSmoothTurnRemaining = 0;
             }
 
             if ( m_autoturnMode == AutoturnModes::LINEAR_SMOOTH_TURN
@@ -382,7 +377,7 @@ void ChaperoneTabController::eventLoopTick(
                           currentTime - m_autoturnLastUpdate )
                           .count();
                 auto miniDeltaAngle = static_cast<int>(
-                    std::abs( ( deltaMillis * autoturnLinearTurnSpeed ) / 1000 )
+                    std::abs( ( deltaMillis * m_autoturnLinearTurnSpeed ) / 1000 )
                     * ( m_autoturnLinearSmoothTurnRemaining < 0 ? -1 : 1 ) );
                 if ( std::abs( m_autoturnLinearSmoothTurnRemaining )
                      < std::abs( miniDeltaAngle ) )
@@ -409,7 +404,7 @@ void ChaperoneTabController::eventLoopTick(
             for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
             {
                 const auto& chaperoneQuad = chaperoneDistances[i];
-                if ( chaperoneQuad.distance <= activationDistance
+                if ( chaperoneQuad.distance <= m_activationDistance
                      && !m_autoturnWallActive[i] )
                 {
                     // ------------------
@@ -473,12 +468,10 @@ void ChaperoneTabController::eventLoopTick(
                                       [( i + 1 ) % chaperoneDistances.size()];
                             LOG( INFO ) << "turning away from shared corner";
                         }
-                        // If within 5 degrees of 'straight at a wall', start in
+                        // If within m_cordDetanglingAngle degrees of 'straight at a wall', start in
                         // whatever direction will start untangling your cord
-                        // TODO: this needs to be an configurable for non-corded
-                        // setups
                         else if ( std::abs( hmdToWallYaw )
-                                  <= cordDetanglingAngle )
+                                  <= m_cordDetanglingAngle )
                         {
                             turnLeft = ( parent->m_moveCenterTabController
                                              .getHmdYawTotal()
@@ -546,7 +539,7 @@ void ChaperoneTabController::eventLoopTick(
                     m_autoturnWallActive[i] = true;
                 }
                 else if ( ( chaperoneQuad.distance
-                            > ( activationDistance + deactivateDistance ) )
+                            > ( m_activationDistance + m_deactivateDistance ) )
                           && m_autoturnWallActive[i] )
                 {
                     m_autoturnWallActive[i] = false;

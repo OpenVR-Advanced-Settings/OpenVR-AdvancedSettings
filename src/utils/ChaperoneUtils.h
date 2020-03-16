@@ -18,11 +18,11 @@ struct ChaperoneQuadData
     const vr::HmdVector3_t& closestCorner( const vr::HmdVector3_t& point ) const
     {
         auto cornerDistanceA
-            = std::sqrt( std::pow( point.v[0] - corners[0].v[0], 2.0 )
-                         + std::pow( point.v[2] - corners[0].v[2], 2.0 ) );
+            = std::pow( point.v[0] - corners[0].v[0], 2.0 )
+                         + std::pow( point.v[2] - corners[0].v[2], 2.0 );
         auto cornerDistanceB
-            = std::sqrt( std::pow( point.v[0] - corners[1].v[0], 2.0 )
-                         + std::pow( point.v[2] - corners[1].v[2], 2.0 ) );
+            = std::pow( point.v[0] - corners[1].v[0], 2.0 )
+                         + std::pow( point.v[2] - corners[1].v[2], 2.0 );
         return ( cornerDistanceA < cornerDistanceB ) ? corners[0] : corners[1];
     }
 };

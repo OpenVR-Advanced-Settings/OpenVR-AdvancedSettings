@@ -10,6 +10,7 @@
 #include "../utils/FrameRateUtils.h"
 #include "../utils/ChaperoneUtils.h"
 #include "../settings/settings_object.h"
+#include "MoveCenterTabController.h"
 
 class QQuickWindow;
 // application namespace
@@ -308,6 +309,12 @@ private:
     bool m_playSpaceMarker = false;
     bool m_forceBounds = false;
 
+    float m_activationDistance
+        = 0.4f; // TODO: Have some indicator in UI that lower values are
+    // more walking space
+    float m_deactivateDistance = 0.15f;
+    double m_cordDetanglingAngle = 10000 * k_centidegreesToRadians;
+    int m_autoturnLinearTurnSpeed = 9000; // centidegrees/sec
     enum class AutoturnModes
     {
         SNAP,
