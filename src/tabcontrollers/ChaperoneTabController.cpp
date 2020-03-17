@@ -417,7 +417,7 @@ float ChaperoneTabController::boundsVisibility() const
 
 void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
 {
-    if ( fabs( static_cast<double>( m_visibility - m_visibility ) ) > 0.005 )
+    if ( fabs( static_cast<double>( m_visibility - value ) ) > 0.005 )
     {
         if ( value <= 0.3f )
         {
