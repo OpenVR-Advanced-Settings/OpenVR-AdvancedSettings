@@ -129,7 +129,8 @@ template <class T> void loadAllObjects( std::vector<T>& vec )
     // We could check vec.at(0), but it's not guaranteed to exist.
     auto o = T{};
     auto profileCount = getAmountOfSavedObjects( o );
-    for ( int profileNumber = 1; profileNumber < profileCount; ++profileNumber )
+    for ( int profileNumber = 1; profileNumber <= profileCount;
+          ++profileNumber )
     {
         vec.emplace_back();
 
