@@ -365,7 +365,95 @@ void ChaperoneTabController::eventLoopTick(
                 // user is outside of the play area.
                 m_autoturnWallActive.resize( chaperoneDistances.size(), true );
                 m_autoturnLastUpdate = currentTime;
-                m_autoturnLinearSmoothTurnRemaining = 0;
+            }
+
+            // XXX temporary
+            static vr::HmdMatrix34_t lastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
+            static auto chaperoneDistancesLast = chaperoneDistances;
+            static auto roundingError = 0.0;
+            if(chaperoneDistances.size() != chaperoneDistancesLast.size())
+            {
+                chaperoneDistancesLast = chaperoneDistances;
+            }
+            if ( m_autoturnVestibularMotionEnabled )
+            {
+                // Find the nearest wall we're moving TOWARDS and rotate away from it
+                // Rotate dist/(2*pi*r) where r is m_autoturnVestibularMotionRadius, 
+                // as if we had walked however many inches along a circle and the world was turning to compensate
+                
+                do {
+                    // find nearest wall we're moving towards
+                    auto nearestWall = chaperoneDistances.end();
+                    auto itrLast = chaperoneDistancesLast.begin();
+                    for(auto itr = chaperoneDistances.begin(); itr != chaperoneDistances.end(); itr++)
+                    {
+                        itrLast++;
+                        if(itr->distance > itrLast->distance){
+                            continue;
+                        }
+
+                        if(nearestWall == chaperoneDistances.end() || itr->distance < nearestWall->distance)
+                        {
+                            nearestWall = itr;
+                        }
+                    }
+                    if (nearestWall == chaperoneDistances.end())
+                    {
+                        break;
+                    }
+
+                    // Convert pose matrix to quaternion
+                    auto hmdQuaternion = quaternion::fromHmdMatrix34(
+                            poseHmd.mDeviceToAbsoluteTracking );
+
+                    // Get HMD raw yaw
+                    double hmdYaw = quaternion::getYaw( hmdQuaternion );
+
+                    // Get angle between HMD position and nearest point on wall
+                    double hmdPositionToWallYaw = static_cast<double>(
+                        std::atan2( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                                        - nearestWall->nearestPoint.v[0],
+                                    poseHmd.mDeviceToAbsoluteTracking.m[2][3]
+                                        - nearestWall->nearestPoint.v[2] ) );
+
+                    // Get angle between HMD and wall
+                    double hmdToWallYaw = hmdYaw - hmdPositionToWallYaw;
+                    if ( hmdToWallYaw >= M_PI )
+                    {
+                        hmdToWallYaw -= 2 * M_PI;
+                    }
+                    else if ( hmdToWallYaw <= -M_PI )
+                    {
+                        hmdToWallYaw += 2 * M_PI;
+                    }
+                    bool turnLeft = hmdToWallYaw > 0.0;
+
+                    // Get the distance between previous and current position
+                    double distanceChange = std::sqrt( std::pow(poseHmd.mDeviceToAbsoluteTracking.m[0][3] - lastHmdUpdate.m[0][3], 2.0) +
+                            std::pow(poseHmd.mDeviceToAbsoluteTracking.m[0][3] - lastHmdUpdate.m[0][3], 2.0));
+
+                    double rotationAmount = (distanceChange / (2.0 * M_PI * m_autoturnVestibularMotionRadius)) * (turnLeft? 1: -1);
+
+                    double newRotationAngleDeg = 
+                            parent->m_moveCenterTabController.rotation()
+                            + (rotationAmount * k_radiansToCentidegrees) + roundingError;
+                    if ( newRotationAngleDeg >= 360000 )
+                    {
+                        newRotationAngleDeg -= 360000;
+                    }
+                    else if ( newRotationAngleDeg <= 0 )
+                    {
+                        newRotationAngleDeg += 360000;
+                    }
+                    int newRotationAngleInt = static_cast<int>(newRotationAngleDeg);
+                    roundingError = newRotationAngleDeg - newRotationAngleInt;
+
+                    parent->m_moveCenterTabController.setRotation(
+                            newRotationAngleInt );
+
+                } while (false);
+                chaperoneDistancesLast = chaperoneDistances;
+                lastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
             }
 
             if ( m_autoturnMode == AutoturnModes::LINEAR_SMOOTH_TURN
@@ -470,8 +558,8 @@ void ChaperoneTabController::eventLoopTick(
                         }
                         // If within m_cordDetanglingAngle degrees of 'straight at a wall', start in
                         // whatever direction will start untangling your cord
-                        else if ( std::abs( hmdToWallYaw )
-                                  <= m_cordDetanglingAngle )
+                        else if ( (std::abs( hmdToWallYaw )
+                                  <= m_cordDetanglingAngle) && (std::abs( parent->m_moveCenterTabController.getHmdYawTotal()) > m_autoturnMinCordTangle) )
                         {
                             turnLeft = ( parent->m_moveCenterTabController
                                              .getHmdYawTotal()

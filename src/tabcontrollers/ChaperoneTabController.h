@@ -314,18 +314,26 @@ private:
     // more walking space
     float m_deactivateDistance = 0.15f;
     double m_cordDetanglingAngle = 10000 * k_centidegreesToRadians;
+    double m_autoturnMinCordTangle = 2 * M_PI;
     int m_autoturnLinearTurnSpeed = 9000; // centidegrees/sec
     enum class AutoturnModes
     {
         SNAP,
         LINEAR_SMOOTH_TURN,
-        DELTA_X_LINEAR,
-        DELTA_X_DYNAMIC
-    } m_autoturnMode
-        = AutoturnModes::LINEAR_SMOOTH_TURN;
+        DELTA_X_LINEAR, // unimplemented
+        DELTA_X_DYNAMIC, // unimplemented
+    } m_autoturnMode = AutoturnModes::LINEAR_SMOOTH_TURN;
     int m_autoturnLinearSmoothTurnRemaining = 0;
     std::chrono::steady_clock::time_point m_autoturnLastUpdate;
     std::vector<bool> m_autoturnWallActive;
+
+    /*  22.0: generally considered imperceptable to humans
+     *  11.0: moderate
+     *  5.5:  strong
+     *  1.0:  extreme
+     */ 
+    bool m_autoturnVestibularMotionEnabled = true;
+    double m_autoturnVestibularMotionRadius = 11.0;
 
     bool m_chaperoneSwitchToBeginnerActive = false;
     int32_t m_chaperoneSwitchToBeginnerLastStyle = 0;
