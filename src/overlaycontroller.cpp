@@ -1403,10 +1403,10 @@ void OverlayController::showKeyboard( QString existingText,
         m_ulOverlayHandle,
         vr::k_EGamepadTextInputModeNormal,
         vr::k_EGamepadTextInputLineModeSingleLine,
+        0,
         "Advanced Settings Overlay",
         1024,
         existingText.toStdString().c_str(),
-        false,
         userValue );
 }
 
