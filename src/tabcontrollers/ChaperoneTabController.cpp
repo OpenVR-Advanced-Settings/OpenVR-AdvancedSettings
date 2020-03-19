@@ -368,43 +368,51 @@ void ChaperoneTabController::eventLoopTick(
             }
 
             // XXX temporary
-            static vr::HmdMatrix34_t lastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
+            static vr::HmdMatrix34_t lastHmdUpdate
+                = poseHmd.mDeviceToAbsoluteTracking;
             static auto chaperoneDistancesLast = chaperoneDistances;
             static auto roundingError = 0.0;
-            if(chaperoneDistances.size() != chaperoneDistancesLast.size())
+            if ( chaperoneDistances.size() != chaperoneDistancesLast.size() )
             {
                 chaperoneDistancesLast = chaperoneDistances;
             }
             if ( m_autoturnVestibularMotionEnabled )
             {
-                // Find the nearest wall we're moving TOWARDS and rotate away from it
-                // Rotate dist/(2*pi*r) where r is m_autoturnVestibularMotionRadius, 
-                // as if we had walked however many inches along a circle and the world was turning to compensate
-                
-                do {
+                // Find the nearest wall we're moving TOWARDS and rotate away
+                // from it Rotate dist/(2*pi*r) where r is
+                // m_autoturnVestibularMotionRadius, as if we had walked however
+                // many inches along a circle and the world was turning to
+                // compensate
+
+                do
+                {
                     // find nearest wall we're moving towards
                     auto nearestWall = chaperoneDistances.end();
                     auto itrLast = chaperoneDistancesLast.begin();
-                    for(auto itr = chaperoneDistances.begin(); itr != chaperoneDistances.end(); itr++)
+                    for ( auto itr = chaperoneDistances.begin();
+                          itr != chaperoneDistances.end();
+                          itr++ )
                     {
                         itrLast++;
-                        if(itr->distance > itrLast->distance){
+                        if ( itr->distance > itrLast->distance )
+                        {
                             continue;
                         }
 
-                        if(nearestWall == chaperoneDistances.end() || itr->distance < nearestWall->distance)
+                        if ( nearestWall == chaperoneDistances.end()
+                             || itr->distance < nearestWall->distance )
                         {
                             nearestWall = itr;
                         }
                     }
-                    if (nearestWall == chaperoneDistances.end())
+                    if ( nearestWall == chaperoneDistances.end() )
                     {
                         break;
                     }
 
                     // Convert pose matrix to quaternion
                     auto hmdQuaternion = quaternion::fromHmdMatrix34(
-                            poseHmd.mDeviceToAbsoluteTracking );
+                        poseHmd.mDeviceToAbsoluteTracking );
 
                     // Get HMD raw yaw
                     double hmdYaw = quaternion::getYaw( hmdQuaternion );
@@ -429,30 +437,33 @@ void ChaperoneTabController::eventLoopTick(
                     bool turnLeft = hmdToWallYaw > 0.0;
 
                     // Get the distance between previous and current position
-                    double distanceChange = std::sqrt( std::pow(poseHmd.mDeviceToAbsoluteTracking.m[0][3] - lastHmdUpdate.m[0][3], 2.0) +
-                            std::pow(poseHmd.mDeviceToAbsoluteTracking.m[0][3] - lastHmdUpdate.m[0][3], 2.0));
+                    double distanceChange = std::sqrt(
+                        std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                                      - lastHmdUpdate.m[0][3],
+                                  2.0 )
+                        + std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                                        - lastHmdUpdate.m[0][3],
+                                    2.0 ) );
 
-                    double rotationAmount = (distanceChange / (2.0 * M_PI * m_autoturnVestibularMotionRadius)) * (turnLeft? 1: -1);
+                    double rotationAmount
+                        = ( distanceChange
+                            / ( 2.0 * M_PI
+                                * m_autoturnVestibularMotionRadius ) )
+                          * ( turnLeft ? 1 : -1 );
 
-                    double newRotationAngleDeg = 
-                            parent->m_moveCenterTabController.rotation()
-                            + (rotationAmount * k_radiansToCentidegrees) + roundingError;
-                    if ( newRotationAngleDeg >= 360000 )
-                    {
-                        newRotationAngleDeg -= 360000;
-                    }
-                    else if ( newRotationAngleDeg <= 0 )
-                    {
-                        newRotationAngleDeg += 360000;
-                    }
-                    int newRotationAngleInt = static_cast<int>(newRotationAngleDeg);
+                    double newRotationAngleDeg = std::fmod(
+                        parent->m_moveCenterTabController.rotation()
+                            + ( rotationAmount * k_radiansToCentidegrees )
+                            + roundingError,
+                        360000.0 );
+                    int newRotationAngleInt
+                        = static_cast<int>( newRotationAngleDeg );
                     roundingError = newRotationAngleDeg - newRotationAngleInt;
 
                     parent->m_moveCenterTabController.setRotation(
-                            newRotationAngleInt );
+                        newRotationAngleInt );
 
-                } while (false);
-                chaperoneDistancesLast = chaperoneDistances;
+                } while ( false );
                 lastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
             }
 
@@ -465,24 +476,19 @@ void ChaperoneTabController::eventLoopTick(
                           currentTime - m_autoturnLastUpdate )
                           .count();
                 auto miniDeltaAngle = static_cast<int>(
-                    std::abs( ( deltaMillis * m_autoturnLinearTurnSpeed ) / 1000 )
+                    std::abs( ( deltaMillis * m_autoturnLinearTurnSpeed )
+                              / 1000 )
                     * ( m_autoturnLinearSmoothTurnRemaining < 0 ? -1 : 1 ) );
                 if ( std::abs( m_autoturnLinearSmoothTurnRemaining )
                      < std::abs( miniDeltaAngle ) )
                 {
                     miniDeltaAngle = m_autoturnLinearSmoothTurnRemaining;
                 }
-                int newRotationAngleDeg = static_cast<int>(
-                    parent->m_moveCenterTabController.rotation()
-                    + miniDeltaAngle );
-                if ( newRotationAngleDeg >= 360000 )
-                {
-                    newRotationAngleDeg -= 360000;
-                }
-                else if ( newRotationAngleDeg <= 0 )
-                {
-                    newRotationAngleDeg += 360000;
-                }
+                int newRotationAngleDeg
+                    = static_cast<int>(
+                          parent->m_moveCenterTabController.rotation()
+                          + miniDeltaAngle )
+                      % 360000;
 
                 parent->m_moveCenterTabController.setRotation(
                     newRotationAngleDeg );
@@ -556,10 +562,15 @@ void ChaperoneTabController::eventLoopTick(
                                       [( i + 1 ) % chaperoneDistances.size()];
                             LOG( INFO ) << "turning away from shared corner";
                         }
-                        // If within m_cordDetanglingAngle degrees of 'straight at a wall', start in
-                        // whatever direction will start untangling your cord
-                        else if ( (std::abs( hmdToWallYaw )
-                                  <= m_cordDetanglingAngle) && (std::abs( parent->m_moveCenterTabController.getHmdYawTotal()) > m_autoturnMinCordTangle) )
+                        // If within m_cordDetanglingAngle degrees of 'straight
+                        // at a wall', start in whatever direction will start
+                        // untangling your cord
+                        else if ( ( std::abs( hmdToWallYaw )
+                                    <= m_cordDetanglingAngle )
+                                  && ( std::abs(
+                                           parent->m_moveCenterTabController
+                                               .getHmdYawTotal() )
+                                       > m_autoturnMinCordTangle ) )
                         {
                             turnLeft = ( parent->m_moveCenterTabController
                                              .getHmdYawTotal()
@@ -601,17 +612,12 @@ void ChaperoneTabController::eventLoopTick(
                                     << ( delta_degrees / 100 ) << " degrees";
                         if ( m_autoturnMode == AutoturnModes::SNAP )
                         {
-                            int newRotationAngleDeg = static_cast<int>(
-                                parent->m_moveCenterTabController.rotation()
-                                + delta_degrees );
-                            if ( newRotationAngleDeg >= 360000 )
-                            {
-                                newRotationAngleDeg -= 360000;
-                            }
-                            else if ( newRotationAngleDeg <= 0 )
-                            {
-                                newRotationAngleDeg += 360000;
-                            }
+                            int newRotationAngleDeg
+                                = static_cast<int>(
+                                      parent->m_moveCenterTabController
+                                          .rotation()
+                                      + delta_degrees )
+                                  % 360000;
 
                             parent->m_moveCenterTabController.setRotation(
                                 newRotationAngleDeg );
@@ -632,8 +638,9 @@ void ChaperoneTabController::eventLoopTick(
                 {
                     m_autoturnWallActive[i] = false;
                 }
-                m_autoturnLastUpdate = currentTime;
             }
+            m_autoturnLastUpdate = std::move( currentTime );
+            chaperoneDistancesLast = std::move( chaperoneDistances );
         }
         else
         {

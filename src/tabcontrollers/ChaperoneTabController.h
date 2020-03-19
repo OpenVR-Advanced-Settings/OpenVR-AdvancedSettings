@@ -322,7 +322,8 @@ private:
         LINEAR_SMOOTH_TURN,
         DELTA_X_LINEAR, // unimplemented
         DELTA_X_DYNAMIC, // unimplemented
-    } m_autoturnMode = AutoturnModes::LINEAR_SMOOTH_TURN;
+    } m_autoturnMode
+        = AutoturnModes::LINEAR_SMOOTH_TURN;
     int m_autoturnLinearSmoothTurnRemaining = 0;
     std::chrono::steady_clock::time_point m_autoturnLastUpdate;
     std::vector<bool> m_autoturnWallActive;
@@ -331,7 +332,7 @@ private:
      *  11.0: moderate
      *  5.5:  strong
      *  1.0:  extreme
-     */ 
+     */
     bool m_autoturnVestibularMotionEnabled = true;
     double m_autoturnVestibularMotionRadius = 11.0;
 
