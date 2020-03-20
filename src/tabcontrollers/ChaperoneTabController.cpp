@@ -377,7 +377,8 @@ void ChaperoneTabController::eventLoopTick(
                          != m_autoturnChaperoneDistancesLast.size() )
                     {
                         m_autoturnChaperoneDistancesLast = chaperoneDistances;
-                        m_autoturnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
+                        m_autoturnLastHmdUpdate
+                            = poseHmd.mDeviceToAbsoluteTracking;
                     }
                     // Find the nearest wall we're moving TOWARDS and rotate
                     // away from it Rotate dist/(2*pi*r) where r is
