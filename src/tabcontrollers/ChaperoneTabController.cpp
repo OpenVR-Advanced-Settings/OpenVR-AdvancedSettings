@@ -344,307 +344,322 @@ void ChaperoneTabController::eventLoopTick(
             }
         }
 
-        // Infinite-walk mode
-        // TODO: if (infinite_walk_enabled)
-        if ( m_isHMDActive && poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
-             && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK
-             && !std::isnan( minDistance ) )
+        // Autoturn mode
+        if ( m_autoturnEnabled )
         {
-            auto currentTime = std::chrono::steady_clock::now();
-
-            auto chaperoneDistances
-                = parent->chaperoneUtils().getDistancesToChaperone(
-                    { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
-                      poseHmd.mDeviceToAbsoluteTracking.m[1][3],
-                      poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
-            if ( m_autoturnWallActive.size() != chaperoneDistances.size() )
+            if ( m_isHMDActive && poseHmd.bPoseIsValid
+                 && poseHmd.bDeviceIsConnected
+                 && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK
+                 && !std::isnan( minDistance ) )
             {
-                // Chaperone changed
-                m_autoturnWallActive.clear();
-                // Initialize all to 'true' so we don't rotate on startup if the
-                // user is outside of the play area.
-                m_autoturnWallActive.resize( chaperoneDistances.size(), true );
-                m_autoturnLastUpdate = currentTime;
-            }
+                auto currentTime = std::chrono::steady_clock::now();
 
-            // XXX temporary
-            static vr::HmdMatrix34_t lastHmdUpdate
-                = poseHmd.mDeviceToAbsoluteTracking;
-            static auto chaperoneDistancesLast = chaperoneDistances;
-            static auto roundingError = 0.0;
-            if ( chaperoneDistances.size() != chaperoneDistancesLast.size() )
-            {
-                chaperoneDistancesLast = chaperoneDistances;
-            }
-            if ( m_autoturnVestibularMotionEnabled )
-            {
-                // Find the nearest wall we're moving TOWARDS and rotate away
-                // from it Rotate dist/(2*pi*r) where r is
-                // m_autoturnVestibularMotionRadius, as if we had walked however
-                // many inches along a circle and the world was turning to
-                // compensate
-
-                do
+                auto chaperoneDistances
+                    = parent->chaperoneUtils().getDistancesToChaperone(
+                        { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
+                          poseHmd.mDeviceToAbsoluteTracking.m[1][3],
+                          poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
+                if ( m_autoturnWallActive.size() != chaperoneDistances.size() )
                 {
-                    // find nearest wall we're moving towards
-                    auto nearestWall = chaperoneDistances.end();
-                    auto itrLast = chaperoneDistancesLast.begin();
-                    for ( auto itr = chaperoneDistances.begin();
-                          itr != chaperoneDistances.end();
-                          itr++ )
-                    {
-                        itrLast++;
-                        if ( itr->distance > itrLast->distance )
-                        {
-                            continue;
-                        }
-
-                        if ( nearestWall == chaperoneDistances.end()
-                             || itr->distance < nearestWall->distance )
-                        {
-                            nearestWall = itr;
-                        }
-                    }
-                    if ( nearestWall == chaperoneDistances.end() )
-                    {
-                        break;
-                    }
-
-                    // Convert pose matrix to quaternion
-                    auto hmdQuaternion = quaternion::fromHmdMatrix34(
-                        poseHmd.mDeviceToAbsoluteTracking );
-
-                    // Get HMD raw yaw
-                    double hmdYaw = quaternion::getYaw( hmdQuaternion );
-
-                    // Get angle between HMD position and nearest point on wall
-                    double hmdPositionToWallYaw = static_cast<double>(
-                        std::atan2( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                        - nearestWall->nearestPoint.v[0],
-                                    poseHmd.mDeviceToAbsoluteTracking.m[2][3]
-                                        - nearestWall->nearestPoint.v[2] ) );
-
-                    // Get angle between HMD and wall
-                    double hmdToWallYaw = hmdYaw - hmdPositionToWallYaw;
-                    if ( hmdToWallYaw >= M_PI )
-                    {
-                        hmdToWallYaw -= 2 * M_PI;
-                    }
-                    else if ( hmdToWallYaw <= -M_PI )
-                    {
-                        hmdToWallYaw += 2 * M_PI;
-                    }
-                    bool turnLeft = hmdToWallYaw > 0.0;
-
-                    // Get the distance between previous and current position
-                    double distanceChange = std::sqrt(
-                        std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                      - lastHmdUpdate.m[0][3],
-                                  2.0 )
-                        + std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                        - lastHmdUpdate.m[0][3],
-                                    2.0 ) );
-
-                    double rotationAmount
-                        = ( distanceChange
-                            / ( 2.0 * M_PI
-                                * m_autoturnVestibularMotionRadius ) )
-                          * ( turnLeft ? 1 : -1 );
-
-                    double newRotationAngleDeg = std::fmod(
-                        parent->m_moveCenterTabController.rotation()
-                            + ( rotationAmount * k_radiansToCentidegrees )
-                            + roundingError,
-                        360000.0 );
-                    int newRotationAngleInt
-                        = static_cast<int>( newRotationAngleDeg );
-                    roundingError = newRotationAngleDeg - newRotationAngleInt;
-
-                    parent->m_moveCenterTabController.setRotation(
-                        newRotationAngleInt );
-
-                } while ( false );
-                lastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
-            }
-
-            if ( m_autoturnMode == AutoturnModes::LINEAR_SMOOTH_TURN
-                 && m_autoturnLinearSmoothTurnRemaining != 0 )
-            {
-                // TODO: implement angular acceleration max?
-                auto deltaMillis
-                    = std::chrono::duration_cast<std::chrono::milliseconds>(
-                          currentTime - m_autoturnLastUpdate )
-                          .count();
-                auto miniDeltaAngle = static_cast<int>(
-                    std::abs( ( deltaMillis * m_autoturnLinearTurnSpeed )
-                              / 1000 )
-                    * ( m_autoturnLinearSmoothTurnRemaining < 0 ? -1 : 1 ) );
-                if ( std::abs( m_autoturnLinearSmoothTurnRemaining )
-                     < std::abs( miniDeltaAngle ) )
-                {
-                    miniDeltaAngle = m_autoturnLinearSmoothTurnRemaining;
+                    // Chaperone changed
+                    m_autoturnWallActive.clear();
+                    // Initialize all to 'true' so we don't rotate on startup if
+                    // the user is outside of the play area.
+                    m_autoturnWallActive.resize( chaperoneDistances.size(),
+                                                 true );
+                    m_autoturnLastUpdate = currentTime;
                 }
-                int newRotationAngleDeg
-                    = static_cast<int>(
-                          parent->m_moveCenterTabController.rotation()
-                          + miniDeltaAngle )
-                      % 360000;
 
-                parent->m_moveCenterTabController.setRotation(
-                    newRotationAngleDeg );
-                m_autoturnLinearSmoothTurnRemaining -= miniDeltaAngle;
-            }
-
-            for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
-            {
-                const auto& chaperoneQuad = chaperoneDistances[i];
-                if ( chaperoneQuad.distance <= m_activationDistance
-                     && !m_autoturnWallActive[i] )
+                // Vestibular motion (true infinite-walk)
+                if ( m_autoturnVestibularMotionEnabled )
                 {
-                    // ------------------
-                    // Convert pose matrix to quaternion
-                    auto hmdQuaternion = quaternion::fromHmdMatrix34(
-                        poseHmd.mDeviceToAbsoluteTracking );
-
-                    // Get HMD raw yaw
-                    double hmdYaw = quaternion::getYaw( hmdQuaternion );
-
-                    // Get angle between HMD position and nearest point on wall
-                    double hmdPositionToWallYaw = static_cast<double>(
-                        std::atan2( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                        - chaperoneQuad.nearestPoint.v[0],
-                                    poseHmd.mDeviceToAbsoluteTracking.m[2][3]
-                                        - chaperoneQuad.nearestPoint.v[2] ) );
-
-                    // Get angle between HMD and wall
-                    double hmdToWallYaw = hmdYaw - hmdPositionToWallYaw;
-                    if ( hmdToWallYaw >= M_PI )
+                    if ( chaperoneDistances.size()
+                         != m_autoturnChaperoneDistancesLast.size() )
                     {
-                        hmdToWallYaw -= 2 * M_PI;
+                        m_autoturnChaperoneDistancesLast = chaperoneDistances;
+                        m_autoturnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
                     }
-                    else if ( hmdToWallYaw <= -M_PI )
-                    {
-                        hmdToWallYaw += 2 * M_PI;
-                    }
+                    // Find the nearest wall we're moving TOWARDS and rotate
+                    // away from it Rotate dist/(2*pi*r) where r is
+                    // m_autoturnVestibularMotionRadius, as if we had walked
+                    // however many inches along a circle and the world was
+                    // turning to compensate
 
                     do
                     {
-                        // Ignore if the wall we encountered is behind us
-                        if ( std::abs( hmdToWallYaw ) >= M_PI / 2 )
+                        // find nearest wall we're moving towards
+                        auto nearestWall = chaperoneDistances.end();
+                        auto itrLast = m_autoturnChaperoneDistancesLast.begin();
+                        for ( auto itr = chaperoneDistances.begin();
+                              itr != chaperoneDistances.end();
+                              itr++ )
                         {
-                            LOG( INFO )
-                                << "Ignoring turn in opposite direction (angle "
-                                << std::abs( hmdToWallYaw ) << ")";
+                            itrLast++;
+                            if ( itr->distance > itrLast->distance )
+                            {
+                                continue;
+                            }
+
+                            if ( nearestWall == chaperoneDistances.end()
+                                 || itr->distance < nearestWall->distance )
+                            {
+                                nearestWall = itr;
+                            }
+                        }
+                        if ( nearestWall == chaperoneDistances.end() )
+                        {
                             break;
                         }
 
-                        // If the closest corner shares a wall with the last
-                        // wall we turned at, turn relative to that corner
-                        bool cornerShared
-                            = ( m_autoturnWallActive
-                                    [( i + 1 ) % chaperoneDistances.size()] )
-                              || ( m_autoturnWallActive
-                                       [( i == 0 )
-                                            ? ( chaperoneDistances.size() - 1 )
-                                            : ( i - 1 )] );
+                        // Convert pose matrix to quaternion
+                        auto hmdQuaternion = quaternion::fromHmdMatrix34(
+                            poseHmd.mDeviceToAbsoluteTracking );
 
-                        bool turnLeft = true;
-                        // Turn away from corner
-                        if ( cornerShared )
-                        {
-                            // Turn left or right depending on which corner it
-                            // is. If we go based on yaw, we could end up
-                            // turning the wrong way if it's large obtuse angle
-                            // and we're facing more towards the previous wall
-                            // than the left.
-                            turnLeft
-                                = !m_autoturnWallActive
-                                      [( i + 1 ) % chaperoneDistances.size()];
-                            LOG( INFO ) << "turning away from shared corner";
-                        }
-                        // If within m_cordDetanglingAngle degrees of 'straight
-                        // at a wall', start in whatever direction will start
-                        // untangling your cord
-                        else if ( ( std::abs( hmdToWallYaw )
-                                    <= m_cordDetanglingAngle )
-                                  && ( std::abs(
-                                           parent->m_moveCenterTabController
-                                               .getHmdYawTotal() )
-                                       > m_autoturnMinCordTangle ) )
-                        {
-                            turnLeft = ( parent->m_moveCenterTabController
-                                             .getHmdYawTotal()
-                                         < 0.0 );
-                            LOG( INFO ) << "turning to detangle cord";
-                        }
-                        // Turn the closest angle to the wall
-                        else
-                        {
-                            turnLeft = hmdToWallYaw > 0.0;
-                            LOG( INFO ) << "turning closest angle to wall";
-                        }
+                        // Get HMD raw yaw
+                        double hmdYaw = quaternion::getYaw( hmdQuaternion );
 
-                        // Limit maximum overall turns to 2
-                        // const double max_turns = 2 * ( 2 * M_PI );
-                        /*
-                        // TODO: Turn change wall color if you turn too far?
-                        bool exceededTurning
-                            = (
-                        parent->m_moveCenterTabController.getHmdYawTotal()
-                                    >= max_turns
-                                && !turnLeft )
-                              || ( parent->m_moveCenterTabController
-                                           .getHmdYawTotal()
-                                       <= -max_turns
-                                   && turnLeft );
-                        */
-                        LOG( INFO ) << "hmd yaw " << hmdYaw
-                                    << ", hmd position to wall angle "
-                                    << hmdPositionToWallYaw;
-                        LOG( INFO ) << "hmd to wall angle " << hmdToWallYaw;
-                        // Positive hmd-to-wall is facing left, negative is
-                        // facing right (relative to the wall)
-                        double delta_degrees
-                            = ( ( turnLeft ? M_PI / 2 : -M_PI / 2 )
-                                - hmdToWallYaw )
-                              * k_radiansToCentidegrees;
-                        LOG( INFO ) << "rotating space "
-                                    << ( delta_degrees / 100 ) << " degrees";
-                        if ( m_autoturnMode == AutoturnModes::SNAP )
-                        {
-                            int newRotationAngleDeg
-                                = static_cast<int>(
-                                      parent->m_moveCenterTabController
-                                          .rotation()
-                                      + delta_degrees )
-                                  % 360000;
+                        // Get angle between HMD position and nearest point on
+                        // wall
+                        double hmdPositionToWallYaw
+                            = static_cast<double>( std::atan2(
+                                poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                                    - nearestWall->nearestPoint.v[0],
+                                poseHmd.mDeviceToAbsoluteTracking.m[2][3]
+                                    - nearestWall->nearestPoint.v[2] ) );
 
-                            parent->m_moveCenterTabController.setRotation(
-                                newRotationAngleDeg );
-                        }
-                        else if ( m_autoturnMode
-                                  == AutoturnModes::LINEAR_SMOOTH_TURN )
+                        // Get angle between HMD and wall
+                        double hmdToWallYaw = hmdYaw - hmdPositionToWallYaw;
+                        if ( hmdToWallYaw >= M_PI )
                         {
-                            m_autoturnLinearSmoothTurnRemaining
-                                += static_cast<int>( delta_degrees );
+                            hmdToWallYaw -= 2 * M_PI;
                         }
+                        else if ( hmdToWallYaw <= -M_PI )
+                        {
+                            hmdToWallYaw += 2 * M_PI;
+                        }
+                        bool turnLeft = hmdToWallYaw > 0.0;
+
+                        // Get the distance between previous and current
+                        // position
+                        double distanceChange = std::sqrt(
+                            std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                                          - m_autoturnLastHmdUpdate.m[0][3],
+                                      2.0 )
+                            + std::pow(
+                                poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                                    - m_autoturnLastHmdUpdate.m[0][3],
+                                2.0 ) );
+
+                        double rotationAmount
+                            = ( distanceChange
+                                / ( 2.0 * M_PI
+                                    * m_autoturnVestibularMotionRadius ) )
+                              * ( turnLeft ? 1 : -1 );
+
+                        double newRotationAngleDeg = std::fmod(
+                            parent->m_moveCenterTabController.rotation()
+                                + ( rotationAmount * k_radiansToCentidegrees )
+                                + m_autoturnRoundingError,
+                            360000.0 );
+                        int newRotationAngleInt
+                            = static_cast<int>( newRotationAngleDeg );
+                        m_autoturnRoundingError
+                            = newRotationAngleDeg - newRotationAngleInt;
+
+                        parent->m_moveCenterTabController.setRotation(
+                            newRotationAngleInt );
+
                     } while ( false );
+                    m_autoturnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
+                }
 
-                    m_autoturnWallActive[i] = true;
-                }
-                else if ( ( chaperoneQuad.distance
-                            > ( m_activationDistance + m_deactivateDistance ) )
-                          && m_autoturnWallActive[i] )
+                if ( m_autoturnMode == AutoturnModes::LINEAR_SMOOTH_TURN
+                     && m_autoturnLinearSmoothTurnRemaining != 0 )
                 {
-                    m_autoturnWallActive[i] = false;
+                    // TODO: implement angular acceleration max?
+                    auto deltaMillis
+                        = std::chrono::duration_cast<std::chrono::milliseconds>(
+                              currentTime - m_autoturnLastUpdate )
+                              .count();
+                    auto miniDeltaAngle = static_cast<int>(
+                        std::abs( ( deltaMillis * m_autoturnLinearTurnSpeed )
+                                  / 1000 )
+                        * ( m_autoturnLinearSmoothTurnRemaining < 0 ? -1
+                                                                    : 1 ) );
+                    if ( std::abs( m_autoturnLinearSmoothTurnRemaining )
+                         < std::abs( miniDeltaAngle ) )
+                    {
+                        miniDeltaAngle = m_autoturnLinearSmoothTurnRemaining;
+                    }
+                    int newRotationAngleDeg
+                        = static_cast<int>(
+                              parent->m_moveCenterTabController.rotation()
+                              + miniDeltaAngle )
+                          % 360000;
+
+                    parent->m_moveCenterTabController.setRotation(
+                        newRotationAngleDeg );
+                    m_autoturnLinearSmoothTurnRemaining -= miniDeltaAngle;
                 }
+
+                for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
+                {
+                    const auto& chaperoneQuad = chaperoneDistances[i];
+                    if ( chaperoneQuad.distance <= m_activationDistance
+                         && !m_autoturnWallActive[i] )
+                    {
+                        // Convert pose matrix to quaternion
+                        auto hmdQuaternion = quaternion::fromHmdMatrix34(
+                            poseHmd.mDeviceToAbsoluteTracking );
+
+                        // Get HMD raw yaw
+                        double hmdYaw = quaternion::getYaw( hmdQuaternion );
+
+                        // Get angle between HMD position and nearest point on
+                        // wall
+                        double hmdPositionToWallYaw
+                            = static_cast<double>( std::atan2(
+                                poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                                    - chaperoneQuad.nearestPoint.v[0],
+                                poseHmd.mDeviceToAbsoluteTracking.m[2][3]
+                                    - chaperoneQuad.nearestPoint.v[2] ) );
+
+                        // Get angle between HMD and wall
+                        double hmdToWallYaw = hmdYaw - hmdPositionToWallYaw;
+                        if ( hmdToWallYaw >= M_PI )
+                        {
+                            hmdToWallYaw -= 2 * M_PI;
+                        }
+                        else if ( hmdToWallYaw <= -M_PI )
+                        {
+                            hmdToWallYaw += 2 * M_PI;
+                        }
+
+                        do
+                        {
+                            // Ignore if the wall we encountered is behind us
+                            if ( std::abs( hmdToWallYaw ) >= M_PI / 2 )
+                            {
+                                LOG( INFO ) << "Ignoring turn in opposite "
+                                               "direction (angle "
+                                            << std::abs( hmdToWallYaw ) << ")";
+                                break;
+                            }
+
+                            // If the closest corner shares a wall with the last
+                            // wall we turned at, turn relative to that corner
+                            bool cornerShared
+                                = ( m_autoturnWallActive[( i + 1 )
+                                                         % chaperoneDistances
+                                                               .size()] )
+                                  || ( m_autoturnWallActive
+                                           [( i == 0 ) ? (
+                                                chaperoneDistances.size() - 1 )
+                                                       : ( i - 1 )] );
+
+                            bool turnLeft = true;
+                            // Turn away from corner
+                            if ( cornerShared )
+                            {
+                                // Turn left or right depending on which corner
+                                // it is. If we go based on yaw, we could end up
+                                // turning the wrong way if it's large obtuse
+                                // angle and we're facing more towards the
+                                // previous wall than the left.
+                                turnLeft
+                                    = !m_autoturnWallActive[( i + 1 )
+                                                            % chaperoneDistances
+                                                                  .size()];
+                                LOG( INFO )
+                                    << "turning away from shared corner";
+                            }
+                            // If within m_cordDetanglingAngle degrees of
+                            // 'straight at a wall', start in whatever direction
+                            // will start untangling your cord
+                            else if ( ( std::abs( hmdToWallYaw )
+                                        <= m_cordDetanglingAngle )
+                                      && ( std::abs(
+                                               parent->m_moveCenterTabController
+                                                   .getHmdYawTotal() )
+                                           > m_autoturnMinCordTangle ) )
+                            {
+                                turnLeft = ( parent->m_moveCenterTabController
+                                                 .getHmdYawTotal()
+                                             < 0.0 );
+                                LOG( INFO ) << "turning to detangle cord";
+                            }
+                            // Turn the closest angle to the wall
+                            else
+                            {
+                                turnLeft = hmdToWallYaw > 0.0;
+                                LOG( INFO ) << "turning closest angle to wall";
+                            }
+
+                            // Limit maximum overall turns to 2
+                            // const double max_turns = 2 * ( 2 * M_PI );
+                            /*
+                            // TODO: Turn change wall color if you turn too far?
+                            bool exceededTurning
+                                = (
+                            parent->m_moveCenterTabController.getHmdYawTotal()
+                                        >= max_turns
+                                    && !turnLeft )
+                                  || ( parent->m_moveCenterTabController
+                                               .getHmdYawTotal()
+                                           <= -max_turns
+                                       && turnLeft );
+                            */
+                            LOG( INFO ) << "hmd yaw " << hmdYaw
+                                        << ", hmd position to wall angle "
+                                        << hmdPositionToWallYaw;
+                            LOG( INFO ) << "hmd to wall angle " << hmdToWallYaw;
+                            // Positive hmd-to-wall is facing left, negative is
+                            // facing right (relative to the wall)
+                            double delta_degrees
+                                = ( ( turnLeft ? M_PI / 2 : -M_PI / 2 )
+                                    - hmdToWallYaw )
+                                  * k_radiansToCentidegrees;
+                            LOG( INFO )
+                                << "rotating space " << ( delta_degrees / 100 )
+                                << " degrees";
+                            if ( m_autoturnMode == AutoturnModes::SNAP )
+                            {
+                                int newRotationAngleDeg
+                                    = static_cast<int>(
+                                          parent->m_moveCenterTabController
+                                              .rotation()
+                                          + delta_degrees )
+                                      % 360000;
+
+                                parent->m_moveCenterTabController.setRotation(
+                                    newRotationAngleDeg );
+                            }
+                            else if ( m_autoturnMode
+                                      == AutoturnModes::LINEAR_SMOOTH_TURN )
+                            {
+                                m_autoturnLinearSmoothTurnRemaining
+                                    += static_cast<int>( delta_degrees );
+                            }
+                        } while ( false );
+
+                        m_autoturnWallActive[i] = true;
+                    }
+                    else if ( ( chaperoneQuad.distance
+                                > ( m_activationDistance
+                                    + m_deactivateDistance ) )
+                              && m_autoturnWallActive[i] )
+                    {
+                        m_autoturnWallActive[i] = false;
+                    }
+                }
+                m_autoturnLastUpdate = currentTime;
+                m_autoturnChaperoneDistancesLast
+                    = std::move( chaperoneDistances );
             }
-            m_autoturnLastUpdate = std::move( currentTime );
-            chaperoneDistancesLast = std::move( chaperoneDistances );
-        }
-        else
-        {
-            m_autoturnWallActive.clear();
+            else
+            {
+                m_autoturnWallActive.clear();
+            }
         }
     }
 

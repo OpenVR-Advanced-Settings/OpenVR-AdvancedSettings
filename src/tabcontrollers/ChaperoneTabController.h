@@ -309,6 +309,8 @@ private:
     bool m_playSpaceMarker = false;
     bool m_forceBounds = false;
 
+    // Settings
+    bool m_autoturnEnabled = true;
     float m_activationDistance
         = 0.4f; // TODO: Have some indicator in UI that lower values are
     // more walking space
@@ -324,17 +326,22 @@ private:
         DELTA_X_DYNAMIC, // unimplemented
     } m_autoturnMode
         = AutoturnModes::LINEAR_SMOOTH_TURN;
-    int m_autoturnLinearSmoothTurnRemaining = 0;
-    std::chrono::steady_clock::time_point m_autoturnLastUpdate;
-    std::vector<bool> m_autoturnWallActive;
 
     /*  22.0: generally considered imperceptable to humans
-     *  11.0: moderate
+     *  11.0: light
      *  5.5:  strong
      *  1.0:  extreme
      */
     bool m_autoturnVestibularMotionEnabled = true;
     double m_autoturnVestibularMotionRadius = 11.0;
+
+    // Variables
+    int m_autoturnLinearSmoothTurnRemaining = 0;
+    std::chrono::steady_clock::time_point m_autoturnLastUpdate;
+    std::vector<bool> m_autoturnWallActive;
+    vr::HmdMatrix34_t m_autoturnLastHmdUpdate;
+    std::vector<utils::ChaperoneQuadData> m_autoturnChaperoneDistancesLast;
+    double m_autoturnRoundingError = 0.0;
 
     bool m_chaperoneSwitchToBeginnerActive = false;
     int32_t m_chaperoneSwitchToBeginnerLastStyle = 0;
