@@ -1427,6 +1427,7 @@ void OverlayController::showKeyboard( QString existingText,
     overlayPos.m[1][3] = overlayPos.m[1][3] - 1.0f;
     vr::VROverlay()->SetKeyboardTransformAbsolute( m_trackingUniverse,
                                                    &overlayPos );
+
 }
 
 void OverlayController::playActivationSound()
