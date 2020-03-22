@@ -1424,20 +1424,9 @@ void OverlayController::showKeyboard( QString existingText,
     vr::HmdMatrix34_t overlayPos;
     vr::VROverlay()->GetOverlayTransformAbsolute(
         systemOverlayHandle, &m_trackingUniverse, &overlayPos );
-    vr::HmdMatrix34_t keyboardLocation = { { { overlayPos.m[0][0],
-                                               overlayPos.m[0][1],
-                                               overlayPos.m[0][2],
-                                               overlayPos.m[0][3] },
-                                             { overlayPos.m[1][0],
-                                               overlayPos.m[1][1],
-                                               overlayPos.m[1][2],
-                                               overlayPos.m[1][3] - 1.0f },
-                                             { overlayPos.m[2][0],
-                                               overlayPos.m[2][1],
-                                               overlayPos.m[2][2],
-                                               overlayPos.m[2][3] } } };
+    overlayPos.m[1][3] = overlayPos.m[1][3] - 1.0f;
     vr::VROverlay()->SetKeyboardTransformAbsolute( m_trackingUniverse,
-                                                   &keyboardLocation );
+                                                   &overlayPos );
 }
 
 void OverlayController::playActivationSound()
