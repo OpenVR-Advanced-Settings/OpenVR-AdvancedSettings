@@ -45,9 +45,9 @@
 namespace application_strings
 {
 constexpr auto applicationOrganizationName = "AdvancedSettings-Team";
-constexpr auto applicationName = "OpenVRAdvancedSettings";
-constexpr const char* applicationKey = "OVRAS-Team.AdvancedSettings";
-constexpr const char* applicationDisplayName = "Advanced Settings";
+constexpr auto applicationName = "OVR Advanced Settings";
+constexpr const char* applicationKey = "steam.overlay.1009850";
+constexpr const char* applicationDisplayName = "OVR Advanced Settings";
 constexpr const char* versionCheckUrl
     = "https://raw.githubusercontent.com/OpenVR-Advanced-Settings/"
       "OpenVR-AdvancedSettings/master/ver/versioncheck.json";

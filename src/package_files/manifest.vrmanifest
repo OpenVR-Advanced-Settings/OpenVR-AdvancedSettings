@@ -1,15 +1,15 @@
 {
 	"source" : "builtin",
 	"applications": [{
-		"app_key": "OVRAS-Team.AdvancedSettings",
+		"app_key": "steam.overlay.1009850",
 		"launch_type": "binary",
 		"binary_path_windows": "AdvancedSettings.exe",
 		"is_dashboard_overlay": true,
 
 		"strings": {
 			"en_us": {
-				"name": "Advanced Settings",
-				"description": "OpenVR Advanced Settings Overlay"
+				"name": "OVR Advanced Settings",
+				"description": "OVR Advanced Settings Overlay"
 			}
 		}
 	}]
