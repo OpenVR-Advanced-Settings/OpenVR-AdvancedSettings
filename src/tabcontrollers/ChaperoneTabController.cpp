@@ -620,17 +620,83 @@ void ChaperoneTabController::eventLoopTick(
                                 = ( ( turnLeft ? M_PI / 2 : -M_PI / 2 )
                                     - hmdToWallYaw )
                                   * k_radiansToCentidegrees;
+                            if ( m_autoturnUseCornerAngle && cornerShared )
+                            {
+                                // Turn the angle of the corner
+                                // Three relevant points - the far corner wall
+                                // we're currently touching, the far corner on
+                                // the wall we've just touched, and the corner
+                                // between them
+                                const auto wrapAround
+                                    = []( const size_t& idx,
+                                          const bool& increment,
+                                          const size_t& modulus ) -> size_t {
+                                    if ( increment )
+                                    {
+                                        return ( idx + 1 ) % modulus;
+                                    }
+                                    else
+                                    {
+                                        return ( idx == 0 ) ? ( modulus - 1 )
+                                                            : ( idx - 1 );
+                                    }
+                                };
+                                const size_t cornerCnt
+                                    = parent->chaperoneUtils().quadsCount();
+                                const size_t middleCornerIdx
+                                    = turnLeft
+                                          ? i
+                                          : wrapAround( i, true, cornerCnt );
+                                const auto& middleCorner
+                                    = parent->chaperoneUtils().getCorner(
+                                        middleCornerIdx );
+                                const auto& newWallCorner
+                                    = parent->chaperoneUtils().getCorner(
+                                        wrapAround( middleCornerIdx,
+                                                    turnLeft,
+                                                    cornerCnt ) );
+                                const auto& touchingWallCorner
+                                    = parent->chaperoneUtils().getCorner(
+                                        wrapAround( middleCornerIdx,
+                                                    !turnLeft,
+                                                    cornerCnt ) );
+
+                                double newWallAngle
+                                    = static_cast<double>( std::atan2(
+                                        middleCorner.v[0] - newWallCorner.v[0],
+                                        middleCorner.v[2]
+                                            - newWallCorner.v[2] ) );
+                                double touchingWallAngle
+                                    = static_cast<double>( std::atan2(
+                                        middleCorner.v[0]
+                                            - touchingWallCorner.v[0],
+                                        middleCorner.v[2]
+                                            - touchingWallCorner.v[2] ) );
+                                LOG( INFO )
+                                    << "twa: " << touchingWallAngle
+                                    << ", nwa: " << newWallAngle << ", diff: "
+                                    << ( newWallAngle - touchingWallAngle );
+                                delta_degrees
+                                    = ( newWallAngle - touchingWallAngle
+                                        + ( turnLeft ? M_PI : -M_PI ) )
+                                      * k_radiansToCentidegrees;
+                                while ( delta_degrees >= 18000 )
+                                {
+                                    delta_degrees -= 36000;
+                                }
+                                while ( delta_degrees <= -18000 )
+                                {
+                                    delta_degrees += 36000;
+                                }
+                            }
                             LOG( INFO )
                                 << "rotating space " << ( delta_degrees / 100 )
                                 << " degrees";
                             if ( m_autoturnMode == AutoturnModes::SNAP )
                             {
-                                int newRotationAngleDeg
-                                    = static_cast<int>(
-                                          parent->m_moveCenterTabController
-                                              .rotation()
-                                          + delta_degrees )
-                                      % 360000;
+                                int newRotationAngleDeg = static_cast<int>(
+                                    parent->m_moveCenterTabController.rotation()
+                                    + delta_degrees );
 
                                 parent->m_moveCenterTabController.setRotation(
                                     newRotationAngleDeg );

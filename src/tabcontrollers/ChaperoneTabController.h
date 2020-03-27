@@ -315,7 +315,9 @@ private:
         = 0.4f; // TODO: Have some indicator in UI that lower values are
     // more walking space
     float m_deactivateDistance = 0.15f;
-    double m_cordDetanglingAngle = 10000 * k_centidegreesToRadians;
+    bool m_autoturnUseCornerAngle
+        = true; // Turn the exact corner of the angle, rather than the headset
+    double m_cordDetanglingAngle = 1000 * k_centidegreesToRadians;
     double m_autoturnMinCordTangle = 2 * M_PI;
     int m_autoturnLinearTurnSpeed = 9000; // centidegrees/sec
     enum class AutoturnModes
@@ -332,7 +334,7 @@ private:
      *  5.5:  strong
      *  1.0:  extreme
      */
-    bool m_autoturnVestibularMotionEnabled = true;
+    bool m_autoturnVestibularMotionEnabled = false;
     double m_autoturnVestibularMotionRadius = 11.0;
 
     // Variables

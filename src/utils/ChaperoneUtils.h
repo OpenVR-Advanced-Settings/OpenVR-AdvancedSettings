@@ -36,6 +36,10 @@ private:
         _getDistancesToChaperone( const vr::HmdVector3_t& point );
 
 public:
+    const vr::HmdVector3_t& getCorner( size_t i ) const noexcept
+    {
+        return ( _corners.get() )[i];
+    }
     uint32_t quadsCount() const noexcept
     {
         return _quadsCount;
