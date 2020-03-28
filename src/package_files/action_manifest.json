@@ -13,6 +13,10 @@
       "binding_url": "default_action_manifests/ovras-team.advancedsettings_default_knuckles.json"
    },
    {
+      "controller_type": "oculus_touch",
+      "binding_url": "default_action_manifests/ovras-team.advancedsettings_default_touch.json"
+   },
+   {
       "controller_type": "generic_hmd",
       "binding_url": "default_action_manifests/ovras-team.advancedsettings_default_hmd.json"
    }
