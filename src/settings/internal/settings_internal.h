@@ -16,6 +16,7 @@ enum class SettingCategory
     Video,
     Chaperone,
     ChaperoneProfiles,
+    Rotation,
 };
 
 struct QtInfo
@@ -53,6 +54,8 @@ struct QtInfo
         return "chaperoneSettings";
     case SettingCategory::ChaperoneProfiles:
         return "chaperoneProfiles";
+    case SettingCategory::Rotation:
+        return "rotationSettings";
     }
     return "no-value";
 }
