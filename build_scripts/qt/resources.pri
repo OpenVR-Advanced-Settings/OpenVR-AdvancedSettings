@@ -49,6 +49,8 @@ DISTFILES += \
     src/res/qml/video_page/profiles/* \
     src/res/qml/video_page/dialogboxes/* \
     src/res/qml/video_page/overlaycolorbright/* \
+	src/res/qml/rotation_page/* \
+	src/res/qml/rotation_page/redirected/* \
     src/res/qml/common/*
 
 win32:RC_ICONS += src/res/img/icons/advicon256px.ico

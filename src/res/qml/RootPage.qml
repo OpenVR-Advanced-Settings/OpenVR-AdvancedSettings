@@ -73,6 +73,17 @@ MyStackViewPage {
                            mainView.push(motionPage)
                        }
                    }
+                   MyPushButton {
+                       id: rotationButton
+                       iconPath: "qrc:/main_menu_icons/motion_tab_icon"
+                       activationSoundEnabled: false
+                       text: "   Rotation"
+                       Layout.fillWidth: true
+                       onClicked: {
+                           MyResources.playFocusChangedSound()
+                           mainView.push(rotationPage)
+                       }
+                   }
 
                    MyPushButton {
                        id: fixFloorButton

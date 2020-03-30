@@ -8,6 +8,7 @@ import "../motion_page"
 import "../video_page"
 import "../chaperone_page"
 import "../steamvr_page"
+import "../rotation_page"
 
 Rectangle {
     id: root
@@ -40,6 +41,11 @@ Rectangle {
     }
 
     property MotionPage motionPage: MotionPage {
+        stackView: mainView
+        visible: false
+    }
+
+    property RotationPage  rotationPage: RotationPage {
         stackView: mainView
         visible: false
     }
