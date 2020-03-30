@@ -145,6 +145,39 @@ GroupBox {
                 }
             }
         }
+        //TODO duplicate and change
+        /*RowLayout {
+            Layout.fillWidth: true
+
+
+            MyText {
+                text: "Cord De-tangle start angle:"
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 10
+            }
+
+
+            MyTextField {
+                id: cordDetanglingAngle
+                text: "360"
+                keyBoardUID: 1003
+                Layout.preferredWidth: 100
+                Layout.leftMargin: 10
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < 0) {
+                            val = 0
+                        } else if (val > 22) {
+                            val = 22
+                        }
+                            deactivationSlider.value = v;
+                    }
+                    text =  RotationTabController.autoTurnDeactivationDistance();
+                }
+            }
+        }*/
 
 
     }

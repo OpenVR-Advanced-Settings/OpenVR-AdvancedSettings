@@ -39,6 +39,7 @@
 #include "tabcontrollers/SettingsTabController.h"
 #include "tabcontrollers/UtilitiesTabController.h"
 #include "tabcontrollers/VideoTabController.h"
+#include "tabcontrollers/RotationTabController.h"
 
 #include "openvr/ivrinput.h"
 
@@ -166,6 +167,7 @@ public: // I know it's an ugly hack to make them public to enable external
     SettingsTabController m_settingsTabController;
     UtilitiesTabController m_utilitiesTabController;
     VideoTabController m_videoTabController;
+    RotationTabController m_rotationTabController;
 
 private:
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );

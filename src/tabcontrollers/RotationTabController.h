@@ -146,8 +146,6 @@ private:
     void doAutoTurn( vr::TrackedDevicePose_t poseHmd, float minDistance );
 
 public:
-    ~RotationTabController();
-
     void initStage1();
     void initStage2( OverlayController* parent );
 
@@ -165,16 +163,6 @@ public:
     AutoturnModes autoTurnMode() const;
     bool vestibularMotionEnabled() const;
     double vestibularMotionRadius() const;
-
-    void setProxState( bool value );
-
-    std::pair<bool, unsigned>
-        getChaperoneProfileIndexFromName( std::string name );
-    void createNewAutosaveProfile();
-
-    // actions
-    void addLeftHapticClick( bool leftHapticClickPressed );
-    void addRightHapticClick( bool rightHapticClickPressed );
 
 public slots:
     void setAutoTurnEnabled( bool value, bool notify = true );
