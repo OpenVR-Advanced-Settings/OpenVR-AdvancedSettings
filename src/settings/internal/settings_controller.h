@@ -7,6 +7,7 @@
 #include "setting_value.h"
 #include "../../utils/setup.h"
 #include "specific_setting_value.h"
+#include "../../tabcontrollers/MoveCenterTabController.h"
 
 namespace settings
 {
@@ -357,6 +358,18 @@ private:
                           SettingCategory::Chaperone,
                           QtInfo{ "disableChaperone" },
                           false },
+        BoolSettingValue{ BoolSetting::ROTATION_autoturnEnabled,
+                          SettingCategory::Rotation,
+                          QtInfo{ "autoturnEnabled" },
+                          false },
+        BoolSettingValue{ BoolSetting::ROTATION_autoturnUseCornerAngle,
+                          SettingCategory::Rotation,
+                          QtInfo{ "autoturnUseCornerAngle" },
+                          true },
+        BoolSettingValue{ BoolSetting::ROTATION_autoturnVestibularMotionEnabled,
+                          SettingCategory::Rotation,
+                          QtInfo{ "autoturnVestibularMotionEnabled" },
+                          false },
     };
 
     constexpr static auto doubleSettingSize
@@ -416,6 +429,28 @@ private:
                             SettingCategory::Chaperone,
                             QtInfo{ "fadeDistanceRemembered" },
                             0.5 },
+        DoubleSettingValue{ DoubleSetting::ROTATION_activationDistance,
+                            SettingCategory::Rotation,
+                            QtInfo{ "activationDistance" },
+                            0.4 },
+        DoubleSettingValue{ DoubleSetting::ROTATION_deactivateDistance,
+                            SettingCategory::Rotation,
+                            QtInfo{ "deactivateDistance" },
+                            0.15 },
+        DoubleSettingValue{ DoubleSetting::ROTATION_cordDetanglingAngle,
+                            SettingCategory::Rotation,
+                            QtInfo{ "cordDetanglingAngle" },
+                            1000 * advsettings::k_centidegreesToRadians },
+        DoubleSettingValue{ DoubleSetting::ROTATION_autoturnMinCordTangle,
+                            SettingCategory::Rotation,
+                            QtInfo{ "autoturnMinCordTangle" },
+                            2 * M_PI },
+        DoubleSettingValue{
+            DoubleSetting::ROTATION_autoturnVestibularMotionRadius,
+            SettingCategory::Rotation,
+            QtInfo{ "autoturnVestibularMotionRadius" },
+            11.0 },
+
     };
 
     constexpr static auto stringSettingsSize
@@ -477,6 +512,14 @@ private:
                          SettingCategory::Utility,
                          QtInfo{ "alarmMinute" },
                          0 },
+        IntSettingValue{ IntSetting::ROTATION_autoturnLinearTurnSpeed,
+                         SettingCategory::Rotation,
+                         QtInfo{ "autoturnLinearTurnSpeed" },
+                         9000 },
+        IntSettingValue{ IntSetting::ROTATION_autoturnMode,
+                         SettingCategory::Rotation,
+                         QtInfo{ "autoturnMode" },
+                         1 },
 
     };
 };

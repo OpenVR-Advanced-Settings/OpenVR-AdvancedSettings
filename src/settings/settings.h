@@ -49,8 +49,12 @@ enum class BoolSetting
     CHAPERONE_chaperoneAlarmSoundAdjustVolume,
     CHAPERONE_chaperoneShowDashboardEnabled,
     CHAPERONE_disableChaperone,
+
+    ROTATION_autoturnEnabled,
+    ROTATION_autoturnUseCornerAngle,
+    ROTATION_autoturnVestibularMotionEnabled,
     // LAST_ENUMERATOR must always be set to the last value
-    LAST_ENUMERATOR = CHAPERONE_disableChaperone,
+    LAST_ENUMERATOR = ROTATION_autoturnVestibularMotionEnabled,
 };
 
 enum class DoubleSetting
@@ -70,8 +74,14 @@ enum class DoubleSetting
     CHAPERONE_alarmSoundDistance,
     CHAPERONE_showDashboardDistance,
     CHAPERONE_fadeDistanceRemembered,
+
+    ROTATION_activationDistance,
+    ROTATION_deactivateDistance,
+    ROTATION_cordDetanglingAngle,
+    ROTATION_autoturnMinCordTangle,
+    ROTATION_autoturnVestibularMotionRadius,
     // LAST_ENUMERATOR must always be set to the last value
-    LAST_ENUMERATOR = CHAPERONE_fadeDistanceRemembered,
+    LAST_ENUMERATOR = ROTATION_autoturnVestibularMotionRadius,
 };
 
 enum class StringSetting
@@ -96,8 +106,11 @@ enum class IntSetting
 
     UTILITY_alarmHour,
     UTILITY_alarmMinute,
+
+    ROTATION_autoturnLinearTurnSpeed,
     // LAST_ENUMERATOR must always be set to the last value
-    LAST_ENUMERATOR = UTILITY_alarmMinute,
+    ROTATION_autoturnMode,
+    LAST_ENUMERATOR = ROTATION_autoturnMode,
 };
 
 std::string initializeAndGetSettingsPath();
