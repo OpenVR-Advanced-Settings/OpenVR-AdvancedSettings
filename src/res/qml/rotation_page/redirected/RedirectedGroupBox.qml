@@ -223,7 +223,7 @@ GroupBox {
         autoTurn.checked = RotationTabController.autoTurnEnabled
         deactivationSlider.value = RotationTabController.autoTurnDeactivationDistance
         cornerAngle.checked = RotationTabController.autoTurnUseCornerAngle
-        speedSlider.value = parseInt(RotationTabController.autoTurnSpeed*(180/Math.PI))
+        speedSlider.value = (RotationTabController.autoTurnSpeed*100).toFixed()
         if(RotationTabController.autoTurnMode === 1){
 
             autoTurnModeToggle.checked = true;
