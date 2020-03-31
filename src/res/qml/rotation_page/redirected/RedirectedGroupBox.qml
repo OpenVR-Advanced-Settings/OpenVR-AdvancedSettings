@@ -10,7 +10,7 @@ GroupBox {
 
     label: MyText {
         leftPadding: 10
-        text: "Redirected Walking"
+        text: "Auto-Turn Settings"
         bottomPadding: -10
     }
     background: Rectangle {
@@ -35,12 +35,9 @@ GroupBox {
             MyToggleButton {
                 id: autoTurn
                 text: "Toggle On/Off"
+                Layout.preferredWidth: 300
                 onCheckedChanged: {
                     RotationTabController.setAutoTurnEnabled(this.checked, true);                }
-            }
-
-            Item {
-                Layout.preferredWidth: 140
             }
 
             MyText {
@@ -93,12 +90,10 @@ GroupBox {
             MyToggleButton {
                 id: cornerAngle
                 text: "Use Corner Angle"
+                Layout.preferredWidth: 300
                 onCheckedChanged: {
-                    RotationTabController.setAutoTurnUseCornerAngle(this.checked, true);                }
-            }
-
-            Item {
-                Layout.preferredWidth: 150
+                    RotationTabController.setAutoTurnUseCornerAngle(this.checked, true);
+                }
             }
 
             MyText {
@@ -150,6 +145,7 @@ GroupBox {
             MyToggleButton {
                 id: autoTurnModeToggle
                 text: "Use Smooth Turn"
+                Layout.preferredWidth: 300
                 onCheckedChanged: {
                     if(this.checked){
 
@@ -161,10 +157,6 @@ GroupBox {
                 }
             }
 
-            Item {
-                Layout.preferredWidth: 150
-            }
-            Layout.fillWidth: true
             MyText {
                 text: "Turn Speed (deg/sec):"
                 horizontalAlignment: Text.AlignRight
@@ -184,7 +176,7 @@ GroupBox {
                 }
                 onValueChanged: {
 
-                    RotationTabController.setAutoTurnSpeed(value, true)
+                    RotationTabController.setAutoTurnSpeed(parseInt(value), true)
                 }
             }
 
@@ -217,25 +209,25 @@ GroupBox {
         RowLayout{
             MyText{
                 text: "Redirected Walking:   "
-                horizontalAlignment: Text.AlignRight
+                horizontalAlignment: Text.AlignLeft
                 Layout.rightMargin: 10
+                Layout.preferredWidth: 300
 
             }
             MyToggleButton {
                 id: redirectedModeToggle
                 text: "Toggle On/Off"
+                Layout.preferredWidth: 225
                 onCheckedChanged: {
                     RotationTabController.setVestibularMotionEnabled(this.checked, true);
 
                 }
             }
-            Item {
-                Layout.preferredWidth: 150
-            }
             MyText{
                 text: "Radius: "
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 4
+                Layout.fillWidth: true
             }
 
 
@@ -262,11 +254,18 @@ GroupBox {
       }
       RowLayout{
           MyText{
-              text: "DeTangle Angle:   Start At "
-              horizontalAlignment: Text.AlignRight
+              text: "DeTangle Angle: "
+              horizontalAlignment: Text.AlignLeft
+              Layout.preferredWidth: 300
               Layout.rightMargin: 5
 
           }
+          MyText{
+              text:"Start At:"
+              Layout.rightMargin: 5
+
+          }
+
           MyTextField {
               id: detangleAngleStartText
               text: "360"
@@ -295,6 +294,7 @@ GroupBox {
               text: "Assist by: "
               horizontalAlignment: Text.AlignRight
               Layout.rightMargin: 10
+              Layout.fillWidth: true
 
           }
           MyTextField {
@@ -329,7 +329,7 @@ GroupBox {
         autoTurn.checked = RotationTabController.autoTurnEnabled
         deactivationSlider.value = RotationTabController.autoTurnDeactivationDistance
         cornerAngle.checked = RotationTabController.autoTurnUseCornerAngle
-        speedSlider.value = (RotationTabController.autoTurnSpeed*100).toFixed()
+        speedSlider.value = (RotationTabController.autoTurnSpeed/100).toFixed()
         if(RotationTabController.autoTurnMode === 1){
 
             autoTurnModeToggle.checked = true;
