@@ -188,7 +188,7 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
             m_autoturnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
         }
 
-        if ( RotationTabController::autoTurnMode()
+        if ( RotationTabController::autoTurnModeType()
                  == AutoturnModes::LINEAR_SMOOTH_TURN
              && m_autoturnLinearSmoothTurnRemaining != 0 )
         {
@@ -388,7 +388,7 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                     }
                     LOG( INFO ) << "rotating space " << ( delta_degrees / 100 )
                                 << " degrees";
-                    if ( RotationTabController::autoTurnMode()
+                    if ( RotationTabController::autoTurnModeType()
                          == AutoturnModes::SNAP )
                     {
                         int newRotationAngleDeg = static_cast<int>(
@@ -398,7 +398,7 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                         parent->m_moveCenterTabController.setRotation(
                             newRotationAngleDeg );
                     }
-                    else if ( RotationTabController::autoTurnMode()
+                    else if ( RotationTabController::autoTurnModeType()
                               == AutoturnModes::LINEAR_SMOOTH_TURN )
                     {
                         m_autoturnLinearSmoothTurnRemaining
@@ -469,10 +469,15 @@ int RotationTabController::autoTurnSpeed() const
         settings::IntSetting::ROTATION_autoturnLinearTurnSpeed );
 }
 
-AutoturnModes RotationTabController::autoTurnMode() const
+AutoturnModes RotationTabController::autoTurnModeType() const
 {
-    return static_cast<AutoturnModes>( static_cast<AutoturnModes>(
-        settings::getSetting( settings::IntSetting::ROTATION_autoturnMode ) ) );
+    return static_cast<AutoturnModes>(
+        settings::getSetting( settings::IntSetting::ROTATION_autoturnMode ) );
+}
+
+int RotationTabController::autoTurnMode() const
+{
+    return settings::getSetting( settings::IntSetting::ROTATION_autoturnMode );
 }
 
 bool RotationTabController::vestibularMotionEnabled() const
@@ -551,15 +556,15 @@ void RotationTabController::setMinCordTangle( double value, bool notify )
 }
 void RotationTabController::setAutoTurnSpeed( int value, bool notify )
 {
-    int valueinrad = static_cast<int>( value * M_PI / 180 );
+    int centival = value * 100;
     settings::setSetting(
-        settings::IntSetting::ROTATION_autoturnLinearTurnSpeed, valueinrad );
+        settings::IntSetting::ROTATION_autoturnLinearTurnSpeed, centival );
     if ( notify )
     {
-        emit autoTurnSpeedChanged( value );
+        emit autoTurnSpeedChanged( centival );
     }
 }
-void RotationTabController::setAutoTurnMode( AutoturnModes value, bool notify )
+void RotationTabController::setAutoTurnMode( int value, bool notify )
 {
     settings::setSetting( settings::IntSetting::ROTATION_autoturnMode,
                           static_cast<int>( value ) );

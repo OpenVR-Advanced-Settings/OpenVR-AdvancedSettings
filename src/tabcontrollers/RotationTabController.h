@@ -121,8 +121,8 @@ class RotationTabController : public QObject
                     NOTIFY minCordTangleChanged )
     Q_PROPERTY( int autoTurnSpeed READ autoTurnSpeed WRITE setAutoTurnSpeed
                     NOTIFY autoTurnSpeedChanged )
-    Q_PROPERTY( AutoturnModes autoTurnMode READ autoTurnMode WRITE
-                    setAutoTurnMode NOTIFY autoTurnModeChanged )
+    Q_PROPERTY( int autoTurnMode READ autoTurnMode WRITE setAutoTurnMode NOTIFY
+                    autoTurnModeChanged )
     Q_PROPERTY(
         bool vestibularMotionEnabled READ vestibularMotionEnabled WRITE
             setVestibularMotionEnabled NOTIFY vestibularMotionEnabledChanged )
@@ -160,7 +160,8 @@ public:
     double cordDetangleAngle() const;
     double minCordTangle() const;
     int autoTurnSpeed() const;
-    AutoturnModes autoTurnMode() const;
+    AutoturnModes autoTurnModeType() const;
+    int autoTurnMode() const;
     bool vestibularMotionEnabled() const;
     double vestibularMotionRadius() const;
 
@@ -172,7 +173,7 @@ public slots:
     void setCordDetangleAngle( double value, bool notify = true );
     void setMinCordTangle( double value, bool notify = true );
     void setAutoTurnSpeed( int value, bool notify = true );
-    void setAutoTurnMode( AutoturnModes value, bool notify = true );
+    void setAutoTurnMode( int value, bool notify = true );
     void setVestibularMotionEnabled( bool value, bool notify = true );
     void setVestibularMotionRadius( double value, bool notify = true );
 
@@ -185,7 +186,7 @@ signals:
     void cordDetangleAngleChanged( double value );
     void minCordTangleChanged( double value );
     void autoTurnSpeedChanged( int value );
-    void autoTurnModeChanged( AutoturnModes value );
+    void autoTurnModeChanged( int value );
     void vestibularMotionEnabledChanged( bool value );
     void vestibularMotionRadiusChanged( double value );
 };
