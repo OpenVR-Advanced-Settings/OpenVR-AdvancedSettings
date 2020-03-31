@@ -200,10 +200,10 @@ GroupBox {
                     if (!isNaN(val)) {
                         if (val < 1) {
                             val = 1
-                        //caps user set Speed to 4000 deg/Second
+                        //caps user set Speed to 1000 deg/Second
                         //used as overflow prevention
-                        } else if (val > 1000000) {
-                            val = 1000000
+                        } else if (val > 1000) {
+                            val = 1000
                         }
                             speedSlider.value = v;
                     }
@@ -213,6 +213,42 @@ GroupBox {
             }
 
 
+        }
+        RowLayout{
+            MyToggleButton {
+                id: redirectedModeToggle
+                text: "Toggle Re-directed Walking: "
+                onCheckedChanged: {
+                    RotationTabController.setVestibularMotionEnabled(this.checked, true);
+
+                }
+            }
+            MyText{
+                text: "Redirected Walking Radius: "
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 10
+
+            }
+            MyTextField {
+                id: redirectedWalkingRadiusText
+                text: "11.0"
+                keyBoardUID: 1004
+                Layout.preferredWidth: 100
+                Layout.leftMargin: 10
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        if (val < 0.5) {
+                            val = 0.5
+                        } else if (val > 50) {
+                            val = 50
+                        }
+                            RotationTabController.setVestibularMotionRadius(val, true);
+                    }
+                    text =  ((RotationTabController.vestibularMotionRadius).toFixed(2));
+                }
+            }
         }
 
 
@@ -232,6 +268,9 @@ GroupBox {
 
              autoTurnModeToggle.checked = false;
         }
+        redirectedWalkingRadiusText.text = ((RotationTabController.vestibularMotionRadius).toFixed(2))
+        redirectedModeToggle.checked = RotationTabController.vestibularMotionEnabled
+
     }
 
     Connections {
@@ -262,6 +301,12 @@ GroupBox {
 
                  autoTurnModeToggle.checked = false;
             }
+        }
+        onVestibularMotionEnabledChanged:{
+         redirectedModeToggle.checked = RotationTabController.vestibularMotionEnabled
+        }
+        onVestibularMotionRadiusChanged:{
+            redirectedWalkingRadiusText.text =  ((RotationTabController.vestibularMotionRadius).toFixed(2))
         }
     }
 }
