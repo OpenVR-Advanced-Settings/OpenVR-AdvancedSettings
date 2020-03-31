@@ -113,9 +113,14 @@ void AudioTabController::initStage2()
     m_pushToTalkValues.pushToTalkPath = *pushToTalkIconFilePath;
     m_pushToTalkValues.pushToMutePath = *pushToMuteIconFilePath;
 
-    vr::VROverlay()->SetOverlayFromFile(
-        m_pushToTalkValues.overlayHandle,
-        m_pushToTalkValues.pushToTalkPath.c_str() );
+    auto pushToPath = m_pushToTalkValues.pushToTalkPath.c_str();
+    if ( settings::getSetting( settings::BoolSetting::AUDIO_micReversePtt ) )
+    {
+        pushToPath = m_pushToTalkValues.pushToMutePath.c_str();
+    }
+
+    vr::VROverlay()->SetOverlayFromFile( m_pushToTalkValues.overlayHandle,
+                                         pushToPath );
     vr::VROverlay()->SetOverlayWidthInMeters( m_pushToTalkValues.overlayHandle,
                                               0.02f );
     vr::HmdMatrix34_t notificationTransform

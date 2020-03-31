@@ -1426,11 +1426,30 @@ void OverlayController::showKeyboard( QString existingText,
         m_ulOverlayHandle,
         vr::k_EGamepadTextInputModeNormal,
         vr::k_EGamepadTextInputLineModeSingleLine,
+        0,
         "Advanced Settings Overlay",
         1024,
         existingText.toStdString().c_str(),
-        false,
         userValue );
+
+    auto m_trackingUniverse = vr::VRCompositor()->GetTrackingSpace();
+
+    vr::EVROverlayError overlayerror;
+    // System Overlay Key
+    const auto systemOverlayKey = std::string( "system.systemui" );
+    vr::VROverlayHandle_t systemOverlayHandle;
+    overlayerror = vr::VROverlay()->FindOverlay( systemOverlayKey.c_str(),
+                                                 &systemOverlayHandle );
+    if ( overlayerror != vr::VROverlayError_None )
+    {
+        return;
+    }
+    vr::HmdMatrix34_t overlayPos;
+    vr::VROverlay()->GetOverlayTransformAbsolute(
+        systemOverlayHandle, &m_trackingUniverse, &overlayPos );
+    overlayPos.m[1][3] = overlayPos.m[1][3] - 1.0f;
+    vr::VROverlay()->SetKeyboardTransformAbsolute( m_trackingUniverse,
+                                                   &overlayPos );
 }
 
 void OverlayController::playActivationSound()
