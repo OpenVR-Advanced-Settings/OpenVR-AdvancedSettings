@@ -40,7 +40,7 @@ GroupBox {
             }
 
             Item {
-                Layout.preferredWidth: 150
+                Layout.preferredWidth: 140
             }
 
             MyText {
@@ -53,7 +53,7 @@ GroupBox {
                 id: activationSlider
                 from: 0
                 to: 1.0
-                stepSize: 0.1
+                stepSize: 0.05
                 value: .4
                 Layout.fillWidth: true
                 onPositionChanged: {
@@ -111,7 +111,7 @@ GroupBox {
                 id: deactivationSlider
                 from: 0
                 to: 1.0
-                stepSize: 0.1
+                stepSize: 0.05
                 value: .15
                 Layout.fillWidth: true
                 onPositionChanged: {
@@ -215,20 +215,30 @@ GroupBox {
 
         }
         RowLayout{
+            MyText{
+                text: "Redirected Walking:   "
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 10
+
+            }
             MyToggleButton {
                 id: redirectedModeToggle
-                text: "Toggle Re-directed Walking: "
+                text: "Toggle On/Off"
                 onCheckedChanged: {
                     RotationTabController.setVestibularMotionEnabled(this.checked, true);
 
                 }
             }
-            MyText{
-                text: "Redirected Walking Radius: "
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
-
+            Item {
+                Layout.preferredWidth: 150
             }
+            MyText{
+                text: "Radius: "
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 4
+            }
+
+
             MyTextField {
                 id: redirectedWalkingRadiusText
                 text: "11.0"
@@ -246,10 +256,70 @@ GroupBox {
                         }
                             RotationTabController.setVestibularMotionRadius(val, true);
                     }
-                    text =  ((RotationTabController.vestibularMotionRadius).toFixed(2));
+                //text =  ((RotationTabController.vestibularMotionRadius).toFixed(2));
                 }
             }
-        }
+      }
+      RowLayout{
+          MyText{
+              text: "DeTangle Angle:   Start At "
+              horizontalAlignment: Text.AlignRight
+              Layout.rightMargin: 5
+
+          }
+          MyTextField {
+              id: detangleAngleStartText
+              text: "360"
+              keyBoardUID: 1005
+              Layout.preferredWidth: 100
+              Layout.leftMargin: 5
+              horizontalAlignment: Text.AlignHCenter
+              function onInputEvent(input) {
+                  var val = parseFloat(input)
+                  if (!isNaN(val)) {
+                      if (val < 0) {
+                          val = 0
+                      } else if (val > 3600) {
+                          val = 3600
+                      }
+                  RotationTabController.setMinCordTangle((val*(Math.PI/180)), true);
+                  }
+                  //text =  ((RotationTabController.vestibularMotionRadius).toFixed(2));
+              }
+          }
+          Item {
+              Layout.preferredWidth: 150
+          }
+
+          MyText{
+              text: "Assist by: "
+              horizontalAlignment: Text.AlignRight
+              Layout.rightMargin: 10
+
+          }
+          MyTextField {
+              id: detangleAngleAssistText
+              text: "10"
+              keyBoardUID: 1006
+              Layout.preferredWidth: 100
+              Layout.leftMargin: 10
+              horizontalAlignment: Text.AlignHCenter
+              function onInputEvent(input) {
+                  var val = parseFloat(input)
+                  if (!isNaN(val)) {
+                      if (val < 0) {
+                          val = 0
+                      } else if (val > 3600) {
+                          val = 3600
+                      }
+                  RotationTabController.setCordDetangleAngle((val*(Math.PI/180)), true);
+                  }
+                  //text =  ((RotationTabController.vestibularMotionRadius).toFixed(2));
+              }
+          }
+      }
+
+
 
 
     }
@@ -270,7 +340,8 @@ GroupBox {
         }
         redirectedWalkingRadiusText.text = ((RotationTabController.vestibularMotionRadius).toFixed(2))
         redirectedModeToggle.checked = RotationTabController.vestibularMotionEnabled
-
+        detangleAngleStartText.text = parseInt(RotationTabController.minCordTangle*(180/Math.PI))
+        detangleAngleAssistText.text = parseInt(RotationTabController.cordDetangleAngle*(180/Math.PI))
     }
 
     Connections {
@@ -307,6 +378,12 @@ GroupBox {
         }
         onVestibularMotionRadiusChanged:{
             redirectedWalkingRadiusText.text =  ((RotationTabController.vestibularMotionRadius).toFixed(2))
+        }
+        onMinCordTangleChanged:{
+            detangleAngleStartText.text = parseInt(RotationTabController.minCordTangle*(180/Math.PI))
+        }
+        onCordDetangleAngleChanged:{
+            detangleAngleAssistText.text = parseInt(RotationTabController.cordDetangleAngle*(180/Math.PI))
         }
     }
 }
