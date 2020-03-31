@@ -62,7 +62,7 @@ struct RotationProfile : settings::ISettingsObject
         o.addValue( autoturnUseCornerAngle );
         o.addValue( cordDetanglingAngle );
         o.addValue( autoturnMinCordTangle );
-        o.addValue( autoturnLinearTurnSpeed ); // CHECK if double/int?
+        o.addValue( autoturnLinearTurnSpeed );
         o.addValue( static_cast<int>( autoturnMode ) );
         o.addValue( autoturnVestibularMotionEnabled );
         o.addValue( autoturnVestibularMotionRadius );
@@ -72,9 +72,6 @@ struct RotationProfile : settings::ISettingsObject
 
     virtual void loadSettings( settings::SettingsObjectData& obj ) override
     {
-        // supersampling = static_cast<float>( obj.getNextValueOrDefault( 1.0 )
-        // );
-
         // Settings
         autoturnEnabled = obj.getNextValueOrDefault( true );
         activationDistance
