@@ -551,8 +551,9 @@ void RotationTabController::setMinCordTangle( double value, bool notify )
 }
 void RotationTabController::setAutoTurnSpeed( int value, bool notify )
 {
+    int valueinrad = static_cast<int>( value * M_PI / 180 );
     settings::setSetting(
-        settings::IntSetting::ROTATION_autoturnLinearTurnSpeed, value );
+        settings::IntSetting::ROTATION_autoturnLinearTurnSpeed, valueinrad );
     if ( notify )
     {
         emit autoTurnSpeedChanged( value );

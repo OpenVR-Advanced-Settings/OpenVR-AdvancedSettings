@@ -145,21 +145,52 @@ GroupBox {
                 }
             }
         }
-        //TODO duplicate and change
-        /*RowLayout {
+
+        RowLayout {
+            MyToggleButton {
+                id: autoTurnModeToggle
+                text: "Use Smooth Turn"
+                onCheckedChanged: {
+                    if(this.checked){
+
+                        RotationTabController.setAutoTurnUseCornerAngle(1, true);
+                    }else{
+                        RotationTabController.setAutoTurnUseCornerAngle(0, true);
+                    }
+
+                }
+            }
+
+            Item {
+                Layout.preferredWidth: 150
+            }
             Layout.fillWidth: true
-
-
             MyText {
-                text: "Cord De-tangle start angle:"
+                text: "Turn Speed (deg/sec):"
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }
 
+            MySlider {
+                id: speedSlider
+                from: 0
+                to: 360
+                stepSize: 1
+                value: 90
+                Layout.fillWidth: true
+                onPositionChanged: {
+                    var val = this.value
+                    speedValueText.text = val.toFixed()
+                }
+                onValueChanged: {
+
+                    RotationTabController.setAutoTurnDeactivationDistance(value, true)
+                }
+            }
 
             MyTextField {
-                id: cordDetanglingAngle
-                text: "360"
+                id: speedValueText
+                text: "90"
                 keyBoardUID: 1003
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
@@ -167,17 +198,23 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 0) {
-                            val = 0
-                        } else if (val > 22) {
-                            val = 22
+                        if (val < 1) {
+                            val = 1
+                        //caps user set Speed to 4000 deg/Second
+                        //used as overflow prevention
+                        } else if (val > 4000) {
+                            val = 4000
                         }
-                            deactivationSlider.value = v;
+                            speedSlider.value = v;
                     }
-                    text =  RotationTabController.autoTurnDeactivationDistance();
+                    //converts the centidegrees to degrees
+                    text =  ((RotationTabController.autoTurnSpeed()*(180/Math.PI)).toFixed());
                 }
             }
-        }*/
+
+
+
+        }
 
 
     }
@@ -187,6 +224,15 @@ GroupBox {
         autoTurn.checked = RotationTabController.autoTurnEnabled
         deactivationSlider.value = RotationTabController.autoTurnDeactivationDistance
         cornerAngle.value = RotationTabController.autoTurnUseCornerAngle
+        speedSlider.value = (RotationTabController.autoTurnSpeed()*(180/Math.PI))
+        if(RotationTabController.autoTurnMode() == 1){
+
+            autoTurnModeToggle.checked = true;
+
+        }else{
+
+             autoTurnModeToggle.checked = false;
+        }
     }
 
     Connections {
@@ -203,6 +249,19 @@ GroupBox {
         }
         onAutoTurnUseCornerAngleChanged:{
             cornerAngle.checked = RotationTabController.setAutoTurnUseCornerAngle
+        }
+        onAutoTurnSpeedChanged:{
+            speedSlider.value = (RotationTabController.autoTurnSpeed()*(180/Math.PI))
+        }
+        onAutoTurnModeChanged:{
+            if(RotationTabController.autoTurnMode() == 1){
+
+                autoTurnModeToggle.checked = true;
+
+            }else{
+
+                 autoTurnModeToggle.checked = false;
+            }
         }
     }
 }

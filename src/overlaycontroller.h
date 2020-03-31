@@ -177,6 +177,7 @@ private:
     void processPushToTalkBindings();
     void processChaperoneBindings();
     void processKeyboardBindings();
+    void processRotationBindings();
 
 public:
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );

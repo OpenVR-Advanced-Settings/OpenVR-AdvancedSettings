@@ -680,6 +680,14 @@ void OverlayController::processKeyboardBindings()
         sendStringAsInput( commands );
     }
 }
+void OverlayController::processRotationBindings()
+{
+    if ( m_actions.autoTurnToggle() )
+    {
+        m_rotationTabController.setAutoTurnEnabled(
+            !( m_rotationTabController.autoTurnEnabled() ) );
+    }
+}
 /*!
 Checks if an action has been activated and dispatches the related action if it
 has been.
@@ -695,6 +703,8 @@ void OverlayController::processInputBindings()
     processChaperoneBindings();
 
     processKeyboardBindings();
+
+    processRotationBindings();
 }
 
 bool OverlayController::crashRecoveryDisabled() const

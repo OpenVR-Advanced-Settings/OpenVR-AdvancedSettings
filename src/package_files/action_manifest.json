@@ -150,6 +150,11 @@
       "requirement": "optional",
       "type": "boolean"
     },
+    {
+      "name": "/actions/motion/in/AutoTurnToggle",
+      "requirement": "optional",
+      "type": "boolean"
+    },
     
     {
       "name": "/actions/misc/in/XAxisLockToggle",
@@ -253,6 +258,7 @@
         "/actions/motion/in/SnapTurnRight" : "Snap-Turn Right",
         "/actions/motion/in/SmoothTurnLeft" : "Smooth-Turn Left",
         "/actions/motion/in/SmoothTurnRight" : "Smooth-Turn Right",
+		"/actions/motion/in/AutoTurnToggle" : "Auto-Turn Toggle",
         
         "/actions/misc/in/XAxisLockToggle" : "X-Axis Lock Toggle",
         "/actions/misc/in/YAxisLockToggle" : "Y-Axis Lock Toggle",
