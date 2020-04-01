@@ -4,7 +4,6 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../common"
 import "space_drag"
-import "space_turn"
 import "height_toggle"
 import "gravity"
 
@@ -15,8 +14,6 @@ MyStackViewPage {
         spacing: 18
 
         SpaceDragGroupBox { id: spaceDragGroupBox }
-
-        SpaceTurnGroupBox { id: spaceTurnGroupBox }
 
         HeightToggleGroupBox { id: heightToggleGroupBox }
 

@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../common"
 import "redirected"
+import "space_turn"
 import "snap_turn"
 
 
@@ -18,6 +19,10 @@ MyStackViewPage {
 
         RedirectedGroupBox{
             id: redirectedGroupBox
+        }
+
+        SpaceTurnGroupBox{
+            id:spaceTurnGroupBox
         }
 
         SnapTurnGroupBox{
