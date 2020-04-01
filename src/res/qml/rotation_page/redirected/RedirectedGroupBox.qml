@@ -97,7 +97,7 @@ GroupBox {
             }
 
             MyText {
-                text: "DeActivation Dist:"
+                text: "Deactivation Dist:"
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }
@@ -216,7 +216,7 @@ GroupBox {
             }
             MyToggleButton {
                 id: redirectedModeToggle
-                text: "Toggle On/Off"
+                text: "On"
                 Layout.preferredWidth: 225
                 onCheckedChanged: {
                     RotationTabController.setVestibularMotionEnabled(this.checked, true);
@@ -254,14 +254,14 @@ GroupBox {
       }
       RowLayout{
           MyText{
-              text: "DeTangle Angle: "
+              text: "Detangle Angle: "
               horizontalAlignment: Text.AlignLeft
               Layout.preferredWidth: 300
               Layout.rightMargin: 5
 
           }
           MyText{
-              text:"Start At:"
+              text:"Minimum Rotations(deg):"
               Layout.rightMargin: 5
 
           }
@@ -291,7 +291,7 @@ GroupBox {
           }
 
           MyText{
-              text: "Assist by: "
+              text: "Max Wall Angle(deg): "
               horizontalAlignment: Text.AlignRight
               Layout.rightMargin: 10
               Layout.fillWidth: true

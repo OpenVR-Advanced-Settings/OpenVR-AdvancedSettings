@@ -255,9 +255,9 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                     // Ignore if the wall we encountered is behind us
                     if ( std::abs( hmdToWallYaw ) >= M_PI / 2 )
                     {
-                        LOG( INFO ) << "Ignoring turn in opposite "
-                                       "direction (angle "
-                                    << std::abs( hmdToWallYaw ) << ")";
+                        LOG( DEBUG ) << "Ignoring turn in opposite "
+                                        "direction (angle "
+                                     << std::abs( hmdToWallYaw ) << ")";
                         break;
                     }
 
@@ -282,7 +282,7 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                         // previous wall than the left.
                         turnLeft = !m_autoturnWallActive
                                        [( i + 1 ) % chaperoneDistances.size()];
-                        LOG( INFO ) << "turning away from shared corner";
+                        LOG( DEBUG ) << "turning away from shared corner";
                     }
                     // If within m_cordDetanglingAngle degrees of
                     // 'straight at a wall', start in whatever direction
@@ -296,13 +296,13 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                         turnLeft = ( parent->m_moveCenterTabController
                                          .getHmdYawTotal()
                                      < 0.0 );
-                        LOG( INFO ) << "turning to detangle cord";
+                        LOG( DEBUG ) << "turning to detangle cord";
                     }
                     // Turn the closest angle to the wall
                     else
                     {
                         turnLeft = hmdToWallYaw > 0.0;
-                        LOG( INFO ) << "turning closest angle to wall";
+                        LOG( DEBUG ) << "turning closest angle to wall";
                     }
 
                     // Limit maximum overall turns to 2
@@ -319,10 +319,10 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                                    <= -max_turns
                                && turnLeft );
                     */
-                    LOG( INFO ) << "hmd yaw " << hmdYaw
-                                << ", hmd position to wall angle "
-                                << hmdPositionToWallYaw;
-                    LOG( INFO ) << "hmd to wall angle " << hmdToWallYaw;
+                    LOG( DEBUG ) << "hmd yaw " << hmdYaw
+                                 << ", hmd position to wall angle "
+                                 << hmdPositionToWallYaw;
+                    LOG( DEBUG ) << "hmd to wall angle " << hmdToWallYaw;
                     // Positive hmd-to-wall is facing left, negative is
                     // facing right (relative to the wall)
                     double delta_degrees
@@ -371,9 +371,9 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                             = static_cast<double>( std::atan2(
                                 middleCorner.v[0] - touchingWallCorner.v[0],
                                 middleCorner.v[2] - touchingWallCorner.v[2] ) );
-                        LOG( INFO ) << "twa: " << touchingWallAngle
-                                    << ", nwa: " << newWallAngle << ", diff: "
-                                    << ( newWallAngle - touchingWallAngle );
+                        LOG( DEBUG ) << "twa: " << touchingWallAngle
+                                     << ", nwa: " << newWallAngle << ", diff: "
+                                     << ( newWallAngle - touchingWallAngle );
                         delta_degrees = ( newWallAngle - touchingWallAngle
                                           + ( turnLeft ? M_PI : -M_PI ) )
                                         * k_radiansToCentidegrees;
@@ -386,8 +386,8 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                             delta_degrees += 36000;
                         }
                     }
-                    LOG( INFO ) << "rotating space " << ( delta_degrees / 100 )
-                                << " degrees";
+                    LOG( DEBUG ) << "rotating space " << ( delta_degrees / 100 )
+                                 << " degrees";
                     if ( RotationTabController::autoTurnModeType()
                          == AutoturnModes::SNAP )
                     {
