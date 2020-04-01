@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../common"
 import "redirected"
+import "snap_turn"
 
 
 MyStackViewPage {
@@ -11,10 +12,18 @@ MyStackViewPage {
     headerText: "Rotation Settings"
     content: ColumnLayout {
         spacing: 10
+        AutoTurnGroupBox{
+            id: autoTurnGroupBox
+        }
 
         RedirectedGroupBox{
-        id: redirectedGroupBox
+            id: redirectedGroupBox
         }
+
+        SnapTurnGroupBox{
+            id: snapTurnGroupBox
+        }
+
 
         Item {
             Layout.fillHeight: true

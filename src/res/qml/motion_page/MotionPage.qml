@@ -7,7 +7,6 @@ import "space_drag"
 import "space_turn"
 import "height_toggle"
 import "gravity"
-import "snap_turn"
 
 MyStackViewPage {
     headerText: "Motion Settings"
@@ -23,7 +22,6 @@ MyStackViewPage {
 
         GravityGroupBox { id: gravityGroupBox }
 
-        SnapTurnGroupBox { id: snapTurnGroupBox }
 
         Item {
             Layout.fillHeight: true

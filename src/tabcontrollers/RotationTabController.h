@@ -82,11 +82,9 @@ struct RotationProfile : settings::ISettingsObject
         cordDetanglingAngle
             = obj.getNextValueOrDefault( 1000 * k_centidegreesToRadians );
         autoturnMinCordTangle = obj.getNextValueOrDefault( 2 * M_PI );
-        autoturnLinearTurnSpeed
-            = obj.getNextValueOrDefault( 9000 ); // TODO check if Int okay?
-        autoturnMode = static_cast<AutoturnModes>(
-            obj.getNextValueOrDefault( static_cast<int>(
-                AutoturnModes::LINEAR_SMOOTH_TURN ) ) ); // TODO check
+        autoturnLinearTurnSpeed = obj.getNextValueOrDefault( 9000 );
+        autoturnMode = static_cast<AutoturnModes>( obj.getNextValueOrDefault(
+            static_cast<int>( AutoturnModes::LINEAR_SMOOTH_TURN ) ) );
         autoturnVestibularMotionEnabled = obj.getNextValueOrDefault( false );
         autoturnVestibularMotionRadius = obj.getNextValueOrDefault( 11.0 );
     }
