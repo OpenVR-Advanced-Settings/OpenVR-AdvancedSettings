@@ -178,7 +178,7 @@ GroupBox {
                 }
                 onValueChanged: {
 
-                    RotationTabController.setAutoTurnSpeed(parseInt(value), true)
+                    RotationTabController.setAutoTurnSpeed(parseInt(value*100), true)
                 }
             }
 

@@ -77,28 +77,28 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                 { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
                   poseHmd.mDeviceToAbsoluteTracking.m[1][3],
                   poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
-        if ( m_autoturnWallActive.size() != chaperoneDistances.size() )
+        if ( m_autoTurnWallActive.size() != chaperoneDistances.size() )
         {
             // Chaperone changed
-            m_autoturnWallActive.clear();
+            m_autoTurnWallActive.clear();
             // Initialize all to 'true' so we don't rotate on startup if
             // the user is outside of the play area.
-            m_autoturnWallActive.resize( chaperoneDistances.size(), true );
-            m_autoturnLastUpdate = currentTime;
+            m_autoTurnWallActive.resize( chaperoneDistances.size(), true );
+            m_autoTurnLastUpdate = currentTime;
         }
 
         // Vestibular motion (true infinite-walk)
         if ( RotationTabController::vestibularMotionEnabled() )
         {
             if ( chaperoneDistances.size()
-                 != m_autoturnChaperoneDistancesLast.size() )
+                 != m_autoTurnChaperoneDistancesLast.size() )
             {
-                m_autoturnChaperoneDistancesLast = chaperoneDistances;
-                m_autoturnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
+                m_autoTurnChaperoneDistancesLast = chaperoneDistances;
+                m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
             }
             // Find the nearest wall we're moving TOWARDS and rotate
             // away from it Rotate dist/(2*pi*r) where r is
-            // m_autoturnVestibularMotionRadius, as if we had walked
+            // m_autoTurnVestibularMotionRadius, as if we had walked
             // however many inches along a circle and the world was
             // turning to compensate
 
@@ -106,7 +106,7 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
             {
                 // find nearest wall we're moving towards
                 auto nearestWall = chaperoneDistances.end();
-                auto itrLast = m_autoturnChaperoneDistancesLast.begin();
+                auto itrLast = m_autoTurnChaperoneDistancesLast.begin();
                 for ( auto itr = chaperoneDistances.begin();
                       itr != chaperoneDistances.end();
                       itr++ )
@@ -159,10 +159,10 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                 // position
                 double distanceChange = std::sqrt(
                     std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                  - m_autoturnLastHmdUpdate.m[0][3],
+                                  - m_autoTurnLastHmdUpdate.m[0][3],
                               2.0 )
                     + std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                    - m_autoturnLastHmdUpdate.m[0][3],
+                                    - m_autoTurnLastHmdUpdate.m[0][3],
                                 2.0 ) );
 
                 double rotationAmount = ( distanceChange
@@ -174,38 +174,38 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                 double newRotationAngleDeg = std::fmod(
                     parent->m_moveCenterTabController.rotation()
                         + ( rotationAmount * k_radiansToCentidegrees )
-                        + m_autoturnRoundingError,
+                        + m_autoTurnRoundingError,
                     360000.0 );
                 int newRotationAngleInt
                     = static_cast<int>( newRotationAngleDeg );
-                m_autoturnRoundingError
+                m_autoTurnRoundingError
                     = newRotationAngleDeg - newRotationAngleInt;
 
                 parent->m_moveCenterTabController.setRotation(
                     newRotationAngleInt );
 
             } while ( false );
-            m_autoturnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
+            m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
         }
 
         if ( RotationTabController::autoTurnModeType()
-                 == AutoturnModes::LINEAR_SMOOTH_TURN
-             && m_autoturnLinearSmoothTurnRemaining != 0 )
+                 == AutoTurnModes::LINEAR_SMOOTH_TURN
+             && m_autoTurnLinearSmoothTurnRemaining != 0 )
         {
             // TODO: implement angular acceleration max?
             auto deltaMillis
                 = std::chrono::duration_cast<std::chrono::milliseconds>(
-                      currentTime - m_autoturnLastUpdate )
+                      currentTime - m_autoTurnLastUpdate )
                       .count();
             auto miniDeltaAngle = static_cast<int>(
                 std::abs(
                     ( deltaMillis * RotationTabController::autoTurnSpeed() )
                     / 1000 )
-                * ( m_autoturnLinearSmoothTurnRemaining < 0 ? -1 : 1 ) );
-            if ( std::abs( m_autoturnLinearSmoothTurnRemaining )
+                * ( m_autoTurnLinearSmoothTurnRemaining < 0 ? -1 : 1 ) );
+            if ( std::abs( m_autoTurnLinearSmoothTurnRemaining )
                  < std::abs( miniDeltaAngle ) )
             {
-                miniDeltaAngle = m_autoturnLinearSmoothTurnRemaining;
+                miniDeltaAngle = m_autoTurnLinearSmoothTurnRemaining;
             }
             int newRotationAngleDeg
                 = static_cast<int>( parent->m_moveCenterTabController.rotation()
@@ -214,7 +214,7 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
 
             parent->m_moveCenterTabController.setRotation(
                 newRotationAngleDeg );
-            m_autoturnLinearSmoothTurnRemaining -= miniDeltaAngle;
+            m_autoTurnLinearSmoothTurnRemaining -= miniDeltaAngle;
         }
 
         for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
@@ -222,7 +222,7 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
             const auto& chaperoneQuad = chaperoneDistances[i];
             if ( chaperoneQuad.distance
                      <= RotationTabController::autoTurnActivationDistance()
-                 && !m_autoturnWallActive[i] )
+                 && !m_autoTurnWallActive[i] )
             {
                 // Convert pose matrix to quaternion
                 auto hmdQuaternion = quaternion::fromHmdMatrix34(
@@ -264,9 +264,9 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                     // If the closest corner shares a wall with the last
                     // wall we turned at, turn relative to that corner
                     bool cornerShared
-                        = ( m_autoturnWallActive[( i + 1 )
+                        = ( m_autoTurnWallActive[( i + 1 )
                                                  % chaperoneDistances.size()] )
-                          || ( m_autoturnWallActive
+                          || ( m_autoTurnWallActive
                                    [( i == 0 )
                                         ? ( chaperoneDistances.size() - 1 )
                                         : ( i - 1 )] );
@@ -280,7 +280,7 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                         // turning the wrong way if it's large obtuse
                         // angle and we're facing more towards the
                         // previous wall than the left.
-                        turnLeft = !m_autoturnWallActive
+                        turnLeft = !m_autoTurnWallActive
                                        [( i + 1 ) % chaperoneDistances.size()];
                         LOG( DEBUG ) << "turning away from shared corner";
                     }
@@ -389,7 +389,7 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                     LOG( DEBUG ) << "rotating space " << ( delta_degrees / 100 )
                                  << " degrees";
                     if ( RotationTabController::autoTurnModeType()
-                         == AutoturnModes::SNAP )
+                         == AutoTurnModes::SNAP )
                     {
                         int newRotationAngleDeg = static_cast<int>(
                             parent->m_moveCenterTabController.rotation()
@@ -399,30 +399,30 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                             newRotationAngleDeg );
                     }
                     else if ( RotationTabController::autoTurnModeType()
-                              == AutoturnModes::LINEAR_SMOOTH_TURN )
+                              == AutoTurnModes::LINEAR_SMOOTH_TURN )
                     {
-                        m_autoturnLinearSmoothTurnRemaining
+                        m_autoTurnLinearSmoothTurnRemaining
                             += static_cast<int>( delta_degrees );
                     }
                 } while ( false );
 
-                m_autoturnWallActive[i] = true;
+                m_autoTurnWallActive[i] = true;
             }
             else if ( ( chaperoneQuad.distance
                         > ( RotationTabController::autoTurnActivationDistance()
                             + RotationTabController::
                                 autoTurnDeactivationDistance() ) )
-                      && m_autoturnWallActive[i] )
+                      && m_autoTurnWallActive[i] )
             {
-                m_autoturnWallActive[i] = false;
+                m_autoTurnWallActive[i] = false;
             }
         }
-        m_autoturnLastUpdate = currentTime;
-        m_autoturnChaperoneDistancesLast = std::move( chaperoneDistances );
+        m_autoTurnLastUpdate = currentTime;
+        m_autoTurnChaperoneDistancesLast = std::move( chaperoneDistances );
     }
     else
     {
-        m_autoturnWallActive.clear();
+        m_autoTurnWallActive.clear();
     }
 }
 // getters
@@ -469,9 +469,9 @@ int RotationTabController::autoTurnSpeed() const
         settings::IntSetting::ROTATION_autoturnLinearTurnSpeed );
 }
 
-AutoturnModes RotationTabController::autoTurnModeType() const
+AutoTurnModes RotationTabController::autoTurnModeType() const
 {
-    return static_cast<AutoturnModes>(
+    return static_cast<AutoTurnModes>(
         settings::getSetting( settings::IntSetting::ROTATION_autoturnMode ) );
 }
 
@@ -556,12 +556,11 @@ void RotationTabController::setMinCordTangle( double value, bool notify )
 }
 void RotationTabController::setAutoTurnSpeed( int value, bool notify )
 {
-    int centival = value * 100;
     settings::setSetting(
-        settings::IntSetting::ROTATION_autoturnLinearTurnSpeed, centival );
+        settings::IntSetting::ROTATION_autoturnLinearTurnSpeed, value );
     if ( notify )
     {
-        emit autoTurnSpeedChanged( centival );
+        emit autoTurnSpeedChanged( value );
     }
 }
 void RotationTabController::setAutoTurnMode( int value, bool notify )

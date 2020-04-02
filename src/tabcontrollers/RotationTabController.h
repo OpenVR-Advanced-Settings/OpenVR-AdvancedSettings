@@ -19,7 +19,7 @@ namespace advsettings
 // forward declaration
 class OverlayController;
 
-enum class AutoturnModes
+enum class AutoTurnModes
 {
     SNAP,
     LINEAR_SMOOTH_TURN,
@@ -32,40 +32,40 @@ struct RotationProfile : settings::ISettingsObject
     std::string profileName;
 
     // Settings
-    bool autoturnEnabled = true;
+    bool autoTurnEnabled = true;
     float activationDistance
         = 0.4f; // TODO: Have some indicator in UI that lower values are
     // more walking space
     float deactivateDistance = 0.15f;
-    bool autoturnUseCornerAngle = true; // Turn the exact corner of the
+    bool autoTurnUseCornerAngle = true; // Turn the exact corner of the
                                         // angle, rather than the headset
     double cordDetanglingAngle = 1000 * k_centidegreesToRadians;
-    double autoturnMinCordTangle = 2 * M_PI;
-    int autoturnLinearTurnSpeed = 9000; // centidegrees/sec
+    double autoTurnMinCordTangle = 2 * M_PI;
+    int autoTurnLinearTurnSpeed = 9000; // centidegrees/sec
 
-    AutoturnModes autoturnMode = AutoturnModes::LINEAR_SMOOTH_TURN;
+    AutoTurnModes autoTurnMode = AutoTurnModes::LINEAR_SMOOTH_TURN;
 
     /*  22.0: generally considered imperceptable to humans
      *  11.0: light
      *  5.5:  strong
      *  1.0:  extreme
      */
-    bool autoturnVestibularMotionEnabled = false;
-    double autoturnVestibularMotionRadius = 11.0;
+    bool autoTurnVestibularMotionEnabled = false;
+    double autoTurnVestibularMotionRadius = 11.0;
 
     virtual settings::SettingsObjectData saveSettings() const override
     {
         settings::SettingsObjectData o;
-        o.addValue( autoturnEnabled );
+        o.addValue( autoTurnEnabled );
         o.addValue( static_cast<double>( activationDistance ) );
         o.addValue( static_cast<double>( deactivateDistance ) );
-        o.addValue( autoturnUseCornerAngle );
+        o.addValue( autoTurnUseCornerAngle );
         o.addValue( cordDetanglingAngle );
-        o.addValue( autoturnMinCordTangle );
-        o.addValue( autoturnLinearTurnSpeed );
-        o.addValue( static_cast<int>( autoturnMode ) );
-        o.addValue( autoturnVestibularMotionEnabled );
-        o.addValue( autoturnVestibularMotionRadius );
+        o.addValue( autoTurnMinCordTangle );
+        o.addValue( autoTurnLinearTurnSpeed );
+        o.addValue( static_cast<int>( autoTurnMode ) );
+        o.addValue( autoTurnVestibularMotionEnabled );
+        o.addValue( autoTurnVestibularMotionRadius );
 
         return o;
     }
@@ -73,20 +73,20 @@ struct RotationProfile : settings::ISettingsObject
     virtual void loadSettings( settings::SettingsObjectData& obj ) override
     {
         // Settings
-        autoturnEnabled = obj.getNextValueOrDefault( true );
+        autoTurnEnabled = obj.getNextValueOrDefault( true );
         activationDistance
             = static_cast<float>( obj.getNextValueOrDefault( 0.4 ) );
         deactivateDistance
             = static_cast<float>( obj.getNextValueOrDefault( 0.15 ) );
-        autoturnUseCornerAngle = obj.getNextValueOrDefault( true );
+        autoTurnUseCornerAngle = obj.getNextValueOrDefault( true );
         cordDetanglingAngle
             = obj.getNextValueOrDefault( 1000 * k_centidegreesToRadians );
-        autoturnMinCordTangle = obj.getNextValueOrDefault( 2 * M_PI );
-        autoturnLinearTurnSpeed = obj.getNextValueOrDefault( 9000 );
-        autoturnMode = static_cast<AutoturnModes>( obj.getNextValueOrDefault(
-            static_cast<int>( AutoturnModes::LINEAR_SMOOTH_TURN ) ) );
-        autoturnVestibularMotionEnabled = obj.getNextValueOrDefault( false );
-        autoturnVestibularMotionRadius = obj.getNextValueOrDefault( 11.0 );
+        autoTurnMinCordTangle = obj.getNextValueOrDefault( 2 * M_PI );
+        autoTurnLinearTurnSpeed = obj.getNextValueOrDefault( 9000 );
+        autoTurnMode = static_cast<AutoTurnModes>( obj.getNextValueOrDefault(
+            static_cast<int>( AutoTurnModes::LINEAR_SMOOTH_TURN ) ) );
+        autoTurnVestibularMotionEnabled = obj.getNextValueOrDefault( false );
+        autoTurnVestibularMotionRadius = obj.getNextValueOrDefault( 11.0 );
     }
 
     virtual std::string settingsName() const override
@@ -129,12 +129,12 @@ private:
     OverlayController* parent;
 
     // Variables
-    int m_autoturnLinearSmoothTurnRemaining = 0;
-    std::chrono::steady_clock::time_point m_autoturnLastUpdate;
-    std::vector<bool> m_autoturnWallActive;
-    vr::HmdMatrix34_t m_autoturnLastHmdUpdate;
-    std::vector<utils::ChaperoneQuadData> m_autoturnChaperoneDistancesLast;
-    double m_autoturnRoundingError = 0.0;
+    int m_autoTurnLinearSmoothTurnRemaining = 0;
+    std::chrono::steady_clock::time_point m_autoTurnLastUpdate;
+    std::vector<bool> m_autoTurnWallActive;
+    vr::HmdMatrix34_t m_autoTurnLastHmdUpdate;
+    std::vector<utils::ChaperoneQuadData> m_autoTurnChaperoneDistancesLast;
+    double m_autoTurnRoundingError = 0.0;
 
     bool m_isHMDActive = false;
 
@@ -155,7 +155,7 @@ public:
     double cordDetangleAngle() const;
     double minCordTangle() const;
     int autoTurnSpeed() const;
-    AutoturnModes autoTurnModeType() const;
+    AutoTurnModes autoTurnModeType() const;
     int autoTurnMode() const;
     bool vestibularMotionEnabled() const;
     double vestibularMotionRadius() const;
