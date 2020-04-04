@@ -75,7 +75,7 @@ MyStackViewPage {
                    }
                    MyPushButton {
                        id: rotationButton
-                       iconPath: "qrc:/main_menu_icons/motion_tab_icon"
+                       iconPath: "qrc:/main_menu_icons/rotation_tab_icon"
                        activationSoundEnabled: false
                        text: "   Rotation"
                        Layout.fillWidth: true
