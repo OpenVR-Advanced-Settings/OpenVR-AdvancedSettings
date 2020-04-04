@@ -140,7 +140,7 @@ OverlayController::OverlayController( bool desktopMode,
     if ( !vr::VROverlay() )
     {
         QMessageBox::critical(
-            nullptr, "OpenVR Advanced Settings Overlay", "Is OpenVR running?" );
+            nullptr, "OVR Advanced Settings Overlay", "Is OpenVR running?" );
         throw std::runtime_error( std::string( "No Overlay interface" ) );
     }
 
@@ -364,7 +364,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             if ( overlayError == vr::VROverlayError_KeyInUse )
             {
                 QMessageBox::critical( nullptr,
-                                       "OpenVR Advanced Settings Overlay",
+                                       "OVR Advanced Settings Overlay",
                                        "Another instance is already running." );
             }
             throw std::runtime_error( std::string(
@@ -544,6 +544,14 @@ void OverlayController::processMediaKeyBindings()
         m_utilitiesTabController.sendMediaStopSong();
     }
 }
+void OverlayController::processExclusiveBindings()
+{
+    if ( m_actions.exclusiveInputToggle() )
+    {
+        m_exclusiveInputToggle = !m_exclusiveInputToggle;
+        m_useExclusive = m_utilitiesTabController.enableExclusiveInput();
+    }
+}
 
 void OverlayController::processMotionBindings()
 {
@@ -674,15 +682,20 @@ has been.
 */
 void OverlayController::processInputBindings()
 {
-    processMediaKeyBindings();
+    processExclusiveBindings();
 
-    processMotionBindings();
+    if ( !m_useExclusive || m_exclusiveInputToggle )
+    {
+        processMediaKeyBindings();
 
-    processPushToTalkBindings();
+        processMotionBindings();
 
-    processChaperoneBindings();
+        processPushToTalkBindings();
 
-    processKeyboardBindings();
+        processChaperoneBindings();
+
+        processKeyboardBindings();
+    }
 }
 
 bool OverlayController::crashRecoveryDisabled() const
@@ -1408,25 +1421,18 @@ void OverlayController::showKeyboard( QString existingText,
         1024,
         existingText.toStdString().c_str(),
         userValue );
+    setKeyboardPos();
+}
 
-    auto m_trackingUniverse = vr::VRCompositor()->GetTrackingSpace();
-
-    vr::EVROverlayError overlayerror;
-    // System Overlay Key
-    const auto systemOverlayKey = std::string( "system.systemui" );
-    vr::VROverlayHandle_t systemOverlayHandle;
-    overlayerror = vr::VROverlay()->FindOverlay( systemOverlayKey.c_str(),
-                                                 &systemOverlayHandle );
-    if ( overlayerror != vr::VROverlayError_None )
-    {
-        return;
-    }
-    vr::HmdMatrix34_t overlayPos;
-    vr::VROverlay()->GetOverlayTransformAbsolute(
-        systemOverlayHandle, &m_trackingUniverse, &overlayPos );
-    overlayPos.m[1][3] = overlayPos.m[1][3] - 1.0f;
-    vr::VROverlay()->SetKeyboardTransformAbsolute( m_trackingUniverse,
-                                                   &overlayPos );
+void OverlayController::setKeyboardPos()
+{
+    vr::HmdVector2_t emptyvec;
+    emptyvec.v[0] = 0;
+    emptyvec.v[1] = 0;
+    vr::HmdRect2_t empty;
+    empty.vTopLeft = emptyvec;
+    empty.vBottomRight = emptyvec;
+    vr::VROverlay()->SetKeyboardPositionForOverlay( m_ulOverlayHandle, empty );
 }
 
 void OverlayController::playActivationSound()

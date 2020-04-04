@@ -29,6 +29,8 @@ class UtilitiesTabController : public QObject
                     NOTIFY alarmTimeHourChanged )
     Q_PROPERTY( int alarmTimeMinute READ alarmTimeMinute WRITE
                     setAlarmTimeMinute NOTIFY alarmTimeMinuteChanged )
+    Q_PROPERTY( bool enableExclusiveInput READ enableExclusiveInput WRITE
+                    setEnableExclusiveInput NOTIFY enableExclusiveInputChanged )
 
 private:
     OverlayController* m_parent;
@@ -56,6 +58,7 @@ public:
     bool vrcDebug() const;
     int alarmTimeHour() const;
     int alarmTimeMinute() const;
+    bool enableExclusiveInput() const;
 
 public slots:
     void sendKeyboardInput( QString input );
@@ -93,6 +96,8 @@ public slots:
     Q_INVOKABLE void sendKeyboardTwo();
     Q_INVOKABLE void sendKeyboardThree();
 
+    void setEnableExclusiveInput( bool value, bool notify = true );
+
     void setAlarmEnabled( bool enabled, bool notify = true );
     void setAlarmIsModal( bool modal, bool notify = true );
     void setVrcDebug( bool value, bool notify = true );
@@ -108,6 +113,7 @@ signals:
     void vrcDebugChanged( bool value );
     void alarmTimeHourChanged( int hour );
     void alarmTimeMinuteChanged( int min );
+    void enableExclusiveInputChanged( bool Value );
 };
 
 } // namespace advsettings

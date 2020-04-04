@@ -226,6 +226,21 @@ int UtilitiesTabController::alarmTimeMinute() const
 {
     return m_alarmTime.minute();
 }
+bool UtilitiesTabController::enableExclusiveInput() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::UTILITY_enableExclusiveInput );
+}
+
+void UtilitiesTabController::setEnableExclusiveInput( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::UTILITY_enableExclusiveInput,
+                          value );
+    if ( notify )
+    {
+        emit enableExclusiveInputChanged( value );
+    }
+}
 
 void UtilitiesTabController::setAlarmEnabled( bool enabled, bool notify )
 {

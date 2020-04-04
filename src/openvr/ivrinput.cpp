@@ -142,6 +142,7 @@ SteamIVRInput::SteamIVRInput()
       m_rightHaptic( action_keys::hapticsRight ),
       m_addLeftHapticClick( action_keys::addLeftHapticClick ),
       m_addRightHapticClick( action_keys::addRightHapticClick ),
+      m_exclusiveInputToggle( action_keys::exclusiveInputToggle ),
       m_proxSensor( action_keys::proxSensor ),
       m_leftHand( input_keys::leftHand ), m_rightHand( input_keys::rightHand ),
       m_sets( { m_mainSet.activeActionSet(),
@@ -328,6 +329,10 @@ bool SteamIVRInput::addRightHapticClick()
 {
     return isDigitalActionActivatedConstant( m_addRightHapticClick );
 }
+bool SteamIVRInput::exclusiveInputToggle()
+{
+    return isDigitalActionActivatedOnce( m_exclusiveInputToggle );
+}
 
 bool SteamIVRInput::keyboardOne()
 {
@@ -392,6 +397,25 @@ void SteamIVRInput::UpdateStates()
         LOG( ERROR )
             << "Error during IVRInput action state update. OpenVR Error: "
             << error;
+    }
+}
+
+// Set's action set priority sets to 0 if not in valid range
+// Set's all Action sets EXCEPT Haptic/ m_main
+void SteamIVRInput::changePriority( int32_t priorityVal )
+{
+    // Set priorityVal between 0x01000000 and 0x01FFFFFF
+    if ( priorityVal > 0x01000000 && priorityVal < 0x01FFFFFF )
+    {
+        m_music.setActionSetPriority( priorityVal );
+        m_motion.setActionSetPriority( priorityVal );
+        m_misc.setActionSetPriority( priorityVal );
+    }
+    else
+    {
+        m_music.setActionSetPriority( 0 );
+        m_motion.setActionSetPriority( 0 );
+        m_misc.setActionSetPriority( 0 );
     }
 }
 

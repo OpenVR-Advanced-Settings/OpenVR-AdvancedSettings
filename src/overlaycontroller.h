@@ -151,6 +151,9 @@ private:
 
     input::SteamIVRInput m_actions;
 
+    bool m_exclusiveInputToggle = false;
+    bool m_useExclusive = false;
+
     QNetworkAccessManager* netManager = new QNetworkAccessManager( this );
     QJsonDocument m_remoteVersionJsonDocument = QJsonDocument();
     QJsonObject m_remoteVersionJsonObject;
@@ -175,6 +178,7 @@ private:
     void processPushToTalkBindings();
     void processChaperoneBindings();
     void processKeyboardBindings();
+    void processExclusiveBindings();
 
 public:
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
@@ -252,6 +256,7 @@ public slots:
     void OnNetworkReply( QNetworkReply* reply );
 
     void showKeyboard( QString existingText, unsigned long userValue = 0 );
+    void setKeyboardPos();
 
     void playActivationSound();
     void playFocusChangedSound();

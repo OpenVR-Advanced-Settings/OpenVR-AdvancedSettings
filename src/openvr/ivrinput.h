@@ -61,6 +61,8 @@ namespace action_keys
     constexpr auto addLeftHapticClick = "/actions/haptic/in/AddLeftHapticClick";
     constexpr auto addRightHapticClick
         = "/actions/haptic/in/AddRightHapticClick";
+    constexpr auto exclusiveInputToggle
+        = "/actions/haptic/in/ExclusiveInputToggle";
 
     constexpr auto chaperoneToggle = "/actions/misc/in/ChaperoneToggle";
 
@@ -149,12 +151,15 @@ public:
     bool proxState();
     bool addLeftHapticClick();
     bool addRightHapticClick();
+    bool exclusiveInputToggle();
 
     bool pushToTalk();
 
     bool keyboardOne();
     bool keyboardTwo();
     bool keyboardThree();
+
+    void changePriority( int priorityVal );
 
     vr::VRActionHandle_t leftHapticActionHandle();
     vr::VRActionHandle_t rightHapticActionHandle();
@@ -232,6 +237,7 @@ private:
     DigitalAction m_rightHaptic;
     DigitalAction m_addLeftHapticClick;
     DigitalAction m_addRightHapticClick;
+    DigitalAction m_exclusiveInputToggle;
 
     // prox Sensor
     DigitalAction m_proxSensor;

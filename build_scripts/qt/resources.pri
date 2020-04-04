@@ -36,6 +36,7 @@ DISTFILES += \
     src/res/qml/utilities_page/media_keys/* \
     src/res/qml/utilities_page/keyboard_utils/* \
     src/res/qml/utilities_page/alarm_clock/* \
+	src/res/qml/utilities_page/util_misc/* \
     src/res/qml/audio_page/dialog_boxes/* \
     src/res/qml/audio_page/device_selector/* \
     src/res/qml/audio_page/proximity/* \

@@ -313,6 +313,10 @@ private:
                           SettingCategory::Utility,
                           QtInfo{ "vrcDebug" },
                           false },
+        BoolSettingValue{ BoolSetting::UTILITY_enableExclusiveInput,
+                          SettingCategory::Application,
+                          QtInfo{ "enableExclusiveInput" },
+                          false },
 
         BoolSettingValue{ BoolSetting::VIDEO_brightnessEnabled,
                           SettingCategory::Video,

@@ -29,6 +29,10 @@ public:
     {
         return m_activeActionSet;
     }
+    void setActionSetPriority( int32_t priorityVal )
+    {
+        m_activeActionSet.nPriority = priorityVal;
+    }
 
 private:
     vr::VRActiveActionSet_t m_activeActionSet = {};
