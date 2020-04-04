@@ -6,11 +6,11 @@ PROJECT_DIR=$SCRIPT_DIR/../../
 BUILD_DIR=$PROJECT_DIR/build/
 EXE_DIR=$BUILD_DIR/bin/linux/AdvancedSettings/
 
-rm -rf $BUILD_DIR
-mkdir -p $BUILD_DIR
-cd $BUILD_DIR
-qmake ..
-make -j`nproc`
+#rm -rf $BUILD_DIR
+#mkdir -p $BUILD_DIR
+#cd $BUILD_DIR
+#qmake ..
+#make -j`nproc`
 
 #wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
 #chmod a+x linuxdeployqt-continuous-x86_64.AppImage
