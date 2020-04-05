@@ -22,9 +22,7 @@ class OverlayController;
 enum class AutoTurnModes
 {
     SNAP,
-    LINEAR_SMOOTH_TURN,
-    DELTA_X_LINEAR, // unimplemented
-    DELTA_X_DYNAMIC, // unimplemented
+    LINEAR_SMOOTH_TURN
 };
 
 struct RotationProfile : settings::ISettingsObject
@@ -138,7 +136,12 @@ private:
 
     bool m_isHMDActive = false;
 
-    void doAutoTurn( vr::TrackedDevicePose_t poseHmd, float minDistance );
+    void doAutoTurn(
+        const vr::TrackedDevicePose_t& poseHmd,
+        const std::vector<utils::ChaperoneQuadData>& chaperoneDistances );
+    void doVestibularMotion(
+        const vr::TrackedDevicePose_t& poseHmd,
+        const std::vector<utils::ChaperoneQuadData>& chaperoneDistances );
 
 public:
     void initStage1();
@@ -185,5 +188,30 @@ signals:
     void vestibularMotionEnabledChanged( bool value );
     void vestibularMotionRadiusChanged( double value );
 };
+
+// Would be nice to do <typename T, T min, T max> but the standard doesn't allow
+// for floating point non-types.
+template <typename T> inline T reduceAngle( T angle, T min, T max )
+{
+    while ( angle >= max )
+    {
+        angle -= ( max - min );
+    }
+    while ( angle < min )
+    {
+        angle += ( max - min );
+    }
+    return angle;
+}
+
+// Convienience function for incrementing/decrementing an index in a circular
+// buffer.
+inline size_t circularIndex( const size_t idx,
+                             const bool increment,
+                             const size_t modulus ) noexcept
+{
+    return increment ? ( ( idx + 1 ) % modulus )
+                     : ( ( idx == 0 ) ? ( modulus - 1 ) : ( idx - 1 ) );
+}
 
 } // namespace advsettings

@@ -13,7 +13,6 @@ void RotationTabController::initStage1()
 { // TODO adjust update rate
   // m_chaperoneSettingsUpdateCounter
   //   = utils::adjustUpdateRate( k_chaperoneSettingsUpdateCounter );
-    eventLoopTick( nullptr );
 }
 
 void RotationTabController::initStage2( OverlayController* var_parent )
@@ -29,7 +28,6 @@ void RotationTabController::eventLoopTick(
         m_isHMDActive = false;
         std::lock_guard<std::recursive_mutex> lock(
             parent->chaperoneUtils().mutex() );
-        auto minDistance = NAN;
         auto& poseHmd = devicePoses[vr::k_unTrackedDeviceIndex_Hmd];
 
         // m_isHMDActive is true when prox sensor OR HMD is moving (~10 seconds
@@ -45,38 +43,138 @@ void RotationTabController::eventLoopTick(
         if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK )
         {
-            auto distanceHmd = parent->chaperoneUtils().getDistanceToChaperone(
-                { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
-                  poseHmd.mDeviceToAbsoluteTracking.m[1][3],
-                  poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
-            if ( !std::isnan( distanceHmd.distance ) )
-            {
-                minDistance = distanceHmd.distance;
-            }
-        }
+            auto chaperoneDistances
+                = parent->chaperoneUtils().getDistancesToChaperone(
+                    { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
+                      poseHmd.mDeviceToAbsoluteTracking.m[1][3],
+                      poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
 
-        // Autoturn mode
-        if ( RotationTabController::autoTurnEnabled() )
-        {
-            doAutoTurn( poseHmd, minDistance );
+            // Autoturn mode
+            if ( RotationTabController::autoTurnEnabled() )
+            {
+                doAutoTurn( poseHmd, chaperoneDistances );
+
+                // Vestibular motion. Dependent on autoTurn so the playspace
+                // doesn't move when you use the keybind
+                if ( RotationTabController::vestibularMotionEnabled() )
+                {
+                    doVestibularMotion( poseHmd, chaperoneDistances );
+                }
+            }
+
+            m_autoTurnChaperoneDistancesLast = std::move( chaperoneDistances );
         }
     }
 }
 
-void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
-                                        float minDistance )
+void RotationTabController::doVestibularMotion(
+    const vr::TrackedDevicePose_t& poseHmd,
+    const std::vector<utils::ChaperoneQuadData>& chaperoneDistances )
 {
     if ( m_isHMDActive && poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
          && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK
-         && !std::isnan( minDistance ) )
+         && !chaperoneDistances.empty() )
+    {
+        if ( chaperoneDistances.size()
+             != m_autoTurnChaperoneDistancesLast.size() )
+        {
+            m_autoTurnChaperoneDistancesLast = chaperoneDistances;
+            m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
+        }
+        // Find the nearest wall we're moving TOWARDS and rotate
+        // away from it Rotate dist/(2*pi*r) where r is
+        // m_autoTurnVestibularMotionRadius, as if we had walked
+        // however many inches along a circle and the world was
+        // turning to compensate
+
+        do
+        {
+            // find nearest wall we're moving towards
+            auto nearestWall = chaperoneDistances.end();
+            auto itrLast = m_autoTurnChaperoneDistancesLast.begin();
+            for ( auto itr = chaperoneDistances.begin();
+                  itr != chaperoneDistances.end();
+                  itr++ )
+            {
+                itrLast++;
+                if ( itr->distance > itrLast->distance )
+                {
+                    continue;
+                }
+
+                if ( nearestWall == chaperoneDistances.end()
+                     || itr->distance < nearestWall->distance )
+                {
+                    nearestWall = itr;
+                }
+            }
+            if ( nearestWall == chaperoneDistances.end() )
+            {
+                break;
+            }
+
+            // Convert pose matrix to quaternion
+            auto hmdQuaternion = quaternion::fromHmdMatrix34(
+                poseHmd.mDeviceToAbsoluteTracking );
+
+            // Get HMD raw yaw
+            double hmdYaw = quaternion::getYaw( hmdQuaternion );
+
+            // Get angle between HMD position and nearest point on
+            // wall
+            double hmdPositionToWallYaw = static_cast<double>(
+                std::atan2( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                                - nearestWall->nearestPoint.v[0],
+                            poseHmd.mDeviceToAbsoluteTracking.m[2][3]
+                                - nearestWall->nearestPoint.v[2] ) );
+
+            // Get angle between HMD and wall
+            double hmdToWallYaw
+                = reduceAngle<>( hmdYaw - hmdPositionToWallYaw, -M_PI, M_PI );
+            bool turnLeft = hmdToWallYaw > 0.0;
+
+            // Get the distance between previous and current
+            // position
+            double distanceChange = std::sqrt(
+                std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                              - m_autoTurnLastHmdUpdate.m[0][3],
+                          2.0 )
+                + std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                                - m_autoTurnLastHmdUpdate.m[0][3],
+                            2.0 ) );
+
+            double rotationAmount
+                = ( distanceChange
+                    / ( 2.0 * M_PI
+                        * RotationTabController::vestibularMotionRadius() ) )
+                  * ( turnLeft ? 1 : -1 );
+
+            double newRotationAngleDeg
+                = std::fmod( parent->m_moveCenterTabController.rotation()
+                                 + ( rotationAmount * k_radiansToCentidegrees )
+                                 + m_autoTurnRoundingError,
+                             360000.0 );
+            int newRotationAngleInt = static_cast<int>( newRotationAngleDeg );
+            m_autoTurnRoundingError = newRotationAngleDeg - newRotationAngleInt;
+
+            parent->m_moveCenterTabController.setRotation(
+                newRotationAngleInt );
+
+        } while ( false );
+        m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
+    }
+}
+
+void RotationTabController::doAutoTurn(
+    const vr::TrackedDevicePose_t& poseHmd,
+    const std::vector<utils::ChaperoneQuadData>& chaperoneDistances )
+{
+    if ( m_isHMDActive && poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
+         && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK
+         && !chaperoneDistances.empty() )
     {
         auto currentTime = std::chrono::steady_clock::now();
 
-        auto chaperoneDistances
-            = parent->chaperoneUtils().getDistancesToChaperone(
-                { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
-                  poseHmd.mDeviceToAbsoluteTracking.m[1][3],
-                  poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
         if ( m_autoTurnWallActive.size() != chaperoneDistances.size() )
         {
             // Chaperone changed
@@ -87,107 +185,8 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
             m_autoTurnLastUpdate = currentTime;
         }
 
-        // Vestibular motion (true infinite-walk)
-        if ( RotationTabController::vestibularMotionEnabled() )
-        {
-            if ( chaperoneDistances.size()
-                 != m_autoTurnChaperoneDistancesLast.size() )
-            {
-                m_autoTurnChaperoneDistancesLast = chaperoneDistances;
-                m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
-            }
-            // Find the nearest wall we're moving TOWARDS and rotate
-            // away from it Rotate dist/(2*pi*r) where r is
-            // m_autoTurnVestibularMotionRadius, as if we had walked
-            // however many inches along a circle and the world was
-            // turning to compensate
-
-            do
-            {
-                // find nearest wall we're moving towards
-                auto nearestWall = chaperoneDistances.end();
-                auto itrLast = m_autoTurnChaperoneDistancesLast.begin();
-                for ( auto itr = chaperoneDistances.begin();
-                      itr != chaperoneDistances.end();
-                      itr++ )
-                {
-                    itrLast++;
-                    if ( itr->distance > itrLast->distance )
-                    {
-                        continue;
-                    }
-
-                    if ( nearestWall == chaperoneDistances.end()
-                         || itr->distance < nearestWall->distance )
-                    {
-                        nearestWall = itr;
-                    }
-                }
-                if ( nearestWall == chaperoneDistances.end() )
-                {
-                    break;
-                }
-
-                // Convert pose matrix to quaternion
-                auto hmdQuaternion = quaternion::fromHmdMatrix34(
-                    poseHmd.mDeviceToAbsoluteTracking );
-
-                // Get HMD raw yaw
-                double hmdYaw = quaternion::getYaw( hmdQuaternion );
-
-                // Get angle between HMD position and nearest point on
-                // wall
-                double hmdPositionToWallYaw = static_cast<double>(
-                    std::atan2( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                    - nearestWall->nearestPoint.v[0],
-                                poseHmd.mDeviceToAbsoluteTracking.m[2][3]
-                                    - nearestWall->nearestPoint.v[2] ) );
-
-                // Get angle between HMD and wall
-                double hmdToWallYaw = hmdYaw - hmdPositionToWallYaw;
-                if ( hmdToWallYaw >= M_PI )
-                {
-                    hmdToWallYaw -= 2 * M_PI;
-                }
-                else if ( hmdToWallYaw <= -M_PI )
-                {
-                    hmdToWallYaw += 2 * M_PI;
-                }
-                bool turnLeft = hmdToWallYaw > 0.0;
-
-                // Get the distance between previous and current
-                // position
-                double distanceChange = std::sqrt(
-                    std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                  - m_autoTurnLastHmdUpdate.m[0][3],
-                              2.0 )
-                    + std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                    - m_autoTurnLastHmdUpdate.m[0][3],
-                                2.0 ) );
-
-                double rotationAmount = ( distanceChange
-                                          / ( 2.0 * M_PI
-                                              * RotationTabController::
-                                                  vestibularMotionRadius() ) )
-                                        * ( turnLeft ? 1 : -1 );
-
-                double newRotationAngleDeg = std::fmod(
-                    parent->m_moveCenterTabController.rotation()
-                        + ( rotationAmount * k_radiansToCentidegrees )
-                        + m_autoTurnRoundingError,
-                    360000.0 );
-                int newRotationAngleInt
-                    = static_cast<int>( newRotationAngleDeg );
-                m_autoTurnRoundingError
-                    = newRotationAngleDeg - newRotationAngleInt;
-
-                parent->m_moveCenterTabController.setRotation(
-                    newRotationAngleInt );
-
-            } while ( false );
-            m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
-        }
-
+        // Apply smooth rotation per-frame: get the time since last frame,
+        // multiply by speed
         if ( RotationTabController::autoTurnModeType()
                  == AutoTurnModes::LINEAR_SMOOTH_TURN
              && m_autoTurnLinearSmoothTurnRemaining != 0 )
@@ -207,10 +206,11 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
             {
                 miniDeltaAngle = m_autoTurnLinearSmoothTurnRemaining;
             }
-            int newRotationAngleDeg
-                = static_cast<int>( parent->m_moveCenterTabController.rotation()
-                                    + miniDeltaAngle )
-                  % 360000;
+            int newRotationAngleDeg = reduceAngle<>(
+                static_cast<int>( parent->m_moveCenterTabController.rotation()
+                                  + miniDeltaAngle ),
+                0,
+                36000 );
 
             parent->m_moveCenterTabController.setRotation(
                 newRotationAngleDeg );
@@ -240,15 +240,8 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                                     - chaperoneQuad.nearestPoint.v[2] ) );
 
                 // Get angle between HMD and wall
-                double hmdToWallYaw = hmdYaw - hmdPositionToWallYaw;
-                if ( hmdToWallYaw >= M_PI )
-                {
-                    hmdToWallYaw -= 2 * M_PI;
-                }
-                else if ( hmdToWallYaw <= -M_PI )
-                {
-                    hmdToWallYaw += 2 * M_PI;
-                }
+                double hmdToWallYaw = reduceAngle<>(
+                    hmdYaw - hmdPositionToWallYaw, -M_PI, M_PI );
 
                 do
                 {
@@ -264,12 +257,10 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                     // If the closest corner shares a wall with the last
                     // wall we turned at, turn relative to that corner
                     bool cornerShared
-                        = ( m_autoTurnWallActive[( i + 1 )
-                                                 % chaperoneDistances.size()] )
-                          || ( m_autoTurnWallActive
-                                   [( i == 0 )
-                                        ? ( chaperoneDistances.size() - 1 )
-                                        : ( i - 1 )] );
+                        = m_autoTurnWallActive[circularIndex(
+                              i, true, chaperoneDistances.size() )]
+                          || m_autoTurnWallActive[circularIndex(
+                              i, false, chaperoneDistances.size() )];
 
                     bool turnLeft = true;
                     // Turn away from corner
@@ -280,8 +271,8 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                         // turning the wrong way if it's large obtuse
                         // angle and we're facing more towards the
                         // previous wall than the left.
-                        turnLeft = !m_autoTurnWallActive
-                                       [( i + 1 ) % chaperoneDistances.size()];
+                        turnLeft = m_autoTurnWallActive[circularIndex(
+                            i, false, chaperoneDistances.size() )];
                         LOG( DEBUG ) << "turning away from shared corner";
                     }
                     // If within m_cordDetanglingAngle degrees of
@@ -305,20 +296,6 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                         LOG( DEBUG ) << "turning closest angle to wall";
                     }
 
-                    // Limit maximum overall turns to 2
-                    // const double max_turns = 2 * ( 2 * M_PI );
-                    /*
-                    // TODO: Turn change wall color if you turn too far?
-                    bool exceededTurning
-                        = (
-                    parent->m_moveCenterTabController.getHmdYawTotal()
-                                >= max_turns
-                            && !turnLeft )
-                          || ( parent->m_moveCenterTabController
-                                       .getHmdYawTotal()
-                                   <= -max_turns
-                               && turnLeft );
-                    */
                     LOG( DEBUG ) << "hmd yaw " << hmdYaw
                                  << ", hmd position to wall angle "
                                  << hmdPositionToWallYaw;
@@ -336,32 +313,19 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                         // we're currently touching, the far corner on
                         // the wall we've just touched, and the corner
                         // between them
-                        const auto wrapAround
-                            = []( const size_t& idx,
-                                  const bool& increment,
-                                  const size_t& modulus ) -> size_t {
-                            if ( increment )
-                            {
-                                return ( idx + 1 ) % modulus;
-                            }
-                            else
-                            {
-                                return ( idx == 0 ) ? ( modulus - 1 )
-                                                    : ( idx - 1 );
-                            }
-                        };
                         const size_t cornerCnt
                             = parent->chaperoneUtils().quadsCount();
                         const size_t middleCornerIdx
-                            = turnLeft ? i : wrapAround( i, true, cornerCnt );
+                            = turnLeft ? i
+                                       : circularIndex( i, true, cornerCnt );
                         const auto& middleCorner
                             = parent->chaperoneUtils().getCorner(
                                 middleCornerIdx );
                         const auto& newWallCorner
-                            = parent->chaperoneUtils().getCorner( wrapAround(
+                            = parent->chaperoneUtils().getCorner( circularIndex(
                                 middleCornerIdx, turnLeft, cornerCnt ) );
                         const auto& touchingWallCorner
-                            = parent->chaperoneUtils().getCorner( wrapAround(
+                            = parent->chaperoneUtils().getCorner( circularIndex(
                                 middleCornerIdx, !turnLeft, cornerCnt ) );
 
                         double newWallAngle = static_cast<double>( std::atan2(
@@ -377,32 +341,23 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
                         delta_degrees = ( newWallAngle - touchingWallAngle
                                           + ( turnLeft ? M_PI : -M_PI ) )
                                         * k_radiansToCentidegrees;
-                        while ( delta_degrees >= 18000 )
-                        {
-                            delta_degrees -= 36000;
-                        }
-                        while ( delta_degrees <= -18000 )
-                        {
-                            delta_degrees += 36000;
-                        }
+                        delta_degrees
+                            = reduceAngle<>( delta_degrees, -18000.0, 18000.0 );
                     }
                     LOG( DEBUG ) << "rotating space " << ( delta_degrees / 100 )
                                  << " degrees";
-                    if ( RotationTabController::autoTurnModeType()
-                         == AutoTurnModes::SNAP )
+                    switch ( RotationTabController::autoTurnModeType() )
                     {
-                        int newRotationAngleDeg = static_cast<int>(
-                            parent->m_moveCenterTabController.rotation()
-                            + delta_degrees );
-
+                    case AutoTurnModes::SNAP:
                         parent->m_moveCenterTabController.setRotation(
-                            newRotationAngleDeg );
-                    }
-                    else if ( RotationTabController::autoTurnModeType()
-                              == AutoTurnModes::LINEAR_SMOOTH_TURN )
-                    {
+                            static_cast<int>(
+                                parent->m_moveCenterTabController.rotation()
+                                + delta_degrees ) );
+                        break;
+                    case AutoTurnModes::LINEAR_SMOOTH_TURN:
                         m_autoTurnLinearSmoothTurnRemaining
                             += static_cast<int>( delta_degrees );
+                        break;
                     }
                 } while ( false );
 
@@ -418,13 +373,13 @@ void RotationTabController::doAutoTurn( vr::TrackedDevicePose_t poseHmd,
             }
         }
         m_autoTurnLastUpdate = currentTime;
-        m_autoTurnChaperoneDistancesLast = std::move( chaperoneDistances );
     }
     else
     {
         m_autoTurnWallActive.clear();
     }
 }
+
 // getters
 
 bool RotationTabController::autoTurnEnabled() const
