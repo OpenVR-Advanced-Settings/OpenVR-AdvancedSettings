@@ -156,6 +156,7 @@ public:
     bool viewRatchettingEnabled() const;
     double viewRatchettingPercent() const;
 
+
 public slots:
     void setAutoTurnEnabled( bool value, bool notify = true );
     void setAutoTurnShowNotification( bool value, bool notify = true );
@@ -170,6 +171,9 @@ public slots:
     void setVestibularMotionRadius( double value, bool notify = true );
     void setViewRatchettingEnabled( bool value, bool notify = true );
     void setViewRatchettingPercent( double value, bool notify = true );
+    
+    // Experimental - auto-align
+    void addAutoAlignPoint();
 
 signals:
 

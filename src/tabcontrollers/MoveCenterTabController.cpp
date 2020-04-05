@@ -330,8 +330,6 @@ void MoveCenterTabController::setRotation( int value, bool notify )
             return;
         }
 
-        double angle = ( value - m_rotation ) * k_centidegreesToRadians;
-
         // Get hmd pose matrix.
         vr::TrackedDevicePose_t
             devicePosesForRot[vr::k_unMaxTrackedDeviceCount];
@@ -356,26 +354,35 @@ void MoveCenterTabController::setRotation( int value, bool notify )
 
         vr::HmdMatrix34_t oldHmdPos
             = devicePosesForRot[0].mDeviceToAbsoluteTracking;
+        
+        setRotationAroundPivot(value, notify, oldHmdPos);
+    }
+}
 
+void MoveCenterTabController::setRotationAroundPivot( int value, bool notify, const vr::HmdMatrix34_t& pivot )
+{
+    if ( m_rotation != value )
+    {
+        double angle = ( value - m_rotation ) * k_centidegreesToRadians;
         // Set up xyz coordinate values from pose matrix.
-        double oldHmdXyz[3] = { static_cast<double>( oldHmdPos.m[0][3] ),
-                                static_cast<double>( oldHmdPos.m[1][3] ),
-                                static_cast<double>( oldHmdPos.m[2][3] ) };
-        double newHmdXyz[3] = { static_cast<double>( oldHmdPos.m[0][3] ),
-                                static_cast<double>( oldHmdPos.m[1][3] ),
-                                static_cast<double>( oldHmdPos.m[2][3] ) };
+        double oldXyz[3] = { static_cast<double>( pivot.m[0][3] ),
+                                static_cast<double>( pivot.m[1][3] ),
+                                static_cast<double>( pivot.m[2][3] ) };
+        double newXyz[3] = { static_cast<double>( pivot.m[0][3] ),
+                                static_cast<double>( pivot.m[1][3] ),
+                                static_cast<double>( pivot.m[2][3] ) };
 
-        // Convert oldHmdXyz into un-rotated coordinates.
+        // Convert oldXyz into un-rotated coordinates.
         double oldAngle = -m_rotation * k_centidegreesToRadians;
-        rotateCoordinates( oldHmdXyz, oldAngle );
+        rotateCoordinates( oldXyz, oldAngle );
 
-        // Set newHmdXyz to have additional rotation from incoming angle change.
-        rotateCoordinates( newHmdXyz, oldAngle - angle );
+        // Set newXyz to have additional rotation from incoming angle change.
+        rotateCoordinates( newXyz, oldAngle - angle );
 
         // find difference in x,z offset due to incoming angle change
         // (coordinates are in un-rotated axis).
         double hmdRotDiff[3]
-            = { oldHmdXyz[0] - newHmdXyz[0], 0, oldHmdXyz[2] - newHmdXyz[2] };
+            = { oldXyz[0] - newXyz[0], 0, oldXyz[2] - newXyz[2] };
 
         m_rotation = value;
         if ( notify )
@@ -999,12 +1006,10 @@ void MoveCenterTabController::reset()
     m_offsetY = 0.0f;
     m_offsetZ = 0.0f;
     m_rotation = 0;
-    m_lastControllerPosition[0] = 0.0f;
-    m_lastControllerPosition[1] = 0.0f;
-    m_lastControllerPosition[2] = 0.0f;
     m_lastMoveHand = vr::TrackedControllerRole_Invalid;
     m_lastRotateHand = vr::TrackedControllerRole_Invalid;
     applyChaperoneResetData();
+    m_lastControllerPosition = {0.0f, 0.0f, 0.0f};
 
     // For Center Marker
     // Needs to happen after apply chaperone
@@ -2211,6 +2216,80 @@ void MoveCenterTabController::updateHmdRotationCounter(
     m_lastHmdQuaternion = m_hmdQuaternion;
 }
 
+// Displace the entire universe by some difference. Both 'from' and 'to' are in relative coordinates, which get converted to absolute.
+void MoveCenterTabController::displaceUniverseRelative(const vr::HmdVector3_t& from, const vr::HmdVector3_t& to, double angle)
+{
+    double relativeControllerPosition[] = {
+        static_cast<double>( to.v[0] ),
+        static_cast<double>( to.v[1] ),
+        static_cast<double>( to.v[2] )
+    };
+    rotateCoordinates( relativeControllerPosition, -angle );
+    float absoluteControllerPosition[] = {
+        static_cast<float>( relativeControllerPosition[0] ) + m_offsetX,
+        static_cast<float>( relativeControllerPosition[1] ) + m_offsetY,
+        static_cast<float>( relativeControllerPosition[2] ) + m_offsetZ,
+    };
+    double relativeFromPosition[] = {
+        static_cast<double>( from.v[0] ),
+        static_cast<double>( from.v[1] ),
+        static_cast<double>( from.v[2] )
+    };
+    rotateCoordinates( relativeFromPosition, -angle );
+    float absoluteFromPosition[] = {
+        static_cast<float>( relativeFromPosition[0] ) + m_offsetX,
+        static_cast<float>( relativeFromPosition[1] ) + m_offsetY,
+        static_cast<float>( relativeFromPosition[2] ) + m_offsetZ,
+    };
+
+    double diff[3] = {
+        static_cast<double>( absoluteControllerPosition[0]
+                - absoluteFromPosition[0] ),
+        static_cast<double>( absoluteControllerPosition[1]
+                - absoluteFromPosition[1] ),
+        static_cast<double>( absoluteControllerPosition[2]
+                - absoluteFromPosition[2] ),
+    };
+
+    // offset is un-rotated coordinates
+
+    // prevent positional glitches from exceeding max openvr offset clamps.
+    // We do this by detecting a drag larger than 100m in a single frame.
+    if ( abs( diff[0] ) > 100.0 || abs( diff[1] ) > 100.0
+            || abs( diff[2] ) > 100.0 )
+    {
+        reset();
+    }
+
+    // prevents updating if axis movement is locked
+    if ( !lockXToggle() )
+    {
+        m_offsetX += static_cast<float>( diff[0] );
+    }
+    if ( !lockYToggle() )
+    {
+        m_offsetY += static_cast<float>( diff[1] );
+    }
+    if ( !lockZToggle() )
+    {
+        m_offsetZ += static_cast<float>( diff[2] );
+    }
+
+    double secondsSinceLastDragUpdate
+        = std::chrono::duration<double>( std::chrono::steady_clock::now()
+                - m_lastDragUpdateTimePoint )
+        .count();
+
+    // TODO: Add 'effects fling' boolean? or simply return diff[] as a HmdVect3_t
+    m_velocity[0] = ( diff[0] / secondsSinceLastDragUpdate )
+        * static_cast<double>( flingStrength() );
+    m_velocity[1] = ( diff[1] / secondsSinceLastDragUpdate )
+        * static_cast<double>( flingStrength() );
+    m_velocity[2] = ( diff[2] / secondsSinceLastDragUpdate )
+        * static_cast<double>( flingStrength() );
+
+}
+
 void MoveCenterTabController::updateHandDrag(
     vr::TrackedDevicePose_t* devicePoses,
     double angle )
@@ -2261,69 +2340,18 @@ void MoveCenterTabController::updateHandDrag(
         return;
     }
 
-    double relativeControllerPosition[] = {
-        static_cast<double>( movePose->mDeviceToAbsoluteTracking.m[0][3] ),
-        static_cast<double>( movePose->mDeviceToAbsoluteTracking.m[1][3] ),
-        static_cast<double>( movePose->mDeviceToAbsoluteTracking.m[2][3] )
-    };
-
-    rotateCoordinates( relativeControllerPosition, -angle );
-    float absoluteControllerPosition[] = {
-        static_cast<float>( relativeControllerPosition[0] ) + m_offsetX,
-        static_cast<float>( relativeControllerPosition[1] ) + m_offsetY,
-        static_cast<float>( relativeControllerPosition[2] ) + m_offsetZ,
+    vr::HmdVector3_t relativeControllerPosition = {
+        movePose->mDeviceToAbsoluteTracking.m[0][3],
+        movePose->mDeviceToAbsoluteTracking.m[1][3],
+        movePose->mDeviceToAbsoluteTracking.m[2][3]
     };
 
     if ( m_lastMoveHand == m_activeDragHand )
     {
-        double diff[3] = {
-            static_cast<double>( absoluteControllerPosition[0]
-                                 - m_lastControllerPosition[0] ),
-            static_cast<double>( absoluteControllerPosition[1]
-                                 - m_lastControllerPosition[1] ),
-            static_cast<double>( absoluteControllerPosition[2]
-                                 - m_lastControllerPosition[2] ),
-        };
-
-        // offset is un-rotated coordinates
-
-        // prevent positional glitches from exceeding max openvr offset clamps.
-        // We do this by detecting a drag larger than 100m in a single frame.
-        if ( abs( diff[0] ) > 100.0 || abs( diff[1] ) > 100.0
-             || abs( diff[2] ) > 100.0 )
-        {
-            reset();
-        }
-
-        // prevents updating if axis movement is locked
-        if ( !lockXToggle() )
-        {
-            m_offsetX += static_cast<float>( diff[0] );
-        }
-        if ( !lockYToggle() )
-        {
-            m_offsetY += static_cast<float>( diff[1] );
-        }
-        if ( !lockZToggle() )
-        {
-            m_offsetZ += static_cast<float>( diff[2] );
-        }
-
-        double secondsSinceLastDragUpdate
-            = std::chrono::duration<double>( std::chrono::steady_clock::now()
-                                             - m_lastDragUpdateTimePoint )
-                  .count();
-
-        m_velocity[0] = ( diff[0] / secondsSinceLastDragUpdate )
-                        * static_cast<double>( flingStrength() );
-        m_velocity[1] = ( diff[1] / secondsSinceLastDragUpdate )
-                        * static_cast<double>( flingStrength() );
-        m_velocity[2] = ( diff[2] / secondsSinceLastDragUpdate )
-                        * static_cast<double>( flingStrength() );
+        // Displace from last controller position to current
+        displaceUniverseRelative(m_lastControllerPosition, relativeControllerPosition, angle);
     }
-    m_lastControllerPosition[0] = absoluteControllerPosition[0];
-    m_lastControllerPosition[1] = absoluteControllerPosition[1];
-    m_lastControllerPosition[2] = absoluteControllerPosition[2];
+    m_lastControllerPosition = relativeControllerPosition;
     m_lastMoveHand = m_activeDragHand;
 }
 

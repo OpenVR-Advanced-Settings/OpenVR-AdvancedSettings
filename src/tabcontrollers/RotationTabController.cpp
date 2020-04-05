@@ -74,11 +74,16 @@ void RotationTabController::initStage2( OverlayController* var_parent )
     this->parent = var_parent;
 }
 
+static vr::TrackedDevicePose_t lastHandPose;
 void RotationTabController::eventLoopTick(
     vr::TrackedDevicePose_t* devicePoses )
 {
     if ( devicePoses )
     {
+        auto moveHandId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
+            vr::TrackedControllerRole_RightHand);
+        lastHandPose = devicePoses[moveHandId];
+
         m_isHMDActive = false;
         std::lock_guard<std::recursive_mutex> lock(
             parent->chaperoneUtils().mutex() );
@@ -578,6 +583,74 @@ void RotationTabController::doAutoTurn(
     }
 }
 
+static std::vector<vr::TrackedDevicePose_t> autoAlignPoints;
+void RotationTabController::addAutoAlignPoint()
+{
+    LOG(INFO) << "point added: " << autoAlignPoints.size();
+    // get the location of right hand, push_back onto autoAlignPoints
+    autoAlignPoints.push_back(lastHandPose);
+
+    // if we have exactly 4 points, go into main loop
+    if(autoAlignPoints.size() == 4)
+    {
+        vr::HmdVector3_t realFirstPoint = {
+            autoAlignPoints[0].mDeviceToAbsoluteTracking.m[0][3],
+            autoAlignPoints[0].mDeviceToAbsoluteTracking.m[1][3],
+            autoAlignPoints[0].mDeviceToAbsoluteTracking.m[2][3]
+        };
+
+        vr::HmdVector3_t realSecondPoint = {
+            autoAlignPoints[1].mDeviceToAbsoluteTracking.m[0][3],
+            autoAlignPoints[1].mDeviceToAbsoluteTracking.m[1][3],
+            autoAlignPoints[1].mDeviceToAbsoluteTracking.m[2][3]
+        };
+
+        vr::HmdVector3_t virtualFirstPoint = {
+            autoAlignPoints[2].mDeviceToAbsoluteTracking.m[0][3],
+            autoAlignPoints[2].mDeviceToAbsoluteTracking.m[1][3],
+            autoAlignPoints[2].mDeviceToAbsoluteTracking.m[2][3]
+        };
+
+        vr::HmdVector3_t virtualSecondPoint = {
+            autoAlignPoints[3].mDeviceToAbsoluteTracking.m[0][3],
+            autoAlignPoints[3].mDeviceToAbsoluteTracking.m[1][3],
+            autoAlignPoints[3].mDeviceToAbsoluteTracking.m[2][3]
+        };
+        
+
+        // Align the first of VR points (points[2]) with the first of the real points (points[0]) purely in position
+        parent->m_moveCenterTabController.displaceUniverseRelative(virtualFirstPoint, realFirstPoint, parent->m_moveCenterTabController.rotation());
+
+
+        // TODO: if centered, use the center of both points as the pivot
+        
+        // Then rotate the universe to align, pivoting around the real point 
+        double realEdgeAngle = static_cast<double>( std::atan2(
+                    realFirstPoint.v[0] - realSecondPoint.v[0],
+                    realFirstPoint.v[2] - realSecondPoint.v[2] ) );
+        double virtualEdgeAngle = static_cast<double>( std::atan2(
+                    virtualFirstPoint.v[0] - virtualSecondPoint.v[0],
+                    virtualFirstPoint.v[2] - virtualSecondPoint.v[2] ) );
+        double delta_degrees = (realEdgeAngle - virtualEdgeAngle) * k_radiansToCentidegrees;
+        int newRotationAngleDeg = static_cast<int>(
+                parent->m_moveCenterTabController.rotation()
+                + delta_degrees );
+
+        // these need to be in the new, offset position. TODO: Doesn't currently work when already offset for some reason
+        vr::HmdMatrix34_t autoAlignPivot = autoAlignPoints[0].mDeviceToAbsoluteTracking;
+        autoAlignPivot.m[0][3] -= realFirstPoint.v[0] - virtualFirstPoint.v[0];
+        autoAlignPivot.m[1][3] -= realFirstPoint.v[1] - virtualFirstPoint.v[1];
+        autoAlignPivot.m[2][3] -= realFirstPoint.v[2] - virtualFirstPoint.v[2];
+
+        parent->m_moveCenterTabController.setRotationAroundPivot(
+                newRotationAngleDeg, true, autoAlignPivot);
+
+
+        // end of main loop, clear autoAlignPoints
+        autoAlignPoints.clear();
+    }
+
+}
 // getters
 
 bool RotationTabController::autoTurnEnabled() const
