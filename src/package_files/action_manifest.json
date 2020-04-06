@@ -52,17 +52,17 @@
       "type": "vibration"
     },
     {
-      "name": "/actions/haptic/in/AddLeftHapticClick",
+      "name": "/actions/system/in/AddLeftHapticClick",
       "requirement": "optional",
       "type": "boolean"
     },
     {
-      "name": "/actions/haptic/in/AddRightHapticClick",
+      "name": "/actions/system/in/AddRightHapticClick",
       "requirement": "optional",
       "type": "boolean"
     },
 	{
-      "name": 	"/actions/haptic/in/ExclusiveInputToggle",
+      "name": 	"/actions/system/in/ExclusiveInputToggle",
       "requirement": "optional",
       "type": "boolean"
     },
@@ -223,6 +223,10 @@
     },
     {
       "name": "/actions/haptic",
+      "usage": "hidden"
+    },
+    {
+      "name": "/actions/system",
       "usage": "leftright"
     }
   ],
@@ -234,6 +238,7 @@
         "/actions/music" : "Music",
         "/actions/misc" : "Misc",
         "/actions/motion" : "Motion",
+		"/actions/system" : "System",
 
         "/actions/music/in/NextTrack" : "Play Next Track",
         "/actions/music/in/PreviousTrack" : "Play Previous Track",
@@ -242,9 +247,11 @@
 
         "/actions/haptic/out/HapticsLeft" : "Haptics Left",
         "/actions/haptic/out/HapticsRight" : " Haptics Right",
-        "/actions/haptic/in/AddLeftHapticClick" : " Add Left Haptic Click",
-        "/actions/haptic/in/AddRightHapticClick" : " Add Right Haptic Click",
-		"/actions/haptic/in/ExclusiveInputToggle" : "Exclusive Input Toggle",
+		"/actions/haptic/in/ProxSensor" : "Proximity Sensor",
+		
+        "/actions/system/in/AddLeftHapticClick" : " Add Left Haptic Click",
+        "/actions/system/in/AddRightHapticClick" : " Add Right Haptic Click",
+		"/actions/system/in/ExclusiveInputToggle" : "Exclusive Input Toggle",
 		
         "/actions/motion/in/LeftHandSpaceTurn" : "Left Hand Space Turn",
         "/actions/motion/in/RightHandSpaceTurn" : "Right Hand Space Turn",
@@ -270,7 +277,6 @@
         "/actions/misc/in/ZAxisLockToggle" : "Z-Axis Lock Toggle",
         "/actions/misc/in/PushToTalk" : "Push To Talk",
 		"/actions/misc/in/ChaperoneToggle" : "Chaperone Toggle",
-        "/actions/haptic/in/ProxSensor" : "Proximity Sensor",
         "/actions/misc/in/KeyboardOne" : "Keyboard Shortcut One",
         "/actions/misc/in/KeyboardTwo" : "Keyboard Shortcut Two",
         "/actions/misc/in/KeyboardThree" : "Keyboard Shortcut Three"

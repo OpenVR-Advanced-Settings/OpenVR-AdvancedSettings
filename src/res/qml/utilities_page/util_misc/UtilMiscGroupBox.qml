@@ -34,7 +34,7 @@ GroupBox {
 
             MyToggleButton {
                 id: utilitiesEnableExclusiveToggle
-                text: "Enable Exclusive Input (Caution):"
+                text: "Enable Exclusive Input (Caution)"
                 onCheckedChanged: {
                     UtilitiesTabController.setEnableExclusiveInput(this.checked, false)
                 }
