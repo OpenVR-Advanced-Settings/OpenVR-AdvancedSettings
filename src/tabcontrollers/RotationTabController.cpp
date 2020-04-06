@@ -40,6 +40,7 @@ void RotationTabController::eventLoopTick(
         {
             m_isHMDActive = true;
         }
+        // TODO: this doesn't need to run if both are off
         if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK )
         {
@@ -53,13 +54,12 @@ void RotationTabController::eventLoopTick(
             if ( RotationTabController::autoTurnEnabled() )
             {
                 doAutoTurn( poseHmd, chaperoneDistances );
-
-                // Vestibular motion. Dependent on autoTurn so the playspace
-                // doesn't move when you use the keybind
-                if ( RotationTabController::vestibularMotionEnabled() )
-                {
-                    doVestibularMotion( poseHmd, chaperoneDistances );
-                }
+            }
+            // Vestibular motion. Dependent on autoTurn so the playspace
+            // doesn't move when you use the keybind
+            if ( RotationTabController::vestibularMotionEnabled() )
+            {
+                doVestibularMotion( poseHmd, chaperoneDistances );
             }
 
             m_autoTurnChaperoneDistancesLast = std::move( chaperoneDistances );
