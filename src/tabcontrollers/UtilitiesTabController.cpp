@@ -21,6 +21,10 @@ void UtilitiesTabController::initStage1()
 
     m_utilitiesSettingsUpdateCounter
         = utils::adjustUpdateRate( k_utilitiesSettingsUpdateCounter );
+    // This ensures that The global action set priority key should always be set
+    // And not have un-init state
+    setActionPriorityKeySetting( settings::getSetting(
+        settings::BoolSetting::UTILITY_enableExclusiveInput ) );
 }
 
 void UtilitiesTabController::initStage2( OverlayController* var_parent )
@@ -236,6 +240,16 @@ void UtilitiesTabController::setEnableExclusiveInput( bool value, bool notify )
 {
     settings::setSetting( settings::BoolSetting::UTILITY_enableExclusiveInput,
                           value );
+    setActionPriorityKeySetting( value );
+    // Long term Set Action Priority may need to be its own value
+    // to allow users to set their priority, for their particular setup
+    int priority = 0;
+    if ( value )
+    {
+        priority = 0x01000001;
+    }
+    setActionPriority( priority );
+
     if ( notify )
     {
         emit enableExclusiveInputChanged( value );
@@ -380,6 +394,38 @@ void UtilitiesTabController::modAlarmTimeMinute( int value, bool notify )
                 emit alarmTimeMinuteChanged( m_alarmTime.minute() );
             }
         }
+    }
+}
+
+void UtilitiesTabController::setActionPriority( int value )
+{
+    int priority = value;
+    setActionPriorityKeySetting( true );
+    if ( priority > 0x01FFFFFF )
+    {
+        LOG( WARNING ) << "Action Priority Exceeded Range, setting to Max "
+                          "Priority (0x01FFFFFF)";
+        priority = 0x01FFFFFF;
+    }
+    if ( priority < 0 )
+    {
+        LOG( WARNING ) << "Action Priority Set below 0, setting to 0";
+        priority = 0;
+    }
+    m_parent->m_actions.changePriority( priority );
+}
+
+void UtilitiesTabController::setActionPriorityKeySetting( bool value )
+{
+    vr::EVRSettingsError error;
+    vr::VRSettings()->SetBool( vr::k_pch_SteamVR_Section,
+                               vr::k_pch_SteamVR_AllowGlobalActionSetPriority,
+                               value,
+                               &error );
+    if ( error != vr::EVRSettingsError::VRSettingsError_None )
+    {
+        LOG( ERROR ) << "Unable to Set Action Priority: "
+                     << vr::VRSettings()->GetSettingsErrorNameFromEnum( error );
     }
 }
 

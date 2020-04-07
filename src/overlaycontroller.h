@@ -149,8 +149,6 @@ private:
     int m_customTickRateCounter = 0;
     int m_verifiedCustomTickRateMs = 0;
 
-    input::SteamIVRInput m_actions;
-
     bool m_exclusiveInputToggle = false;
     bool m_useExclusive = false;
 
@@ -169,6 +167,8 @@ public: // I know it's an ugly hack to make them public to enable external
     SettingsTabController m_settingsTabController;
     UtilitiesTabController m_utilitiesTabController;
     VideoTabController m_videoTabController;
+
+    input::SteamIVRInput m_actions;
 
 private:
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );

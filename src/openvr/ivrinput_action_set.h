@@ -31,7 +31,30 @@ public:
     }
     void setActionSetPriority( int32_t priorityVal )
     {
+        if ( priorityVal > 0x01FFFFFF )
+        {
+            LOG( ERROR ) << " Action Set Priority set to Reserved Action Set "
+                            "Priority: Setting Priority to Max";
+            priorityVal = 0x01FFFFFF;
+        }
+        else if ( priorityVal < 0 )
+        {
+            LOG( WARNING ) << " Action Set Priority set to < 0 something may "
+                              "have gone wrong";
+        }
+        else if ( priorityVal < 0x01000000 )
+        {
+            LOG( INFO ) << " Priority set to: " << priorityVal
+                        << " Priority is NOT active";
+        }
+        else
+        {
+            LOG( INFO ) << " Priority set to: " << priorityVal
+                        << " Priority IS active";
+        }
         m_activeActionSet.nPriority = priorityVal;
+        LOG( INFO ) << "Priority IS: " << m_activeActionSet.nPriority;
+        return;
     }
 
 private:

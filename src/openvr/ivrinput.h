@@ -57,7 +57,7 @@ namespace action_keys
 
     constexpr auto hapticsLeft = "/actions/haptic/out/HapticsLeft";
     constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
-    constexpr auto proxSensor = "/actions/system/in/ProxSensor";
+    constexpr auto proxSensor = "/actions/haptic/in/ProxSensor";
     constexpr auto addLeftHapticClick = "/actions/system/in/AddLeftHapticClick";
     constexpr auto addRightHapticClick
         = "/actions/system/in/AddRightHapticClick";
@@ -84,10 +84,10 @@ namespace action_sets
 {
     constexpr auto numberOfSets = 5;
     constexpr auto haptic = "/actions/haptic";
+    constexpr auto system = "/actions/system";
     constexpr auto music = "/actions/music";
     constexpr auto misc = "/actions/misc";
     constexpr auto motion = "/actions/motion";
-    constexpr auto system = "/actions/system";
 } // namespace action_sets
 
 using ActiveActionSets

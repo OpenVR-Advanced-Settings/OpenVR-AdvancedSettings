@@ -151,6 +151,7 @@ SteamIVRInput::SteamIVRInput()
                 m_motion.activeActionSet(),
                 m_misc.activeActionSet(),
                 m_system.activeActionSet() } )
+
 {
 } // namespace input
 /*!
@@ -402,23 +403,18 @@ void SteamIVRInput::UpdateStates()
     }
 }
 
-// Set's action set priority sets to 0 if not in valid range
-// Set's all Action sets EXCEPT Haptic/ m_main
+// Set's all Action sets EXCEPT Haptic and System
 void SteamIVRInput::changePriority( int32_t priorityVal )
 {
-    // Set priorityVal between 0x01000000 and 0x01FFFFFF
-    if ( priorityVal > 0x01000000 && priorityVal < 0x01FFFFFF )
-    {
-        m_music.setActionSetPriority( priorityVal );
-        m_motion.setActionSetPriority( priorityVal );
-        m_misc.setActionSetPriority( priorityVal );
-    }
-    else
-    {
-        m_music.setActionSetPriority( 0 );
-        m_motion.setActionSetPriority( 0 );
-        m_misc.setActionSetPriority( 0 );
-    }
+    m_music.setActionSetPriority( priorityVal );
+    m_motion.setActionSetPriority( priorityVal );
+    m_misc.setActionSetPriority( priorityVal );
+
+    m_sets = { m_haptics.activeActionSet(),
+               m_music.activeActionSet(),
+               m_motion.activeActionSet(),
+               m_misc.activeActionSet(),
+               m_system.activeActionSet() };
 }
 
 } // namespace input

@@ -51,6 +51,11 @@
       "name": "/actions/haptic/out/HapticsRight",
       "type": "vibration"
     },
+	    {
+      "name": "/actions/haptic/in/ProxSensor",
+      "requirement": "optional",
+      "type": "boolean"
+    },
     {
       "name": "/actions/system/in/AddLeftHapticClick",
       "requirement": "optional",
@@ -183,11 +188,6 @@
     },
 	  {
       "name": "/actions/misc/in/ChaperoneToggle",
-      "requirement": "optional",
-      "type": "boolean"
-    },
-    {
-      "name": "/actions/haptic/in/ProxSensor",
       "requirement": "optional",
       "type": "boolean"
     },

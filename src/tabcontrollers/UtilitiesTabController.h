@@ -60,6 +60,9 @@ public:
     int alarmTimeMinute() const;
     bool enableExclusiveInput() const;
 
+    void setActionPriorityKeySetting( bool value );
+    void setActionPriority( int value );
+
 public slots:
     void sendKeyboardInput( QString input );
     void sendKeyboardEnter();
