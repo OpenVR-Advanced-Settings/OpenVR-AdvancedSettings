@@ -29,6 +29,7 @@ public:
     {
         return m_activeActionSet;
     }
+
     void setActionSetPriority( int32_t priorityVal )
     {
         if ( priorityVal > 0x01FFFFFF )
@@ -44,16 +45,15 @@ public:
         }
         else if ( priorityVal < 0x01000000 )
         {
-            LOG( INFO ) << " Priority set to: " << priorityVal
-                        << " Priority is NOT active";
+            LOG( DEBUG ) << " Priority set to: " << priorityVal
+                         << " Priority is not active";
         }
         else
         {
-            LOG( INFO ) << " Priority set to: " << priorityVal
-                        << " Priority IS active";
+            LOG( DEBUG ) << " Priority set to: " << priorityVal
+                         << " Priority is active";
         }
-        m_activeActionSet.nPriority = priorityVal;
-        LOG( INFO ) << "Priority IS: " << m_activeActionSet.nPriority;
+        m_activeActionSet.nPriority = static_cast<int>( priorityVal );
         return;
     }
 

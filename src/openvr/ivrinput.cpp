@@ -409,12 +409,6 @@ void SteamIVRInput::changePriority( int32_t priorityVal )
     m_music.setActionSetPriority( priorityVal );
     m_motion.setActionSetPriority( priorityVal );
     m_misc.setActionSetPriority( priorityVal );
-
-    m_sets = { m_haptics.activeActionSet(),
-               m_music.activeActionSet(),
-               m_motion.activeActionSet(),
-               m_misc.activeActionSet(),
-               m_system.activeActionSet() };
 }
 
 } // namespace input
