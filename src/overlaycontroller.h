@@ -255,6 +255,7 @@ public slots:
     void OnNetworkReply( QNetworkReply* reply );
 
     void showKeyboard( QString existingText, unsigned long userValue = 0 );
+    void setKeyboardPos();
 
     void playActivationSound();
     void playFocusChangedSound();
