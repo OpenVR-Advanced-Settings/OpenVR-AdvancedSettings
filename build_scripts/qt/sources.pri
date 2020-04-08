@@ -40,7 +40,6 @@ HEADERS += src/overlaycontroller.h \
     src/utils/Matrix.h \
     src/utils/ChaperoneUtils.h \
     src/quaternion/quaternion.h \
-    src/tabcontrollers/audiomanager/AudioManagerDummy.h \
     src/openvr/openvr_init.h \
     src/openvr/ivrinput_action.h \
     src/openvr/ivrinput_manifest.h \
@@ -90,8 +89,18 @@ unix:!macx {
         SOURCES += src/media_keys/media_keys_dummy.cpp
     }
 
-    SOURCES += src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
-    HEADERS += src/tabcontrollers/audiomanager/AudioManagerDummy.h
+    !noPulse {
+        message(PulseAudio features enabled.)
+        SOURCES += src/tabcontrollers/audiomanager/AudioManagerPulse.cpp
+        HEADERS += src/tabcontrollers/audiomanager/AudioManagerPulse.h \
+            src/tabcontrollers/audiomanager/AudioManagerPulse_internal.h
+        LIBS += -lpulse
+    }
+    else {
+        message(PulseAudio features disabled.)
+        SOURCES += src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
+        HEADERS += src/tabcontrollers/audiomanager/AudioManagerDummy.h
+    }
 }
 
 macx {
