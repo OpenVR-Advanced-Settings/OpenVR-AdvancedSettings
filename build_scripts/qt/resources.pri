@@ -23,9 +23,7 @@ DISTFILES += \
     src/res/qml/motion_page/* \
     src/res/qml/motion_page/gravity/* \
     src/res/qml/motion_page/height_toggle/* \
-    src/res/qml/motion_page/snap_turn/* \
     src/res/qml/motion_page/space_drag/* \
-    src/res/qml/motion_page/space_turn/* \
     src/res/qml/RootPage.qml \
     src/res/qml/SettingsPage.qml \
     src/res/qml/StatisticsPage.qml \
@@ -49,6 +47,10 @@ DISTFILES += \
     src/res/qml/video_page/profiles/* \
     src/res/qml/video_page/dialogboxes/* \
     src/res/qml/video_page/overlaycolorbright/* \
+	src/res/qml/rotation_page/* \
+	src/res/qml/rotation_page/redirected/* \
+	src/res/qml/rotation_page/snap_turn/* \
+	src/res/qml/rotation_page/space_turn/* \
     src/res/qml/common/*
 
 win32:RC_ICONS += src/res/img/icons/advicon256px.ico

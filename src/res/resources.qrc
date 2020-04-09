@@ -29,5 +29,6 @@
     <file alias="steamvr_tab_icon">img/main_menu_icons/steamvr_tab_icon.svg</file>
     <file alias="utilities_tab_icon">img/main_menu_icons/utilities_tab_icon.svg</file>
     <file alias="video_tab_icon">img/main_menu_icons/video_tab_icon.svg</file>
+	<file alias="rotation_tab_icon">img/main_menu_icons/rotation_tab_icon.svg</file>
 </qresource>
 </RCC>

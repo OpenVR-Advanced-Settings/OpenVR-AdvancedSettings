@@ -2,6 +2,8 @@
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
 #include "../settings/settings.h"
+#include "../utils/Matrix.h"
+#include "../quaternion/quaternion.h"
 #include <cmath>
 
 // application namespace
@@ -278,9 +280,9 @@ void ChaperoneTabController::eventLoopTick(
                 { poseHmd.mDeviceToAbsoluteTracking.m[0][3],
                   poseHmd.mDeviceToAbsoluteTracking.m[1][3],
                   poseHmd.mDeviceToAbsoluteTracking.m[2][3] } );
-            if ( !std::isnan( distanceHmd ) )
+            if ( !std::isnan( distanceHmd.distance ) )
             {
-                minDistance = distanceHmd;
+                minDistance = distanceHmd.distance;
             }
         }
         auto leftIndex = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
@@ -296,11 +298,11 @@ void ChaperoneTabController::eventLoopTick(
                         { poseLeft.mDeviceToAbsoluteTracking.m[0][3],
                           poseLeft.mDeviceToAbsoluteTracking.m[1][3],
                           poseLeft.mDeviceToAbsoluteTracking.m[2][3] } );
-                if ( !std::isnan( distanceLeft )
+                if ( !std::isnan( distanceLeft.distance )
                      && ( std::isnan( minDistance )
-                          || distanceLeft < minDistance ) )
+                          || distanceLeft.distance < minDistance ) )
                 {
-                    minDistance = distanceLeft;
+                    minDistance = distanceLeft.distance;
                 }
             }
         }
@@ -318,11 +320,11 @@ void ChaperoneTabController::eventLoopTick(
                         { poseRight.mDeviceToAbsoluteTracking.m[0][3],
                           poseRight.mDeviceToAbsoluteTracking.m[1][3],
                           poseRight.mDeviceToAbsoluteTracking.m[2][3] } );
-                if ( !std::isnan( distanceRight )
+                if ( !std::isnan( distanceRight.distance )
                      && ( std::isnan( minDistance )
-                          || distanceRight < minDistance ) )
+                          || distanceRight.distance < minDistance ) )
                 {
-                    minDistance = distanceRight;
+                    minDistance = distanceRight.distance;
                 }
             }
         }

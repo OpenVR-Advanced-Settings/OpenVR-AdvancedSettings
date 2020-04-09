@@ -8,7 +8,9 @@
 #include <openvr.h>
 #include <cmath>
 #include "../utils/FrameRateUtils.h"
+#include "../utils/ChaperoneUtils.h"
 #include "../settings/settings_object.h"
+#include "MoveCenterTabController.h"
 
 class QQuickWindow;
 // application namespace

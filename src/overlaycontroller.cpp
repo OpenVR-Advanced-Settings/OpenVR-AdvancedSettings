@@ -152,6 +152,7 @@ OverlayController::OverlayController( bool desktopMode,
     m_settingsTabController.initStage1();
     m_utilitiesTabController.initStage1();
     m_videoTabController.initStage1();
+    m_rotationTabController.initStage1();
 
     // init action handles
 
@@ -278,6 +279,16 @@ OverlayController::OverlayController( bool desktopMode,
         "VideoTabController",
         []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_videoTabController );
+            QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
+            return obj;
+        } );
+    qmlRegisterSingletonType<SteamVRTabController>(
+        qmlSingletonImportName,
+        1,
+        0,
+        "RotationTabController",
+        []( QQmlEngine*, QJSEngine* ) {
+            QObject* obj = &( objectAddress->m_rotationTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -455,6 +466,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     m_settingsTabController.initStage2( this );
     m_utilitiesTabController.initStage2( this );
     m_moveCenterTabController.initStage2( this );
+    m_rotationTabController.initStage2( this );
 }
 
 void OverlayController::OnRenderRequest()
@@ -668,6 +680,14 @@ void OverlayController::processKeyboardBindings()
         sendStringAsInput( commands );
     }
 }
+void OverlayController::processRotationBindings()
+{
+    if ( m_actions.autoTurnToggle() )
+    {
+        m_rotationTabController.setAutoTurnEnabled(
+            !( m_rotationTabController.autoTurnEnabled() ) );
+    }
+}
 /*!
 Checks if an action has been activated and dispatches the related action if it
 has been.
@@ -683,6 +703,8 @@ void OverlayController::processInputBindings()
     processChaperoneBindings();
 
     processKeyboardBindings();
+
+    processRotationBindings();
 }
 
 bool OverlayController::crashRecoveryDisabled() const
@@ -1121,6 +1143,7 @@ void OverlayController::mainEventLoop()
         devicePoses, leftSpeed, rightSpeed );
     m_chaperoneTabController.eventLoopTick( devicePoses );
     m_audioTabController.eventLoopTick();
+    m_rotationTabController.eventLoopTick( devicePoses );
 
     if ( vr::VROverlay()->IsDashboardVisible() )
     {

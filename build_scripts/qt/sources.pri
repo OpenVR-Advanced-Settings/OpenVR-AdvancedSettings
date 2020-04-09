@@ -9,6 +9,7 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/SteamVRTabController.cpp \
     src/tabcontrollers/UtilitiesTabController.cpp \
     src/tabcontrollers/VideoTabController.cpp \
+	src/tabcontrollers/RotationTabController.cpp\
     src/utils/ChaperoneUtils.cpp \
     src/openvr/openvr_init.cpp \
     src/openvr/ivrinput.cpp \
@@ -19,6 +20,7 @@ SOURCES += src/main.cpp\
     src/keyboard_input/input_parser.cpp \
     src/settings/settings.cpp \
     src/settings/settings_object.cpp \
+
 
 
 HEADERS += src/overlaycontroller.h \
@@ -32,6 +34,7 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/UtilitiesTabController.h \
     src/tabcontrollers/VideoTabController.h \
     src/tabcontrollers/audiomanager/AudioManager.h \
+	src/tabcontrollers/RotationTabController.h\
     src/keyboard_input/keyboard_input.h \
     src/media_keys/media_keys.h \
     src/utils/Matrix.h \
@@ -55,6 +58,7 @@ HEADERS += src/overlaycontroller.h \
     src/settings/internal/specific_setting_value.h \
     src/settings/settings_object.h \
     src/settings/internal/settings_object_data.h
+
 
 win32 {
     SOURCES += src/tabcontrollers/audiomanager/AudioManagerWindows.cpp \
