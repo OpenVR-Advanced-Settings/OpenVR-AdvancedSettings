@@ -1,81 +1,13 @@
-workflows:
-    version: 2
-    gcc_1:
-        jobs:
-          - gcc
-    clang_1:
-        jobs:
-          - clang
-    clang_tidy:
-        jobs:
-          - clang-tidy
-
-update_and_install_prereqs: &update_and_install_prereqs
-    - checkout
-    - run: apt-get update &&  apt-get upgrade -y
-    - run:
-        name: Get wget and apt-key
-        command: |
-            apt-get install wget -y
-            apt-get install software-properties-common apt-transport-https -y
-    - run:
-        name: Set up LLVM-8 repo
-        command: |
-            wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key |  apt-key add -
-            add-apt-repository 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
-            add-apt-repository 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main'
-            apt update -qq
-    - run:
-        name: Install LLVM-8 binaries
-        command: |
-            apt install clang-format-8 -y
-            apt install clang-tidy-7 -y
-            apt install clang-8 -y
-            apt install clang -y
-    - run:
-        name: Run clang-format
-        command: python ./build_scripts/run-clang-format.py ./src -r --color always --clang-format-executable clang-format-8
-    - run:
-        name: Install g++-7
-        command: |
-            add-apt-repository ppa:ubuntu-toolchain-r/test
-            apt update
-            apt install g++-7 -y
-    - run:
-        name: Add required QT repos
-        command: |
-            add-apt-repository ppa:beineri/opt-qt-5.12.2-xenial -y
-            apt-get update -qq
-    - run: apt-get install build-essential libgl1-mesa-dev -y
-    - run:
-        name: Install QT packages
-        command: |
-            apt-get install qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2 qt512quickcontrols qt512tools qt512imageformats qt512svg qt512base qtchooser -y
-    - run:
-        name: Install X11 packages
-        command: apt-get install libx11-dev libxt-dev libxtst-dev -y
-    - run:
-        name: Install pulse packages
-        command: apt-get install libpulse-dev -y
-    - run:
-        name: Install bear/clang-tidy
-        command: apt-get install bear clang-tidy -y
-    - run:
-        name: Set up qtchooser
-        command: qtchooser -install opt-qt512 /opt/qt512/bin/qmake
-    - run:
-        name: Give build scripts +x
-        command: |
-            chmod +x ./build_scripts/linux/build_linux.sh
-            chmod +x ./build_scripts/linux/format.sh
-            chmod +x ./build_scripts/linux/run-clang-tidy.sh
-            chmod +x ./build_scripts/linux/verify_formatting.sh
-    - run:
-        name: Run build script
-        command: ./build_scripts/linux/build_linux.sh
+version: 2.0
 
 jobs:
-    gcc:
+    build:
+        branches:
+            ignore:
+                - /docs-*/
+                - /do-not-run-ci-*/
+                - /only-appveyor-ci-*/
+                - /only-travis-ci-*/
         environment:
             QMAKE_SPEC: linux-g++
             QT_SELECT: opt-qt512
@@ -168,22 +100,3 @@ jobs:
             - store_artifacts:
                 path: ./artifacts/
 
-    clang:
-        environment:
-            QMAKE_SPEC: linux-clang
-            QT_SELECT: opt-qt512
-            MAKE_JOBS: 2
-        docker:
-            - image: "ubuntu:xenial"
-        steps: *update_and_install_prereqs
-            
-    clang-tidy:
-        environment:
-            QMAKE_SPEC: linux-clang
-            QT_SELECT: opt-qt512
-            USE_TIDY: TRUE
-            CLANG_TIDY_EXECUTABLE: clang-tidy-7
-            MAKE_JOBS: 2
-        docker:
-            - image: "ubuntu:xenial"
-        steps: *update_and_install_prereqs
