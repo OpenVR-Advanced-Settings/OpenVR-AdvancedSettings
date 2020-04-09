@@ -59,9 +59,9 @@ namespace action_keys
     constexpr auto hapticsLeft = "/actions/haptic/out/HapticsLeft";
     constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
     constexpr auto proxSensor = "/actions/haptic/in/ProxSensor";
-    constexpr auto addLeftHapticClick = "/actions/haptic/in/AddLeftHapticClick";
+    constexpr auto addLeftHapticClick = "/actions/system/in/AddLeftHapticClick";
     constexpr auto addRightHapticClick
-        = "/actions/haptic/in/AddRightHapticClick";
+        = "/actions/system/in/AddRightHapticClick";
 
     constexpr auto chaperoneToggle = "/actions/misc/in/ChaperoneToggle";
 
@@ -81,11 +81,12 @@ Keys for different action sets
 */
 namespace action_sets
 {
-    constexpr auto numberOfSets = 4;
+    constexpr auto numberOfSets = 5;
     constexpr auto haptic = "/actions/haptic";
     constexpr auto music = "/actions/music";
     constexpr auto misc = "/actions/misc";
     constexpr auto motion = "/actions/motion";
+    constexpr auto system = "/actions/system";
 } // namespace action_sets
 
 using ActiveActionSets
@@ -184,10 +185,11 @@ public:
 private:
     Manifest m_manifest;
 
-    ActionSet m_mainSet;
+    ActionSet m_haptics;
     ActionSet m_music;
     ActionSet m_motion;
     ActionSet m_misc;
+    ActionSet m_system;
 
     // Music player bindings
     DigitalAction m_nextTrack;

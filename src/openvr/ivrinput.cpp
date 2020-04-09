@@ -100,9 +100,10 @@ Wrong action names may not result in direct error messages, but just features
 mystically not working.
 */
 SteamIVRInput::SteamIVRInput()
-    : m_manifest(), m_mainSet( action_sets::haptic ),
+    : m_manifest(), m_haptics( action_sets::haptic ),
       m_music( action_sets::music ), m_motion( action_sets::motion ),
-      m_misc( action_sets::misc ), m_nextTrack( action_keys::nextTrack ),
+      m_misc( action_sets::misc ), m_system( action_sets::system ),
+      m_nextTrack( action_keys::nextTrack ),
       m_previousTrack( action_keys::previousTrack ),
       m_pausePlayTrack( action_keys::pausePlayTrack ),
       m_stopTrack( action_keys::stopTrack ),
@@ -145,10 +146,11 @@ SteamIVRInput::SteamIVRInput()
       m_addRightHapticClick( action_keys::addRightHapticClick ),
       m_proxSensor( action_keys::proxSensor ),
       m_leftHand( input_keys::leftHand ), m_rightHand( input_keys::rightHand ),
-      m_sets( { m_mainSet.activeActionSet(),
+      m_sets( { m_haptics.activeActionSet(),
                 m_music.activeActionSet(),
                 m_motion.activeActionSet(),
-                m_misc.activeActionSet() } )
+                m_misc.activeActionSet(),
+                m_system.activeActionSet() } )
 {
 }
 /*!
