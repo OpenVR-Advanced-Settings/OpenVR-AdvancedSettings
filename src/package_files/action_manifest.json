@@ -52,12 +52,12 @@
       "type": "vibration"
     },
     {
-      "name": "/actions/haptic/in/AddLeftHapticClick",
+      "name": "/actions/system/in/AddLeftHapticClick",
       "requirement": "optional",
       "type": "boolean"
     },
     {
-      "name": "/actions/haptic/in/AddRightHapticClick",
+      "name": "/actions/system/in/AddRightHapticClick",
       "requirement": "optional",
       "type": "boolean"
     },
@@ -222,8 +222,13 @@
     },
     {
       "name": "/actions/haptic",
+      "usage": "hidden"
+    },
+	{
+      "name": "/actions/system",
       "usage": "leftright"
     }
+
   ],
   "localization" : [
    {
@@ -233,6 +238,7 @@
         "/actions/music" : "Music",
         "/actions/misc" : "Misc",
         "/actions/motion" : "Motion",
+		"/actions/system" : "System",
 
         "/actions/music/in/NextTrack" : "Play Next Track",
         "/actions/music/in/PreviousTrack" : "Play Previous Track",
@@ -241,8 +247,8 @@
 
         "/actions/haptic/out/HapticsLeft" : "Haptics Left",
         "/actions/haptic/out/HapticsRight" : " Haptics Right",
-        "/actions/haptic/in/AddLeftHapticClick" : " Add Left Haptic Click",
-        "/actions/haptic/in/AddRightHapticClick" : " Add Right Haptic Click",
+        "/actions/system/in/AddLeftHapticClick" : " Add Left Haptic Click",
+        "/actions/system/in/AddRightHapticClick" : " Add Right Haptic Click",
 		
         "/actions/motion/in/LeftHandSpaceTurn" : "Left Hand Space Turn",
         "/actions/motion/in/RightHandSpaceTurn" : "Right Hand Space Turn",

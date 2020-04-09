@@ -26,9 +26,6 @@
             }
          ]
       },
-      "/actions/main" : {
-         "sources" : []
-      },
       "/actions/misc" : {
          "sources" : [
             {
