@@ -7,14 +7,17 @@ else {
     system(g++-7 --version) {
         message('g++-7' found.)
         QMAKE_CXX = g++-7
+        QMAKE_LINK = g++-7
     }
     system(g++-8 --version) {
         message('g++-8' found.)
         QMAKE_CXX = g++-8
+        QMAKE_LINK = g++-8
     }
     system(g++-9 --version) {
         message('g++-9' found.)
         QMAKE_CXX = g++-9
+        QMAKE_LINK = g++-9
     }
 }
 
