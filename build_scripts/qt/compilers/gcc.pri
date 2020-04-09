@@ -31,3 +31,6 @@ QMAKE_CXXFLAGS += -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wrestric
 QMAKE_CXXFLAGS += -Wconversion -Wno-sign-conversion
 
 QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant
+
+# Qmake will append this even though higher optimization levels are used.
+QMAKE_LFLAGS_RELEASE -= -Wl,-O1
