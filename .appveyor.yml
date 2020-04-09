@@ -37,3 +37,10 @@ artifacts:
     name: portable
   - path: installer\AdvancedSettings*.exe
     name: installer
+
+branches:
+  except:
+    - /docs-*/
+    - /do-not-run-ci-*/
+    - /only-travis-ci-*/
+    - /only-circle-ci-*/

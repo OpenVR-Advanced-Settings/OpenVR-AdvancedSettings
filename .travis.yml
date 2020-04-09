@@ -1,6 +1,13 @@
 language: cpp
 dist: xenial
 
+branches:
+  except:
+    - /docs-*/
+    - /do-not-run-ci-*/
+    - /only-appveyor-ci-*/
+    - /only-circle-ci-*/
+
 matrix:
   include:
   - os: linux
