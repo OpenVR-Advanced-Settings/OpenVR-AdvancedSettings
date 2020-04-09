@@ -38,6 +38,8 @@ else {
     }
 }
 
+system("$$QMAKE_CXX --version")
+
 include(clang-gcc-common-switches.pri)
 
 QMAKE_CXXFLAGS += -Wmost
