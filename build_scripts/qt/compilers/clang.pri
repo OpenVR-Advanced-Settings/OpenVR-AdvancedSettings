@@ -18,18 +18,22 @@ else {
     message('clang' version is not above 4. Attempting to use highest specific version.)
     system("clang-5 --version") {
         QMAKE_CXX = clang-5
+        QMAKE_LINK = clang-5
         message('clang-5' found.)
     }
     system("clang-6 --version") {
         QMAKE_CXX = clang-6
+        QMAKE_LINK = clang-6
         message('clang-6' found.)
     }
     system("clang-7 --version") {
         QMAKE_CXX = clang-7
+        QMAKE_LINK = clang-7
         message('clang-7' found.)
     }
     system("clang-8 --version") {
         QMAKE_CXX = clang-8
+        QMAKE_LINK = clang-8
         message('clang-8' found.)
     }
 }
