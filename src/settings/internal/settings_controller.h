@@ -391,7 +391,7 @@ private:
         DoubleSettingValue{ DoubleSetting::VIDEO_brightnessOpacityValue,
                             SettingCategory::Video,
                             QtInfo{ "brightnessOpacityValue" },
-                            0.0 },
+                            1.0 },
         DoubleSettingValue{ DoubleSetting::VIDEO_colorOverlayOpacity,
                             SettingCategory::Video,
                             QtInfo{ "colorOverlayOpacity" },

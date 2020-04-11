@@ -89,7 +89,7 @@
 			}
 		]
 	},
-	"/actions/misc": {
+	"/actions/system": {
 		"sources": [
 			{
 				"path": "/user/hand/right/input/trackpad",
@@ -99,7 +99,7 @@
 				},
 				"inputs": {
 					"south": {
-						"output": "/actions/misc/in/pushtotalk"
+						"output": "/actions/system/in/pushtotalk"
 					}
 				}
 			}

@@ -26,12 +26,12 @@
             }
          ]
       },
-      "/actions/misc" : {
+      "/actions/system" : {
          "sources" : [
             {
                "inputs" : {
                   "click" : {
-                     "output" : "/actions/misc/in/pushtotalk"
+                     "output" : "/actions/system/in/pushtotalk"
                   }
                },
                "mode" : "button",

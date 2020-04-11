@@ -50,7 +50,7 @@ namespace action_keys
     constexpr auto xAxisLockToggle = "/actions/misc/in/XAxisLockToggle";
     constexpr auto yAxisLockToggle = "/actions/misc/in/YAxisLockToggle";
     constexpr auto zAxisLockToggle = "/actions/misc/in/ZAxisLockToggle";
-    constexpr auto pushToTalk = "/actions/misc/in/PushToTalk";
+    constexpr auto pushToTalk = "/actions/system/in/PushToTalk";
 
     constexpr auto keyboardOne = "/actions/misc/in/KeyboardOne";
     constexpr auto keyboardTwo = "/actions/misc/in/KeyboardTwo";
