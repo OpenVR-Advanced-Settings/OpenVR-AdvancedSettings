@@ -25,11 +25,13 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
      * [Music](#music)
      * [Motion](#motion)
      * [Misc.](#misc)
+	 * [System.](#system)
      * [Haptics.](#haptics)
   * [Default Bindings](#default-bindings)
      * [Vive Wands](#vive-wands)
      * [Valve Index Controllers (Knuckles)](#valve-index-controllers-knuckles)
      * [WMR](#wmr)
+	 * [Touch](#touch)
      * [Other Controllers](#other-controllers)
   * [SteamVR Input Guide](#steamvr-input-guide)
   * [Command Line Arguments](#command-line-arguments)
@@ -42,6 +44,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
   * [- Chaperone Proximity Warning Settings Page](#--chaperone-proximity-warning-settings-page)
   * [- Space Offset Page](#--space-offset-page)
   * [- Motion Page](#--motion-page)
+  * [- Rotation Page](#--rotation-page)
   * [- Space Fix Page](#--space-fix-page)
   * [- Audio Page](#--audio-page)
   * [- Video Page](#--video-page)
@@ -159,6 +162,7 @@ Override actions will take priority over non-override actions during simultaneou
 | Snap-Turn Right | Binary/Button |  Rotates a set value to the right based on settings in motion tab. |
 | Smooth-Turn Right | Binary/Button | Rotates an amount per frame to the right based on settings in motion tab. |
 | Smooth-Turn Left | Binary/Button | Rotates an amount per frame to the left based on settings in motion tab. |
+| Auto-Turn Toggle | Binary/Button | Toggles the Auto-Turn Feature on/off.
 
 ### Misc.
 
@@ -176,14 +180,22 @@ Actions that don't have a clear category.
 | Keyboard Shortcut Three | Binary/Button | Sends the key sequence defined the the settings file. This has no default sequence. |
 
 
-### Haptics.
+### System.
 
-Actions that cause Vibration.
+Actions That will stay active regardless of the situation.
+
 
 |    Action     |     Type      |  Explanation  |
 | ------------- | ------------- |  ------------ |
 | Add Left Haptic Click | Binary/Button | simulates a "click" with controller haptics. (left hand)
 | Add Right Haptic Click | Binary/Button | simulates a "click" with controller haptics. (right hand)
+
+### Haptics.
+
+These Actions are Hidden, They are bound by default. They allow the application to use the haptics and proximity sensor in HMD's.
+
+|    Action     |     Type      |  Explanation  |
+| ------------- | ------------- |  ------------ |
 | Haptics Left | Vibration | Handle for haptic events on the Left Controller. **Do not "bind" this action**|
 | Haptics Right | Vibration | Handle for haptic events on the Right Controller. **Do not "bind" this action**|
 | Proximity Sensor | Binary/Button | Connects Automatically to your HMD's proximity sensor. **Do not "bind" this action**, it will cause un-predictable behavior. |
@@ -219,6 +231,15 @@ Actions that cause Vibration.
   - **Single Click**: Swap Active Space Drag (override) (respective hand)
 - TrackPad (right hand)
   - **D-pad Down click**: Push-to-Talk
+- Haptics bound
+
+### Touch
+- B/Y Button (respective hands)
+  - **Single Click**: Space Turn (respective hand)
+  - **Double Click**: Space Drag (override) (respective hand)
+  - **Single Click**: Swap Active Space Drag (override) (respective hand)
+- Trigger (left hand)
+  - **Click**: Push-to-Talk
 - Haptics bound
 
 ### Other Controllers
@@ -341,10 +362,6 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
   - **Comfort Mode**: Limits the rate at which your movement updates, reducing smoothness so that perceived motion starts to feel more like mini-teleports. Higher values reduce smoothness more.
   - **Force Bounds**: Forces the display of the chaperone bounds during Space Drag.
-- **Space Turn**: Allows rotating your playspace by rotating your controller. Binds must be set via SteamVR Input system.
-  - **Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
-  - **Comfort Mode**: Limits the rate at which your rotation updates, reducing smoothness so that perceived rotation starts to feel more like mini-snap-turns. Higher values reduce smoothness more.
-  - **Force Bounds**: Forces the display of the chaperone bounds during Space Turn.
 - **Height Toggle**: Toggle between zero and an offset for gravity floor height. If gravity is inactive the user is also moved to this offset. (Example: allows for quick switching between a seated and standing height.) Can be bound via SteamVr Input System.
   - **On**: Current toggle state, Binds directly modify this.
   - **Height Offset**: The amount of the offset (+ is down.)
@@ -352,10 +369,37 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Gravity Settings**: Provides a gravity and momentum simulation to dynamically move your space offset.
   - **On**: Current toggle state, Binds directly modify this.
   - **Gravity Strength**: Gravity simulation's downward acceleration in meters per second squared. Planet buttons provide quick settings for well known gravity strengths. Values can also be typed in directly.
+  - **Friction**: Slows down motion over time.
   - **Save Momentum**: whether your momentum is saved between on/off toggles of gravity.
   - **fling Strength**: adjusts the strength at which you "throw" yourself with space drag feature.
+
+
+## - Rotation Page
+
+<img src="docs/screenshots/RotationPage.png" width="600" alt="Rotation Page">
+
+- **Auto Turn**: Automatically rotates your playspace when you get near a wall, by rotating the direction you're looking to be inside your playspace parallel to a wall.
+ - **Toggle On/Off**: current state, bind directly modifies this.
+ - **Activation Distance**: How far from the wall before Autoturn activates.
+ - **DeActivation Distance**:  The minimum distance (activation + deactivation) you must be from the wall before autoturn will activate again.
+ - **Use Corner Angle**: When already against a wall and reaching a corner, turn the angle of that corner rather than the angle of your headset to the wall (reccomended)
+ - **Use Smooth Turn**: Toggles between a smooth turn and a snap turn.
+ - **Turn Speed**: How fast you rotate in Degrees per second.
+ - **Detangle Angle**: Settings attempting to keep your cord untangled while using the Auto-Turn feature.
+  - **Min Rotations(deg)**: The amount of rotation before Auto-Turn starts to try and un-tangle your cord.
+  - **Max Wall Angle(deg)**: When the angle of your headset to the wall is less than Max Wall Angle, it will turn you whichever way will start to untangle your cord. Otherwise it will turn you whichever way is closest. Set to '0' if you have a cordless setup 
+- **Redirected Walking**: Adds rotation as you walk to turn you away from the nearest wall you're moving towards. At 'Imperceptable' and 'Slight' angles should be subtle enough to feel as if you're walking in a straight line, effectively making your playspace feel bigger. 
+ - **On**: Toggles Feature on/off
+ - **Radius**: Radius in meters of how big a circle would be drawn to keep you walking in a straight line inside a game.
+
+
+- **Space Turn**: Allows rotating your playspace by rotating your controller. Binds must be set via SteamVR Input system.
+  - **Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
+  - **Comfort Mode**: Limits the rate at which your rotation updates, reducing smoothness so that perceived rotation starts to feel more like mini-snap-turns. Higher values reduce smoothness more.
+  - **Force Bounds**: Forces the display of the chaperone bounds during Space Turn.
 - **Snap Turn Angle**: Allows snap (instant) turning by the specified angle. Can type in values or use the preset buttons for angles that neatly divide 360 degrees. Must bind actions via SteamVR Input interface.
 - **Smooth Turn Rate**: Allows smooth turning by a percentage of a degree per frame. (i.e. 100% at 90fps is 90 degress/sec or 15 RPM)
+
 
 ## - Space Fix Page
 
