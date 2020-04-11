@@ -1,5 +1,5 @@
 # comments are the value of CLANG_VERSION
-CLANG_VERSION = $$system("clang --version | grep 'clang version'")
+CLANG_VERSION = $$system("clang++ --version | grep 'clang version'")
 # clang version 6.0.0-1ubuntu2 (tags/RELEASE_600/final)
 CLANG_VERSION = $$split(CLANG_VERSION, ' ')
 # CLANG_VERSION is now a list, this is shown as spaces in QMAKE
@@ -12,29 +12,31 @@ CLANG_VERSION = $$member(CLANG_VERSION, 0)
 # 6
 
 greaterThan(CLANG_VERSION, 4) {
-    message('clang' version is above 4. Using regular clang.)
+    message('clang++' version is above 4. Using regular clang++.)
+    QMAKE_CXX = clang++
+    QMAKE_LINK = clang++
 }
 else {
-    message('clang' version is not above 4. Attempting to use highest specific version.)
-    system("clang-5 --version") {
-        QMAKE_CXX = clang-5
-        QMAKE_LINK = clang-5
-        message('clang-5' found.)
+    message('clang++' version is not above 4. Attempting to use highest specific version.)
+    system("clang++-5 --version") {
+        QMAKE_CXX = clang++-5
+        QMAKE_LINK = clang++-5
+        message('clang++-5' found.)
     }
-    system("clang-6 --version") {
-        QMAKE_CXX = clang-6
-        QMAKE_LINK = clang-6
-        message('clang-6' found.)
+    system("clang++-6 --version") {
+        QMAKE_CXX = clang++-6
+        QMAKE_LINK = clang++-6
+        message('clang++-6' found.)
     }
-    system("clang-7 --version") {
-        QMAKE_CXX = clang-7
-        QMAKE_LINK = clang-7
-        message('clang-7' found.)
+    system("clang++-7 --version") {
+        QMAKE_CXX = clang++-7
+        QMAKE_LINK = clang++-7
+        message('clang++-7' found.)
     }
-    system("clang-8 --version") {
-        QMAKE_CXX = clang-8
-        QMAKE_LINK = clang-8
-        message('clang-8' found.)
+    system("clang++-8 --version") {
+        QMAKE_CXX = clang++-8
+        QMAKE_LINK = clang++-8
+        message('clang++-8' found.)
     }
 }
 
