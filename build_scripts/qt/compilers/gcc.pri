@@ -39,3 +39,4 @@ QMAKE_CXXFLAGS += -Wzero-as-null-pointer-constant
 
 # Qmake will append this even though higher optimization levels are used.
 QMAKE_LFLAGS_RELEASE -= -Wl,-O1
+QMAKE_LFLAGS += -Wl,-O3
