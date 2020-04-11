@@ -378,7 +378,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 
 <img src="docs/screenshots/RotationPage.png" width="600" alt="Rotation Page">
 
-- **Auto Turn**: Automatically rotates your playspace when you get near a wall, by rotating the direction you're looking to be inside your playspace parallel to a wall.
+- **Auto Turn**: Automatically rotates your playspace when you get near a wall, by rotating the direction you're looking to be inside your playspace, parallel to a wall.
   - **Toggle On/Off**: current state, bind directly modifies this.
   - **Activation Distance**: How far from the wall before Autoturn activates.
   - **DeActivation Distance**:  The minimum distance (activation + deactivation) you must be from the wall before autoturn will activate again.
