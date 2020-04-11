@@ -379,18 +379,18 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 <img src="docs/screenshots/RotationPage.png" width="600" alt="Rotation Page">
 
 - **Auto Turn**: Automatically rotates your playspace when you get near a wall, by rotating the direction you're looking to be inside your playspace parallel to a wall.
- - **Toggle On/Off**: current state, bind directly modifies this.
- - **Activation Distance**: How far from the wall before Autoturn activates.
- - **DeActivation Distance**:  The minimum distance (activation + deactivation) you must be from the wall before autoturn will activate again.
- - **Use Corner Angle**: When already against a wall and reaching a corner, turn the angle of that corner rather than the angle of your headset to the wall (reccomended)
- - **Use Smooth Turn**: Toggles between a smooth turn and a snap turn.
- - **Turn Speed**: How fast you rotate in Degrees per second.
- - **Detangle Angle**: Settings attempting to keep your cord untangled while using the Auto-Turn feature.
-  - **Min Rotations(deg)**: The amount of rotation before Auto-Turn starts to try and un-tangle your cord.
-  - **Max Wall Angle(deg)**: When the angle of your headset to the wall is less than Max Wall Angle, it will turn you whichever way will start to untangle your cord. Otherwise it will turn you whichever way is closest. Set to '0' if you have a cordless setup 
+  - **Toggle On/Off**: current state, bind directly modifies this.
+  - **Activation Distance**: How far from the wall before Autoturn activates.
+  - **DeActivation Distance**:  The minimum distance (activation + deactivation) you must be from the wall before autoturn will activate again.
+  - **Use Corner Angle**: When already against a wall and reaching a corner, turn the angle of that corner rather than the angle of your headset to the wall (reccomended)
+  - **Use Smooth Turn**: Toggles between a smooth turn and a snap turn.
+  - **Turn Speed**: How fast you rotate in Degrees per second.
+  - **Detangle Angle**: Settings attempting to keep your cord untangled while using the Auto-Turn feature.
+    - **Min Rotations(deg)**: The amount of rotation before Auto-Turn starts to try and un-tangle your cord.
+    - **Max Wall Angle(deg)**: When the angle of your headset to the wall is less than Max Wall Angle, it will turn you whichever way will start to untangle your cord. Otherwise it will turn you whichever way is closest. Set to '0' if you have a cordless setup 
 - **Redirected Walking**: Adds rotation as you walk to turn you away from the nearest wall you're moving towards. At 'Imperceptable' and 'Slight' angles should be subtle enough to feel as if you're walking in a straight line, effectively making your playspace feel bigger. 
- - **On**: Toggles Feature on/off
- - **Radius**: Radius in meters of how big a circle would be drawn to keep you walking in a straight line inside a game.
+  - **On**: Toggles Feature on/off
+  - **Radius**: Radius in meters of how big a circle would be drawn to keep you walking in a straight line inside a game.
 
 
 - **Space Turn**: Allows rotating your playspace by rotating your controller. Binds must be set via SteamVR Input system.
@@ -437,7 +437,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Color Adjustment**: Allows Adjusting of the Color of your display.
   - **<Color>**: Adjusts the Gain to adjust color. (This works for Valve Index, Vive, and Vive Pro) If your headset does not support gain adjustment please see **Use Overlay For Color**.
 - **SuperSampling**: Adjusts application super sampling values (requires refresh of dashboard, and/or restart of SteamVR/OpenVR).
- - **Toggle Override**: allows user configureable amount different than recommended value.
+  - **Toggle Override**: allows user configureable amount different than recommended value.
 - **Video Profiles**: allows Users to save their settings and apply quickly via a drop down menu.
 - **Misc**:
   - **Motion Smoothing**: Enables/Disables Motion Smoothing.
