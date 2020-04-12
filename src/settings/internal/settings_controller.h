@@ -129,6 +129,18 @@ public:
         {
             setting.saveValue();
         }
+        for ( auto& setting : m_doubleSettings )
+        {
+            setting.saveValue();
+        }
+        for ( auto& setting : m_stringSettings )
+        {
+            setting.saveValue();
+        }
+        for ( auto& setting : m_intSettings )
+        {
+            setting.saveValue();
+        }
     }
 
     template <typename ReturnType, typename Setting>

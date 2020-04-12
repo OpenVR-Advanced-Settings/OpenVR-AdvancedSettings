@@ -520,8 +520,7 @@ void RotationTabController::setAutoTurnSpeed( int value, bool notify )
 }
 void RotationTabController::setAutoTurnMode( int value, bool notify )
 {
-    settings::setSetting( settings::IntSetting::ROTATION_autoturnMode,
-                          static_cast<int>( value ) );
+    settings::setSetting( settings::IntSetting::ROTATION_autoturnMode, value );
     if ( notify )
     {
         emit autoTurnModeChanged( value );
