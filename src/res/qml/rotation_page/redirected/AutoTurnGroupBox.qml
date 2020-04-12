@@ -79,9 +79,9 @@ GroupBox {
                         } else if (val > 22) {
                             val = 22
                         }
-                            activationSlider.value = v;
+                            activationSlider.value = val.toFixed(2);
                     }
-                    text =  RotationTabController.autoTurnActivationDistance;
+                    text =  RotationTabController.autoTurnActivationDistance.toFixed(2);
                 }
             }
         }
@@ -136,9 +136,9 @@ GroupBox {
                         } else if (val > 22) {
                             val = 22
                         }
-                            deactivationSlider.value = v;
+                            deactivationSlider.value = val.toFixed(2);
                     }
-                    text =  RotationTabController.autoTurnDeactivationDistance;
+                    text =  RotationTabController.autoTurnDeactivationDistance.toFixed(2);
                 }
             }
         }
@@ -200,7 +200,7 @@ GroupBox {
                         } else if (val > 1000) {
                             val = 1000
                         }
-                            speedSlider.value = v;
+                            speedSlider.value = val;
                     }
                     //converts the centidegrees to degrees
                     text =  (((RotationTabController.autoTurnSpeed)/100).toFixed());
@@ -280,9 +280,9 @@ GroupBox {
     }
 
     Component.onCompleted: {
-        activationSlider.value = RotationTabController.autoTurnActivationDistance
+        activationSlider.value = RotationTabController.autoTurnActivationDistance.toFixed(2)
         autoTurn.checked = RotationTabController.autoTurnEnabled
-        deactivationSlider.value = RotationTabController.autoTurnDeactivationDistance
+        deactivationSlider.value = RotationTabController.autoTurnDeactivationDistance.toFixed(2)
         cornerAngle.checked = RotationTabController.autoTurnUseCornerAngle
         speedSlider.value = (RotationTabController.autoTurnSpeed/100).toFixed()
         if(RotationTabController.autoTurnMode === 1){
@@ -304,10 +304,10 @@ GroupBox {
             autoTurn.checked = RotationTabController.autoTurnEnabled
         }
         onAutoTurnActivationDistanceChanged: {
-            activationSlider.value = RotationTabController.autoTurnActivationDistance
+            activationSlider.value = RotationTabController.autoTurnActivationDistance.toFixed(2)
         }
         onAutoTurnDeactivationDistanceChanged:{
-            deactivationSlider.value = RotationTabController.autoTurnDeactivationDistance
+            deactivationSlider.value = RotationTabController.autoTurnDeactivationDistance.toFixed(2)
         }
         onAutoTurnUseCornerAngleChanged:{
             cornerAngle.checked = RotationTabController.autoTurnUseCornerAngle

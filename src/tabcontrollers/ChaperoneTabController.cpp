@@ -968,7 +968,8 @@ void ChaperoneTabController::addChaperoneProfile(
     profile->includesFloorBoundsMarker = includeFloorBounds;
     if ( includeFloorBounds )
     {
-        profile->floorBoundsMarker = vr::VRSettings()->GetBool(
+        // TODO disabled until we add support on page back in
+        /*profile->floorBoundsMarker = vr::VRSettings()->GetBool(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool,
             &vrSettingsError );
@@ -979,7 +980,7 @@ void ChaperoneTabController::addChaperoneProfile(
                            << "\" setting: "
                            << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                                   vrSettingsError );
-        }
+        }*/
     }
     profile->includesBoundsColor = includeBoundsColor;
     if ( includeBoundsColor )
@@ -1107,10 +1108,12 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
         }
         if ( profile.includesFloorBoundsMarker )
         {
-            vr::VRSettings()->SetBool(
+            // TODO disabled until we control it better.
+            /* vr::VRSettings()->SetBool(
                 vr::k_pch_CollisionBounds_Section,
                 vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool,
                 profile.floorBoundsMarker );
+            */
         }
         if ( profile.includesBoundsColor )
         {
