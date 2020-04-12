@@ -79,7 +79,7 @@ GroupBox {
                         } else if (val > 22) {
                             val = 22
                         }
-                            activationSlider.value = v;
+                            activationSlider.value = val;
                     }
                     text =  RotationTabController.autoTurnActivationDistance;
                 }
@@ -136,7 +136,7 @@ GroupBox {
                         } else if (val > 22) {
                             val = 22
                         }
-                            deactivationSlider.value = v;
+                            deactivationSlider.value = val;
                     }
                     text =  RotationTabController.autoTurnDeactivationDistance;
                 }
@@ -200,7 +200,7 @@ GroupBox {
                         } else if (val > 1000) {
                             val = 1000
                         }
-                            speedSlider.value = v;
+                            speedSlider.value = val;
                     }
                     //converts the centidegrees to degrees
                     text =  (((RotationTabController.autoTurnSpeed)/100).toFixed());
