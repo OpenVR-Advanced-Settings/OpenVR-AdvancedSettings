@@ -88,7 +88,7 @@ Ubuntu newer than than 19.04 and Arch/Manjaro will have up to date Qt packages i
 ### Ubuntu
 
 ```bash
-sudo apt-get -y install qt5-default qtmultimedia5-dev qtdeclarative5-dev
+sudo apt-get -y install qt5-default qtmultimedia5-dev libqt5multimediawidgets5 libqt5multimedia5-plugins libqt5multimedia5 qml-module-qtquick-extras qml-module-qtquick-controls2 qml-module-qtquick-dialogs qml-module-qtmultimedia qtdeclarative5-dev qtchooser
 ```
 
 ### Arch/Manjaro
@@ -282,7 +282,7 @@ cd OpenVR-AdvancedSettings
 # Install build tools
 sudo apt-get -y install build-essential libgl1-mesa-dev
 # Install Qt
-sudo apt-get -y install qt5-default qtmultimedia5-dev libqt5multimediawidgets5 libqt5multimedia5-plugins libqt5multimedia5 qml-module-qtquick-extras qml-module-qtquick-controls2 qml-module-qtquick-dialogs qtdeclarative5-dev qtchooser
+sudo apt-get -y install qt5-default qtmultimedia5-dev libqt5multimediawidgets5 libqt5multimedia5-plugins libqt5multimedia5 qml-module-qtquick-extras qml-module-qtquick-controls2 qml-module-qtquick-dialogs qml-module-qtmultimedia qtdeclarative5-dev qtchooser
 # Install additional features
 sudo apt-get -y install libx11-dev libxt-dev libxtst-dev libpulse-dev
 # Install necessary SteamVR libraries
