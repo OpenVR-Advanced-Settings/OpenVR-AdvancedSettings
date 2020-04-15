@@ -307,7 +307,7 @@ sudo pacman --noconfirm -S base-devel mesa libudev0-shim
 # Install Qt
 sudo pacman --noconfirm -S qt5-declarative qt5-multimedia
 # Install additional features
-sudo pacman --noconfirm -S xorg-server dbus libpulse-dev
+sudo pacman --noconfirm -S xorg-server dbus pulseaudio
 # Compile
 qmake
 make -j2
