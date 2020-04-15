@@ -184,6 +184,7 @@ public:
     virtual ~OverlayController();
 
     void Shutdown();
+    Q_INVOKABLE [[noreturn]] void exitApp();
 
     bool isDashboardVisible()
     {

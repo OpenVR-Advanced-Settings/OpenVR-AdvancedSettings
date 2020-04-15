@@ -189,6 +189,13 @@ MyStackViewPage {
                     OverlayController.setEnableDebug(checked, true)
                 }
             }
+            MyToggleButton {
+                id: btnShutdown
+                text: "OVRAS shutdown"
+                onCheckedChanged: {
+                    OverlayController.exitApp()
+                }
+            }
 
         }
 
