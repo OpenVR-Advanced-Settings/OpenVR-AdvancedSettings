@@ -175,14 +175,15 @@ MyStackViewPage {
 
         RowLayout {
             Layout.fillWidth: true
-            // set visible to true here in builds when we need a debug toggle checkbox, otherwise false when on master branch.
-            visible: false
+
 
             Item {
                 Layout.fillWidth: true
             }
 
             MyToggleButton {
+                // set visible to true here in builds when we need a debug toggle checkbox, otherwise false when on master branch.
+                visible: false
                 id: debugToggle
                 text: "Debug"
                 onCheckedChanged: {
