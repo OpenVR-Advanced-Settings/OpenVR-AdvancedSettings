@@ -97,10 +97,10 @@ void RotationTabController::doVestibularMotion(
                   itr++ )
             {
                 itrLast++;
-                if ( itr->distance > itrLast->distance )
-                {
-                    continue;
-                }
+                // if ( itr->distance > itrLast->distance )
+                //{
+                //    continue;
+                //}
 
                 if ( nearestWall == chaperoneDistances.end()
                      || itr->distance < nearestWall->distance )
@@ -135,19 +135,23 @@ void RotationTabController::doVestibularMotion(
 
             // Get the distance between previous and current
             // position
-            double distanceChange = std::sqrt(
-                std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                              - m_autoTurnLastHmdUpdate.m[0][3],
-                          2.0 )
-                + std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+            double distanceChange = static_cast<double>(
+                std::hypot( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
                                 - m_autoTurnLastHmdUpdate.m[0][3],
-                            2.0 ) );
+                            poseHmd.mDeviceToAbsoluteTracking.m[2][3]
+                                - m_autoTurnLastHmdUpdate.m[2][3] ) );
 
-            double rotationAmount
-                = ( distanceChange
-                    / ( 2.0 * M_PI
-                        * RotationTabController::vestibularMotionRadius() ) )
-                  * ( turnLeft ? 1 : -1 );
+            // Get the arc length between the previous point and current point
+            // 2 sin-1( (d/2)/r ) (in radians)
+            double arcLength = 2
+                               * std::asin( ( distanceChange / 2 )
+                                            / vestibularMotionRadius() );
+            if ( std::isnan( arcLength ) )
+            {
+                break;
+            }
+
+            double rotationAmount = arcLength * ( turnLeft ? 1 : -1 );
 
             double newRotationAngleDeg
                 = std::fmod( parent->m_moveCenterTabController.rotation()
