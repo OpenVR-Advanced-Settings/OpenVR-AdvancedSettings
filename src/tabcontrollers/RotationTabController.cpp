@@ -141,11 +141,16 @@ void RotationTabController::doVestibularMotion(
                               poseHmd.mDeviceToAbsoluteTracking.m[2][3]
                                   - m_autoTurnLastHmdUpdate.m[2][3] );
 
-            double rotationAmount
-                = ( distanceChange
-                    / ( 2.0 * M_PI
-                        * RotationTabController::vestibularMotionRadius() ) )
-                  * ( turnLeft ? 1 : -1 );
+            // Get the arc length between the previous point and current point
+            // 2 sin-1( (d/2)/r ) (in radians)
+            double arcLength
+                = 2 * asin( ( distanceChange / 2 ) / vestibularMotionRadius() );
+            if ( std::isnan( arcLength ) )
+            {
+                break;
+            }
+
+            double rotationAmount = arcLength * ( turnLeft ? 1 : -1 );
 
             double newRotationAngleDeg
                 = std::fmod( parent->m_moveCenterTabController.rotation()
