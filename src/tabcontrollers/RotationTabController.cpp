@@ -135,16 +135,17 @@ void RotationTabController::doVestibularMotion(
 
             // Get the distance between previous and current
             // position
-            double distanceChange
-                = std::hypot( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                  - m_autoTurnLastHmdUpdate.m[0][3],
-                              poseHmd.mDeviceToAbsoluteTracking.m[2][3]
-                                  - m_autoTurnLastHmdUpdate.m[2][3] );
+            double distanceChange = static_cast<double>(
+                std::hypot( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                                - m_autoTurnLastHmdUpdate.m[0][3],
+                            poseHmd.mDeviceToAbsoluteTracking.m[2][3]
+                                - m_autoTurnLastHmdUpdate.m[2][3] ) );
 
             // Get the arc length between the previous point and current point
             // 2 sin-1( (d/2)/r ) (in radians)
-            double arcLength
-                = 2 * asin( ( distanceChange / 2 ) / vestibularMotionRadius() );
+            double arcLength = 2
+                               * std::asin( ( distanceChange / 2 )
+                                            / vestibularMotionRadius() );
             if ( std::isnan( arcLength ) )
             {
                 break;
