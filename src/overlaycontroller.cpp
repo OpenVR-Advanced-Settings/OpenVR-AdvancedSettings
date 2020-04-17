@@ -327,6 +327,24 @@ OverlayController::~OverlayController()
     Shutdown();
 }
 
+void OverlayController::exitApp()
+{
+    settings::saveAllSettings();
+
+    m_moveCenterTabController.shutdown();
+    // Un-mute mic before Exiting VR, as it is set at system level Not
+    // Vr level.
+    // m_audioTabController.setMicMuted( false, false );
+    m_audioTabController.shutdown();
+    m_chaperoneTabController.shutdown();
+    Shutdown();
+    QApplication::exit();
+
+    LOG( INFO ) << "All systems exited.";
+    exit( EXIT_SUCCESS );
+    // Does not fallthrough
+}
+
 void OverlayController::Shutdown()
 {
     disconnect( &m_pumpEventsTimer,
@@ -1004,20 +1022,10 @@ void OverlayController::mainEventLoop()
             vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some
                                                        // time just in case
 
-            settings::saveAllSettings();
-
-            m_moveCenterTabController.shutdown();
-            // Un-mute mic before Exiting VR, as it is set at system level Not
-            // Vr level.
-            // m_audioTabController.setMicMuted( false, false );
-            m_audioTabController.shutdown();
-            m_chaperoneTabController.shutdown();
-            Shutdown();
-            QApplication::exit();
-
-            LOG( INFO ) << "All systems exited.";
+            exitApp();
+            // Won't fallthrough, but also exitApp() wont, but QT won't
+            // acknowledge
             exit( EXIT_SUCCESS );
-            // Does not fallthrough
         }
 
         case vr::VREvent_DashboardActivated:

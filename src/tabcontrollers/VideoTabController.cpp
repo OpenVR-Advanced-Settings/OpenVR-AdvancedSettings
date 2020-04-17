@@ -70,6 +70,7 @@ void VideoTabController::initBrightnessOverlay()
                      << vr::VROverlay()->GetOverlayErrorNameFromEnum(
                             overlayError );
     }
+    setBrightnessOpacityValue( brightnessOpacityValue(), false );
 }
 
 void VideoTabController::initColorOverlay()
@@ -286,6 +287,7 @@ void VideoTabController::setBrightnessEnabled( bool value,
         {
             if ( overlayHandle != vr::k_ulOverlayHandleInvalid )
             {
+                setBrightnessOpacityValue( brightnessOpacityValue(), false );
                 vr::VROverlay()->ShowOverlay( getBrightnessOverlayHandle() );
                 LOG( INFO ) << "Brightness Overlay toggled on";
             }
@@ -314,35 +316,28 @@ void VideoTabController::setBrightnessOpacityValue( float percvalue,
     float realvalue = static_cast<float>(
         std::pow( static_cast<double>( 1.0f - percvalue ), 1 / 3. ) );
 
-    if ( fabs( static_cast<double>( percvalue - brightnessOpacityValue() ) )
-         > .005 )
+    settings::setSetting( settings::DoubleSetting::VIDEO_brightnessOpacityValue,
+                          static_cast<double>( percvalue ) );
+
+    if ( realvalue >= 0.97f || realvalue <= 0.00f )
     {
+        LOG( WARNING ) << "alpha value is invalid setting to 1.0";
         settings::setSetting(
-            settings::DoubleSetting::VIDEO_brightnessOpacityValue,
-            static_cast<double>( percvalue ) );
+            settings::DoubleSetting::VIDEO_brightnessOpacityValue, 1.0 );
+        realvalue = 0;
+    }
+    vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
+        m_brightnessOverlayHandle, realvalue );
+    if ( overlayError != vr::VROverlayError_None )
+    {
+        LOG( ERROR ) << "Could not set alpha for brightness overlay: "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                            overlayError );
+    }
 
-        if ( realvalue <= 1.0f && realvalue >= 0.00f )
-        {
-            vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
-                m_brightnessOverlayHandle, realvalue );
-            if ( overlayError != vr::VROverlayError_None )
-            {
-                LOG( ERROR ) << "Could not set alpha for brightness overlay: "
-                             << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                                    overlayError );
-            }
-        }
-        else
-        {
-            LOG( WARNING ) << "alpha value is invalid setting to 1.0";
-            settings::setSetting(
-                settings::DoubleSetting::VIDEO_brightnessOpacityValue, 0.0 );
-        }
-
-        if ( notify )
-        {
-            emit brightnessOpacityValueChanged( percvalue );
-        }
+    if ( notify )
+    {
+        emit brightnessOpacityValueChanged( percvalue );
     }
 }
 

@@ -51,7 +51,7 @@ GroupBox {
 
             MySlider {
                 id: brightnessSlider
-                from: 0.01
+                from: 0.10
                 to: 1.0
                 stepSize: 0.01
                 value: 1.0
