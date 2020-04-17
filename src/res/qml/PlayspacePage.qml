@@ -611,7 +611,7 @@ MyStackViewPage {
                     seatedDisableWarningText.visible = !boolEnableSeatedMotion
                 } else if (MoveCenterTabController.trackingUniverse === 1) {
                     spaceModeText.text = "Standing"
-                    spaceSeatedRecenter.visible = false
+                    spaceSeatedRecenter.visible = true
                     offsetsGroupBox.visible = true
                     rotationGroupBox.visible = true
                     resetButtonRow.visible = true
