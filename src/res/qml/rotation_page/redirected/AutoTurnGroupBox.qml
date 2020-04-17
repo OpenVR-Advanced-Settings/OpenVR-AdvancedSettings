@@ -168,8 +168,8 @@ GroupBox {
             MySlider {
                 id: speedSlider
                 from: 0
-                to: 360
-                stepSize: 1
+                to: 900
+                stepSize: 10
                 value: 90
                 Layout.fillWidth: true
                 onPositionChanged: {
