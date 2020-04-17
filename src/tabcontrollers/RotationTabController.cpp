@@ -97,10 +97,10 @@ void RotationTabController::doVestibularMotion(
                   itr++ )
             {
                 itrLast++;
-                if ( itr->distance > itrLast->distance )
-                {
-                    continue;
-                }
+                // if ( itr->distance > itrLast->distance )
+                //{
+                //    continue;
+                //}
 
                 if ( nearestWall == chaperoneDistances.end()
                      || itr->distance < nearestWall->distance )
@@ -135,13 +135,11 @@ void RotationTabController::doVestibularMotion(
 
             // Get the distance between previous and current
             // position
-            double distanceChange = std::sqrt(
-                std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                              - m_autoTurnLastHmdUpdate.m[0][3],
-                          2.0 )
-                + std::pow( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                - m_autoTurnLastHmdUpdate.m[0][3],
-                            2.0 ) );
+            double distanceChange
+                = std::hypot( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
+                                  - m_autoTurnLastHmdUpdate.m[0][3],
+                              poseHmd.mDeviceToAbsoluteTracking.m[2][3]
+                                  - m_autoTurnLastHmdUpdate.m[2][3] );
 
             double rotationAmount
                 = ( distanceChange
