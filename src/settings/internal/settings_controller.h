@@ -452,7 +452,7 @@ private:
         DoubleSettingValue{ DoubleSetting::ROTATION_cordDetanglingAngle,
                             SettingCategory::Rotation,
                             QtInfo{ "cordDetanglingAngle" },
-                            1000 * advsettings::k_centidegreesToRadians },
+                            1500 * advsettings::k_centidegreesToRadians },
         DoubleSettingValue{ DoubleSetting::ROTATION_autoturnMinCordTangle,
                             SettingCategory::Rotation,
                             QtInfo{ "autoturnMinCordTangle" },

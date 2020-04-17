@@ -10,7 +10,7 @@ GroupBox {
 
     label: MyText {
         leftPadding: 10
-        text: "Auto-Turn Settings"
+        text: "Auto-turn (aka infinite walk)"
         bottomPadding: -10
     }
     background: Rectangle {
@@ -168,8 +168,8 @@ GroupBox {
             MySlider {
                 id: speedSlider
                 from: 0
-                to: 360
-                stepSize: 1
+                to: 900
+                stepSize: 10
                 value: 90
                 Layout.fillWidth: true
                 onPositionChanged: {
