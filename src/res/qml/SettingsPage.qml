@@ -156,17 +156,32 @@ MyStackViewPage {
                 Layout.fillWidth: true
             }
         }
+        RowLayout{
 
-        MyText {
-            id: seatedOldExternalWarning
-            wrapMode: Text.WordWrap
-            font.pointSize: 20
-            color: "#FFA500"
-            text: "WARNING: 'Allow External App Chaperone Edits' + 'Old-Style Motion' + 'Enable Motion Features When in Seated Mode' active together may cause space center misalignment. Load the «Autosaved Profile» in the 'Chaperone' tab to fix."
-            horizontalAlignment: Text.AlignHCenter
-            Layout.leftMargin: 20
-            Layout.rightMargin: 20
-            Layout.fillWidth: true
+            MyText {
+                id: seatedOldExternalWarning
+                wrapMode: Text.WordWrap
+                font.pointSize: 20
+                color: "#FFA500"
+                text: "WARNING: 'Allow External App Chaperone Edits' + 'Old-Style Motion' + 'Enable Motion Features When in Seated Mode' active together may cause space center misalignment. Load the «Autosaved Profile» in the 'Chaperone' tab to fix."
+                horizontalAlignment: Text.AlignHCenter
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
+                Layout.fillWidth: true
+            }
+        }
+        RowLayout{
+            Item {
+                Layout.fillWidth: true
+            }
+            MyPushButton {
+                id: shutdownButton
+                Layout.preferredWidth: 250
+                text: "Shutdown OVRAS"
+                onClicked: {
+                    OverlayController.exitApp()
+                    }
+                }
         }
 
         Item {
@@ -188,13 +203,6 @@ MyStackViewPage {
                 text: "Debug"
                 onCheckedChanged: {
                     OverlayController.setEnableDebug(checked, true)
-                }
-            }
-            MyToggleButton {
-                id: btnShutdown
-                text: "OVRAS shutdown"
-                onCheckedChanged: {
-                    OverlayController.exitApp()
                 }
             }
 
