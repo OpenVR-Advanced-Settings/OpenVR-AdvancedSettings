@@ -1023,6 +1023,9 @@ void OverlayController::mainEventLoop()
                                                        // time just in case
 
             exitApp();
+            // Won't fallthrough, but also exitApp() wont, but QT won't
+            // acknowledge
+            exit( EXIT_SUCCESS );
         }
 
         case vr::VREvent_DashboardActivated:
