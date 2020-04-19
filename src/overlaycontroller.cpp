@@ -329,6 +329,9 @@ OverlayController::~OverlayController()
 
 void OverlayController::exitApp()
 {
+    // save to settings that shutdown was safe
+    setPreviousShutdownSafe( true );
+
     settings::saveAllSettings();
 
     m_moveCenterTabController.shutdown();
@@ -337,6 +340,7 @@ void OverlayController::exitApp()
     // m_audioTabController.setMicMuted( false, false );
     m_audioTabController.shutdown();
     m_chaperoneTabController.shutdown();
+
     Shutdown();
     QApplication::exit();
 
@@ -371,9 +375,6 @@ void OverlayController::Shutdown()
         m_pRenderTimer.reset();
     }
     m_pFbo.reset();
-
-    // save to settings that shutdown was safe
-    setPreviousShutdownSafe( true );
 }
 
 void OverlayController::SetWidget( QQuickItem* quickItem,
