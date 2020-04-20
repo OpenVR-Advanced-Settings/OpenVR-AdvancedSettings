@@ -46,6 +46,7 @@ struct OffsetProfile : settings::ISettingsObject
     {
         settings::SettingsObjectData o;
 
+        o.addValue( profileName );
         o.addValue( static_cast<double>( offsetX ) );
         o.addValue( static_cast<double>( offsetY ) );
         o.addValue( static_cast<double>( offsetZ ) );
@@ -57,6 +58,7 @@ struct OffsetProfile : settings::ISettingsObject
 
     virtual void loadSettings( settings::SettingsObjectData& obj ) override
     {
+        profileName = ( obj.getNextValueOrDefault( "" ) );
         offsetX = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
         offsetY = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
         offsetZ = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );

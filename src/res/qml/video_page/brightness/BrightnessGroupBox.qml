@@ -76,8 +76,8 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 5) {
-                            val = 5
+                        if (val < 10) {
+                            val = 10
                         } else if (val > 100.0) {
                             val = 100.0
                         }
