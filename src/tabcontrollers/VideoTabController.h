@@ -41,6 +41,7 @@ struct VideoProfile : settings::ISettingsObject
     {
         settings::SettingsObjectData o;
 
+        o.addValue( profileName );
         o.addValue( static_cast<double>( supersampling ) );
 
         o.addValue( anisotropicFiltering );
@@ -64,6 +65,7 @@ struct VideoProfile : settings::ISettingsObject
 
     virtual void loadSettings( settings::SettingsObjectData& obj ) override
     {
+        profileName = obj.getNextValueOrDefault( "" );
         supersampling = static_cast<float>( obj.getNextValueOrDefault( 1.0 ) );
 
         anisotropicFiltering = obj.getNextValueOrDefault( false );
