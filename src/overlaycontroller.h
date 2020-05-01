@@ -83,6 +83,10 @@ constexpr int k_nonVsyncTickRate = 20;
 constexpr int k_maxCustomTickRate = 999;
 constexpr int k_hmdRotationCounterUpdateRate = 7;
 
+// directory of sound files
+constexpr const char* clickSoundURL = "/res/sounds/click.wav";
+constexpr const char* focusChangedSoundURL = "/res/sounds/focus.wav";
+
 class OverlayController : public QObject
 {
     Q_OBJECT

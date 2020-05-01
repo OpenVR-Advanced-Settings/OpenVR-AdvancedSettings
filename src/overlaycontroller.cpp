@@ -69,8 +69,7 @@ OverlayController::OverlayController( bool desktopMode,
     m_runtimePathUrl = QUrl::fromLocalFile( tempRuntimePath );
     LOG( INFO ) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
-    QString activationSoundFile = m_runtimePathUrl.toLocalFile().append(
-        "/content/panorama/sounds/activation.wav" );
+    QString activationSoundFile = clickSoundURL;
     QFileInfo activationSoundFileInfo( activationSoundFile );
     if ( activationSoundFileInfo.exists() && activationSoundFileInfo.isFile() )
     {
@@ -84,8 +83,7 @@ OverlayController::OverlayController( bool desktopMode,
                      << activationSoundFile;
     }
 
-    QString focusChangedSoundFile = m_runtimePathUrl.toLocalFile().append(
-        "/content/panorama/sounds/focus_change.wav" );
+    QString focusChangedSoundFile = focusChangedSoundFile;
     QFileInfo focusChangedSoundFileInfo( focusChangedSoundFile );
     if ( focusChangedSoundFileInfo.exists()
          && focusChangedSoundFileInfo.isFile() )
