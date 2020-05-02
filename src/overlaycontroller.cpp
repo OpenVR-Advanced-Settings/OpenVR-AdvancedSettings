@@ -83,7 +83,7 @@ OverlayController::OverlayController( bool desktopMode,
                      << activationSoundFile;
     }
 
-    QString focusChangedSoundFile = focusChangedSoundFile;
+    QString focusChangedSoundFile = focusChangedSoundURL;
     QFileInfo focusChangedSoundFileInfo( focusChangedSoundFile );
     if ( focusChangedSoundFileInfo.exists()
          && focusChangedSoundFileInfo.isFile() )

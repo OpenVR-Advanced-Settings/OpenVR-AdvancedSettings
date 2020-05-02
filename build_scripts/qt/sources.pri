@@ -13,6 +13,7 @@ SOURCES += src/main.cpp\
     src/utils/ChaperoneUtils.cpp \
     src/openvr/openvr_init.cpp \
     src/openvr/ivrinput.cpp \
+	src/openvr/ivrsettings.cpp\
     src/utils/setup.cpp \
     src/utils/paths.cpp \
     src/utils/FrameRateUtils.cpp \
@@ -46,6 +47,7 @@ HEADERS += src/overlaycontroller.h \
     src/openvr/ivrinput_action_set.h \
     src/openvr/ivrinput_input_source.h \
     src/openvr/ivrinput.h \
+	src/openvr/ivrsettings.h \
     src/utils/setup.h \
     src/utils/paths.h \
     src/utils/FrameRateUtils.h \

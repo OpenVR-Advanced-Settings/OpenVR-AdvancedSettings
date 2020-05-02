@@ -604,6 +604,11 @@ float ChaperoneTabController::chaperoneShowDashboardDistance() const
         settings::DoubleSetting::CHAPERONE_showDashboardDistance ) );
 }
 
+int ChaperoneTabController::chaperoneColorA() const
+{
+    //
+}
+
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount()
 {
     return static_cast<unsigned int>( chaperoneProfiles.size() );

@@ -8,6 +8,8 @@ RESOURCES += src/res/resources.qrc
 
 DISTFILES += \
     src/res/sounds/alarm01.wav \
+	src/res/sounds/click.wav \
+	src/res/sounds/focus.wav \
     src/res/img/audio/microphone/ptt_notification.png \
     src/res/img/audio/microphone/ptt_notification.svg \
     src/res/img/battery/* \

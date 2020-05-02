@@ -298,6 +298,14 @@ class ChaperoneTabController : public QObject
         float chaperoneShowDashboardDistance READ chaperoneShowDashboardDistance
             WRITE setChaperoneShowDashboardDistance NOTIFY
                 chaperoneShowDashboardDistanceChanged )
+    Q_PROPERTY( int chaperoneColorR READ chaperoneColorR WRITE
+                    setChaperoneColorR NOTIFY chaperoneColorRChanged )
+    Q_PROPERTY( int chaperoneColorG READ chaperoneColorG WRITE
+                    setChaperoneColorG NOTIFY chaperoneColorGChanged )
+    Q_PROPERTY( int chaperoneColorB READ chaperoneColorB WRITE
+                    setChaperoneColorB NOTIFY chaperoneColorBChanged )
+    Q_PROPERTY( int chaperoneColorA READ chaperoneColorA WRITE
+                    setChaperoneColorA NOTIFY chaperoneColorAChanged )
 
 private:
     OverlayController* parent;
@@ -359,6 +367,11 @@ public:
     bool forceBounds() const;
     bool disableChaperone() const;
 
+    int chaperoneColorR() const;
+    int chaperoneColorG() const;
+    int chaperoneColorB() const;
+    int chaperoneColorA() const;
+
     void setRightHapticActionHandle( vr::VRActionHandle_t handle );
     void setLeftHapticActionHandle( vr::VRActionHandle_t handle );
     void setRightInputHandle( vr::VRInputValueHandle_t handle );
@@ -419,6 +432,11 @@ public slots:
     void setChaperoneShowDashboardEnabled( bool value, bool notify = true );
     void setChaperoneShowDashboardDistance( float value, bool notify = true );
 
+    void setChaperoneColorR( int value );
+    void setChaperoneColorG( int value );
+    void setChaperoneColorB( int value );
+    void setChaperoneColorA( int value );
+
     void flipOrientation( double degrees = 180 );
     void reloadFromDisk();
 
@@ -463,6 +481,11 @@ signals:
 
     void chaperoneShowDashboardEnabledChanged( bool value );
     void chaperoneShowDashboardDistanceChanged( float value );
+
+    void chaperoneColorRChanged( float value );
+    void chaperoneColorGChanged( float value );
+    void chaperoneColorBChanged( float value );
+    void chaperoneColorAChanged( float value );
 
     void chaperoneProfilesUpdated();
 };
