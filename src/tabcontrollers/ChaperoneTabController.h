@@ -482,10 +482,10 @@ signals:
     void chaperoneShowDashboardEnabledChanged( bool value );
     void chaperoneShowDashboardDistanceChanged( float value );
 
-    void chaperoneColorRChanged( float value );
-    void chaperoneColorGChanged( float value );
-    void chaperoneColorBChanged( float value );
-    void chaperoneColorAChanged( float value );
+    void chaperoneColorRChanged( int value );
+    void chaperoneColorGChanged( int value );
+    void chaperoneColorBChanged( int value );
+    void chaperoneColorAChanged( int value );
 
     void chaperoneProfilesUpdated();
 };
