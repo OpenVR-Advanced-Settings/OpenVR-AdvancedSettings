@@ -11,6 +11,7 @@
 #include "../utils/ChaperoneUtils.h"
 #include "../settings/settings_object.h"
 #include "MoveCenterTabController.h"
+#include "../openvr/ivrsettings.h"
 
 class QQuickWindow;
 // application namespace

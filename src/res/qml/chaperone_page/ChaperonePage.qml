@@ -495,6 +495,19 @@ MyStackViewPage {
                 mainView.push(chaperoneWarningsPage)
             }
         }
+        Item {Layout.fillWidth: true}
+
+        MyPushButton {
+            id: chaperoneAdditionalButton
+            text: "Additional Chaperone Settings"
+            Layout.preferredWidth: 350
+
+            onClicked: {
+                MyResources.playFocusChangedSound()
+                mainView.push(chaperoneAdditionalPage)
+            }
+        }
+
         ChangeOrientationGroupBox { }
 
 

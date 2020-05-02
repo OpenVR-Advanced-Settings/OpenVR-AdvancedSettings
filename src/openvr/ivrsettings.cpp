@@ -1,8 +1,4 @@
 #include "ivrsettings.h"
-#include <openvr.h>
-#include <iostream>
-#include <array>
-#include <easylogging++.h>
 
 namespace ivrsettings
 {

@@ -4,7 +4,6 @@
 #include "../settings/settings.h"
 #include "../utils/Matrix.h"
 #include "../quaternion/quaternion.h"
-#include "../openvr/ivrsettings.cpp" //TODO make this header?
 #include <cmath>
 
 // application namespace

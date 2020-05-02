@@ -1,14 +1,15 @@
 #pragma once
 
 #include <openvr.h>
-#include <array>
-
-namespace ivrsettings
+#include <iostream>
+#include <string>
+#include <easylogging++.h>
 
 /* Wrapper For OpenVR's IVR settings class, allows us to do our error logging
  * while also minimizing code
  *
  */
+namespace ivrsettings
 {
 enum class logType
 {
@@ -54,4 +55,4 @@ void handleErrors( logType errorType,
                    const char* pchSettingsKey,
                    vr::EVRSettingsError,
                    std::string customErrorMsg );
-}
+} // namespace ivrsettings
