@@ -4,6 +4,7 @@
 #include "../settings/settings.h"
 #include "../utils/Matrix.h"
 #include "../quaternion/quaternion.h"
+#include "../openvr/ivrsettings.cpp" //TODO make this header?
 #include <cmath>
 
 // application namespace
@@ -604,9 +605,33 @@ float ChaperoneTabController::chaperoneShowDashboardDistance() const
         settings::DoubleSetting::CHAPERONE_showDashboardDistance ) );
 }
 
+int ChaperoneTabController::chaperoneColorR() const
+{
+    return ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
+                                  vr::k_pch_CollisionBounds_ColorGammaR_Int32,
+                                  ivrsettings::logType::err,
+                                  "" );
+}
+int ChaperoneTabController::chaperoneColorG() const
+{
+    return ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
+                                  vr::k_pch_CollisionBounds_ColorGammaG_Int32,
+                                  ivrsettings::logType::err,
+                                  "" );
+}
+int ChaperoneTabController::chaperoneColorB() const
+{
+    return ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
+                                  vr::k_pch_CollisionBounds_ColorGammaB_Int32,
+                                  ivrsettings::logType::err,
+                                  "" );
+}
 int ChaperoneTabController::chaperoneColorA() const
 {
-    //
+    return ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
+                                  vr::k_pch_CollisionBounds_ColorGammaA_Int32,
+                                  ivrsettings::logType::err,
+                                  "" );
 }
 
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount()
