@@ -485,26 +485,28 @@ MyStackViewPage {
             Item { Layout.fillWidth: true }
         }
 
-
-        MyPushButton {
-            id: chaperoneWarningsConfigButton
-            text: "Proximity Warning Settings"
-            Layout.preferredWidth: 350
-            onClicked: {
-                MyResources.playFocusChangedSound()
-                mainView.push(chaperoneWarningsPage)
+        RowLayout {
+            Layout.fillWidth: true
+            MyPushButton {
+                id: chaperoneWarningsConfigButton
+                text: "Proximity Warning Settings"
+                Layout.preferredWidth: 350
+                onClicked: {
+                    MyResources.playFocusChangedSound()
+                    mainView.push(chaperoneWarningsPage)
+                }
             }
-        }
-        Item {Layout.fillWidth: true}
+            Item {Layout.fillWidth: true}
 
-        MyPushButton {
-            id: chaperoneAdditionalButton
-            text: "Additional Chaperone Settings"
-            Layout.preferredWidth: 350
+            MyPushButton {
+                id: chaperoneAdditionalButton
+                text: "Additional Chaperone Settings"
+                Layout.preferredWidth: 400
 
-            onClicked: {
-                MyResources.playFocusChangedSound()
-                mainView.push(chaperoneAdditionalPage)
+                onClicked: {
+                    MyResources.playFocusChangedSound()
+                    mainView.push(chaperoneAdditionalPage)
+                }
             }
         }
 
