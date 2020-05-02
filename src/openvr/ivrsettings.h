@@ -12,9 +12,9 @@ namespace ivrsettings
 {
 enum class logType
 {
-    warning,
+    warn,
     err,
-    debug
+    bug
 
 };
 

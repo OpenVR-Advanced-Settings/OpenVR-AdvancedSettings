@@ -432,10 +432,10 @@ public slots:
     void setChaperoneShowDashboardEnabled( bool value, bool notify = true );
     void setChaperoneShowDashboardDistance( float value, bool notify = true );
 
-    void setChaperoneColorR( int value );
-    void setChaperoneColorG( int value );
-    void setChaperoneColorB( int value );
-    void setChaperoneColorA( int value );
+    void setChaperoneColorR( int value, bool notify = true );
+    void setChaperoneColorG( int value, bool notify = true );
+    void setChaperoneColorB( int value, bool notify = true );
+    void setChaperoneColorA( int value, bool notify = true );
 
     void flipOrientation( double degrees = 180 );
     void reloadFromDisk();

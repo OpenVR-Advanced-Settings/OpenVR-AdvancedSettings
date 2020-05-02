@@ -15,7 +15,7 @@ void handleErrors( logType errorType,
     {
         switch ( errorType )
         {
-        case logType::warning:
+        case logType::warn:
             LOG( WARNING ) << "Could not read \"" << pchSettingsKey
                            << "\" setting: "
                            << vr::VRSettings()->GetSettingsErrorNameFromEnum(
@@ -29,7 +29,7 @@ void handleErrors( logType errorType,
                                 error )
                          << " " << customErrorMsg;
             break;
-        case logType::debug:
+        case logType::bug:
             LOG( DEBUG ) << "Could not read \"" << pchSettingsKey
                          << "\" setting: "
                          << vr::VRSettings()->GetSettingsErrorNameFromEnum(

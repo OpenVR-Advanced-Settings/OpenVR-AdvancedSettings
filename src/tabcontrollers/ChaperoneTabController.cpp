@@ -665,6 +665,97 @@ void ChaperoneTabController::setForceBounds( bool value, bool notify )
     }
 }
 
+void ChaperoneTabController::setChaperoneColorR( int value, bool notify )
+{
+    if ( value > 255 )
+    {
+        value = 255;
+        LOG( WARNING ) << "Red Channel larger than 255, setting to 255";
+    }
+    else if ( value < 0 )
+    {
+        value = 0;
+        LOG( WARNING ) << "Red Channel smaller than 0, setting to 0";
+    }
+    ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
+                           vr::k_pch_CollisionBounds_ColorGammaR_Int32,
+                           value,
+                           ivrsettings::logType::err,
+                           "" );
+    if ( notify )
+    {
+        emit chaperoneColorRChanged( value );
+    }
+}
+
+void ChaperoneTabController::setChaperoneColorG( int value, bool notify )
+{
+    if ( value > 255 )
+    {
+        value = 255;
+        LOG( WARNING ) << "Green Channel larger than 255, setting to 255";
+    }
+    else if ( value < 0 )
+    {
+        value = 0;
+        LOG( WARNING ) << "Green Channel smaller than 0, setting to 0";
+    }
+    ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
+                           vr::k_pch_CollisionBounds_ColorGammaG_Int32,
+                           value,
+                           ivrsettings::logType::err,
+                           "" );
+    if ( notify )
+    {
+        emit chaperoneColorGChanged( value );
+    }
+}
+
+void ChaperoneTabController::setChaperoneColorB( int value, bool notify )
+{
+    if ( value > 255 )
+    {
+        value = 255;
+        LOG( WARNING ) << "Blue Channel larger than 255, setting to 255";
+    }
+    else if ( value < 0 )
+    {
+        value = 0;
+        LOG( WARNING ) << "Blue Channel smaller than 0, setting to 0";
+    }
+    ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
+                           vr::k_pch_CollisionBounds_ColorGammaB_Int32,
+                           value,
+                           ivrsettings::logType::err,
+                           "" );
+    if ( notify )
+    {
+        emit chaperoneColorBChanged( value );
+    }
+}
+void ChaperoneTabController::setChaperoneColorA( int value, bool notify )
+{
+    if ( value > 255 )
+    {
+        value = 255;
+        LOG( WARNING ) << "Alpha Channel larger than 255, setting to 255";
+    }
+    else if ( value < 0 )
+    {
+        value = 0;
+        LOG( WARNING ) << "Alpha Channel smaller than 0, setting to 0";
+    }
+    ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
+                           vr::k_pch_CollisionBounds_ColorGammaA_Int32,
+                           value,
+                           ivrsettings::logType::err,
+                           "" );
+    if ( notify )
+    {
+        emit chaperoneColorAChanged( value );
+    }
+}
+
 void ChaperoneTabController::setChaperoneSwitchToBeginnerEnabled( bool value,
                                                                   bool notify )
 {
