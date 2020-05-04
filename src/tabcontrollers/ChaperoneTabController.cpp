@@ -363,12 +363,8 @@ void ChaperoneTabController::eventLoopTick(
 
 void ChaperoneTabController::updateChaperoneSettings()
 {
-    setBoundsVisibility( chaperoneColorA() / 255.0f );
-    setFadeDistance(
-        ivrsettings::getFloat( vr::k_pch_CollisionBounds_Section,
-                               vr::k_pch_CollisionBounds_FadeDistance_Float,
-                               ivrsettings::logType::warn,
-                               "" ) );
+    setBoundsVisibility( static_cast<float>( chaperoneColorA() ) / 255.0f );
+    setFadeDistance( fadeDistance(), true, true );
 
     setCenterMarker(
         ivrsettings::getBool( vr::k_pch_CollisionBounds_Section,
@@ -401,7 +397,7 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
         {
             m_visibility = value;
         }
-        // ROLL into Alpha color?
+        // TODO ROLL into Alpha color?
         vr::VRSettings()->SetInt32(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_ColorGammaA_Int32,
@@ -414,14 +410,28 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
     }
 }
 
-float ChaperoneTabController::fadeDistance() const
+float ChaperoneTabController::fadeDistance()
 {
+    std::pair<ivrsettings::settingsError, float> p
+        = ivrsettings::getFloat( vr::k_pch_CollisionBounds_Section,
+                                 vr::k_pch_CollisionBounds_FadeDistance_Float,
+                                 ivrsettings::logType::err,
+                                 "" );
+    if ( p.first == ivrsettings::settingsError::noErr )
+    {
+        m_fadeDistance = p.second;
+        return p.second;
+    }
+    // Error Handling?
     return m_fadeDistance;
 }
 
-void ChaperoneTabController::setFadeDistance( float value, bool notify )
+void ChaperoneTabController::setFadeDistance( float value,
+                                              bool notify,
+                                              bool forcechange )
 {
-    if ( fabs( static_cast<double>( m_fadeDistance - value ) ) > 0.005 )
+    if ( fabs( static_cast<double>( m_fadeDistance - value ) ) > 0.005
+         || forcechange )
     {
         m_fadeDistance = value;
         ivrsettings::setFloat( vr::k_pch_CollisionBounds_Section,
@@ -429,6 +439,7 @@ void ChaperoneTabController::setFadeDistance( float value, bool notify )
                                m_fadeDistance,
                                ivrsettings::logType::err,
                                "" );
+
         if ( notify )
         {
             emit fadeDistanceChanged( m_fadeDistance );

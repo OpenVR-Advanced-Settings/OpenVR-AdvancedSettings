@@ -2,10 +2,10 @@
 
 namespace ivrsettings
 {
-void handleErrors( logType errorType,
-                   const char* pchSettingsKey,
-                   vr::EVRSettingsError error,
-                   std::string customErrorMsg )
+settingsError handleErrors( logType errorType,
+                            const char* pchSettingsKey,
+                            vr::EVRSettingsError error,
+                            std::string customErrorMsg )
 {
     if ( error != vr::VRSettingsError_None )
     {
@@ -33,83 +33,92 @@ void handleErrors( logType errorType,
                          << " " << customErrorMsg;
             break;
         }
+        return settingsError::undefErr;
     }
+    return settingsError::noErr;
 }
 
-bool getBool( const char* pchSection,
-              const char* pchSettingsKey,
-              logType errorType,
-              std::string customErrorMsg )
+std::pair<settingsError, bool> getBool( const char* pchSection,
+                                        const char* pchSettingsKey,
+                                        logType errorType,
+                                        std::string customErrorMsg )
 
 {
     bool value;
     vr::EVRSettingsError error;
     value = vr::VRSettings()->GetBool( pchSection, pchSettingsKey, &error );
-    handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
-    return value;
+    settingsError e
+        = handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
+    std::pair<settingsError, bool> p( e, value );
+    return p;
 }
 
-int getInt32( const char* pchSection,
-              const char* pchSettingsKey,
-              logType errorType,
-              std::string customErrorMsg )
+std::pair<settingsError, int> getInt32( const char* pchSection,
+                                        const char* pchSettingsKey,
+                                        logType errorType,
+                                        std::string customErrorMsg )
 
 {
     int value;
     vr::EVRSettingsError error;
     value = static_cast<int>(
         vr::VRSettings()->GetInt32( pchSection, pchSettingsKey, &error ) );
-    handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
-    return value;
+    settingsError e
+        = handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
+    std::pair<settingsError, int> p( e, value );
+    return p;
 }
 
-float getFloat( const char* pchSection,
-                const char* pchSettingsKey,
-                logType errorType,
-                std::string customErrorMsg )
+std::pair<settingsError, float> getFloat( const char* pchSection,
+                                          const char* pchSettingsKey,
+                                          logType errorType,
+                                          std::string customErrorMsg )
 
 {
     float value;
     vr::EVRSettingsError error;
     value = vr::VRSettings()->GetFloat( pchSection, pchSettingsKey, &error );
     handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
-    return value;
+    settingsError e
+        = handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
+    std::pair<settingsError, float> p( e, value );
+    return p;
 }
 
 // Setters
 
-void setBool( const char* pchSection,
-              const char* pchSettingsKey,
-              bool bValue,
-              logType errorType,
-              std::string customErrorMsg )
+settingsError setBool( const char* pchSection,
+                       const char* pchSettingsKey,
+                       bool bValue,
+                       logType errorType,
+                       std::string customErrorMsg )
 {
     vr::EVRSettingsError error;
     vr::VRSettings()->SetBool( pchSection, pchSettingsKey, bValue, &error );
-    handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
+    return handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
 }
 
-void setInt32( const char* pchSection,
-               const char* pchSettingsKey,
-               int nValue,
-               logType errorType,
-               std::string customErrorMsg )
+settingsError setInt32( const char* pchSection,
+                        const char* pchSettingsKey,
+                        int nValue,
+                        logType errorType,
+                        std::string customErrorMsg )
 {
     vr::EVRSettingsError error;
     vr::VRSettings()->SetInt32(
         pchSection, pchSettingsKey, static_cast<int32_t>( nValue ), &error );
-    handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
+    return handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
 }
 
-void setFloat( const char* pchSection,
-               const char* pchSettingsKey,
-               float flValue,
-               logType errorType,
-               std::string customErrorMsg )
+settingsError setFloat( const char* pchSection,
+                        const char* pchSettingsKey,
+                        float flValue,
+                        logType errorType,
+                        std::string customErrorMsg )
 {
     vr::EVRSettingsError error;
     vr::VRSettings()->SetFloat( pchSection, pchSettingsKey, flValue, &error );
-    handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
+    return handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
 }
 
 } // namespace ivrsettings

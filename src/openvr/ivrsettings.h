@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <easylogging++.h>
+#include <utility>
 
 /* Wrapper For OpenVR's IVR settings class, allows us to do our error logging
  * while also minimizing code
@@ -19,40 +20,49 @@ enum class logType
 
 };
 
-bool getBool( const char* pchSection,
-              const char* pchSettingsKey,
-              logType errorType,
-              std::string customErrorMsg = "" );
+// might make sense to mirror ovr's errors exactly, but for now this is more
+// than sufficient
+enum class settingsError
+{
+    noErr,
+    undefErr,
 
-int getInt32( const char* pchSection,
-              const char* pchSettingsKey,
-              logType errorType,
-              std::string customErrorMsg = "" );
+};
 
-float getFloat( const char* pchSection,
-                const char* pchSettingsKey,
-                logType errorType,
-                std::string customErrorMsg = "" );
+std::pair<settingsError, bool> getBool( const char* pchSection,
+                                        const char* pchSettingsKey,
+                                        logType errorType,
+                                        std::string customErrorMsg = "" );
+
+std::pair<settingsError, int> getInt32( const char* pchSection,
+                                        const char* pchSettingsKey,
+                                        logType errorType,
+                                        std::string customErrorMsg = "" );
+
+std::pair<settingsError, float> getFloat( const char* pchSection,
+                                          const char* pchSettingsKey,
+                                          logType errorType,
+                                          std::string customErrorMsg = "" );
 // TODO string
 
-void setBool( const char* pchSection,
-              const char* pchSettingsKey,
-              bool bValue,
-              logType errorType,
-              std::string customErrorMsg = "" );
-void setInt32( const char* pchSection,
-               const char* pchSettingsKey,
-               int nValue,
-               logType errorType,
-               std::string customErrorMsg = "" );
-void setFloat( const char* pchSection,
-               const char* pchSettingsKey,
-               float flValue,
-               logType errorType,
-               std::string customErrorMsg = "" );
+settingsError setBool( const char* pchSection,
+                       const char* pchSettingsKey,
+                       bool bValue,
+                       logType errorType,
+                       std::string customErrorMsg = "" );
+settingsError setInt32( const char* pchSection,
+                        const char* pchSettingsKey,
+                        int nValue,
+                        logType errorType,
+                        std::string customErrorMsg = "" );
+settingsError setFloat( const char* pchSection,
+                        const char* pchSettingsKey,
+                        float flValue,
+                        logType errorType,
+                        std::string customErrorMsg = "" );
 
-void handleErrors( logType errorType,
-                   const char* pchSettingsKey,
-                   vr::EVRSettingsError,
-                   std::string customErrorMsg );
+settingsError handleErrors( logType errorType,
+                            const char* pchSettingsKey,
+                            vr::EVRSettingsError,
+                            std::string customErrorMsg );
 } // namespace ivrsettings

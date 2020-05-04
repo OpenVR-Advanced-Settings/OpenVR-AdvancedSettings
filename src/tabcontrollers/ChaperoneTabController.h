@@ -12,6 +12,7 @@
 #include "../settings/settings_object.h"
 #include "MoveCenterTabController.h"
 #include "../openvr/ivrsettings.h"
+#include <utility>
 
 class QQuickWindow;
 // application namespace
@@ -361,7 +362,7 @@ public:
     void handleChaperoneWarnings( float distance );
 
     float boundsVisibility() const;
-    float fadeDistance() const;
+    float fadeDistance();
     float height() const;
     bool centerMarker() const;
     bool playSpaceMarker() const;
@@ -410,7 +411,9 @@ public:
 
 public slots:
     void setBoundsVisibility( float value, bool notify = true );
-    void setFadeDistance( float value, bool notify = true );
+    void setFadeDistance( float value,
+                          bool notify = true,
+                          bool forcechange = false );
     void setHeight( float value, bool notify = true );
     void updateHeight( float value, bool notify = true );
     void setCenterMarker( bool value, bool notify = true );
