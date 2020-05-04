@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <openvr.h>
@@ -42,6 +41,8 @@
 #include "tabcontrollers/RotationTabController.h"
 
 #include "openvr/ivrinput.h"
+
+#include "alarm_clock/vr_alarm.h"
 
 namespace application_strings
 {
@@ -151,6 +152,8 @@ private:
     int m_verifiedCustomTickRateMs = 0;
 
     input::SteamIVRInput m_actions;
+
+    alarm_clock::VrAlarm m_alarm;
 
     QNetworkAccessManager* netManager = new QNetworkAccessManager( this );
     QJsonDocument m_remoteVersionJsonDocument = QJsonDocument();

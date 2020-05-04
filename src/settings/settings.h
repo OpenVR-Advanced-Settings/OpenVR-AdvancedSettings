@@ -109,6 +109,7 @@ enum class IntSetting
 
     UTILITY_alarmHour,
     UTILITY_alarmMinute,
+    UTILITY_alarmSecond,
 
     ROTATION_autoturnLinearTurnSpeed,
     // LAST_ENUMERATOR must always be set to the last value

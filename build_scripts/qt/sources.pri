@@ -22,6 +22,7 @@ SOURCES += src/main.cpp\
     src/keyboard_input/input_parser.cpp \
     src/settings/settings.cpp \
     src/settings/settings_object.cpp \
+    src/alarm_clock/vr_alarm.cpp \
 
 
 
@@ -61,7 +62,8 @@ HEADERS += src/overlaycontroller.h \
     src/settings/internal/settings_controller.h \
     src/settings/internal/specific_setting_value.h \
     src/settings/settings_object.h \
-    src/settings/internal/settings_object_data.h
+    src/settings/internal/settings_object_data.h \
+    src/alarm_clock/vr_alarm.h \
 
 
 win32 {
