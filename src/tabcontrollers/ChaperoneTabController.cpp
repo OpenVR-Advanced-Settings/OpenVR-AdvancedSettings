@@ -27,6 +27,19 @@ void ChaperoneTabController::initStage2( OverlayController* var_parent )
     this->parent = var_parent;
 }
 
+void ChaperoneTabController::dashboardLoopTick()
+{
+    if ( settingsUpdateCounter >= m_chaperoneSettingsUpdateCounter )
+    {
+        updateChaperoneSettings();
+        settingsUpdateCounter = 0;
+    }
+    else
+    {
+        settingsUpdateCounter++;
+    }
+}
+
 ChaperoneTabController::~ChaperoneTabController()
 {
     m_chaperoneHapticFeedbackActive = false;
@@ -346,38 +359,17 @@ void ChaperoneTabController::eventLoopTick(
             }
         }
     }
-
-    if ( settingsUpdateCounter >= m_chaperoneSettingsUpdateCounter )
-    {
-        if ( parent->isDashboardVisible() )
-        {
-            updateChaperoneSettings();
-        }
-        settingsUpdateCounter = 0;
-    }
-    else
-    {
-        settingsUpdateCounter++;
-    }
 }
 
 void ChaperoneTabController::updateChaperoneSettings()
 {
     setBoundsVisibility( static_cast<float>( chaperoneColorA() ) / 255.0f );
     setFadeDistance( fadeDistance(), true, true );
-
-    setCenterMarker(
-        ivrsettings::getBool( vr::k_pch_CollisionBounds_Section,
-                              vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
-                              ivrsettings::logType::warn,
-                              "" ) );
-
-    setPlaySpaceMarker(
-        ivrsettings::getBool( vr::k_pch_CollisionBounds_Section,
-                              vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
-                              ivrsettings::logType::warn,
-                              "" ) );
-    // TODO set chaperone Colors on different XD
+    setCenterMarker( centerMarker() );
+    setPlaySpaceMarker( playSpaceMarker() );
+    setChaperoneColorR( chaperoneColorR() );
+    setChaperoneColorG( chaperoneColorG() );
+    setChaperoneColorB( chaperoneColorB() );
 }
 
 float ChaperoneTabController::boundsVisibility() const
@@ -397,11 +389,7 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
         {
             m_visibility = value;
         }
-        // TODO ROLL into Alpha color?
-        vr::VRSettings()->SetInt32(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-            static_cast<int32_t>( 255 * m_visibility ) );
+        setChaperoneColorA( static_cast<int>( 255 * m_visibility ), notify );
 
         if ( notify )
         {
@@ -422,10 +410,10 @@ float ChaperoneTabController::fadeDistance()
         m_fadeDistance = p.second;
         return p.second;
     }
-    // Error Handling?
     return m_fadeDistance;
 }
 
+// TODO Check do I really need forcechange?
 void ChaperoneTabController::setFadeDistance( float value,
                                               bool notify,
                                               bool forcechange )
@@ -439,7 +427,7 @@ void ChaperoneTabController::setFadeDistance( float value,
                                m_fadeDistance,
                                ivrsettings::logType::err,
                                "" );
-
+        // On failure do Nothing
         if ( notify )
         {
             emit fadeDistanceChanged( m_fadeDistance );
@@ -447,8 +435,19 @@ void ChaperoneTabController::setFadeDistance( float value,
     }
 }
 
-float ChaperoneTabController::height() const
+float ChaperoneTabController::height()
 {
+    std::pair<ivrsettings::settingsError, float> p
+        = ivrsettings::getFloat( vr::k_pch_CollisionBounds_Section,
+                                 vr::k_pch_CollisionBounds_WallHeight_Float,
+                                 ivrsettings::logType::err,
+                                 "" );
+    if ( p.first == ivrsettings::settingsError::noErr )
+    {
+        m_height = p.second;
+        return p.second;
+    }
+
     return m_height;
 }
 
@@ -457,7 +456,13 @@ void ChaperoneTabController::setHeight( float value, bool notify )
     if ( fabs( static_cast<double>( m_height - value ) ) > 0.005 )
     {
         m_height = value;
-        parent->m_moveCenterTabController.setBoundsBasisHeight( m_height );
+        ivrsettings::setFloat( vr::k_pch_CollisionBounds_Section,
+                               vr::k_pch_CollisionBounds_WallHeight_Float,
+                               m_height,
+                               ivrsettings::logType::err,
+                               "" );
+        // TODO does this mess Movement up?
+        // parent->m_moveCenterTabController.setBoundsBasisHeight( m_height );
         if ( notify )
         {
             emit heightChanged( m_height );
@@ -465,6 +470,7 @@ void ChaperoneTabController::setHeight( float value, bool notify )
     }
 }
 
+// TODO check if Needed
 void ChaperoneTabController::updateHeight( float value, bool notify )
 {
     if ( fabs( static_cast<double>( m_height - value ) ) > 0.005 )
@@ -477,8 +483,19 @@ void ChaperoneTabController::updateHeight( float value, bool notify )
     }
 }
 
-bool ChaperoneTabController::centerMarker() const
+bool ChaperoneTabController::centerMarker()
 {
+    std::pair<ivrsettings::settingsError, bool> p
+        = ivrsettings::getBool( vr::k_pch_CollisionBounds_Section,
+                                vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
+                                ivrsettings::logType::err,
+                                "" );
+    if ( p.first == ivrsettings::settingsError::noErr )
+    {
+        m_centerMarker = p.second;
+        return p.second;
+    }
+
     return m_centerMarker;
 }
 
@@ -492,6 +509,7 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
                               m_centerMarker,
                               ivrsettings::logType::err,
                               "" );
+        // On Error Do Nothing
         if ( notify )
         {
             emit centerMarkerChanged( m_centerMarker );
@@ -499,8 +517,19 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
     }
 }
 
-bool ChaperoneTabController::playSpaceMarker() const
+bool ChaperoneTabController::playSpaceMarker()
 {
+    std::pair<ivrsettings::settingsError, bool> p
+        = ivrsettings::getBool( vr::k_pch_CollisionBounds_Section,
+                                vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
+                                ivrsettings::logType::err,
+                                "" );
+    if ( p.first == ivrsettings::settingsError::noErr )
+    {
+        m_playSpaceMarker = p.second;
+        return p.second;
+    }
+
     return m_playSpaceMarker;
 }
 
@@ -514,6 +543,7 @@ void ChaperoneTabController::setPlaySpaceMarker( bool value, bool notify )
                               m_playSpaceMarker,
                               ivrsettings::logType::err,
                               "" );
+        // On Error Do Nothing
         if ( notify )
         {
             emit playSpaceMarkerChanged( m_playSpaceMarker );
@@ -523,6 +553,7 @@ void ChaperoneTabController::setPlaySpaceMarker( bool value, bool notify )
 
 bool ChaperoneTabController::forceBounds() const
 {
+    // TODO look at (not IVR settings it's IVRChaperone)
     return m_forceBounds;
 }
 
@@ -594,31 +625,56 @@ float ChaperoneTabController::chaperoneShowDashboardDistance() const
 
 int ChaperoneTabController::chaperoneColorR() const
 {
-    return ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
-                                  vr::k_pch_CollisionBounds_ColorGammaR_Int32,
-                                  ivrsettings::logType::err,
-                                  "" );
+    std::pair<ivrsettings::settingsError, int> p
+        = ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
+                                 vr::k_pch_CollisionBounds_ColorGammaR_Int32,
+                                 ivrsettings::logType::err,
+                                 "" );
+    if ( p.first != ivrsettings::settingsError::noErr )
+    {
+        return 0;
+    }
+    return p.second;
 }
 int ChaperoneTabController::chaperoneColorG() const
 {
-    return ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
-                                  vr::k_pch_CollisionBounds_ColorGammaG_Int32,
-                                  ivrsettings::logType::err,
-                                  "" );
+    std::pair<ivrsettings::settingsError, int> p
+        = ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
+                                 vr::k_pch_CollisionBounds_ColorGammaG_Int32,
+                                 ivrsettings::logType::err,
+                                 "" );
+    if ( p.first != ivrsettings::settingsError::noErr )
+    {
+        return 255;
+    }
+    return p.second;
 }
 int ChaperoneTabController::chaperoneColorB() const
 {
-    return ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
-                                  vr::k_pch_CollisionBounds_ColorGammaB_Int32,
-                                  ivrsettings::logType::err,
-                                  "" );
+    std::pair<ivrsettings::settingsError, int> p
+        = ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
+                                 vr::k_pch_CollisionBounds_ColorGammaB_Int32,
+                                 ivrsettings::logType::err,
+                                 "" );
+    if ( p.first != ivrsettings::settingsError::noErr )
+    {
+        return 255;
+    }
+    return p.second;
 }
+// aka transparancy
 int ChaperoneTabController::chaperoneColorA() const
 {
-    return ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
-                                  vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-                                  ivrsettings::logType::err,
-                                  "" );
+    std::pair<ivrsettings::settingsError, int> p
+        = ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
+                                 vr::k_pch_CollisionBounds_ColorGammaA_Int32,
+                                 ivrsettings::logType::err,
+                                 "" );
+    if ( p.first != ivrsettings::settingsError::noErr )
+    {
+        return 255;
+    }
+    return p.second;
 }
 
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount()
@@ -654,72 +710,85 @@ void ChaperoneTabController::setForceBounds( bool value, bool notify )
 
 void ChaperoneTabController::setChaperoneColorR( int value, bool notify )
 {
-    if ( value > 255 )
+    if ( value != m_chaperoneColorR )
     {
-        value = 255;
-        LOG( WARNING ) << "Red Channel larger than 255, setting to 255";
-    }
-    else if ( value < 0 )
-    {
-        value = 0;
-        LOG( WARNING ) << "Red Channel smaller than 0, setting to 0";
-    }
-    ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
-                           vr::k_pch_CollisionBounds_ColorGammaR_Int32,
-                           value,
-                           ivrsettings::logType::err,
-                           "" );
-    if ( notify )
-    {
-        emit chaperoneColorRChanged( value );
+        if ( value > 255 )
+        {
+            value = 255;
+            LOG( WARNING ) << "Red Channel larger than 255, setting to 255";
+        }
+        else if ( value < 0 )
+        {
+            value = 0;
+            LOG( WARNING ) << "Red Channel smaller than 0, setting to 0";
+        }
+        m_chaperoneColorR = value;
+        ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
+                               vr::k_pch_CollisionBounds_ColorGammaR_Int32,
+                               m_chaperoneColorR,
+                               ivrsettings::logType::err,
+                               "" );
+        if ( notify )
+        {
+            emit chaperoneColorRChanged( value );
+        }
     }
 }
 
 void ChaperoneTabController::setChaperoneColorG( int value, bool notify )
 {
-    if ( value > 255 )
+    if ( value != m_chaperoneColorG )
     {
-        value = 255;
-        LOG( WARNING ) << "Green Channel larger than 255, setting to 255";
-    }
-    else if ( value < 0 )
-    {
-        value = 0;
-        LOG( WARNING ) << "Green Channel smaller than 0, setting to 0";
-    }
-    ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
-                           vr::k_pch_CollisionBounds_ColorGammaG_Int32,
-                           value,
-                           ivrsettings::logType::err,
-                           "" );
-    if ( notify )
-    {
-        emit chaperoneColorGChanged( value );
+        if ( value > 255 )
+        {
+            value = 255;
+            LOG( WARNING ) << "Green Channel larger than 255, setting to 255";
+        }
+        else if ( value < 0 )
+        {
+            value = 0;
+            LOG( WARNING ) << "Green Channel smaller than 0, setting to 0";
+        }
+        m_chaperoneColorG = value;
+        ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
+                               vr::k_pch_CollisionBounds_ColorGammaG_Int32,
+                               m_chaperoneColorG,
+                               ivrsettings::logType::err,
+                               "" );
+        if ( notify )
+        {
+            emit chaperoneColorGChanged( value );
+        }
     }
 }
 
 void ChaperoneTabController::setChaperoneColorB( int value, bool notify )
 {
-    if ( value > 255 )
+    if ( value != m_chaperoneColorB )
     {
-        value = 255;
-        LOG( WARNING ) << "Blue Channel larger than 255, setting to 255";
-    }
-    else if ( value < 0 )
-    {
-        value = 0;
-        LOG( WARNING ) << "Blue Channel smaller than 0, setting to 0";
-    }
-    ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
-                           vr::k_pch_CollisionBounds_ColorGammaB_Int32,
-                           value,
-                           ivrsettings::logType::err,
-                           "" );
-    if ( notify )
-    {
-        emit chaperoneColorBChanged( value );
+        if ( value > 255 )
+        {
+            value = 255;
+            LOG( WARNING ) << "Blue Channel larger than 255, setting to 255";
+        }
+        else if ( value < 0 )
+        {
+            value = 0;
+            LOG( WARNING ) << "Blue Channel smaller than 0, setting to 0";
+        }
+        m_chaperoneColorB = value;
+        ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
+                               vr::k_pch_CollisionBounds_ColorGammaB_Int32,
+                               m_chaperoneColorB,
+                               ivrsettings::logType::err,
+                               "" );
+        if ( notify )
+        {
+            emit chaperoneColorBChanged( value );
+        }
     }
 }
+// TODO use or not?
 void ChaperoneTabController::setChaperoneColorA( int value, bool notify )
 {
     if ( value > 255 )
@@ -1093,10 +1162,12 @@ void ChaperoneTabController::addChaperoneProfile(
     {
         profile->chaperoneStyle
 
-            = ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
-                                     vr::k_pch_CollisionBounds_Style_Int32,
-                                     ivrsettings::logType::warn,
-                                     "" );
+            = std::pair<ivrsettings::settingsError, int>(
+                  ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
+                                         vr::k_pch_CollisionBounds_Style_Int32,
+                                         ivrsettings::logType::warn,
+                                         "" ) )
+                  .second;
     }
     profile->includesForceBounds = includeForceBounds;
     if ( includeForceBounds )

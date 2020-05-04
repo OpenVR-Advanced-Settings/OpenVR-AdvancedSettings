@@ -339,6 +339,10 @@ private:
     bool m_leftHapticClickActivated = false;
     bool m_rightHapticClickActivated = false;
 
+    int m_chaperoneColorR = 0;
+    int m_chaperoneColorG = 255;
+    int m_chaperoneColorB = 255;
+
     bool m_autosaveComplete = false;
 
     int m_updateTicksChaperoneReload = 0;
@@ -359,13 +363,14 @@ public:
     void initStage2( OverlayController* parent );
 
     void eventLoopTick( vr::TrackedDevicePose_t* devicePoses );
+    void dashboardLoopTick();
     void handleChaperoneWarnings( float distance );
 
     float boundsVisibility() const;
     float fadeDistance();
-    float height() const;
-    bool centerMarker() const;
-    bool playSpaceMarker() const;
+    float height();
+    bool centerMarker();
+    bool playSpaceMarker();
     bool forceBounds() const;
     bool disableChaperone() const;
 
