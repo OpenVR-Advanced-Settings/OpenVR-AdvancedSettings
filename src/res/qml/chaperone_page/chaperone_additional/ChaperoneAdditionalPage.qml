@@ -10,16 +10,21 @@ import "chaperoneboundscolor"
 MyStackViewPage {
     headerText: "Additional Chaperone Settings"
     content: ColumnLayout {
-        spacing: 36
+        spacing: 10
 
-        //TODO content
-        Component.onCompleted: {
-
+        ChaperoneBoundsColorGroupBox{
+        id: chaperoneBoundsColorGroupBox
+        }
+        Item {
+            Layout.fillHeight: true
         }
 
-        Connections {
-            target: ChaperoneTabController
-
-        }
     }
+
+
 }
+
+
+
+    //TODO content
+

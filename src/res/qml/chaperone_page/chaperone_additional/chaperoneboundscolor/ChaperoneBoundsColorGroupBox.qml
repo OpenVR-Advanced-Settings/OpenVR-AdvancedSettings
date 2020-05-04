@@ -2,16 +2,16 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
-import "../../common"
+import "../../../common"
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 
 GroupBox {
-    id: changeOrientationGroupBox
+    id: chaperoneBoundsColorGroupBox
     Layout.fillWidth: true
 
     label: MyText {
         leftPadding: 10
-        text: "Rotate Orientation (permanent)"
+        text: "Chaperone Color"
         bottomPadding: -10
     }
     background: Rectangle {
@@ -30,75 +30,222 @@ GroupBox {
             Layout.bottomMargin: 5
         }
 
-        ColumnLayout {
-            RowLayout {
-                MyPushButton2 {
-                    id: spaceRotationMinusButton
-                    Layout.preferredWidth: 40
-                    text: "-"
-                    onClicked: {
-                        var val = spaceRotationSlider.value - 45
-                        if (val <= -180){
-                            val = -180;
-                        }
-                        spaceRotationSlider.value = val
-                        spaceRotationText.text = val
-                    }
+            RowLayout{
+
+                MyText {
+                    text: "Red:"
+                    horizontalAlignment: Text.AlignRight
+                    Layout.preferredWidth: 75
                 }
 
                 MySlider {
-                    id: spaceRotationSlider
-                    from: -180
-                    to: 180
-                    stepSize: 1
+                    id: chaperoneColorRedSlider
+                    from: 0
+                    to: 255
+                    stepSize: 5
                     value: 0
                     Layout.fillWidth: true
-                    onValueChanged: {
-                        var val = this.value
-                        spaceRotationText.text = val
-                    }
-                }
-
-                MyPushButton2 {
-                    id: spaceRotationPlusButton
-                    Layout.preferredWidth: 40
-                    text: "+"
-                    onClicked: {
-                        var val = spaceRotationSlider.value + 45
-                        if (val >= 180){
-                            val = 180;
-                        }
-                        spaceRotationSlider.value = val
-                        spaceRotationText.text = val
+                    onPositionChanged: {
+                        var val = (this.value).toFixed(0)
+                        colorRedText.text = val
+                        ChaperoneTabController.setChaperoneColorR(val, true)
                     }
                 }
 
                 MyTextField {
-                    id: spaceRotationText
-                    text: "0°"
-                    keyBoardUID: 311
-                    Layout.preferredWidth: 150
+                    id: colorRedText
+                    text: "0"
+                    keyBoardUID: 320
+                    Layout.preferredWidth: 100
                     Layout.leftMargin: 10
                     horizontalAlignment: Text.AlignHCenter
                     function onInputEvent(input) {
-                        var val = parseFloat(input)
+                        var val = parseInt(input)
                         if (!isNaN(val)) {
-                            spaceRotationText.text = val + "°"
-                            spaceRotationSlider.value = val
+                            if (val < 0) {
+                                val = 0
+                            } else if (val > 255) {
+                                val = 255
+                            }
+                            ChaperoneTabController.setChaperoneColorR(val, true)
+                            chaperoneColorRedSlider.value = val
                         }
+                        text = val
                     }
                 }
-                MyPushButton {
-                    id: spaceRotationApplyButton
-                    Layout.preferredWidth: 145
-                    text:"Apply"
-                    onClicked: {
-                        ChaperoneTabController.flipOrientation(spaceRotationSlider.value)
-                        spaceRotationSlider.value = 0
-                        spaceRotationText.text = "0°"
+
+                Item{
+                    Layout.preferredWidth: 200
+                }
+                MyText {
+                    text: "Green:"
+                    horizontalAlignment: Text.AlignRight
+                    Layout.preferredWidth: 75
+                }
+
+                MySlider {
+                    id: chaperoneColorGreenSlider
+                    from: 0
+                    to: 255
+                    stepSize: 5
+                    value: 255
+                    Layout.fillWidth: true
+                    onPositionChanged: {
+                        var val = (this.value).toFixed(0)
+                        colorGreenText.text = val
+                        ChaperoneTabController.setChaperoneColorG(val, true)
                     }
-               }
+                }
+
+                MyTextField {
+                    id: colorGreenText
+                    text: "255"
+                    keyBoardUID: 321
+                    Layout.preferredWidth: 100
+                    Layout.leftMargin: 10
+                    horizontalAlignment: Text.AlignHCenter
+                    function onInputEvent(input) {
+                        var val = parseInt(input)
+                        if (!isNaN(val)) {
+                            if (val < 0) {
+                                val = 0
+                            } else if (val > 255) {
+                                val = 255
+                            }
+                            ChaperoneTabController.setChaperoneColorG(val, true)
+                            chaperoneColorGreenSlider.value = val
+                        }
+                        text = val
+                    }
+                }
+
             }
+            RowLayout{
+                MyText {
+                    text: "Blue:"
+                    horizontalAlignment: Text.AlignRight
+                    Layout.preferredWidth: 75
+                }
+
+                MySlider {
+                    id: chaperoneColorBlueSlider
+                    from: 0
+                    to: 255
+                    stepSize: 5
+                    value: 255
+                    Layout.fillWidth: true
+                    onPositionChanged: {
+                        var val = (this.value).toFixed(0)
+                        colorBlueText.text = val
+                        ChaperoneTabController.setChaperoneColorB(val, true)
+                    }
+                }
+
+                MyTextField {
+                    id: colorBlueText
+                    text: "255"
+                    keyBoardUID: 322
+                    Layout.preferredWidth: 100
+                    Layout.leftMargin: 10
+                    horizontalAlignment: Text.AlignHCenter
+                    function onInputEvent(input) {
+                        var val = parseInt(input)
+                        if (!isNaN(val)) {
+                            if (val < 0) {
+                                val = 0
+                            } else if (val > 255) {
+                                val = 255
+                            }
+                            ChaperoneTabController.setChaperoneColorB(val, true)
+                            chaperoneColorBlueSlider.value = val
+                        }
+                        text = val
+                    }
+                }
+
+                MyText {
+                    text: "Alpha:"
+                    horizontalAlignment: Text.AlignRight
+                    Layout.preferredWidth: 75
+                }
+
+                MySlider {
+                    id: chaperoneColorAlphaSlider
+                    from: 0
+                    to: 255
+                    stepSize: 5
+                    value: 158
+                    Layout.fillWidth: true
+                    onPositionChanged: {
+                        var val = (this.value).toFixed(0)
+                        colorAlphaText.text = val
+                        ChaperoneTabController.setChaperoneColorA(val, true)
+                    }
+                }
+
+                MyTextField {
+                    id: colorAlphaText
+                    text: "158"
+                    keyBoardUID: 323
+                    Layout.preferredWidth: 100
+                    Layout.leftMargin: 10
+                    horizontalAlignment: Text.AlignHCenter
+                    function onInputEvent(input) {
+                        var val = parseInt(input)
+                        if (!isNaN(val)) {
+                            if (val < 0) {
+                                val = 0
+                            } else if (val > 255) {
+                                val = 255
+                            }
+                            ChaperoneTabController.setChaperoneColorA(val, true)
+                            chaperoneColorAlphaSlider.value = val
+                        }
+                        text = val
+                    }
+
+
+            }
+
         }
+    }
+    Component.onCompleted: {
+        // set up var here to prevent double call to c++ from qml
+        var redValue = ChaperoneTabController.chaperoneColorR
+        var greenValue = ChaperoneTabController.chaperoneColorG
+        var blueValue = ChaperoneTabController.chaperoneColorB
+        var alphaValue = ChaperoneTabController.chaperoneColorA
+       colorRedText.text = redValue
+       colorGreenText.text = greenValue
+       colorBlueText.text = blueValue
+       colorAlphaText.text = alphaValue
+       chaperoneColorRedSlider.value = redValue
+       chaperoneColorGreenSlider.value = greenValue
+       chaperoneColorBlueSlider.value = blueValue
+       chaperoneColorAlphaSlider.value = alphaValue
+
+    }
+
+    Connections {
+        target: ChaperoneTabController
+        onChaperoneColorRChanged:{
+            var redValue = ChaperoneTabController.chaperoneColorR
+            colorRedText.text = redValue
+            chaperoneColorRedSlider.value = redValue
+        }
+        onChaperoneColorGChanged:{
+            var greenValue = ChaperoneTabController.chaperoneColorG
+            colorGreenText.text = greenValue
+            chaperoneColorGreenSlider.value = greenValue
+        }
+        onChaperoneColorBChanged:{
+            var blueValue = ChaperoneTabController.chaperoneColorB
+            colorBlueText.text = blueValue
+            chaperoneColorBlueSlider.value = blueValue
+        }
+        onChaperoneColorAChanged:{
+            var alphaValue = ChaperoneTabController.chaperoneColorA
+            colorAlphaText.text = alphaValue
+            chaperoneColorAlphaSlider.value = alphaValue        }
     }
 }
