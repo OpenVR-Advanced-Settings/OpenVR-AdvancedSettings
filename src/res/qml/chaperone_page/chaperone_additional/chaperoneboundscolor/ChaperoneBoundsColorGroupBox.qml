@@ -162,51 +162,6 @@ GroupBox {
                         text = val
                     }
                 }
-
-                MyText {
-                    text: "Alpha:"
-                    horizontalAlignment: Text.AlignRight
-                    Layout.preferredWidth: 75
-                }
-
-                MySlider {
-                    id: chaperoneColorAlphaSlider
-                    from: 0
-                    to: 255
-                    stepSize: 5
-                    value: 158
-                    Layout.fillWidth: true
-                    onPositionChanged: {
-                        var val = (this.value).toFixed(0)
-                        colorAlphaText.text = val
-                        ChaperoneTabController.setChaperoneColorA(val, true)
-                    }
-                }
-
-                MyTextField {
-                    id: colorAlphaText
-                    text: "158"
-                    keyBoardUID: 323
-                    Layout.preferredWidth: 100
-                    Layout.leftMargin: 10
-                    horizontalAlignment: Text.AlignHCenter
-                    function onInputEvent(input) {
-                        var val = parseInt(input)
-                        if (!isNaN(val)) {
-                            if (val < 0) {
-                                val = 0
-                            } else if (val > 255) {
-                                val = 255
-                            }
-                            ChaperoneTabController.setChaperoneColorA(val, true)
-                            chaperoneColorAlphaSlider.value = val
-                        }
-                        text = val
-                    }
-
-
-            }
-
         }
     }
     Component.onCompleted: {
@@ -214,15 +169,12 @@ GroupBox {
         var redValue = ChaperoneTabController.chaperoneColorR
         var greenValue = ChaperoneTabController.chaperoneColorG
         var blueValue = ChaperoneTabController.chaperoneColorB
-        var alphaValue = ChaperoneTabController.chaperoneColorA
        colorRedText.text = redValue
        colorGreenText.text = greenValue
        colorBlueText.text = blueValue
-       colorAlphaText.text = alphaValue
        chaperoneColorRedSlider.value = redValue
        chaperoneColorGreenSlider.value = greenValue
        chaperoneColorBlueSlider.value = blueValue
-       chaperoneColorAlphaSlider.value = alphaValue
 
     }
 
@@ -243,9 +195,5 @@ GroupBox {
             colorBlueText.text = blueValue
             chaperoneColorBlueSlider.value = blueValue
         }
-        onChaperoneColorAChanged:{
-            var alphaValue = ChaperoneTabController.chaperoneColorA
-            colorAlphaText.text = alphaValue
-            chaperoneColorAlphaSlider.value = alphaValue        }
     }
 }
