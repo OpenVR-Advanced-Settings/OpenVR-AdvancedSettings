@@ -83,63 +83,19 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
         if ( distance <= activationDistance && m_isHMDActive
              && !m_chaperoneSwitchToBeginnerActive )
         {
-            // TODO return error ENUM and switch to wrapper
-            vr::EVRSettingsError vrSettingsError;
-            m_chaperoneSwitchToBeginnerLastStyle = vr::VRSettings()->GetInt32(
-                vr::k_pch_CollisionBounds_Section,
-                vr::k_pch_CollisionBounds_Style_Int32,
-                &vrSettingsError );
-            if ( vrSettingsError != vr::VRSettingsError_None )
-            {
-                LOG( WARNING )
-                    << "Could not read \""
-                    << vr::k_pch_CollisionBounds_Style_Int32 << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
-            }
-            else
-            {
-                // TODO return error ENUM
-                vr::VRSettings()->SetInt32(
-                    vr::k_pch_CollisionBounds_Section,
-                    vr::k_pch_CollisionBounds_Style_Int32,
-                    vr::COLLISION_BOUNDS_STYLE_BEGINNER,
-                    &vrSettingsError );
-                if ( vrSettingsError != vr::VRSettingsError_None )
-                {
-                    LOG( WARNING )
-                        << "Could not set \""
-                        << vr::k_pch_CollisionBounds_Style_Int32
-                        << "\" setting: "
-                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                               vrSettingsError );
-                }
-                else
-                {
-                    m_chaperoneSwitchToBeginnerActive = true;
-                }
-            }
+            // Instead of backing out at every stage, this will log errors, but
+            // proceed forward.
+            m_chaperoneSwitchToBeginnerLastStyle = collisionBoundStyle();
+            setCollisionBoundStyle(
+                static_cast<int>( vr::COLLISION_BOUNDS_STYLE_BEGINNER ), true );
+            m_chaperoneSwitchToBeginnerActive = true;
         }
         else if ( ( distance > activationDistance || !m_isHMDActive )
                   && m_chaperoneSwitchToBeginnerActive )
         {
-            vr::EVRSettingsError vrSettingsError;
-            vr::VRSettings()->SetInt32( vr::k_pch_CollisionBounds_Section,
-                                        vr::k_pch_CollisionBounds_Style_Int32,
-                                        m_chaperoneSwitchToBeginnerLastStyle,
-                                        &vrSettingsError );
-            if ( vrSettingsError != vr::VRSettingsError_None )
-            {
-                LOG( WARNING )
-                    << "Could not set \""
-                    << vr::k_pch_CollisionBounds_Style_Int32 << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
-            }
-            else
-            {
-                m_chaperoneSwitchToBeginnerActive = false;
-            }
+            setCollisionBoundStyle( m_chaperoneSwitchToBeginnerLastStyle,
+                                    true );
+            m_chaperoneSwitchToBeginnerActive = false;
         }
     }
 
@@ -1210,12 +1166,7 @@ void ChaperoneTabController::addChaperoneProfile(
     {
         profile->chaperoneStyle
 
-            = std::pair<ivrsettings::settingsError, int>(
-                  ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
-                                         vr::k_pch_CollisionBounds_Style_Int32,
-                                         ivrsettings::logType::warn,
-                                         "" ) )
-                  .second;
+            = m_collisionBoundStyle; // TODO make sure initiliazed properly
     }
     profile->includesForceBounds = includeForceBounds;
     if ( includeForceBounds )
@@ -1302,11 +1253,7 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
         }
         if ( profile.includesChaperoneStyle )
         {
-            ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
-                                   vr::k_pch_CollisionBounds_Style_Int32,
-                                   profile.chaperoneStyle,
-                                   ivrsettings::logType::warn,
-                                   "While Loading Profile" );
+            setCollisionBoundStyle( profile.chaperoneStyle, true );
         }
         if ( profile.includesForceBounds )
         {
@@ -1584,11 +1531,7 @@ void ChaperoneTabController::shutdown()
     if ( isChaperoneSwitchToBeginnerEnabled()
          && m_chaperoneSwitchToBeginnerActive )
     {
-        ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
-                               vr::k_pch_CollisionBounds_Style_Int32,
-                               m_chaperoneSwitchToBeginnerLastStyle,
-                               ivrsettings::logType::err,
-                               "" );
+        setCollisionBoundStyle( m_chaperoneSwitchToBeginnerLastStyle, false );
     }
 }
 
