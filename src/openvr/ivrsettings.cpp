@@ -12,21 +12,21 @@ settingsError handleErrors( logType errorType,
         switch ( errorType )
         {
         case logType::warn:
-            LOG( WARNING ) << "Could not read \"" << pchSettingsKey
+            LOG( WARNING ) << "Could not access \"" << pchSettingsKey
                            << "\" setting: "
                            << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                                   error )
                            << " " << customErrorMsg;
             break;
         case logType::err:
-            LOG( ERROR ) << "Could not read \"" << pchSettingsKey
+            LOG( ERROR ) << "Could not access \"" << pchSettingsKey
                          << "\" setting: "
                          << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                                 error )
                          << " " << customErrorMsg;
             break;
         case logType::bug:
-            LOG( DEBUG ) << "Could not read \"" << pchSettingsKey
+            LOG( DEBUG ) << "Could not access \"" << pchSettingsKey
                          << "\" setting: "
                          << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                                 error )
