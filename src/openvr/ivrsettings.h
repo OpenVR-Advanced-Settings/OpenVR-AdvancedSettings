@@ -61,6 +61,14 @@ settingsError setFloat( const char* pchSection,
                         logType errorType,
                         std::string customErrorMsg = "" );
 
+settingsError RemoveSection( const char* pchSection,
+                             logType errorType,
+                             std::string customErrorMsg = "" );
+settingsError RemoveKeyInSection( const char* pchSection,
+                                  const char* pchSettingsKey,
+                                  logType errorType,
+                                  std::string customErrorMsg = "" );
+
 settingsError handleErrors( logType errorType,
                             const char* pchSettingsKey,
                             vr::EVRSettingsError,

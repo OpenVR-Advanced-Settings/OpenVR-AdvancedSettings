@@ -121,4 +121,23 @@ settingsError setFloat( const char* pchSection,
     return handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
 }
 
+settingsError removeSection( const char* pchSection,
+                             logType errorType,
+                             std::string customErrorMsg )
+{
+    vr::EVRSettingsError error;
+    vr::VRSettings()->RemoveSection( pchSection, &error );
+    return handleErrors( errorType, "Section", error, customErrorMsg );
+}
+
+settingsError removeKeyInSection( const char* pchSection,
+                                  const char* pchSettingsKey,
+                                  logType errorType,
+                                  std::string customErrorMsg )
+{
+    vr::EVRSettingsError error;
+    vr::VRSettings()->RemoveKeyInSection( pchSection, pchSettingsKey, &error );
+    return handleErrors( errorType, pchSettingsKey, error, customErrorMsg );
+}
+
 } // namespace ivrsettings
