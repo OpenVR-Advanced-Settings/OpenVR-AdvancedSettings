@@ -319,7 +319,7 @@ void VideoTabController::setBrightnessOpacityValue( float percvalue,
     settings::setSetting( settings::DoubleSetting::VIDEO_brightnessOpacityValue,
                           static_cast<double>( percvalue ) );
 
-    if ( realvalue >= 0.97f || realvalue <= 0.00f )
+    if ( realvalue >= 0.97f || realvalue < 0.00f )
     {
         LOG( WARNING ) << "alpha value is invalid setting to 1.0";
         settings::setSetting(
