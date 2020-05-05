@@ -84,8 +84,6 @@ constexpr int k_maxCustomTickRate = 999;
 constexpr int k_hmdRotationCounterUpdateRate = 7;
 
 // directory of sound files
-constexpr auto clickSoundURL = "res/sounds/click.wav";
-constexpr auto focusChangedSoundURL = "res/sounds/focus.wav";
 
 class OverlayController : public QObject
 {

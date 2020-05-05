@@ -69,6 +69,7 @@ OverlayController::OverlayController( bool desktopMode,
     m_runtimePathUrl = QUrl::fromLocalFile( tempRuntimePath );
     LOG( INFO ) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
+    constexpr auto clickSoundURL = "res/sounds/click.wav";
     const auto activationSoundFile
         = paths::binaryDirectoryFindFile( clickSoundURL );
 
@@ -83,7 +84,7 @@ OverlayController::OverlayController( bool desktopMode,
         LOG( ERROR ) << "Could not find activation sound file "
                      << clickSoundURL;
     }
-
+    constexpr auto focusChangedSoundURL = "res/sounds/focus.wav";
     const auto focusChangedSoundFile
         = paths::binaryDirectoryFindFile( focusChangedSoundURL );
 
