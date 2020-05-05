@@ -69,33 +69,34 @@ OverlayController::OverlayController( bool desktopMode,
     m_runtimePathUrl = QUrl::fromLocalFile( tempRuntimePath );
     LOG( INFO ) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
-    QString activationSoundFile = clickSoundURL;
-    QFileInfo activationSoundFileInfo( activationSoundFile );
-    if ( activationSoundFileInfo.exists() && activationSoundFileInfo.isFile() )
+    const auto activationSoundFile
+        = paths::binaryDirectoryFindFile( clickSoundURL );
+
+    if ( activationSoundFile.has_value() )
     {
-        m_activationSoundEffect.setSource(
-            QUrl::fromLocalFile( activationSoundFile ) );
+        m_activationSoundEffect.setSource( QUrl::fromLocalFile(
+            QString::fromStdString( ( *activationSoundFile ) ) ) );
         m_activationSoundEffect.setVolume( 1.0 );
     }
     else
     {
         LOG( ERROR ) << "Could not find activation sound file "
-                     << activationSoundFile;
+                     << clickSoundURL;
     }
 
-    QString focusChangedSoundFile = focusChangedSoundURL;
-    QFileInfo focusChangedSoundFileInfo( focusChangedSoundFile );
-    if ( focusChangedSoundFileInfo.exists()
-         && focusChangedSoundFileInfo.isFile() )
+    const auto focusChangedSoundFile
+        = paths::binaryDirectoryFindFile( focusChangedSoundURL );
+
+    if ( focusChangedSoundFile.has_value() )
     {
-        m_focusChangedSoundEffect.setSource(
-            QUrl::fromLocalFile( focusChangedSoundFile ) );
+        m_focusChangedSoundEffect.setSource( QUrl::fromLocalFile(
+            QString::fromStdString( ( *focusChangedSoundFile ) ) ) );
         m_focusChangedSoundEffect.setVolume( 1.0 );
     }
     else
     {
-        LOG( ERROR ) << "Could not find focus changed sound file "
-                     << focusChangedSoundFile;
+        LOG( ERROR ) << "Could not find focus Changed sound file "
+                     << focusChangedSoundURL;
     }
 
     constexpr auto alarmFileName = "res/sounds/alarm01.wav";
