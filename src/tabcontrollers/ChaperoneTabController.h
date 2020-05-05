@@ -308,6 +308,8 @@ class ChaperoneTabController : public QObject
                     setChaperoneColorB NOTIFY chaperoneColorBChanged )
     Q_PROPERTY( int chaperoneColorA READ chaperoneColorA WRITE
                     setChaperoneColorA NOTIFY chaperoneColorAChanged )
+    Q_PROPERTY( int collisionBoundStyle READ collisionBoundStyle WRITE
+                    setCollisionBoundStyle NOTIFY collisionBoundStyleChanged )
 
 private:
     OverlayController* parent;
@@ -343,6 +345,8 @@ private:
     int m_chaperoneColorG = 255;
     int m_chaperoneColorB = 255;
 
+    int m_collisionBoundStyle = 0;
+
     bool m_autosaveComplete = false;
 
     int m_updateTicksChaperoneReload = 0;
@@ -374,10 +378,12 @@ public:
     bool forceBounds() const;
     bool disableChaperone() const;
 
-    int chaperoneColorR() const;
-    int chaperoneColorG() const;
-    int chaperoneColorB() const;
+    int chaperoneColorR();
+    int chaperoneColorG();
+    int chaperoneColorB();
     int chaperoneColorA() const;
+
+    int collisionBoundStyle();
 
     void setRightHapticActionHandle( vr::VRActionHandle_t handle );
     void setLeftHapticActionHandle( vr::VRActionHandle_t handle );
@@ -446,6 +452,8 @@ public slots:
     void setChaperoneColorB( int value, bool notify = true );
     void setChaperoneColorA( int value, bool notify = true );
 
+    void setCollisionBoundStyle( int value, bool notify = true );
+
     void flipOrientation( double degrees = 180 );
     void reloadFromDisk();
 
@@ -495,6 +503,8 @@ signals:
     void chaperoneColorGChanged( int value );
     void chaperoneColorBChanged( int value );
     void chaperoneColorAChanged( int value );
+
+    void collisionBoundStyleChanged( int value );
 
     void chaperoneProfilesUpdated();
 };

@@ -353,6 +353,7 @@ void ChaperoneTabController::eventLoopTick(
             m_updateTicksChaperoneReload++;
             if ( m_updateTicksChaperoneReload >= 500 )
             {
+                // TODO check if not roomscale XD
                 m_updateTicksChaperoneReload = 0;
                 LOG( WARNING ) << "Attempting to reload chaperone data";
                 parent->chaperoneUtils().loadChaperoneData();
@@ -623,7 +624,7 @@ float ChaperoneTabController::chaperoneShowDashboardDistance() const
         settings::DoubleSetting::CHAPERONE_showDashboardDistance ) );
 }
 
-int ChaperoneTabController::chaperoneColorR() const
+int ChaperoneTabController::chaperoneColorR()
 {
     std::pair<ivrsettings::settingsError, int> p
         = ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
@@ -632,11 +633,12 @@ int ChaperoneTabController::chaperoneColorR() const
                                  "" );
     if ( p.first != ivrsettings::settingsError::noErr )
     {
-        return 0;
+        return m_chaperoneColorR;
     }
-    return p.second;
+    m_chaperoneColorR = p.second;
+    return m_chaperoneColorR;
 }
-int ChaperoneTabController::chaperoneColorG() const
+int ChaperoneTabController::chaperoneColorG()
 {
     std::pair<ivrsettings::settingsError, int> p
         = ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
@@ -645,11 +647,12 @@ int ChaperoneTabController::chaperoneColorG() const
                                  "" );
     if ( p.first != ivrsettings::settingsError::noErr )
     {
-        return 255;
+        return m_chaperoneColorG;
     }
-    return p.second;
+    m_chaperoneColorG = p.second;
+    return m_chaperoneColorG;
 }
-int ChaperoneTabController::chaperoneColorB() const
+int ChaperoneTabController::chaperoneColorB()
 {
     std::pair<ivrsettings::settingsError, int> p
         = ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
@@ -658,9 +661,10 @@ int ChaperoneTabController::chaperoneColorB() const
                                  "" );
     if ( p.first != ivrsettings::settingsError::noErr )
     {
-        return 255;
+        return m_chaperoneColorB;
     }
-    return p.second;
+    m_chaperoneColorB = p.second;
+    return m_chaperoneColorB;
 }
 // aka transparancy
 int ChaperoneTabController::chaperoneColorA() const
@@ -675,6 +679,21 @@ int ChaperoneTabController::chaperoneColorA() const
         return 255;
     }
     return p.second;
+}
+
+int ChaperoneTabController::collisionBoundStyle()
+{
+    std::pair<ivrsettings::settingsError, int> p
+        = ivrsettings::getInt32( vr::k_pch_CollisionBounds_Section,
+                                 vr::k_pch_CollisionBounds_Style_Int32,
+                                 ivrsettings::logType::err,
+                                 "" );
+    if ( p.first != ivrsettings::settingsError::noErr )
+    {
+        return m_collisionBoundStyle;
+    }
+    m_collisionBoundStyle = p.second;
+    return m_collisionBoundStyle;
 }
 
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount()
@@ -809,6 +828,35 @@ void ChaperoneTabController::setChaperoneColorA( int value, bool notify )
     if ( notify )
     {
         emit chaperoneColorAChanged( value );
+    }
+}
+
+void ChaperoneTabController::setCollisionBoundStyle( int value, bool notify )
+{
+    if ( value != m_collisionBoundStyle )
+    {
+        if ( vr::COLLISION_BOUNDS_STYLE_COUNT < value )
+        {
+            value = 0;
+            LOG( WARNING )
+                << "Invalid Collision Bound Value (>count), set to beginner";
+        }
+        else if ( value < 0 )
+        {
+            value = 0;
+            LOG( WARNING )
+                << "Invalid Collision Bound Value (<0), set to beginner";
+        }
+        m_collisionBoundStyle = value;
+        ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
+                               vr::k_pch_CollisionBounds_Style_Int32,
+                               m_collisionBoundStyle,
+                               ivrsettings::logType::err,
+                               "" );
+        if ( notify )
+        {
+            emit collisionBoundStyleChanged( value );
+        }
     }
 }
 
