@@ -1026,7 +1026,7 @@ void ChaperoneTabController::setDisableChaperone( bool value, bool notify )
         {
             settings::setSetting(
                 settings::DoubleSetting::CHAPERONE_fadeDistanceRemembered,
-                static_cast<double>( value ) );
+                static_cast<double>( m_fadeDistance ) );
 
             setFadeDistance( 0.0f, true );
         }
