@@ -61,10 +61,10 @@ settingsError setFloat( const char* pchSection,
                         logType errorType,
                         std::string customErrorMsg = "" );
 
-settingsError RemoveSection( const char* pchSection,
+settingsError removeSection( const char* pchSection,
                              logType errorType,
                              std::string customErrorMsg = "" );
-settingsError RemoveKeyInSection( const char* pchSection,
+settingsError removeKeyInSection( const char* pchSection,
                                   const char* pchSettingsKey,
                                   logType errorType,
                                   std::string customErrorMsg = "" );
