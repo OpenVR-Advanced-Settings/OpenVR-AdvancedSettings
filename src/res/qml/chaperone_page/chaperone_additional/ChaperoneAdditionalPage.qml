@@ -6,6 +6,7 @@ import ovras.advsettings 1.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 import "../../common"
 import "chaperoneboundscolor"
+import "chaperonetype"
 
 MyStackViewPage {
     headerText: "Additional Chaperone Settings"
@@ -15,6 +16,10 @@ MyStackViewPage {
         ChaperoneBoundsColorGroupBox{
         id: chaperoneBoundsColorGroupBox
         }
+        ChaperoneTypeGroupBox{
+            id:chaperoneTypeGroupBox
+        }
+
         Item {
             Layout.fillHeight: true
         }

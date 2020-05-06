@@ -86,8 +86,11 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
             // Instead of backing out at every stage, this will log errors, but
             // proceed forward.
             m_chaperoneSwitchToBeginnerLastStyle = collisionBoundStyle();
+            // IMPORTANT DO NOT NOTIFY IF WE SWITCH BECAUSE WARNINGS
             setCollisionBoundStyle(
-                static_cast<int>( vr::COLLISION_BOUNDS_STYLE_BEGINNER ), true );
+                static_cast<int>( vr::COLLISION_BOUNDS_STYLE_BEGINNER ),
+                false,
+                true );
             m_chaperoneSwitchToBeginnerActive = true;
         }
         else if ( ( distance > activationDistance || !m_isHMDActive )
@@ -787,7 +790,9 @@ void ChaperoneTabController::setChaperoneColorA( int value, bool notify )
     }
 }
 
-void ChaperoneTabController::setCollisionBoundStyle( int value, bool notify )
+void ChaperoneTabController::setCollisionBoundStyle( int value,
+                                                     bool notify,
+                                                     bool isTemp )
 {
     if ( value != m_collisionBoundStyle )
     {
@@ -803,7 +808,19 @@ void ChaperoneTabController::setCollisionBoundStyle( int value, bool notify )
             LOG( WARNING )
                 << "Invalid Collision Bound Value (<0), set to beginner";
         }
-        m_collisionBoundStyle = value;
+        if ( !isTemp )
+        {
+            if ( m_chaperoneSwitchToBeginnerActive )
+            {
+                m_chaperoneSwitchToBeginnerLastStyle
+                    = static_cast<int32_t>( value );
+            }
+            else
+            {
+                m_collisionBoundStyle = value;
+            }
+        }
+
         ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
                                vr::k_pch_CollisionBounds_Style_Int32,
                                m_collisionBoundStyle,

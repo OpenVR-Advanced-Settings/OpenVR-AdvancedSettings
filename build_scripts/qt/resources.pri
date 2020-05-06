@@ -22,6 +22,7 @@ DISTFILES += \
     src/res/qml/chaperone_page/change_orientation/* \
 	src/res/qml/chaperone_page/chaperone_additional/* \
 	src/res/qml/chaperone_page/chaperone_additional/chaperoneboundscolor/* \
+	src/res/qml/chaperone_page/chaperone_additional/chaperonetype/* \
     src/res/qml/FixFloorPage.qml \
     src/res/qml/PlayspacePage.qml \
     src/res/qml/motion_page/* \

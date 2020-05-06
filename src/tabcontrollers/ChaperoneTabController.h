@@ -452,7 +452,9 @@ public slots:
     void setChaperoneColorB( int value, bool notify = true );
     void setChaperoneColorA( int value, bool notify = true );
 
-    void setCollisionBoundStyle( int value, bool notify = true );
+    void setCollisionBoundStyle( int value,
+                                 bool notify = true,
+                                 bool isTemp = false );
 
     void flipOrientation( double degrees = 180 );
     void reloadFromDisk();
