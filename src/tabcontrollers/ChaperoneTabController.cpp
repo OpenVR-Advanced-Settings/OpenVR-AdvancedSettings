@@ -811,7 +811,7 @@ void ChaperoneTabController::setChaperoneFloorToggle( bool value, bool notify )
         m_chaperoneFloorToggle = value;
         ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
                                vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool,
-                               m_chaperoneColorG,
+                               m_chaperoneFloorToggle,
                                ivrsettings::logType::err,
                                "" );
         if ( notify )
