@@ -640,6 +640,20 @@ int ChaperoneTabController::chaperoneColorA() const
     return p.second;
 }
 
+bool ChaperoneTabController::chaperoneFloorToggle()
+{
+    std::pair<ivrsettings::settingsError, int> p = ivrsettings::getBool(
+        vr::k_pch_CollisionBounds_Section,
+        vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool,
+        ivrsettings::logType::err,
+        "" );
+    if ( p.first != ivrsettings::settingsError::noErr )
+    {
+        return false;
+    }
+    return p.second;
+}
+
 int ChaperoneTabController::collisionBoundStyle()
 {
     std::pair<ivrsettings::settingsError, int> p
@@ -787,6 +801,23 @@ void ChaperoneTabController::setChaperoneColorA( int value, bool notify )
     if ( notify )
     {
         emit chaperoneColorAChanged( value );
+    }
+}
+
+void ChaperoneTabController::setChaperoneFloorToggle( bool value, bool notify )
+{
+    if ( value != m_chaperoneFloorToggle )
+    {
+        m_chaperoneFloorToggle = value;
+        ivrsettings::setInt32( vr::k_pch_CollisionBounds_Section,
+                               vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool,
+                               m_chaperoneColorG,
+                               ivrsettings::logType::err,
+                               "" );
+        if ( notify )
+        {
+            emit chaperoneFloorToggleChanged( value );
+        }
     }
 }
 
@@ -1157,19 +1188,7 @@ void ChaperoneTabController::addChaperoneProfile(
     profile->includesFloorBoundsMarker = includeFloorBounds;
     if ( includeFloorBounds )
     {
-        // TODO disabled until we add support on page back in
-        /*profile->floorBoundsMarker = vr::VRSettings()->GetBool(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }*/
+        profile->floorBoundsMarker = m_chaperoneFloorToggle;
     }
     profile->includesBoundsColor = includeBoundsColor;
     if ( includeBoundsColor )
@@ -1255,12 +1274,7 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
         }
         if ( profile.includesFloorBoundsMarker )
         {
-            // TODO disabled until we control it better.
-            /* vr::VRSettings()->SetBool(
-                vr::k_pch_CollisionBounds_Section,
-                vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool,
-                profile.floorBoundsMarker );
-            */
+            setChaperoneFloorToggle( profile.floorBoundsMarker );
         }
         if ( profile.includesBoundsColor )
         {

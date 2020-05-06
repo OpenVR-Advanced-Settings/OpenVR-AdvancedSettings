@@ -7,6 +7,7 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 import "../../common"
 import "chaperoneboundscolor"
 import "chaperonetype"
+import "chaperonemisc"
 
 MyStackViewPage {
     headerText: "Additional Chaperone Settings"
@@ -18,6 +19,9 @@ MyStackViewPage {
         }
         ChaperoneTypeGroupBox{
             id:chaperoneTypeGroupBox
+        }
+        ChaperoneMiscGroupBox{
+            id:chaperoneMiscGroupBox
         }
 
         Item {

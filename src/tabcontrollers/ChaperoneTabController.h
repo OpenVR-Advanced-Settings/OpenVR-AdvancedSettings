@@ -310,6 +310,8 @@ class ChaperoneTabController : public QObject
                     setChaperoneColorA NOTIFY chaperoneColorAChanged )
     Q_PROPERTY( int collisionBoundStyle READ collisionBoundStyle WRITE
                     setCollisionBoundStyle NOTIFY collisionBoundStyleChanged )
+    Q_PROPERTY( bool chaperoneFloorToggle READ chaperoneFloorToggle WRITE
+                    setChaperoneFloorToggle NOTIFY chaperoneFloorToggleChanged )
 
 private:
     OverlayController* parent;
@@ -347,6 +349,8 @@ private:
 
     int m_collisionBoundStyle = 0;
 
+    bool m_chaperoneFloorToggle = false;
+
     bool m_autosaveComplete = false;
 
     int m_updateTicksChaperoneReload = 0;
@@ -382,6 +386,8 @@ public:
     int chaperoneColorG();
     int chaperoneColorB();
     int chaperoneColorA() const;
+
+    bool chaperoneFloorToggle();
 
     int collisionBoundStyle();
 
@@ -455,6 +461,7 @@ public slots:
     void setCollisionBoundStyle( int value,
                                  bool notify = true,
                                  bool isTemp = false );
+    void setChaperoneFloorToggle( bool value, bool notify = true );
 
     void flipOrientation( double degrees = 180 );
     void reloadFromDisk();
@@ -507,6 +514,8 @@ signals:
     void chaperoneColorAChanged( int value );
 
     void collisionBoundStyleChanged( int value );
+
+    void chaperoneFloorToggleChanged( bool value );
 
     void chaperoneProfilesUpdated();
 };
