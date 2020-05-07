@@ -14,6 +14,7 @@ DISTFILES += \
     src/res/img/audio/microphone/ptt_notification.svg \
     src/res/img/battery/* \
     src/res/img/icons/* \
+	src/res/img/chaperone/* \
     src/res/qml/qmldir \
     src/res/qml/audio_page/* \
     src/res/qml/ChaperonePage.qml \
