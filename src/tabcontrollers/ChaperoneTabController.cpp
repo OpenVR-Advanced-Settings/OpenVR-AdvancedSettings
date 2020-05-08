@@ -230,6 +230,10 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
 void ChaperoneTabController::eventLoopTick(
     vr::TrackedDevicePose_t* devicePoses )
 {
+    if ( m_centerMarker )
+    {
+        updateOverlays();
+    }
     if ( devicePoses )
     {
         m_isHMDActive = false;
@@ -474,15 +478,15 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
         vr::EVROverlayError error;
         if ( m_centerMarker )
         {
-            error = vr::VROverlay()->ShowOverlay(
-                m_chaperoneFloorInnerOverlayHandle );
-            vr::VROverlay()->ShowOverlay( m_chaperoneFloorOuterOverlayHandle );
+            error
+                = vr::VROverlay()->ShowOverlay( m_chaperoneFloorOverlayHandle );
+            vr::VROverlay()->ShowOverlay( m_chaperoneFloorOverlayHandle );
         }
         else
         {
-            error = vr::VROverlay()->HideOverlay(
-                m_chaperoneFloorInnerOverlayHandle );
-            vr::VROverlay()->HideOverlay( m_chaperoneFloorOuterOverlayHandle );
+            error
+                = vr::VROverlay()->HideOverlay( m_chaperoneFloorOverlayHandle );
+            vr::VROverlay()->HideOverlay( m_chaperoneFloorOverlayHandle );
         }
         LOG( ERROR ) << "ERROR or not of hide/show: "
                      << vr::VROverlay()->GetOverlayErrorNameFromEnum( error );
@@ -1515,45 +1519,41 @@ void ChaperoneTabController::addRightHapticClick( bool rightHapticClickPressed )
     }
 }
 
-void ChaperoneTabController::initFloorOverlays()
+void ChaperoneTabController::initFloorOverlay()
 {
-    std::string overlayInnerKey
-        = std::string( application_strings::applicationKey )
-          + ".floormarkerinneroverlay";
-    std::string overlayOuterKey
-        = std::string( application_strings::applicationKey )
-          + ".floormarkerouteroverlay";
+    std::string overlayFloorMarkerKey
+        = std::string( application_strings::applicationKey ) + ".floormarker";
     // INNER Overlay
     vr::VROverlayError overlayError
-        = vr::VROverlay()->CreateOverlay( overlayInnerKey.c_str(),
-                                          overlayInnerKey.c_str(),
-                                          &m_chaperoneFloorInnerOverlayHandle );
+        = vr::VROverlay()->CreateOverlay( overlayFloorMarkerKey.c_str(),
+                                          overlayFloorMarkerKey.c_str(),
+                                          &m_chaperoneFloorOverlayHandle );
     if ( overlayError == vr::VROverlayError_None )
     {
-        const auto innerOverlayPath = paths::binaryDirectoryFindFile(
-            chaperone_keys::k_chaperoneFloorInnerOverlayFilename );
-        if ( innerOverlayPath.has_value() )
+        const auto floorMarkerOverlayPath
+            = paths::binaryDirectoryFindFile( m_floorMarkerFN );
+        if ( floorMarkerOverlayPath.has_value() )
         {
             overlayError = vr::VROverlay()->SetOverlayFromFile(
-                m_chaperoneFloorInnerOverlayHandle, innerOverlayPath->c_str() );
+                m_chaperoneFloorOverlayHandle,
+                floorMarkerOverlayPath->c_str() );
             vr::VROverlay()->SetOverlayWidthInMeters(
-                m_chaperoneFloorInnerOverlayHandle, 0.3f );
+                m_chaperoneFloorOverlayHandle, 0.3f );
             vr::HmdMatrix34_t notificationTransform
                 = { { { 1.0f, 0.0f, 0.0f, 0.00f },
                       { 0.0f, 0.0f, 1.0f, 0.00f },
                       { 0.0f, -1.0f, 0.0f, 0.00f } } };
             vr::VROverlay()->SetOverlayTransformAbsolute(
-                m_chaperoneFloorInnerOverlayHandle,
+                m_chaperoneFloorOverlayHandle,
                 vr::ETrackingUniverseOrigin::TrackingUniverseStanding,
                 &notificationTransform );
-            vr::VROverlay()->SetOverlayAlpha(
-                m_chaperoneFloorInnerOverlayHandle, 0.5f );
+            vr::VROverlay()->SetOverlayAlpha( m_chaperoneFloorOverlayHandle,
+                                              0.5f );
         }
         else
         {
             LOG( ERROR ) << "Could not find inner chaperone floor overlay \""
-                         << chaperone_keys::k_chaperoneFloorInnerOverlayFilename
-                         << "\"";
+                         << m_floorMarkerFN << "\"";
         }
     }
     else
@@ -1562,46 +1562,27 @@ void ChaperoneTabController::initFloorOverlays()
                      << vr::VROverlay()->GetOverlayErrorNameFromEnum(
                             overlayError );
     }
+}
 
-    // OUTER overlay
-    overlayError
-        = vr::VROverlay()->CreateOverlay( overlayOuterKey.c_str(),
-                                          overlayOuterKey.c_str(),
-                                          &m_chaperoneFloorOuterOverlayHandle );
-    if ( overlayError == vr::VROverlayError_None )
-    {
-        const auto outerOverlayPath = paths::binaryDirectoryFindFile(
-            chaperone_keys::k_chaperoneFloorOuterOverlayFilename );
-        if ( outerOverlayPath.has_value() )
-        {
-            vr::VROverlay()->SetOverlayFromFile(
-                m_chaperoneFloorOuterOverlayHandle, outerOverlayPath->c_str() );
-            vr::VROverlay()->SetOverlayWidthInMeters(
-                m_chaperoneFloorOuterOverlayHandle, 0.5f );
-            vr::HmdMatrix34_t notificationTransform
-                = { { { 1.0f, 0.0f, 0.0f, 0.00f },
-                      { 0.0f, 0.0f, 1.0f, 0.00f },
-                      { 0.0f, -1.0f, 0.0f, 0.0f } } };
-            vr::VROverlay()->SetOverlayTransformAbsolute(
-                m_chaperoneFloorOuterOverlayHandle,
-                vr::ETrackingUniverseOrigin::TrackingUniverseStanding,
-                &notificationTransform );
-            vr::VROverlay()->SetOverlayAlpha(
-                m_chaperoneFloorOuterOverlayHandle, 0.5f );
-        }
-        else
-        {
-            LOG( ERROR ) << "Could not find outer chaperone floor overlay \""
-                         << chaperone_keys::k_chaperoneFloorOuterOverlayFilename
-                         << "\"";
-        }
-    }
-    else
-    {
-        LOG( ERROR ) << "Could not create Outer chaperone overlay: "
-                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                            overlayError );
-    }
+void ChaperoneTabController::updateOverlay()
+{
+    float xoff = -( parent->m_moveCenterTabController.offsetX() );
+    float yoff = -( parent->m_moveCenterTabController.offsetY() );
+    float zoff = -( parent->m_moveCenterTabController.offsetZ() );
+    /* Rotation on Y Axis
+     * {cos t, 0, sin t}
+     * {0, 1, 0}
+     * {-sin t, 0 cost t}
+     */
+
+    vr::HmdMatrix34_t updateTransform = { { { 1.0f, 0.0f, 0.0f, xoff },
+                                            { 0.0f, 0.0f, 1.0f, yoff },
+                                            { 0.0f, -1.0f, 0.0f, zoff } } };
+
+    vr::VROverlay()->SetOverlayTransformAbsolute(
+        m_chaperoneFloorOverlayHandle,
+        vr::ETrackingUniverseOrigin::TrackingUniverseStanding,
+        &updateTransform );
 }
 
 void ChaperoneTabController::setProxState( bool value )

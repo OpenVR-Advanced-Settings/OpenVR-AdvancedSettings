@@ -16,14 +16,6 @@
 
 class QQuickWindow;
 // application namespace
-namespace chaperone_keys
-{
-// TODO
-constexpr auto k_chaperoneFloorInnerOverlayFilename
-    = "/res/img/chaperone/chapinner.png";
-constexpr auto k_chaperoneFloorOuterOverlayFilename
-    = "/res/img/chaperone/chapouter.png";
-} // namespace chaperone_keys
 
 namespace advsettings
 {
@@ -371,14 +363,14 @@ private:
     vr::VRInputValueHandle_t m_leftInputHandle;
     vr::VRInputValueHandle_t m_rightInputHandle;
 
-    vr::VROverlayHandle_t m_chaperoneFloorInnerOverlayHandle
-        = vr::k_ulOverlayHandleInvalid;
-    vr::VROverlayHandle_t m_chaperoneFloorOuterOverlayHandle
+    vr::VROverlayHandle_t m_chaperoneFloorOverlayHandle
         = vr::k_ulOverlayHandleInvalid;
 
     std::vector<ChaperoneProfile> chaperoneProfiles;
 
-    void initFloorOverlays();
+    std::string m_floorMarkerFN = "/res/img/chaperone/chapinner.png";
+    void initFloorOverlay();
+    void updateOverlay();
 
 public:
     ~ChaperoneTabController();
