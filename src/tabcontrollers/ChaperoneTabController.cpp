@@ -470,16 +470,22 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
                               m_centerMarker,
                               ivrsettings::logType::err,
                               "" );
-        * / if ( m_centerMarker )
+
+        vr::EVROverlayError error;
+        if ( m_centerMarker )
         {
-            vr::VROverlay()->ShowOverlay( m_chaperoneFloorInnerOverlayHandle );
+            error = vr::VROverlay()->ShowOverlay(
+                m_chaperoneFloorInnerOverlayHandle );
             vr::VROverlay()->ShowOverlay( m_chaperoneFloorOuterOverlayHandle );
         }
         else
         {
-            vr::VROverlay()->HideOverlay( m_chaperoneFloorInnerOverlayHandle );
+            error = vr::VROverlay()->HideOverlay(
+                m_chaperoneFloorInnerOverlayHandle );
             vr::VROverlay()->HideOverlay( m_chaperoneFloorOuterOverlayHandle );
         }
+        LOG( ERROR ) << "ERROR or not of hide/show: "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum( error );
 
         // On Error Do Nothing
         if ( notify )
@@ -1525,21 +1531,11 @@ void ChaperoneTabController::initFloorOverlays()
     if ( overlayError == vr::VROverlayError_None )
     {
         const auto innerOverlayPath = paths::binaryDirectoryFindFile(
-            video_keys::k_brightnessOverlayFilename );
+            chaperone_keys::k_chaperoneFloorInnerOverlayFilename );
         if ( innerOverlayPath.has_value() )
         {
             overlayError = vr::VROverlay()->SetOverlayFromFile(
                 m_chaperoneFloorInnerOverlayHandle, innerOverlayPath->c_str() );
-            if ( overlayError != vr::VROverlayError_None )
-            {
-                LOG( ERROR ) << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                    overlayError )
-                             << "setting image";
-            }
-            else
-            {
-                LOG( ERROR ) << "NO ERROR LOL KEKEK";
-            }
             vr::VROverlay()->SetOverlayWidthInMeters(
                 m_chaperoneFloorInnerOverlayHandle, 0.3f );
             vr::HmdMatrix34_t notificationTransform
@@ -1550,6 +1546,8 @@ void ChaperoneTabController::initFloorOverlays()
                 m_chaperoneFloorInnerOverlayHandle,
                 vr::ETrackingUniverseOrigin::TrackingUniverseStanding,
                 &notificationTransform );
+            vr::VROverlay()->SetOverlayAlpha(
+                m_chaperoneFloorInnerOverlayHandle, 0.5f );
         }
         else
         {
@@ -1573,21 +1571,11 @@ void ChaperoneTabController::initFloorOverlays()
     if ( overlayError == vr::VROverlayError_None )
     {
         const auto outerOverlayPath = paths::binaryDirectoryFindFile(
-            video_keys::k_brightnessOverlayFilename );
+            chaperone_keys::k_chaperoneFloorOuterOverlayFilename );
         if ( outerOverlayPath.has_value() )
         {
-            overlayError = vr::VROverlay()->SetOverlayFromFile(
+            vr::VROverlay()->SetOverlayFromFile(
                 m_chaperoneFloorOuterOverlayHandle, outerOverlayPath->c_str() );
-            if ( overlayError != vr::VROverlayError_None )
-            {
-                LOG( ERROR ) << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                    overlayError )
-                             << "setting image";
-            }
-            else
-            {
-                LOG( ERROR ) << "NO ERROR LOL KEKEK";
-            }
             vr::VROverlay()->SetOverlayWidthInMeters(
                 m_chaperoneFloorOuterOverlayHandle, 0.5f );
             vr::HmdMatrix34_t notificationTransform
@@ -1598,6 +1586,8 @@ void ChaperoneTabController::initFloorOverlays()
                 m_chaperoneFloorOuterOverlayHandle,
                 vr::ETrackingUniverseOrigin::TrackingUniverseStanding,
                 &notificationTransform );
+            vr::VROverlay()->SetOverlayAlpha(
+                m_chaperoneFloorOuterOverlayHandle, 0.5f );
         }
         else
         {
