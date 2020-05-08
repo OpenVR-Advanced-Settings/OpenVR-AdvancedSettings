@@ -25,7 +25,7 @@ void ChaperoneTabController::initStage1()
 void ChaperoneTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
-    initFloorOverlays();
+    initFloorOverlay();
 }
 
 void ChaperoneTabController::dashboardLoopTick()
@@ -232,7 +232,7 @@ void ChaperoneTabController::eventLoopTick(
 {
     if ( m_centerMarker )
     {
-        updateOverlays();
+        updateOverlay();
     }
     if ( devicePoses )
     {
@@ -488,8 +488,12 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
                 = vr::VROverlay()->HideOverlay( m_chaperoneFloorOverlayHandle );
             vr::VROverlay()->HideOverlay( m_chaperoneFloorOverlayHandle );
         }
-        LOG( ERROR ) << "ERROR or not of hide/show: "
-                     << vr::VROverlay()->GetOverlayErrorNameFromEnum( error );
+        if ( vr::EVROverlayError::VROverlayError_None != error )
+        {
+            LOG( ERROR ) << "Could not show/Hide Floor Overlay: "
+                         << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                                error );
+        }
 
         // On Error Do Nothing
         if ( notify )
@@ -497,7 +501,7 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
             emit centerMarkerChanged( m_centerMarker );
         }
     }
-}
+} // namespace advsettings
 
 bool ChaperoneTabController::playSpaceMarker()
 {
@@ -1524,43 +1528,22 @@ void ChaperoneTabController::initFloorOverlay()
     std::string overlayFloorMarkerKey
         = std::string( application_strings::applicationKey ) + ".floormarker";
     // INNER Overlay
-    vr::VROverlayError overlayError
-        = vr::VROverlay()->CreateOverlay( overlayFloorMarkerKey.c_str(),
-                                          overlayFloorMarkerKey.c_str(),
-                                          &m_chaperoneFloorOverlayHandle );
-    if ( overlayError == vr::VROverlayError_None )
+
+    ivroverlay::overlayError overlayError
+        = ivroverlay::createOverlay( overlayFloorMarkerKey,
+                                     overlayFloorMarkerKey,
+                                     &m_chaperoneFloorOverlayHandle,
+                                     "" );
+    if ( overlayError == ivroverlay::overlayError::noErr )
     {
-        const auto floorMarkerOverlayPath
-            = paths::binaryDirectoryFindFile( m_floorMarkerFN );
-        if ( floorMarkerOverlayPath.has_value() )
-        {
-            overlayError = vr::VROverlay()->SetOverlayFromFile(
-                m_chaperoneFloorOverlayHandle,
-                floorMarkerOverlayPath->c_str() );
-            vr::VROverlay()->SetOverlayWidthInMeters(
-                m_chaperoneFloorOverlayHandle, 0.3f );
-            vr::HmdMatrix34_t notificationTransform
-                = { { { 1.0f, 0.0f, 0.0f, 0.00f },
-                      { 0.0f, 0.0f, 1.0f, 0.00f },
-                      { 0.0f, -1.0f, 0.0f, 0.00f } } };
-            vr::VROverlay()->SetOverlayTransformAbsolute(
-                m_chaperoneFloorOverlayHandle,
-                vr::ETrackingUniverseOrigin::TrackingUniverseStanding,
-                &notificationTransform );
-            vr::VROverlay()->SetOverlayAlpha( m_chaperoneFloorOverlayHandle,
-                                              0.5f );
-        }
-        else
-        {
-            LOG( ERROR ) << "Could not find inner chaperone floor overlay \""
-                         << m_floorMarkerFN << "\"";
-        }
+        ivroverlay::setOverlayFromFile(
+            m_chaperoneFloorOverlayHandle, m_floorMarkerFN, "" );
+        ivroverlay::setOverlayWidthInMeters( m_chaperoneFloorOverlayHandle,
+                                             0.5f );
     }
     else
     {
-        LOG( ERROR ) << "Could not create Inner chaperone overlay: "
-                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                            overlayError );
+        // TODO Set Failure variable.
     }
 }
 
@@ -1583,6 +1566,57 @@ void ChaperoneTabController::updateOverlay()
         m_chaperoneFloorOverlayHandle,
         vr::ETrackingUniverseOrigin::TrackingUniverseStanding,
         &updateTransform );
+    // TODO COLOR and ALPHA should only be called/set when changed (call from
+    // set?)
+    vr::VROverlay()->SetOverlayAlpha( m_chaperoneFloorOverlayHandle,
+                                      m_visibility );
+    float chapColorR = static_cast<float>( m_chaperoneColorR ) / 255.0f;
+    float chapColorG = static_cast<float>( m_chaperoneColorG ) / 255.0f;
+    float chapColorB = static_cast<float>( m_chaperoneColorB ) / 255.0f;
+    vr::VROverlay()->SetOverlayColor(
+        m_chaperoneFloorOverlayHandle, chapColorR, chapColorG, chapColorB );
+    // float rotation = parent->m_statisticsTabController.hmdRotations();
+    // int fullRotation = static_cast<int>( rotation / 360 );
+    /*
+        switch ( fullRotation )
+        {
+        case 0:
+            break;
+        case 1:
+            m_floorMarkerFN = "/res/img/chaperone/centermarkr1.png";
+            break;
+        case 2:
+            m_floorMarkerFN = "/res/img/chaperone/centermarkr2.png";
+            break;
+        case -1:
+            m_floorMarkerFN = "/res/img/chaperone/centermarkl1.png";
+            break;
+        case -2:
+            m_floorMarkerFN = "/res/img/chaperone/centermarkl2.png";
+            break;
+        default:
+            if ( fullRotation < 0 )
+            {
+                m_floorMarkerFN = "/res/img/chaperone/centermarkl3.png";
+            }
+            else
+            {
+                m_floorMarkerFN = "/res/img/chaperone/centermarkr3.png";
+            }
+        }
+        const auto floorMarkerOverlayPath
+            = paths::binaryDirectoryFindFile( m_floorMarkerFN );
+        if ( floorMarkerOverlayPath.has_value() )
+        {
+            vr::VROverlay()->SetOverlayFromFile( m_chaperoneFloorOverlayHandle,
+                                                 floorMarkerOverlayPath->c_str()
+       );
+        }
+        else
+        {
+            LOG( ERROR ) << "Could not find chaperone floor overlay \""
+                         << m_floorMarkerFN << "\"";
+        }*/
 }
 
 void ChaperoneTabController::setProxState( bool value )

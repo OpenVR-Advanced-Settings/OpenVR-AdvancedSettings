@@ -12,6 +12,7 @@
 #include "../settings/settings_object.h"
 #include "MoveCenterTabController.h"
 #include "../openvr/ivrsettings.h"
+#include "../openvr/ivroverlay.h"
 #include <utility>
 
 class QQuickWindow;
@@ -368,7 +369,7 @@ private:
 
     std::vector<ChaperoneProfile> chaperoneProfiles;
 
-    std::string m_floorMarkerFN = "/res/img/chaperone/chapinner.png";
+    std::string m_floorMarkerFN = "/res/img/chaperone/centermark.png";
     void initFloorOverlay();
     void updateOverlay();
 
