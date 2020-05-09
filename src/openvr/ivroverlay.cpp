@@ -110,4 +110,38 @@ overlayError setOverlayFromFile( vr::VROverlayHandle_t ulOverlayHandle,
     }
 }
 
+overlayError showOverlay( vr::VROverlayHandle_t ulOverlayHandle,
+                          std::string customErrorMsg )
+{
+    vr::VROverlayError overlayError
+        = vr::VROverlay()->ShowOverlay( ulOverlayHandle );
+    if ( overlayError == vr::VROverlayError_None )
+    {
+        return overlayError::noErr;
+    }
+    else
+    {
+        // TODO get Name and print out error.....
+        LOG( ERROR ) << "Error showing overlay " << customErrorMsg;
+        return overlayError::undefErr;
+    }
+}
+
+overlayError hideOverlay( vr::VROverlayHandle_t ulOverlayHandle,
+                          std::string customErrorMsg )
+{
+    vr::VROverlayError overlayError
+        = vr::VROverlay()->HideOverlay( ulOverlayHandle );
+    if ( overlayError == vr::VROverlayError_None )
+    {
+        return overlayError::noErr;
+    }
+    else
+    {
+        // TODO get Name and print out error.....
+        LOG( ERROR ) << "Error hiding overlay " << customErrorMsg;
+        return overlayError::undefErr;
+    }
+}
+
 } // namespace ivroverlay

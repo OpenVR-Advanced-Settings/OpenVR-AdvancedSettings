@@ -372,6 +372,10 @@ private:
     std::string m_floorMarkerFN = "/res/img/chaperone/centermark.png";
     void initFloorOverlay();
     void updateOverlay();
+    void updateOverlayColor();
+    void checkOverlayRotation();
+    int m_rotationUpdateCounter = 0;
+    int m_rotationCurrent = 0;
 
 public:
     ~ChaperoneTabController();

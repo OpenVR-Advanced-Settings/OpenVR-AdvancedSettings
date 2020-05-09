@@ -43,5 +43,9 @@ overlayError setOverlayWidthInMeters( vr::VROverlayHandle_t ulOverlayHandle,
 overlayError setOverlayFromFile( vr::VROverlayHandle_t ulOverlayHandle,
                                  std::string fileName,
                                  std::string customErrorMsg = "" );
+overlayError showOverlay( vr::VROverlayHandle_t ulOverlayHandle,
+                          std::string customErrorMsg = "" );
+overlayError hideOverlay( vr::VROverlayHandle_t ulOverlayHandle,
+                          std::string customErrorMsg = "" );
 
 } // namespace ivroverlay

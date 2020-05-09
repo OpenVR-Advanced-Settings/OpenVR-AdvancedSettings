@@ -355,6 +355,8 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
             m_visibility = value;
         }
         setChaperoneColorA( static_cast<int>( 255 * m_visibility ), notify );
+        ivroverlay::setOverlayAlpha(
+            m_chaperoneFloorOverlayHandle, m_visibility, "" );
 
         if ( notify )
         {
@@ -746,6 +748,7 @@ void ChaperoneTabController::setChaperoneColorR( int value, bool notify )
                                m_chaperoneColorR,
                                ivrsettings::logType::err,
                                "" );
+        updateOverlayColor();
         if ( notify )
         {
             emit chaperoneColorRChanged( value );
@@ -773,6 +776,7 @@ void ChaperoneTabController::setChaperoneColorG( int value, bool notify )
                                m_chaperoneColorG,
                                ivrsettings::logType::err,
                                "" );
+        updateOverlayColor();
         if ( notify )
         {
             emit chaperoneColorGChanged( value );
@@ -800,12 +804,22 @@ void ChaperoneTabController::setChaperoneColorB( int value, bool notify )
                                m_chaperoneColorB,
                                ivrsettings::logType::err,
                                "" );
+        updateOverlayColor();
         if ( notify )
         {
             emit chaperoneColorBChanged( value );
         }
     }
 }
+void ChaperoneTabController::updateOverlayColor()
+{
+    float chapColorR = static_cast<float>( m_chaperoneColorR ) / 255.0f;
+    float chapColorG = static_cast<float>( m_chaperoneColorG ) / 255.0f;
+    float chapColorB = static_cast<float>( m_chaperoneColorB ) / 255.0f;
+    ivroverlay::setOverlayColor(
+        m_chaperoneFloorOverlayHandle, chapColorR, chapColorG, chapColorB, "" );
+}
+
 // TODO use or not?
 void ChaperoneTabController::setChaperoneColorA( int value, bool notify )
 {
@@ -1540,6 +1554,9 @@ void ChaperoneTabController::initFloorOverlay()
             m_chaperoneFloorOverlayHandle, m_floorMarkerFN, "" );
         ivroverlay::setOverlayWidthInMeters( m_chaperoneFloorOverlayHandle,
                                              0.5f );
+        updateOverlayColor();
+        ivroverlay::setOverlayAlpha(
+            m_chaperoneFloorOverlayHandle, m_visibility, "" );
     }
     else
     {
@@ -1566,57 +1583,64 @@ void ChaperoneTabController::updateOverlay()
         m_chaperoneFloorOverlayHandle,
         vr::ETrackingUniverseOrigin::TrackingUniverseStanding,
         &updateTransform );
-    // TODO COLOR and ALPHA should only be called/set when changed (call from
-    // set?)
-    vr::VROverlay()->SetOverlayAlpha( m_chaperoneFloorOverlayHandle,
-                                      m_visibility );
-    float chapColorR = static_cast<float>( m_chaperoneColorR ) / 255.0f;
-    float chapColorG = static_cast<float>( m_chaperoneColorG ) / 255.0f;
-    float chapColorB = static_cast<float>( m_chaperoneColorB ) / 255.0f;
-    vr::VROverlay()->SetOverlayColor(
-        m_chaperoneFloorOverlayHandle, chapColorR, chapColorG, chapColorB );
-    // float rotation = parent->m_statisticsTabController.hmdRotations();
-    // int fullRotation = static_cast<int>( rotation / 360 );
-    /*
+    checkOverlayRotation();
+}
+
+void ChaperoneTabController::checkOverlayRotation()
+{
+    // can only turn so quickly soooo roughly .5 secondish update should be fine
+    if ( m_rotationUpdateCounter > 45 )
+    {
+        m_rotationUpdateCounter = 0;
+        float rotation = parent->m_statisticsTabController.hmdRotations();
+        int fullRotation = static_cast<int>( rotation );
+        int rotationNext;
+
         switch ( fullRotation )
         {
         case 0:
+            m_floorMarkerFN = "/res/img/chaperone/centermark.png";
+            rotationNext = 0;
             break;
         case 1:
             m_floorMarkerFN = "/res/img/chaperone/centermarkr1.png";
+            rotationNext = 1;
             break;
         case 2:
             m_floorMarkerFN = "/res/img/chaperone/centermarkr2.png";
+            rotationNext = 2;
             break;
         case -1:
             m_floorMarkerFN = "/res/img/chaperone/centermarkl1.png";
+            rotationNext = -1;
             break;
         case -2:
             m_floorMarkerFN = "/res/img/chaperone/centermarkl2.png";
+            rotationNext = -2;
             break;
         default:
             if ( fullRotation < 0 )
             {
                 m_floorMarkerFN = "/res/img/chaperone/centermarkl3.png";
+                rotationNext = -3;
             }
             else
             {
                 m_floorMarkerFN = "/res/img/chaperone/centermarkr3.png";
+                rotationNext = 3;
             }
         }
-        const auto floorMarkerOverlayPath
-            = paths::binaryDirectoryFindFile( m_floorMarkerFN );
-        if ( floorMarkerOverlayPath.has_value() )
+        if ( rotationNext != m_rotationCurrent )
         {
-            vr::VROverlay()->SetOverlayFromFile( m_chaperoneFloorOverlayHandle,
-                                                 floorMarkerOverlayPath->c_str()
-       );
+            m_rotationCurrent = rotationNext;
+            ivroverlay::setOverlayFromFile(
+                m_chaperoneFloorOverlayHandle, m_floorMarkerFN, "" );
         }
-        else
-        {
-            LOG( ERROR ) << "Could not find chaperone floor overlay \""
-                         << m_floorMarkerFN << "\"";
-        }*/
+    }
+    else
+    {
+        m_rotationUpdateCounter++;
+    }
 }
 
 void ChaperoneTabController::setProxState( bool value )
