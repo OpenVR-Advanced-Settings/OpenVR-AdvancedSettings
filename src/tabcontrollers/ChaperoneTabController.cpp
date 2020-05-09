@@ -486,7 +486,7 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
             emit centerMarkerChanged( m_centerMarker );
         }
     }
-} // namespace advsettings
+}
 
 bool ChaperoneTabController::playSpaceMarker()
 {
