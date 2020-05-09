@@ -359,7 +359,7 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
             m_visibility = value;
         }
         setChaperoneColorA( static_cast<int>( 255 * m_visibility ), notify );
-        ivroverlay::setOverlayAlpha(
+        ovr_overlay_wrapper::setOverlayAlpha(
             m_chaperoneFloorOverlayHandle, m_visibility, "" );
 
         if ( notify )
@@ -805,7 +805,7 @@ void ChaperoneTabController::updateOverlayColor()
     float chapColorR = static_cast<float>( m_chaperoneColorR ) / 255.0f;
     float chapColorG = static_cast<float>( m_chaperoneColorG ) / 255.0f;
     float chapColorB = static_cast<float>( m_chaperoneColorB ) / 255.0f;
-    ivroverlay::setOverlayColor(
+    ovr_overlay_wrapper::setOverlayColor(
         m_chaperoneFloorOverlayHandle, chapColorR, chapColorG, chapColorB, "" );
 }
 
@@ -838,11 +838,11 @@ void ChaperoneTabController::setCenterMarkerNew( bool value, bool notify )
                           value );
     if ( value )
     {
-        ivroverlay::showOverlay( m_chaperoneFloorOverlayHandle );
+        ovr_overlay_wrapper::showOverlay( m_chaperoneFloorOverlayHandle );
     }
     else
     {
-        ivroverlay::hideOverlay( m_chaperoneFloorOverlayHandle );
+        ovr_overlay_wrapper::hideOverlay( m_chaperoneFloorOverlayHandle );
     }
 
     if ( notify )
@@ -1548,19 +1548,19 @@ void ChaperoneTabController::initFloorOverlay()
         = std::string( application_strings::applicationKey ) + ".floormarker";
     // INNER Overlay
 
-    ivroverlay::overlayError overlayError
-        = ivroverlay::createOverlay( overlayFloorMarkerKey,
-                                     overlayFloorMarkerKey,
-                                     &m_chaperoneFloorOverlayHandle,
-                                     "" );
-    if ( overlayError == ivroverlay::overlayError::noErr )
+    ovr_overlay_wrapper::OverlayError overlayError
+        = ovr_overlay_wrapper::createOverlay( overlayFloorMarkerKey,
+                                              overlayFloorMarkerKey,
+                                              &m_chaperoneFloorOverlayHandle,
+                                              "" );
+    if ( overlayError == ovr_overlay_wrapper::OverlayError::NoError )
     {
-        ivroverlay::setOverlayFromFile(
+        ovr_overlay_wrapper::setOverlayFromFile(
             m_chaperoneFloorOverlayHandle, m_floorMarkerFN, "" );
-        ivroverlay::setOverlayWidthInMeters( m_chaperoneFloorOverlayHandle,
-                                             0.5f );
+        ovr_overlay_wrapper::setOverlayWidthInMeters(
+            m_chaperoneFloorOverlayHandle, 0.5f );
         updateOverlayColor();
-        ivroverlay::setOverlayAlpha(
+        ovr_overlay_wrapper::setOverlayAlpha(
             m_chaperoneFloorOverlayHandle, m_visibility, "" );
     }
     else
@@ -1586,10 +1586,11 @@ void ChaperoneTabController::updateOverlay()
         vr::HmdMatrix34_t updateTransform = { { { 1.0f, 0.0f, 0.0f, xoff },
                                                 { 0.0f, 0.0f, 1.0f, yoff },
                                                 { 0.0f, -1.0f, 0.0f, zoff } } };
-        ivroverlay::setOverlayTransformAbsolute( m_chaperoneFloorOverlayHandle,
-                                                 m_trackingUniverse,
-                                                 &updateTransform,
-                                                 "" );
+        ovr_overlay_wrapper::setOverlayTransformAbsolute(
+            m_chaperoneFloorOverlayHandle,
+            m_trackingUniverse,
+            &updateTransform,
+            "" );
         checkOverlayRotation();
     }
 }
@@ -1654,7 +1655,7 @@ void ChaperoneTabController::checkOverlayRotation()
         if ( rotationNext != m_rotationCurrent )
         {
             m_rotationCurrent = rotationNext;
-            ivroverlay::setOverlayFromFile(
+            ovr_overlay_wrapper::setOverlayFromFile(
                 m_chaperoneFloorOverlayHandle, m_floorMarkerFN, "" );
         }
     }
