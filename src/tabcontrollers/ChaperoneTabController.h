@@ -11,8 +11,8 @@
 #include "../utils/ChaperoneUtils.h"
 #include "../settings/settings_object.h"
 #include "MoveCenterTabController.h"
-#include "../openvr/ivrsettings.h"
-#include "../openvr/ivroverlay.h"
+#include "../openvr/ovr_overlay_wrapper.h"
+#include "../openvr/ovr_settings_wrapper.h"
 #include <utility>
 
 class QQuickWindow;
