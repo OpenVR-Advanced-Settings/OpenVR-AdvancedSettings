@@ -230,7 +230,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
 void ChaperoneTabController::eventLoopTick(
     vr::TrackedDevicePose_t* devicePoses )
 {
-    if ( m_centerMarker )
+    if ( centerMarkerNew() )
     {
         updateOverlay();
     }
@@ -477,27 +477,6 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
                               ivrsettings::logType::err,
                               "" );
 
-        vr::EVROverlayError error;
-        if ( m_centerMarker )
-        {
-            error
-                = vr::VROverlay()->ShowOverlay( m_chaperoneFloorOverlayHandle );
-            vr::VROverlay()->ShowOverlay( m_chaperoneFloorOverlayHandle );
-        }
-        else
-        {
-            error
-                = vr::VROverlay()->HideOverlay( m_chaperoneFloorOverlayHandle );
-            vr::VROverlay()->HideOverlay( m_chaperoneFloorOverlayHandle );
-        }
-        if ( vr::EVROverlayError::VROverlayError_None != error )
-        {
-            LOG( ERROR ) << "Could not show/Hide Floor Overlay: "
-                         << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                                error );
-        }
-
-        // On Error Do Nothing
         if ( notify )
         {
             emit centerMarkerChanged( m_centerMarker );
@@ -699,12 +678,8 @@ int ChaperoneTabController::collisionBoundStyle()
 
 bool ChaperoneTabController::centerMarkerNew()
 {
-    // TODO new Center Marker
-}
-
-bool ChaperoneTabController::centerMarkerToggle()
-{
-    // TODO new Center Marker
+    return settings::getSetting(
+        settings::BoolSetting::CHAPERONE_centerMarkerNew );
 }
 
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount()
@@ -858,31 +833,21 @@ void ChaperoneTabController::setCenterMarkerNew( bool value, bool notify )
 {
     if ( value != centerMarkerNew() )
     {
-        // TODO setCenterMarkerNew
-        /*settings::setSetting(
-            settings::DoubleSetting::CHAPERONE_switchToBeginnerDistance,
-            static_cast<double>( value ) );
-*/
-        if ( notify )
+        settings::setSetting( settings::BoolSetting::CHAPERONE_centerMarkerNew,
+                              value );
+        if ( value )
         {
-            emit centerMarkerNewChanged( value );
+            ivroverlay::showOverlay( m_chaperoneFloorOverlayHandle );
+        }
+        else
+        {
+            ivroverlay::hideOverlay( m_chaperoneFloorOverlayHandle );
         }
     }
-}
 
-void ChaperoneTabController::setCenterMarkerToggle( bool value, bool notify )
-{
-    if ( value != centerMarkerToggle() )
+    if ( notify )
     {
-        // TODO setCenterMarkerNew
-        /*settings::setSetting(
-            settings::DoubleSetting::CHAPERONE_switchToBeginnerDistance,
-            static_cast<double>( value ) );
-*/
-        if ( notify )
-        {
-            emit centerMarkerToggleChanged( value );
-        }
+        emit centerMarkerNewChanged( value );
     }
 }
 

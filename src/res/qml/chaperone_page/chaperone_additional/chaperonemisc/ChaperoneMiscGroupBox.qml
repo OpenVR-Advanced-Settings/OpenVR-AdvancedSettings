@@ -40,18 +40,34 @@ GroupBox {
                     ChaperoneTabController.setChaperoneFloorToggle(this.checked, false)
                 }
             }
+            Item{
+                Layout.preferredWidth: 20
+            }
+
+            MyToggleButton {
+                id: legacyCenterMarkerbtn
+                text: "Legacy Center Marker"
+                Layout.preferredWidth: 400
+                onCheckedChanged: {
+                    ChaperoneTabController.setCenterMarker(this.checked, false)
+                }
+            }
         }
 
     }
 
     Component.onCompleted: {
             chaperoneFloorToggleBtn.checked = ChaperoneTabController.chaperoneFloorToggle
+            legacyCenterMarkerbtn.checked = ChaperoneTabController.centermarker
     }
 
     Connections {
         target: ChaperoneTabController
         onChaperoneFloorToggleChanged:{
             chaperoneFloorToggleBtn.checked = ChaperoneTabController.chaperoneFloorToggle
+        }
+        onCenterMarkerChanged:{
+            legacyCenterMarkerbtn.checked = ChaperoneTabController.centermarker
         }
     }
 }

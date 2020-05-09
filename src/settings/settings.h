@@ -49,6 +49,7 @@ enum class BoolSetting
     CHAPERONE_chaperoneAlarmSoundAdjustVolume,
     CHAPERONE_chaperoneShowDashboardEnabled,
     CHAPERONE_disableChaperone,
+    CHAPERONE_centerMarkerNew,
 
     ROTATION_autoturnEnabled,
     ROTATION_autoturnUseCornerAngle,

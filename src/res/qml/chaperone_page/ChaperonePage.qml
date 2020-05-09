@@ -443,7 +443,7 @@ MyStackViewPage {
                 text: "Center Marker"
                 Layout.fillWidth: false
                 onCheckedChanged: {
-                    ChaperoneTabController.setCenterMarker(this.checked, false)
+                    ChaperoneTabController.setCenterMarkerNew(this.checked, false)
                 }
             }
 
@@ -596,8 +596,8 @@ MyStackViewPage {
                 chaperoneHeightText.text = h
             }
 
-            onCenterMarkerChanged: {
-                chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarker
+            onCenterMarkerNewChanged: {
+                chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarkerNew
             }
             onPlaySpaceMarkerChanged: {
                 chaperonePlaySpaceToggle.checked = ChaperoneTabController.playSpaceMarker
