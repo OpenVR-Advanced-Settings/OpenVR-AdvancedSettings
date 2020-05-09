@@ -1,4 +1,4 @@
-#include "ivroverlay.h"
+#include "ovr_overlay_wrapper.h"
 
 namespace ovr_overlay_wrapper
 {
