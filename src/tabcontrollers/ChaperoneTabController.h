@@ -314,6 +314,8 @@ class ChaperoneTabController : public QObject
                     setCollisionBoundStyle NOTIFY collisionBoundStyleChanged )
     Q_PROPERTY( bool chaperoneFloorToggle READ chaperoneFloorToggle WRITE
                     setChaperoneFloorToggle NOTIFY chaperoneFloorToggleChanged )
+    Q_PROPERTY( bool centerMarkerNew READ centerMarkerNew WRITE
+                    setCenterMarkerNew NOTIFY centerMarkerNewChanged )
 
 private:
     OverlayController* parent;
@@ -400,6 +402,9 @@ public:
     int chaperoneColorB();
     int chaperoneColorA() const;
 
+    bool centerMarkerNew();
+    bool centerMarkerToggle();
+
     bool chaperoneFloorToggle();
 
     int collisionBoundStyle();
@@ -471,6 +476,9 @@ public slots:
     void setChaperoneColorB( int value, bool notify = true );
     void setChaperoneColorA( int value, bool notify = true );
 
+    void setCenterMarkerNew( bool value, bool notify = true );
+    void setCenterMarkerToggle( bool value, bool notify = true );
+
     void setCollisionBoundStyle( int value,
                                  bool notify = true,
                                  bool isTemp = false );
@@ -529,6 +537,8 @@ signals:
     void collisionBoundStyleChanged( int value );
 
     void chaperoneFloorToggleChanged( bool value );
+    void centerMarkerNewChanged( bool value );
+    void centerMarkerToggleChanged( bool value );
 
     void chaperoneProfilesUpdated();
 };

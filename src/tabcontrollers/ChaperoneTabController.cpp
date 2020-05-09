@@ -697,6 +697,16 @@ int ChaperoneTabController::collisionBoundStyle()
     return m_collisionBoundStyle;
 }
 
+bool ChaperoneTabController::centerMarkerNew()
+{
+    // TODO new Center Marker
+}
+
+bool ChaperoneTabController::centerMarkerToggle()
+{
+    // TODO new Center Marker
+}
+
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount()
 {
     return static_cast<unsigned int>( chaperoneProfiles.size() );
@@ -841,6 +851,38 @@ void ChaperoneTabController::setChaperoneColorA( int value, bool notify )
     if ( notify )
     {
         emit chaperoneColorAChanged( value );
+    }
+}
+
+void ChaperoneTabController::setCenterMarkerNew( bool value, bool notify )
+{
+    if ( value != centerMarkerNew() )
+    {
+        // TODO setCenterMarkerNew
+        /*settings::setSetting(
+            settings::DoubleSetting::CHAPERONE_switchToBeginnerDistance,
+            static_cast<double>( value ) );
+*/
+        if ( notify )
+        {
+            emit centerMarkerNewChanged( value );
+        }
+    }
+}
+
+void ChaperoneTabController::setCenterMarkerToggle( bool value, bool notify )
+{
+    if ( value != centerMarkerToggle() )
+    {
+        // TODO setCenterMarkerNew
+        /*settings::setSetting(
+            settings::DoubleSetting::CHAPERONE_switchToBeginnerDistance,
+            static_cast<double>( value ) );
+*/
+        if ( notify )
+        {
+            emit centerMarkerToggleChanged( value );
+        }
     }
 }
 
@@ -1593,43 +1635,56 @@ void ChaperoneTabController::checkOverlayRotation()
     {
         m_rotationUpdateCounter = 0;
         float rotation = parent->m_statisticsTabController.hmdRotations();
-        int fullRotation = static_cast<int>( rotation );
         int rotationNext;
-
-        switch ( fullRotation )
+        if ( rotation > 0 )
         {
-        case 0:
-            m_floorMarkerFN = "/res/img/chaperone/centermark.png";
-            rotationNext = 0;
-            break;
-        case 1:
-            m_floorMarkerFN = "/res/img/chaperone/centermarkr1.png";
-            rotationNext = 1;
-            break;
-        case 2:
-            m_floorMarkerFN = "/res/img/chaperone/centermarkr2.png";
-            rotationNext = 2;
-            break;
-        case -1:
-            m_floorMarkerFN = "/res/img/chaperone/centermarkl1.png";
-            rotationNext = -1;
-            break;
-        case -2:
-            m_floorMarkerFN = "/res/img/chaperone/centermarkl2.png";
-            rotationNext = -2;
-            break;
-        default:
-            if ( fullRotation < 0 )
+            rotation = rotation + 0.5f;
+            int fullRotation = static_cast<int>( rotation );
+            switch ( fullRotation )
             {
-                m_floorMarkerFN = "/res/img/chaperone/centermarkl3.png";
-                rotationNext = -3;
-            }
-            else
-            {
+            case 0:
+                m_floorMarkerFN = "/res/img/chaperone/centermark.png";
+                rotationNext = 0;
+                break;
+            case 1:
+                m_floorMarkerFN = "/res/img/chaperone/centermarkr1.png";
+                rotationNext = 1;
+                break;
+            case 2:
+                m_floorMarkerFN = "/res/img/chaperone/centermarkr2.png";
+                rotationNext = 2;
+                break;
+
+            default:
+
                 m_floorMarkerFN = "/res/img/chaperone/centermarkr3.png";
                 rotationNext = 3;
             }
         }
+        else
+        {
+            rotation = rotation + 0.5f;
+            int fullRotation = static_cast<int>( std::floor( rotation ) );
+            switch ( fullRotation )
+            {
+            case 0:
+                m_floorMarkerFN = "/res/img/chaperone/centermark.png";
+                rotationNext = 0;
+                break;
+            case -1:
+                m_floorMarkerFN = "/res/img/chaperone/centermarkl1.png";
+                rotationNext = -1;
+                break;
+            case -2:
+                m_floorMarkerFN = "/res/img/chaperone/centermarkl2.png";
+                rotationNext = -2;
+                break;
+            default:
+                m_floorMarkerFN = "/res/img/chaperone/centermarkl3.png";
+                rotationNext = -3;
+            }
+        }
+
         if ( rotationNext != m_rotationCurrent )
         {
             m_rotationCurrent = rotationNext;
