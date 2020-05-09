@@ -9,12 +9,12 @@ SOURCES += src/main.cpp\
     src/tabcontrollers/SteamVRTabController.cpp \
     src/tabcontrollers/UtilitiesTabController.cpp \
     src/tabcontrollers/VideoTabController.cpp \
-	src/tabcontrollers/RotationTabController.cpp\
+    src/tabcontrollers/RotationTabController.cpp\
     src/utils/ChaperoneUtils.cpp \
     src/openvr/openvr_init.cpp \
     src/openvr/ivrinput.cpp \
-	src/openvr/ivrsettings.cpp \
-	src/openvr/ivroverlay.cpp \
+    src/openvr/ovr_settings_wrapper.cpp \
+    src/openvr/ovr_overlay_wrapper.cpp \
     src/utils/setup.cpp \
     src/utils/paths.cpp \
     src/utils/FrameRateUtils.cpp \
@@ -36,7 +36,7 @@ HEADERS += src/overlaycontroller.h \
     src/tabcontrollers/UtilitiesTabController.h \
     src/tabcontrollers/VideoTabController.h \
     src/tabcontrollers/audiomanager/AudioManager.h \
-	src/tabcontrollers/RotationTabController.h\
+    src/tabcontrollers/RotationTabController.h\
     src/keyboard_input/keyboard_input.h \
     src/media_keys/media_keys.h \
     src/utils/Matrix.h \
@@ -48,8 +48,8 @@ HEADERS += src/overlaycontroller.h \
     src/openvr/ivrinput_action_set.h \
     src/openvr/ivrinput_input_source.h \
     src/openvr/ivrinput.h \
-	src/openvr/ivrsettings.h \
-	src/openvr/ivroverlay.h \
+    src/openvr/ovr_settings_wrapper.h \
+    src/openvr/ovr_overlay_wrapper.h \
     src/utils/setup.h \
     src/utils/paths.h \
     src/utils/FrameRateUtils.h \
