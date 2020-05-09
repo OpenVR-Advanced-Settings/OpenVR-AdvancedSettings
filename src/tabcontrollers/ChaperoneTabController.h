@@ -377,6 +377,10 @@ private:
     void checkOverlayRotation();
     int m_rotationUpdateCounter = 0;
     int m_rotationCurrent = 0;
+    bool m_overlayNeedsUpdate = false;
+
+    vr::ETrackingUniverseOrigin m_trackingUniverse
+        = vr::TrackingUniverseRawAndUncalibrated;
 
 public:
     ~ChaperoneTabController();

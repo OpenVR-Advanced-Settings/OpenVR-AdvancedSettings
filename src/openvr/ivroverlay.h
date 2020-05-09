@@ -47,5 +47,10 @@ overlayError showOverlay( vr::VROverlayHandle_t ulOverlayHandle,
                           std::string customErrorMsg = "" );
 overlayError hideOverlay( vr::VROverlayHandle_t ulOverlayHandle,
                           std::string customErrorMsg = "" );
+overlayError setOverlayTransformAbsolute(
+    vr::VROverlayHandle_t ulOverlayHandle,
+    vr::ETrackingUniverseOrigin eTrackingOrigin,
+    const vr::HmdMatrix34_t* pmatTrackingOriginToOverlayTransform,
+    std::string customErrorMsg = "" );
 
 } // namespace ivroverlay

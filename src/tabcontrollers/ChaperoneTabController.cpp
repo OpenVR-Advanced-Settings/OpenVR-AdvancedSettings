@@ -11,6 +11,7 @@ namespace advsettings
 {
 void ChaperoneTabController::initStage1()
 {
+    m_trackingUniverse = vr::VRCompositor()->GetTrackingSpace();
     if ( disableChaperone() )
     {
         setFadeDistance( 0.0f, true );
@@ -19,13 +20,15 @@ void ChaperoneTabController::initStage1()
     reloadChaperoneProfiles();
     m_chaperoneSettingsUpdateCounter
         = utils::adjustUpdateRate( k_chaperoneSettingsUpdateCounter );
+    initFloorOverlay();
     eventLoopTick( nullptr );
 }
 
 void ChaperoneTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
-    initFloorOverlay();
+    // Cludge Fix for now, but its not getting called for some reason w/ QML
+    setCenterMarkerNew( centerMarkerNew() );
 }
 
 void ChaperoneTabController::dashboardLoopTick()
@@ -33,6 +36,7 @@ void ChaperoneTabController::dashboardLoopTick()
     if ( settingsUpdateCounter >= m_chaperoneSettingsUpdateCounter )
     {
         updateChaperoneSettings();
+        m_trackingUniverse = vr::VRCompositor()->GetTrackingSpace();
         settingsUpdateCounter = 0;
     }
     else
@@ -230,7 +234,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
 void ChaperoneTabController::eventLoopTick(
     vr::TrackedDevicePose_t* devicePoses )
 {
-    if ( centerMarkerNew() )
+    if ( centerMarkerNew() && devicePoses != nullptr )
     {
         updateOverlay();
     }
@@ -678,8 +682,9 @@ int ChaperoneTabController::collisionBoundStyle()
 
 bool ChaperoneTabController::centerMarkerNew()
 {
-    return settings::getSetting(
+    bool temp = settings::getSetting(
         settings::BoolSetting::CHAPERONE_centerMarkerNew );
+    return temp;
 }
 
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount()
@@ -831,18 +836,15 @@ void ChaperoneTabController::setChaperoneColorA( int value, bool notify )
 
 void ChaperoneTabController::setCenterMarkerNew( bool value, bool notify )
 {
-    if ( value != centerMarkerNew() )
+    settings::setSetting( settings::BoolSetting::CHAPERONE_centerMarkerNew,
+                          value );
+    if ( value )
     {
-        settings::setSetting( settings::BoolSetting::CHAPERONE_centerMarkerNew,
-                              value );
-        if ( value )
-        {
-            ivroverlay::showOverlay( m_chaperoneFloorOverlayHandle );
-        }
-        else
-        {
-            ivroverlay::hideOverlay( m_chaperoneFloorOverlayHandle );
-        }
+        ivroverlay::showOverlay( m_chaperoneFloorOverlayHandle );
+    }
+    else
+    {
+        ivroverlay::hideOverlay( m_chaperoneFloorOverlayHandle );
     }
 
     if ( notify )
@@ -1149,7 +1151,7 @@ void ChaperoneTabController::flipOrientation( double degrees )
     double rad = 0;
     rad = degrees * ( M_PI / 180.0 );
 
-    parent->RotateUniverseCenter( vr::TrackingUniverseStanding,
+    parent->RotateUniverseCenter( m_trackingUniverse,
                                   static_cast<float>( rad ) );
     parent->m_moveCenterTabController.zeroOffsets();
 }
@@ -1567,30 +1569,33 @@ void ChaperoneTabController::initFloorOverlay()
     }
     else
     {
+        LOG( ERROR ) << "overlay Not initialized";
         // TODO Set Failure variable.
     }
 }
 
 void ChaperoneTabController::updateOverlay()
 {
-    float xoff = -( parent->m_moveCenterTabController.offsetX() );
-    float yoff = -( parent->m_moveCenterTabController.offsetY() );
-    float zoff = -( parent->m_moveCenterTabController.offsetZ() );
-    /* Rotation on Y Axis
-     * {cos t, 0, sin t}
-     * {0, 1, 0}
-     * {-sin t, 0 cost t}
-     */
+    if ( m_trackingUniverse != vr::TrackingUniverseRawAndUncalibrated )
+    {
+        float xoff = -( parent->m_moveCenterTabController.offsetX() );
+        float yoff = -( parent->m_moveCenterTabController.offsetY() );
+        float zoff = -( parent->m_moveCenterTabController.offsetZ() );
+        /* Rotation on Y Axis
+         * {cos t, 0, sin t}
+         * {0, 1, 0}
+         * {-sin t, 0 cost t}
+         */
 
-    vr::HmdMatrix34_t updateTransform = { { { 1.0f, 0.0f, 0.0f, xoff },
-                                            { 0.0f, 0.0f, 1.0f, yoff },
-                                            { 0.0f, -1.0f, 0.0f, zoff } } };
-
-    vr::VROverlay()->SetOverlayTransformAbsolute(
-        m_chaperoneFloorOverlayHandle,
-        vr::ETrackingUniverseOrigin::TrackingUniverseStanding,
-        &updateTransform );
-    checkOverlayRotation();
+        vr::HmdMatrix34_t updateTransform = { { { 1.0f, 0.0f, 0.0f, xoff },
+                                                { 0.0f, 0.0f, 1.0f, yoff },
+                                                { 0.0f, -1.0f, 0.0f, zoff } } };
+        ivroverlay::setOverlayTransformAbsolute( m_chaperoneFloorOverlayHandle,
+                                                 m_trackingUniverse,
+                                                 &updateTransform,
+                                                 "" );
+        checkOverlayRotation();
+    }
 }
 
 void ChaperoneTabController::checkOverlayRotation()

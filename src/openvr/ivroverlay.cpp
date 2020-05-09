@@ -144,4 +144,30 @@ overlayError hideOverlay( vr::VROverlayHandle_t ulOverlayHandle,
     }
 }
 
+overlayError setOverlayTransformAbsolute(
+    vr::VROverlayHandle_t ulOverlayHandle,
+    vr::ETrackingUniverseOrigin eTrackingOrigin,
+    const vr::HmdMatrix34_t* pmatTrackingOriginToOverlayTransform,
+    std::string customErrorMsg )
+{
+    vr::VROverlayError overlayError
+        = vr::VROverlay()->SetOverlayTransformAbsolute(
+            ulOverlayHandle,
+            eTrackingOrigin,
+            pmatTrackingOriginToOverlayTransform );
+    if ( overlayError == vr::VROverlayError_None )
+    {
+        return overlayError::noErr;
+    }
+    else
+    {
+        // TODO get handle name
+        LOG( ERROR ) << "Error setting Overlay Position "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                            overlayError )
+                     << " " << customErrorMsg;
+        return overlayError::undefErr;
+    }
+}
+
 } // namespace ivroverlay

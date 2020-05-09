@@ -58,7 +58,7 @@ GroupBox {
 
     Component.onCompleted: {
             chaperoneFloorToggleBtn.checked = ChaperoneTabController.chaperoneFloorToggle
-            legacyCenterMarkerbtn.checked = ChaperoneTabController.centermarker
+            legacyCenterMarkerbtn.checked = ChaperoneTabController.centerMarker
     }
 
     Connections {

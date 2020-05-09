@@ -555,7 +555,7 @@ MyStackViewPage {
                 chaperoneHeightSlider.value = h
             }
             chaperoneHeightText.text = h
-            chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarker
+            chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarkerNew
             chaperonePlaySpaceToggle.checked = ChaperoneTabController.playSpaceMarker
             chaperoneForceBoundsToggle.checked = ChaperoneTabController.forceBounds
             chaperoneDisableChaperone.checked = ChaperoneTabController.disableChaperone
