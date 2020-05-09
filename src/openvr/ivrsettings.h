@@ -10,67 +10,50 @@
  * while also minimizing code
  *
  */
-namespace ivrsettings
+namespace ovr_settings_wrapper
 {
-enum class logType
-{
-    warn,
-    err,
-    bug
-
-};
-
 // might make sense to mirror ovr's errors exactly, but for now this is more
 // than sufficient
-enum class settingsError
+enum class SettingsError
 {
-    noErr,
-    undefErr,
+    NoError,
+    UndefinedError,
 
 };
 
-std::pair<settingsError, bool> getBool( const char* pchSection,
+std::pair<SettingsError, bool> getBool( const char* pchSection,
                                         const char* pchSettingsKey,
-                                        logType errorType,
                                         std::string customErrorMsg = "" );
 
-std::pair<settingsError, int> getInt32( const char* pchSection,
+std::pair<SettingsError, int> getInt32( const char* pchSection,
                                         const char* pchSettingsKey,
-                                        logType errorType,
                                         std::string customErrorMsg = "" );
 
-std::pair<settingsError, float> getFloat( const char* pchSection,
+std::pair<SettingsError, float> getFloat( const char* pchSection,
                                           const char* pchSettingsKey,
-                                          logType errorType,
                                           std::string customErrorMsg = "" );
 // TODO string
 
-settingsError setBool( const char* pchSection,
+SettingsError setBool( const char* pchSection,
                        const char* pchSettingsKey,
                        bool bValue,
-                       logType errorType,
                        std::string customErrorMsg = "" );
-settingsError setInt32( const char* pchSection,
+SettingsError setInt32( const char* pchSection,
                         const char* pchSettingsKey,
                         int nValue,
-                        logType errorType,
                         std::string customErrorMsg = "" );
-settingsError setFloat( const char* pchSection,
+SettingsError setFloat( const char* pchSection,
                         const char* pchSettingsKey,
                         float flValue,
-                        logType errorType,
                         std::string customErrorMsg = "" );
 
-settingsError removeSection( const char* pchSection,
-                             logType errorType,
+SettingsError removeSection( const char* pchSection,
                              std::string customErrorMsg = "" );
-settingsError removeKeyInSection( const char* pchSection,
+SettingsError removeKeyInSection( const char* pchSection,
                                   const char* pchSettingsKey,
-                                  logType errorType,
                                   std::string customErrorMsg = "" );
 
-settingsError handleErrors( logType errorType,
-                            const char* pchSettingsKey,
+SettingsError handleErrors( const char* pchSettingsKey,
                             vr::EVRSettingsError,
                             std::string customErrorMsg );
-} // namespace ivrsettings
+} // namespace ovr_settings_wrapper
