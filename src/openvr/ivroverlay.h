@@ -12,45 +12,45 @@
  * while also minimizing code
  *
  */
-namespace ivroverlay
+namespace ovr_overlay_wrapper
 {
 // might make sense to mirror ovr's errors exactly, but for now this is more
 // than sufficient
-enum class overlayError
+enum class OverlayError
 {
-    noErr,
-    undefErr,
+    NoError,
+    UndefinedError,
 
 };
 
-overlayError createOverlay( const std::string pchOverlayKey,
+OverlayError createOverlay( const std::string pchOverlayKey,
                             const std::string pchOverlayName,
                             vr::VROverlayHandle_t* pOverlayHandle,
                             std::string customErrorMsg = "" );
 
-overlayError setOverlayColor( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError setOverlayColor( vr::VROverlayHandle_t ulOverlayHandle,
                               float fRed,
                               float fGreen,
                               float fBlue,
                               std::string customErrorMsg = "" );
-overlayError setOverlayAlpha( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError setOverlayAlpha( vr::VROverlayHandle_t ulOverlayHandle,
                               float alpha,
                               std::string customErrorMsg = "" );
 
-overlayError setOverlayWidthInMeters( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError setOverlayWidthInMeters( vr::VROverlayHandle_t ulOverlayHandle,
                                       float fWidthInMeters,
                                       std::string customErrorMsg = "" );
-overlayError setOverlayFromFile( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError setOverlayFromFile( vr::VROverlayHandle_t ulOverlayHandle,
                                  std::string fileName,
                                  std::string customErrorMsg = "" );
-overlayError showOverlay( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError showOverlay( vr::VROverlayHandle_t ulOverlayHandle,
                           std::string customErrorMsg = "" );
-overlayError hideOverlay( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError hideOverlay( vr::VROverlayHandle_t ulOverlayHandle,
                           std::string customErrorMsg = "" );
-overlayError setOverlayTransformAbsolute(
+OverlayError setOverlayTransformAbsolute(
     vr::VROverlayHandle_t ulOverlayHandle,
     vr::ETrackingUniverseOrigin eTrackingOrigin,
     const vr::HmdMatrix34_t* pmatTrackingOriginToOverlayTransform,
     std::string customErrorMsg = "" );
 
-} // namespace ivroverlay
+} // namespace ovr_overlay_wrapper
