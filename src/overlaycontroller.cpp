@@ -77,7 +77,7 @@ OverlayController::OverlayController( bool desktopMode,
     {
         m_activationSoundEffect.setSource( QUrl::fromLocalFile(
             QString::fromStdString( ( *activationSoundFile ) ) ) );
-        m_activationSoundEffect.setVolume( 1.0 );
+        m_activationSoundEffect.setVolume( 0.8 );
     }
     else
     {
@@ -92,7 +92,7 @@ OverlayController::OverlayController( bool desktopMode,
     {
         m_focusChangedSoundEffect.setSource( QUrl::fromLocalFile(
             QString::fromStdString( ( *focusChangedSoundFile ) ) ) );
-        m_focusChangedSoundEffect.setVolume( 1.0 );
+        m_focusChangedSoundEffect.setVolume( 0.8 );
     }
     else
     {
