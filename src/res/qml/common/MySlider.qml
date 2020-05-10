@@ -48,7 +48,7 @@ Slider {
 
     onValueChanged: {
 		if (activeFocus) {
-			MyResources.playActivationSound()
+            //MyResources.playActivationSound()
 		}
     }
 }
