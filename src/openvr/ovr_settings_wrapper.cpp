@@ -97,14 +97,14 @@ SettingsError setFloat( std::string section,
     return handleErrors( settingsKey, error, customErrorMsg );
 }
 
-SettingsError removesection( std::string section, std::string customErrorMsg )
+SettingsError removeSection( std::string section, std::string customErrorMsg )
 {
     vr::EVRSettingsError error;
     vr::VRSettings()->RemoveSection( section.c_str(), &error );
     return handleErrors( "section", error, customErrorMsg );
 }
 
-SettingsError removeKeyInsection( std::string section,
+SettingsError removeKeyInSection( std::string section,
                                   std::string settingsKey,
                                   std::string customErrorMsg )
 {
