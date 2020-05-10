@@ -235,12 +235,15 @@ void ChaperoneTabController::eventLoopTick(
     vr::TrackedDevicePose_t* devicePoses )
 {
     m_trackingUniverse = universe;
+    // Update overlay should only run After move center tab controller is
+    // initialized.
+    // As such this protects it from running during initstage 1.
     if ( centerMarkerNew() && devicePoses != nullptr )
     {
         updateOverlay();
     }
     // TODO need to test, this should disable chaperone warnings unless you are
-    // in "standing mode/room-scale
+    // in standing mode/room-scale
     if ( devicePoses && m_trackingUniverse == vr::TrackingUniverseStanding )
     {
         m_isHMDActive = false;
