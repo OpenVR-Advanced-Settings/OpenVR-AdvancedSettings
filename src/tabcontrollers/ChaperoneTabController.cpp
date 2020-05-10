@@ -432,8 +432,7 @@ void ChaperoneTabController::setHeight( float value, bool notify )
             vr::k_pch_CollisionBounds_WallHeight_Float,
             m_height,
             "" );
-        // TODO does this mess Movement up?
-        // parent->m_moveCenterTabController.setBoundsBasisHeight( m_height );
+        parent->m_moveCenterTabController.setBoundsBasisHeight( m_height );
         if ( notify )
         {
             emit heightChanged( m_height );
@@ -441,7 +440,6 @@ void ChaperoneTabController::setHeight( float value, bool notify )
     }
 }
 
-// TODO check if Needed
 void ChaperoneTabController::updateHeight( float value, bool notify )
 {
     if ( fabs( static_cast<double>( m_height - value ) ) > 0.005 )
@@ -1546,8 +1544,6 @@ void ChaperoneTabController::initFloorOverlay()
 {
     std::string overlayFloorMarkerKey
         = std::string( application_strings::applicationKey ) + ".floormarker";
-    // INNER Overlay
-
     ovr_overlay_wrapper::OverlayError overlayError
         = ovr_overlay_wrapper::createOverlay( overlayFloorMarkerKey,
                                               overlayFloorMarkerKey,
