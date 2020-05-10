@@ -78,7 +78,7 @@ GroupBox {
                         } else if (val > 100.0) {
                             val = 100.0
                         }
-                        var v = (val/100).toFixed(2)
+                        var v = (val/100)
                         VideoTabController.setBrightnessOpacityValue(v.toFixed(2), true)
                             brightnessSlider.value = v
                     }
