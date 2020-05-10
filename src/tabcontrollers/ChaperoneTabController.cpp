@@ -21,7 +21,7 @@ void ChaperoneTabController::initStage1()
     m_chaperoneSettingsUpdateCounter
         = utils::adjustUpdateRate( k_chaperoneSettingsUpdateCounter );
     initFloorOverlay();
-    eventLoopTick( nullptr );
+    eventLoopTick( m_trackingUniverse, nullptr );
 }
 
 void ChaperoneTabController::initStage2( OverlayController* var_parent )
@@ -36,7 +36,6 @@ void ChaperoneTabController::dashboardLoopTick()
     if ( settingsUpdateCounter >= m_chaperoneSettingsUpdateCounter )
     {
         updateChaperoneSettings();
-        m_trackingUniverse = vr::VRCompositor()->GetTrackingSpace();
         settingsUpdateCounter = 0;
     }
     else
@@ -232,8 +231,10 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
 }
 
 void ChaperoneTabController::eventLoopTick(
+    vr::ETrackingUniverseOrigin universe,
     vr::TrackedDevicePose_t* devicePoses )
 {
+    m_trackingUniverse = universe;
     if ( centerMarkerNew() && devicePoses != nullptr )
     {
         updateOverlay();

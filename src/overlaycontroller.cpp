@@ -1144,13 +1144,13 @@ void OverlayController::mainEventLoop()
         rightSpeed
             = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
     }
+    auto universe = vr::VRCompositor()->GetTrackingSpace();
 
-    m_moveCenterTabController.eventLoopTick(
-        vr::VRCompositor()->GetTrackingSpace(), devicePoses );
+    m_moveCenterTabController.eventLoopTick( universe, devicePoses );
     m_utilitiesTabController.eventLoopTick();
     m_statisticsTabController.eventLoopTick(
         devicePoses, leftSpeed, rightSpeed );
-    m_chaperoneTabController.eventLoopTick( devicePoses );
+    m_chaperoneTabController.eventLoopTick( universe, devicePoses );
     m_audioTabController.eventLoopTick();
     m_rotationTabController.eventLoopTick( devicePoses );
 

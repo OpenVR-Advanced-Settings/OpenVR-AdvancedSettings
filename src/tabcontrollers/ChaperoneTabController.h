@@ -388,7 +388,8 @@ public:
     void initStage1();
     void initStage2( OverlayController* parent );
 
-    void eventLoopTick( vr::TrackedDevicePose_t* devicePoses );
+    void eventLoopTick( vr::ETrackingUniverseOrigin universe,
+                        vr::TrackedDevicePose_t* devicePoses );
     void dashboardLoopTick();
     void handleChaperoneWarnings( float distance );
 
