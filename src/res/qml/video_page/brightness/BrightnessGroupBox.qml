@@ -79,6 +79,7 @@ GroupBox {
                             val = 100.0
                         }
                         var v = (val/100).toFixed(2)
+                        VideoTabController.setBrightnessOpacityValue(v.toFixed(2), true)
                             brightnessSlider.value = v
                     }
                     text = Math.round(VideoTabController.brightnessOpacityValue * 100) + "%"
