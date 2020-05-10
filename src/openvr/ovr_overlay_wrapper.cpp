@@ -2,20 +2,20 @@
 
 namespace ovr_overlay_wrapper
 {
-OverlayError createOverlay( const std::string pchOverlayKey,
-                            const std::string pchOverlayName,
-                            vr::VROverlayHandle_t* pOverlayHandle,
+OverlayError createOverlay( const std::string overlayKey,
+                            const std::string overlayName,
+                            vr::VROverlayHandle_t* overlayHandle,
                             std::string customErrorMsg )
 {
     vr::VROverlayError oError = vr::VROverlay()->CreateOverlay(
-        pchOverlayKey.c_str(), pchOverlayName.c_str(), pOverlayHandle );
+        overlayKey.c_str(), overlayName.c_str(), overlayHandle );
     if ( oError == vr::VROverlayError_None )
     {
         return OverlayError::NoError;
     }
     else
     {
-        LOG( ERROR ) << "Could not create overlay: " << pchOverlayName
+        LOG( ERROR ) << "Could not create overlay: " << overlayName
                      << "because "
                      << vr::VROverlay()->GetOverlayErrorNameFromEnum( oError )
                      << " " << customErrorMsg;
@@ -23,14 +23,14 @@ OverlayError createOverlay( const std::string pchOverlayKey,
     }
 }
 
-OverlayError setOverlayColor( vr::VROverlayHandle_t ulOverlayHandle,
-                              float fRed,
-                              float fGreen,
-                              float fBlue,
+OverlayError setOverlayColor( vr::VROverlayHandle_t overlayHandle,
+                              float red,
+                              float green,
+                              float blue,
                               std::string customErrorMsg )
 {
-    vr::VROverlayError oError = vr::VROverlay()->SetOverlayColor(
-        ulOverlayHandle, fRed, fGreen, fBlue );
+    vr::VROverlayError oError
+        = vr::VROverlay()->SetOverlayColor( overlayHandle, red, green, blue );
     if ( oError == vr::VROverlayError_None )
     {
         return OverlayError::NoError;
@@ -43,12 +43,12 @@ OverlayError setOverlayColor( vr::VROverlayHandle_t ulOverlayHandle,
     }
 }
 
-OverlayError setOverlayAlpha( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError setOverlayAlpha( vr::VROverlayHandle_t overlayHandle,
                               float alpha,
                               std::string customErrorMsg )
 {
     vr::VROverlayError oError
-        = vr::VROverlay()->SetOverlayAlpha( ulOverlayHandle, alpha );
+        = vr::VROverlay()->SetOverlayAlpha( overlayHandle, alpha );
     if ( oError == vr::VROverlayError_None )
     {
         return OverlayError::NoError;
@@ -61,12 +61,12 @@ OverlayError setOverlayAlpha( vr::VROverlayHandle_t ulOverlayHandle,
     }
 }
 
-OverlayError setOverlayWidthInMeters( vr::VROverlayHandle_t ulOverlayHandle,
-                                      float fWidthInMeters,
+OverlayError setOverlayWidthInMeters( vr::VROverlayHandle_t overlayHandle,
+                                      float widthInMeters,
                                       std::string customErrorMsg )
 {
     vr::VROverlayError oError = vr::VROverlay()->SetOverlayWidthInMeters(
-        ulOverlayHandle, fWidthInMeters );
+        overlayHandle, widthInMeters );
     if ( oError == vr::VROverlayError_None )
     {
         return OverlayError::NoError;
@@ -79,7 +79,7 @@ OverlayError setOverlayWidthInMeters( vr::VROverlayHandle_t ulOverlayHandle,
     }
 }
 
-OverlayError setOverlayFromFile( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError setOverlayFromFile( vr::VROverlayHandle_t overlayHandle,
                                  std::string fileName,
                                  std::string customErrorMsg )
 {
@@ -88,7 +88,7 @@ OverlayError setOverlayFromFile( vr::VROverlayHandle_t ulOverlayHandle,
         if ( overlayPath.has_value() )
         {
             vr::VROverlayError oError = vr::VROverlay()->SetOverlayFromFile(
-                ulOverlayHandle, overlayPath->c_str() );
+                overlayHandle, overlayPath->c_str() );
             if ( oError == vr::VROverlayError_None )
             {
                 return OverlayError::NoError;
@@ -108,10 +108,10 @@ OverlayError setOverlayFromFile( vr::VROverlayHandle_t ulOverlayHandle,
     }
 }
 
-OverlayError showOverlay( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError showOverlay( vr::VROverlayHandle_t overlayHandle,
                           std::string customErrorMsg )
 {
-    vr::VROverlayError oError = vr::VROverlay()->ShowOverlay( ulOverlayHandle );
+    vr::VROverlayError oError = vr::VROverlay()->ShowOverlay( overlayHandle );
     if ( oError == vr::VROverlayError_None )
     {
         return OverlayError::NoError;
@@ -124,10 +124,10 @@ OverlayError showOverlay( vr::VROverlayHandle_t ulOverlayHandle,
     }
 }
 
-OverlayError hideOverlay( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError hideOverlay( vr::VROverlayHandle_t overlayHandle,
                           std::string customErrorMsg )
 {
-    vr::VROverlayError oError = vr::VROverlay()->HideOverlay( ulOverlayHandle );
+    vr::VROverlayError oError = vr::VROverlay()->HideOverlay( overlayHandle );
     if ( oError == vr::VROverlayError_None )
     {
         return OverlayError::NoError;
@@ -141,15 +141,13 @@ OverlayError hideOverlay( vr::VROverlayHandle_t ulOverlayHandle,
 }
 
 OverlayError setOverlayTransformAbsolute(
-    vr::VROverlayHandle_t ulOverlayHandle,
-    vr::ETrackingUniverseOrigin eTrackingOrigin,
-    const vr::HmdMatrix34_t* pmatTrackingOriginToOverlayTransform,
+    vr::VROverlayHandle_t overlayHandle,
+    vr::ETrackingUniverseOrigin trackingOrigin,
+    const vr::HmdMatrix34_t* trackingOriginToOverlayTransform,
     std::string customErrorMsg )
 {
     vr::VROverlayError oError = vr::VROverlay()->SetOverlayTransformAbsolute(
-        ulOverlayHandle,
-        eTrackingOrigin,
-        pmatTrackingOriginToOverlayTransform );
+        overlayHandle, trackingOrigin, trackingOriginToOverlayTransform );
     if ( oError == vr::VROverlayError_None )
     {
         return OverlayError::NoError;

@@ -21,39 +21,39 @@ enum class SettingsError
 
 };
 
-std::pair<SettingsError, bool> getBool( const char* pchSection,
-                                        const char* pchSettingsKey,
+std::pair<SettingsError, bool> getBool( std::string section,
+                                        std::string settingsKey,
                                         std::string customErrorMsg = "" );
 
-std::pair<SettingsError, int> getInt32( const char* pchSection,
-                                        const char* pchSettingsKey,
+std::pair<SettingsError, int> getInt32( std::string section,
+                                        std::string settingsKey,
                                         std::string customErrorMsg = "" );
 
-std::pair<SettingsError, float> getFloat( const char* pchSection,
-                                          const char* pchSettingsKey,
+std::pair<SettingsError, float> getFloat( std::string section,
+                                          std::string settingsKey,
                                           std::string customErrorMsg = "" );
 // TODO string
 
-SettingsError setBool( const char* pchSection,
-                       const char* pchSettingsKey,
+SettingsError setBool( std::string section,
+                       std::string settingsKey,
                        bool bValue,
                        std::string customErrorMsg = "" );
-SettingsError setInt32( const char* pchSection,
-                        const char* pchSettingsKey,
+SettingsError setInt32( std::string section,
+                        std::string settingsKey,
                         int nValue,
                         std::string customErrorMsg = "" );
-SettingsError setFloat( const char* pchSection,
-                        const char* pchSettingsKey,
+SettingsError setFloat( std::string section,
+                        std::string settingsKey,
                         float flValue,
                         std::string customErrorMsg = "" );
 
-SettingsError removeSection( const char* pchSection,
+SettingsError removeSection( std::string section,
                              std::string customErrorMsg = "" );
-SettingsError removeKeyInSection( const char* pchSection,
-                                  const char* pchSettingsKey,
+SettingsError removeKeyInSection( std::string section,
+                                  std::string settingsKey,
                                   std::string customErrorMsg = "" );
 
-SettingsError handleErrors( const char* pchSettingsKey,
+SettingsError handleErrors( std::string settingsKey,
                             vr::EVRSettingsError,
                             std::string customErrorMsg );
 } // namespace ovr_settings_wrapper

@@ -23,34 +23,34 @@ enum class OverlayError
 
 };
 
-OverlayError createOverlay( const std::string pchOverlayKey,
-                            const std::string pchOverlayName,
-                            vr::VROverlayHandle_t* pOverlayHandle,
+OverlayError createOverlay( const std::string overlayKey,
+                            const std::string overlayName,
+                            vr::VROverlayHandle_t* overlayHandle,
                             std::string customErrorMsg = "" );
 
-OverlayError setOverlayColor( vr::VROverlayHandle_t ulOverlayHandle,
-                              float fRed,
-                              float fGreen,
-                              float fBlue,
+OverlayError setOverlayColor( vr::VROverlayHandle_t overlayHandle,
+                              float red,
+                              float green,
+                              float blue,
                               std::string customErrorMsg = "" );
-OverlayError setOverlayAlpha( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError setOverlayAlpha( vr::VROverlayHandle_t overlayHandle,
                               float alpha,
                               std::string customErrorMsg = "" );
 
-OverlayError setOverlayWidthInMeters( vr::VROverlayHandle_t ulOverlayHandle,
-                                      float fWidthInMeters,
+OverlayError setOverlayWidthInMeters( vr::VROverlayHandle_t overlayHandle,
+                                      float widthInMeters,
                                       std::string customErrorMsg = "" );
-OverlayError setOverlayFromFile( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError setOverlayFromFile( vr::VROverlayHandle_t overlayHandle,
                                  std::string fileName,
                                  std::string customErrorMsg = "" );
-OverlayError showOverlay( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError showOverlay( vr::VROverlayHandle_t overlayHandle,
                           std::string customErrorMsg = "" );
-OverlayError hideOverlay( vr::VROverlayHandle_t ulOverlayHandle,
+OverlayError hideOverlay( vr::VROverlayHandle_t overlayHandle,
                           std::string customErrorMsg = "" );
 OverlayError setOverlayTransformAbsolute(
-    vr::VROverlayHandle_t ulOverlayHandle,
-    vr::ETrackingUniverseOrigin eTrackingOrigin,
-    const vr::HmdMatrix34_t* pmatTrackingOriginToOverlayTransform,
+    vr::VROverlayHandle_t overlayHandle,
+    vr::ETrackingUniverseOrigin trackingOrigin,
+    const vr::HmdMatrix34_t* trackingOriginToOverlayTransform,
     std::string customErrorMsg = "" );
 
 } // namespace ovr_overlay_wrapper
