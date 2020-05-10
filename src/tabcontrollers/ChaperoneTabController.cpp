@@ -238,7 +238,9 @@ void ChaperoneTabController::eventLoopTick(
     {
         updateOverlay();
     }
-    if ( devicePoses )
+    // TODO need to test, this should disable chaperone warnings unless you are
+    // in "standing mode/room-scale
+    if ( devicePoses && m_trackingUniverse == vr::TrackingUniverseStanding )
     {
         m_isHMDActive = false;
         std::lock_guard<std::recursive_mutex> lock(
@@ -321,7 +323,6 @@ void ChaperoneTabController::eventLoopTick(
             m_updateTicksChaperoneReload++;
             if ( m_updateTicksChaperoneReload >= 500 )
             {
-                // TODO check if not roomscale XD
                 m_updateTicksChaperoneReload = 0;
                 LOG( WARNING ) << "Attempting to reload chaperone data";
                 parent->chaperoneUtils().loadChaperoneData();
