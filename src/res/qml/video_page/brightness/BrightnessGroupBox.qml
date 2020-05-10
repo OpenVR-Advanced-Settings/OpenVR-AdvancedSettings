@@ -90,7 +90,7 @@ GroupBox {
     Component.onCompleted: {
         var brightvalue = VideoTabController.brightnessOpacityValue
         brightnessSlider.value = brightvalue
-        brightnessValueText.text = Math.round(brightnessOpacityValue*100)+ "%"
+        brightnessValueText.text = Math.round(brightvalue*100)+ "%"
         brightnessToggle.checked = VideoTabController.brightnessEnabled
     }
 
@@ -100,7 +100,7 @@ GroupBox {
         onBrightnessOpacityValueChanged: {
             var brightvalue = VideoTabController.brightnessOpacityValue
             brightnessSlider.value = brightvalue
-            brightnessValueText.text = Math.round(brightnessOpacityValue*100)+ "%"
+            brightnessValueText.text = Math.round(brightvalue*100)+ "%"
         }
         onBrightnessEnabledChanged: {
             brightnessToggle.checked = VideoTabController.brightnessEnabled
