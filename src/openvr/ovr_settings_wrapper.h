@@ -32,7 +32,10 @@ std::pair<SettingsError, int> getInt32( std::string section,
 std::pair<SettingsError, float> getFloat( std::string section,
                                           std::string settingsKey,
                                           std::string customErrorMsg = "" );
-// TODO string
+std::pair<SettingsError, std::string> getString( std::string section,
+                                                 std::string settingsKey,
+                                                 std::string customErrorMsg
+                                                 = "" );
 
 SettingsError setBool( std::string section,
                        std::string settingsKey,
@@ -46,6 +49,10 @@ SettingsError setFloat( std::string section,
                         std::string settingsKey,
                         float value,
                         std::string customErrorMsg = "" );
+SettingsError setString( std::string section,
+                         std::string settingsKey,
+                         char* value,
+                         std::string customErrorMsg = "" );
 
 SettingsError removeSection( std::string section,
                              std::string customErrorMsg = "" );

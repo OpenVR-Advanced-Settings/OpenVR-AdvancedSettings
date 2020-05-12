@@ -60,6 +60,26 @@ std::pair<SettingsError, float> getFloat( std::string section,
     return p;
 }
 
+std::pair<SettingsError, std::string> getString( std::string section,
+                                                 std::string settingsKey,
+                                                 std::string customErrorMsg )
+
+{
+    vr::EVRSettingsError error;
+    // This appears to be correct value as set in CVRSettingHelper as of
+    // ovr 1.11.11
+    const uint32_t bufferMax = 4096;
+    char cStringOut[bufferMax];
+
+    vr::VRSettings()->GetString(
+        section.c_str(), settingsKey.c_str(), cStringOut, bufferMax, &error );
+    handleErrors( settingsKey, error, customErrorMsg );
+    std::string value = cStringOut;
+    SettingsError e = handleErrors( settingsKey, error, customErrorMsg );
+    std::pair<SettingsError, std::string> p( e, value );
+    return p;
+}
+
 // Setters
 
 SettingsError setBool( std::string section,
@@ -93,6 +113,17 @@ SettingsError setFloat( std::string section,
 {
     vr::EVRSettingsError error;
     vr::VRSettings()->SetFloat(
+        section.c_str(), settingsKey.c_str(), value, &error );
+    return handleErrors( settingsKey, error, customErrorMsg );
+}
+
+SettingsError setString( std::string section,
+                         std::string settingsKey,
+                         char* value,
+                         std::string customErrorMsg )
+{
+    vr::EVRSettingsError error;
+    vr::VRSettings()->SetString(
         section.c_str(), settingsKey.c_str(), value, &error );
     return handleErrors( settingsKey, error, customErrorMsg );
 }
