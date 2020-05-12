@@ -52,6 +52,17 @@ GroupBox {
                     ChaperoneTabController.setCenterMarker(this.checked, false)
                 }
             }
+            Item{
+                Layout.preferredWidth: 20
+            }
+            MyPushButton2{
+                id:btnResetOrientation
+                text: "Reset Turn Counter"
+                onClicked: {
+                    StatisticsTabController.statsRotationResetClicked()
+                }
+            }
+
         }
 
     }

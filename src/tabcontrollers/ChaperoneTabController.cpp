@@ -1226,6 +1226,7 @@ void ChaperoneTabController::addChaperoneProfile(
     if ( includeCenterMarker )
     {
         profile->centerMarker = m_centerMarker;
+        profile->centerMarkerNew = centerMarkerNew();
     }
     profile->includesPlaySpaceMarker = includePlaySpaceMarker;
     if ( includePlaySpaceMarker )
@@ -1278,6 +1279,7 @@ void ChaperoneTabController::addChaperoneProfile(
         profile->chaperoneShowDashboardDistance
             = chaperoneShowDashboardDistance();
     }
+
     saveChaperoneProfiles();
     emit chaperoneProfilesUpdated();
 }
@@ -1314,6 +1316,7 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
         if ( profile.includesCenterMarker )
         {
             setCenterMarker( profile.centerMarker );
+            setCenterMarkerNew( profile.centerMarkerNew );
         }
         if ( profile.includesPlaySpaceMarker )
         {

@@ -69,6 +69,7 @@ struct ChaperoneProfile : settings::ISettingsObject
     float chaperoneAlarmSoundDistance = 0.0f;
     bool enableChaperoneShowDashboard = false;
     float chaperoneShowDashboardDistance = 0.0f;
+    bool centerMarkerNew = false;
 
     virtual settings::SettingsObjectData saveSettings() const override
     {
@@ -143,6 +144,7 @@ struct ChaperoneProfile : settings::ISettingsObject
         o.addValue( static_cast<double>( chaperoneAlarmSoundDistance ) );
         o.addValue( enableChaperoneShowDashboard );
         o.addValue( static_cast<double>( chaperoneShowDashboardDistance ) );
+        o.addValue( centerMarkerNew );
 
         return o;
     }
@@ -234,6 +236,7 @@ struct ChaperoneProfile : settings::ISettingsObject
         enableChaperoneShowDashboard = obj.getNextValueOrDefault( false );
         chaperoneShowDashboardDistance
             = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
+        centerMarkerNew = obj.getNextValueOrDefault( false );
     }
 
     virtual std::string settingsName() const override
