@@ -37,8 +37,10 @@ OverlayError setOverlayColor( vr::VROverlayHandle_t overlayHandle,
     }
     else
     {
-        // TODO get Name and print out error.....
-        LOG( ERROR ) << "Error setting Color: " << customErrorMsg;
+        LOG( ERROR ) << "Error setting Overlay Color For "
+                     << getOverlayKey( overlayHandle ) << " with error: "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum( oError )
+                     << " " << customErrorMsg;
         return OverlayError::UndefinedError;
     }
 }
@@ -55,8 +57,10 @@ OverlayError setOverlayAlpha( vr::VROverlayHandle_t overlayHandle,
     }
     else
     {
-        // TODO get Name and print out error.....
-        LOG( ERROR ) << "Error setting Alpha: " << customErrorMsg;
+        LOG( ERROR ) << "Error setting Overlay Alpha For "
+                     << getOverlayKey( overlayHandle ) << " with error: "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum( oError )
+                     << " " << customErrorMsg;
         return OverlayError::UndefinedError;
     }
 }
@@ -73,8 +77,10 @@ OverlayError setOverlayWidthInMeters( vr::VROverlayHandle_t overlayHandle,
     }
     else
     {
-        // TODO get Name and print out error.....
-        LOG( ERROR ) << "Error setting Width" << customErrorMsg;
+        LOG( ERROR ) << "Error setting overlay width For "
+                     << getOverlayKey( overlayHandle ) << " with error: "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum( oError )
+                     << " " << customErrorMsg;
         return OverlayError::UndefinedError;
     }
 }
@@ -95,8 +101,11 @@ OverlayError setOverlayFromFile( vr::VROverlayHandle_t overlayHandle,
             }
             else
             {
-                // TODO get Name and print out error.....
-                LOG( ERROR ) << "Error creating overlay " << customErrorMsg;
+                LOG( ERROR )
+                    << "Error setting Overlay from file For "
+                    << getOverlayKey( overlayHandle ) << " with error: "
+                    << vr::VROverlay()->GetOverlayErrorNameFromEnum( oError )
+                    << " " << customErrorMsg;
                 return OverlayError::UndefinedError;
             }
         }
@@ -118,8 +127,10 @@ OverlayError showOverlay( vr::VROverlayHandle_t overlayHandle,
     }
     else
     {
-        // TODO get Name and print out error.....
-        LOG( ERROR ) << "Error showing overlay " << customErrorMsg;
+        LOG( ERROR ) << "Error showing overlay For "
+                     << getOverlayKey( overlayHandle ) << " with error: "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum( oError )
+                     << " " << customErrorMsg;
         return OverlayError::UndefinedError;
     }
 }
@@ -134,8 +145,10 @@ OverlayError hideOverlay( vr::VROverlayHandle_t overlayHandle,
     }
     else
     {
-        // TODO get Name and print out error.....
-        LOG( ERROR ) << "Error hiding overlay " << customErrorMsg;
+        LOG( ERROR ) << "Error hiding overlay For "
+                     << getOverlayKey( overlayHandle ) << " with error: "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum( oError )
+                     << " " << customErrorMsg;
         return OverlayError::UndefinedError;
     }
 }
@@ -154,11 +167,32 @@ OverlayError setOverlayTransformAbsolute(
     }
     else
     {
-        // TODO get handle name
-        LOG( ERROR ) << "Error setting Overlay Position "
+        LOG( ERROR ) << "Error setting Overlay Position For "
+                     << getOverlayKey( overlayHandle ) << " with error: "
                      << vr::VROverlay()->GetOverlayErrorNameFromEnum( oError )
                      << " " << customErrorMsg;
         return OverlayError::UndefinedError;
+    }
+}
+
+std::string getOverlayKey( vr::VROverlayHandle_t overlayHandle )
+{
+    // max size as of ovr 1.11.11 128 bytes
+    const uint32_t bufferMax = vr::k_unVROverlayMaxKeyLength;
+    char cStringOut[bufferMax];
+    vr::EVROverlayError oErrorOut;
+    vr::VROverlay()->GetOverlayKey(
+        overlayHandle, cStringOut, bufferMax, &oErrorOut );
+    std::string output = cStringOut;
+    if ( oErrorOut == vr::VROverlayError_None )
+    {
+        return output;
+    }
+    else
+    {
+        std::string errorName
+            = vr::VROverlay()->GetOverlayErrorNameFromEnum( oErrorOut );
+        return ( "can't get name:" + errorName );
     }
 }
 

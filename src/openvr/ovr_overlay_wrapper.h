@@ -53,4 +53,6 @@ OverlayError setOverlayTransformAbsolute(
     const vr::HmdMatrix34_t* trackingOriginToOverlayTransform,
     std::string customErrorMsg = "" );
 
+std::string getOverlayKey( vr::VROverlayHandle_t overlayHandle );
+
 } // namespace ovr_overlay_wrapper
