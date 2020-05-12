@@ -35,27 +35,23 @@ GroupBox {
             MyToggleButton {
                 id: chaperoneFloorToggleBtn
                 text: "Floor Bounds Always On"
-                Layout.preferredWidth: 400
+                Layout.preferredWidth: 375
                 onCheckedChanged: {
                     ChaperoneTabController.setChaperoneFloorToggle(this.checked, false)
                 }
             }
-            Item{
-                Layout.preferredWidth: 20
-            }
+
 
             MyToggleButton {
                 id: legacyCenterMarkerbtn
                 text: "Legacy Center Marker"
-                Layout.preferredWidth: 400
+                Layout.preferredWidth: 375
                 onCheckedChanged: {
                     ChaperoneTabController.setCenterMarker(this.checked, false)
                 }
             }
-            Item{
-                Layout.preferredWidth: 20
-            }
-            MyPushButton2{
+
+            MyPushButton{
                 id:btnResetOrientation
                 text: "Reset Turn Counter"
                 onClicked: {

@@ -133,7 +133,7 @@ GroupBox {
                     to: 255
                     stepSize: 5
                     value: 255
-                    Layout.preferredWidth: 275
+                    Layout.preferredWidth: 250
                     onPositionChanged: {
                         var val = (this.value).toFixed(0)
                         colorBlueText.text = val
