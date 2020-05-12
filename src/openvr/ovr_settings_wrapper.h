@@ -36,15 +36,15 @@ std::pair<SettingsError, float> getFloat( std::string section,
 
 SettingsError setBool( std::string section,
                        std::string settingsKey,
-                       bool bValue,
+                       bool value,
                        std::string customErrorMsg = "" );
 SettingsError setInt32( std::string section,
                         std::string settingsKey,
-                        int nValue,
+                        int value,
                         std::string customErrorMsg = "" );
 SettingsError setFloat( std::string section,
                         std::string settingsKey,
-                        float flValue,
+                        float value,
                         std::string customErrorMsg = "" );
 
 SettingsError removeSection( std::string section,

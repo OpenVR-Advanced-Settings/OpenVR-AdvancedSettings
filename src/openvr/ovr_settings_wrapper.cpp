@@ -64,36 +64,36 @@ std::pair<SettingsError, float> getFloat( std::string section,
 
 SettingsError setBool( std::string section,
                        std::string settingsKey,
-                       bool bValue,
+                       bool value,
                        std::string customErrorMsg )
 {
     vr::EVRSettingsError error;
     vr::VRSettings()->SetBool(
-        section.c_str(), settingsKey.c_str(), bValue, &error );
+        section.c_str(), settingsKey.c_str(), value, &error );
     return handleErrors( settingsKey, error, customErrorMsg );
 }
 
 SettingsError setInt32( std::string section,
                         std::string settingsKey,
-                        int nValue,
+                        int value,
                         std::string customErrorMsg )
 {
     vr::EVRSettingsError error;
     vr::VRSettings()->SetInt32( section.c_str(),
                                 settingsKey.c_str(),
-                                static_cast<int32_t>( nValue ),
+                                static_cast<int32_t>( value ),
                                 &error );
     return handleErrors( settingsKey, error, customErrorMsg );
 }
 
 SettingsError setFloat( std::string section,
                         std::string settingsKey,
-                        float flValue,
+                        float value,
                         std::string customErrorMsg )
 {
     vr::EVRSettingsError error;
     vr::VRSettings()->SetFloat(
-        section.c_str(), settingsKey.c_str(), flValue, &error );
+        section.c_str(), settingsKey.c_str(), value, &error );
     return handleErrors( settingsKey, error, customErrorMsg );
 }
 
