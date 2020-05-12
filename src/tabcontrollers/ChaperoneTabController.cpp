@@ -29,6 +29,8 @@ void ChaperoneTabController::initStage2( OverlayController* var_parent )
     this->parent = var_parent;
     // Cludge Fix for now, but its not getting called for some reason w/ QML
     setCenterMarkerNew( centerMarkerNew() );
+    updateChaperoneSettings(); // force one update of OVR saved settings to make
+                               // sure our m_ variables are correct
 }
 
 void ChaperoneTabController::dashboardLoopTick()
@@ -242,9 +244,7 @@ void ChaperoneTabController::eventLoopTick(
     {
         updateOverlay();
     }
-    // TODO need to test, this should disable chaperone warnings unless you are
-    // in standing mode/room-scale
-    if ( devicePoses && m_trackingUniverse == vr::TrackingUniverseStanding )
+    if ( devicePoses )
     {
         m_isHMDActive = false;
         std::lock_guard<std::recursive_mutex> lock(
@@ -324,6 +324,8 @@ void ChaperoneTabController::eventLoopTick(
         else
         {
             // attempts to reload chaperone data once per ~5 seconds.
+            // TODO still need to figure out a proper way to handle this
+            // failure.
             m_updateTicksChaperoneReload++;
             if ( m_updateTicksChaperoneReload >= 500 )
             {
@@ -338,12 +340,13 @@ void ChaperoneTabController::eventLoopTick(
 void ChaperoneTabController::updateChaperoneSettings()
 {
     setBoundsVisibility( static_cast<float>( chaperoneColorA() ) / 255.0f );
-    setFadeDistance( fadeDistance(), true, true );
+    setFadeDistance( fadeDistance(), true );
     setCenterMarker( centerMarker() );
     setPlaySpaceMarker( playSpaceMarker() );
     setChaperoneColorR( chaperoneColorR() );
     setChaperoneColorG( chaperoneColorG() );
     setChaperoneColorB( chaperoneColorB() );
+    setCollisionBoundStyle( collisionBoundStyle() );
 }
 
 float ChaperoneTabController::boundsVisibility() const
@@ -389,13 +392,9 @@ float ChaperoneTabController::fadeDistance()
     return m_fadeDistance;
 }
 
-// TODO Check do I really need forcechange?
-void ChaperoneTabController::setFadeDistance( float value,
-                                              bool notify,
-                                              bool forcechange )
+void ChaperoneTabController::setFadeDistance( float value, bool notify )
 {
-    if ( fabs( static_cast<double>( m_fadeDistance - value ) ) > 0.005
-         || forcechange )
+    if ( fabs( static_cast<double>( m_fadeDistance - value ) ) > 0.005 )
     {
         m_fadeDistance = value;
         ovr_settings_wrapper::setFloat(
@@ -527,7 +526,7 @@ void ChaperoneTabController::setPlaySpaceMarker( bool value, bool notify )
 
 bool ChaperoneTabController::forceBounds() const
 {
-    // TODO look at (not IVR settings it's IVRChaperone)
+    // todo ivrchaperonewrapper
     return m_forceBounds;
 }
 
@@ -812,7 +811,6 @@ void ChaperoneTabController::updateOverlayColor()
         m_chaperoneFloorOverlayHandle, chapColorR, chapColorG, chapColorB, "" );
 }
 
-// TODO use or not?
 void ChaperoneTabController::setChaperoneColorA( int value, bool notify )
 {
     if ( value > 255 )
@@ -1251,7 +1249,7 @@ void ChaperoneTabController::addChaperoneProfile(
     {
         profile->chaperoneStyle
 
-            = m_collisionBoundStyle; // TODO make sure initiliazed properly
+            = m_collisionBoundStyle;
     }
     profile->includesForceBounds = includeForceBounds;
     if ( includeForceBounds )

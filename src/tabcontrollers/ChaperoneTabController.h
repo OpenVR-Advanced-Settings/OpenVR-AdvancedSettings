@@ -449,9 +449,7 @@ public:
 
 public slots:
     void setBoundsVisibility( float value, bool notify = true );
-    void setFadeDistance( float value,
-                          bool notify = true,
-                          bool forcechange = false );
+    void setFadeDistance( float value, bool notify = true );
     void setHeight( float value, bool notify = true );
     void updateHeight( float value, bool notify = true );
     void setCenterMarker( bool value, bool notify = true );
