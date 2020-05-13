@@ -9,6 +9,7 @@ import "../video_page"
 import "../chaperone_page"
 import "../steamvr_page"
 import "../rotation_page"
+import "../chaperone_page/chaperone_additional"
 
 Rectangle {
     id: root
@@ -31,6 +32,11 @@ Rectangle {
     }
 
     property ChaperoneWarningsPage chaperoneWarningsPage: ChaperoneWarningsPage {
+        stackView: mainView
+        visible: false
+    }
+
+    property ChaperoneAdditionalPage chaperoneAdditionalPage: ChaperoneAdditionalPage{
         stackView: mainView
         visible: false
     }

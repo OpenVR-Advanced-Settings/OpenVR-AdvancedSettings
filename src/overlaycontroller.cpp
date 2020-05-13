@@ -69,35 +69,35 @@ OverlayController::OverlayController( bool desktopMode,
     m_runtimePathUrl = QUrl::fromLocalFile( tempRuntimePath );
     LOG( INFO ) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
-    QString activationSoundFile = m_runtimePathUrl.toLocalFile().append(
-        "/content/panorama/sounds/activation.wav" );
-    QFileInfo activationSoundFileInfo( activationSoundFile );
-    if ( activationSoundFileInfo.exists() && activationSoundFileInfo.isFile() )
+    constexpr auto clickSoundURL = "res/sounds/click.wav";
+    const auto activationSoundFile
+        = paths::binaryDirectoryFindFile( clickSoundURL );
+
+    if ( activationSoundFile.has_value() )
     {
-        m_activationSoundEffect.setSource(
-            QUrl::fromLocalFile( activationSoundFile ) );
-        m_activationSoundEffect.setVolume( 1.0 );
+        m_activationSoundEffect.setSource( QUrl::fromLocalFile(
+            QString::fromStdString( ( *activationSoundFile ) ) ) );
+        m_activationSoundEffect.setVolume( 0.7 );
     }
     else
     {
         LOG( ERROR ) << "Could not find activation sound file "
-                     << activationSoundFile;
+                     << clickSoundURL;
     }
+    constexpr auto focusChangedSoundURL = "res/sounds/focus.wav";
+    const auto focusChangedSoundFile
+        = paths::binaryDirectoryFindFile( focusChangedSoundURL );
 
-    QString focusChangedSoundFile = m_runtimePathUrl.toLocalFile().append(
-        "/content/panorama/sounds/focus_change.wav" );
-    QFileInfo focusChangedSoundFileInfo( focusChangedSoundFile );
-    if ( focusChangedSoundFileInfo.exists()
-         && focusChangedSoundFileInfo.isFile() )
+    if ( focusChangedSoundFile.has_value() )
     {
-        m_focusChangedSoundEffect.setSource(
-            QUrl::fromLocalFile( focusChangedSoundFile ) );
-        m_focusChangedSoundEffect.setVolume( 1.0 );
+        m_focusChangedSoundEffect.setSource( QUrl::fromLocalFile(
+            QString::fromStdString( ( *focusChangedSoundFile ) ) ) );
+        m_focusChangedSoundEffect.setVolume( 0.7 );
     }
     else
     {
-        LOG( ERROR ) << "Could not find focus changed sound file "
-                     << focusChangedSoundFile;
+        LOG( ERROR ) << "Could not find focus Changed sound file "
+                     << focusChangedSoundURL;
     }
 
     constexpr auto alarmFileName = "res/sounds/alarm01.wav";
@@ -1144,13 +1144,13 @@ void OverlayController::mainEventLoop()
         rightSpeed
             = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
     }
+    auto universe = vr::VRCompositor()->GetTrackingSpace();
 
-    m_moveCenterTabController.eventLoopTick(
-        vr::VRCompositor()->GetTrackingSpace(), devicePoses );
+    m_moveCenterTabController.eventLoopTick( universe, devicePoses );
     m_utilitiesTabController.eventLoopTick();
     m_statisticsTabController.eventLoopTick(
         devicePoses, leftSpeed, rightSpeed );
-    m_chaperoneTabController.eventLoopTick( devicePoses );
+    m_chaperoneTabController.eventLoopTick( universe, devicePoses );
     m_audioTabController.eventLoopTick();
     m_rotationTabController.eventLoopTick( devicePoses );
 
@@ -1160,6 +1160,7 @@ void OverlayController::mainEventLoop()
         m_steamVRTabController.dashboardLoopTick();
         m_fixFloorTabController.dashboardLoopTick( devicePoses );
         m_videoTabController.dashboardLoopTick();
+        m_chaperoneTabController.dashboardLoopTick();
     }
 
     if ( m_ulOverlayThumbnailHandle != vr::k_ulOverlayHandleInvalid )

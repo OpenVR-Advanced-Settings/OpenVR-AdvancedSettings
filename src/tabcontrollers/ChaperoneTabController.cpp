@@ -11,6 +11,7 @@ namespace advsettings
 {
 void ChaperoneTabController::initStage1()
 {
+    m_trackingUniverse = vr::VRCompositor()->GetTrackingSpace();
     if ( disableChaperone() )
     {
         setFadeDistance( 0.0f, true );
@@ -19,12 +20,30 @@ void ChaperoneTabController::initStage1()
     reloadChaperoneProfiles();
     m_chaperoneSettingsUpdateCounter
         = utils::adjustUpdateRate( k_chaperoneSettingsUpdateCounter );
-    eventLoopTick( nullptr );
+    initFloorOverlay();
+    eventLoopTick( m_trackingUniverse, nullptr );
 }
 
 void ChaperoneTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
+    // Cludge Fix for now, but its not getting called for some reason w/ QML
+    setCenterMarkerNew( centerMarkerNew() );
+    updateChaperoneSettings(); // force one update of OVR saved settings to make
+                               // sure our m_ variables are correct
+}
+
+void ChaperoneTabController::dashboardLoopTick()
+{
+    if ( settingsUpdateCounter >= m_chaperoneSettingsUpdateCounter )
+    {
+        updateChaperoneSettings();
+        settingsUpdateCounter = 0;
+    }
+    else
+    {
+        settingsUpdateCounter++;
+    }
 }
 
 ChaperoneTabController::~ChaperoneTabController()
@@ -70,61 +89,22 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
         if ( distance <= activationDistance && m_isHMDActive
              && !m_chaperoneSwitchToBeginnerActive )
         {
-            vr::EVRSettingsError vrSettingsError;
-            m_chaperoneSwitchToBeginnerLastStyle = vr::VRSettings()->GetInt32(
-                vr::k_pch_CollisionBounds_Section,
-                vr::k_pch_CollisionBounds_Style_Int32,
-                &vrSettingsError );
-            if ( vrSettingsError != vr::VRSettingsError_None )
-            {
-                LOG( WARNING )
-                    << "Could not read \""
-                    << vr::k_pch_CollisionBounds_Style_Int32 << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
-            }
-            else
-            {
-                vr::VRSettings()->SetInt32(
-                    vr::k_pch_CollisionBounds_Section,
-                    vr::k_pch_CollisionBounds_Style_Int32,
-                    vr::COLLISION_BOUNDS_STYLE_BEGINNER,
-                    &vrSettingsError );
-                if ( vrSettingsError != vr::VRSettingsError_None )
-                {
-                    LOG( WARNING )
-                        << "Could not set \""
-                        << vr::k_pch_CollisionBounds_Style_Int32
-                        << "\" setting: "
-                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                               vrSettingsError );
-                }
-                else
-                {
-                    m_chaperoneSwitchToBeginnerActive = true;
-                }
-            }
+            // Instead of backing out at every stage, this will log errors, but
+            // proceed forward.
+            m_chaperoneSwitchToBeginnerLastStyle = collisionBoundStyle();
+            // IMPORTANT DO NOT NOTIFY IF WE SWITCH BECAUSE WARNINGS
+            setCollisionBoundStyle(
+                static_cast<int>( vr::COLLISION_BOUNDS_STYLE_BEGINNER ),
+                false,
+                true );
+            m_chaperoneSwitchToBeginnerActive = true;
         }
         else if ( ( distance > activationDistance || !m_isHMDActive )
                   && m_chaperoneSwitchToBeginnerActive )
         {
-            vr::EVRSettingsError vrSettingsError;
-            vr::VRSettings()->SetInt32( vr::k_pch_CollisionBounds_Section,
-                                        vr::k_pch_CollisionBounds_Style_Int32,
-                                        m_chaperoneSwitchToBeginnerLastStyle,
-                                        &vrSettingsError );
-            if ( vrSettingsError != vr::VRSettingsError_None )
-            {
-                LOG( WARNING )
-                    << "Could not set \""
-                    << vr::k_pch_CollisionBounds_Style_Int32 << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
-            }
-            else
-            {
-                m_chaperoneSwitchToBeginnerActive = false;
-            }
+            setCollisionBoundStyle( m_chaperoneSwitchToBeginnerLastStyle,
+                                    true );
+            m_chaperoneSwitchToBeginnerActive = false;
         }
     }
 
@@ -253,8 +233,17 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
 }
 
 void ChaperoneTabController::eventLoopTick(
+    vr::ETrackingUniverseOrigin universe,
     vr::TrackedDevicePose_t* devicePoses )
 {
+    m_trackingUniverse = universe;
+    // Update overlay should only run After move center tab controller is
+    // initialized.
+    // As such this protects it from running during initstage 1.
+    if ( centerMarkerNew() && devicePoses != nullptr )
+    {
+        updateOverlay();
+    }
     if ( devicePoses )
     {
         m_isHMDActive = false;
@@ -335,6 +324,8 @@ void ChaperoneTabController::eventLoopTick(
         else
         {
             // attempts to reload chaperone data once per ~5 seconds.
+            // TODO still need to figure out a proper way to handle this
+            // failure.
             m_updateTicksChaperoneReload++;
             if ( m_updateTicksChaperoneReload >= 500 )
             {
@@ -344,72 +335,18 @@ void ChaperoneTabController::eventLoopTick(
             }
         }
     }
-
-    if ( settingsUpdateCounter >= m_chaperoneSettingsUpdateCounter )
-    {
-        if ( parent->isDashboardVisible() )
-        {
-            updateChaperoneSettings();
-        }
-        settingsUpdateCounter = 0;
-    }
-    else
-    {
-        settingsUpdateCounter++;
-    }
 }
 
 void ChaperoneTabController::updateChaperoneSettings()
 {
-    vr::EVRSettingsError vrSettingsError;
-    float vis = static_cast<float>(
-        vr::VRSettings()->GetInt32( vr::k_pch_CollisionBounds_Section,
-                                    vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-                                    &vrSettingsError ) );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_CollisionBounds_ColorGammaA_Int32
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-    setBoundsVisibility( vis / 255.0f );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_CollisionBounds_FadeDistance_Float
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-
-    auto cm = vr::VRSettings()->GetBool(
-        vr::k_pch_CollisionBounds_Section,
-        vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_CollisionBounds_CenterMarkerOn_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-    setCenterMarker( cm );
-    auto ps
-        = vr::VRSettings()->GetBool( vr::k_pch_CollisionBounds_Section,
-                                     vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
-                                     &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_CollisionBounds_PlaySpaceOn_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-    setPlaySpaceMarker( ps );
+    setBoundsVisibility( static_cast<float>( chaperoneColorA() ) / 255.0f );
+    setFadeDistance( fadeDistance(), true );
+    setCenterMarker( centerMarker() );
+    setPlaySpaceMarker( playSpaceMarker() );
+    setChaperoneColorR( chaperoneColorR() );
+    setChaperoneColorG( chaperoneColorG() );
+    setChaperoneColorB( chaperoneColorB() );
+    setCollisionBoundStyle( collisionBoundStyle() );
 }
 
 float ChaperoneTabController::boundsVisibility() const
@@ -429,10 +366,9 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
         {
             m_visibility = value;
         }
-        vr::VRSettings()->SetInt32(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-            static_cast<int32_t>( 255 * m_visibility ) );
+        setChaperoneColorA( static_cast<int>( 255 * m_visibility ), notify );
+        ovr_overlay_wrapper::setOverlayAlpha(
+            m_chaperoneFloorOverlayHandle, m_visibility, "" );
 
         if ( notify )
         {
@@ -441,8 +377,18 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
     }
 }
 
-float ChaperoneTabController::fadeDistance() const
+float ChaperoneTabController::fadeDistance()
 {
+    std::pair<ovr_settings_wrapper::SettingsError, float> p
+        = ovr_settings_wrapper::getFloat(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_FadeDistance_Float,
+            "" );
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        m_fadeDistance = p.second;
+        return p.second;
+    }
     return m_fadeDistance;
 }
 
@@ -451,10 +397,12 @@ void ChaperoneTabController::setFadeDistance( float value, bool notify )
     if ( fabs( static_cast<double>( m_fadeDistance - value ) ) > 0.005 )
     {
         m_fadeDistance = value;
-        vr::VRSettings()->SetFloat(
+        ovr_settings_wrapper::setFloat(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_FadeDistance_Float,
-            m_fadeDistance );
+            m_fadeDistance,
+            "" );
+        // On failure do Nothing
         if ( notify )
         {
             emit fadeDistanceChanged( m_fadeDistance );
@@ -462,8 +410,19 @@ void ChaperoneTabController::setFadeDistance( float value, bool notify )
     }
 }
 
-float ChaperoneTabController::height() const
+float ChaperoneTabController::height()
 {
+    std::pair<ovr_settings_wrapper::SettingsError, float> p
+        = ovr_settings_wrapper::getFloat(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_WallHeight_Float,
+            "" );
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        m_height = p.second;
+        return p.second;
+    }
+
     return m_height;
 }
 
@@ -472,6 +431,11 @@ void ChaperoneTabController::setHeight( float value, bool notify )
     if ( fabs( static_cast<double>( m_height - value ) ) > 0.005 )
     {
         m_height = value;
+        ovr_settings_wrapper::setFloat(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_WallHeight_Float,
+            m_height,
+            "" );
         parent->m_moveCenterTabController.setBoundsBasisHeight( m_height );
         if ( notify )
         {
@@ -492,8 +456,19 @@ void ChaperoneTabController::updateHeight( float value, bool notify )
     }
 }
 
-bool ChaperoneTabController::centerMarker() const
+bool ChaperoneTabController::centerMarker()
 {
+    std::pair<ovr_settings_wrapper::SettingsError, bool> p
+        = ovr_settings_wrapper::getBool(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
+            "" );
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        m_centerMarker = p.second;
+        return p.second;
+    }
+
     return m_centerMarker;
 }
 
@@ -502,10 +477,12 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
     if ( m_centerMarker != value )
     {
         m_centerMarker = value;
-        vr::VRSettings()->SetBool(
+        ovr_settings_wrapper::setBool(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
-            m_centerMarker );
+            m_centerMarker,
+            "" );
+
         if ( notify )
         {
             emit centerMarkerChanged( m_centerMarker );
@@ -513,8 +490,19 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
     }
 }
 
-bool ChaperoneTabController::playSpaceMarker() const
+bool ChaperoneTabController::playSpaceMarker()
 {
+    std::pair<ovr_settings_wrapper::SettingsError, bool> p
+        = ovr_settings_wrapper::getBool(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
+            "" );
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        m_playSpaceMarker = p.second;
+        return p.second;
+    }
+
     return m_playSpaceMarker;
 }
 
@@ -523,9 +511,12 @@ void ChaperoneTabController::setPlaySpaceMarker( bool value, bool notify )
     if ( m_playSpaceMarker != value )
     {
         m_playSpaceMarker = value;
-        vr::VRSettings()->SetBool( vr::k_pch_CollisionBounds_Section,
-                                   vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
-                                   m_playSpaceMarker );
+        ovr_settings_wrapper::setBool(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
+            m_playSpaceMarker,
+            "" );
+        // On Error Do Nothing
         if ( notify )
         {
             emit playSpaceMarkerChanged( m_playSpaceMarker );
@@ -535,6 +526,7 @@ void ChaperoneTabController::setPlaySpaceMarker( bool value, bool notify )
 
 bool ChaperoneTabController::forceBounds() const
 {
+    // todo ivrchaperonewrapper
     return m_forceBounds;
 }
 
@@ -604,6 +596,98 @@ float ChaperoneTabController::chaperoneShowDashboardDistance() const
         settings::DoubleSetting::CHAPERONE_showDashboardDistance ) );
 }
 
+int ChaperoneTabController::chaperoneColorR()
+{
+    std::pair<ovr_settings_wrapper::SettingsError, int> p
+        = ovr_settings_wrapper::getInt32(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_ColorGammaR_Int32,
+            "" );
+    if ( p.first != ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return m_chaperoneColorR;
+    }
+    m_chaperoneColorR = p.second;
+    return m_chaperoneColorR;
+}
+int ChaperoneTabController::chaperoneColorG()
+{
+    std::pair<ovr_settings_wrapper::SettingsError, int> p
+        = ovr_settings_wrapper::getInt32(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_ColorGammaG_Int32,
+            "" );
+    if ( p.first != ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return m_chaperoneColorG;
+    }
+    m_chaperoneColorG = p.second;
+    return m_chaperoneColorG;
+}
+int ChaperoneTabController::chaperoneColorB()
+{
+    std::pair<ovr_settings_wrapper::SettingsError, int> p
+        = ovr_settings_wrapper::getInt32(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_ColorGammaB_Int32,
+            "" );
+    if ( p.first != ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return m_chaperoneColorB;
+    }
+    m_chaperoneColorB = p.second;
+    return m_chaperoneColorB;
+}
+// aka transparancy
+int ChaperoneTabController::chaperoneColorA() const
+{
+    std::pair<ovr_settings_wrapper::SettingsError, int> p
+        = ovr_settings_wrapper::getInt32(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_ColorGammaA_Int32,
+            "" );
+    if ( p.first != ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return 255;
+    }
+    return p.second;
+}
+
+bool ChaperoneTabController::chaperoneFloorToggle()
+{
+    std::pair<ovr_settings_wrapper::SettingsError, int> p
+        = ovr_settings_wrapper::getBool(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool,
+            "" );
+    if ( p.first != ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return false;
+    }
+    return p.second;
+}
+
+int ChaperoneTabController::collisionBoundStyle()
+{
+    std::pair<ovr_settings_wrapper::SettingsError, int> p
+        = ovr_settings_wrapper::getInt32( vr::k_pch_CollisionBounds_Section,
+                                          vr::k_pch_CollisionBounds_Style_Int32,
+                                          "" );
+    if ( p.first != ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return m_collisionBoundStyle;
+    }
+    m_collisionBoundStyle = p.second;
+    return m_collisionBoundStyle;
+}
+
+bool ChaperoneTabController::centerMarkerNew()
+{
+    bool temp = settings::getSetting(
+        settings::BoolSetting::CHAPERONE_centerMarkerNew );
+    return temp;
+}
+
 Q_INVOKABLE unsigned ChaperoneTabController::getChaperoneProfileCount()
 {
     return static_cast<unsigned int>( chaperoneProfiles.size() );
@@ -635,6 +719,198 @@ void ChaperoneTabController::setForceBounds( bool value, bool notify )
     }
 }
 
+void ChaperoneTabController::setChaperoneColorR( int value, bool notify )
+{
+    if ( value != m_chaperoneColorR )
+    {
+        if ( value > 255 )
+        {
+            value = 255;
+            LOG( WARNING ) << "Red Channel larger than 255, setting to 255";
+        }
+        else if ( value < 0 )
+        {
+            value = 0;
+            LOG( WARNING ) << "Red Channel smaller than 0, setting to 0";
+        }
+        m_chaperoneColorR = value;
+        ovr_settings_wrapper::setInt32(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_ColorGammaR_Int32,
+            m_chaperoneColorR,
+            "" );
+        updateOverlayColor();
+        if ( notify )
+        {
+            emit chaperoneColorRChanged( value );
+        }
+    }
+}
+
+void ChaperoneTabController::setChaperoneColorG( int value, bool notify )
+{
+    if ( value != m_chaperoneColorG )
+    {
+        if ( value > 255 )
+        {
+            value = 255;
+            LOG( WARNING ) << "Green Channel larger than 255, setting to 255";
+        }
+        else if ( value < 0 )
+        {
+            value = 0;
+            LOG( WARNING ) << "Green Channel smaller than 0, setting to 0";
+        }
+        m_chaperoneColorG = value;
+        ovr_settings_wrapper::setInt32(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_ColorGammaG_Int32,
+            m_chaperoneColorG,
+            "" );
+        updateOverlayColor();
+        if ( notify )
+        {
+            emit chaperoneColorGChanged( value );
+        }
+    }
+}
+
+void ChaperoneTabController::setChaperoneColorB( int value, bool notify )
+{
+    if ( value != m_chaperoneColorB )
+    {
+        if ( value > 255 )
+        {
+            value = 255;
+            LOG( WARNING ) << "Blue Channel larger than 255, setting to 255";
+        }
+        else if ( value < 0 )
+        {
+            value = 0;
+            LOG( WARNING ) << "Blue Channel smaller than 0, setting to 0";
+        }
+        m_chaperoneColorB = value;
+        ovr_settings_wrapper::setInt32(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_ColorGammaB_Int32,
+            m_chaperoneColorB,
+            "" );
+        updateOverlayColor();
+        if ( notify )
+        {
+            emit chaperoneColorBChanged( value );
+        }
+    }
+}
+void ChaperoneTabController::updateOverlayColor()
+{
+    float chapColorR = static_cast<float>( m_chaperoneColorR ) / 255.0f;
+    float chapColorG = static_cast<float>( m_chaperoneColorG ) / 255.0f;
+    float chapColorB = static_cast<float>( m_chaperoneColorB ) / 255.0f;
+    ovr_overlay_wrapper::setOverlayColor(
+        m_chaperoneFloorOverlayHandle, chapColorR, chapColorG, chapColorB, "" );
+}
+
+void ChaperoneTabController::setChaperoneColorA( int value, bool notify )
+{
+    if ( value > 255 )
+    {
+        value = 255;
+        LOG( WARNING ) << "Alpha Channel larger than 255, setting to 255";
+    }
+    else if ( value < 0 )
+    {
+        value = 0;
+        LOG( WARNING ) << "Alpha Channel smaller than 0, setting to 0";
+    }
+    ovr_settings_wrapper::setInt32( vr::k_pch_CollisionBounds_Section,
+                                    vr::k_pch_CollisionBounds_ColorGammaA_Int32,
+                                    value,
+                                    "" );
+    if ( notify )
+    {
+        emit chaperoneColorAChanged( value );
+    }
+}
+
+void ChaperoneTabController::setCenterMarkerNew( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::CHAPERONE_centerMarkerNew,
+                          value );
+    if ( value )
+    {
+        ovr_overlay_wrapper::showOverlay( m_chaperoneFloorOverlayHandle );
+    }
+    else
+    {
+        ovr_overlay_wrapper::hideOverlay( m_chaperoneFloorOverlayHandle );
+    }
+
+    if ( notify )
+    {
+        emit centerMarkerNewChanged( value );
+    }
+}
+
+void ChaperoneTabController::setChaperoneFloorToggle( bool value, bool notify )
+{
+    if ( value != m_chaperoneFloorToggle )
+    {
+        m_chaperoneFloorToggle = value;
+        ovr_settings_wrapper::setInt32(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool,
+            m_chaperoneFloorToggle,
+            "" );
+        if ( notify )
+        {
+            emit chaperoneFloorToggleChanged( value );
+        }
+    }
+}
+
+void ChaperoneTabController::setCollisionBoundStyle( int value,
+                                                     bool notify,
+                                                     bool isTemp )
+{
+    if ( value != m_collisionBoundStyle )
+    {
+        if ( vr::COLLISION_BOUNDS_STYLE_COUNT < value )
+        {
+            value = 0;
+            LOG( WARNING )
+                << "Invalid Collision Bound Value (>count), set to beginner";
+        }
+        else if ( value < 0 )
+        {
+            value = 0;
+            LOG( WARNING )
+                << "Invalid Collision Bound Value (<0), set to beginner";
+        }
+        if ( !isTemp )
+        {
+            if ( m_chaperoneSwitchToBeginnerActive )
+            {
+                m_chaperoneSwitchToBeginnerLastStyle
+                    = static_cast<int32_t>( value );
+            }
+            else
+            {
+                m_collisionBoundStyle = value;
+            }
+        }
+
+        ovr_settings_wrapper::setInt32( vr::k_pch_CollisionBounds_Section,
+                                        vr::k_pch_CollisionBounds_Style_Int32,
+                                        m_collisionBoundStyle,
+                                        "" );
+        if ( notify )
+        {
+            emit collisionBoundStyleChanged( value );
+        }
+    }
+}
+
 void ChaperoneTabController::setChaperoneSwitchToBeginnerEnabled( bool value,
                                                                   bool notify )
 {
@@ -642,19 +918,11 @@ void ChaperoneTabController::setChaperoneSwitchToBeginnerEnabled( bool value,
     {
         if ( !value && m_chaperoneSwitchToBeginnerActive )
         {
-            vr::EVRSettingsError vrSettingsError;
-            vr::VRSettings()->SetInt32( vr::k_pch_CollisionBounds_Section,
-                                        vr::k_pch_CollisionBounds_Style_Int32,
-                                        m_chaperoneSwitchToBeginnerLastStyle,
-                                        &vrSettingsError );
-            if ( vrSettingsError != vr::VRSettingsError_None )
-            {
-                LOG( WARNING )
-                    << "Could not set \""
-                    << vr::k_pch_CollisionBounds_Style_Int32 << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
-            }
+            ovr_settings_wrapper::setInt32(
+                vr::k_pch_CollisionBounds_Section,
+                vr::k_pch_CollisionBounds_Style_Int32,
+                m_chaperoneSwitchToBeginnerLastStyle,
+                "" );
         }
 
         m_chaperoneSwitchToBeginnerActive = false;
@@ -853,7 +1121,7 @@ void ChaperoneTabController::setDisableChaperone( bool value, bool notify )
         {
             settings::setSetting(
                 settings::DoubleSetting::CHAPERONE_fadeDistanceRemembered,
-                static_cast<double>( value ) );
+                static_cast<double>( m_fadeDistance ) );
 
             setFadeDistance( 0.0f, true );
         }
@@ -881,7 +1149,7 @@ void ChaperoneTabController::flipOrientation( double degrees )
     double rad = 0;
     rad = degrees * ( M_PI / 180.0 );
 
-    parent->RotateUniverseCenter( vr::TrackingUniverseStanding,
+    parent->RotateUniverseCenter( m_trackingUniverse,
                                   static_cast<float>( rad ) );
     parent->m_moveCenterTabController.zeroOffsets();
 }
@@ -907,7 +1175,6 @@ void ChaperoneTabController::addChaperoneProfile(
     bool includeForceBounds,
     bool includesProximityWarningSettings )
 {
-    vr::EVRSettingsError vrSettingsError;
     ChaperoneProfile* profile = nullptr;
     for ( auto& p : chaperoneProfiles )
     {
@@ -959,6 +1226,7 @@ void ChaperoneTabController::addChaperoneProfile(
     if ( includeCenterMarker )
     {
         profile->centerMarker = m_centerMarker;
+        profile->centerMarkerNew = centerMarkerNew();
     }
     profile->includesPlaySpaceMarker = includePlaySpaceMarker;
     if ( includePlaySpaceMarker )
@@ -968,75 +1236,21 @@ void ChaperoneTabController::addChaperoneProfile(
     profile->includesFloorBoundsMarker = includeFloorBounds;
     if ( includeFloorBounds )
     {
-        // TODO disabled until we add support on page back in
-        /*profile->floorBoundsMarker = vr::VRSettings()->GetBool(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }*/
+        profile->floorBoundsMarker = m_chaperoneFloorToggle;
     }
     profile->includesBoundsColor = includeBoundsColor;
     if ( includeBoundsColor )
     {
-        profile->boundsColor[0] = vr::VRSettings()->GetInt32(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_ColorGammaR_Int32,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_CollisionBounds_ColorGammaR_Int32
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        profile->boundsColor[1] = vr::VRSettings()->GetInt32(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_ColorGammaG_Int32,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_CollisionBounds_ColorGammaG_Int32
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        profile->boundsColor[2] = vr::VRSettings()->GetInt32(
-            vr::k_pch_CollisionBounds_Section,
-            vr::k_pch_CollisionBounds_ColorGammaB_Int32,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_CollisionBounds_ColorGammaB_Int32
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
+        profile->boundsColor[0] = chaperoneColorR();
+        profile->boundsColor[1] = chaperoneColorG();
+        profile->boundsColor[2] = chaperoneColorB();
     }
     profile->includesChaperoneStyle = includeChaperoneStyle;
     if ( includeChaperoneStyle )
     {
         profile->chaperoneStyle
-            = vr::VRSettings()->GetInt32( vr::k_pch_CollisionBounds_Section,
-                                          vr::k_pch_CollisionBounds_Style_Int32,
-                                          &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_CollisionBounds_Style_Int32
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
+
+            = m_collisionBoundStyle;
     }
     profile->includesForceBounds = includeForceBounds;
     if ( includeForceBounds )
@@ -1065,6 +1279,7 @@ void ChaperoneTabController::addChaperoneProfile(
         profile->chaperoneShowDashboardDistance
             = chaperoneShowDashboardDistance();
     }
+
     saveChaperoneProfiles();
     emit chaperoneProfilesUpdated();
 }
@@ -1101,6 +1316,7 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
         if ( profile.includesCenterMarker )
         {
             setCenterMarker( profile.centerMarker );
+            setCenterMarkerNew( profile.centerMarkerNew );
         }
         if ( profile.includesPlaySpaceMarker )
         {
@@ -1108,33 +1324,17 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
         }
         if ( profile.includesFloorBoundsMarker )
         {
-            // TODO disabled until we control it better.
-            /* vr::VRSettings()->SetBool(
-                vr::k_pch_CollisionBounds_Section,
-                vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool,
-                profile.floorBoundsMarker );
-            */
+            setChaperoneFloorToggle( profile.floorBoundsMarker );
         }
         if ( profile.includesBoundsColor )
         {
-            vr::VRSettings()->SetInt32(
-                vr::k_pch_CollisionBounds_Section,
-                vr::k_pch_CollisionBounds_ColorGammaR_Int32,
-                profile.boundsColor[0] );
-            vr::VRSettings()->SetInt32(
-                vr::k_pch_CollisionBounds_Section,
-                vr::k_pch_CollisionBounds_ColorGammaG_Int32,
-                profile.boundsColor[1] );
-            vr::VRSettings()->SetInt32(
-                vr::k_pch_CollisionBounds_Section,
-                vr::k_pch_CollisionBounds_ColorGammaB_Int32,
-                profile.boundsColor[2] );
+            setChaperoneColorR( profile.boundsColor[0] );
+            setChaperoneColorG( profile.boundsColor[1] );
+            setChaperoneColorB( profile.boundsColor[2] );
         }
         if ( profile.includesChaperoneStyle )
         {
-            vr::VRSettings()->SetInt32( vr::k_pch_CollisionBounds_Section,
-                                        vr::k_pch_CollisionBounds_Style_Int32,
-                                        profile.chaperoneStyle );
+            setCollisionBoundStyle( profile.chaperoneStyle, true );
         }
         if ( profile.includesForceBounds )
         {
@@ -1261,59 +1461,8 @@ void ChaperoneTabController::applyAutosavedProfile()
 
 void ChaperoneTabController::reset()
 {
-    vr::EVRSettingsError vrSettingsError;
-
-    vr::VRSettings()->RemoveKeyInSection(
-        vr::k_pch_CollisionBounds_Section,
-        vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not remove \""
-                       << vr::k_pch_CollisionBounds_ColorGammaA_Int32
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-
-    vr::VRSettings()->RemoveKeyInSection(
-        vr::k_pch_CollisionBounds_Section,
-        vr::k_pch_CollisionBounds_FadeDistance_Float,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not remove \""
-                       << vr::k_pch_CollisionBounds_FadeDistance_Float
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-
-    vr::VRSettings()->RemoveKeyInSection(
-        vr::k_pch_CollisionBounds_Section,
-        vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not remove \""
-                       << vr::k_pch_CollisionBounds_CenterMarkerOn_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-
-    vr::VRSettings()->RemoveKeyInSection(
-        vr::k_pch_CollisionBounds_Section,
-        vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not remove \""
-                       << vr::k_pch_CollisionBounds_PlaySpaceOn_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
+    ovr_settings_wrapper::removeSection( vr::k_pch_CollisionBounds_Section,
+                                         "Reseting Collision Section" );
 
     setForceBounds( false );
 
@@ -1397,6 +1546,127 @@ void ChaperoneTabController::addRightHapticClick( bool rightHapticClickPressed )
     }
 }
 
+void ChaperoneTabController::initFloorOverlay()
+{
+    std::string overlayFloorMarkerKey
+        = std::string( application_strings::applicationKey ) + ".floormarker";
+    ovr_overlay_wrapper::OverlayError overlayError
+        = ovr_overlay_wrapper::createOverlay( overlayFloorMarkerKey,
+                                              overlayFloorMarkerKey,
+                                              &m_chaperoneFloorOverlayHandle,
+                                              "" );
+    if ( overlayError == ovr_overlay_wrapper::OverlayError::NoError )
+    {
+        ovr_overlay_wrapper::setOverlayFromFile(
+            m_chaperoneFloorOverlayHandle, m_floorMarkerFN, "" );
+        ovr_overlay_wrapper::setOverlayWidthInMeters(
+            m_chaperoneFloorOverlayHandle, 0.5f );
+        updateOverlayColor();
+        ovr_overlay_wrapper::setOverlayAlpha(
+            m_chaperoneFloorOverlayHandle, m_visibility, "" );
+    }
+    else
+    {
+        LOG( ERROR ) << "overlay Not initialized";
+        // TODO Set Failure variable.
+    }
+}
+
+void ChaperoneTabController::updateOverlay()
+{
+    if ( m_trackingUniverse != vr::TrackingUniverseRawAndUncalibrated )
+    {
+        float xoff = -( parent->m_moveCenterTabController.offsetX() );
+        float yoff = -( parent->m_moveCenterTabController.offsetY() );
+        float zoff = -( parent->m_moveCenterTabController.offsetZ() );
+        /* Rotation on Y Axis
+         * {cos t, 0, sin t}
+         * {0, 1, 0}
+         * {-sin t, 0 cost t}
+         */
+
+        vr::HmdMatrix34_t updateTransform = { { { 1.0f, 0.0f, 0.0f, xoff },
+                                                { 0.0f, 0.0f, 1.0f, yoff },
+                                                { 0.0f, -1.0f, 0.0f, zoff } } };
+        ovr_overlay_wrapper::setOverlayTransformAbsolute(
+            m_chaperoneFloorOverlayHandle,
+            m_trackingUniverse,
+            &updateTransform,
+            "" );
+        checkOverlayRotation();
+    }
+}
+
+void ChaperoneTabController::checkOverlayRotation()
+{
+    // can only turn so quickly soooo roughly .5 secondish update should be fine
+    if ( m_rotationUpdateCounter > 45 )
+    {
+        m_rotationUpdateCounter = 0;
+        float rotation = parent->m_statisticsTabController.hmdRotations();
+        int rotationNext;
+        if ( rotation > 0 )
+        {
+            rotation = rotation + 0.5f;
+            int fullRotation = static_cast<int>( rotation );
+            switch ( fullRotation )
+            {
+            case 0:
+                m_floorMarkerFN = "/res/img/chaperone/centermark.png";
+                rotationNext = 0;
+                break;
+            case 1:
+                m_floorMarkerFN = "/res/img/chaperone/centermarkr1.png";
+                rotationNext = 1;
+                break;
+            case 2:
+                m_floorMarkerFN = "/res/img/chaperone/centermarkr2.png";
+                rotationNext = 2;
+                break;
+
+            default:
+
+                m_floorMarkerFN = "/res/img/chaperone/centermarkr3.png";
+                rotationNext = 3;
+            }
+        }
+        else
+        {
+            rotation = rotation + 0.5f;
+            int fullRotation = static_cast<int>( std::floor( rotation ) );
+            switch ( fullRotation )
+            {
+            case 0:
+                m_floorMarkerFN = "/res/img/chaperone/centermark.png";
+                rotationNext = 0;
+                break;
+            case -1:
+                m_floorMarkerFN = "/res/img/chaperone/centermarkl1.png";
+                rotationNext = -1;
+                break;
+            case -2:
+                m_floorMarkerFN = "/res/img/chaperone/centermarkl2.png";
+                rotationNext = -2;
+                break;
+            default:
+                m_floorMarkerFN = "/res/img/chaperone/centermarkl3.png";
+                rotationNext = -3;
+            }
+        }
+
+        if ( rotationNext != m_rotationCurrent )
+        {
+            m_rotationCurrent = rotationNext;
+            ovr_overlay_wrapper::setOverlayFromFile(
+                m_chaperoneFloorOverlayHandle, m_floorMarkerFN, "" );
+        }
+    }
+    else
+    {
+        m_rotationUpdateCounter++;
+    }
+}
+
 void ChaperoneTabController::setProxState( bool value )
 {
     if ( value )
@@ -1412,19 +1682,7 @@ void ChaperoneTabController::shutdown()
     if ( isChaperoneSwitchToBeginnerEnabled()
          && m_chaperoneSwitchToBeginnerActive )
     {
-        vr::EVRSettingsError vrSettingsError;
-        vr::VRSettings()->SetInt32( vr::k_pch_CollisionBounds_Section,
-                                    vr::k_pch_CollisionBounds_Style_Int32,
-                                    m_chaperoneSwitchToBeginnerLastStyle,
-                                    &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not set \""
-                           << vr::k_pch_CollisionBounds_Style_Int32
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
+        setCollisionBoundStyle( m_chaperoneSwitchToBeginnerLastStyle, false );
     }
 }
 

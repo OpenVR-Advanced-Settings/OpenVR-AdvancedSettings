@@ -67,6 +67,9 @@ jobs:
                 name: Install bear/clang-tidy
                 command: sudo apt-get install bear clang-tidy -y
             - run:
+                name: Install SDL libs
+                command: sudo apt-get install libsdl2-2.0-0 -y
+            - run:
                 name: Set up qtchooser
                 command: qtchooser -install opt-qt512 /opt/qt512/bin/qmake
             - run:

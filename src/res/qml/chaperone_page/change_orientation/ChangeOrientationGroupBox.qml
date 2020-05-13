@@ -42,7 +42,7 @@ GroupBox {
                             val = -180;
                         }
                         spaceRotationSlider.value = val
-                        spaceRotationText.text = val
+                        spaceRotationText.text = val.toFixed(2) + "°"
                     }
                 }
 
@@ -55,7 +55,7 @@ GroupBox {
                     Layout.fillWidth: true
                     onValueChanged: {
                         var val = this.value
-                        spaceRotationText.text = val
+                        spaceRotationText.text = val.toFixed(2) + "°"
                     }
                 }
 
@@ -69,7 +69,7 @@ GroupBox {
                             val = 180;
                         }
                         spaceRotationSlider.value = val
-                        spaceRotationText.text = val
+                        spaceRotationText.text = val.toFixed(2) + "°"
                     }
                 }
 
@@ -83,7 +83,7 @@ GroupBox {
                     function onInputEvent(input) {
                         var val = parseFloat(input)
                         if (!isNaN(val)) {
-                            spaceRotationText.text = val + "°"
+                            spaceRotationText.text = val.toFixed(2) + "°"
                             spaceRotationSlider.value = val
                         }
                     }

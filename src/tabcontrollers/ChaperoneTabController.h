@@ -11,9 +11,13 @@
 #include "../utils/ChaperoneUtils.h"
 #include "../settings/settings_object.h"
 #include "MoveCenterTabController.h"
+#include "../openvr/ovr_overlay_wrapper.h"
+#include "../openvr/ovr_settings_wrapper.h"
+#include <utility>
 
 class QQuickWindow;
 // application namespace
+
 namespace advsettings
 {
 // forward declaration
@@ -65,6 +69,7 @@ struct ChaperoneProfile : settings::ISettingsObject
     float chaperoneAlarmSoundDistance = 0.0f;
     bool enableChaperoneShowDashboard = false;
     float chaperoneShowDashboardDistance = 0.0f;
+    bool centerMarkerNew = false;
 
     virtual settings::SettingsObjectData saveSettings() const override
     {
@@ -139,6 +144,7 @@ struct ChaperoneProfile : settings::ISettingsObject
         o.addValue( static_cast<double>( chaperoneAlarmSoundDistance ) );
         o.addValue( enableChaperoneShowDashboard );
         o.addValue( static_cast<double>( chaperoneShowDashboardDistance ) );
+        o.addValue( centerMarkerNew );
 
         return o;
     }
@@ -230,6 +236,7 @@ struct ChaperoneProfile : settings::ISettingsObject
         enableChaperoneShowDashboard = obj.getNextValueOrDefault( false );
         chaperoneShowDashboardDistance
             = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
+        centerMarkerNew = obj.getNextValueOrDefault( false );
     }
 
     virtual std::string settingsName() const override
@@ -298,7 +305,20 @@ class ChaperoneTabController : public QObject
         float chaperoneShowDashboardDistance READ chaperoneShowDashboardDistance
             WRITE setChaperoneShowDashboardDistance NOTIFY
                 chaperoneShowDashboardDistanceChanged )
-
+    Q_PROPERTY( int chaperoneColorR READ chaperoneColorR WRITE
+                    setChaperoneColorR NOTIFY chaperoneColorRChanged )
+    Q_PROPERTY( int chaperoneColorG READ chaperoneColorG WRITE
+                    setChaperoneColorG NOTIFY chaperoneColorGChanged )
+    Q_PROPERTY( int chaperoneColorB READ chaperoneColorB WRITE
+                    setChaperoneColorB NOTIFY chaperoneColorBChanged )
+    Q_PROPERTY( int chaperoneColorA READ chaperoneColorA WRITE
+                    setChaperoneColorA NOTIFY chaperoneColorAChanged )
+    Q_PROPERTY( int collisionBoundStyle READ collisionBoundStyle WRITE
+                    setCollisionBoundStyle NOTIFY collisionBoundStyleChanged )
+    Q_PROPERTY( bool chaperoneFloorToggle READ chaperoneFloorToggle WRITE
+                    setChaperoneFloorToggle NOTIFY chaperoneFloorToggleChanged )
+    Q_PROPERTY( bool centerMarkerNew READ centerMarkerNew WRITE
+                    setCenterMarkerNew NOTIFY centerMarkerNewChanged )
 private:
     OverlayController* parent;
 
@@ -329,6 +349,14 @@ private:
     bool m_leftHapticClickActivated = false;
     bool m_rightHapticClickActivated = false;
 
+    int m_chaperoneColorR = 0;
+    int m_chaperoneColorG = 255;
+    int m_chaperoneColorB = 255;
+
+    int m_collisionBoundStyle = 0;
+
+    bool m_chaperoneFloorToggle = false;
+
     bool m_autosaveComplete = false;
 
     int m_updateTicksChaperoneReload = 0;
@@ -340,7 +368,22 @@ private:
     vr::VRInputValueHandle_t m_leftInputHandle;
     vr::VRInputValueHandle_t m_rightInputHandle;
 
+    vr::VROverlayHandle_t m_chaperoneFloorOverlayHandle
+        = vr::k_ulOverlayHandleInvalid;
+
     std::vector<ChaperoneProfile> chaperoneProfiles;
+
+    std::string m_floorMarkerFN = "/res/img/chaperone/centermark.png";
+    void initFloorOverlay();
+    void updateOverlay();
+    void updateOverlayColor();
+    void checkOverlayRotation();
+    int m_rotationUpdateCounter = 0;
+    int m_rotationCurrent = 0;
+    bool m_overlayNeedsUpdate = false;
+
+    vr::ETrackingUniverseOrigin m_trackingUniverse
+        = vr::TrackingUniverseRawAndUncalibrated;
 
 public:
     ~ChaperoneTabController();
@@ -348,16 +391,29 @@ public:
     void initStage1();
     void initStage2( OverlayController* parent );
 
-    void eventLoopTick( vr::TrackedDevicePose_t* devicePoses );
+    void eventLoopTick( vr::ETrackingUniverseOrigin universe,
+                        vr::TrackedDevicePose_t* devicePoses );
+    void dashboardLoopTick();
     void handleChaperoneWarnings( float distance );
 
     float boundsVisibility() const;
-    float fadeDistance() const;
-    float height() const;
-    bool centerMarker() const;
-    bool playSpaceMarker() const;
+    float fadeDistance();
+    float height();
+    bool centerMarker();
+    bool playSpaceMarker();
     bool forceBounds() const;
     bool disableChaperone() const;
+
+    int chaperoneColorR();
+    int chaperoneColorG();
+    int chaperoneColorB();
+    int chaperoneColorA() const;
+
+    bool centerMarkerNew();
+
+    bool chaperoneFloorToggle();
+
+    int collisionBoundStyle();
 
     void setRightHapticActionHandle( vr::VRActionHandle_t handle );
     void setLeftHapticActionHandle( vr::VRActionHandle_t handle );
@@ -419,6 +475,18 @@ public slots:
     void setChaperoneShowDashboardEnabled( bool value, bool notify = true );
     void setChaperoneShowDashboardDistance( float value, bool notify = true );
 
+    void setChaperoneColorR( int value, bool notify = true );
+    void setChaperoneColorG( int value, bool notify = true );
+    void setChaperoneColorB( int value, bool notify = true );
+    void setChaperoneColorA( int value, bool notify = true );
+
+    void setCenterMarkerNew( bool value, bool notify = true );
+
+    void setCollisionBoundStyle( int value,
+                                 bool notify = true,
+                                 bool isTemp = false );
+    void setChaperoneFloorToggle( bool value, bool notify = true );
+
     void flipOrientation( double degrees = 180 );
     void reloadFromDisk();
 
@@ -463,6 +531,16 @@ signals:
 
     void chaperoneShowDashboardEnabledChanged( bool value );
     void chaperoneShowDashboardDistanceChanged( float value );
+
+    void chaperoneColorRChanged( int value );
+    void chaperoneColorGChanged( int value );
+    void chaperoneColorBChanged( int value );
+    void chaperoneColorAChanged( int value );
+
+    void collisionBoundStyleChanged( int value );
+
+    void chaperoneFloorToggleChanged( bool value );
+    void centerMarkerNewChanged( bool value );
 
     void chaperoneProfilesUpdated();
 };

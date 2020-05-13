@@ -8,16 +8,24 @@ RESOURCES += src/res/resources.qrc
 
 DISTFILES += \
     src/res/sounds/alarm01.wav \
+    src/res/sounds/click.wav \
+    src/res/sounds/focus.wav \
     src/res/img/audio/microphone/ptt_notification.png \
     src/res/img/audio/microphone/ptt_notification.svg \
     src/res/img/battery/* \
     src/res/img/icons/* \
+    src/res/img/video/* \
+    src/res/img/chaperone/* \
     src/res/qml/qmldir \
     src/res/qml/audio_page/* \
     src/res/qml/ChaperonePage.qml \
     src/res/qml/ChaperoneWarningsPage.qml \
     src/res/qml/chaperone_page/* \
     src/res/qml/chaperone_page/change_orientation/* \
+    src/res/qml/chaperone_page/chaperone_additional/* \
+    src/res/qml/chaperone_page/chaperone_additional/chaperoneboundscolor/* \
+    src/res/qml/chaperone_page/chaperone_additional/chaperonetype/* \
+    src/res/qml/chaperone_page/chaperone_additional/chaperonemisc/* \
     src/res/qml/FixFloorPage.qml \
     src/res/qml/PlayspacePage.qml \
     src/res/qml/motion_page/* \
@@ -47,10 +55,10 @@ DISTFILES += \
     src/res/qml/video_page/profiles/* \
     src/res/qml/video_page/dialogboxes/* \
     src/res/qml/video_page/overlaycolorbright/* \
-	src/res/qml/rotation_page/* \
-	src/res/qml/rotation_page/redirected/* \
-	src/res/qml/rotation_page/snap_turn/* \
-	src/res/qml/rotation_page/space_turn/* \
+    src/res/qml/rotation_page/* \
+    src/res/qml/rotation_page/redirected/* \
+    src/res/qml/rotation_page/snap_turn/* \
+    src/res/qml/rotation_page/space_turn/* \
     src/res/qml/common/*
 
 win32:RC_ICONS += src/res/img/icons/advicon256px.ico

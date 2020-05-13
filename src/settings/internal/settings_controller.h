@@ -370,6 +370,11 @@ private:
                           SettingCategory::Chaperone,
                           QtInfo{ "disableChaperone" },
                           false },
+        BoolSettingValue{ BoolSetting::CHAPERONE_centerMarkerNew,
+                          SettingCategory::Chaperone,
+                          QtInfo{ "centerMarkerNew" },
+                          false },
+
         BoolSettingValue{ BoolSetting::ROTATION_autoturnEnabled,
                           SettingCategory::Rotation,
                           QtInfo{ "autoturnEnabled" },

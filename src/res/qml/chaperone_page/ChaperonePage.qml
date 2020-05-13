@@ -443,7 +443,7 @@ MyStackViewPage {
                 text: "Center Marker"
                 Layout.fillWidth: false
                 onCheckedChanged: {
-                    ChaperoneTabController.setCenterMarker(this.checked, false)
+                    ChaperoneTabController.setCenterMarkerNew(this.checked, false)
                 }
             }
 
@@ -485,16 +485,31 @@ MyStackViewPage {
             Item { Layout.fillWidth: true }
         }
 
+        RowLayout {
+            Layout.fillWidth: true
+            MyPushButton {
+                id: chaperoneWarningsConfigButton
+                text: "Proximity Warning Settings"
+                Layout.preferredWidth: 350
+                onClicked: {
+                    MyResources.playFocusChangedSound()
+                    mainView.push(chaperoneWarningsPage)
+                }
+            }
+            Item {Layout.fillWidth: true}
 
-        MyPushButton {
-            id: chaperoneWarningsConfigButton
-            text: "Proximity Warning Settings"
-            Layout.preferredWidth: 350
-            onClicked: {
-                MyResources.playFocusChangedSound()
-                mainView.push(chaperoneWarningsPage)
+            MyPushButton {
+                id: chaperoneAdditionalButton
+                text: "Additional Chaperone Settings"
+                Layout.preferredWidth: 400
+
+                onClicked: {
+                    MyResources.playFocusChangedSound()
+                    mainView.push(chaperoneAdditionalPage)
+                }
             }
         }
+
         ChangeOrientationGroupBox { }
 
 
@@ -540,7 +555,7 @@ MyStackViewPage {
                 chaperoneHeightSlider.value = h
             }
             chaperoneHeightText.text = h
-            chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarker
+            chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarkerNew
             chaperonePlaySpaceToggle.checked = ChaperoneTabController.playSpaceMarker
             chaperoneForceBoundsToggle.checked = ChaperoneTabController.forceBounds
             chaperoneDisableChaperone.checked = ChaperoneTabController.disableChaperone
@@ -581,8 +596,8 @@ MyStackViewPage {
                 chaperoneHeightText.text = h
             }
 
-            onCenterMarkerChanged: {
-                chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarker
+            onCenterMarkerNewChanged: {
+                chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarkerNew
             }
             onPlaySpaceMarkerChanged: {
                 chaperonePlaySpaceToggle.checked = ChaperoneTabController.playSpaceMarker
