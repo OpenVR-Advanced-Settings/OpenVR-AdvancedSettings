@@ -68,6 +68,13 @@ MyStackViewPage {
                 OverlayController.setDisableVersionCheck(checked, true)
             }
         }
+        MyToggleButton {
+            id: nativeChaperoneToggleButton
+            text: "Force Use Steam's Native Chaperone"
+            onCheckedChanged: {
+                SettingsTabController.setNativeChaperoneToggle(this.checked, true)
+            }
+        }
 
         RowLayout {
             Layout.fillWidth: true
@@ -225,6 +232,7 @@ MyStackViewPage {
             debugStateRow.visible = OverlayController.enableDebug
             debugStateText.text = OverlayController.debugState
             disableVersionCheckToggle.checked = OverlayController.disableVersionCheck
+            nativeChaperoneToggleButton.checked = SettingsTabController.nativeChaperoneToggle
 
             seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
         }
@@ -233,6 +241,9 @@ MyStackViewPage {
             target: SettingsTabController
             onAutoStartEnabledChanged: {
                 settingsAutoStartToggle.checked = SettingsTabController.autoStartEnabled
+            }
+            onNativeChaperoneToggleChanged:{
+                nativeChaperoneToggleButton.checked = SettingsTabController.nativeChaperoneToggle
             }
         }
 
