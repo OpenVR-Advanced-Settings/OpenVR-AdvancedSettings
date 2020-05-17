@@ -93,6 +93,15 @@ WORD convertToVirtualKeycode( const Token token )
         return 0;
     }
 }
+void initOsSystems()
+{
+    // Intentionally blank, no setup needed on Windows
+}
+
+void shutdownOsSystems()
+{
+    // Intentionally blank, no shutdown needed on Windows
+}
 
 INPUT createInputStruct( const WORD virtualKeyCode,
                          const KeyStatus keyStatus ) noexcept
@@ -163,68 +172,9 @@ void sendKeyboardInputRaw( std::vector<INPUT> inputs )
     }
 }
 
-void sendTokensAsInput( const std::vector<Token> tokens )
+void sendKeyPress( const Token token, const KeyStatus status )
 {
-    std::vector<INPUT> inputs = {};
-    std::vector<Token> heldInputs = {};
-    bool noKeyUp = false;
-    for ( const auto& token : tokens )
-    {
-        if ( token == Token::TOKEN_NO_KEYUP_NEXT )
-        {
-            noKeyUp = true;
-            continue;
-        }
-
-        if ( isModifier( token ) )
-        {
-            inputs.push_back( createInputStruct(
-                convertToVirtualKeycode( token ), KeyStatus::Down ) );
-            if ( !noKeyUp )
-            {
-                heldInputs.push_back( token );
-            }
-            continue;
-        }
-
-        if ( token == Token::TOKEN_NEW_SEQUENCE )
-        {
-            for ( const auto& h : heldInputs )
-            {
-                inputs.push_back( createInputStruct(
-                    convertToVirtualKeycode( h ), KeyStatus::Up ) );
-            }
-            heldInputs.clear();
-            continue;
-        }
-
-        if ( isLiteral( token ) )
-        {
-            inputs.push_back( createInputStruct(
-                convertToVirtualKeycode( token ), KeyStatus::Down ) );
-            if ( !noKeyUp )
-            {
-                inputs.push_back( createInputStruct(
-                    convertToVirtualKeycode( token ), KeyStatus::Up ) );
-            }
-            continue;
-        }
-        if ( token != Token::TOKEN_NO_KEYUP_NEXT )
-        {
-            noKeyUp = false;
-            continue;
-        }
-    }
-
-    if ( !heldInputs.empty() )
-    {
-        for ( const auto& h : heldInputs )
-        {
-            inputs.push_back( createInputStruct( convertToVirtualKeycode( h ),
-                                                 KeyStatus::Up ) );
-        }
-    }
-
-    sendKeyboardInputRaw( inputs );
-    // send inputs
+    std::vector<INPUT> v
+        = { createInputStruct( convertToVirtualKeycode( token ), status ) };
+    sendKeyboardInputRaw( v );
 }
