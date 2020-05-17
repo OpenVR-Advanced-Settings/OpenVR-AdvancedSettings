@@ -163,9 +163,24 @@ unsigned int tokenToKeySym( const Token token )
     }
 }
 
-void sendKeyPress( const Token token,
-                   const KeyStatus status,
-                   Display* const display )
+Display* getDisplay()
+{
+    static Display* display = XOpenDisplay( nullptr );
+    return display;
+}
+
+void initOsSystems()
+{
+    XTestGrabControl( getDisplay(), True );
+}
+
+void shutdownOsSystems()
+{
+    XSync( getDisplay(), False );
+    XTestGrabControl( getDisplay(), False );
+}
+
+void sendKeyPress( const Token token, const KeyStatus status )
 {
     bool keyDown = false;
 
@@ -174,72 +189,8 @@ void sendKeyPress( const Token token,
         keyDown = true;
     }
 
-    XTestFakeKeyEvent( display,
-                       XKeysymToKeycode( display, tokenToKeySym( token ) ),
+    XTestFakeKeyEvent( getDisplay(),
+                       XKeysymToKeycode( getDisplay(), tokenToKeySym( token ) ),
                        keyDown,
                        0 );
-}
-
-void sendTokensAsInput( const std::vector<Token> tokens )
-{
-    Display* const display = XOpenDisplay( nullptr );
-    XTestGrabControl( display, True );
-
-    std::vector<Token> heldInputs = {};
-    bool noKeyUp = false;
-    for ( const auto& token : tokens )
-    {
-        if ( token == Token::TOKEN_NO_KEYUP_NEXT )
-        {
-            noKeyUp = true;
-            continue;
-        }
-
-        if ( isModifier( token ) )
-        {
-            sendKeyPress( token, KeyStatus::Down, display );
-            if ( noKeyUp )
-            {
-                heldInputs.push_back( token );
-            }
-            continue;
-        }
-
-        if ( token == Token::TOKEN_NEW_SEQUENCE )
-        {
-            for ( const auto& h : heldInputs )
-            {
-                sendKeyPress( h, KeyStatus::Up, display );
-            }
-            heldInputs.clear();
-            continue;
-        }
-
-        if ( isLiteral( token ) )
-        {
-            sendKeyPress( token, KeyStatus::Down, display );
-            if ( noKeyUp )
-            {
-                sendKeyPress( token, KeyStatus::Up, display );
-            }
-            continue;
-        }
-
-        if ( token != Token::TOKEN_NO_KEYUP_NEXT )
-        {
-            noKeyUp = false;
-            continue;
-        }
-    }
-
-    if ( !heldInputs.empty() )
-    {
-        for ( const auto& h : heldInputs )
-        {
-            sendKeyPress( h, KeyStatus::Up, display );
-        }
-    }
-
-    XSync( display, False );
-    XTestGrabControl( display, False );
 }
