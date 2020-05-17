@@ -70,7 +70,7 @@ MyStackViewPage {
         }
         MyToggleButton {
             id: nativeChaperoneToggleButton
-            text: "Force Use Steam's Native Chaperone"
+            text: "Driver Bounds Import (un-checked to force use Steam's native chaperone)"
             onCheckedChanged: {
                 SettingsTabController.setNativeChaperoneToggle(this.checked, true)
             }
