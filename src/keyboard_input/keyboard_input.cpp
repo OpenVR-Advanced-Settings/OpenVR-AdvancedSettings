@@ -26,32 +26,36 @@ void sendKeyboardBackspace( const int count )
 
 void sendKeyboardAltTab()
 {
-    const auto tokens
-        = std::vector<Token>{ Token::MODIFIER_ALT, Token::KEY_TAB };
+    const auto tokens = std::vector<Token>{ Token::TOKEN_NO_KEYUP_NEXT,
+                                            Token::MODIFIER_ALT,
+                                            Token::KEY_TAB };
 
     sendTokensAsInput( tokens );
 }
 
 void sendKeyboardAltEnter()
 {
-    const auto tokens
-        = std::vector<Token>{ Token::MODIFIER_ALT, Token::KEY_ENTER };
+    const auto tokens = std::vector<Token>{ Token::TOKEN_NO_KEYUP_NEXT,
+                                            Token::MODIFIER_ALT,
+                                            Token::KEY_ENTER };
 
     sendTokensAsInput( tokens );
 }
 
 void sendKeyboardCtrlC()
 {
-    const auto tokens
-        = std::vector<Token>{ Token::MODIFIER_CTRL, Token::KEY_c };
+    const auto tokens = std::vector<Token>{ Token::TOKEN_NO_KEYUP_NEXT,
+                                            Token::MODIFIER_CTRL,
+                                            Token::KEY_c };
 
     sendTokensAsInput( tokens );
 }
 
 void sendKeyboardCtrlV()
 {
-    const auto tokens
-        = std::vector<Token>{ Token::MODIFIER_CTRL, Token::KEY_v };
+    const auto tokens = std::vector<Token>{ Token::TOKEN_NO_KEYUP_NEXT,
+                                            Token::MODIFIER_CTRL,
+                                            Token::KEY_v };
 
     sendTokensAsInput( tokens );
 }
