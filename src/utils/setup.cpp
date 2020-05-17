@@ -67,6 +67,10 @@ CommandLineOptions returnCommandLineParser( const MyQApplication& application )
                                             k_forceRemoveManifestDescription );
     parser.addOption( forceRemoveManifest );
 
+    QCommandLineOption resetSettings( k_resetSettings,
+                                      k_resetSettingsDescription );
+    parser.addOption( resetSettings );
+
     parser.process( application );
 
     const bool desktopModeEnabled = parser.isSet( desktopMode );
@@ -87,12 +91,14 @@ CommandLineOptions returnCommandLineParser( const MyQApplication& application )
     const bool forceRemoveManifestEnabled = parser.isSet( forceRemoveManifest );
     LOG_IF( forceRemoveManifestEnabled, INFO )
         << "Forcing removal of applications manifest.";
+    const bool resetSettingsEnabled = parser.isSet( resetSettings );
+    LOG_IF( resetSettingsEnabled, INFO ) << "Reset SteamVR Settings.";
 
-    const CommandLineOptions commandLineArgs{ desktopModeEnabled,
-                                              forceNoSoundEnabled,
-                                              forceNoManifestEnabled,
-                                              forceInstallManifestEnabled,
-                                              forceRemoveManifestEnabled };
+    const CommandLineOptions commandLineArgs{
+        desktopModeEnabled,         forceNoSoundEnabled,
+        forceNoManifestEnabled,     forceInstallManifestEnabled,
+        forceRemoveManifestEnabled, resetSettingsEnabled
+    };
 
     LOG( INFO ) << "Command line arguments processed.";
 
