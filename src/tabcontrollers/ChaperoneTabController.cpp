@@ -6,6 +6,22 @@
 #include "../quaternion/quaternion.h"
 #include <cmath>
 
+// TODO sloppy mess for testing, need To merge this with one in
+// movecentertabcontroller... possibly to a util namespace?
+void rotateCoordinates2( double coordinates[3], double angle )
+{
+    if ( angle == 0 )
+    {
+        return;
+    }
+    double s = sin( angle );
+    double c = cos( angle );
+    double newX = coordinates[0] * c - coordinates[2] * s;
+    double newZ = coordinates[0] * s + coordinates[2] * c;
+    coordinates[0] = newX;
+    coordinates[2] = newZ;
+}
+
 // application namespace
 namespace advsettings
 {
@@ -1576,18 +1592,24 @@ void ChaperoneTabController::updateOverlay()
 {
     if ( m_trackingUniverse != vr::TrackingUniverseRawAndUncalibrated )
     {
-        float xoff = -( parent->m_moveCenterTabController.offsetX() );
-        float yoff = -( parent->m_moveCenterTabController.offsetY() );
-        float zoff = -( parent->m_moveCenterTabController.offsetZ() );
+        double rotatecoords[3] = {
+            static_cast<double>( parent->m_moveCenterTabController.offsetX() ),
+            static_cast<double>( parent->m_moveCenterTabController.offsetY() ),
+            static_cast<double>( parent->m_moveCenterTabController.offsetZ() )
+        };
+        rotateCoordinates2( rotatecoords,
+                            ( parent->m_moveCenterTabController.rotation() ) );
         /* Rotation on Y Axis
          * {cos t, 0, sin t}
          * {0, 1, 0}
          * {-sin t, 0 cost t}
          */
-
-        vr::HmdMatrix34_t updateTransform = { { { 1.0f, 0.0f, 0.0f, xoff },
-                                                { 0.0f, 0.0f, 1.0f, yoff },
-                                                { 0.0f, -1.0f, 0.0f, zoff } } };
+        // TODO update rotation of center marker
+        vr::HmdMatrix34_t updateTransform = {
+            { { 1.0f, 0.0f, 0.0f, static_cast<float>( rotatecoords[0] ) },
+              { 0.0f, 0.0f, 1.0f, static_cast<float>( rotatecoords[1] ) },
+              { 0.0f, -1.0f, 0.0f, static_cast<float>( rotatecoords[2] ) } }
+        };
         ovr_overlay_wrapper::setOverlayTransformAbsolute(
             m_chaperoneFloorOverlayHandle,
             m_trackingUniverse,
