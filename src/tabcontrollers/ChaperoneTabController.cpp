@@ -1593,27 +1593,31 @@ void ChaperoneTabController::updateOverlay()
     if ( m_trackingUniverse != vr::TrackingUniverseRawAndUncalibrated )
     {
         double rotatecoords[3] = {
-            static_cast<double>( parent->m_moveCenterTabController.offsetX() ),
-            static_cast<double>( parent->m_moveCenterTabController.offsetY() ),
-            static_cast<double>( parent->m_moveCenterTabController.offsetZ() )
+            static_cast<double>( -parent->m_moveCenterTabController.offsetX() ),
+            static_cast<double>( -parent->m_moveCenterTabController.offsetY() ),
+            static_cast<double>( -parent->m_moveCenterTabController.offsetZ() )
         };
-        rotateCoordinates2( rotatecoords,
-                            ( parent->m_moveCenterTabController.rotation() ) );
+        rotateCoordinates2(
+            rotatecoords,
+            ( ( parent->m_moveCenterTabController.m_universeOffsetYaw ) ) );
         /* Rotation on Y Axis
          * {cos t, 0, sin t}
          * {0, 1, 0}
          * {-sin t, 0 cost t}
          */
         // TODO update rotation of center marker
+        // offsets Need to be Negative to handle movement
+
         vr::HmdMatrix34_t updateTransform = {
             { { 1.0f, 0.0f, 0.0f, static_cast<float>( rotatecoords[0] ) },
               { 0.0f, 0.0f, 1.0f, static_cast<float>( rotatecoords[1] ) },
               { 0.0f, -1.0f, 0.0f, static_cast<float>( rotatecoords[2] ) } }
         };
+
         ovr_overlay_wrapper::setOverlayTransformAbsolute(
             m_chaperoneFloorOverlayHandle,
             m_trackingUniverse,
-            &updateTransform,
+            &( updateTransform ),
             "" );
         checkOverlayRotation();
     }

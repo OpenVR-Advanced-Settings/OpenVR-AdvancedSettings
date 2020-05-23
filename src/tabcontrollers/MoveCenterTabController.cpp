@@ -2567,14 +2567,21 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     // (we reuse offsetUniverseCenterYaw to rotate the chaperone also)
     double offsetUniverseCenterYaw = static_cast<double>( std::atan2(
         offsetUniverseCenter.m[0][2], offsetUniverseCenter.m[2][2] ) );
+
     double offsetUniverseCenterXyz[3]
         = { static_cast<double>( offsetUniverseCenter.m[0][3] ),
             static_cast<double>( offsetUniverseCenter.m[1][3] ),
             static_cast<double>( offsetUniverseCenter.m[2][3] ) };
     // unrotate to get raw values of xyz
+
+    // potentially unsafe XD TODO
+    m_universeOffsetYaw = ( offsetUniverseCenterYaw
+                            - ( m_rotation * k_centidegreesToRadians ) );
+    // m_universeoffset = offsetUniverseCenter;
     rotateCoordinates( offsetUniverseCenterXyz,
                        offsetUniverseCenterYaw
                            - ( m_rotation * k_centidegreesToRadians ) );
+
     if ( abs( offsetUniverseCenterXyz[0] ) > k_maxOpenvrWorkingSetOffest
          || ( abs( offsetUniverseCenterXyz[0] )
                   > k_maxOvrasUniverseCenteredTurningOffset

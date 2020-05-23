@@ -286,6 +286,12 @@ public:
     Q_INVOKABLE unsigned getOffsetProfileCount();
     Q_INVOKABLE QString getOffsetProfileName( unsigned index );
 
+    // TODO TEMP for chaperone thing.
+    vr::HmdMatrix34_t m_universeoffset = { { { 1.0f, 0.0f, 0.0f, 0.0f },
+                                             { 0.0f, 0.0f, 1.0f, 0.0f },
+                                             { 0.0f, -1.0f, 0.0f, 0.0f } } };
+    double m_universeOffsetYaw = 0.0;
+
     // actions:
     void leftHandSpaceDrag( bool leftHandDragActive );
     void rightHandSpaceDrag( bool rightHandDragActive );

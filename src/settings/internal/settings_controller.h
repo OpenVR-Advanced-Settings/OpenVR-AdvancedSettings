@@ -426,18 +426,22 @@ private:
                             QtInfo{ "colorBlueNew" },
                             1.0 },
 
+        // TODO BUG should be in Chaperone Settings Not Video breaking?
         DoubleSettingValue{ DoubleSetting::CHAPERONE_switchToBeginnerDistance,
                             SettingCategory::Video,
                             QtInfo{ "chaperoneSwitchToBeginnerDistance" },
                             0.5 },
+        // TODO BUG should be in Chaperone Settings Not Video breaking?
         DoubleSettingValue{ DoubleSetting::CHAPERONE_hapticFeedbackDistance,
                             SettingCategory::Video,
                             QtInfo{ "chaperoneHapticFeedbackDistance" },
                             0.5 },
+        // TODO BUG should be in Chaperone Settings Not Video breaking?
         DoubleSettingValue{ DoubleSetting::CHAPERONE_alarmSoundDistance,
                             SettingCategory::Video,
                             QtInfo{ "chaperoneAlarmSoundDistance" },
                             0.5 },
+        // TODO BUG should be in Chaperone Settings Not Video breaking?
         DoubleSettingValue{ DoubleSetting::CHAPERONE_showDashboardDistance,
                             SettingCategory::Video,
                             QtInfo{ "chaperoneShowDashboardDistance" },
