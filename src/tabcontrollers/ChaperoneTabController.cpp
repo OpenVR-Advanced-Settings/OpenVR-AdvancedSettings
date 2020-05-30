@@ -1224,8 +1224,6 @@ void ChaperoneTabController::addChaperoneProfile(
     {
         profile->centerMarker = m_centerMarker;
         profile->centerMarkerNew = centerMarkerNew();
-        LOG( ERROR ) << "chap profile added centermarker new saved is: "
-                     << centerMarkerNew();
     }
     profile->includesPlaySpaceMarker = includePlaySpaceMarker;
     if ( includePlaySpaceMarker )
@@ -1316,8 +1314,6 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
         {
             setCenterMarker( profile.centerMarker );
             setCenterMarkerNew( profile.centerMarkerNew );
-            LOG( ERROR ) << "chap profile applied centermarker new saved is: "
-                         << profile.centerMarkerNew;
         }
         if ( profile.includesPlaySpaceMarker )
         {
