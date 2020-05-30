@@ -80,7 +80,10 @@ struct ChaperoneProfile : settings::ISettingsObject
         o.addValue( includesChaperoneGeometry );
         o.addValue( static_cast<int>( chaperoneGeometryQuadCount ) );
 
-        if ( chaperoneGeometryQuadCount > 0 )
+        const auto chaperoneGeometryQuadsValid = chaperoneGeometryQuadCount > 0;
+        o.addValue( chaperoneGeometryQuadsValid );
+
+        if ( chaperoneGeometryQuadsValid )
         {
             for ( auto& arrayMember : chaperoneGeometryQuads )
             {
@@ -157,7 +160,6 @@ struct ChaperoneProfile : settings::ISettingsObject
         chaperoneGeometryQuadCount
             = static_cast<unsigned>( obj.getNextValueOrDefault( 0 ) );
 
-        // chaperoneGeometryQuads = nullptr;
         const auto chaperoneGeometryQuadsValid
             = obj.getNextValueOrDefault( false );
         if ( chaperoneGeometryQuadsValid )
