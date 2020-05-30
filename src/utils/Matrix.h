@@ -5,6 +5,13 @@
 
 namespace utils
 {
+// TODO possibly expand on this to include other orientations?
+// This is Forward, and Up orientation matrix
+constexpr vr::HmdMatrix34_t k_forwardUpMatrix
+    = { { { 1.0f, 0.0f, 0.0f, 0.0f },
+          { 0.0f, 0.0f, 1.0f, 0.0f },
+          { 0.0f, -1.0f, 0.0f, 0.0f } } };
+
 inline vr::HmdMatrix34_t& initRotationMatrix( vr::HmdMatrix34_t& matrix,
                                               unsigned axisId,
                                               float angle )

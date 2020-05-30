@@ -6,22 +6,6 @@
 #include "../quaternion/quaternion.h"
 #include <cmath>
 
-// TODO sloppy mess for testing, need To merge this with one in
-// movecentertabcontroller... possibly to a util namespace?
-void rotateCoordinates2( double coordinates[3], double angle )
-{
-    if ( angle == 0 )
-    {
-        return;
-    }
-    double s = sin( angle );
-    double c = cos( angle );
-    double newX = coordinates[0] * c - coordinates[2] * s;
-    double newZ = coordinates[0] * s + coordinates[2] * c;
-    coordinates[0] = newX;
-    coordinates[2] = newZ;
-}
-
 // application namespace
 namespace advsettings
 {
@@ -44,6 +28,8 @@ void ChaperoneTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
     // Cludge Fix for now, but its not getting called for some reason w/ QML
+    // Additionally this will ensure that m_centerMarkerUpdate is properly
+    // synched
     setCenterMarkerNew( centerMarkerNew() );
     updateChaperoneSettings(); // force one update of OVR saved settings to make
                                // sure our m_ variables are correct
@@ -253,13 +239,6 @@ void ChaperoneTabController::eventLoopTick(
     vr::TrackedDevicePose_t* devicePoses )
 {
     m_trackingUniverse = universe;
-    // Update overlay should only run After move center tab controller is
-    // initialized.
-    // As such this protects it from running during initstage 1.
-    if ( centerMarkerNew() && devicePoses != nullptr )
-    {
-        updateOverlay();
-    }
     if ( devicePoses )
     {
         m_isHMDActive = false;
@@ -856,10 +835,12 @@ void ChaperoneTabController::setCenterMarkerNew( bool value, bool notify )
     if ( value )
     {
         ovr_overlay_wrapper::showOverlay( m_chaperoneFloorOverlayHandle );
+        parent->m_moveCenterTabController.m_centerMarkerUpdate = true;
     }
     else
     {
         ovr_overlay_wrapper::hideOverlay( m_chaperoneFloorOverlayHandle );
+        parent->m_moveCenterTabController.m_centerMarkerUpdate = false;
     }
 
     if ( notify )
@@ -1243,6 +1224,8 @@ void ChaperoneTabController::addChaperoneProfile(
     {
         profile->centerMarker = m_centerMarker;
         profile->centerMarkerNew = centerMarkerNew();
+        LOG( ERROR ) << "chap profile added centermarker new saved is: "
+                     << centerMarkerNew();
     }
     profile->includesPlaySpaceMarker = includePlaySpaceMarker;
     if ( includePlaySpaceMarker )
@@ -1333,6 +1316,8 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
         {
             setCenterMarker( profile.centerMarker );
             setCenterMarkerNew( profile.centerMarkerNew );
+            LOG( ERROR ) << "chap profile applied centermarker new saved is: "
+                         << profile.centerMarkerNew;
         }
         if ( profile.includesPlaySpaceMarker )
         {
@@ -1592,32 +1577,10 @@ void ChaperoneTabController::updateOverlay()
 {
     if ( m_trackingUniverse != vr::TrackingUniverseRawAndUncalibrated )
     {
-        double rotatecoords[3] = {
-            static_cast<double>( -parent->m_moveCenterTabController.offsetX() ),
-            static_cast<double>( -parent->m_moveCenterTabController.offsetY() ),
-            static_cast<double>( -parent->m_moveCenterTabController.offsetZ() )
-        };
-        rotateCoordinates2(
-            rotatecoords,
-            ( ( parent->m_moveCenterTabController.m_universeOffsetYaw ) ) );
-        /* Rotation on Y Axis
-         * {cos t, 0, sin t}
-         * {0, 1, 0}
-         * {-sin t, 0 cost t}
-         */
-        // TODO update rotation of center marker
-        // offsets Need to be Negative to handle movement
-
-        vr::HmdMatrix34_t updateTransform = {
-            { { 1.0f, 0.0f, 0.0f, static_cast<float>( rotatecoords[0] ) },
-              { 0.0f, 0.0f, 1.0f, static_cast<float>( rotatecoords[1] ) },
-              { 0.0f, -1.0f, 0.0f, static_cast<float>( rotatecoords[2] ) } }
-        };
-
         ovr_overlay_wrapper::setOverlayTransformAbsolute(
             m_chaperoneFloorOverlayHandle,
             m_trackingUniverse,
-            &( updateTransform ),
+            &( parent->m_moveCenterTabController.m_centerMarkerMatrix ),
             "" );
         checkOverlayRotation();
     }

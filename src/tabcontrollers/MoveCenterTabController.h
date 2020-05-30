@@ -5,6 +5,7 @@
 #include <openvr.h>
 #include <chrono>
 #include <qmath.h>
+#include "../utils/Matrix.h"
 #include "../utils/FrameRateUtils.h"
 #include "../settings/settings_object.h"
 
@@ -205,6 +206,10 @@ private:
 
     unsigned int m_moveCenterSettingsUpdateCounter = 83;
 
+    // For Center Marker
+    float m_universeYaw = 0.0;
+    vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
+
     double m_velocity[3] = { 0.0, 0.0, 0.0 };
     std::chrono::steady_clock::time_point m_lastGravityUpdateTimePoint;
     std::chrono::steady_clock::time_point m_lastDragUpdateTimePoint;
@@ -286,11 +291,9 @@ public:
     Q_INVOKABLE unsigned getOffsetProfileCount();
     Q_INVOKABLE QString getOffsetProfileName( unsigned index );
 
-    // TODO TEMP for chaperone thing.
-    vr::HmdMatrix34_t m_universeoffset = { { { 1.0f, 0.0f, 0.0f, 0.0f },
-                                             { 0.0f, 0.0f, 1.0f, 0.0f },
-                                             { 0.0f, -1.0f, 0.0f, 0.0f } } };
-    double m_universeOffsetYaw = 0.0;
+    // Public Matrix Used By ChaperoneTabController To Set appropriate turning~!
+    bool m_centerMarkerUpdate = false;
+    vr::HmdMatrix34_t m_centerMarkerMatrix = utils::k_forwardUpMatrix;
 
     // actions:
     void leftHandSpaceDrag( bool leftHandDragActive );

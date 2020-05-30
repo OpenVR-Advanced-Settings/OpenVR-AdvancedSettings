@@ -70,6 +70,7 @@ struct ChaperoneProfile : settings::ISettingsObject
     bool enableChaperoneShowDashboard = false;
     float chaperoneShowDashboardDistance = 0.0f;
     bool centerMarkerNew = false;
+    bool dud = false;
 
     virtual settings::SettingsObjectData saveSettings() const override
     {
@@ -145,6 +146,7 @@ struct ChaperoneProfile : settings::ISettingsObject
         o.addValue( enableChaperoneShowDashboard );
         o.addValue( static_cast<double>( chaperoneShowDashboardDistance ) );
         o.addValue( centerMarkerNew );
+        o.addValue( dud );
 
         return o;
     }
@@ -237,6 +239,7 @@ struct ChaperoneProfile : settings::ISettingsObject
         chaperoneShowDashboardDistance
             = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
         centerMarkerNew = obj.getNextValueOrDefault( false );
+        dud = obj.getNextValueOrDefault( false );
     }
 
     virtual std::string settingsName() const override
@@ -375,7 +378,6 @@ private:
 
     std::string m_floorMarkerFN = "/res/img/chaperone/centermark.png";
     void initFloorOverlay();
-    void updateOverlay();
     void updateOverlayColor();
     void checkOverlayRotation();
     int m_rotationUpdateCounter = 0;
@@ -395,6 +397,8 @@ public:
                         vr::TrackedDevicePose_t* devicePoses );
     void dashboardLoopTick();
     void handleChaperoneWarnings( float distance );
+
+    void updateOverlay();
 
     float boundsVisibility() const;
     float fadeDistance();

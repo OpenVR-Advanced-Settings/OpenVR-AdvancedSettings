@@ -1,7 +1,6 @@
 #include "MoveCenterTabController.h"
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
-#include "../utils/Matrix.h"
 #include "../quaternion/quaternion.h"
 #include "../settings/settings.h"
 
@@ -1005,6 +1004,11 @@ void MoveCenterTabController::reset()
     m_lastControllerPosition[0] = 0.0f;
     m_lastControllerPosition[1] = 0.0f;
     m_lastControllerPosition[2] = 0.0f;
+
+    // For Center Marker
+    m_offsetmatrix = utils::k_forwardUpMatrix;
+    m_universeYaw = 0.0;
+
     m_lastMoveHand = vr::TrackedControllerRole_Invalid;
     m_lastRotateHand = vr::TrackedControllerRole_Invalid;
     applyChaperoneResetData();
@@ -2574,10 +2578,6 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             static_cast<double>( offsetUniverseCenter.m[2][3] ) };
     // unrotate to get raw values of xyz
 
-    // potentially unsafe XD TODO
-    m_universeOffsetYaw = ( offsetUniverseCenterYaw
-                            - ( m_rotation * k_centidegreesToRadians ) );
-    // m_universeoffset = offsetUniverseCenter;
     rotateCoordinates( offsetUniverseCenterXyz,
                        offsetUniverseCenterYaw
                            - ( m_rotation * k_centidegreesToRadians ) );
@@ -2720,6 +2720,53 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
                     updatedBounds[quad].vCorners[corner].v,
                     static_cast<float>( offsetUniverseCenterYaw ) );
             }
+        }
+
+        // Center Marker for playspace.
+        if ( m_centerMarkerUpdate )
+        {
+            // TODO Make sure That Phrasing is consistant with other Code
+
+            // Rotation Needed To Orient Properly
+            m_universeYaw = static_cast<float>(
+                offsetUniverseCenterYaw
+                + ( m_rotation * k_centidegreesToRadians ) );
+            // Set Unrotated Coordinates
+            float universePlayCenterTempCoords[3] = { 0.0f, 0.0f, 0.0f };
+            universePlayCenterTempCoords[0]
+                -= offsetUniverseCenter.m[0][3]
+                   - m_universeCenterForReset.m[0][3];
+            universePlayCenterTempCoords[1]
+                -= offsetUniverseCenter.m[1][3]
+                   - m_universeCenterForReset.m[1][3];
+            universePlayCenterTempCoords[2]
+                -= offsetUniverseCenter.m[2][3]
+                   - m_universeCenterForReset.m[2][3];
+            // Rotate un-rotated to raw?
+            rotateFloatCoordinates(
+                universePlayCenterTempCoords,
+                static_cast<float>( offsetUniverseCenterYaw ) );
+            // Set Up orientation properly away from raw center
+            utils::matMul33( m_offsetmatrix,
+                             offsetUniverseCenter,
+                             utils::k_forwardUpMatrix );
+            // sets up matrix to rotate around y axis by amount Turned (Negative
+            // to cancel our turning)
+            vr::HmdMatrix34_t rotMatrix;
+            utils::initRotationMatrix(
+                rotMatrix,
+                1,
+                -( static_cast<float>(
+                    offsetUniverseCenterYaw
+                    + ( m_rotation * k_centidegreesToRadians ) ) ) );
+            // Rotates orientation At playspace center
+            utils::matMul33( m_centerMarkerMatrix, rotMatrix, m_offsetmatrix );
+
+            m_centerMarkerMatrix.m[0][3] = universePlayCenterTempCoords[0];
+            m_centerMarkerMatrix.m[1][3] = universePlayCenterTempCoords[1];
+            m_centerMarkerMatrix.m[2][3] = universePlayCenterTempCoords[2];
+
+            parent->m_chaperoneTabController.updateOverlay();
         }
 
         // update chaperone working set preview (this does not commit)

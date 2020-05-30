@@ -56,6 +56,8 @@ void saveListToDisk( std::list<Value> values,
 
     s.endArray();
     s.endGroup();
+    // This may not be strictly necessary, but this force saves/loads settings
+    s.sync();
 }
 template <typename Value>
 std::list<Value> loadListFromDisk( const std::string structName,

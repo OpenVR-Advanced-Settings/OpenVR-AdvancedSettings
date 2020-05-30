@@ -58,6 +58,7 @@ struct VideoProfile : settings::ISettingsObject
 
         o.addValue( overlayMethodState );
 
+        // TODO add opacity Toggle?
         o.addValue( static_cast<double>( opacity ) );
 
         return o;
