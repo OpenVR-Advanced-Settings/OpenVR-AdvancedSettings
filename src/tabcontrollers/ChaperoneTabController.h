@@ -391,6 +391,7 @@ public:
     ~ChaperoneTabController();
 
     void initStage1();
+
     void initStage2( OverlayController* parent );
 
     void eventLoopTick( vr::ETrackingUniverseOrigin universe,
