@@ -2742,7 +2742,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             universePlayCenterTempCoords[2]
                 -= offsetUniverseCenter.m[2][3]
                    - m_universeCenterForReset.m[2][3];
-            // Rotate un-rotated to raw?
+            // Rotate un-rotated to rotated
             rotateFloatCoordinates(
                 universePlayCenterTempCoords,
                 static_cast<float>( offsetUniverseCenterYaw ) );
