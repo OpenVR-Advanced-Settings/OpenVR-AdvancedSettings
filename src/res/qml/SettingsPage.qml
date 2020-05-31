@@ -75,7 +75,7 @@ MyStackViewPage {
             }
             MyToggleButton {
                 id: nativeChaperoneToggleButton
-                text: "Driver Bounds Import (un-checked to force use Steam's native chaperone)"
+                text: "Force Use Steam's Chaperone (experimental + requires restart of SteamVR)"
                 onCheckedChanged: {
                     SettingsTabController.setNativeChaperoneToggle(this.checked, true)
                 }

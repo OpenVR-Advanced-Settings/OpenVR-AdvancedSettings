@@ -47,8 +47,7 @@ bool SettingsTabController::nativeChaperoneToggle()
             "" );
     if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        m_nativeChaperoneToggle = p.second;
-        return p.second;
+        m_nativeChaperoneToggle = !( p.second );
     }
     return m_nativeChaperoneToggle;
 }
@@ -57,7 +56,7 @@ void SettingsTabController::setNativeChaperoneToggle( bool value, bool notify )
 {
     if ( m_nativeChaperoneToggle != value )
     {
-        m_nativeChaperoneToggle = value;
+        m_nativeChaperoneToggle = !( value );
         ovr_settings_wrapper::setBool(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_EnableDriverImport,
