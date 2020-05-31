@@ -30,7 +30,7 @@ void ChaperoneTabController::initStage2( OverlayController* var_parent )
     // Cludge Fix for now, but its not getting called for some reason w/ QML
     // Additionally this will ensure that m_centerMarkerUpdate is properly
     // synched
-    setCenterMarkerNew( centerMarkerNew() );
+    // setCenterMarkerNew( centerMarkerNew() );
     updateChaperoneSettings(); // force one update of OVR saved settings to make
                                // sure our m_ variables are correct
 }
