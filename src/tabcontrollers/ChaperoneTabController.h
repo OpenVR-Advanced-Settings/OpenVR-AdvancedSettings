@@ -381,6 +381,7 @@ private:
     int m_rotationCurrent = 0;
     bool m_overlayNeedsUpdate = false;
     bool m_overlayIsInit = false;
+    bool m_QTChapInit = false;
 
     vr::ETrackingUniverseOrigin m_trackingUniverse
         = vr::TrackingUniverseRawAndUncalibrated;
@@ -443,6 +444,7 @@ public:
 
     Q_INVOKABLE unsigned getChaperoneProfileCount();
     Q_INVOKABLE QString getChaperoneProfileName( unsigned index );
+    Q_INVOKABLE void chapQTIsInit();
 
     std::pair<bool, unsigned>
         getChaperoneProfileIndexFromName( std::string name );

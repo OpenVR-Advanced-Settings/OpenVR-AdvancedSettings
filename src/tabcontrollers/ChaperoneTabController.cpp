@@ -239,7 +239,7 @@ void ChaperoneTabController::eventLoopTick(
     vr::TrackedDevicePose_t* devicePoses )
 {
     m_trackingUniverse = universe;
-    if ( centerMarkerNew() && m_overlayIsInit )
+    if ( centerMarkerNew() && m_overlayIsInit && m_QTChapInit )
     {
         updateOverlay();
     }
@@ -1675,6 +1675,11 @@ void ChaperoneTabController::checkOverlayRotation()
     {
         m_rotationUpdateCounter++;
     }
+}
+
+void ChaperoneTabController::chapQTIsInit()
+{
+    m_QTChapInit = true;
 }
 
 void ChaperoneTabController::setProxState( bool value )
