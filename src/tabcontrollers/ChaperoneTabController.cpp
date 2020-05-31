@@ -239,6 +239,10 @@ void ChaperoneTabController::eventLoopTick(
     vr::TrackedDevicePose_t* devicePoses )
 {
     m_trackingUniverse = universe;
+    if ( centerMarkerNew() && m_overlayIsInit )
+    {
+        updateOverlay();
+    }
     if ( devicePoses )
     {
         m_isHMDActive = false;
@@ -835,12 +839,12 @@ void ChaperoneTabController::setCenterMarkerNew( bool value, bool notify )
     if ( value )
     {
         ovr_overlay_wrapper::showOverlay( m_chaperoneFloorOverlayHandle );
-        parent->m_moveCenterTabController.m_centerMarkerUpdate = true;
+        // parent->m_moveCenterTabController.m_centerMarkerUpdate = true;
     }
     else
     {
         ovr_overlay_wrapper::hideOverlay( m_chaperoneFloorOverlayHandle );
-        parent->m_moveCenterTabController.m_centerMarkerUpdate = false;
+        // parent->m_moveCenterTabController.m_centerMarkerUpdate = false;
     }
 
     if ( notify )
@@ -1561,6 +1565,7 @@ void ChaperoneTabController::initFloorOverlay()
         updateOverlayColor();
         ovr_overlay_wrapper::setOverlayAlpha(
             m_chaperoneFloorOverlayHandle, m_visibility, "" );
+        m_overlayIsInit = true;
     }
     else
     {
@@ -1573,11 +1578,31 @@ void ChaperoneTabController::updateOverlay()
 {
     if ( m_trackingUniverse != vr::TrackingUniverseRawAndUncalibrated )
     {
+        vr::HmdMatrix34_t rotMatrix;
+        utils::initRotationMatrix(
+            rotMatrix,
+            1,
+            ( static_cast<float>(
+                parent->m_moveCenterTabController.m_universeYaw ) ) );
+        // Rotates orientation At playspace center
+        vr::HmdMatrix34_t finalmatrix;
+        utils::matMul33( finalmatrix,
+                         rotMatrix,
+                         parent->m_moveCenterTabController.m_offsetmatrix );
+
+        finalmatrix.m[0][3]
+            = parent->m_moveCenterTabController.m_offsetmatrix.m[0][3];
+        finalmatrix.m[1][3]
+            = parent->m_moveCenterTabController.m_offsetmatrix.m[1][3];
+        finalmatrix.m[2][3]
+            = parent->m_moveCenterTabController.m_offsetmatrix.m[2][3];
+
         ovr_overlay_wrapper::setOverlayTransformAbsolute(
             m_chaperoneFloorOverlayHandle,
             m_trackingUniverse,
-            &( parent->m_moveCenterTabController.m_centerMarkerMatrix ),
+            &( finalmatrix ),
             "" );
+
         checkOverlayRotation();
     }
 }

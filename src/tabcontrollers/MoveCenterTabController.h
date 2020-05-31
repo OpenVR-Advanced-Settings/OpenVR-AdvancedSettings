@@ -206,10 +206,6 @@ private:
 
     unsigned int m_moveCenterSettingsUpdateCounter = 83;
 
-    // For Center Marker
-    float m_universeYaw = 0.0;
-    vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
-
     double m_velocity[3] = { 0.0, 0.0, 0.0 };
     std::chrono::steady_clock::time_point m_lastGravityUpdateTimePoint;
     std::chrono::steady_clock::time_point m_lastDragUpdateTimePoint;
@@ -292,7 +288,10 @@ public:
     Q_INVOKABLE QString getOffsetProfileName( unsigned index );
 
     // Public Matrix Used By ChaperoneTabController To Set appropriate turning~!
-    bool m_centerMarkerUpdate = false;
+    // For Center Marker
+    float m_universeYaw = 0.0;
+    vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
+    bool m_centerMarkerUpdate = true;
     vr::HmdMatrix34_t m_centerMarkerMatrix = utils::k_forwardUpMatrix;
 
     // actions:

@@ -1007,6 +1007,7 @@ void MoveCenterTabController::reset()
 
     // For Center Marker
     m_offsetmatrix = utils::k_forwardUpMatrix;
+    m_centerMarkerMatrix = utils::k_forwardUpMatrix;
     m_universeYaw = 0.0;
 
     m_lastMoveHand = vr::TrackedControllerRole_Invalid;
@@ -2729,8 +2730,8 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
 
             // Rotation Needed To Orient Properly
             m_universeYaw = static_cast<float>(
-                offsetUniverseCenterYaw
-                + ( m_rotation * k_centidegreesToRadians ) );
+                -( ( m_rotation * k_centidegreesToRadians )
+                   + offsetUniverseCenterYaw ) );
             // Set Unrotated Coordinates
             float universePlayCenterTempCoords[3] = { 0.0f, 0.0f, 0.0f };
             universePlayCenterTempCoords[0]
@@ -2746,27 +2747,32 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             rotateFloatCoordinates(
                 universePlayCenterTempCoords,
                 static_cast<float>( offsetUniverseCenterYaw ) );
+            m_offsetmatrix.m[0][3] = universePlayCenterTempCoords[0];
+            m_offsetmatrix.m[1][3] = universePlayCenterTempCoords[1];
+            m_offsetmatrix.m[2][3] = universePlayCenterTempCoords[2];
             // Set Up orientation properly away from raw center
             utils::matMul33( m_offsetmatrix,
                              offsetUniverseCenter,
                              utils::k_forwardUpMatrix );
             // sets up matrix to rotate around y axis by amount Turned (Negative
             // to cancel our turning)
-            vr::HmdMatrix34_t rotMatrix;
-            utils::initRotationMatrix(
-                rotMatrix,
-                1,
-                -( static_cast<float>(
-                    offsetUniverseCenterYaw
-                    + ( m_rotation * k_centidegreesToRadians ) ) ) );
+            /* vr::HmdMatrix34_t rotMatrix;
+             utils::initRotationMatrix(
+                 rotMatrix,
+                 1,
+                 -( static_cast<float>(
+                     offsetUniverseCenterYaw
+                     + ( m_rotation * k_centidegreesToRadians ) ) ) );
+ */
             // Rotates orientation At playspace center
-            utils::matMul33( m_centerMarkerMatrix, rotMatrix, m_offsetmatrix );
+            // utils::matMul33( m_centerMarkerMatrix, rotMatrix, m_offsetmatrix
+            // );
 
-            m_centerMarkerMatrix.m[0][3] = universePlayCenterTempCoords[0];
-            m_centerMarkerMatrix.m[1][3] = universePlayCenterTempCoords[1];
-            m_centerMarkerMatrix.m[2][3] = universePlayCenterTempCoords[2];
+            // m_centerMarkerMatrix.m[0][3] = universePlayCenterTempCoords[0];
+            // m_centerMarkerMatrix.m[1][3] = universePlayCenterTempCoords[1];
+            // m_centerMarkerMatrix.m[2][3] = universePlayCenterTempCoords[2];
 
-            parent->m_chaperoneTabController.updateOverlay();
+            // parent->m_chaperoneTabController.updateOverlay();
         }
 
         // update chaperone working set preview (this does not commit)
