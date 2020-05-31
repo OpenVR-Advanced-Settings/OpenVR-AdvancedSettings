@@ -289,10 +289,8 @@ public:
 
     // Public Matrix Used By ChaperoneTabController To Set appropriate turning~!
     // For Center Marker
-    float m_universeYaw = 0.0;
     vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
-    bool m_centerMarkerUpdate = true;
-    vr::HmdMatrix34_t m_centerMarkerMatrix = utils::k_forwardUpMatrix;
+    bool m_centerMarkerUpdate = false;
 
     // actions:
     void leftHandSpaceDrag( bool leftHandDragActive );

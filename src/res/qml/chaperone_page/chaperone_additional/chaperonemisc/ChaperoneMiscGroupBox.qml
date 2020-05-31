@@ -64,7 +64,6 @@ GroupBox {
     }
 
     Component.onCompleted: {
-            ChaperoneTabController.chapQTIsInit()
             chaperoneFloorToggleBtn.checked = ChaperoneTabController.chaperoneFloorToggle
             legacyCenterMarkerbtn.checked = ChaperoneTabController.centerMarker
     }

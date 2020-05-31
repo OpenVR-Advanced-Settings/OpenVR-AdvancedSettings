@@ -27,12 +27,17 @@ void ChaperoneTabController::initStage1()
 void ChaperoneTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
-    // Cludge Fix for now, but its not getting called for some reason w/ QML
-    // Additionally this will ensure that m_centerMarkerUpdate is properly
-    // synched
-    // setCenterMarkerNew( centerMarkerNew() );
+
     updateChaperoneSettings(); // force one update of OVR saved settings to make
                                // sure our m_ variables are correct
+    // Force call Update Overlay Once, so Default state is in correct location
+    if ( m_overlayIsInit )
+    {
+        vr::HmdMatrix34_t temp = { { { 1.0f, 0.0f, 0.0f, 0.0f },
+                                     { 0.0f, 0.0f, 1.0f, 0.0f },
+                                     { 0.0f, -1.0f, 0.0f, 0.0f } } };
+        updateOverlay( &( temp ) );
+    }
 }
 
 void ChaperoneTabController::dashboardLoopTick()
@@ -239,10 +244,7 @@ void ChaperoneTabController::eventLoopTick(
     vr::TrackedDevicePose_t* devicePoses )
 {
     m_trackingUniverse = universe;
-    if ( centerMarkerNew() && m_overlayIsInit && m_QTChapInit )
-    {
-        updateOverlay();
-    }
+
     if ( devicePoses )
     {
         m_isHMDActive = false;
@@ -839,12 +841,12 @@ void ChaperoneTabController::setCenterMarkerNew( bool value, bool notify )
     if ( value )
     {
         ovr_overlay_wrapper::showOverlay( m_chaperoneFloorOverlayHandle );
-        // parent->m_moveCenterTabController.m_centerMarkerUpdate = true;
+        m_overlayNeedsUpdate = true;
     }
     else
     {
         ovr_overlay_wrapper::hideOverlay( m_chaperoneFloorOverlayHandle );
-        // parent->m_moveCenterTabController.m_centerMarkerUpdate = false;
+        m_overlayNeedsUpdate = false;
     }
 
     if ( notify )
@@ -1574,33 +1576,18 @@ void ChaperoneTabController::initFloorOverlay()
     }
 }
 
-void ChaperoneTabController::updateOverlay()
+// This Function Is called And Handled In MoveCenterTabController to reduce
+// un-necessary overhead, as well as consistancy in movement operations
+// It will be updated Every frame that movement is updated
+void ChaperoneTabController::updateOverlay(
+    vr::HmdMatrix34_t* centerPlaySpaceMatrix )
 {
     if ( m_trackingUniverse != vr::TrackingUniverseRawAndUncalibrated )
     {
-        vr::HmdMatrix34_t rotMatrix;
-        utils::initRotationMatrix(
-            rotMatrix,
-            1,
-            ( static_cast<float>(
-                parent->m_moveCenterTabController.m_universeYaw ) ) );
-        // Rotates orientation At playspace center
-        vr::HmdMatrix34_t finalmatrix;
-        utils::matMul33( finalmatrix,
-                         rotMatrix,
-                         parent->m_moveCenterTabController.m_offsetmatrix );
-
-        finalmatrix.m[0][3]
-            = parent->m_moveCenterTabController.m_offsetmatrix.m[0][3];
-        finalmatrix.m[1][3]
-            = parent->m_moveCenterTabController.m_offsetmatrix.m[1][3];
-        finalmatrix.m[2][3]
-            = parent->m_moveCenterTabController.m_offsetmatrix.m[2][3];
-
         ovr_overlay_wrapper::setOverlayTransformAbsolute(
             m_chaperoneFloorOverlayHandle,
             m_trackingUniverse,
-            &( finalmatrix ),
+            ( centerPlaySpaceMatrix ),
             "" );
 
         checkOverlayRotation();
@@ -1675,11 +1662,6 @@ void ChaperoneTabController::checkOverlayRotation()
     {
         m_rotationUpdateCounter++;
     }
-}
-
-void ChaperoneTabController::chapQTIsInit()
-{
-    m_QTChapInit = true;
 }
 
 void ChaperoneTabController::setProxState( bool value )
