@@ -510,9 +510,11 @@ Full build instructions can be found [here](docs/building_for_linux.md).
 
 # Common Issues:
 
+
 - **Issue:** Upon clicking ADV-Settings icon no page shows up.
-  - **Cause:** related to multiple GPU systems (and specifically nvidia), and ALVR
-  - **Solution:** go to Nvidia Control Panel -> manage 3D settings -> add Advanced Settings, and force the vr gpu for it.
+  - **Cause:** related to multiple GPU systems Displaying OpenGL on low power GPU first (IGPU's primarily) [some programs such as alvr may also cause this issue] 
+  - **Solution for Nvidia GPU's:** go to Nvidia Control Panel -> manage 3D settings -> Program Settings -> add Advanced Settings, and change `OpenGL Rendering GPU` to the GPU your VR is connected to.
+  - **Solution for Windows (1803+):** go to Settings -> System -> Display -> Select `Classic App` and Browse for `AdvancedSettings.exe` -> Click Options -> Select High Performance
 
 - **Issue:** Snap back when using motion controls with WMR headset
   - **Cause:** WMR boundary off, or set up for standing only.
