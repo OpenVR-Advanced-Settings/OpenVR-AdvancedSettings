@@ -378,7 +378,7 @@ private:
     std::string m_floorMarkerFN = "/res/img/chaperone/centermark.png";
     void initCenterMarkerOverlay();
     void updateCenterMarkerOverlayColor();
-    void checkOverlayRotation();
+    void checkCenterMarkerOverlayRotationCount();
     int m_rotationUpdateCounter = 0;
     int m_rotationCurrent = 0;
     bool m_centerMarkerOverlayIsInit = false;

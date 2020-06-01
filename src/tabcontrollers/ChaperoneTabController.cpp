@@ -1590,11 +1590,11 @@ void ChaperoneTabController::updateCenterMarkerOverlay(
             ( centerPlaySpaceMatrix ),
             "" );
 
-        checkOverlayRotation();
+        checkCenterMarkerOverlayRotationCount();
     }
 }
 
-void ChaperoneTabController::checkOverlayRotation()
+void ChaperoneTabController::checkCenterMarkerOverlayRotationCount()
 {
     // can only turn so quickly soooo roughly .5 secondish update should be fine
     if ( m_rotationUpdateCounter > 45 )
