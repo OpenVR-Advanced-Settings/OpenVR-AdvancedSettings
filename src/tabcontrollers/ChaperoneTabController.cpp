@@ -20,7 +20,7 @@ void ChaperoneTabController::initStage1()
     reloadChaperoneProfiles();
     m_chaperoneSettingsUpdateCounter
         = utils::adjustUpdateRate( k_chaperoneSettingsUpdateCounter );
-    initFloorOverlay();
+    initCenterMarkerOverlay();
     eventLoopTick( m_trackingUniverse, nullptr );
 }
 
@@ -31,12 +31,12 @@ void ChaperoneTabController::initStage2( OverlayController* var_parent )
     updateChaperoneSettings(); // force one update of OVR saved settings to make
                                // sure our m_ variables are correct
     // Force call Update Overlay Once, so Default state is in correct location
-    if ( m_overlayIsInit )
+    if ( m_centerMarkerOverlayIsInit )
     {
         vr::HmdMatrix34_t temp = { { { 1.0f, 0.0f, 0.0f, 0.0f },
                                      { 0.0f, 0.0f, 1.0f, 0.0f },
                                      { 0.0f, -1.0f, 0.0f, 0.0f } } };
-        updateOverlay( &( temp ) );
+        updateCenterMarkerOverlay( &( temp ) );
     }
 }
 
@@ -740,7 +740,7 @@ void ChaperoneTabController::setChaperoneColorR( int value, bool notify )
             vr::k_pch_CollisionBounds_ColorGammaR_Int32,
             m_chaperoneColorR,
             "" );
-        updateOverlayColor();
+        updateCenterMarkerOverlayColor();
         if ( notify )
         {
             emit chaperoneColorRChanged( value );
@@ -768,7 +768,7 @@ void ChaperoneTabController::setChaperoneColorG( int value, bool notify )
             vr::k_pch_CollisionBounds_ColorGammaG_Int32,
             m_chaperoneColorG,
             "" );
-        updateOverlayColor();
+        updateCenterMarkerOverlayColor();
         if ( notify )
         {
             emit chaperoneColorGChanged( value );
@@ -796,14 +796,14 @@ void ChaperoneTabController::setChaperoneColorB( int value, bool notify )
             vr::k_pch_CollisionBounds_ColorGammaB_Int32,
             m_chaperoneColorB,
             "" );
-        updateOverlayColor();
+        updateCenterMarkerOverlayColor();
         if ( notify )
         {
             emit chaperoneColorBChanged( value );
         }
     }
 }
-void ChaperoneTabController::updateOverlayColor()
+void ChaperoneTabController::updateCenterMarkerOverlayColor()
 {
     float chapColorR = static_cast<float>( m_chaperoneColorR ) / 255.0f;
     float chapColorG = static_cast<float>( m_chaperoneColorG ) / 255.0f;
@@ -841,12 +841,12 @@ void ChaperoneTabController::setCenterMarkerNew( bool value, bool notify )
     if ( value )
     {
         ovr_overlay_wrapper::showOverlay( m_chaperoneFloorOverlayHandle );
-        m_overlayNeedsUpdate = true;
+        m_centerMarkerOverlayNeedsUpdate = true;
     }
     else
     {
         ovr_overlay_wrapper::hideOverlay( m_chaperoneFloorOverlayHandle );
-        m_overlayNeedsUpdate = false;
+        m_centerMarkerOverlayNeedsUpdate = false;
     }
 
     if ( notify )
@@ -1549,7 +1549,7 @@ void ChaperoneTabController::addRightHapticClick( bool rightHapticClickPressed )
     }
 }
 
-void ChaperoneTabController::initFloorOverlay()
+void ChaperoneTabController::initCenterMarkerOverlay()
 {
     std::string overlayFloorMarkerKey
         = std::string( application_strings::applicationKey ) + ".floormarker";
@@ -1564,10 +1564,10 @@ void ChaperoneTabController::initFloorOverlay()
             m_chaperoneFloorOverlayHandle, m_floorMarkerFN, "" );
         ovr_overlay_wrapper::setOverlayWidthInMeters(
             m_chaperoneFloorOverlayHandle, 0.5f );
-        updateOverlayColor();
+        updateCenterMarkerOverlayColor();
         ovr_overlay_wrapper::setOverlayAlpha(
             m_chaperoneFloorOverlayHandle, m_visibility, "" );
-        m_overlayIsInit = true;
+        m_centerMarkerOverlayIsInit = true;
     }
     else
     {
@@ -1579,7 +1579,7 @@ void ChaperoneTabController::initFloorOverlay()
 // This Function Is called And Handled In MoveCenterTabController to reduce
 // un-necessary overhead, as well as consistancy in movement operations
 // It will be updated Every frame that movement is updated
-void ChaperoneTabController::updateOverlay(
+void ChaperoneTabController::updateCenterMarkerOverlay(
     vr::HmdMatrix34_t* centerPlaySpaceMatrix )
 {
     if ( m_trackingUniverse != vr::TrackingUniverseRawAndUncalibrated )

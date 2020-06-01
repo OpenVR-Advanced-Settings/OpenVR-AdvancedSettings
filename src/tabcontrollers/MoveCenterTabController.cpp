@@ -1006,10 +1006,11 @@ void MoveCenterTabController::reset()
     m_lastControllerPosition[2] = 0.0f;
 
     // For Center Marker
-    if ( parent->m_chaperoneTabController.m_overlayNeedsUpdate )
+    if ( parent->m_chaperoneTabController.m_centerMarkerOverlayNeedsUpdate )
     {
         m_offsetmatrix = utils::k_forwardUpMatrix;
-        parent->m_chaperoneTabController.updateOverlay( &m_offsetmatrix );
+        parent->m_chaperoneTabController.updateCenterMarkerOverlay(
+            &m_offsetmatrix );
     }
     m_lastMoveHand = vr::TrackedControllerRole_Invalid;
     m_lastRotateHand = vr::TrackedControllerRole_Invalid;
@@ -2725,7 +2726,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         }
 
         // Center Marker for playspace.
-        if ( parent->m_chaperoneTabController.m_overlayNeedsUpdate )
+        if ( parent->m_chaperoneTabController.m_centerMarkerOverlayNeedsUpdate )
         {
             // Set Unrotated Coordinates
             float universePlayCenterTempCoords[3] = { 0.0f, 0.0f, 0.0f };
@@ -2761,7 +2762,8 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             finalmatrix.m[1][3] = universePlayCenterTempCoords[1];
             finalmatrix.m[2][3] = universePlayCenterTempCoords[2];
 
-            parent->m_chaperoneTabController.updateOverlay( &finalmatrix );
+            parent->m_chaperoneTabController.updateCenterMarkerOverlay(
+                &finalmatrix );
         }
 
         // update chaperone working set preview (this does not commit)

@@ -149,11 +149,11 @@ void resetAllSettings()
 {
     // these should cover all sections we touch and should be added to if we
     // touch more or they change
-    removeSection( vr::k_pch_SteamVR_Section, "While Reseting All" );
-    removeSection( vr::k_pch_Notifications_Section, "While Reseting All" );
-    removeSection( vr::k_pch_CollisionBounds_Section, "While Reseting All" );
-    removeSection( vr::k_pch_Camera_Section, "While Reseting All" );
-    removeSection( vr::k_pch_audio_Section, "While Reseting All" );
+    removeSection( vr::k_pch_SteamVR_Section, "While Resetting All" );
+    removeSection( vr::k_pch_Notifications_Section, "While Resetting All" );
+    removeSection( vr::k_pch_CollisionBounds_Section, "While Resetting All" );
+    removeSection( vr::k_pch_Camera_Section, "While Resetting All" );
+    removeSection( vr::k_pch_audio_Section, "While Resetting All" );
 }
 
 } // namespace ovr_settings_wrapper
