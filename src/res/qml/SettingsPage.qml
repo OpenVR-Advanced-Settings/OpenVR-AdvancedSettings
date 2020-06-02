@@ -75,7 +75,7 @@ MyStackViewPage {
             }
             MyToggleButton {
                 id: nativeChaperoneToggleButton
-                text: "Force Use Steam's Chaperone (experimental + requires restart of SteamVR)"
+                text: "Force Use SteamVR Chaperone (experimental + SteamVR restart required)"
                 onCheckedChanged: {
                     SettingsTabController.setNativeChaperoneToggle(this.checked, true)
                 }
