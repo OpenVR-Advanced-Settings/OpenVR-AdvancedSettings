@@ -1,5 +1,6 @@
 #include "utils/setup.h"
 #include "settings/settings.h"
+#include "openvr/ovr_settings_wrapper.h"
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -108,6 +109,11 @@ int main( int argc, char* argv[] )
                 static_cast<int>(
                     qobject_cast<QQuickItem*>( quickObj )->height() ) );
             m_pWindow->show();
+        }
+        if ( commandLineArgs.resetSettings )
+        {
+            // resets all settings if called
+            ovr_settings_wrapper::resetAllSettings();
         }
 
         return mainEventLoop.exec();

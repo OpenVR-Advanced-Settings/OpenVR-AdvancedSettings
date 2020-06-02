@@ -10,7 +10,7 @@ GroupBox {
 
     label: MyText {
         leftPadding: 10
-        text: "Redirected Walking"
+        text: "Vestibular Motion (for continuous redirected walking)"
         bottomPadding: -10
     }
     background: Rectangle {

@@ -10,7 +10,7 @@ GroupBox {
 
     label: MyText {
         leftPadding: 10
-        text: "Auto-turn (aka infinite walk)"
+        text: "Auto-Turn (for discrete redirected walking)"
         bottomPadding: -10
     }
     background: Rectangle {

@@ -556,6 +556,8 @@ MyStackViewPage {
             }
             chaperoneHeightText.text = h
             chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarkerNew
+            //We Need a Set call on init in order to display the overlay!
+            ChaperoneTabController.setCenterMarkerNew(chaperoneCenterMarkerToggle.checked);
             chaperonePlaySpaceToggle.checked = ChaperoneTabController.playSpaceMarker
             chaperoneForceBoundsToggle.checked = ChaperoneTabController.forceBounds
             chaperoneDisableChaperone.checked = ChaperoneTabController.disableChaperone

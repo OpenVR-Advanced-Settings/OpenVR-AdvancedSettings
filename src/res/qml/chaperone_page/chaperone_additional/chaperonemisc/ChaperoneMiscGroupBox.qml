@@ -74,7 +74,7 @@ GroupBox {
             chaperoneFloorToggleBtn.checked = ChaperoneTabController.chaperoneFloorToggle
         }
         onCenterMarkerChanged:{
-            legacyCenterMarkerbtn.checked = ChaperoneTabController.centermarker
+            legacyCenterMarkerbtn.checked = ChaperoneTabController.centerMarker
         }
     }
 }

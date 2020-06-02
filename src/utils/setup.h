@@ -26,6 +26,7 @@ struct CommandLineOptions
     const bool forceNoManifest = false;
     const bool forceInstallManifest = false;
     const bool forceRemoveManifest = false;
+    const bool resetSettings = false;
 };
 
 // Manages the programs control flow and main settings.
@@ -87,6 +88,9 @@ constexpr auto k_forceInstallManifestDescription
 constexpr auto k_forceRemoveManifest = "force-remove-manifest";
 constexpr auto k_forceRemoveManifestDescription
     = "Forces removing the applications manifest. Application will exit early.";
+constexpr auto k_resetSettings = "reset-steamvr-settings";
+constexpr auto k_resetSettingsDescription
+    = "Resets all SteamVR values that can be modified in OVRAS to defaults.";
 
 CommandLineOptions returnCommandLineParser( const MyQApplication& application );
 

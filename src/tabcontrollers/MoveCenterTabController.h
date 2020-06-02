@@ -5,6 +5,7 @@
 #include <openvr.h>
 #include <chrono>
 #include <qmath.h>
+#include "../utils/Matrix.h"
 #include "../utils/FrameRateUtils.h"
 #include "../settings/settings_object.h"
 
@@ -204,6 +205,9 @@ private:
     unsigned m_turnComfortFrameSkipCounter = 0;
 
     unsigned int m_moveCenterSettingsUpdateCounter = 83;
+
+    // Matrix used For Center Marker
+    vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
 
     double m_velocity[3] = { 0.0, 0.0, 0.0 };
     std::chrono::steady_clock::time_point m_lastGravityUpdateTimePoint;
