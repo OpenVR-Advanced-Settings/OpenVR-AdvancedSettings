@@ -204,6 +204,16 @@
       "name": "/actions/misc/in/KeyboardThree",
       "requirement": "optional",
       "type": "boolean"
+    },
+	    {
+      "name": "/actions/misc/in/KeyboardPressOne",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+	    {
+      "name": "/actions/misc/in/KeyboardPressTwo",
+      "requirement": "optional",
+      "type": "boolean"
     }
 	
   ],
