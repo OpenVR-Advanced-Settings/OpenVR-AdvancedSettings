@@ -10,7 +10,7 @@ GroupBox {
 
     label: MyText {
         leftPadding: 10
-        text: "Space Turn"
+        text: "Space Turn (for manual redirected walking)"
         bottomPadding: -10
     }
     background: Rectangle {

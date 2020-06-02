@@ -63,4 +63,6 @@ SettingsError removeKeyInSection( std::string section,
 SettingsError handleErrors( std::string settingsKey,
                             vr::EVRSettingsError,
                             std::string customErrorMsg );
+
+void resetAllSettings();
 } // namespace ovr_settings_wrapper

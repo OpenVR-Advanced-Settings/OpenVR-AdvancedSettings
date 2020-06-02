@@ -376,13 +376,12 @@ private:
     std::vector<ChaperoneProfile> chaperoneProfiles;
 
     std::string m_floorMarkerFN = "/res/img/chaperone/centermark.png";
-    void initFloorOverlay();
-    void updateOverlay();
-    void updateOverlayColor();
-    void checkOverlayRotation();
+    void initCenterMarkerOverlay();
+    void updateCenterMarkerOverlayColor();
+    void checkCenterMarkerOverlayRotationCount();
     int m_rotationUpdateCounter = 0;
     int m_rotationCurrent = 0;
-    bool m_overlayNeedsUpdate = false;
+    bool m_centerMarkerOverlayIsInit = false;
 
     vr::ETrackingUniverseOrigin m_trackingUniverse
         = vr::TrackingUniverseRawAndUncalibrated;
@@ -398,6 +397,8 @@ public:
     void dashboardLoopTick();
     void handleChaperoneWarnings( float distance );
 
+    void updateCenterMarkerOverlay( vr::HmdMatrix34_t* centerPlaySpaceMatrix );
+
     float boundsVisibility() const;
     float fadeDistance();
     float height();
@@ -412,6 +413,7 @@ public:
     int chaperoneColorA() const;
 
     bool centerMarkerNew();
+    bool m_centerMarkerOverlayNeedsUpdate = false;
 
     bool chaperoneFloorToggle();
 
