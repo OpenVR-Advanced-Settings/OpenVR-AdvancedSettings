@@ -698,6 +698,14 @@ void OverlayController::processKeyboardBindings()
 
         sendStringAsInput( commands );
     }
+    if ( m_actions.keyboardPressOne() )
+    {
+        // TODO
+    }
+    if ( m_actions.keyboardPressTwo() )
+    {
+        // TODO
+    }
 }
 void OverlayController::processRotationBindings()
 {
