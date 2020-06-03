@@ -289,8 +289,8 @@
         "/actions/misc/in/KeyboardOne" : "Keyboard Shortcut One",
         "/actions/misc/in/KeyboardTwo" : "Keyboard Shortcut Two",
         "/actions/misc/in/KeyboardThree" : "Keyboard Shortcut Three",
-		"/actions/misc/in/KeyboardPressOne": "Keyboard Press One",
-		"/actions/misc/in/KeyboardPressTwo": "Keyboard Press Two"
+        "/actions/misc/in/KeyboardPressOne": "Keyboard Press One",
+        "/actions/misc/in/KeyboardPressTwo": "Keyboard Press Two"
     }
   ]
 }
