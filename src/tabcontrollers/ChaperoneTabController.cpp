@@ -245,6 +245,13 @@ void ChaperoneTabController::eventLoopTick(
 {
     m_trackingUniverse = universe;
 
+    if ( centerMarker() )
+    {
+        // This Runs Independently of Updates to orientation and position of
+        // center Marker This also only runs Every ~.5 seconds
+        checkCenterMarkerOverlayRotationCount();
+    }
+
     if ( devicePoses )
     {
         m_isHMDActive = false;
@@ -1589,8 +1596,6 @@ void ChaperoneTabController::updateCenterMarkerOverlay(
             m_trackingUniverse,
             ( centerPlaySpaceMatrix ),
             "" );
-
-        checkCenterMarkerOverlayRotationCount();
     }
 }
 
@@ -1651,7 +1656,7 @@ void ChaperoneTabController::checkCenterMarkerOverlayRotationCount()
             }
         }
 
-        if ( rotationNext != m_rotationCurrent )
+        if ( rotationNext != m_rotationCurrent && m_centerMarkerOverlayIsInit )
         {
             m_rotationCurrent = rotationNext;
             ovr_overlay_wrapper::setOverlayFromFile(
