@@ -78,14 +78,9 @@ inline void sendTokensAsInput( const std::vector<Token> tokens )
 inline void sendTokenPress( const Token token, KeyStatus event = KeyStatus::Up )
 {
     initOsSystems();
-    if ( isLiteral( token ) )
-    {
-        sendKeyPress( token, event );
-    }
-    else
-    {
-        LOG( ERROR ) << "Token for KeyPress Is Invalid Skipping Event";
-    }
+
+    sendKeyPress( token, event );
+
     shutdownOsSystems();
 }
 
