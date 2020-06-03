@@ -245,7 +245,7 @@ void ChaperoneTabController::eventLoopTick(
 {
     m_trackingUniverse = universe;
 
-    if ( centerMarker() )
+    if ( centerMarkerNew() )
     {
         // This Runs Independently of Updates to orientation and position of
         // center Marker This also only runs Every ~.5 seconds
