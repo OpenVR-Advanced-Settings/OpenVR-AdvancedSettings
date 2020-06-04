@@ -698,6 +698,37 @@ void OverlayController::processKeyboardBindings()
 
         sendStringAsInput( commands );
     }
+    // Press Key One
+    if ( m_actions.keyboardPressOne() && !m_keyPressOneState )
+    {
+        const auto commands = settings::getSetting(
+            settings::StringSetting::KEYBOARDSHORTCUT_keyboardPressOne );
+        sendFirstCharAsInput( commands, KeyStatus::Down );
+        m_keyPressOneState = true;
+    }
+    if ( m_keyPressOneState && !m_actions.keyboardPressOne() )
+    {
+        const auto commands = settings::getSetting(
+            settings::StringSetting::KEYBOARDSHORTCUT_keyboardPressOne );
+        sendFirstCharAsInput( commands, KeyStatus::Up );
+        m_keyPressOneState = false;
+    }
+
+    // Press Key Two
+    if ( m_actions.keyboardPressTwo() && !m_keyPressTwoState )
+    {
+        const auto commands = settings::getSetting(
+            settings::StringSetting::KEYBOARDSHORTCUT_keyboardPressTwo );
+        sendFirstCharAsInput( commands, KeyStatus::Down );
+        m_keyPressTwoState = true;
+    }
+    if ( m_keyPressTwoState && !m_actions.keyboardPressTwo() )
+    {
+        const auto commands = settings::getSetting(
+            settings::StringSetting::KEYBOARDSHORTCUT_keyboardPressTwo );
+        sendFirstCharAsInput( commands, KeyStatus::Up );
+        m_keyPressTwoState = false;
+    }
 }
 void OverlayController::processRotationBindings()
 {

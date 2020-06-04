@@ -138,6 +138,8 @@ SteamIVRInput::SteamIVRInput()
       m_keyboardOne( action_keys::keyboardOne ),
       m_keyboardTwo( action_keys::keyboardTwo ),
       m_keyboardThree( action_keys::keyboardThree ),
+      m_keyboardPressOne( action_keys::keyboardPressOne ),
+      m_keyboardPressTwo( action_keys::keyboardPressTwo ),
       m_chaperoneToggle( action_keys::chaperoneToggle ),
       m_pushToTalk( action_keys::pushToTalk ),
       m_leftHaptic( action_keys::hapticsLeft ),
@@ -349,6 +351,15 @@ bool SteamIVRInput::keyboardThree()
 {
     return isDigitalActionActivatedOnce( m_keyboardThree );
 }
+bool SteamIVRInput::keyboardPressOne()
+{
+    return isDigitalActionActivatedConstant( m_keyboardPressOne );
+}
+bool SteamIVRInput::keyboardPressTwo()
+{
+    return isDigitalActionActivatedConstant( m_keyboardPressTwo );
+}
+
 /*!
 Returns the action handle of the Left Haptic Action
 */

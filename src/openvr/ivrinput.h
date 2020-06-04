@@ -55,6 +55,8 @@ namespace action_keys
     constexpr auto keyboardOne = "/actions/misc/in/KeyboardOne";
     constexpr auto keyboardTwo = "/actions/misc/in/KeyboardTwo";
     constexpr auto keyboardThree = "/actions/misc/in/KeyboardThree";
+    constexpr auto keyboardPressOne = "/actions/misc/in/KeyboardPressOne";
+    constexpr auto keyboardPressTwo = "/actions/misc/in/KeyboardPressTwo";
 
     constexpr auto hapticsLeft = "/actions/haptic/out/HapticsLeft";
     constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
@@ -158,6 +160,8 @@ public:
     bool keyboardOne();
     bool keyboardTwo();
     bool keyboardThree();
+    bool keyboardPressOne();
+    bool keyboardPressTwo();
 
     vr::VRActionHandle_t leftHapticActionHandle();
     vr::VRActionHandle_t rightHapticActionHandle();
@@ -225,6 +229,8 @@ private:
     DigitalAction m_keyboardOne;
     DigitalAction m_keyboardTwo;
     DigitalAction m_keyboardThree;
+    DigitalAction m_keyboardPressOne;
+    DigitalAction m_keyboardPressTwo;
 
     // Misc Bindings
     DigitalAction m_chaperoneToggle;

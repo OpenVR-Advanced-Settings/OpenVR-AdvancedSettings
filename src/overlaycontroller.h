@@ -179,6 +179,9 @@ private:
     void processKeyboardBindings();
     void processRotationBindings();
 
+    bool m_keyPressOneState = false;
+    bool m_keyPressTwoState = false;
+
 public:
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
     virtual ~OverlayController();

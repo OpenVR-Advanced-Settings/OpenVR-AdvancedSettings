@@ -75,6 +75,26 @@ inline void sendTokensAsInput( const std::vector<Token> tokens )
     shutdownOsSystems();
 }
 
+inline void sendTokenPress( const Token token, KeyStatus event = KeyStatus::Up )
+{
+    initOsSystems();
+
+    sendKeyPress( token, event );
+
+    shutdownOsSystems();
+}
+
+inline void sendFirstCharAsInput( const std::string inputstring,
+                                  KeyStatus event )
+{
+    const auto tokens = ParseKeyboardInputsToTokens( inputstring );
+    const auto inputs = removeIncorrectTokens( tokens );
+    if ( !tokens.empty() )
+    {
+        sendTokenPress( inputs.front(), event );
+    }
+}
+
 inline void sendStringAsInput( const std::string input )
 {
     const auto tokens = ParseKeyboardInputsToTokens( input );
