@@ -17,6 +17,7 @@ void SettingsTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
     setNativeChaperoneToggle( nativeChaperoneToggle() );
+    setOculusSdkToggle( oculusSdkToggle() );
 }
 
 void SettingsTabController::dashboardLoopTick()
@@ -52,6 +53,20 @@ bool SettingsTabController::nativeChaperoneToggle()
     return m_nativeChaperoneToggle;
 }
 
+bool SettingsTabController::oculusSdkToggle()
+{
+    std::pair<ovr_settings_wrapper::SettingsError, bool> p
+        = ovr_settings_wrapper::getFloat(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_BlockOculusSDKOnAllLaunches_Bool,
+            "" );
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        m_oculusSdkToggle = !( p.second );
+    }
+    return m_oculusSdkToggle;
+}
+
 void SettingsTabController::setNativeChaperoneToggle( bool value, bool notify )
 {
     if ( m_nativeChaperoneToggle != value )
@@ -66,6 +81,24 @@ void SettingsTabController::setNativeChaperoneToggle( bool value, bool notify )
         if ( notify )
         {
             emit nativeChaperoneToggleChanged( m_nativeChaperoneToggle );
+        }
+    }
+}
+
+void SettingsTabController::setOculusSdkToggle( bool value, bool notify )
+{
+    if ( m_oculusSdkToggle != value )
+    {
+        m_oculusSdkToggle = ( value );
+        ovr_settings_wrapper::setBool(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_BlockOculusSDKOnAllLaunches_Bool,
+            m_oculusSdkToggle,
+            "" );
+        // On Error Do Nothing
+        if ( notify )
+        {
+            emit oculusSdkToggleChanged( m_oculusSdkToggle );
         }
     }
 }

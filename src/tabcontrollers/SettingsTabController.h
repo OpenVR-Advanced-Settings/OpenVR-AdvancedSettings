@@ -20,6 +20,8 @@ class SettingsTabController : public QObject
     Q_PROPERTY(
         bool nativeChaperoneToggle READ nativeChaperoneToggle WRITE
             setNativeChaperoneToggle NOTIFY nativeChaperoneToggleChanged )
+    Q_PROPERTY( bool oculusSdkToggle READ oculusSdkToggle WRITE
+                    setOculusSdkToggle NOTIFY oculusSdkToggleChanged )
 
 private:
     OverlayController* parent;
@@ -28,6 +30,7 @@ private:
 
     bool m_autoStartEnabled = false;
     bool m_nativeChaperoneToggle = false;
+    bool m_oculusSdkToggle = false;
 
     unsigned int m_settingsTabSettingsUpdateCounter = 157;
 
@@ -39,14 +42,17 @@ public:
 
     bool autoStartEnabled() const;
     bool nativeChaperoneToggle();
+    bool oculusSdkToggle();
 
 public slots:
     void setAutoStartEnabled( bool value, bool notify = true );
     void setNativeChaperoneToggle( bool value, bool notify = true );
+    void setOculusSdkToggle( bool value, bool notify = true );
 
 signals:
     void autoStartEnabledChanged( bool value );
     void nativeChaperoneToggleChanged( bool value );
+    void oculusSdkToggleChanged( bool value );
 };
 
 } // namespace advsettings
