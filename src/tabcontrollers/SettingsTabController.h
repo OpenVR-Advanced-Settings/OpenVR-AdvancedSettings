@@ -30,7 +30,6 @@ private:
 
     bool m_autoStartEnabled = false;
     bool m_nativeChaperoneToggle = false;
-    bool m_oculusSdkToggle = false;
 
     unsigned int m_settingsTabSettingsUpdateCounter = 157;
 
