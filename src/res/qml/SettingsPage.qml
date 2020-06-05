@@ -80,6 +80,13 @@ MyStackViewPage {
                     SettingsTabController.setNativeChaperoneToggle(this.checked, true)
                 }
             }
+            MyToggleButton {
+                id: oculusSdkToggleButton
+                text: "Force Use SteamVR (Disable Oculus API [experimental])"
+                onCheckedChanged: {
+                    SettingsTabController.setOculusSdkToggle(this.checked, true)
+                }
+            }
 
             RowLayout {
                 Layout.fillWidth: true
@@ -238,6 +245,7 @@ MyStackViewPage {
                 debugStateText.text = OverlayController.debugState
                 disableVersionCheckToggle.checked = OverlayController.disableVersionCheck
                 nativeChaperoneToggleButton.checked = SettingsTabController.nativeChaperoneToggle
+                oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
 
                 seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
             }
@@ -249,6 +257,9 @@ MyStackViewPage {
             }
             onNativeChaperoneToggleChanged:{
                 nativeChaperoneToggleButton.checked = SettingsTabController.nativeChaperoneToggle
+            }
+            onOculusSdkToggleChanged:{
+                oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
             }
         }
 

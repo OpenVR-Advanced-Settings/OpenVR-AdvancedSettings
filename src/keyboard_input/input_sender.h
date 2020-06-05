@@ -30,9 +30,13 @@ inline void sendTokensAsInput( const std::vector<Token> tokens )
         if ( isModifier( token ) )
         {
             sendKeyPress( token, KeyStatus::Down );
-            if ( !noKeyUp )
+            if ( noKeyUp )
             {
                 heldInputs.push_back( token );
+            }
+            else
+            {
+                sendKeyPress( token, KeyStatus::Up );
             }
             continue;
         }
@@ -50,7 +54,11 @@ inline void sendTokensAsInput( const std::vector<Token> tokens )
         if ( isLiteral( token ) )
         {
             sendKeyPress( token, KeyStatus::Down );
-            if ( !noKeyUp )
+            if ( noKeyUp )
+            {
+                heldInputs.push_back( token );
+            }
+            else
             {
                 sendKeyPress( token, KeyStatus::Up );
             }
