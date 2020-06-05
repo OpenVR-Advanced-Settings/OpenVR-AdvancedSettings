@@ -2,6 +2,7 @@
 #include "../tabcontrollers/UtilitiesTabController.h"
 #include "vr_alarm.h"
 #include "../openvr/ovr_overlay_wrapper.h"
+#include "../utils/update_rate.h"
 
 namespace alarm_clock
 {
@@ -36,6 +37,12 @@ VrAlarm::VrAlarm()
 
 void VrAlarm::eventLoopTick()
 {
+    if ( updateRate.shouldSubjectNotRun(
+             UpdateSubject::UtilitiesTabController ) )
+    {
+        return;
+    }
+
     if ( alarmEnabled() && m_alarm.isValid() )
     {
         checkAlarmStatus();
