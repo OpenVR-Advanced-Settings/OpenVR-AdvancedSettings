@@ -19,24 +19,13 @@ class OverlayController;
 class UtilitiesTabController : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY( bool alarmEnabled READ alarmEnabled WRITE setAlarmEnabled NOTIFY
-                    alarmEnabledChanged )
-    Q_PROPERTY( bool alarmIsModal READ alarmIsModal WRITE setAlarmIsModal NOTIFY
-                    alarmIsModalChanged )
     Q_PROPERTY(
         bool vrcDebug READ vrcDebug WRITE setVrcDebug NOTIFY vrcDebugChanged )
-    Q_PROPERTY( int alarmTimeHour READ alarmTimeHour WRITE setAlarmTimeHour
-                    NOTIFY alarmTimeHourChanged )
-    Q_PROPERTY( int alarmTimeMinute READ alarmTimeMinute WRITE
-                    setAlarmTimeMinute NOTIFY alarmTimeMinuteChanged )
 
 private:
     OverlayController* m_parent;
 
     unsigned settingsUpdateCounter = 0;
-
-    QTime m_alarmTime;
-    QTime m_alarmLastCheckTime;
 
     vr::VROverlayHandle_t m_batteryOverlayHandles[vr::k_unMaxTrackedDeviceCount]
         = { 0 };
@@ -51,11 +40,7 @@ public:
 
     void eventLoopTick();
 
-    bool alarmEnabled() const;
-    bool alarmIsModal() const;
     bool vrcDebug() const;
-    int alarmTimeHour() const;
-    int alarmTimeMinute() const;
 
 public slots:
     void sendKeyboardInput( QString input );
@@ -93,21 +78,10 @@ public slots:
     Q_INVOKABLE void sendKeyboardTwo();
     Q_INVOKABLE void sendKeyboardThree();
 
-    void setAlarmEnabled( bool enabled, bool notify = true );
-    void setAlarmIsModal( bool modal, bool notify = true );
     void setVrcDebug( bool value, bool notify = true );
-    void setAlarmTimeHour( int hour, bool notify = true );
-    void setAlarmTimeMinute( int min, bool notify = true );
-    void setAlarmTimeToCurrentTime();
-    void modAlarmTimeHour( int value, bool notify = true );
-    void modAlarmTimeMinute( int value, bool notify = true );
 
 signals:
-    void alarmEnabledChanged( bool enabled );
-    void alarmIsModalChanged( bool modal );
     void vrcDebugChanged( bool value );
-    void alarmTimeHourChanged( int hour );
-    void alarmTimeMinuteChanged( int min );
 };
 
 } // namespace advsettings

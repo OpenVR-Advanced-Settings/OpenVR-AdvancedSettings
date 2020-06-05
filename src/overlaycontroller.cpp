@@ -46,7 +46,7 @@ OverlayController::OverlayController( bool desktopMode,
     : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ),
       m_verifiedCustomTickRateMs( verifyCustomTickRate( settings::getSetting(
           settings::IntSetting::APPLICATION_customTickRateMs ) ) ),
-      m_actions()
+      m_actions(), m_alarm()
 {
     // Arbitrarily chosen Max Length of Directory path, should be sufficient for
     // Any set-up
@@ -289,6 +289,12 @@ OverlayController::OverlayController( bool desktopMode,
         "RotationTabController",
         []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_rotationTabController );
+            QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
+            return obj;
+        } );
+    qmlRegisterSingletonType<alarm_clock::VrAlarm>(
+        qmlSingletonImportName, 1, 0, "VrAlarm", []( QQmlEngine*, QJSEngine* ) {
+            QObject* obj = &( objectAddress->m_alarm );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
@@ -1184,6 +1190,8 @@ void OverlayController::mainEventLoop()
     m_chaperoneTabController.eventLoopTick( universe, devicePoses );
     m_audioTabController.eventLoopTick();
     m_rotationTabController.eventLoopTick( devicePoses );
+
+    m_alarm.eventLoopTick();
 
     if ( vr::VROverlay()->IsDashboardVisible() )
     {
