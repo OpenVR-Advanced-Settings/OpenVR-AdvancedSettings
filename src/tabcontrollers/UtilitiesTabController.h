@@ -32,10 +32,7 @@ private:
     int m_batteryState[vr::k_unMaxTrackedDeviceCount];
     bool m_batteryVisible[vr::k_unMaxTrackedDeviceCount];
 
-    unsigned int m_utilitiesSettingsUpdateCounter = 19;
-
 public:
-    void initStage1();
     void initStage2( OverlayController* var_parent );
 
     void eventLoopTick();

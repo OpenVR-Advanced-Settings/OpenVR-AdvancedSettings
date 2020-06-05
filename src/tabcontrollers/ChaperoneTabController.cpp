@@ -4,6 +4,7 @@
 #include "../settings/settings.h"
 #include "../utils/Matrix.h"
 #include "../quaternion/quaternion.h"
+#include "../utils/update_rate.h"
 #include <cmath>
 
 // application namespace
@@ -18,8 +19,6 @@ void ChaperoneTabController::initStage1()
     }
 
     reloadChaperoneProfiles();
-    m_chaperoneSettingsUpdateCounter
-        = utils::adjustUpdateRate( k_chaperoneSettingsUpdateCounter );
     initCenterMarkerOverlay();
     eventLoopTick( m_trackingUniverse, nullptr );
 }
@@ -42,15 +41,13 @@ void ChaperoneTabController::initStage2( OverlayController* var_parent )
 
 void ChaperoneTabController::dashboardLoopTick()
 {
-    if ( settingsUpdateCounter >= m_chaperoneSettingsUpdateCounter )
+    if ( updateRate.shouldSubjectNotRun(
+             UpdateSubject::ChaperoneTabController ) )
     {
-        updateChaperoneSettings();
-        settingsUpdateCounter = 0;
+        return;
     }
-    else
-    {
-        settingsUpdateCounter++;
-    }
+
+    updateChaperoneSettings();
 }
 
 ChaperoneTabController::~ChaperoneTabController()

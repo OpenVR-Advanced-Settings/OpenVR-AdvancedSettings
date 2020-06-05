@@ -44,6 +44,8 @@
 
 #include "alarm_clock/vr_alarm.h"
 
+#include "utils/update_rate.h"
+
 namespace application_strings
 {
 constexpr auto applicationOrganizationName = "AdvancedSettings-Team";
@@ -61,23 +63,6 @@ constexpr const char* applicationVersionString = APPLICATION_VERSION;
 // application namespace
 namespace advsettings
 {
-// These counters set timing for refreshing settings changes in tab ui
-// SettingsUpdateCounter values are set as prime numbers to reduce overlap
-// of simultaneous settings updates.
-// Actual rates of updates are counter * vsync (~11ms)
-// Values chosen based on update speed priority
-// Avoid setting values to the same numbers.
-constexpr int k_audioSettingsUpdateCounter = 89;
-constexpr int k_chaperoneSettingsUpdateCounter = 101;
-constexpr int k_moveCenterSettingsUpdateCounter = 83;
-constexpr int k_settingsTabSettingsUpdateCounter = 157;
-constexpr int k_steamVrSettingsUpdateCounter = 97;
-constexpr int k_utilitiesSettingsUpdateCounter = 19;
-
-// Dashboard Updates These can be faster as they should only be running while
-// Dashboard is active.
-constexpr int k_videoDashboardUpdateCounter = 47;
-
 // k_nonVsyncTickRate determines number of ms we wait to force the next event
 // loop tick when vsync is too late due to dropped frames.
 constexpr int k_nonVsyncTickRate = 20;
