@@ -328,7 +328,6 @@ These version are not stable and this should be considered for advanced users on
   - **Camera for Bounds**: Your camera view will replace your vr view as you near/exit chaperone
   - **Camera for Dashboard**: You will have a small camera view attached to your controller when you have the dashboard active.
   - **Camera for Room View**: You will have a Tron/Shadow version of the room when double-clicking system button.
-- **Desktop Overlay Width**: Adjusts teh width of Steam's desktop overlay.
 - **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
 
 ## - Chaperone Page
@@ -347,6 +346,17 @@ These version are not stable and this should be considered for advanced users on
 - **Rotate Orientation**: Rotates the orientation by a set amount.
 - **Reload from Disk**: Reloads the chaperone bounds geometry from disk.
 
+## - Additional Chaperone Settings Page
+
+<img src="docs/screenshots/ChaperoneAdditionalPage.png" width="600" alt="Chaperone Additional Page">
+
+- **Chaperone Color**: Adjust the R, G, and B color channels of the chaperone.
+- **Chaperone Styles**: Adjust the appearance of the Chaperone.
+- **Misc:**
+  - **Floor Bounds Always On**: Forces floor bounds to always show.
+  - **Legacy Center Marker**: Old Center Marker, does not move with motion or indicate rotation.
+  - **Reset Turn Counter**: Re-zero's turn counter for center marker turn indicators, based on current HMD orientation.
+  
 ## - Chaperone Proximity Warning Settings Page
 
 <img src="docs/screenshots/ChaperoneWarningPage.png" width="600" alt="Chaperone Proximity Warning Settings Page">
@@ -499,7 +509,10 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Enable Motion Features When in Seated Mode:** Uncheck this if Advanced Settings causes strange positioning in a seated application. (Different apps handle seated mode in different ways, some are less compatible with Advanced Settings). Note: if unchecked, all Space Offsets and Motion tab features will be disabled.
 - **Disable Automatic Crash Recovery of Chaperone Config:** This prevents applying of the last good autosaved chaperone profile when starting up after not shutting down properly.
 - **Disable Notification of Newer Version Availability**: This turns off the on start-up check for a new version. (You can refresh this to do a manual check.)
+- **Force Use SteamVR Chaperone**: This feature is currently experimental, when using third party headsets this will allow you to use SteamVR's chaperone, as if it was a native headset.
+- **Force Use SteamVR (Disable Oculus API)**: This feature is currently experimental, it should disable Oculus API preventing games with both SteamVR and Oculus API to only run as SteamVR
 - **Disable App Vsync:** Allows setting a custom base update rate for Advanced Settings. (Might be useful on HMDs with very high or very low refresh rates).
+- **Shutdown OVRAS** Shuts-Down Advanced Settings without closing out of VR.
 
 # How to Compile
 
