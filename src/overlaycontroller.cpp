@@ -704,33 +704,33 @@ void OverlayController::processKeyboardBindings()
         sendStringAsInput( commands );
     }
     // Press Key One
-    if ( m_actions.keyboardPressOne() && !m_keyPressOneState )
+    if ( m_actions.keyPressMisc() && !m_keyPressOneState )
     {
         const auto commands = settings::getSetting(
-            settings::StringSetting::KEYBOARDSHORTCUT_keyboardPressOne );
+            settings::StringSetting::KEYBOARDSHORTCUT_keyPressMisc );
         sendFirstCharAsInput( commands, KeyStatus::Down );
         m_keyPressOneState = true;
     }
-    if ( m_keyPressOneState && !m_actions.keyboardPressOne() )
+    if ( m_keyPressOneState && !m_actions.keyPressMisc() )
     {
         const auto commands = settings::getSetting(
-            settings::StringSetting::KEYBOARDSHORTCUT_keyboardPressOne );
+            settings::StringSetting::KEYBOARDSHORTCUT_keyPressMisc );
         sendFirstCharAsInput( commands, KeyStatus::Up );
         m_keyPressOneState = false;
     }
 
     // Press Key Two
-    if ( m_actions.keyboardPressTwo() && !m_keyPressTwoState )
+    if ( m_actions.keyPressSystem() && !m_keyPressTwoState )
     {
         const auto commands = settings::getSetting(
-            settings::StringSetting::KEYBOARDSHORTCUT_keyboardPressTwo );
+            settings::StringSetting::KEYBOARDSHORTCUT_keyPressSystem );
         sendFirstCharAsInput( commands, KeyStatus::Down );
         m_keyPressTwoState = true;
     }
-    if ( m_keyPressTwoState && !m_actions.keyboardPressTwo() )
+    if ( m_keyPressTwoState && !m_actions.keyPressSystem() )
     {
         const auto commands = settings::getSetting(
-            settings::StringSetting::KEYBOARDSHORTCUT_keyboardPressTwo );
+            settings::StringSetting::KEYBOARDSHORTCUT_keyPressSystem );
         sendFirstCharAsInput( commands, KeyStatus::Up );
         m_keyPressTwoState = false;
     }

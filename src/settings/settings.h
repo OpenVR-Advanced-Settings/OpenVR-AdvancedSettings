@@ -90,10 +90,10 @@ enum class StringSetting
     KEYBOARDSHORTCUT_keyboardOne,
     KEYBOARDSHORTCUT_keyboardTwo,
     KEYBOARDSHORTCUT_keyboardThree,
-    KEYBOARDSHORTCUT_keyboardPressOne,
-    KEYBOARDSHORTCUT_keyboardPressTwo,
+    KEYBOARDSHORTCUT_keyPressMisc,
+    KEYBOARDSHORTCUT_keyPressSystem,
     // LAST_ENUMERATOR must always be set to the last value
-    LAST_ENUMERATOR = KEYBOARDSHORTCUT_keyboardPressTwo,
+    LAST_ENUMERATOR = KEYBOARDSHORTCUT_keyPressSystem,
 };
 
 enum class IntSetting

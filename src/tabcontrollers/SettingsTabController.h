@@ -27,7 +27,6 @@ private:
     OverlayController* parent;
 
     bool m_autoStartEnabled = false;
-    bool m_nativeChaperoneToggle = false;
 
 public:
     void initStage1();

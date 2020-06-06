@@ -6,7 +6,6 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 ComboBox {
     id: myComboBox
     hoverEnabled: true
-
     background: Rectangle {
         color: parent.pressed ? "#406288" : (parent.activeFocus ? "#365473" : "#2c435d")
     }

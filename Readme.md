@@ -21,6 +21,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
      * [AppImage](#appimage)
      * [Arch/Manjaro](#archmanjaro)
      * [Building from Source](#building-from-source)
+  * [Guides](#guides)
   * [Bindings](#bindings)
      * [Music](#music)
      * [Motion](#motion)
@@ -33,7 +34,6 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
      * [WMR](#wmr)
 	 * [Touch](#touch)
      * [Other Controllers](#other-controllers)
-  * [SteamVR Input Guide](#steamvr-input-guide)
   * [Command Line Arguments](#command-line-arguments)
   * [INI File Options](#ini-file-options)
   * [Preview builds](#preview-builds)
@@ -80,7 +80,8 @@ Do all this without leaving VR:
 - Advanced Space Features: gravity, space-turn, and space-drag
 - Control media players (Pause/Play, Next Song, Previous Song, Stop).
 - Send keyboard inputs (like Alt+Tab, Alt+Enter, Backspace, etc.).
-- Bind VR controller buttons to send keyboard inputs (for example to mute VOIP applications while in VR). [Tutorial](docs/keyboard_input_guide.md).
+- Bind VR controller buttons to send keyboard inputs (for example to mute VOIP applications while in VR).
+- Center Marker with rotation indicator.
 - All the above also available from a window on the desktop.
 
 # Usage
@@ -120,9 +121,23 @@ Manjaro users can [enable](https://wiki.manjaro.org/index.php/Arch_User_Reposito
 
 Detailed instructions are available [here](docs/building_for_linux.md).
 
+## Guides
+
+### Overall Feature Overview Guides
+
+- [Kung's 3.0 New Feature Guide (video/youtube)[https://youtu.be/2ZHdjOfnqOU)]
+
+### SteamVR Input System (keybinds for app)
+
+- [Steam VR Input System (text)](docs/SteamVRInputGuide.md)
+
+### Keyboard Binding System
+
+- [Keyboard Input Guide (text)](docs/keyboard_input_guide.md)
+
 ## Bindings
 
-For information on how to properly set-up bindings see: [SteamVR Input Guide](#steamvr-input-guide)
+For information on how to properly set-up bindings see: [SteamVR Input System Guide](#guides)
 
 The following actions currently exist:
 ### Music
@@ -174,10 +189,10 @@ Actions that don't have a clear category.
 | Y-Axis Lock Toggle | Binary/Button | Toggles the lock of the Y-Axis for offsets.|
 | Z-Axis Lock Toggle | Binary/Button | Toggles the lock of the Z-Axis for offsets.|
 | Chaperone Toggle | Binary/Button | Toggles the chaperone on/off. |
-| Push to Talk | Binary/Button |  Acts as starter for PTT, can mute if push-to-mute is selected.|
 | Keyboard Shortcut One | Binary/Button | Sends the key sequence defined the the settings file. Defaults to Ctrl+Shift+M (Discord default toggle mute). |
 | Keyboard Shortcut Two | Binary/Button | Sends the key sequence defined the the settings file. This has no default sequence. |
 | Keyboard Shortcut Three | Binary/Button | Sends the key sequence defined the the settings file. This has no default sequence. |
+| Key Press Misc | Binary/Button | Sends the key press defined in the settings file. Defaults to F9 |
 
 
 ### System.
@@ -187,8 +202,10 @@ Actions That will stay active regardless of the situation.
 
 |    Action     |     Type      |  Explanation  |
 | ------------- | ------------- |  ------------ |
+| Push to Talk | Binary/Button |  Acts as starter for PTT, can mute if push-to-mute is selected.|
 | Add Left Haptic Click | Binary/Button | simulates a "click" with controller haptics. (left hand)
 | Add Right Haptic Click | Binary/Button | simulates a "click" with controller haptics. (right hand)
+| Key Press System | Binary/Button | Sends the key press defined in the settings file. Defaults to F9 |
 
 ### Haptics.
 
@@ -247,12 +264,6 @@ These Actions are Hidden, They are bound by default. They allow the application 
 No current default bindings you will have to make your own.
 
 
-## SteamVR Input Guide
-
-A Guide to the SteamVR Input System can be found [here](docs/SteamVRInputGuide.md)
-
-**Or** a Video guide by Kung can be found [here](https://youtu.be/2ZHdjOfnqOU)
-
 ## Command Line Arguments
 
 The application (`AdvancedSettings.exe`) can be run with the following optional arguments:
@@ -266,6 +277,8 @@ The application (`AdvancedSettings.exe`) can be run with the following optional 
 `"--force-install-manifest"`: Force installs the `.vrmanifest` and adds the application to autostart. If you're having issues with autostart not working try running the program once with this set. The program will exit early when this flag is set.
 
 `"--force-remove-manifest"`: Force uninstalls the `.vrmanifest`. This should be done every time the application is uninstalled. On Windows it is automatically done by the uninstaller. The program will exit early when this flag is set.
+
+`"--reset-steamvr-settings"`: Resets the SteamVR settings we adjust to Steam's Default Values.
 
 ## INI File Options
 
@@ -285,7 +298,7 @@ Under `[applicationSettings]` adding `enableDebug=true` will show a "Debug State
 
 ## Preview builds
 
-If you want to try latest and greatest unreleased features, you can download the latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/icewind1991/openvr-advancedsettings/branch/master) and [Linux](https://circleci.com/gh/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings) (`gcc` build, CircleCI issue requires login to see artifact tab).
+If you want to try latest and greatest unreleased features, you can download the latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/OVRAdvancedSettings/openvr-advancedsettings/branch/master)and [Linux](https://circleci.com/gh/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings) (`gcc` build, CircleCI issue requires login to see artifact tab).
 
 These version are not stable and this should be considered for advanced users only.
 
@@ -315,7 +328,6 @@ These version are not stable and this should be considered for advanced users on
   - **Camera for Bounds**: Your camera view will replace your vr view as you near/exit chaperone
   - **Camera for Dashboard**: You will have a small camera view attached to your controller when you have the dashboard active.
   - **Camera for Room View**: You will have a Tron/Shadow version of the room when double-clicking system button.
-- **Desktop Overlay Width**: Adjusts teh width of Steam's desktop overlay.
 - **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
 
 ## - Chaperone Page
@@ -334,6 +346,17 @@ These version are not stable and this should be considered for advanced users on
 - **Rotate Orientation**: Rotates the orientation by a set amount.
 - **Reload from Disk**: Reloads the chaperone bounds geometry from disk.
 
+## - Additional Chaperone Settings Page
+
+<img src="docs/screenshots/ChaperoneAdditionalPage.png" width="600" alt="Chaperone Additional Page">
+
+- **Chaperone Color**: Adjust the R, G, and B color channels of the chaperone.
+- **Chaperone Styles**: Adjust the appearance of the Chaperone.
+- **Misc:**
+  - **Floor Bounds Always On**: Forces floor bounds to always show.
+  - **Legacy Center Marker**: Old Center Marker, does not move with motion or indicate rotation.
+  - **Reset Turn Counter**: Re-zero's turn counter for center marker turn indicators, based on current HMD orientation.
+  
 ## - Chaperone Proximity Warning Settings Page
 
 <img src="docs/screenshots/ChaperoneWarningPage.png" width="600" alt="Chaperone Proximity Warning Settings Page">
@@ -486,7 +509,10 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Enable Motion Features When in Seated Mode:** Uncheck this if Advanced Settings causes strange positioning in a seated application. (Different apps handle seated mode in different ways, some are less compatible with Advanced Settings). Note: if unchecked, all Space Offsets and Motion tab features will be disabled.
 - **Disable Automatic Crash Recovery of Chaperone Config:** This prevents applying of the last good autosaved chaperone profile when starting up after not shutting down properly.
 - **Disable Notification of Newer Version Availability**: This turns off the on start-up check for a new version. (You can refresh this to do a manual check.)
+- **Force Use SteamVR Chaperone**: This feature is currently experimental, when using third party headsets this will allow you to use SteamVR's chaperone, as if it was a native headset.
+- **Force Use SteamVR (Disable Oculus API)**: This feature is currently experimental, it should disable Oculus API preventing games with both SteamVR and Oculus API to only run as SteamVR
 - **Disable App Vsync:** Allows setting a custom base update rate for Advanced Settings. (Might be useful on HMDs with very high or very low refresh rates).
+- **Shutdown OVRAS** Shuts-Down Advanced Settings without closing out of VR.
 
 # How to Compile
 
