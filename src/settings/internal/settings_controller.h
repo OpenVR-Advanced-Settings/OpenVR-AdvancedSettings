@@ -481,7 +481,7 @@ private:
     constexpr static auto stringSettingsSize
         = static_cast<int>( StringSetting::LAST_ENUMERATOR ) + 1;
     constexpr static auto discordDefaultMuteKeybinding = "^>m";
-    constexpr static auto pressDefaultOne = "F9";
+    constexpr static auto pressDefault = "F9";
     std::array<StringSettingValue, stringSettingsSize> m_stringSettings{
         StringSettingValue{ StringSetting::KEYBOARDSHORTCUT_keyboardOne,
                             SettingCategory::KeyboardShortcut,
@@ -495,14 +495,14 @@ private:
                             SettingCategory::KeyboardShortcut,
                             QtInfo{ "keyboardThree" },
                             discordDefaultMuteKeybinding },
-        StringSettingValue{ StringSetting::KEYBOARDSHORTCUT_keyboardPressOne,
+        StringSettingValue{ StringSetting::KEYBOARDSHORTCUT_keyPressMisc,
                             SettingCategory::KeyboardShortcut,
-                            QtInfo{ "keyboardPressOne" },
-                            pressDefaultOne },
-        StringSettingValue{ StringSetting::KEYBOARDSHORTCUT_keyboardPressTwo,
+                            QtInfo{ "keyPressmisc" },
+                            pressDefault },
+        StringSettingValue{ StringSetting::KEYBOARDSHORTCUT_keyPressSystem,
                             SettingCategory::KeyboardShortcut,
-                            QtInfo{ "keyboardPressTwo" },
-                            pressDefaultOne },
+                            QtInfo{ "keyPressSystem" },
+                            pressDefault },
     };
 
     constexpr static auto intSettingsSize
