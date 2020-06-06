@@ -21,6 +21,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
      * [AppImage](#appimage)
      * [Arch/Manjaro](#archmanjaro)
      * [Building from Source](#building-from-source)
+  * [Guides](#guides)
   * [Bindings](#bindings)
      * [Music](#music)
      * [Motion](#motion)
@@ -33,7 +34,6 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
      * [WMR](#wmr)
 	 * [Touch](#touch)
      * [Other Controllers](#other-controllers)
-  * [SteamVR Input Guide](#steamvr-input-guide)
   * [Command Line Arguments](#command-line-arguments)
   * [INI File Options](#ini-file-options)
   * [Preview builds](#preview-builds)
@@ -80,7 +80,8 @@ Do all this without leaving VR:
 - Advanced Space Features: gravity, space-turn, and space-drag
 - Control media players (Pause/Play, Next Song, Previous Song, Stop).
 - Send keyboard inputs (like Alt+Tab, Alt+Enter, Backspace, etc.).
-- Bind VR controller buttons to send keyboard inputs (for example to mute VOIP applications while in VR). [Tutorial](docs/keyboard_input_guide.md).
+- Bind VR controller buttons to send keyboard inputs (for example to mute VOIP applications while in VR).
+- Center Marker with rotation indicator.
 - All the above also available from a window on the desktop.
 
 # Usage
@@ -120,9 +121,23 @@ Manjaro users can [enable](https://wiki.manjaro.org/index.php/Arch_User_Reposito
 
 Detailed instructions are available [here](docs/building_for_linux.md).
 
+## Guides
+
+### Overall Feature Overview Guides
+
+- [Kung's 3.0 New Feature Guide (video/youtube)[https://youtu.be/2ZHdjOfnqOU)]
+
+### SteamVR Input System (keybinds for app)
+
+- [Steam VR Input System (text)](docs/SteamVRInputGuide.md)
+
+### Keyboard Binding System
+
+- [Keyboard Input Guide (text)](docs/keyboard_input_guide.md)
+
 ## Bindings
 
-For information on how to properly set-up bindings see: [SteamVR Input Guide](#steamvr-input-guide)
+For information on how to properly set-up bindings see: [SteamVR Input System Guide](#guides)
 
 The following actions currently exist:
 ### Music
@@ -174,10 +189,10 @@ Actions that don't have a clear category.
 | Y-Axis Lock Toggle | Binary/Button | Toggles the lock of the Y-Axis for offsets.|
 | Z-Axis Lock Toggle | Binary/Button | Toggles the lock of the Z-Axis for offsets.|
 | Chaperone Toggle | Binary/Button | Toggles the chaperone on/off. |
-| Push to Talk | Binary/Button |  Acts as starter for PTT, can mute if push-to-mute is selected.|
 | Keyboard Shortcut One | Binary/Button | Sends the key sequence defined the the settings file. Defaults to Ctrl+Shift+M (Discord default toggle mute). |
 | Keyboard Shortcut Two | Binary/Button | Sends the key sequence defined the the settings file. This has no default sequence. |
 | Keyboard Shortcut Three | Binary/Button | Sends the key sequence defined the the settings file. This has no default sequence. |
+| Key Press Misc | Binary/Button | Sends the key press defined in the settings file. Defaults to F9 |
 
 
 ### System.
@@ -187,8 +202,10 @@ Actions That will stay active regardless of the situation.
 
 |    Action     |     Type      |  Explanation  |
 | ------------- | ------------- |  ------------ |
+| Push to Talk | Binary/Button |  Acts as starter for PTT, can mute if push-to-mute is selected.|
 | Add Left Haptic Click | Binary/Button | simulates a "click" with controller haptics. (left hand)
 | Add Right Haptic Click | Binary/Button | simulates a "click" with controller haptics. (right hand)
+| Key Press System | Binary/Button | Sends the key press defined in the settings file. Defaults to F9 |
 
 ### Haptics.
 
@@ -247,12 +264,6 @@ These Actions are Hidden, They are bound by default. They allow the application 
 No current default bindings you will have to make your own.
 
 
-## SteamVR Input Guide
-
-A Guide to the SteamVR Input System can be found [here](docs/SteamVRInputGuide.md)
-
-**Or** a Video guide by Kung can be found [here](https://youtu.be/2ZHdjOfnqOU)
-
 ## Command Line Arguments
 
 The application (`AdvancedSettings.exe`) can be run with the following optional arguments:
@@ -266,6 +277,8 @@ The application (`AdvancedSettings.exe`) can be run with the following optional 
 `"--force-install-manifest"`: Force installs the `.vrmanifest` and adds the application to autostart. If you're having issues with autostart not working try running the program once with this set. The program will exit early when this flag is set.
 
 `"--force-remove-manifest"`: Force uninstalls the `.vrmanifest`. This should be done every time the application is uninstalled. On Windows it is automatically done by the uninstaller. The program will exit early when this flag is set.
+
+`"--reset-steamvr-settings"`: Resets the SteamVR settings we adjust to Steam's Default Values.
 
 ## INI File Options
 
