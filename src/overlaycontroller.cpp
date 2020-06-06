@@ -150,7 +150,6 @@ OverlayController::OverlayController( bool desktopMode,
     m_moveCenterTabController.initStage1();
     m_audioTabController.initStage1();
     m_settingsTabController.initStage1();
-    m_utilitiesTabController.initStage1();
     m_videoTabController.initStage1();
     m_rotationTabController.initStage1();
 
@@ -958,6 +957,8 @@ void OverlayController::OnTimeoutPumpEvents()
             m_vsyncTooLateCounter++;
         }
     }
+
+    updateRate.incrementCounter();
 }
 
 void OverlayController::mainEventLoop()

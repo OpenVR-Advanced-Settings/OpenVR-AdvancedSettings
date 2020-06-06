@@ -4,6 +4,7 @@
 #include "../overlaycontroller.h"
 #include "../settings/settings.h"
 #include "../settings/settings_object.h"
+#include "../utils/update_rate.h"
 #ifdef _WIN32
 #    include "audiomanager/AudioManagerWindows.h"
 #elif __linux__
@@ -26,8 +27,6 @@ void AudioTabController::initStage1()
     audioManager.reset( new AudioManagerDummy() );
 #endif
     audioManager->init( this );
-    m_audioSettingsUpdateCounter
-        = utils::adjustUpdateRate( k_audioSettingsUpdateCounter );
     initOverride();
     m_playbackDevices = audioManager->getPlaybackDevices();
     m_recordingDevices = audioManager->getRecordingDevices();
@@ -190,51 +189,48 @@ bool AudioTabController::audioProfileDefault() const
 
 void AudioTabController::eventLoopTick()
 {
+    if ( updateRate.shouldSubjectNotRun( UpdateSubject::AudioTabController ) )
+    {
+        return;
+    }
+
     if ( !eventLoopMutex.try_lock() )
     {
         return;
     }
 
-    if ( settingsUpdateCounter >= m_audioSettingsUpdateCounter )
+    vr::EVRSettingsError vrSettingsError;
+    char mirrorDeviceId[1024];
+    vr::VRSettings()->GetString( vr::k_pch_audio_Section,
+                                 vr::k_pch_audio_PlaybackMirrorDevice_String,
+                                 mirrorDeviceId,
+                                 1024,
+                                 &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
     {
-        vr::EVRSettingsError vrSettingsError;
-        char mirrorDeviceId[1024];
-        vr::VRSettings()->GetString(
-            vr::k_pch_audio_Section,
-            vr::k_pch_audio_PlaybackMirrorDevice_String,
-            mirrorDeviceId,
-            1024,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_audio_PlaybackMirrorDevice_String
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        if ( lastMirrorDevId.compare( mirrorDeviceId ) != 0 )
-        {
-            audioManager->setMirrorDevice( mirrorDeviceId );
-            findMirrorDeviceIndex( audioManager->getMirrorDevId() );
-            lastMirrorDevId = mirrorDeviceId;
-        }
-        if ( m_mirrorDeviceIndex >= 0 )
-        {
-            setMirrorVolume( audioManager->getMirrorVolume() );
-            setMirrorMuted( audioManager->getMirrorMuted() );
-        }
-        if ( m_recordingDeviceIndex >= 0 )
-        {
-            setMicVolume( audioManager->getMicVolume() );
-            setMicMuted( audioManager->getMicMuted() );
-        }
-        settingsUpdateCounter = 0;
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_audio_PlaybackMirrorDevice_String
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
     }
-    else
+    if ( lastMirrorDevId.compare( mirrorDeviceId ) != 0 )
     {
-        settingsUpdateCounter++;
+        audioManager->setMirrorDevice( mirrorDeviceId );
+        findMirrorDeviceIndex( audioManager->getMirrorDevId() );
+        lastMirrorDevId = mirrorDeviceId;
     }
+    if ( m_mirrorDeviceIndex >= 0 )
+    {
+        setMirrorVolume( audioManager->getMirrorVolume() );
+        setMirrorMuted( audioManager->getMirrorMuted() );
+    }
+    if ( m_recordingDeviceIndex >= 0 )
+    {
+        setMicVolume( audioManager->getMicVolume() );
+        setMicMuted( audioManager->getMicMuted() );
+    }
+
     eventLoopMutex.unlock();
 }
 

@@ -1,6 +1,7 @@
 #include "SettingsTabController.h"
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
+#include "../utils/update_rate.h"
 
 // application namespace
 namespace advsettings
@@ -9,8 +10,6 @@ void SettingsTabController::initStage1()
 {
     m_autoStartEnabled = vr::VRApplications()->GetApplicationAutoLaunch(
         application_strings::applicationKey );
-    m_settingsTabSettingsUpdateCounter
-        = utils::adjustUpdateRate( k_settingsTabSettingsUpdateCounter );
 }
 
 void SettingsTabController::initStage2( OverlayController* var_parent )
@@ -22,16 +21,14 @@ void SettingsTabController::initStage2( OverlayController* var_parent )
 
 void SettingsTabController::dashboardLoopTick()
 {
-    if ( settingsUpdateCounter >= m_settingsTabSettingsUpdateCounter )
+    if ( updateRate.shouldSubjectNotRun(
+             UpdateSubject::SettingsTabController ) )
     {
-        setAutoStartEnabled( vr::VRApplications()->GetApplicationAutoLaunch(
-            application_strings::applicationKey ) );
-        settingsUpdateCounter = 0;
+        return;
     }
-    else
-    {
-        settingsUpdateCounter++;
-    }
+
+    setAutoStartEnabled( vr::VRApplications()->GetApplicationAutoLaunch(
+        application_strings::applicationKey ) );
 }
 
 bool SettingsTabController::autoStartEnabled() const

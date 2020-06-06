@@ -131,8 +131,6 @@ private:
     bool m_isPlaybackOverride = false;
     bool m_isRecordingOverride = false;
 
-    unsigned int m_audioSettingsUpdateCounter = 90;
-
     int m_defaultProfileIndex = -1;
 
     unsigned settingsUpdateCounter = 0;

@@ -204,8 +204,6 @@ private:
     unsigned m_dragComfortFrameSkipCounter = 0;
     unsigned m_turnComfortFrameSkipCounter = 0;
 
-    unsigned int m_moveCenterSettingsUpdateCounter = 83;
-
     // Matrix used For Center Marker
     vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
 

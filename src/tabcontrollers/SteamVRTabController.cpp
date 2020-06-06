@@ -1,14 +1,13 @@
 #include "SteamVRTabController.h"
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
+#include "../utils/update_rate.h"
 
 // application namespace
 namespace advsettings
 {
 void SteamVRTabController::initStage1()
 {
-    m_steamVrSettingsUpdateCounter
-        = utils::adjustUpdateRate( k_steamVrSettingsUpdateCounter );
     dashboardLoopTick();
 }
 
@@ -19,149 +18,141 @@ void SteamVRTabController::initStage2( OverlayController* var_parent )
 
 void SteamVRTabController::dashboardLoopTick()
 {
-    if ( settingsUpdateCounter >= m_steamVrSettingsUpdateCounter )
+    if ( updateRate.shouldSubjectNotRun( UpdateSubject::SteamVrTabController ) )
     {
-        vr::EVRSettingsError vrSettingsError;
-
-        // Checks and synchs performance graph
-        auto pg = vr::VRSettings()->GetBool( vr::k_pch_Perf_Section,
-                                             vr::k_pch_Perf_PerfGraphInHMD_Bool,
-                                             &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_Perf_PerfGraphInHMD_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setPerformanceGraph( pg );
-
-        // synch systembutton
-        auto sb = vr::VRSettings()->GetBool(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_SendSystemButtonToAllApps_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_SendSystemButtonToAllApps_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setSystemButton( sb );
-
-        // synch nofadetogrid
-        auto nf = vr::VRSettings()->GetBool( vr::k_pch_SteamVR_Section,
-                                             vr::k_pch_SteamVR_DoNotFadeToGrid,
-                                             &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_DoNotFadeToGrid
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setNoFadeToGrid( nf );
-
-        // synch multipleDriver
-        auto md = vr::VRSettings()->GetBool(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setMultipleDriver( md );
-
-        // synch dnd
-        auto donotd = vr::VRSettings()->GetBool(
-            vr::k_pch_Notifications_Section,
-            vr::k_pch_Notifications_DoNotDisturb_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_Notifications_DoNotDisturb_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setDND( donotd );
-
-        // synch camera
-        auto ca = vr::VRSettings()->GetBool( vr::k_pch_Camera_Section,
-                                             vr::k_pch_Camera_EnableCamera_Bool,
-                                             &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_Camera_EnableCamera_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setCameraActive( ca );
-
-        // synch camera room
-        auto cr = vr::VRSettings()->GetBool(
-            vr::k_pch_Camera_Section,
-            vr::k_pch_Camera_EnableCameraForRoomView_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_Camera_EnableCameraForRoomView_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setCameraRoom( cr );
-
-        // synch camera dashboard
-        auto cd = vr::VRSettings()->GetBool(
-            vr::k_pch_Camera_Section,
-            vr::k_pch_Camera_EnableCameraInDashboard_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_Camera_EnableCameraInDashboard_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setCameraDashboard( cd );
-
-        // synch camera bounds
-        auto cb = vr::VRSettings()->GetBool(
-            vr::k_pch_Camera_Section,
-            vr::k_pch_Camera_EnableCameraForCollisionBounds_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING )
-                << "Could not read \""
-                << vr::k_pch_Camera_EnableCameraForCollisionBounds_Bool
-                << "\" setting: "
-                << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                       vrSettingsError );
-        }
-        setCameraBounds( cb );
-
-        settingsUpdateCounter = 0;
+        return;
     }
-    else
+
+    vr::EVRSettingsError vrSettingsError;
+
+    // Checks and synchs performance graph
+    auto pg = vr::VRSettings()->GetBool( vr::k_pch_Perf_Section,
+                                         vr::k_pch_Perf_PerfGraphInHMD_Bool,
+                                         &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
     {
-        settingsUpdateCounter++;
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_Perf_PerfGraphInHMD_Bool << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
     }
+    setPerformanceGraph( pg );
+
+    // synch systembutton
+    auto sb = vr::VRSettings()->GetBool(
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_SendSystemButtonToAllApps_Bool,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_SteamVR_SendSystemButtonToAllApps_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    setSystemButton( sb );
+
+    // synch nofadetogrid
+    auto nf = vr::VRSettings()->GetBool( vr::k_pch_SteamVR_Section,
+                                         vr::k_pch_SteamVR_DoNotFadeToGrid,
+                                         &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_SteamVR_DoNotFadeToGrid << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    setNoFadeToGrid( nf );
+
+    // synch multipleDriver
+    auto md = vr::VRSettings()->GetBool(
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    setMultipleDriver( md );
+
+    // synch dnd
+    auto donotd
+        = vr::VRSettings()->GetBool( vr::k_pch_Notifications_Section,
+                                     vr::k_pch_Notifications_DoNotDisturb_Bool,
+                                     &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_Notifications_DoNotDisturb_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    setDND( donotd );
+
+    // synch camera
+    auto ca = vr::VRSettings()->GetBool( vr::k_pch_Camera_Section,
+                                         vr::k_pch_Camera_EnableCamera_Bool,
+                                         &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_Camera_EnableCamera_Bool << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    setCameraActive( ca );
+
+    // synch camera room
+    auto cr = vr::VRSettings()->GetBool(
+        vr::k_pch_Camera_Section,
+        vr::k_pch_Camera_EnableCameraForRoomView_Bool,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_Camera_EnableCameraForRoomView_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    setCameraRoom( cr );
+
+    // synch camera dashboard
+    auto cd = vr::VRSettings()->GetBool(
+        vr::k_pch_Camera_Section,
+        vr::k_pch_Camera_EnableCameraInDashboard_Bool,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_Camera_EnableCameraInDashboard_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    setCameraDashboard( cd );
+
+    // synch camera bounds
+    auto cb = vr::VRSettings()->GetBool(
+        vr::k_pch_Camera_Section,
+        vr::k_pch_Camera_EnableCameraForCollisionBounds_Bool,
+        &vrSettingsError );
+    if ( vrSettingsError != vr::VRSettingsError_None )
+    {
+        LOG( WARNING ) << "Could not read \""
+                       << vr::k_pch_Camera_EnableCameraForCollisionBounds_Bool
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
+    }
+    setCameraBounds( cb );
 }
 
 bool SteamVRTabController::performanceGraph() const

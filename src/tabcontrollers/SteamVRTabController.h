@@ -49,10 +49,6 @@ private:
     bool m_cameraRoom = false;
     bool m_cameraDashboard = false;
 
-    unsigned settingsUpdateCounter = 0;
-
-    unsigned int m_steamVrSettingsUpdateCounter = 97;
-
 public:
     void initStage1();
     void initStage2( OverlayController* parent );

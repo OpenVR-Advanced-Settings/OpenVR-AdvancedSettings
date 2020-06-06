@@ -23,6 +23,7 @@ SOURCES += src/main.cpp\
     src/settings/settings.cpp \
     src/settings/settings_object.cpp \
     src/alarm_clock/vr_alarm.cpp \
+    src/utils/update_rate.cpp \
 
 
 
@@ -64,6 +65,9 @@ HEADERS += src/overlaycontroller.h \
     src/settings/settings_object.h \
     src/settings/internal/settings_object_data.h \
     src/alarm_clock/vr_alarm.h \
+    src/settings/internal/settings_object_data.h \
+    src/settings/internal/settings_object_data.h \
+    src/utils/update_rate.h \
 
 
 win32 {

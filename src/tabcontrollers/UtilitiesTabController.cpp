@@ -4,18 +4,13 @@
 #include "../overlaycontroller.h"
 #include "../keyboard_input/input_sender.h"
 #include "../settings/settings.h"
+#include "../utils/update_rate.h"
 #include <chrono>
 #include <thread>
 
 // application namespace
 namespace advsettings
 {
-void UtilitiesTabController::initStage1()
-{
-    m_utilitiesSettingsUpdateCounter
-        = utils::adjustUpdateRate( k_utilitiesSettingsUpdateCounter );
-}
-
 void UtilitiesTabController::initStage2( OverlayController* var_parent )
 {
     this->m_parent = var_parent;
@@ -270,87 +265,81 @@ vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index )
 
 void UtilitiesTabController::eventLoopTick()
 {
-    if ( settingsUpdateCounter >= m_utilitiesSettingsUpdateCounter )
+    if ( updateRate.shouldSubjectNotRun(
+             UpdateSubject::UtilitiesTabController ) )
     {
-        // attach battery overlay to all tracked devices that aren't a
-        // controller or hmd
-        for ( vr::TrackedDeviceIndex_t i = 0; i < vr::k_unMaxTrackedDeviceCount;
-              i++ )
+        return;
+    }
+
+    // attach battery overlay to all tracked devices that aren't a
+    // controller or hmd
+    for ( vr::TrackedDeviceIndex_t i = 0; i < vr::k_unMaxTrackedDeviceCount;
+          i++ )
+    {
+        vr::ETrackedDeviceClass deviceClass
+            = vr::VRSystem()->GetTrackedDeviceClass( i );
+        if ( deviceClass
+             == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker )
         {
-            vr::ETrackedDeviceClass deviceClass
-                = vr::VRSystem()->GetTrackedDeviceClass( i );
-            if ( deviceClass
-                 == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker )
+            if ( m_batteryOverlayHandles[i] == 0 )
             {
-                if ( m_batteryOverlayHandles[i] == 0 )
+                LOG( INFO ) << "Creating battery overlay for device " << i;
+                m_batteryOverlayHandles[i] = createBatteryOverlay( i );
+                m_batteryVisible[i] = true;
+            }
+
+            bool shouldShow = vr::VROverlay()->IsDashboardVisible();
+
+            if ( shouldShow != m_batteryVisible[i] )
+            {
+                if ( shouldShow )
                 {
-                    LOG( INFO ) << "Creating battery overlay for device " << i;
-                    m_batteryOverlayHandles[i] = createBatteryOverlay( i );
-                    m_batteryVisible[i] = true;
+                    vr::VROverlay()->ShowOverlay( m_batteryOverlayHandles[i] );
                 }
-
-                bool shouldShow = vr::VROverlay()->IsDashboardVisible();
-
-                if ( shouldShow != m_batteryVisible[i] )
+                else
                 {
-                    if ( shouldShow )
+                    vr::VROverlay()->HideOverlay( m_batteryOverlayHandles[i] );
+                }
+                m_batteryVisible[i] = shouldShow;
+            }
+
+            bool hasBatteryStatus
+                = vr::VRSystem()->GetBoolTrackedDeviceProperty(
+                    i,
+                    vr::ETrackedDeviceProperty::
+                        Prop_DeviceProvidesBatteryStatus_Bool );
+            if ( hasBatteryStatus )
+            {
+                float battery = vr::VRSystem()->GetFloatTrackedDeviceProperty(
+                    i,
+                    vr::ETrackedDeviceProperty::
+                        Prop_DeviceBatteryPercentage_Float );
+                int batteryState = static_cast<int>(
+                    ceil( static_cast<double>( battery * 5 ) ) );
+
+                if ( batteryState != m_batteryState[i] )
+                {
+                    LOG( INFO )
+                        << "Updating battery overlay for device " << i << " to "
+                        << batteryState << "(" << battery << ")"
+                        << QString::number( m_batteryOverlayHandles[i] );
+                    QString batteryIconPath
+                        = getBatteryIconPath( batteryState );
+                    if ( QFile::exists( batteryIconPath ) )
                     {
-                        vr::VROverlay()->ShowOverlay(
-                            m_batteryOverlayHandles[i] );
+                        vr::VROverlay()->SetOverlayFromFile(
+                            m_batteryOverlayHandles[i],
+                            batteryIconPath.toStdString().c_str() );
                     }
                     else
                     {
-                        vr::VROverlay()->HideOverlay(
-                            m_batteryOverlayHandles[i] );
+                        LOG( ERROR ) << "Could not find battery icon \""
+                                     << batteryIconPath << "\"";
                     }
-                    m_batteryVisible[i] = shouldShow;
-                }
-
-                bool hasBatteryStatus
-                    = vr::VRSystem()->GetBoolTrackedDeviceProperty(
-                        i,
-                        vr::ETrackedDeviceProperty::
-                            Prop_DeviceProvidesBatteryStatus_Bool );
-                if ( hasBatteryStatus )
-                {
-                    float battery
-                        = vr::VRSystem()->GetFloatTrackedDeviceProperty(
-                            i,
-                            vr::ETrackedDeviceProperty::
-                                Prop_DeviceBatteryPercentage_Float );
-                    int batteryState = static_cast<int>(
-                        ceil( static_cast<double>( battery * 5 ) ) );
-
-                    if ( batteryState != m_batteryState[i] )
-                    {
-                        LOG( INFO )
-                            << "Updating battery overlay for device " << i
-                            << " to " << batteryState << "(" << battery << ")"
-                            << QString::number( m_batteryOverlayHandles[i] );
-                        QString batteryIconPath
-                            = getBatteryIconPath( batteryState );
-                        if ( QFile::exists( batteryIconPath ) )
-                        {
-                            vr::VROverlay()->SetOverlayFromFile(
-                                m_batteryOverlayHandles[i],
-                                batteryIconPath.toStdString().c_str() );
-                        }
-                        else
-                        {
-                            LOG( ERROR ) << "Could not find battery icon \""
-                                         << batteryIconPath << "\"";
-                        }
-                        m_batteryState[i] = batteryState;
-                    }
+                    m_batteryState[i] = batteryState;
                 }
             }
         }
-
-        settingsUpdateCounter = 0;
-    }
-    else
-    {
-        settingsUpdateCounter++;
     }
 }
 
