@@ -8,6 +8,7 @@ RowLayout {
 
     HourComboBox {
         id: hourBox
+        Layout.preferredWidth: 60
         onActivated: {
             parent.timeChanged(hourBox.currentIndex,
                                minuteBox.currentIndex,
@@ -20,6 +21,7 @@ RowLayout {
 
     MinuteSecondComboBox {
         id: minuteBox
+        Layout.preferredWidth:60
         onActivated: {
             parent.timeChanged(hourBox.currentIndex,
                                minuteBox.currentIndex,
@@ -32,6 +34,7 @@ RowLayout {
 
     MinuteSecondComboBox {
         id: secondBox
+        Layout.preferredWidth:60
         onActivated: {
             parent.timeChanged(hourBox.currentIndex,
                                minuteBox.currentIndex,

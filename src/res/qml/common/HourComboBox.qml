@@ -1,11 +1,12 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
+import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 
 MyComboBox {
-    textRole: "text"
-    valueRole: "value"
+    //textRole: "text"
+    //valueRole: "value"
     model: [
         { value: 0, text: "00" },
         { value: 1, text: "01" },

@@ -10,7 +10,7 @@ GroupBox {
     
     label: MyText {
         leftPadding: 10
-        text: "Clock"
+        text: "Alarm Clock"
         bottomPadding: -10
     }
     background: Rectangle {
@@ -78,14 +78,14 @@ GroupBox {
 
                 MyPushButton2 {
                     text: "+5 Min"
-                    Layout.preferredWidth: 120
+                    Layout.preferredWidth: 110
                     onClicked: {
                         VrAlarm.modAlarmTime(0, 5, 0)
                     }
                 }
 
                 MyPushButton2 {
-                    Layout.preferredWidth: 120
+                    Layout.preferredWidth: 110
                     text: "-5 Min"
                     onClicked: {
                         VrAlarm.modAlarmTime(0, -5, 0)
