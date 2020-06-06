@@ -374,11 +374,10 @@ void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
         setChaperoneColorA( static_cast<int>( 255 * m_visibility ), notify );
         ovr_overlay_wrapper::setOverlayAlpha(
             m_chaperoneFloorOverlayHandle, m_visibility, "" );
-
-        if ( notify )
-        {
-            emit boundsVisibilityChanged( m_visibility );
-        }
+    }
+    if ( notify )
+    {
+        emit boundsVisibilityChanged( m_visibility );
     }
 }
 
@@ -392,7 +391,6 @@ float ChaperoneTabController::fadeDistance()
     if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
         m_fadeDistance = p.second;
-        return p.second;
     }
     return m_fadeDistance;
 }
@@ -408,10 +406,10 @@ void ChaperoneTabController::setFadeDistance( float value, bool notify )
             m_fadeDistance,
             "" );
         // On failure do Nothing
-        if ( notify )
-        {
-            emit fadeDistanceChanged( m_fadeDistance );
-        }
+    }
+    if ( notify )
+    {
+        emit fadeDistanceChanged( m_fadeDistance );
     }
 }
 
@@ -487,11 +485,10 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
             vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
             m_centerMarker,
             "" );
-
-        if ( notify )
-        {
-            emit centerMarkerChanged( m_centerMarker );
-        }
+    }
+    if ( notify )
+    {
+        emit centerMarkerChanged( m_centerMarker );
     }
 }
 
@@ -522,10 +519,10 @@ void ChaperoneTabController::setPlaySpaceMarker( bool value, bool notify )
             m_playSpaceMarker,
             "" );
         // On Error Do Nothing
-        if ( notify )
-        {
-            emit playSpaceMarkerChanged( m_playSpaceMarker );
-        }
+    }
+    if ( notify )
+    {
+        emit playSpaceMarkerChanged( m_playSpaceMarker );
     }
 }
 
@@ -744,11 +741,12 @@ void ChaperoneTabController::setChaperoneColorR( int value, bool notify )
             vr::k_pch_CollisionBounds_ColorGammaR_Int32,
             m_chaperoneColorR,
             "" );
+        // TODO will get out of synch when using external modifer!
         updateCenterMarkerOverlayColor();
-        if ( notify )
-        {
-            emit chaperoneColorRChanged( value );
-        }
+    }
+    if ( notify )
+    {
+        emit chaperoneColorRChanged( value );
     }
 }
 
@@ -773,10 +771,10 @@ void ChaperoneTabController::setChaperoneColorG( int value, bool notify )
             m_chaperoneColorG,
             "" );
         updateCenterMarkerOverlayColor();
-        if ( notify )
-        {
-            emit chaperoneColorGChanged( value );
-        }
+    }
+    if ( notify )
+    {
+        emit chaperoneColorGChanged( value );
     }
 }
 
@@ -801,10 +799,10 @@ void ChaperoneTabController::setChaperoneColorB( int value, bool notify )
             m_chaperoneColorB,
             "" );
         updateCenterMarkerOverlayColor();
-        if ( notify )
-        {
-            emit chaperoneColorBChanged( value );
-        }
+    }
+    if ( notify )
+    {
+        emit chaperoneColorBChanged( value );
     }
 }
 void ChaperoneTabController::updateCenterMarkerOverlayColor()
@@ -911,10 +909,10 @@ void ChaperoneTabController::setCollisionBoundStyle( int value,
                                         vr::k_pch_CollisionBounds_Style_Int32,
                                         m_collisionBoundStyle,
                                         "" );
-        if ( notify )
-        {
-            emit collisionBoundStyleChanged( value );
-        }
+    }
+    if ( notify )
+    {
+        emit collisionBoundStyleChanged( value );
     }
 }
 

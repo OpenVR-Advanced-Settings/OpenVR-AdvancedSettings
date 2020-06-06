@@ -793,10 +793,10 @@ void VideoTabController::setSuperSampling( float value, const bool notify )
         vr::VRSettings()->SetFloat( vr::k_pch_SteamVR_Section,
                                     vr::k_pch_SteamVR_SupersampleScale_Float,
                                     m_superSampling );
-        if ( notify )
-        {
-            emit superSamplingChanged( m_superSampling );
-        }
+    }
+    if ( notify )
+    {
+        emit superSamplingChanged( m_superSampling );
     }
 }
 
@@ -810,10 +810,10 @@ void VideoTabController::setAllowSupersampleOverride( const bool value,
             vr::k_pch_SteamVR_Section,
             vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
             m_allowSupersampleOverride );
-        if ( notify )
-        {
-            emit allowSupersampleOverrideChanged( m_allowSupersampleOverride );
-        }
+    }
+    if ( notify )
+    {
+        emit allowSupersampleOverrideChanged( m_allowSupersampleOverride );
     }
 }
 
@@ -837,10 +837,10 @@ void VideoTabController::setMotionSmoothing( const bool value,
         vr::VRSettings()->SetBool( vr::k_pch_SteamVR_Section,
                                    vr::k_pch_SteamVR_MotionSmoothing_Bool,
                                    m_motionSmoothing );
-        if ( notify )
-        {
-            emit motionSmoothingChanged( m_motionSmoothing );
-        }
+    }
+    if ( notify )
+    {
+        emit motionSmoothingChanged( m_motionSmoothing );
     }
 }
 
@@ -878,11 +878,10 @@ void VideoTabController::setAllowSupersampleFiltering( const bool value,
             vr::k_pch_SteamVR_Section,
             vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
             m_allowSupersampleFiltering );
-        if ( notify )
-        {
-            emit allowSupersampleFilteringChanged(
-                m_allowSupersampleFiltering );
-        }
+    }
+    if ( notify )
+    {
+        emit allowSupersampleFilteringChanged( m_allowSupersampleFiltering );
     }
 }
 

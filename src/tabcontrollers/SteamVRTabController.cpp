@@ -169,10 +169,10 @@ void SteamVRTabController::setPerformanceGraph( const bool value,
         vr::VRSettings()->SetBool( vr::k_pch_Perf_Section,
                                    vr::k_pch_Perf_PerfGraphInHMD_Bool,
                                    m_performanceGraphToggle );
-        if ( notify )
-        {
-            emit performanceGraphChanged( m_performanceGraphToggle );
-        }
+    }
+    if ( notify )
+    {
+        emit performanceGraphChanged( m_performanceGraphToggle );
     }
 }
 
@@ -191,10 +191,10 @@ void SteamVRTabController::setMultipleDriver( const bool value,
             vr::k_pch_SteamVR_Section,
             vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool,
             m_multipleDriverToggle );
-        if ( notify )
-        {
-            emit multipleDriverChanged( m_multipleDriverToggle );
-        }
+    }
+    if ( notify )
+    {
+        emit multipleDriverChanged( m_multipleDriverToggle );
     }
 }
 
@@ -212,10 +212,10 @@ void SteamVRTabController::setNoFadeToGrid( const bool value,
         vr::VRSettings()->SetBool( vr::k_pch_SteamVR_Section,
                                    vr::k_pch_SteamVR_DoNotFadeToGrid,
                                    m_noFadeToGridToggle );
-        if ( notify )
-        {
-            emit noFadeToGridChanged( m_noFadeToGridToggle );
-        }
+    }
+    if ( notify )
+    {
+        emit noFadeToGridChanged( m_noFadeToGridToggle );
     }
 }
 
@@ -234,10 +234,10 @@ void SteamVRTabController::setSystemButton( const bool value,
             vr::k_pch_SteamVR_Section,
             vr::k_pch_SteamVR_SendSystemButtonToAllApps_Bool,
             m_systemButtonToggle );
-        if ( notify )
-        {
-            emit systemButtonChanged( m_systemButtonToggle );
-        }
+    }
+    if ( notify )
+    {
+        emit systemButtonChanged( m_systemButtonToggle );
     }
 }
 
@@ -254,10 +254,10 @@ void SteamVRTabController::setDND( const bool value, const bool notify )
         vr::VRSettings()->SetBool( vr::k_pch_Notifications_Section,
                                    vr::k_pch_Notifications_DoNotDisturb_Bool,
                                    m_dnd );
-        if ( notify )
-        {
-            emit dNDChanged( m_dnd );
-        }
+    }
+    if ( notify )
+    {
+        emit dNDChanged( m_dnd );
     }
 }
 
@@ -278,10 +278,10 @@ void SteamVRTabController::setCameraActive( const bool value,
         vr::VRSettings()->SetBool( vr::k_pch_Camera_Section,
                                    vr::k_pch_Camera_EnableCamera_Bool,
                                    m_cameraActive );
-        if ( notify )
-        {
-            emit cameraActiveChanged( m_cameraActive );
-        }
+    }
+    if ( notify )
+    {
+        emit cameraActiveChanged( m_cameraActive );
     }
 }
 
@@ -300,10 +300,10 @@ void SteamVRTabController::setCameraBounds( const bool value,
             vr::k_pch_Camera_Section,
             vr::k_pch_Camera_EnableCameraForCollisionBounds_Bool,
             m_cameraBounds );
-        if ( notify )
-        {
-            emit cameraBoundsChanged( m_cameraBounds );
-        }
+    }
+    if ( notify )
+    {
+        emit cameraBoundsChanged( m_cameraBounds );
     }
 }
 
@@ -321,10 +321,10 @@ void SteamVRTabController::setCameraRoom( const bool value, const bool notify )
             vr::k_pch_Camera_Section,
             vr::k_pch_Camera_EnableCameraForRoomView_Bool,
             m_cameraRoom );
-        if ( notify )
-        {
-            emit cameraRoomChanged( m_cameraRoom );
-        }
+    }
+    if ( notify )
+    {
+        emit cameraRoomChanged( m_cameraRoom );
     }
 }
 
@@ -363,10 +363,10 @@ void SteamVRTabController::setCameraDashboard( const bool value,
             vr::k_pch_Camera_Section,
             vr::k_pch_Camera_EnableCameraInDashboard_Bool,
             m_cameraDashboard );
-        if ( notify )
-        {
-            emit cameraDashboardChanged( m_cameraDashboard );
-        }
+    }
+    if ( notify )
+    {
+        emit cameraDashboardChanged( m_cameraDashboard );
     }
 }
 

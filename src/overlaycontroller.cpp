@@ -918,6 +918,7 @@ void OverlayController::OnTimeoutPumpEvents()
         {
             mainEventLoop();
             m_customTickRateCounter = 0;
+            updateRate.incrementCounter();
         }
         else
         {
@@ -938,6 +939,7 @@ void OverlayController::OnTimeoutPumpEvents()
             // main event loop. (this function should trigger about every 11ms
             // assuming 90fps compositor)
             mainEventLoop();
+            updateRate.incrementCounter();
 
             // wait for the next frame after executing our main event loop once.
             m_lastFrame = m_currentFrame;
@@ -957,8 +959,6 @@ void OverlayController::OnTimeoutPumpEvents()
             m_vsyncTooLateCounter++;
         }
     }
-
-    updateRate.incrementCounter();
 }
 
 void OverlayController::mainEventLoop()
