@@ -14,6 +14,7 @@ void SteamVRTabController::initStage1()
 void SteamVRTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
+    synchSteamVR();
 }
 
 void SteamVRTabController::dashboardLoopTick()
@@ -22,141 +23,33 @@ void SteamVRTabController::dashboardLoopTick()
     {
         return;
     }
+    synchSteamVR();
+}
 
-    vr::EVRSettingsError vrSettingsError;
-
-    // Checks and synchs performance graph
-    auto pg = vr::VRSettings()->GetBool( vr::k_pch_Perf_Section,
-                                         vr::k_pch_Perf_PerfGraphInHMD_Bool,
-                                         &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_Perf_PerfGraphInHMD_Bool << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-    setPerformanceGraph( pg );
-
-    // synch systembutton
-    auto sb = vr::VRSettings()->GetBool(
-        vr::k_pch_SteamVR_Section,
-        vr::k_pch_SteamVR_SendSystemButtonToAllApps_Bool,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_SteamVR_SendSystemButtonToAllApps_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-    setSystemButton( sb );
-
-    // synch nofadetogrid
-    auto nf = vr::VRSettings()->GetBool( vr::k_pch_SteamVR_Section,
-                                         vr::k_pch_SteamVR_DoNotFadeToGrid,
-                                         &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_SteamVR_DoNotFadeToGrid << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-    setNoFadeToGrid( nf );
-
-    // synch multipleDriver
-    auto md = vr::VRSettings()->GetBool(
-        vr::k_pch_SteamVR_Section,
-        vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-    setMultipleDriver( md );
-
-    // synch dnd
-    auto donotd
-        = vr::VRSettings()->GetBool( vr::k_pch_Notifications_Section,
-                                     vr::k_pch_Notifications_DoNotDisturb_Bool,
-                                     &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_Notifications_DoNotDisturb_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-    setDND( donotd );
-
-    // synch camera
-    auto ca = vr::VRSettings()->GetBool( vr::k_pch_Camera_Section,
-                                         vr::k_pch_Camera_EnableCamera_Bool,
-                                         &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_Camera_EnableCamera_Bool << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-    setCameraActive( ca );
-
-    // synch camera room
-    auto cr = vr::VRSettings()->GetBool(
-        vr::k_pch_Camera_Section,
-        vr::k_pch_Camera_EnableCameraForRoomView_Bool,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_Camera_EnableCameraForRoomView_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-    setCameraRoom( cr );
-
-    // synch camera dashboard
-    auto cd = vr::VRSettings()->GetBool(
-        vr::k_pch_Camera_Section,
-        vr::k_pch_Camera_EnableCameraInDashboard_Bool,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_Camera_EnableCameraInDashboard_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-    setCameraDashboard( cd );
-
-    // synch camera bounds
-    auto cb = vr::VRSettings()->GetBool(
-        vr::k_pch_Camera_Section,
-        vr::k_pch_Camera_EnableCameraForCollisionBounds_Bool,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_Camera_EnableCameraForCollisionBounds_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-    setCameraBounds( cb );
+void SteamVRTabController::synchSteamVR()
+{
+    // Un-comment these if other Apps make heavy use OR ADDED to STEAMVR
+    // officially
+    // setPerformanceGraph(performanceGraph());
+    // setSystemButton(systemButton());
+    setMultipleDriver( multipleDriver() );
+    setDND( dnd() );
+    setNoFadeToGrid( noFadeToGrid() );
+    setCameraActive( cameraActive() );
+    setCameraRoom( cameraRoom() );
+    setCameraDashboard( cameraDashboard() );
+    setCameraBounds( cameraBounds() );
 }
 
 bool SteamVRTabController::performanceGraph() const
 {
+    auto p = ovr_settings_wrapper::getBool(
+        vr::k_pch_Perf_Section, vr::k_pch_Perf_PerfGraphInHMD_Bool );
+
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
     return m_performanceGraphToggle;
 }
 
@@ -166,18 +59,26 @@ void SteamVRTabController::setPerformanceGraph( const bool value,
     if ( m_performanceGraphToggle != value )
     {
         m_performanceGraphToggle = value;
-        vr::VRSettings()->SetBool( vr::k_pch_Perf_Section,
-                                   vr::k_pch_Perf_PerfGraphInHMD_Bool,
-                                   m_performanceGraphToggle );
-    }
-    if ( notify )
-    {
-        emit performanceGraphChanged( m_performanceGraphToggle );
+        ovr_settings_wrapper::setBool( vr::k_pch_Perf_Section,
+                                       vr::k_pch_Perf_PerfGraphInHMD_Bool,
+                                       m_performanceGraphToggle );
+        if ( notify )
+        {
+            emit performanceGraphChanged( m_performanceGraphToggle );
+        }
     }
 }
 
 bool SteamVRTabController::multipleDriver() const
 {
+    auto p = ovr_settings_wrapper::getBool(
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool );
+
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
     return m_multipleDriverToggle;
 }
 
@@ -187,19 +88,26 @@ void SteamVRTabController::setMultipleDriver( const bool value,
     if ( m_multipleDriverToggle != value )
     {
         m_multipleDriverToggle = value;
-        vr::VRSettings()->SetBool(
+        ovr_settings_wrapper::setBool(
             vr::k_pch_SteamVR_Section,
             vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool,
             m_multipleDriverToggle );
-    }
-    if ( notify )
-    {
-        emit multipleDriverChanged( m_multipleDriverToggle );
+        if ( notify )
+        {
+            emit multipleDriverChanged( m_multipleDriverToggle );
+        }
     }
 }
 
 bool SteamVRTabController::noFadeToGrid() const
 {
+    auto p = ovr_settings_wrapper::getBool( vr::k_pch_SteamVR_Section,
+                                            vr::k_pch_SteamVR_DoNotFadeToGrid );
+
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
     return m_noFadeToGridToggle;
 }
 
@@ -209,18 +117,26 @@ void SteamVRTabController::setNoFadeToGrid( const bool value,
     if ( m_noFadeToGridToggle != value )
     {
         m_noFadeToGridToggle = value;
-        vr::VRSettings()->SetBool( vr::k_pch_SteamVR_Section,
-                                   vr::k_pch_SteamVR_DoNotFadeToGrid,
-                                   m_noFadeToGridToggle );
-    }
-    if ( notify )
-    {
-        emit noFadeToGridChanged( m_noFadeToGridToggle );
+        ovr_settings_wrapper::setBool( vr::k_pch_SteamVR_Section,
+                                       vr::k_pch_SteamVR_DoNotFadeToGrid,
+                                       m_noFadeToGridToggle );
+        if ( notify )
+        {
+            emit noFadeToGridChanged( m_noFadeToGridToggle );
+        }
     }
 }
 
 bool SteamVRTabController::systemButton() const
 {
+    auto p = ovr_settings_wrapper::getBool(
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_SendSystemButtonToAllApps_Bool );
+
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
     return m_systemButtonToggle;
 }
 
@@ -230,19 +146,27 @@ void SteamVRTabController::setSystemButton( const bool value,
     if ( m_systemButtonToggle != value )
     {
         m_systemButtonToggle = value;
-        vr::VRSettings()->SetBool(
+        ovr_settings_wrapper::setBool(
             vr::k_pch_SteamVR_Section,
             vr::k_pch_SteamVR_SendSystemButtonToAllApps_Bool,
             m_systemButtonToggle );
-    }
-    if ( notify )
-    {
-        emit systemButtonChanged( m_systemButtonToggle );
+        if ( notify )
+        {
+            emit systemButtonChanged( m_systemButtonToggle );
+        }
     }
 }
 
 bool SteamVRTabController::dnd() const
 {
+    auto p = ovr_settings_wrapper::getBool(
+        vr::k_pch_Notifications_Section,
+        vr::k_pch_Notifications_DoNotDisturb_Bool );
+
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
     return m_dnd;
 }
 
@@ -251,13 +175,14 @@ void SteamVRTabController::setDND( const bool value, const bool notify )
     if ( m_dnd != value )
     {
         m_dnd = value;
-        vr::VRSettings()->SetBool( vr::k_pch_Notifications_Section,
-                                   vr::k_pch_Notifications_DoNotDisturb_Bool,
-                                   m_dnd );
-    }
-    if ( notify )
-    {
-        emit dNDChanged( m_dnd );
+        ovr_settings_wrapper::setBool(
+            vr::k_pch_Notifications_Section,
+            vr::k_pch_Notifications_DoNotDisturb_Bool,
+            m_dnd );
+        if ( notify )
+        {
+            emit dNDChanged( m_dnd );
+        }
     }
 }
 
@@ -266,6 +191,13 @@ void SteamVRTabController::setDND( const bool value, const bool notify )
 
 bool SteamVRTabController::cameraActive() const
 {
+    auto p = ovr_settings_wrapper::getBool(
+        vr::k_pch_Camera_Section, vr::k_pch_Camera_EnableCamera_Bool );
+
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
     return m_cameraActive;
 }
 
@@ -275,18 +207,26 @@ void SteamVRTabController::setCameraActive( const bool value,
     if ( m_cameraActive != value )
     {
         m_cameraActive = value;
-        vr::VRSettings()->SetBool( vr::k_pch_Camera_Section,
-                                   vr::k_pch_Camera_EnableCamera_Bool,
-                                   m_cameraActive );
-    }
-    if ( notify )
-    {
-        emit cameraActiveChanged( m_cameraActive );
+        ovr_settings_wrapper::setBool( vr::k_pch_Camera_Section,
+                                       vr::k_pch_Camera_EnableCamera_Bool,
+                                       m_cameraActive );
+        if ( notify )
+        {
+            emit cameraActiveChanged( m_cameraActive );
+        }
     }
 }
 
 bool SteamVRTabController::cameraBounds() const
 {
+    auto p = ovr_settings_wrapper::getBool(
+        vr::k_pch_Camera_Section,
+        vr::k_pch_Camera_EnableCameraForCollisionBounds_Bool );
+
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
     return m_cameraBounds;
 }
 
@@ -296,19 +236,27 @@ void SteamVRTabController::setCameraBounds( const bool value,
     if ( m_cameraBounds != value )
     {
         m_cameraBounds = value;
-        vr::VRSettings()->SetBool(
+        ovr_settings_wrapper::setBool(
             vr::k_pch_Camera_Section,
             vr::k_pch_Camera_EnableCameraForCollisionBounds_Bool,
             m_cameraBounds );
-    }
-    if ( notify )
-    {
-        emit cameraBoundsChanged( m_cameraBounds );
+        if ( notify )
+        {
+            emit cameraBoundsChanged( m_cameraBounds );
+        }
     }
 }
 
 bool SteamVRTabController::cameraRoom() const
 {
+    auto p = ovr_settings_wrapper::getBool(
+        vr::k_pch_Camera_Section,
+        vr::k_pch_Camera_EnableCameraForRoomView_Bool );
+
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
     return m_cameraRoom;
 }
 
@@ -317,19 +265,27 @@ void SteamVRTabController::setCameraRoom( const bool value, const bool notify )
     if ( m_cameraRoom != value )
     {
         m_cameraRoom = value;
-        vr::VRSettings()->SetBool(
+        ovr_settings_wrapper::setBool(
             vr::k_pch_Camera_Section,
             vr::k_pch_Camera_EnableCameraForRoomView_Bool,
             m_cameraRoom );
-    }
-    if ( notify )
-    {
-        emit cameraRoomChanged( m_cameraRoom );
+        if ( notify )
+        {
+            emit cameraRoomChanged( m_cameraRoom );
+        }
     }
 }
 
 bool SteamVRTabController::cameraDashboard() const
 {
+    auto p = ovr_settings_wrapper::getBool(
+        vr::k_pch_Camera_Section,
+        vr::k_pch_Camera_EnableCameraInDashboard_Bool );
+
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
     return m_cameraDashboard;
 }
 
@@ -359,14 +315,14 @@ void SteamVRTabController::setCameraDashboard( const bool value,
     if ( m_cameraDashboard != value )
     {
         m_cameraDashboard = value;
-        vr::VRSettings()->SetBool(
+        ovr_settings_wrapper::setBool(
             vr::k_pch_Camera_Section,
             vr::k_pch_Camera_EnableCameraInDashboard_Bool,
             m_cameraDashboard );
-    }
-    if ( notify )
-    {
-        emit cameraDashboardChanged( m_cameraDashboard );
+        if ( notify )
+        {
+            emit cameraDashboardChanged( m_cameraDashboard );
+        }
     }
 }
 

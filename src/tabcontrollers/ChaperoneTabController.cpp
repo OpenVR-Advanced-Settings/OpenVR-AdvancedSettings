@@ -27,9 +27,9 @@ void ChaperoneTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
 
-    updateChaperoneSettings(); // force one update of OVR saved settings to make
-                               // sure our m_ variables are correct
-    // Force call Update Overlay Once, so Default state is in correct location
+    updateChaperoneSettings();
+    // initMembers();
+
     if ( m_centerMarkerOverlayIsInit )
     {
         vr::HmdMatrix34_t temp = { { { 1.0f, 0.0f, 0.0f, 0.0f },

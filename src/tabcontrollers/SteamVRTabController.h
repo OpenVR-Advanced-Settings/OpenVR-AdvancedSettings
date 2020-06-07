@@ -49,6 +49,8 @@ private:
     bool m_cameraRoom = false;
     bool m_cameraDashboard = false;
 
+    void synchSteamVR();
+
 public:
     void initStage1();
     void initStage2( OverlayController* parent );
