@@ -39,7 +39,6 @@ void VideoTabController::synchSteamVR()
     setAllowSupersampleOverride( allowSupersampleOverride() );
     setSuperSampling( superSampling() );
     setAllowSupersampleFiltering( allowSupersampleFiltering() );
-    // TODO synch Gain()?
 }
 
 void VideoTabController::initBrightnessOverlay()
