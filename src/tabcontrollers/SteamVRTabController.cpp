@@ -30,7 +30,7 @@ void SteamVRTabController::synchSteamVR()
 {
     // Un-comment these if other Apps make heavy use OR ADDED to STEAMVR
     // officially
-    // setPerformanceGraph(performanceGraph());
+    setPerformanceGraph( performanceGraph() );
     // setSystemButton(systemButton());
     setMultipleDriver( multipleDriver() );
     setDND( dnd() );

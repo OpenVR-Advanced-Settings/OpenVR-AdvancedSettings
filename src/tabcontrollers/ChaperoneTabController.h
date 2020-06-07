@@ -33,7 +33,6 @@ struct ChaperoneProfile : settings::ISettingsObject
     vr::HmdMatrix34_t standingCenter;
     float playSpaceAreaX = 0.0f;
     float playSpaceAreaZ = 0.0f;
-
     bool includesVisibility = false;
     float visibility = 0.6f;
 
@@ -380,8 +379,6 @@ private:
     int m_rotationUpdateCounter = 0;
     int m_rotationCurrent = 0;
     bool m_centerMarkerOverlayIsInit = false;
-
-    void initMembers();
 
     vr::ETrackingUniverseOrigin m_trackingUniverse
         = vr::TrackingUniverseRawAndUncalibrated;

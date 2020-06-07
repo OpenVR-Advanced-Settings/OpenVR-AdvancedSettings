@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "../utils/FrameRateUtils.h"
+#include "../openvr/ovr_settings_wrapper.h"
 
 class QQuickWindow;
 // application namespace

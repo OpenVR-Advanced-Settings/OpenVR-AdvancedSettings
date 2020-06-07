@@ -28,7 +28,6 @@ void ChaperoneTabController::initStage2( OverlayController* var_parent )
     this->parent = var_parent;
 
     updateChaperoneSettings();
-    // initMembers();
 
     if ( m_centerMarkerOverlayIsInit )
     {
@@ -342,19 +341,6 @@ void ChaperoneTabController::eventLoopTick(
     }
 }
 
-void ChaperoneTabController::initMembers()
-{
-    m_fadeDistance = fadeDistance();
-    m_centerMarker = centerMarker();
-    m_playSpaceMarker = playSpaceMarker();
-    m_chaperoneColorR = chaperoneColorR();
-    m_chaperoneColorG = chaperoneColorG();
-    m_chaperoneColorB = chaperoneColorB();
-    m_chaperoneFloorToggle = chaperoneFloorToggle();
-
-    // aka bounds visibility
-    m_chaperoneColorA = chaperoneColorA();
-}
 void ChaperoneTabController::updateChaperoneSettings()
 {
     setBoundsVisibility( boundsVisibility() );
@@ -366,6 +352,7 @@ void ChaperoneTabController::updateChaperoneSettings()
     setChaperoneColorB( chaperoneColorB() );
     setChaperoneFloorToggle( chaperoneFloorToggle() );
     setCollisionBoundStyle( collisionBoundStyle() );
+    setHeight( height() );
 }
 
 void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
