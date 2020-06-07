@@ -342,43 +342,35 @@ void ChaperoneTabController::eventLoopTick(
     }
 }
 
+void ChaperoneTabController::initMembers()
+{
+    m_fadeDistance = fadeDistance();
+    m_centerMarker = centerMarker();
+    m_playSpaceMarker = playSpaceMarker();
+    m_chaperoneColorR = chaperoneColorR();
+    m_chaperoneColorG = chaperoneColorG();
+    m_chaperoneColorB = chaperoneColorB();
+    m_chaperoneFloorToggle = chaperoneFloorToggle();
+
+    // aka bounds visibility
+    m_chaperoneColorA = chaperoneColorA();
+}
 void ChaperoneTabController::updateChaperoneSettings()
 {
-    setBoundsVisibility( static_cast<float>( chaperoneColorA() ) / 255.0f );
+    setBoundsVisibility( boundsVisibility() );
     setFadeDistance( fadeDistance(), true );
     setCenterMarker( centerMarker() );
     setPlaySpaceMarker( playSpaceMarker() );
     setChaperoneColorR( chaperoneColorR() );
     setChaperoneColorG( chaperoneColorG() );
     setChaperoneColorB( chaperoneColorB() );
+    setChaperoneFloorToggle( chaperoneFloorToggle() );
     setCollisionBoundStyle( collisionBoundStyle() );
-}
-
-float ChaperoneTabController::boundsVisibility() const
-{
-    return m_visibility;
 }
 
 void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
 {
-    if ( fabs( static_cast<double>( m_visibility - value ) ) > 0.005 )
-    {
-        if ( value <= 0.3f )
-        {
-            m_visibility = 0.3f;
-        }
-        else
-        {
-            m_visibility = value;
-        }
-        setChaperoneColorA( static_cast<int>( 255 * m_visibility ), notify );
-        ovr_overlay_wrapper::setOverlayAlpha(
-            m_chaperoneFloorOverlayHandle, m_visibility, "" );
-    }
-    if ( notify )
-    {
-        emit boundsVisibilityChanged( m_visibility );
-    }
+    setChaperoneColorA( static_cast<int>( value * 255.0f ), notify );
 }
 
 float ChaperoneTabController::fadeDistance()
@@ -390,7 +382,7 @@ float ChaperoneTabController::fadeDistance()
             "" );
     if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        m_fadeDistance = p.second;
+        return p.second;
     }
     return m_fadeDistance;
 }
@@ -406,10 +398,10 @@ void ChaperoneTabController::setFadeDistance( float value, bool notify )
             m_fadeDistance,
             "" );
         // On failure do Nothing
-    }
-    if ( notify )
-    {
-        emit fadeDistanceChanged( m_fadeDistance );
+        if ( notify )
+        {
+            emit fadeDistanceChanged( m_fadeDistance );
+        }
     }
 }
 
@@ -468,7 +460,6 @@ bool ChaperoneTabController::centerMarker()
             "" );
     if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        m_centerMarker = p.second;
         return p.second;
     }
 
@@ -485,10 +476,10 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
             vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
             m_centerMarker,
             "" );
-    }
-    if ( notify )
-    {
-        emit centerMarkerChanged( m_centerMarker );
+        if ( notify )
+        {
+            emit centerMarkerChanged( m_centerMarker );
+        }
     }
 }
 
@@ -501,7 +492,6 @@ bool ChaperoneTabController::playSpaceMarker()
             "" );
     if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        m_playSpaceMarker = p.second;
         return p.second;
     }
 
@@ -519,16 +509,17 @@ void ChaperoneTabController::setPlaySpaceMarker( bool value, bool notify )
             m_playSpaceMarker,
             "" );
         // On Error Do Nothing
-    }
-    if ( notify )
-    {
-        emit playSpaceMarkerChanged( m_playSpaceMarker );
+        if ( notify )
+        {
+            emit playSpaceMarkerChanged( m_playSpaceMarker );
+        }
     }
 }
 
 bool ChaperoneTabController::forceBounds() const
 {
-    // todo ivrchaperonewrapper
+    // Currently th ere is no way to get from OVR if force bounds is on/off as
+    // of OVR 1.12.5
     return m_forceBounds;
 }
 
@@ -605,11 +596,10 @@ int ChaperoneTabController::chaperoneColorR()
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_ColorGammaR_Int32,
             "" );
-    if ( p.first != ovr_settings_wrapper::SettingsError::NoError )
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return m_chaperoneColorR;
+        return p.second;
     }
-    m_chaperoneColorR = p.second;
     return m_chaperoneColorR;
 }
 int ChaperoneTabController::chaperoneColorG()
@@ -619,11 +609,10 @@ int ChaperoneTabController::chaperoneColorG()
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_ColorGammaG_Int32,
             "" );
-    if ( p.first != ovr_settings_wrapper::SettingsError::NoError )
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return m_chaperoneColorG;
+        return p.second;
     }
-    m_chaperoneColorG = p.second;
     return m_chaperoneColorG;
 }
 int ChaperoneTabController::chaperoneColorB()
@@ -633,26 +622,39 @@ int ChaperoneTabController::chaperoneColorB()
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_ColorGammaB_Int32,
             "" );
-    if ( p.first != ovr_settings_wrapper::SettingsError::NoError )
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return m_chaperoneColorB;
+        return p.second;
     }
-    m_chaperoneColorB = p.second;
     return m_chaperoneColorB;
 }
 // aka transparancy
-int ChaperoneTabController::chaperoneColorA() const
+int ChaperoneTabController::chaperoneColorA()
 {
     std::pair<ovr_settings_wrapper::SettingsError, int> p
         = ovr_settings_wrapper::getInt32(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_ColorGammaA_Int32,
             "" );
-    if ( p.first != ovr_settings_wrapper::SettingsError::NoError )
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return 255;
+        return m_chaperoneColorA;
     }
     return p.second;
+}
+
+float ChaperoneTabController::boundsVisibility()
+{
+    std::pair<ovr_settings_wrapper::SettingsError, int> p
+        = ovr_settings_wrapper::getInt32(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_ColorGammaA_Int32,
+            "" );
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return static_cast<float>( m_chaperoneColorA / 255.0f );
+    }
+    return static_cast<float>( p.second / 255.0f );
 }
 
 bool ChaperoneTabController::chaperoneFloorToggle()
@@ -662,11 +664,11 @@ bool ChaperoneTabController::chaperoneFloorToggle()
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool,
             "" );
-    if ( p.first != ovr_settings_wrapper::SettingsError::NoError )
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return false;
+        return p.second;
     }
-    return p.second;
+    return m_chaperoneFloorToggle;
 }
 
 int ChaperoneTabController::collisionBoundStyle()
@@ -675,11 +677,10 @@ int ChaperoneTabController::collisionBoundStyle()
         = ovr_settings_wrapper::getInt32( vr::k_pch_CollisionBounds_Section,
                                           vr::k_pch_CollisionBounds_Style_Int32,
                                           "" );
-    if ( p.first != ovr_settings_wrapper::SettingsError::NoError )
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return m_collisionBoundStyle;
+        return p.second;
     }
-    m_collisionBoundStyle = p.second;
     return m_collisionBoundStyle;
 }
 
@@ -741,12 +742,11 @@ void ChaperoneTabController::setChaperoneColorR( int value, bool notify )
             vr::k_pch_CollisionBounds_ColorGammaR_Int32,
             m_chaperoneColorR,
             "" );
-        // TODO will get out of synch when using external modifer!
         updateCenterMarkerOverlayColor();
-    }
-    if ( notify )
-    {
-        emit chaperoneColorRChanged( value );
+        if ( notify )
+        {
+            emit chaperoneColorRChanged( value );
+        }
     }
 }
 
@@ -771,10 +771,10 @@ void ChaperoneTabController::setChaperoneColorG( int value, bool notify )
             m_chaperoneColorG,
             "" );
         updateCenterMarkerOverlayColor();
-    }
-    if ( notify )
-    {
-        emit chaperoneColorGChanged( value );
+        if ( notify )
+        {
+            emit chaperoneColorGChanged( value );
+        }
     }
 }
 
@@ -799,10 +799,10 @@ void ChaperoneTabController::setChaperoneColorB( int value, bool notify )
             m_chaperoneColorB,
             "" );
         updateCenterMarkerOverlayColor();
-    }
-    if ( notify )
-    {
-        emit chaperoneColorBChanged( value );
+        if ( notify )
+        {
+            emit chaperoneColorBChanged( value );
+        }
     }
 }
 void ChaperoneTabController::updateCenterMarkerOverlayColor()
@@ -816,25 +816,34 @@ void ChaperoneTabController::updateCenterMarkerOverlayColor()
 
 void ChaperoneTabController::setChaperoneColorA( int value, bool notify )
 {
-    if ( value > 255 )
+    if ( value != m_chaperoneColorA )
     {
-        value = 255;
-        LOG( WARNING ) << "Alpha Channel larger than 255, setting to 255";
+        if ( value > 255 )
+        {
+            value = 255;
+            LOG( WARNING ) << "Alpha Channel larger than 255, setting to 255";
+        }
+        else if ( value < 0 )
+        {
+            value = 0;
+            LOG( WARNING ) << "Alpha Channel smaller than 0, setting to 0";
+        }
+        m_chaperoneColorA = value;
+        ovr_settings_wrapper::setInt32(
+            vr::k_pch_CollisionBounds_Section,
+            vr::k_pch_CollisionBounds_ColorGammaA_Int32,
+            value,
+            "" );
+        ovr_overlay_wrapper::setOverlayAlpha( m_chaperoneFloorOverlayHandle,
+                                              static_cast<float>( value )
+                                                  / 255.0f,
+                                              "" );
+        if ( notify )
+        {
+            emit chaperoneColorAChanged( value );
+        }
     }
-    else if ( value < 0 )
-    {
-        value = 0;
-        LOG( WARNING ) << "Alpha Channel smaller than 0, setting to 0";
-    }
-    ovr_settings_wrapper::setInt32( vr::k_pch_CollisionBounds_Section,
-                                    vr::k_pch_CollisionBounds_ColorGammaA_Int32,
-                                    value,
-                                    "" );
-    if ( notify )
-    {
-        emit chaperoneColorAChanged( value );
-    }
-}
+} // namespace advsettings
 
 void ChaperoneTabController::setCenterMarkerNew( bool value, bool notify )
 {
@@ -909,10 +918,10 @@ void ChaperoneTabController::setCollisionBoundStyle( int value,
                                         vr::k_pch_CollisionBounds_Style_Int32,
                                         m_collisionBoundStyle,
                                         "" );
-    }
-    if ( notify )
-    {
-        emit collisionBoundStyleChanged( value );
+        if ( notify )
+        {
+            emit collisionBoundStyleChanged( value );
+        }
     }
 }
 
@@ -1220,7 +1229,7 @@ void ChaperoneTabController::addChaperoneProfile(
     profile->includesVisibility = includeVisbility;
     if ( includeVisbility )
     {
-        profile->visibility = m_visibility;
+        profile->visibility = boundsVisibility();
     }
     profile->includesFadeDistance = includeFadeDistance;
     if ( includeFadeDistance )
@@ -1568,7 +1577,7 @@ void ChaperoneTabController::initCenterMarkerOverlay()
             m_chaperoneFloorOverlayHandle, 0.5f );
         updateCenterMarkerOverlayColor();
         ovr_overlay_wrapper::setOverlayAlpha(
-            m_chaperoneFloorOverlayHandle, m_visibility, "" );
+            m_chaperoneFloorOverlayHandle, boundsVisibility(), "" );
         m_centerMarkerOverlayIsInit = true;
     }
     else

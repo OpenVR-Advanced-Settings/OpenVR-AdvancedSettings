@@ -324,7 +324,6 @@ class ChaperoneTabController : public QObject
 private:
     OverlayController* parent;
 
-    float m_visibility = 0.6f;
     float m_fadeDistance = 0.7f;
     float m_height = 2.0f;
     bool m_centerMarker = false;
@@ -354,6 +353,7 @@ private:
     int m_chaperoneColorR = 0;
     int m_chaperoneColorG = 255;
     int m_chaperoneColorB = 255;
+    int m_chaperoneColorA = 153;
 
     int m_collisionBoundStyle = 0;
 
@@ -381,6 +381,8 @@ private:
     int m_rotationCurrent = 0;
     bool m_centerMarkerOverlayIsInit = false;
 
+    void initMembers();
+
     vr::ETrackingUniverseOrigin m_trackingUniverse
         = vr::TrackingUniverseRawAndUncalibrated;
 
@@ -397,7 +399,6 @@ public:
 
     void updateCenterMarkerOverlay( vr::HmdMatrix34_t* centerPlaySpaceMatrix );
 
-    float boundsVisibility() const;
     float fadeDistance();
     float height();
     bool centerMarker();
@@ -408,7 +409,8 @@ public:
     int chaperoneColorR();
     int chaperoneColorG();
     int chaperoneColorB();
-    int chaperoneColorA() const;
+    int chaperoneColorA();
+    float boundsVisibility();
 
     bool centerMarkerNew();
     bool m_centerMarkerOverlayNeedsUpdate = false;
