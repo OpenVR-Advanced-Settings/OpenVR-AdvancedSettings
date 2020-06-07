@@ -357,7 +357,8 @@ void ChaperoneTabController::updateChaperoneSettings()
 
 void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
 {
-    setChaperoneColorA( static_cast<int>( value * 255.0f ), notify );
+    setChaperoneColorA(
+        static_cast<int>( static_cast<float>( value ) * 255.0f ), notify );
 }
 
 float ChaperoneTabController::fadeDistance()
@@ -639,9 +640,10 @@ float ChaperoneTabController::boundsVisibility()
             "" );
     if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return static_cast<float>( m_chaperoneColorA / 255.0f );
+        return static_cast<float>( static_cast<float>( m_chaperoneColorA )
+                                   / 255.0f );
     }
-    return static_cast<float>( p.second / 255.0f );
+    return static_cast<float>( static_cast<float>( p.second ) / 255.0f );
 }
 
 bool ChaperoneTabController::chaperoneFloorToggle()
