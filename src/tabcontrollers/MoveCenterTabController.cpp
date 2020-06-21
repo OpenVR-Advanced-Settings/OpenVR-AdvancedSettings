@@ -2107,6 +2107,8 @@ void MoveCenterTabController::saveUncommittedChaperone()
     }
 }
 
+// NOTE this function will create bad output if User Rotates 180 Degrees in 1/7*
+// frame-rate. (Worst Case 30 fps = ~770 deg/s)
 void MoveCenterTabController::updateHmdRotationCounter(
     vr::TrackedDevicePose_t hmdPose,
     double angle )
@@ -2149,17 +2151,22 @@ void MoveCenterTabController::updateHmdRotationCounter(
 
     // Calculate yaw from quaternion.
     double hmdYawDiff = quaternion::getYaw( hmdDiffQuaternion );
-    m_hmdYawTotal += hmdYawDiff;
 
     // Just Testing XD
     double yawSingleTemp = m_hmdYawSingle + hmdYawDiff;
     m_hmdYawSingle = quaternion::getYaw( m_hmdQuaternion );
 
-    // Detects if we have rotated an entire time~!
-    if ( ( std::abs( yawSingleTemp ) / ( 2 * M_PI ) ) > 1 )
+    // Detects if we are at a check point (180 deg from forward)
+    if ( ( std::abs( yawSingleTemp ) ) > M_PI )
     {
-        // detects positive/negative turn count
-        if ( hmdYawDiff >= 0 )
+        // This is probably an impossible case, but could mess with things.
+        if ( hmdYawDiff == 0 )
+        {
+            return;
+        }
+        // detects WHICH direction we are turning, and adds/subtracks from
+        // counter.
+        if ( hmdYawDiff > 0 )
         {
             m_hmdYawTurnCount += 1;
         }
@@ -2167,9 +2174,16 @@ void MoveCenterTabController::updateHmdRotationCounter(
         {
             m_hmdYawTurnCount -= 1;
         }
-        // Overrwrites Yaw with current hmd position + (limits max error
-        // accumulation to 1 rotation) and synchs with every normal rotation.
-        m_hmdYawTotal = ( m_hmdYawSingle ) + m_hmdYawTurnCount * ( 2 * M_PI );
+    }
+    // creates turns based on current orientation + count.
+    // This will not accumulate error.
+    if ( m_hmdYawTurnCount == 0 )
+    {
+        m_hmdYawTotal = m_hmdYawSingle;
+    }
+    else
+    {
+        m_hmdYawTotal = m_hmdYawSingle + ( m_hmdYawTurnCount * 2 * M_PI );
     }
     // Apply yaw difference to m_hmdYawTotal.
     m_lastHmdQuaternion = m_hmdQuaternion;
