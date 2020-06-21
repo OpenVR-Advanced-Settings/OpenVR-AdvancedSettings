@@ -1178,6 +1178,8 @@ double MoveCenterTabController::getHmdYawTotal()
 void MoveCenterTabController::resetHmdYawTotal()
 {
     m_hmdYawTotal = 0.0;
+    m_hmdYawSingle = 0.0;
+    m_hmdYawTurnCount = 0;
 }
 
 void MoveCenterTabController::clampVelocity( double* velocity )
@@ -2147,9 +2149,29 @@ void MoveCenterTabController::updateHmdRotationCounter(
 
     // Calculate yaw from quaternion.
     double hmdYawDiff = quaternion::getYaw( hmdDiffQuaternion );
-
-    // Apply yaw difference to m_hmdYawTotal.
     m_hmdYawTotal += hmdYawDiff;
+
+    // Just Testing XD
+    double yawSingleTemp = m_hmdYawSingle + hmdYawDiff;
+    m_hmdYawSingle = quaternion::getYaw( m_hmdQuaternion );
+
+    // Detects if we have rotated an entire time~!
+    if ( ( std::abs( yawSingleTemp ) / ( 2 * M_PI ) ) > 1 )
+    {
+        // detects positive/negative turn count
+        if ( hmdYawDiff >= 0 )
+        {
+            m_hmdYawTurnCount += 1;
+        }
+        else
+        {
+            m_hmdYawTurnCount -= 1;
+        }
+        // Overrwrites Yaw with current hmd position + (limits max error
+        // accumulation to 1 rotation) and synchs with every normal rotation.
+        m_hmdYawTotal = ( m_hmdYawSingle ) + m_hmdYawTurnCount * ( 2 * M_PI );
+    }
+    // Apply yaw difference to m_hmdYawTotal.
     m_lastHmdQuaternion = m_hmdQuaternion;
 }
 

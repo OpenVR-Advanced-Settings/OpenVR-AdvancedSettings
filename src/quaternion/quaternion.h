@@ -1,7 +1,7 @@
 #pragma once
 
 #include <openvr.h>
-//#include <cmath>
+#include <cmath>
 
 namespace quaternion
 {
