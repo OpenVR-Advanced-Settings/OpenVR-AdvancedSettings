@@ -2156,11 +2156,6 @@ void MoveCenterTabController::updateHmdRotationCounter(
     double yawSingleTemp = m_hmdYawSingle + hmdYawDiff;
     m_hmdYawSingle = quaternion::getYaw( m_hmdQuaternion );
 
-    if ( hmdYawDiff > M_PI )
-    {
-        LOG( ERROR ) << " Turned too fast Rotation Counter May be out Of Synch";
-    }
-
     // Detects if we are at a check point (180 deg from forward)
     if ( ( std::abs( yawSingleTemp ) ) > M_PI )
     {
