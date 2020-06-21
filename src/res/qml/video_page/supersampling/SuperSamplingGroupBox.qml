@@ -38,7 +38,7 @@ GroupBox {
                 onCheckedChanged: {
                     VideoTabController.setAllowSupersampleOverride(this.checked, false)
                     VideoTabController.setSuperSampling(videoSupersamplingSlider.value, true)
-                    videoSupersamplingText.text = VideoTabController.superSampling.toFixed(1)
+                    videoSupersamplingText.text = VideoTabController.superSampling.toFixed(2)
                     if(!this.checked){
                         videoSupersamplingText.enabled = false
                         videoSupersamplingSlider.enabled = false
@@ -73,8 +73,8 @@ GroupBox {
                 Layout.fillWidth: true
                 onValueChanged: {
                     var val = this.value
-                    videoSupersamplingText.text = val.toFixed(1)
-                    VideoTabController.setSuperSampling(this.value.toFixed(1), true)
+                    videoSupersamplingText.text = val.toFixed(2)
+                    VideoTabController.setSuperSampling(this.value.toFixed(2), true)
                 }
             }
 
@@ -107,7 +107,7 @@ GroupBox {
                             VideoTabController.setSuperSampling(v, false)
                         }
                     }
-                    text = VideoTabController.superSampling.toFixed(1)
+                    text = VideoTabController.superSampling.toFixed(2)
                 }
             }
         }
@@ -134,13 +134,13 @@ GroupBox {
         target: VideoTabController
 
         onSuperSamplingChanged: {
-            var s1 = VideoTabController.superSampling.toFixed(1)
+            var s1 = VideoTabController.superSampling.toFixed(2)
             videoSupersamplingSlider.value = s1
             videoSupersamplingText.text = s1
         }
         onAllowSupersampleOverrideChanged: {
             videoAllowSupersampleOverrideToggle.checked = VideoTabController.allowSupersampleOverride
-            var s1 = VideoTabController.superSampling.toFixed(1)
+            var s1 = VideoTabController.superSampling.toFixed(2)
             videoSupersamplingSlider.value = s1
             videoSupersamplingText.text = s1
         }
