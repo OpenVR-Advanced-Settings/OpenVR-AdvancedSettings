@@ -1178,7 +1178,7 @@ double MoveCenterTabController::getHmdYawTotal()
 void MoveCenterTabController::resetHmdYawTotal()
 {
     m_hmdYawTotal = 0.0;
-    m_hmdYawSingle = 0.0;
+    m_hmdYawOld = 0.0;
     m_hmdYawTurnCount = 0;
 }
 
@@ -2144,48 +2144,42 @@ void MoveCenterTabController::updateHmdRotationCounter(
         m_lastHmdQuaternion = m_hmdQuaternion;
         return;
     }
-    // Construct a quaternion representing difference between old
-    // hmd pose and new hmd pose.
-    vr::HmdQuaternion_t hmdDiffQuaternion = quaternion::multiply(
-        m_hmdQuaternion, quaternion::conjugate( m_lastHmdQuaternion ) );
 
-    // Calculate yaw from quaternion.
-    double hmdYawDiff = quaternion::getYaw( hmdDiffQuaternion );
+    double hmdYawCurrent = quaternion::getYaw( m_hmdQuaternion );
 
-    // Just Testing XD
-    double yawSingleTemp = m_hmdYawSingle + hmdYawDiff;
-    m_hmdYawSingle = quaternion::getYaw( m_hmdQuaternion );
-
-    // Detects if we are at a check point (180 deg from forward)
-    if ( ( std::abs( yawSingleTemp ) ) > M_PI )
+    // checks to see if hmd is in exact same position
+    if ( m_hmdYawOld == hmdYawCurrent )
     {
-        // This is probably an impossible case, but could mess with things.
-        if ( hmdYawDiff == 0 )
-        {
-            return;
-        }
-        // detects WHICH direction we are turning, and adds/subtracks from
-        // counter.
-        if ( hmdYawDiff > 0 )
+        return;
+    }
+    // Checks if The points defined by Yaw old and current form an arc of no
+    // more than 180 degrees, that MUST intersect With 180 degrees.
+
+    // NOTE: This fails if there is > 180 degrees between the update Rate
+    // Worst Case Scenario this should be ~770 deg/s turning speed. (30 fps)
+
+    if ( std::abs( m_hmdYawOld - hmdYawCurrent ) > M_PI )
+    {
+        if ( m_hmdYawOld >= 0 )
         {
             m_hmdYawTurnCount += 1;
         }
-        else
+        else if ( m_hmdYawOld < 0 )
         {
             m_hmdYawTurnCount -= 1;
         }
     }
-    // creates turns based on current orientation + count.
-    // This will not accumulate error.
+
+    // Sets total rotation based on current orientation + Turn Count
     if ( m_hmdYawTurnCount == 0 )
     {
-        m_hmdYawTotal = m_hmdYawSingle;
+        m_hmdYawTotal = hmdYawCurrent;
     }
     else
     {
-        m_hmdYawTotal = m_hmdYawSingle + ( m_hmdYawTurnCount * 2 * M_PI );
+        m_hmdYawTotal = hmdYawCurrent + ( m_hmdYawTurnCount * 2 * M_PI );
     }
-    // Apply yaw difference to m_hmdYawTotal.
+    m_hmdYawOld = hmdYawCurrent;
     m_lastHmdQuaternion = m_hmdQuaternion;
 }
 

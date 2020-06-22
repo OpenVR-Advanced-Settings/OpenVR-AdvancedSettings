@@ -170,7 +170,7 @@ private:
         = { k_quaternionInvalidValue, 0.0, 0.0, 0.0 };
     vr::HmdQuaternion_t m_hmdQuaternion;
     double m_hmdYawTotal = 0.0;
-    double m_hmdYawSingle = 0.0;
+    double m_hmdYawOld = 0.0;
     int m_hmdYawTurnCount = 0;
     vr::ETrackedControllerRole m_activeDragHand
         = vr::TrackedControllerRole_Invalid;
