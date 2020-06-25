@@ -5,3 +5,4 @@ Comment=OVRAS
 Exec=AdvancedSettings
 Icon=AdvancedSettings
 Categories=Office;
+X-AppImage-Integrate=false
