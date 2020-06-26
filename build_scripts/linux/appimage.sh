@@ -39,6 +39,10 @@ cp $PROJECT_DIR/src/res/img/icons/thumbicon.png $EXE_DIR/usr/share/icons/hicolor
 
 cp $PROJECT_DIR/src/package_files/linux/AdvancedSettings.desktop $EXE_DIR/usr/share/applications/AdvancedSettings.desktop
 
+if [ "$1" == "steam" ]; then
+  echo "X-AppImage-Integrate=false" >> $EXE_DIR/usr/share/applications/AdvancedSettings.desktop
+fi
+
 qmake --version
 
 $PROJECT_DIR/linuxdeployqt-continuous-x86_64.AppImage -version --appimage-extract-and-run
