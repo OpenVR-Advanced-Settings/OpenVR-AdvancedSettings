@@ -49,6 +49,7 @@ $APPIMAGE_COMMAND
 
 # Disable AppImageLauncher integration for Steam versions
 echo "X-AppImage-Integrate=false" >> $EXE_DIR/usr/share/applications/AdvancedSettings.desktop
+echo "X-AppImage-Integrate=false" >> $EXE_DIR/AdvancedSettings.desktop
 export VERSION="$(git rev-parse --short HEAD)-STEAM"
 
 $APPIMAGE_COMMAND
