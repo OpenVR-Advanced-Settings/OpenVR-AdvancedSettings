@@ -2146,6 +2146,8 @@ void MoveCenterTabController::updateHmdRotationCounter(
     }
 
     double hmdYawCurrent = quaternion::getYaw( m_hmdQuaternion );
+    // double hmdPitchCurrent = quaternion::getPitch( m_hmdQuaternion );
+    // double hmdRollCurrent = quaternion::getRoll( m_hmdQuaternion );
 
     // checks to see if hmd is in exact same position
     if ( m_hmdYawOld == hmdYawCurrent )
@@ -2160,13 +2162,22 @@ void MoveCenterTabController::updateHmdRotationCounter(
 
     if ( std::abs( m_hmdYawOld - hmdYawCurrent ) > M_PI )
     {
-        if ( m_hmdYawOld >= 0 )
+        bool isInverted = ( hmdMatrixAbsolute.m[1][1] < 0 );
+        if ( !isInverted )
         {
-            m_hmdYawTurnCount += 1;
+            if ( m_hmdYawOld >= 0 )
+            {
+                m_hmdYawTurnCount += 1;
+            }
+            else if ( m_hmdYawOld < 0 )
+            {
+                m_hmdYawTurnCount -= 1;
+            }
         }
-        else if ( m_hmdYawOld < 0 )
+        else
         {
-            m_hmdYawTurnCount -= 1;
+            LOG( WARNING )
+                << "HMD Was Inverted during a Turn may be in-accurate";
         }
     }
 
