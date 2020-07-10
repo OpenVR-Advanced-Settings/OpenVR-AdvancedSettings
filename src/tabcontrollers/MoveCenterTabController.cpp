@@ -2162,6 +2162,7 @@ void MoveCenterTabController::updateHmdRotationCounter(
 
     if ( std::abs( m_hmdYawOld - hmdYawCurrent ) > M_PI )
     {
+        // Checks if the HMD is inverted, and skips if it is
         bool isInverted = ( hmdMatrixAbsolute.m[1][1] < 0 );
         if ( !isInverted )
         {
@@ -2176,8 +2177,8 @@ void MoveCenterTabController::updateHmdRotationCounter(
         }
         else
         {
-            LOG( WARNING )
-                << "HMD Was Inverted during a Turn may be in-accurate";
+            LOG( WARNING ) << "HMD Was Inverted during a Turn Count, Turn "
+                              "counter may be in-accurate";
         }
     }
 
