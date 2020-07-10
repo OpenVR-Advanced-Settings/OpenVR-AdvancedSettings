@@ -457,12 +457,12 @@ void MoveCenterTabController::setFrictionPercent( int value, bool notify )
 bool MoveCenterTabController::adjustChaperone() const
 {
     return settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_adjustChaperone );
+        settings::BoolSetting::PLAYSPACE_adjustChaperone2 );
 }
 
 void MoveCenterTabController::setAdjustChaperone( bool value, bool notify )
 {
-    settings::setSetting( settings::BoolSetting::PLAYSPACE_adjustChaperone,
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_adjustChaperone2,
                           value );
 
     if ( notify )
@@ -2719,7 +2719,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     // As of SVR 1.13.1 The Chaperone will follow Universe Center NOT raw Center
     // as such this should be off by defualt.
 
-    /*if ( adjustChaperone() )
+    if ( adjustChaperone() )
     {
         // make a copy of our bounds and
         // reorient relative to new universe center
@@ -2775,7 +2775,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
             updatedBounds, m_collisionBoundsCountForReset );
         delete[] updatedBounds;
-    }*/
+    }
 
     // Center Marker for playspace.
     if ( parent->m_chaperoneTabController.m_centerMarkerOverlayNeedsUpdate )

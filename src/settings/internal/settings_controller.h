@@ -275,6 +275,10 @@ private:
                           SettingCategory::Playspace,
                           QtInfo{ "simpleRecenter" },
                           false },
+        BoolSettingValue{ BoolSetting::PLAYSPACE_adjustChaperone,
+                          SettingCategory::Playspace,
+                          QtInfo{ "adjustChaperone2" },
+                          false },
 
         BoolSettingValue{ BoolSetting::APPLICATION_disableVersionCheck,
                           SettingCategory::Application,
