@@ -275,7 +275,9 @@ private:
                           SettingCategory::Playspace,
                           QtInfo{ "simpleRecenter" },
                           false },
-        BoolSettingValue{ BoolSetting::PLAYSPACE_adjustChaperone,
+        // TODO Replace Back to Adjust Chaperone When Breaking Change is done.
+        // Needed New Setting defaulted to off w/ SVR 1.13.x release
+        BoolSettingValue{ BoolSetting::PLAYSPACE_adjustChaperone2,
                           SettingCategory::Playspace,
                           QtInfo{ "adjustChaperone2" },
                           false },
