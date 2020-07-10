@@ -2716,7 +2716,10 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             &offsetSeatedCenter );
     }
 
-    if ( adjustChaperone() )
+    // As of SVR 1.13.1 The Chaperone will follow Universe Center NOT raw Center
+    // as such this should be off by defualt.
+
+    /*if ( adjustChaperone() )
     {
         // make a copy of our bounds and
         // reorient relative to new universe center
@@ -2746,17 +2749,20 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
                 // origin
                 updatedBounds[quad].vCorners[corner].v[0]
                     -= offsetUniverseCenter.m[0][3]
-                       - m_universeCenterForReset.m[0][3];
+                       - offsetUniverseCenter.m[0][3];
+                //- m_universeCenterForReset.m[0][3];
                 // but don't touch y=0 values to keep floor corners rooted down
                 if ( updatedBounds[quad].vCorners[corner].v[1] != 0 )
                 {
                     updatedBounds[quad].vCorners[corner].v[1]
                         -= offsetUniverseCenter.m[1][3]
-                           - m_universeCenterForReset.m[1][3];
+                           - offsetUniverseCenter.m[1][3];
+                    //- m_universeCenterForReset.m[1][3];
                 }
                 updatedBounds[quad].vCorners[corner].v[2]
                     -= offsetUniverseCenter.m[2][3]
-                       - m_universeCenterForReset.m[2][3];
+                       - offsetUniverseCenter.m[2][3];
+                //- m_universeCenterForReset.m[2][3];
 
                 // rotate by universe center's yaw
                 rotateFloatCoordinates(
@@ -2765,52 +2771,48 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             }
         }
 
-        // Center Marker for playspace.
-        if ( parent->m_chaperoneTabController.m_centerMarkerOverlayNeedsUpdate )
-        {
-            // Set Unrotated Coordinates
-            float universePlayCenterTempCoords[3] = { 0.0f, 0.0f, 0.0f };
-            universePlayCenterTempCoords[0]
-                -= offsetUniverseCenter.m[0][3]
-                   - m_universeCenterForReset.m[0][3];
-            universePlayCenterTempCoords[1]
-                -= offsetUniverseCenter.m[1][3]
-                   - m_universeCenterForReset.m[1][3];
-            universePlayCenterTempCoords[2]
-                -= offsetUniverseCenter.m[2][3]
-                   - m_universeCenterForReset.m[2][3];
-            // Rotate un-rotated to rotated
-            rotateFloatCoordinates(
-                universePlayCenterTempCoords,
-                static_cast<float>( offsetUniverseCenterYaw ) );
-            // Set Up orientation properly away from raw center
-            utils::matMul33( m_offsetmatrix,
-                             offsetUniverseCenter,
-                             utils::k_forwardUpMatrix );
-            vr::HmdMatrix34_t rotMatrix;
-            utils::initRotationMatrix(
-                rotMatrix,
-                1,
-                static_cast<float>( -( ( m_rotation * k_centidegreesToRadians )
-                                       + offsetUniverseCenterYaw ) ) );
-
-            // Rotates orientation At playspace center
-            vr::HmdMatrix34_t finalmatrix;
-            utils::matMul33( finalmatrix, rotMatrix, m_offsetmatrix );
-
-            finalmatrix.m[0][3] = universePlayCenterTempCoords[0];
-            finalmatrix.m[1][3] = universePlayCenterTempCoords[1];
-            finalmatrix.m[2][3] = universePlayCenterTempCoords[2];
-
-            parent->m_chaperoneTabController.updateCenterMarkerOverlay(
-                &finalmatrix );
-        }
-
         // update chaperone working set preview (this does not commit)
         vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
             updatedBounds, m_collisionBoundsCountForReset );
         delete[] updatedBounds;
+    }*/
+
+    // Center Marker for playspace.
+    if ( parent->m_chaperoneTabController.m_centerMarkerOverlayNeedsUpdate )
+    {
+        // Set Unrotated Coordinates
+        float universePlayCenterTempCoords[3] = { 0.0f, 0.0f, 0.0f };
+        universePlayCenterTempCoords[0]
+            -= offsetUniverseCenter.m[0][3] - m_universeCenterForReset.m[0][3];
+        universePlayCenterTempCoords[1]
+            -= offsetUniverseCenter.m[1][3] - m_universeCenterForReset.m[1][3];
+        universePlayCenterTempCoords[2]
+            -= offsetUniverseCenter.m[2][3] - m_universeCenterForReset.m[2][3];
+        // Rotate un-rotated to rotated
+        rotateFloatCoordinates( universePlayCenterTempCoords,
+                                static_cast<float>( offsetUniverseCenterYaw ) );
+        // Set Up orientation properly away from raw center
+        utils::matMul33(
+            m_offsetmatrix, offsetUniverseCenter, utils::k_forwardUpMatrix );
+        vr::HmdMatrix34_t rotMatrix;
+        utils::initRotationMatrix(
+            rotMatrix,
+            1,
+            static_cast<float>( -( ( m_rotation * k_centidegreesToRadians )
+                                   + offsetUniverseCenterYaw ) ) );
+
+        // Rotates orientation At playspace center
+        vr::HmdMatrix34_t finalmatrix;
+        utils::matMul33( finalmatrix, rotMatrix, m_offsetmatrix );
+
+        finalmatrix.m[0][3] = universePlayCenterTempCoords[0];
+        finalmatrix.m[1][3] = universePlayCenterTempCoords[1];
+        finalmatrix.m[2][3] = universePlayCenterTempCoords[2];
+
+        parent->m_chaperoneTabController.updateCenterMarkerOverlay(
+            &finalmatrix );
     }
+
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &offsetUniverseCenter );
 
