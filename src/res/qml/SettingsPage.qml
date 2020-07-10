@@ -13,6 +13,7 @@ MyStackViewPage {
         ScrollBar.vertical.policy: ScrollBar.AlwaysOn
         Layout.fillWidth: true
         Layout.fillHeight: true
+        clip: true
 
             ColumnLayout {
             spacing: 18
