@@ -457,12 +457,12 @@ void MoveCenterTabController::setFrictionPercent( int value, bool notify )
 bool MoveCenterTabController::adjustChaperone() const
 {
     return settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_adjustChaperone );
+        settings::BoolSetting::PLAYSPACE_adjustChaperone2 );
 }
 
 void MoveCenterTabController::setAdjustChaperone( bool value, bool notify )
 {
-    settings::setSetting( settings::BoolSetting::PLAYSPACE_adjustChaperone,
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_adjustChaperone2,
                           value );
 
     if ( notify )
@@ -1178,6 +1178,8 @@ double MoveCenterTabController::getHmdYawTotal()
 void MoveCenterTabController::resetHmdYawTotal()
 {
     m_hmdYawTotal = 0.0;
+    m_hmdYawOld = 0.0;
+    m_hmdYawTurnCount = 0;
 }
 
 void MoveCenterTabController::clampVelocity( double* velocity )
@@ -2105,6 +2107,8 @@ void MoveCenterTabController::saveUncommittedChaperone()
     }
 }
 
+// NOTE this function will create bad output if User Rotates 180 Degrees in 1/7*
+// frame-rate. (Worst Case 30 fps = ~770 deg/s)
 void MoveCenterTabController::updateHmdRotationCounter(
     vr::TrackedDevicePose_t hmdPose,
     double angle )
@@ -2140,16 +2144,54 @@ void MoveCenterTabController::updateHmdRotationCounter(
         m_lastHmdQuaternion = m_hmdQuaternion;
         return;
     }
-    // Construct a quaternion representing difference between old
-    // hmd pose and new hmd pose.
-    vr::HmdQuaternion_t hmdDiffQuaternion = quaternion::multiply(
-        m_hmdQuaternion, quaternion::conjugate( m_lastHmdQuaternion ) );
 
-    // Calculate yaw from quaternion.
-    double hmdYawDiff = quaternion::getYaw( hmdDiffQuaternion );
+    double hmdYawCurrent = quaternion::getYaw( m_hmdQuaternion );
+    // double hmdPitchCurrent = quaternion::getPitch( m_hmdQuaternion );
+    // double hmdRollCurrent = quaternion::getRoll( m_hmdQuaternion );
 
-    // Apply yaw difference to m_hmdYawTotal.
-    m_hmdYawTotal += hmdYawDiff;
+    // checks to see if hmd is in exact same position
+    if ( m_hmdYawOld == hmdYawCurrent )
+    {
+        return;
+    }
+    // Checks if The points defined by Yaw old and current form an arc of no
+    // more than 180 degrees, that MUST intersect With 180 degrees.
+
+    // NOTE: This fails if there is > 180 degrees between the update Rate
+    // Worst Case Scenario this should be ~770 deg/s turning speed. (30 fps)
+
+    if ( std::abs( m_hmdYawOld - hmdYawCurrent ) > M_PI )
+    {
+        // Checks if the HMD is inverted, and skips if it is
+        bool isInverted = ( hmdMatrixAbsolute.m[1][1] < 0 );
+        if ( !isInverted )
+        {
+            if ( m_hmdYawOld >= 0 )
+            {
+                m_hmdYawTurnCount += 1;
+            }
+            else if ( m_hmdYawOld < 0 )
+            {
+                m_hmdYawTurnCount -= 1;
+            }
+        }
+        else
+        {
+            LOG( WARNING ) << "HMD Was Inverted during a Turn Count, Turn "
+                              "counter may be in-accurate";
+        }
+    }
+
+    // Sets total rotation based on current orientation + Turn Count
+    if ( m_hmdYawTurnCount == 0 )
+    {
+        m_hmdYawTotal = hmdYawCurrent;
+    }
+    else
+    {
+        m_hmdYawTotal = hmdYawCurrent + ( m_hmdYawTurnCount * 2 * M_PI );
+    }
+    m_hmdYawOld = hmdYawCurrent;
     m_lastHmdQuaternion = m_hmdQuaternion;
 }
 
@@ -2674,6 +2716,9 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             &offsetSeatedCenter );
     }
 
+    // As of SVR 1.13.1 The Chaperone will follow Universe Center NOT raw Center
+    // as such this should be off by defualt.
+
     if ( adjustChaperone() )
     {
         // make a copy of our bounds and
@@ -2704,17 +2749,20 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
                 // origin
                 updatedBounds[quad].vCorners[corner].v[0]
                     -= offsetUniverseCenter.m[0][3]
-                       - m_universeCenterForReset.m[0][3];
+                       - offsetUniverseCenter.m[0][3];
+                //- m_universeCenterForReset.m[0][3];
                 // but don't touch y=0 values to keep floor corners rooted down
                 if ( updatedBounds[quad].vCorners[corner].v[1] != 0 )
                 {
                     updatedBounds[quad].vCorners[corner].v[1]
                         -= offsetUniverseCenter.m[1][3]
-                           - m_universeCenterForReset.m[1][3];
+                           - offsetUniverseCenter.m[1][3];
+                    //- m_universeCenterForReset.m[1][3];
                 }
                 updatedBounds[quad].vCorners[corner].v[2]
                     -= offsetUniverseCenter.m[2][3]
-                       - m_universeCenterForReset.m[2][3];
+                       - offsetUniverseCenter.m[2][3];
+                //- m_universeCenterForReset.m[2][3];
 
                 // rotate by universe center's yaw
                 rotateFloatCoordinates(
@@ -2723,52 +2771,48 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             }
         }
 
-        // Center Marker for playspace.
-        if ( parent->m_chaperoneTabController.m_centerMarkerOverlayNeedsUpdate )
-        {
-            // Set Unrotated Coordinates
-            float universePlayCenterTempCoords[3] = { 0.0f, 0.0f, 0.0f };
-            universePlayCenterTempCoords[0]
-                -= offsetUniverseCenter.m[0][3]
-                   - m_universeCenterForReset.m[0][3];
-            universePlayCenterTempCoords[1]
-                -= offsetUniverseCenter.m[1][3]
-                   - m_universeCenterForReset.m[1][3];
-            universePlayCenterTempCoords[2]
-                -= offsetUniverseCenter.m[2][3]
-                   - m_universeCenterForReset.m[2][3];
-            // Rotate un-rotated to rotated
-            rotateFloatCoordinates(
-                universePlayCenterTempCoords,
-                static_cast<float>( offsetUniverseCenterYaw ) );
-            // Set Up orientation properly away from raw center
-            utils::matMul33( m_offsetmatrix,
-                             offsetUniverseCenter,
-                             utils::k_forwardUpMatrix );
-            vr::HmdMatrix34_t rotMatrix;
-            utils::initRotationMatrix(
-                rotMatrix,
-                1,
-                static_cast<float>( -( ( m_rotation * k_centidegreesToRadians )
-                                       + offsetUniverseCenterYaw ) ) );
-
-            // Rotates orientation At playspace center
-            vr::HmdMatrix34_t finalmatrix;
-            utils::matMul33( finalmatrix, rotMatrix, m_offsetmatrix );
-
-            finalmatrix.m[0][3] = universePlayCenterTempCoords[0];
-            finalmatrix.m[1][3] = universePlayCenterTempCoords[1];
-            finalmatrix.m[2][3] = universePlayCenterTempCoords[2];
-
-            parent->m_chaperoneTabController.updateCenterMarkerOverlay(
-                &finalmatrix );
-        }
-
         // update chaperone working set preview (this does not commit)
         vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
             updatedBounds, m_collisionBoundsCountForReset );
         delete[] updatedBounds;
     }
+
+    // Center Marker for playspace.
+    if ( parent->m_chaperoneTabController.m_centerMarkerOverlayNeedsUpdate )
+    {
+        // Set Unrotated Coordinates
+        float universePlayCenterTempCoords[3] = { 0.0f, 0.0f, 0.0f };
+        universePlayCenterTempCoords[0]
+            -= offsetUniverseCenter.m[0][3] - m_universeCenterForReset.m[0][3];
+        universePlayCenterTempCoords[1]
+            -= offsetUniverseCenter.m[1][3] - m_universeCenterForReset.m[1][3];
+        universePlayCenterTempCoords[2]
+            -= offsetUniverseCenter.m[2][3] - m_universeCenterForReset.m[2][3];
+        // Rotate un-rotated to rotated
+        rotateFloatCoordinates( universePlayCenterTempCoords,
+                                static_cast<float>( offsetUniverseCenterYaw ) );
+        // Set Up orientation properly away from raw center
+        utils::matMul33(
+            m_offsetmatrix, offsetUniverseCenter, utils::k_forwardUpMatrix );
+        vr::HmdMatrix34_t rotMatrix;
+        utils::initRotationMatrix(
+            rotMatrix,
+            1,
+            static_cast<float>( -( ( m_rotation * k_centidegreesToRadians )
+                                   + offsetUniverseCenterYaw ) ) );
+
+        // Rotates orientation At playspace center
+        vr::HmdMatrix34_t finalmatrix;
+        utils::matMul33( finalmatrix, rotMatrix, m_offsetmatrix );
+
+        finalmatrix.m[0][3] = universePlayCenterTempCoords[0];
+        finalmatrix.m[1][3] = universePlayCenterTempCoords[1];
+        finalmatrix.m[2][3] = universePlayCenterTempCoords[2];
+
+        parent->m_chaperoneTabController.updateCenterMarkerOverlay(
+            &finalmatrix );
+    }
+
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &offsetUniverseCenter );
 

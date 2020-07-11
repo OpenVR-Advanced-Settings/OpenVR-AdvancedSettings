@@ -477,14 +477,6 @@ MyStackViewPage {
                     }
                 }
 
-                MyToggleButton {
-                    id: spaceAdjustChaperoneToggle
-                    text: "Adjust Chaperone"
-                    onCheckedChanged: {
-                        MoveCenterTabController.adjustChaperone = this.checked
-                    }
-                }
-
                 Item {
                     Layout.fillWidth: true
                 }
@@ -517,7 +509,6 @@ MyStackViewPage {
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
 
         Component.onCompleted: {
-            spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
             spaceMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
             spaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
             spaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
@@ -574,9 +565,6 @@ MyStackViewPage {
                 var intTempRotation = MoveCenterTabController.tempRotation
                 spaceRotationSlider.value = ( intTempRotation / 100 )
                 spaceRotationText.text = ( intTempRotation / 100 ) + "°"
-            }
-            onAdjustChaperoneChanged: {
-                spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
             }
 			onLockXToggleChanged: {
 				lockXToggle.checked = MoveCenterTabController.lockXToggle

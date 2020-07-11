@@ -1,7 +1,7 @@
 #pragma once
 
 #include <openvr.h>
-//#include <cmath>
+#include <cmath>
 
 namespace quaternion
 {
@@ -63,6 +63,36 @@ inline double getYaw( const vr::HmdQuaternion_t& quat )
         = atan2( 2.0 * ( quat.y * quat.w + quat.x * quat.z ),
                  ( 2.0 * ( quat.w * quat.w + quat.x * quat.x ) ) - 1.0 );
     return yawResult;
+}
+
+inline double getPitch( const vr::HmdQuaternion_t& quat )
+{
+    // positive forward
+    // negative behind
+
+    double pitchResult
+        = atan2( 2.0 * ( quat.x * quat.w + quat.y * quat.z ),
+                 1.0 - 2.0 * ( quat.x * quat.x + quat.y * quat.y ) );
+    //    double pitchResult
+    //= atan2( 2.0 * ( quat.x * quat.w + quat.y * quat.z ),
+    //      2.0 * ( quat.w * quat.w + quat.z * quat.z ) - 1.0 );
+    return pitchResult;
+}
+
+inline double getRoll( const vr::HmdQuaternion_t& quat )
+{
+    double rollResult;
+    double sinp = 2 * ( quat.w * quat.z - quat.y * quat.x );
+    if ( std::abs( sinp ) >= 1 )
+
+    {
+        rollResult = std::copysign( 3.14159265358979323846 / 2, sinp );
+    }
+    else
+    {
+        rollResult = std::asin( sinp );
+    }
+    return rollResult;
 }
 
 } // namespace quaternion
