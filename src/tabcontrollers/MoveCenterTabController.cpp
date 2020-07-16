@@ -1002,17 +1002,30 @@ void MoveCenterTabController::reset()
     m_lastControllerPosition[0] = 0.0f;
     m_lastControllerPosition[1] = 0.0f;
     m_lastControllerPosition[2] = 0.0f;
-
-    // For Center Marker
-    if ( parent->m_chaperoneTabController.m_centerMarkerOverlayNeedsUpdate )
-    {
-        m_offsetmatrix = utils::k_forwardUpMatrix;
-        parent->m_chaperoneTabController.updateCenterMarkerOverlay(
-            &m_offsetmatrix );
-    }
     m_lastMoveHand = vr::TrackedControllerRole_Invalid;
     m_lastRotateHand = vr::TrackedControllerRole_Invalid;
     applyChaperoneResetData();
+
+    // For Center Marker
+    // Needs to happen after apply chaperone
+    if ( parent->m_chaperoneTabController.m_centerMarkerOverlayNeedsUpdate )
+    {
+        m_offsetmatrix = utils::k_forwardUpMatrix;
+        if ( m_trackingUniverse == vr::TrackingUniverseSeated )
+        {
+            vr::HmdMatrix34_t temp;
+            vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+                &temp );
+            m_offsetmatrix.m[1][3] = temp.m[1][3];
+        }
+        else
+        {
+            m_offsetmatrix.m[1][3] = 0;
+        }
+        parent->m_chaperoneTabController.updateCenterMarkerOverlay(
+            &m_offsetmatrix );
+    }
+
     emit offsetXChanged( m_offsetX );
     emit offsetYChanged( m_offsetY );
     emit offsetZChanged( m_offsetZ );
@@ -2808,6 +2821,14 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         finalmatrix.m[0][3] = universePlayCenterTempCoords[0];
         finalmatrix.m[1][3] = universePlayCenterTempCoords[1];
         finalmatrix.m[2][3] = universePlayCenterTempCoords[2];
+
+        if ( m_trackingUniverse == vr::TrackingUniverseSeated )
+        {
+            vr::HmdMatrix34_t temp;
+            vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+                &temp );
+            finalmatrix.m[1][3] += temp.m[1][3];
+        }
 
         parent->m_chaperoneTabController.updateCenterMarkerOverlay(
             &finalmatrix );

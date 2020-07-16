@@ -420,7 +420,7 @@ void ChaperoneTabController::setHeight( float value, bool notify )
             m_height,
             "" );
         parent->m_moveCenterTabController.setBoundsBasisHeight( m_height );
-        parent->m_moveCenterTabController.updateChaperoneResetData();
+        // parent->m_moveCenterTabController.updateChaperoneResetData();
         if ( notify )
         {
             emit heightChanged( m_height );
