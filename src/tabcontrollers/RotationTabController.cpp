@@ -74,7 +74,6 @@ void RotationTabController::initStage2( OverlayController* var_parent )
     this->parent = var_parent;
 }
 
-static vr::TrackedDevicePose_t lastHandPose;
 void RotationTabController::eventLoopTick(
     vr::TrackedDevicePose_t* devicePoses )
 {
@@ -583,7 +582,6 @@ void RotationTabController::doAutoTurn(
     }
 }
 
-static std::vector<vr::TrackedDevicePose_t> autoAlignPoints;
 void RotationTabController::addAutoAlignPoint()
 {
     LOG(INFO) << "point added: " << autoAlignPoints.size();
