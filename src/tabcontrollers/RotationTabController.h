@@ -7,6 +7,7 @@
 #include <thread>
 #include <openvr.h>
 #include <cmath>
+#include <optional>
 #include "../utils/FrameRateUtils.h"
 #include "../utils/ChaperoneUtils.h"
 #include "../settings/settings_object.h"
@@ -58,6 +59,18 @@ class RotationTabController : public QObject
 private:
     OverlayController* parent;
 
+    struct
+    {
+        vr::VROverlayHandle_t overlayHandle = vr::k_ulOverlayHandleInvalid;
+        std::string autoturnPath;
+        std::string noautoturnPath;
+    } m_autoturnValues;
+
+    virtual vr::VROverlayHandle_t getNotificationOverlayHandle()
+    {
+        return m_autoturnValues.overlayHandle;
+    }
+
     // Variables
     int m_autoTurnLinearSmoothTurnRemaining = 0;
     std::chrono::steady_clock::time_point m_autoTurnLastUpdate;
@@ -65,6 +78,9 @@ private:
     vr::HmdMatrix34_t m_autoTurnLastHmdUpdate;
     std::vector<utils::ChaperoneQuadData> m_autoTurnChaperoneDistancesLast;
     double m_autoTurnRoundingError = 0.0;
+
+    std::optional<std::chrono::steady_clock::time_point>
+        m_autoTurnNotificationTimestamp;
 
     bool m_isHMDActive = false;
 
@@ -87,6 +103,7 @@ public:
     float autoTurnActivationDistance() const;
     float autoTurnDeactivationDistance() const;
     bool autoTurnUseCornerAngle() const;
+    bool autoTurnShowNotification() const;
     double cordDetangleAngle() const;
     double minCordTangle() const;
     int autoTurnSpeed() const;
@@ -97,6 +114,7 @@ public:
 
 public slots:
     void setAutoTurnEnabled( bool value, bool notify = true );
+    void setAutoTurnShowNotification( bool value, bool notify = true );
     void setAutoTurnActivationDistance( float value, bool notify = true );
     void setAutoTurnDeactivationDistance( float value, bool notify = true );
     void setAutoTurnUseCornerAngle( bool value, bool notify = true );
@@ -109,7 +127,9 @@ public slots:
 
 signals:
 
+    void defaultProfileDisplay();
     void autoTurnEnabledChanged( bool value );
+    void autoTurnShowNotificationChanged( bool value );
     void autoTurnActivationDistanceChanged( float value );
     void autoTurnDeactivationDistanceChanged( float value );
     void autoTurnUseCornerAngleChanged( bool value );

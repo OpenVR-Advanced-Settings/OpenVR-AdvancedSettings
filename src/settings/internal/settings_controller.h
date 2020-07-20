@@ -393,6 +393,10 @@ private:
                           SettingCategory::Rotation,
                           QtInfo{ "autoturnVestibularMotionEnabled" },
                           false },
+        BoolSettingValue{ BoolSetting::ROTATION_autoturnShowNotification,
+                          SettingCategory::Rotation,
+                          QtInfo{ "autoturnShowNotification" },
+                          false }
     };
 
     constexpr static auto doubleSettingSize

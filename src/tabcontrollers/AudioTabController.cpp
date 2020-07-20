@@ -63,18 +63,6 @@ void AudioTabController::initStage1()
     eventLoopTick();
 }
 
-std::optional<std::string> verifyIconFilePath( std::string filename )
-{
-    const auto notifIconPath = paths::binaryDirectoryFindFile( filename );
-    if ( !notifIconPath.has_value() )
-    {
-        LOG( ERROR ) << "Could not find push to talk icon \"" << filename
-                     << "\"";
-    }
-
-    return notifIconPath;
-}
-
 void AudioTabController::initStage2()
 {
     const auto pushToTalkOverlayKey
@@ -102,9 +90,9 @@ void AudioTabController::initStage2()
         = "/res/img/audio/microphone/ptm_notification.png";
 
     const auto pushToTalkIconFilePath
-        = verifyIconFilePath( pushToTalkIconFilepath );
+        = paths::verifyIconFilePath( pushToTalkIconFilepath );
     const auto pushToMuteIconFilePath
-        = verifyIconFilePath( pushToMuteIconFilepath );
+        = paths::verifyIconFilePath( pushToMuteIconFilepath );
 
     if ( !pushToTalkIconFilePath.has_value()
          || !pushToMuteIconFilePath.has_value() )
