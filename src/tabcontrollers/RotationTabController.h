@@ -68,9 +68,15 @@ private:
 
     bool m_isHMDActive = false;
 
-    void doAutoTurn(
+    void updateAutoTurn(
         const vr::TrackedDevicePose_t& poseHmd,
         const std::vector<utils::ChaperoneQuadData>& chaperoneDistances );
+    void doAutoTurn(
+        const vr::TrackedDevicePose_t& poseHmd,
+        const std::vector<utils::ChaperoneQuadData>& chaperoneDistances,
+        const size_t index );
+    void doAutoTurnFromNearestWall(const vr::TrackedDevicePose_t& poseHmd,
+            const std::vector<utils::ChaperoneQuadData>& chaperoneDistances);
     void doVestibularMotion(
         const vr::TrackedDevicePose_t& poseHmd,
         const std::vector<utils::ChaperoneQuadData>& chaperoneDistances );
