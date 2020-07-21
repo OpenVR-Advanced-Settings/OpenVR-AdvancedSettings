@@ -67,6 +67,7 @@ private:
     double m_autoTurnRoundingError = 0.0;
 
     bool m_isHMDActive = false;
+    bool m_autoTurnFromNearestWallRequested = false;
 
     void updateAutoTurn(
         const vr::TrackedDevicePose_t& poseHmd,
@@ -86,6 +87,8 @@ public:
     void initStage2( OverlayController* parent );
 
     void eventLoopTick( vr::TrackedDevicePose_t* devicePoses );
+
+    void requestAutoTurnFromNearestWall();
 
     float boundsVisibility() const;
 

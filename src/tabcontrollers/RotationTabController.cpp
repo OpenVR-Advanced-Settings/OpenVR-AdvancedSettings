@@ -62,9 +62,20 @@ void RotationTabController::eventLoopTick(
                 doVestibularMotion( poseHmd, chaperoneDistances );
             }
 
+            if (m_autoTurnFromNearestWallRequested)
+            {
+                m_autoTurnFromNearestWallRequested = false;
+                doAutoTurnFromNearestWall( poseHmd, chaperoneDistances);
+            }
+
             m_autoTurnChaperoneDistancesLast = std::move( chaperoneDistances );
         }
     }
+}
+
+void RotationTabController::requestAutoTurnFromNearestWall()
+{
+    m_autoTurnFromNearestWallRequested = true;
 }
 
 void RotationTabController::doVestibularMotion(

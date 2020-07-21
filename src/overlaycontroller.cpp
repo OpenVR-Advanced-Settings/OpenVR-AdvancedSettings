@@ -743,6 +743,10 @@ void OverlayController::processRotationBindings()
         m_rotationTabController.setAutoTurnEnabled(
             !( m_rotationTabController.autoTurnEnabled() ) );
     }
+    if ( m_actions.autoTurnFromNearestWall() )
+    {
+        m_rotationTabController.requestAutoTurnFromNearestWall();
+    }
 }
 /*!
 Checks if an action has been activated and dispatches the related action if it
