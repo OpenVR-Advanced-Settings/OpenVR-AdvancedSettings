@@ -122,9 +122,9 @@ void RotationTabController::eventLoopTick(
     if ( m_autoTurnNotificationTimestamp )
     {
         auto count = std::chrono::duration_cast<std::chrono::milliseconds>(
-                 std::chrono::steady_clock::now()
-                 - *m_autoTurnNotificationTimestamp )
-                 .count();
+                         std::chrono::steady_clock::now()
+                         - *m_autoTurnNotificationTimestamp )
+                         .count();
         if ( count > 1500 )
         {
             m_autoTurnNotificationTimestamp.reset();
@@ -133,9 +133,13 @@ void RotationTabController::eventLoopTick(
             {
                 vr::VROverlay()->HideOverlay( getNotificationOverlayHandle() );
             }
-        } else {
-            float pct = std::min(1.0f, 3.0f - static_cast<float>(count)/500.0f );
-            vr::VROverlay()->SetOverlayAlpha( getNotificationOverlayHandle(), pct );
+        }
+        else
+        {
+            float pct
+                = std::min( 1.0f, 3.0f - static_cast<float>( count ) / 500.0f );
+            vr::VROverlay()->SetOverlayAlpha( getNotificationOverlayHandle(),
+                                              pct );
         }
     }
 }
@@ -558,7 +562,8 @@ void RotationTabController::setAutoTurnEnabled( bool value, bool notify )
     if ( autoTurnShowNotification()
          && getNotificationOverlayHandle() != vr::k_ulOverlayHandleInvalid )
     {
-        vr::VROverlay()->SetOverlayAlpha( getNotificationOverlayHandle(), 1.0f );
+        vr::VROverlay()->SetOverlayAlpha( getNotificationOverlayHandle(),
+                                          1.0f );
         vr::VROverlay()->ShowOverlay( getNotificationOverlayHandle() );
         m_autoTurnNotificationTimestamp.emplace(
             std::chrono::steady_clock::now() );
