@@ -368,52 +368,46 @@ void RotationTabController::doAutoTurn(
                      < ( FrameRates::RATE_144HZ + FrameRates::RATE_120HZ ) / 2 )
                 {
                     m_estimatedFrameRate = FrameRates::RATE_144HZ;
-                    LOG (INFO) << "Estimate Frame Rate: 144Hz. Exact: " << (1.0 / FrameRates::toDoubleSeconds(delta));
                 }
                 else if ( ( delta >= ( FrameRates::RATE_144HZ
                                        + FrameRates::RATE_120HZ )
                                          / 2 )
                           && ( delta < ( FrameRates::RATE_120HZ
-                                          + FrameRates::RATE_90HZ )
-                                            / 2 ) )
+                                         + FrameRates::RATE_90HZ )
+                                           / 2 ) )
                 {
                     m_estimatedFrameRate = FrameRates::RATE_120HZ;
-                    LOG (INFO) << "Estimate Frame Rate: 120Hz. Exact: " << (1.0 / FrameRates::toDoubleSeconds(delta));
                 }
                 else if ( ( delta >= ( FrameRates::RATE_120HZ
                                        + FrameRates::RATE_90HZ )
                                          / 2 )
                           && ( delta < ( FrameRates::RATE_90HZ
-                                          + FrameRates::RATE_72HZ )
-                                            / 2 ) )
+                                         + FrameRates::RATE_72HZ )
+                                           / 2 ) )
                 {
                     m_estimatedFrameRate = FrameRates::RATE_90HZ;
-                    LOG (INFO) << "Estimate Frame Rate: 90Hz. Exact: " << (1.0 / FrameRates::toDoubleSeconds(delta));
                 }
                 else if ( ( delta
                             >= ( FrameRates::RATE_90HZ + FrameRates::RATE_72HZ )
                                    / 2 )
                           && ( delta < ( FrameRates::RATE_72HZ
-                                          + FrameRates::RATE_60HZ )
-                                            / 2 ) )
+                                         + FrameRates::RATE_60HZ )
+                                           / 2 ) )
                 {
                     m_estimatedFrameRate = FrameRates::RATE_72HZ;
-                    LOG (INFO) << "Estimate Frame Rate: 72Hz. Exact: " << (1.0 / FrameRates::toDoubleSeconds(delta));
                 }
                 else if ( ( delta
                             >= ( FrameRates::RATE_72HZ + FrameRates::RATE_60HZ )
                                    / 2 )
                           && ( delta < ( FrameRates::RATE_60HZ
-                                          + FrameRates::RATE_45HZ )
-                                            / 2 ) )
+                                         + FrameRates::RATE_45HZ )
+                                           / 2 ) )
                 {
                     m_estimatedFrameRate = FrameRates::RATE_60HZ;
-                    LOG (INFO) << "Estimate Frame Rate: 60Hz. Exact: " << (1.0 / FrameRates::toDoubleSeconds(delta));
                 }
                 else
                 {
                     m_estimatedFrameRate = FrameRates::RATE_45HZ;
-                    LOG (INFO) << "Estimate Frame Rate: 45Hz. Exact: " << (1.0 / FrameRates::toDoubleSeconds(delta));
                 }
             }
             else if ( ( chaperoneQuad.distance
