@@ -196,14 +196,11 @@ void RotationTabController::doAutoTurn(
              && m_autoTurnLinearSmoothTurnRemaining != 0 )
         {
             // TODO: implement angular acceleration max?
-            auto deltaMillis
-                = std::chrono::duration_cast<std::chrono::milliseconds>(
-                      currentTime - m_autoTurnLastUpdate )
-                      .count();
+            double deltaSeconds
+                = FrameRates::toDoubleSeconds( m_estimatedFrameRate );
             auto miniDeltaAngle = static_cast<int>(
                 std::abs(
-                    ( deltaMillis * RotationTabController::autoTurnSpeed() )
-                    / 1000 )
+                    ( deltaSeconds * RotationTabController::autoTurnSpeed() ) )
                 * ( m_autoTurnLinearSmoothTurnRemaining < 0 ? -1 : 1 ) );
             if ( std::abs( m_autoTurnLinearSmoothTurnRemaining )
                  < std::abs( miniDeltaAngle ) )
@@ -366,6 +363,52 @@ void RotationTabController::doAutoTurn(
                 } while ( false );
 
                 m_autoTurnWallActive[i] = true;
+                auto delta = currentTime - m_autoTurnLastUpdate;
+                if ( delta
+                     < ( FrameRates::RATE_144HZ + FrameRates::RATE_120HZ ) / 2 )
+                {
+                    m_estimatedFrameRate = FrameRates::RATE_144HZ;
+                }
+                else if ( ( delta >= ( FrameRates::RATE_144HZ
+                                       + FrameRates::RATE_120HZ )
+                                         / 2 )
+                          && ( delta < ( FrameRates::RATE_120HZ
+                                         + FrameRates::RATE_90HZ )
+                                           / 2 ) )
+                {
+                    m_estimatedFrameRate = FrameRates::RATE_120HZ;
+                }
+                else if ( ( delta >= ( FrameRates::RATE_120HZ
+                                       + FrameRates::RATE_90HZ )
+                                         / 2 )
+                          && ( delta < ( FrameRates::RATE_90HZ
+                                         + FrameRates::RATE_72HZ )
+                                           / 2 ) )
+                {
+                    m_estimatedFrameRate = FrameRates::RATE_90HZ;
+                }
+                else if ( ( delta
+                            >= ( FrameRates::RATE_90HZ + FrameRates::RATE_72HZ )
+                                   / 2 )
+                          && ( delta < ( FrameRates::RATE_72HZ
+                                         + FrameRates::RATE_60HZ )
+                                           / 2 ) )
+                {
+                    m_estimatedFrameRate = FrameRates::RATE_72HZ;
+                }
+                else if ( ( delta
+                            >= ( FrameRates::RATE_72HZ + FrameRates::RATE_60HZ )
+                                   / 2 )
+                          && ( delta < ( FrameRates::RATE_60HZ
+                                         + FrameRates::RATE_45HZ )
+                                           / 2 ) )
+                {
+                    m_estimatedFrameRate = FrameRates::RATE_60HZ;
+                }
+                else
+                {
+                    m_estimatedFrameRate = FrameRates::RATE_45HZ;
+                }
             }
             else if ( ( chaperoneQuad.distance
                         > ( RotationTabController::autoTurnActivationDistance()
