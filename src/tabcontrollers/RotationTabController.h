@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <QObject>
@@ -25,6 +24,35 @@ enum class AutoTurnModes
     SNAP,
     LINEAR_SMOOTH_TURN
 };
+
+namespace FrameRates
+{
+    // Each of type std::chrono::time_point::duration
+    constexpr auto RATE_45HZ = std::chrono::duration_cast<
+        std::chrono::steady_clock::time_point::duration>(
+        std::chrono::duration<int, std::ratio<1, 45>>( 1 ) );
+    constexpr auto RATE_60HZ = std::chrono::duration_cast<
+        std::chrono::steady_clock::time_point::duration>(
+        std::chrono::duration<int, std::ratio<1, 60>>( 1 ) );
+    constexpr auto RATE_72HZ = std::chrono::duration_cast<
+        std::chrono::steady_clock::time_point::duration>(
+        std::chrono::duration<int, std::ratio<1, 72>>( 1 ) );
+    constexpr auto RATE_90HZ = std::chrono::duration_cast<
+        std::chrono::steady_clock::time_point::duration>(
+        std::chrono::duration<int, std::ratio<1, 90>>( 1 ) );
+    constexpr auto RATE_120HZ = std::chrono::duration_cast<
+        std::chrono::steady_clock::time_point::duration>(
+        std::chrono::duration<int, std::ratio<1, 120>>( 1 ) );
+    constexpr auto RATE_144HZ = std::chrono::duration_cast<
+        std::chrono::steady_clock::time_point::duration>(
+        std::chrono::duration<int, std::ratio<1, 144>>( 1 ) );
+
+    template <typename T> double toDoubleSeconds( T duration )
+    {
+        return ( static_cast<double>( duration.count() ) * T::period::num )
+               / T::period::den;
+    }
+} // namespace FrameRates
 
 class RotationTabController : public QObject
 {
@@ -78,6 +106,7 @@ private:
     vr::HmdMatrix34_t m_autoTurnLastHmdUpdate;
     std::vector<utils::ChaperoneQuadData> m_autoTurnChaperoneDistancesLast;
     double m_autoTurnRoundingError = 0.0;
+    std::chrono::steady_clock::time_point::duration m_estimatedFrameRate;
 
     std::optional<std::chrono::steady_clock::time_point>
         m_autoTurnNotificationTimestamp;
