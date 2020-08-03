@@ -107,8 +107,6 @@ private:
     std::chrono::steady_clock::time_point m_autoTurnLastUpdate;
     std::vector<bool> m_autoTurnWallActive;
     vr::HmdMatrix34_t m_autoTurnLastHmdUpdate;
-    std::vector<utils::ChaperoneQuadData> m_autoTurnChaperoneDistancesLast;
-    double m_autoTurnRoundingError = 0.0;
     std::chrono::steady_clock::time_point::duration m_estimatedFrameRate;
 
     std::optional<std::chrono::steady_clock::time_point>

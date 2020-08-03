@@ -115,8 +115,6 @@ void RotationTabController::eventLoopTick(
             {
                 doVestibularMotion( poseHmd, chaperoneDistances );
             }
-
-            m_autoTurnChaperoneDistancesLast = std::move( chaperoneDistances );
         }
     }
     if ( m_autoTurnNotificationTimestamp )
@@ -152,13 +150,7 @@ void RotationTabController::doVestibularMotion(
          && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK
          && !chaperoneDistances.empty() )
     {
-        if ( chaperoneDistances.size()
-             != m_autoTurnChaperoneDistancesLast.size() )
-        {
-            m_autoTurnChaperoneDistancesLast = chaperoneDistances;
-            m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
-        }
-        // Find the nearest wall we're moving TOWARDS and rotate
+        // Find the nearest wall and rotate
         // away from it Rotate dist/(2*pi*r) where r is
         // m_autoTurnVestibularMotionRadius, as if we had walked
         // however many inches along a circle and the world was
@@ -166,25 +158,22 @@ void RotationTabController::doVestibularMotion(
 
         do
         {
-            // find nearest wall we're moving towards
-            auto nearestWall = chaperoneDistances.end();
-            auto itrLast = m_autoTurnChaperoneDistancesLast.begin();
-            for ( auto itr = chaperoneDistances.begin();
-                  itr != chaperoneDistances.end();
-                  itr++ )
-            {
-                itrLast++;
-                // if ( itr->distance > itrLast->distance )
-                //{
-                //    continue;
-                //}
+            // TODO: Dynamic radius: Find nearest wall, perhaps in front of us?
+            // use max(distance, radius) as radius
+            // TODO: Acceleration: Add a maximum interframe angular
+            // acceleration. Calculate 'rotation desired' and 'rotation last
+            // frame', and move the latter towards the former at the angular
+            // acceleration desired. Possibly calculate 'vestibular rotation
+            // desired', and try to intelligently pace one to match the other
+            // without overcompensating?
 
-                if ( nearestWall == chaperoneDistances.end()
-                     || itr->distance < nearestWall->distance )
-                {
-                    nearestWall = itr;
-                }
-            }
+            // find nearest wall
+            auto nearestWall
+                = std::min_element( chaperoneDistances.begin(),
+                                    chaperoneDistances.end(),
+                                    []( const auto& wall1, const auto& wall2 ) {
+                                        return wall1.distance < wall2.distance;
+                                    } );
             if ( nearestWall == chaperoneDistances.end() )
             {
                 break;
@@ -232,11 +221,9 @@ void RotationTabController::doVestibularMotion(
 
             double newRotationAngleDeg
                 = std::fmod( parent->m_moveCenterTabController.rotation()
-                                 + ( rotationAmount * k_radiansToCentidegrees )
-                                 + m_autoTurnRoundingError,
+                                 + ( rotationAmount * k_radiansToCentidegrees ),
                              360000.0 );
             int newRotationAngleInt = static_cast<int>( newRotationAngleDeg );
-            m_autoTurnRoundingError = newRotationAngleDeg - newRotationAngleInt;
 
             parent->m_moveCenterTabController.setRotation(
                 newRotationAngleInt );
