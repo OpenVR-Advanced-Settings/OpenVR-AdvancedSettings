@@ -1014,9 +1014,12 @@ void MoveCenterTabController::reset()
         if ( m_trackingUniverse == vr::TrackingUniverseSeated )
         {
             vr::HmdMatrix34_t temp;
+            // This is not the floor it should be ~ chair height... this seems
+            // to be intended behaviour from openvr
             vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
                 &temp );
             m_offsetmatrix.m[1][3] = temp.m[1][3];
+            // TODO check orientation
         }
         else
         {
@@ -2816,12 +2819,12 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
 
         // Rotates orientation At playspace center
         vr::HmdMatrix34_t finalmatrix;
+
         utils::matMul33( finalmatrix, rotMatrix, m_offsetmatrix );
 
         finalmatrix.m[0][3] = universePlayCenterTempCoords[0];
         finalmatrix.m[1][3] = universePlayCenterTempCoords[1];
         finalmatrix.m[2][3] = universePlayCenterTempCoords[2];
-
         if ( m_trackingUniverse == vr::TrackingUniverseSeated )
         {
             vr::HmdMatrix34_t temp;
