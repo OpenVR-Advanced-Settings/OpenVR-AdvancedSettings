@@ -210,10 +210,18 @@ GroupBox {
 
         }
       RowLayout{
+          MyToggleButton {
+              id: autoTurnNotificationToggle
+              text: "Notification"
+              Layout.preferredWidth: 150
+              onCheckedChanged: {
+              setAutoTurnShowNotification(this.checked, true)
+              }
+
           MyText{
               text: "Detangle Angle: "
               horizontalAlignment: Text.AlignLeft
-              Layout.preferredWidth: 250
+              Layout.preferredWidth: 200
               Layout.rightMargin: 5
 
           }
@@ -285,6 +293,7 @@ GroupBox {
         deactivationSlider.value = RotationTabController.autoTurnDeactivationDistance.toFixed(2)
         cornerAngle.checked = RotationTabController.autoTurnUseCornerAngle
         speedSlider.value = (RotationTabController.autoTurnSpeed/100).toFixed()
+        autoTurnNotificationToggle.checked = RotationTabController.autoTurnShowNotification
         if(RotationTabController.autoTurnMode === 1){
 
             autoTurnModeToggle.checked = true;
@@ -331,6 +340,9 @@ GroupBox {
         }
         onCordDetangleAngleChanged:{
             detangleAngleAssistText.text = parseInt(RotationTabController.cordDetangleAngle*(180/Math.PI))
+        }
+        onAutoTurnShowNotificationChanged:{
+            autoTurnNotificationToggle.checked = RotationTabController.autoTurnShowNotification
         }
     }
 }

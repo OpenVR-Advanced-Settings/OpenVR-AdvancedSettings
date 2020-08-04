@@ -83,6 +83,9 @@ class RotationTabController : public QObject
     Q_PROPERTY(
         double vestibularMotionRadius READ vestibularMotionRadius WRITE
             setVestibularMotionRadius NOTIFY vestibularMotionRadiusChanged )
+    Q_PROPERTY(
+        bool autoTurnShowNotification READ autoTurnShowNotification WRITE
+            setAutoTurnShowNotification NOTIFY autoTurnShowNotificationChanged )
 
 private:
     OverlayController* parent;
