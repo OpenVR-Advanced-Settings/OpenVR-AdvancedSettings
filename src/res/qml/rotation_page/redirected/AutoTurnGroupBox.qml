@@ -217,6 +217,7 @@ GroupBox {
               onCheckedChanged: {
               setAutoTurnShowNotification(this.checked, true)
               }
+          }
 
           MyText{
               text: "Detangle Angle: "
