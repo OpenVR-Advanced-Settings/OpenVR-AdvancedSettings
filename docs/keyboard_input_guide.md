@@ -117,6 +117,10 @@
 ### Case Sensative
 - basic characters are all LOWER case, while keys such as ENTER are all UPPER case.
 
+### Custom Keys Not Saving.
+- We only load keybinds from file on start-up, and save based on what is in memory (not in file)
+  - **ONLY** edit the settings file while Advanced Settings is **not** running.
+
 ### Focus Issues
 - we deliver the keypress to the OS, depending on your set-up and program you may have to have the window "in-focus"
 

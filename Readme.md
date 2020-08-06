@@ -549,6 +549,10 @@ Full build instructions can be found [here](docs/building_for_linux.md).
 - **Issue:** While using Trackers (additional devices besides controllers) Keybinds don't work.
   - **Cause:** Trackers can Assume controller roles, and prevent your controllers from working properly.
   - **Solution:** Assign Tracker Roles Via SteamVR Widget to anything besides `held-in-hand`
+  
+- **Issue:** Custom Key Presses Not Saving In file.
+  - **Cause:** Key Presses Modified while Advanced Settings is running.
+  - **Solution:** Only modify the settings file while VR/Advanced Settings is **not** running.
 
 # License
 
