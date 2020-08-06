@@ -396,7 +396,7 @@ private:
         BoolSettingValue{ BoolSetting::ROTATION_autoturnShowNotification,
                           SettingCategory::Rotation,
                           QtInfo{ "autoturnShowNotification" },
-                          false }
+                          true }
     };
 
     constexpr static auto doubleSettingSize

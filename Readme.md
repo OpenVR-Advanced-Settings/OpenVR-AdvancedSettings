@@ -125,7 +125,7 @@ Detailed instructions are available [here](docs/building_for_linux.md).
 
 ### Overall Feature Overview Guides
 
-- [Kung's 3.0 New Feature Guide (video/youtube)[https://youtu.be/2ZHdjOfnqOU)]
+- [Kung's 3.0 New Feature Guide (video/youtube)[https://youtu.be/2ZHdjOfnqOU]
 
 ### SteamVR Input System (keybinds for app)
 
