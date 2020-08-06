@@ -472,7 +472,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Brightness**: Same as regular.
 - **Opacity**: Adjusts opacity of color overlay.
   - **Toggle On/Off**: Turns on/off Color Adjustment Overlay.
-- **<Color>**: Adjusts the overlay to adjust the color.
+- **Color (Red/Green/Blue)**: Adjusts the overlay to adjust the color.
 
 ## - Utilities Page
 

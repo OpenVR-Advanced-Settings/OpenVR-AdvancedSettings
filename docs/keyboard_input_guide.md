@@ -129,4 +129,4 @@
  - alt + tab, alt + F4 = `*TAB *F4`
 
 ## Parser Spec
-(Parser Spec)[https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/blob/master/docs/specs/Keyboard_Manager-Parser_Spec.md]
+[Parser Spec](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/blob/master/docs/specs/Keyboard_Manager-Parser_Spec.md)
