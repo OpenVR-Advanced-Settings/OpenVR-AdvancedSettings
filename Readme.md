@@ -546,6 +546,10 @@ Full build instructions can be found [here](docs/building_for_linux.md).
   - **Cause:** WMR boundary off, or set up for standing only.
   - **Solution:** Please set-up WMR for all experiences, and then if you don't want WMR boundary you can toggle off the boundary **after** SteamVR/OpenVR has been started.
 
+- **Issue:** While using Trackers (additional devices besides controllers) Keybinds don't work.
+  - **Cause:** Trackers can Assume controller roles, and prevent your controllers from working properly.
+  - **Solution:** Assign Tracker Roles Via SteamVR Widget to anything besides `held-in-hand`
+
 # License
 
 This software is released under GPL 3.0, and other third-party Licenses
