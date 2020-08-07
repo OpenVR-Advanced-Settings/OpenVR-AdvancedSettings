@@ -35,9 +35,17 @@ GroupBox {
             MyToggleButton {
                 id: autoTurn
                 text: "Toggle On/Off"
-                Layout.preferredWidth: 300
+                Layout.preferredWidth: 250
                 onCheckedChanged: {
                     RotationTabController.setAutoTurnEnabled(this.checked, true);                }
+            }
+            MyToggleButton {
+                id: autoTurnNotificationToggle
+                text: "HMD Icon"
+                Layout.preferredWidth: 175
+                onCheckedChanged: {
+                RotationTabController.setAutoTurnShowNotification(this.checked, true)
+                }
             }
 
             MyText {
@@ -160,7 +168,7 @@ GroupBox {
             }
 
             MyText {
-                text: "Turn Speed (deg/sec):"
+                text: "Turn Speed(deg/sec):"
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }
@@ -174,7 +182,7 @@ GroupBox {
                 Layout.fillWidth: true
                 onPositionChanged: {
                     var val = this.value
-                    speedValueText.text = val.toFixed()
+                    speedValueText.text = val.toFixed()+ "°"
                 }
                 onValueChanged: {
 
@@ -184,7 +192,7 @@ GroupBox {
 
             MyTextField {
                 id: speedValueText
-                text: "90"
+                text: "90°"
                 keyBoardUID: 1003
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
@@ -203,21 +211,13 @@ GroupBox {
                             speedSlider.value = val;
                     }
                     //converts the centidegrees to degrees
-                    text =  (((RotationTabController.autoTurnSpeed)/100).toFixed());
+                    text =  (((RotationTabController.autoTurnSpeed)/100).toFixed()) + "°";
                 }
             }
 
 
         }
       RowLayout{
-          MyToggleButton {
-              id: autoTurnNotificationToggle
-              text: "Notification"
-              Layout.preferredWidth: 150
-              onCheckedChanged: {
-              setAutoTurnShowNotification(this.checked, true)
-              }
-          }
 
           MyText{
               text: "Detangle Angle: "
@@ -227,14 +227,14 @@ GroupBox {
 
           }
           MyText{
-              text:"Min Rotations(deg):"
+              text:"Min Rotations:"
               Layout.rightMargin: 5
 
           }
 
           MyTextField {
               id: detangleAngleStartText
-              text: "360"
+              text: "360°"
               keyBoardUID: 1005
               Layout.preferredWidth: 100
               Layout.leftMargin: 5
@@ -248,6 +248,7 @@ GroupBox {
                           val = 3600
                       }
                   RotationTabController.setMinCordTangle((val*(Math.PI/180)), true);
+                  text = (Math.round(val).toFixed())+ "°";
                   }
               }
           }
@@ -256,7 +257,7 @@ GroupBox {
           }
 
           MyText{
-              text: "Max Wall Angle(deg): "
+              text: "Max Wall Angle: "
               horizontalAlignment: Text.AlignRight
               Layout.rightMargin: 10
               Layout.fillWidth: true
@@ -264,7 +265,7 @@ GroupBox {
           }
           MyTextField {
               id: detangleAngleAssistText
-              text: "10"
+              text: "10°"
               keyBoardUID: 1006
               Layout.preferredWidth: 100
               Layout.leftMargin: 10
@@ -278,6 +279,7 @@ GroupBox {
                           val = 3600
                       }
                   RotationTabController.setCordDetangleAngle((val*(Math.PI/180)), true);
+                  text = (Math.round(val).toFixed())+ "°";
                   }
               }
           }
@@ -303,8 +305,8 @@ GroupBox {
 
              autoTurnModeToggle.checked = false;
         }
-        detangleAngleStartText.text = parseInt(RotationTabController.minCordTangle*(180/Math.PI))
-        detangleAngleAssistText.text = parseInt(RotationTabController.cordDetangleAngle*(180/Math.PI))
+        detangleAngleStartText.text = parseInt(RotationTabController.minCordTangle*(180/Math.PI))+ "°"
+        detangleAngleAssistText.text = parseInt(RotationTabController.cordDetangleAngle*(180/Math.PI))+ "°"
     }
 
     Connections {
@@ -337,10 +339,10 @@ GroupBox {
             }
         }
         onMinCordTangleChanged:{
-            detangleAngleStartText.text = parseInt(RotationTabController.minCordTangle*(180/Math.PI))
+            detangleAngleStartText.text = parseInt(RotationTabController.minCordTangle*(180/Math.PI))+ "°"
         }
         onCordDetangleAngleChanged:{
-            detangleAngleAssistText.text = parseInt(RotationTabController.cordDetangleAngle*(180/Math.PI))
+            detangleAngleAssistText.text = parseInt(RotationTabController.cordDetangleAngle*(180/Math.PI))+ "°"
         }
         onAutoTurnShowNotificationChanged:{
             autoTurnNotificationToggle.checked = RotationTabController.autoTurnShowNotification
