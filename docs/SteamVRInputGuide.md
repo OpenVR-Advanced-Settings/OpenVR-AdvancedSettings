@@ -14,7 +14,7 @@ All the types mean to you is which physical buttons can be bound to which action
 
 ## Okay Cool? How do I do this?
 
-1. Go to SteamVR dashboard->Steam->Controller Bindings OR go to http://127.0.0.1:27062/dashboard/controllerbinding.html from a desktop browser WHILE steamVR is running.
+1. Go to SteamVR dashboard->Steam->Controller Bindings OR go to http://127.0.0.1:27062/dashboard/controllerbinding.html?app=application.generated.unity.steamvr.exe from a desktop browser WHILE steamVR is running.
 2. Select the application you want to modify keybinds for (Advanced Settings will currently always be at the bottom)
 3. Select your controller (the controller must be on).
 4. Select your binding.
