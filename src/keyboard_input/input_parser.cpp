@@ -55,6 +55,24 @@ std::optional<Token> getFunctionNumber( const char& character ) noexcept
     }
 }
 
+std::optional<Token> getFunctionNumberExtended( const char& character ) noexcept
+{
+    switch ( character )
+    {
+    case '0':
+        return Token::KEY_F10;
+    case '1':
+        return Token::KEY_F11;
+    case '2':
+        return Token::KEY_F12;
+    // Theoretically we could extende out to f19, but as F12 is the only
+    // function key on Standard Keyboard.
+    default:
+        LOG( INFO ) << "Unknown function key number: " << character;
+        return std::nullopt;
+    }
+}
+
 std::optional<Token> checkIfLegalCapitalLiteral( std::string input ) noexcept
 {
     // C++ can't do string comparisons in switches. :(
@@ -188,6 +206,26 @@ std::vector<Token>
                 break;
             }
             const auto token = getFunctionNumber( *ch );
+            if ( token.has_value() )
+            {
+                tokens.push_back( *token );
+                continue;
+            }
+            else
+            {
+                // Spec says to abort on errors and submit correct values before
+                // error.
+                break;
+            }
+        }
+        else if ( *ch == 'G' )
+        {
+            ++ch;
+            if ( ch == end )
+            {
+                break;
+            }
+            const auto token = getFunctionNumberExtended( *ch );
             if ( token.has_value() )
             {
                 tokens.push_back( *token );
@@ -427,6 +465,12 @@ bool isLiteral( const Token token ) noexcept
     case Token::KEY_F8:
         return true;
     case Token::KEY_F9:
+        return true;
+    case Token::KEY_F10:
+        return true;
+    case Token::KEY_F11:
+        return true;
+    case Token::KEY_F12:
         return true;
 
     case Token::KEY_BACKSPACE:
