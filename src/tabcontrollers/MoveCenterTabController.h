@@ -232,7 +232,6 @@ private:
     void updateGravity();
     void updateSpace( bool forceUpdate = false );
     void clampVelocity( double* velocity );
-    void updateChaperoneResetData();
     void applyChaperoneResetData();
     void saveUncommittedChaperone();
     void outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix );
@@ -284,6 +283,8 @@ public:
     void incomingSeatedReset();
     void setBoundsBasisHeight( float newHeight );
     float getBoundsBasisMaxY();
+
+    void updateChaperoneResetData();
 
     void reloadOffsetProfiles();
     void saveOffsetProfiles();
