@@ -55,6 +55,7 @@
 | A to Z | The letter in lowercase. `a`, `b`, `c`, ... |
 | Number Row 0-9 | The number. `0`, `1`, `2`, ... |
 | Function keys F1-F9 | Capital F followed by number. `F1`, `F2`, `F3`, ... |
+| Function keys F10-F12 | Capital G followed by number. `G0` = F10, `G1` = F11, ... |
 | Backspace | `BACKSPACE` |
 | Space | `SPACE` |
 | Tab | `TAB` |
