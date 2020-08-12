@@ -17,6 +17,60 @@ void RotationTabController::initStage1()
 
 void RotationTabController::initStage2( OverlayController* var_parent )
 {
+    const auto autoturnOverlayKey
+        = std::string( application_strings::applicationKey )
+          + ".autoturnnotification";
+
+    const auto overlayError
+        = vr::VROverlay()->CreateOverlay( autoturnOverlayKey.c_str(),
+                                          autoturnOverlayKey.c_str(),
+                                          &m_autoturnValues.overlayHandle );
+    if ( overlayError != vr::VROverlayError_None )
+    {
+        LOG( ERROR ) << "Could not create autoturn notification overlay: "
+                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                            overlayError );
+
+        emit defaultProfileDisplay();
+
+        return;
+    }
+
+    constexpr auto autoturnIconFilepath = "/res/img/rotation/autoturn.png";
+    constexpr auto noautoturnIconFilepath = "/res/img/rotation/noautoturn.png";
+
+    const auto autoturnIconFilePath
+        = paths::verifyIconFilePath( autoturnIconFilepath );
+    const auto noautoturnIconFilePath
+        = paths::verifyIconFilePath( noautoturnIconFilepath );
+
+    if ( !autoturnIconFilePath.has_value()
+         || !noautoturnIconFilePath.has_value() )
+    {
+        emit defaultProfileDisplay();
+        return;
+    }
+
+    m_autoturnValues.autoturnPath = *autoturnIconFilePath;
+    m_autoturnValues.noautoturnPath = *noautoturnIconFilePath;
+
+    auto pushToPath = m_autoturnValues.autoturnPath.c_str();
+
+    vr::VROverlay()->SetOverlayFromFile( m_autoturnValues.overlayHandle,
+                                         pushToPath );
+    vr::VROverlay()->SetOverlayWidthInMeters( m_autoturnValues.overlayHandle,
+                                              0.02f );
+    vr::HmdMatrix34_t notificationTransform
+        = { { { 1.0f, 0.0f, 0.0f, 0.12f },
+              { 0.0f, 1.0f, 0.0f, 0.08f },
+              { 0.0f, 0.0f, 1.0f, -0.3f } } };
+    vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
+        m_autoturnValues.overlayHandle,
+        vr::k_unTrackedDeviceIndex_Hmd,
+        &notificationTransform );
+
+    emit defaultProfileDisplay();
+
     this->parent = var_parent;
 }
 
@@ -63,6 +117,29 @@ void RotationTabController::eventLoopTick(
             }
 
             m_autoTurnChaperoneDistancesLast = std::move( chaperoneDistances );
+        }
+    }
+    if ( m_autoTurnNotificationTimestamp )
+    {
+        auto count = std::chrono::duration_cast<std::chrono::milliseconds>(
+                         std::chrono::steady_clock::now()
+                         - *m_autoTurnNotificationTimestamp )
+                         .count();
+        if ( count > 1500 )
+        {
+            m_autoTurnNotificationTimestamp.reset();
+            if ( getNotificationOverlayHandle()
+                 != vr::k_ulOverlayHandleInvalid )
+            {
+                vr::VROverlay()->HideOverlay( getNotificationOverlayHandle() );
+            }
+        }
+        else
+        {
+            float pct
+                = std::min( 1.0f, 3.0f - static_cast<float>( count ) / 500.0f );
+            vr::VROverlay()->SetOverlayAlpha( getNotificationOverlayHandle(),
+                                              pct );
         }
     }
 }
@@ -453,6 +530,12 @@ bool RotationTabController::autoTurnUseCornerAngle() const
         settings::BoolSetting::ROTATION_autoturnUseCornerAngle );
 }
 
+bool RotationTabController::autoTurnShowNotification() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::ROTATION_autoturnShowNotification );
+}
+
 double RotationTabController::cordDetangleAngle() const
 {
     return settings::getSetting(
@@ -504,6 +587,39 @@ void RotationTabController::setAutoTurnEnabled( bool value, bool notify )
     if ( notify )
     {
         emit autoTurnEnabledChanged( value );
+    }
+
+    if ( !value )
+    {
+        vr::VROverlay()->SetOverlayFromFile(
+            m_autoturnValues.overlayHandle,
+            m_autoturnValues.noautoturnPath.c_str() );
+    }
+    else
+    {
+        vr::VROverlay()->SetOverlayFromFile(
+            m_autoturnValues.overlayHandle,
+            m_autoturnValues.autoturnPath.c_str() );
+    }
+
+    if ( autoTurnShowNotification()
+         && getNotificationOverlayHandle() != vr::k_ulOverlayHandleInvalid )
+    {
+        vr::VROverlay()->SetOverlayAlpha( getNotificationOverlayHandle(),
+                                          1.0f );
+        vr::VROverlay()->ShowOverlay( getNotificationOverlayHandle() );
+        m_autoTurnNotificationTimestamp.emplace(
+            std::chrono::steady_clock::now() );
+    }
+}
+void RotationTabController::setAutoTurnShowNotification( bool value,
+                                                         bool notify )
+{
+    settings::setSetting(
+        settings::BoolSetting::ROTATION_autoturnShowNotification, value );
+    if ( notify )
+    {
+        emit autoTurnShowNotificationChanged( value );
     }
 }
 void RotationTabController::setAutoTurnActivationDistance( float value,

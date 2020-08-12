@@ -125,7 +125,7 @@ Detailed instructions are available [here](docs/building_for_linux.md).
 
 ### Overall Feature Overview Guides
 
-- [Kung's 3.0 New Feature Guide (video/youtube)[https://youtu.be/2ZHdjOfnqOU)]
+- [Kung's 3.0 New Feature Guide (video/youtube)[https://youtu.be/2ZHdjOfnqOU]
 
 ### SteamVR Input System (keybinds for app)
 
@@ -472,7 +472,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Brightness**: Same as regular.
 - **Opacity**: Adjusts opacity of color overlay.
   - **Toggle On/Off**: Turns on/off Color Adjustment Overlay.
-- **<Color>**: Adjusts the overlay to adjust the color.
+- **Color (Red/Green/Blue)**: Adjusts the overlay to adjust the color.
 
 ## - Utilities Page
 
@@ -545,6 +545,14 @@ Full build instructions can be found [here](docs/building_for_linux.md).
 - **Issue:** Snap back when using motion controls with WMR headset
   - **Cause:** WMR boundary off, or set up for standing only.
   - **Solution:** Please set-up WMR for all experiences, and then if you don't want WMR boundary you can toggle off the boundary **after** SteamVR/OpenVR has been started.
+
+- **Issue:** While using Trackers (additional devices besides controllers) Keybinds don't work.
+  - **Cause:** Trackers can Assume controller roles, and prevent your controllers from working properly.
+  - **Solution:** Assign Tracker Roles Via SteamVR Widget to anything besides `held-in-hand`
+  
+- **Issue:** Custom Key Presses Not Saving In file.
+  - **Cause:** Key Presses Modified while Advanced Settings is running.
+  - **Solution:** Only modify the settings file while VR/Advanced Settings is **not** running.
 
 # License
 
