@@ -7,6 +7,55 @@
 
 enum class Token
 {
+
+    KEY_F1,
+    KEY_F2,
+    KEY_F3,
+    KEY_F4,
+    KEY_F5,
+    KEY_F6,
+    KEY_F7,
+    KEY_F8,
+    KEY_F9,
+    KEY_F10,
+    KEY_F11,
+    KEY_F12,
+
+    KEY_BACKSPACE,
+    KEY_SPACE,
+    KEY_TAB,
+    KEY_ESC,
+    KEY_INS,
+    KEY_DEL,
+    KEY_END,
+    KEY_PGDN,
+    KEY_PGUP,
+    KEY_CAPS,
+    KEY_PRNSCRN,
+    KEY_PAUSE,
+    KEY_SCRLOCK,
+    KEY_LEFTARROW,
+    KEY_RIGHTARROW,
+    KEY_UPARROW,
+    KEY_DOWNARROW,
+    KEY_KPSLASH,
+    KEY_KPSTAR,
+    KEY_KPMINUS,
+    KEY_KPPLUS,
+    KEY_ENTER,
+
+    // Misc tokens
+    TOKEN_NEW_SEQUENCE,
+    TOKEN_NO_KEYUP_NEXT,
+
+    // Modifiers
+    MODIFIER_CTRL,
+    MODIFIER_ALT,
+    MODIFIER_SHIFT,
+    MODIFIER_RSHIFT,
+    MODIFIER_SUPER,
+    MODIFIER_TILDE,
+
     // Literals
     KEY_a = 'a',
     KEY_b = 'b',
@@ -45,51 +94,6 @@ enum class Token
     KEY_7 = '7',
     KEY_8 = '8',
     KEY_9 = '9',
-
-    KEY_F1,
-    KEY_F2,
-    KEY_F3,
-    KEY_F4,
-    KEY_F5,
-    KEY_F6,
-    KEY_F7,
-    KEY_F8,
-    KEY_F9,
-
-    KEY_BACKSPACE,
-    KEY_SPACE,
-    KEY_TAB,
-    KEY_ESC,
-    KEY_INS,
-    KEY_DEL,
-    KEY_END,
-    KEY_PGDN,
-    KEY_PGUP,
-    KEY_CAPS,
-    KEY_PRNSCRN,
-    KEY_PAUSE,
-    KEY_SCRLOCK,
-    KEY_LEFTARROW,
-    KEY_RIGHTARROW,
-    KEY_UPARROW,
-    KEY_DOWNARROW,
-    KEY_KPSLASH,
-    KEY_KPSTAR,
-    KEY_KPMINUS,
-    KEY_KPPLUS,
-    KEY_ENTER,
-
-    // Misc tokens
-    TOKEN_NEW_SEQUENCE,
-    TOKEN_NO_KEYUP_NEXT,
-
-    // Modifiers
-    MODIFIER_CTRL,
-    MODIFIER_ALT,
-    MODIFIER_SHIFT,
-    MODIFIER_RSHIFT,
-    MODIFIER_SUPER,
-    MODIFIER_TILDE,
 };
 
 std::vector<Token>
