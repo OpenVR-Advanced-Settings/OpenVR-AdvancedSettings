@@ -201,6 +201,17 @@ void RotationTabController::doVestibularMotion(
                 = reduceAngle<>( hmdYaw - hmdPositionToWallYaw, -M_PI, M_PI );
             bool turnLeft = hmdToWallYaw > 0.0;
 
+            // Only turn if moving forward
+            double hmdMovementDirection = static_cast<double>(
+                std::atan2( m_autoTurnLastHmdUpdate.m[0][3]
+                                - poseHmd.mDeviceToAbsoluteTracking.m[0][3],
+                            m_autoTurnLastHmdUpdate.m[2][3]
+                                - poseHmd.mDeviceToAbsoluteTracking.m[2][3] ) );
+            if(std::abs(hmdYaw - hmdMovementDirection) * k_radiansToCentidegrees >= 70000)
+            {
+                break;
+            }
+
             // Get the distance between previous and current
             // position
             double distanceChange = static_cast<double>(
