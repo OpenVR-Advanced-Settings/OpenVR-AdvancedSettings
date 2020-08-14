@@ -115,6 +115,8 @@ void RotationTabController::eventLoopTick(
             {
                 doVestibularMotion( poseHmd, chaperoneDistances );
             }
+            
+            m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
         }
     }
     if ( m_autoTurnNotificationTimestamp )
@@ -229,7 +231,6 @@ void RotationTabController::doVestibularMotion(
                 newRotationAngleInt );
 
         } while ( false );
-        m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
     }
 }
 
