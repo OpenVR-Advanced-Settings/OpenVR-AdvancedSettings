@@ -169,16 +169,20 @@ void RotationTabController::doVestibularMotion(
         {
             // find nearest wall we're moving towards
             auto nearestWall = chaperoneDistances.end();
+            auto nearestWallApproaching = chaperoneDistances.end();
             auto itrLast = m_autoTurnChaperoneDistancesLast.begin();
             for ( auto itr = chaperoneDistances.begin();
                   itr != chaperoneDistances.end();
                   itr++ )
             {
                 itrLast++;
-                // if ( itr->distance > itrLast->distance )
-                //{
-                //    continue;
-                //}
+
+                if ( (itr->distance <= itrLast->distance) &&
+                        (nearestWallApproaching == chaperoneDistances.end()
+                     || itr->distance < nearestWall->distance))
+                {
+                    nearestWallApproaching = itr;
+                }
 
                 if ( nearestWall == chaperoneDistances.end()
                      || itr->distance < nearestWall->distance )
@@ -186,7 +190,8 @@ void RotationTabController::doVestibularMotion(
                     nearestWall = itr;
                 }
             }
-            if ( nearestWall == chaperoneDistances.end() )
+            if ( nearestWall == chaperoneDistances.end() ||
+                    nearestWallApproaching == chaperoneDistances.end())
             {
                 break;
             }
@@ -234,7 +239,7 @@ void RotationTabController::doVestibularMotion(
             // 2 sin-1( (d/2)/r ) (in radians)
             double arcLength = 2
                                * std::asin( ( distanceChange / 2 )
-                                            / vestibularMotionRadius() );
+                                            / std::max(vestibularMotionRadius(), static_cast<double>(nearestWallApproaching->distance )));
             if ( std::isnan( arcLength ) )
             {
                 break;
