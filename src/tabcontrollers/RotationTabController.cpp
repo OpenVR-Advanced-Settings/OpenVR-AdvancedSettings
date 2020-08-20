@@ -224,7 +224,7 @@ void RotationTabController::doVestibularMotion(
                                 - poseHmd.mDeviceToAbsoluteTracking.m[2][3] ) );
             if ( std::abs( hmdYaw - hmdMovementDirection )
                      * k_radiansToCentidegrees
-                 >= 70000 )
+                 >= 7000 )
             {
                 break;
             }
