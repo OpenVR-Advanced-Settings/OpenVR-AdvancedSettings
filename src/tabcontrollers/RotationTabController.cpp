@@ -115,7 +115,7 @@ void RotationTabController::eventLoopTick(
             {
                 doVestibularMotion( poseHmd, chaperoneDistances );
             }
-            
+
             m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
             m_autoTurnChaperoneDistancesLast = std::move( chaperoneDistances );
         }
@@ -177,9 +177,9 @@ void RotationTabController::doVestibularMotion(
             {
                 itrLast++;
 
-                if ( (itr->distance <= itrLast->distance) &&
-                        (nearestWallApproaching == chaperoneDistances.end()
-                     || itr->distance < nearestWall->distance))
+                if ( ( itr->distance <= itrLast->distance )
+                     && ( nearestWallApproaching == chaperoneDistances.end()
+                          || itr->distance < nearestWall->distance ) )
                 {
                     nearestWallApproaching = itr;
                 }
@@ -190,8 +190,8 @@ void RotationTabController::doVestibularMotion(
                     nearestWall = itr;
                 }
             }
-            if ( nearestWall == chaperoneDistances.end() ||
-                    nearestWallApproaching == chaperoneDistances.end())
+            if ( nearestWall == chaperoneDistances.end()
+                 || nearestWallApproaching == chaperoneDistances.end() )
             {
                 break;
             }
@@ -222,7 +222,9 @@ void RotationTabController::doVestibularMotion(
                                 - poseHmd.mDeviceToAbsoluteTracking.m[0][3],
                             m_autoTurnLastHmdUpdate.m[2][3]
                                 - poseHmd.mDeviceToAbsoluteTracking.m[2][3] ) );
-            if(std::abs(hmdYaw - hmdMovementDirection) * k_radiansToCentidegrees >= 70000)
+            if ( std::abs( hmdYaw - hmdMovementDirection )
+                     * k_radiansToCentidegrees
+                 >= 70000 )
             {
                 break;
             }
@@ -237,9 +239,13 @@ void RotationTabController::doVestibularMotion(
 
             // Get the arc length between the previous point and current point
             // 2 sin-1( (d/2)/r ) (in radians)
-            double arcLength = 2
-                               * std::asin( ( distanceChange / 2 )
-                                            / std::max(vestibularMotionRadius(), static_cast<double>(nearestWallApproaching->distance )));
+            double arcLength
+                = 2
+                  * std::asin(
+                      ( distanceChange / 2 )
+                      / std::max( vestibularMotionRadius(),
+                                  static_cast<double>(
+                                      nearestWallApproaching->distance ) ) );
             if ( std::isnan( arcLength ) )
             {
                 break;
