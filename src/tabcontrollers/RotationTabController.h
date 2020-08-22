@@ -110,6 +110,8 @@ private:
     std::vector<utils::ChaperoneQuadData> m_autoTurnChaperoneDistancesLast;
     double m_autoTurnRoundingError = 0.0;
     std::chrono::steady_clock::time_point::duration m_estimatedFrameRate;
+    double m_ratchettingLastHmdRotation = 0.0;
+    size_t m_ratchettingLastWall = 0;
 
     std::optional<std::chrono::steady_clock::time_point>
         m_autoTurnNotificationTimestamp;
@@ -120,6 +122,9 @@ private:
         const vr::TrackedDevicePose_t& poseHmd,
         const std::vector<utils::ChaperoneQuadData>& chaperoneDistances );
     void doVestibularMotion(
+        const vr::TrackedDevicePose_t& poseHmd,
+        const std::vector<utils::ChaperoneQuadData>& chaperoneDistances );
+    void doViewRatchetting(
         const vr::TrackedDevicePose_t& poseHmd,
         const std::vector<utils::ChaperoneQuadData>& chaperoneDistances );
 
