@@ -21,6 +21,15 @@ inline void sendTokensAsInput( const std::vector<Token> tokens )
     bool noKeyUp = false;
     for ( const auto& token : tokens )
     {
+        if ( token == Token::TOKEN_NO_KEYUP_NEXT )
+        {
+            noKeyUp = true;
+            continue;
+        }
+        else
+        {
+            noKeyUp = false;
+        }
         if ( isModifier( token ) )
         {
             sendKeyPress( token, KeyStatus::Down );
@@ -37,28 +46,9 @@ inline void sendTokensAsInput( const std::vector<Token> tokens )
         if ( isLiteral( token ) )
         {
             sendKeyPress( token, KeyStatus::Down );
-            if ( noKeyUp )
-            {
-                heldInputs.push_back( token );
-            }
-            else
-            {
-                sendKeyPress( token, KeyStatus::Up );
-            }
+            sendKeyPress( token, KeyStatus::Up );
             continue;
         }
-        // NEEDS to be checked after modifer check and literal? but should never
-        // be called on literal?
-        if ( token == Token::TOKEN_NO_KEYUP_NEXT )
-        {
-            noKeyUp = true;
-            continue;
-        }
-        else
-        {
-            noKeyUp = false;
-        }
-
         if ( token == Token::TOKEN_NEW_SEQUENCE )
         {
             for ( const auto& h : heldInputs )
