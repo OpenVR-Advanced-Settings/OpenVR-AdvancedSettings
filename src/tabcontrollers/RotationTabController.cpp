@@ -259,38 +259,21 @@ void RotationTabController::doVestibularMotion(
         // m_autoTurnVestibularMotionRadius, as if we had walked
         // however many inches along a circle and the world was
         // turning to compensate
+        
+        // Find the (index of the) nearest wall
+        size_t nearestWallIdx = 0;
+        for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
+        {
+            if ( chaperoneDistances[i].distance
+                 < chaperoneDistances[nearestWallIdx].distance )
+            {
+                nearestWallIdx = i;
+            }
+        }
+        const auto& nearestWall = chaperoneDistances[nearestWallIdx];
 
         do
         {
-            // find nearest wall we're moving towards
-            auto nearestWall = chaperoneDistances.end();
-            auto nearestWallApproaching = chaperoneDistances.end();
-            auto itrLast = m_autoTurnChaperoneDistancesLast.begin();
-            for ( auto itr = chaperoneDistances.begin();
-                  itr != chaperoneDistances.end();
-                  itr++ )
-            {
-                itrLast++;
-
-                if ( ( itr->distance <= itrLast->distance )
-                     && ( nearestWallApproaching == chaperoneDistances.end()
-                          || itr->distance < nearestWall->distance ) )
-                {
-                    nearestWallApproaching = itr;
-                }
-
-                if ( nearestWall == chaperoneDistances.end()
-                     || itr->distance < nearestWall->distance )
-                {
-                    nearestWall = itr;
-                }
-            }
-            if ( nearestWall == chaperoneDistances.end()
-                 || nearestWallApproaching == chaperoneDistances.end() )
-            {
-                break;
-            }
-
             // Convert pose matrix to quaternion
             auto hmdQuaternion = quaternion::fromHmdMatrix34(
                 poseHmd.mDeviceToAbsoluteTracking );
@@ -302,9 +285,9 @@ void RotationTabController::doVestibularMotion(
             // wall
             double hmdPositionToWallYaw = static_cast<double>(
                 std::atan2( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                - nearestWall->nearestPoint.v[0],
+                                - nearestWall.nearestPoint.v[0],
                             poseHmd.mDeviceToAbsoluteTracking.m[2][3]
-                                - nearestWall->nearestPoint.v[2] ) );
+                                - nearestWall.nearestPoint.v[2] ) );
 
             // Get angle between HMD and wall
             double hmdToWallYaw
@@ -334,13 +317,9 @@ void RotationTabController::doVestibularMotion(
 
             // Get the arc length between the previous point and current point
             // 2 sin-1( (d/2)/r ) (in radians)
-            double arcLength
-                = 2
-                  * std::asin(
-                      ( distanceChange / 2 )
-                      / std::max( vestibularMotionRadius(),
-                                  static_cast<double>(
-                                      nearestWallApproaching->distance ) ) );
+            double arcLength = 2
+                               * std::asin( ( distanceChange / 2 )
+                                            / vestibularMotionRadius() );
             if ( std::isnan( arcLength ) )
             {
                 break;
@@ -348,10 +327,9 @@ void RotationTabController::doVestibularMotion(
 
             double rotationAmount = arcLength * ( turnLeft ? 1 : -1 );
             int newRotationAngle
-                = ( parent->m_moveCenterTabController.rotation()
+                = reduceAngle<>(parent->m_moveCenterTabController.rotation()
                     + static_cast<int>( rotationAmount
-                                        * k_radiansToCentidegrees ) )
-                  % 36000;
+                                        * k_radiansToCentidegrees ), 0, 36000);
 
             parent->m_moveCenterTabController.setRotation( newRotationAngle );
 
