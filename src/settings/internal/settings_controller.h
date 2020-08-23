@@ -393,6 +393,10 @@ private:
                           SettingCategory::Rotation,
                           QtInfo{ "autoturnVestibularMotionEnabled" },
                           false },
+        BoolSettingValue{ BoolSetting::ROTATION_autoturnViewRatchettingEnabled,
+                          SettingCategory::Rotation,
+                          QtInfo{ "autoturnViewRatchettingEnabled" },
+                          false },
         BoolSettingValue{ BoolSetting::ROTATION_autoturnShowNotification,
                           SettingCategory::Rotation,
                           QtInfo{ "autoturnShowNotification" },
@@ -485,6 +489,11 @@ private:
             SettingCategory::Rotation,
             QtInfo{ "autoturnVestibularMotionRadius" },
             11.0 },
+        DoubleSettingValue{
+            DoubleSetting::ROTATION_autoturnViewRatchettingPercent,
+            SettingCategory::Rotation,
+            QtInfo{ "autoturnViewRatchettingPercent" },
+            0.05 },
 
     };
 

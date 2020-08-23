@@ -84,6 +84,12 @@ class RotationTabController : public QObject
         double vestibularMotionRadius READ vestibularMotionRadius WRITE
             setVestibularMotionRadius NOTIFY vestibularMotionRadiusChanged )
     Q_PROPERTY(
+        bool viewRatchettingEnabled READ viewRatchettingEnabled WRITE
+            setViewRatchettingEnabled NOTIFY viewRatchettingEnabledChanged )
+    Q_PROPERTY(
+        double viewRatchettingPercent READ viewRatchettingPercent WRITE
+            setViewRatchettingPercent NOTIFY viewRatchettingPercentChanged )
+    Q_PROPERTY(
         bool autoTurnShowNotification READ autoTurnShowNotification WRITE
             setAutoTurnShowNotification NOTIFY autoTurnShowNotificationChanged )
 
@@ -147,6 +153,8 @@ public:
     int autoTurnMode() const;
     bool vestibularMotionEnabled() const;
     double vestibularMotionRadius() const;
+    bool viewRatchettingEnabled() const;
+    double viewRatchettingPercent() const;
 
 public slots:
     void setAutoTurnEnabled( bool value, bool notify = true );
@@ -160,6 +168,8 @@ public slots:
     void setAutoTurnMode( int value, bool notify = true );
     void setVestibularMotionEnabled( bool value, bool notify = true );
     void setVestibularMotionRadius( double value, bool notify = true );
+    void setViewRatchettingEnabled( bool value, bool notify = true );
+    void setViewRatchettingPercent( double value, bool notify = true );
 
 signals:
 
@@ -175,6 +185,8 @@ signals:
     void autoTurnModeChanged( int value );
     void vestibularMotionEnabledChanged( bool value );
     void vestibularMotionRadiusChanged( double value );
+    void viewRatchettingEnabledChanged( bool value );
+    void viewRatchettingPercentChanged( double value );
 };
 
 // Would be nice to do <typename T, T min, T max> but the standard doesn't allow

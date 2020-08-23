@@ -115,7 +115,7 @@ void RotationTabController::eventLoopTick(
                 doVestibularMotion( poseHmd, chaperoneDistances );
             }
 
-            if ( true )
+            if ( RotationTabController::viewRatchettingEnabled() )
             {
                 doViewRatchetting( poseHmd, chaperoneDistances );
             }
@@ -202,10 +202,8 @@ void RotationTabController::doViewRatchetting(
             {
                 break;
             }
-            double ratchettingFactor = 0.05;
 
             // Facing away from the wall is 0, |facing towards the wall| is M_PI
-
             double delta_degrees = 0.0;
             if ( std::abs( hmdToWallYaw )
                      - std::abs( m_ratchettingLastHmdRotation )
@@ -217,7 +215,7 @@ void RotationTabController::doViewRatchetting(
                                     hmdToWallYaw - m_ratchettingLastHmdRotation,
                                     -M_PI,
                                     M_PI )
-                                * ratchettingFactor;
+                                * viewRatchettingPercent();
             }
             else
             {
@@ -663,6 +661,18 @@ double RotationTabController::vestibularMotionRadius() const
         settings::DoubleSetting::ROTATION_autoturnVestibularMotionRadius );
 }
 
+bool RotationTabController::viewRatchettingEnabled() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::ROTATION_autoturnViewRatchettingEnabled );
+}
+
+double RotationTabController::viewRatchettingPercent() const
+{
+    return settings::getSetting(
+        settings::DoubleSetting::ROTATION_autoturnViewRatchettingPercent );
+}
+
 // Setters
 
 void RotationTabController::setAutoTurnEnabled( bool value, bool notify )
@@ -795,6 +805,28 @@ void RotationTabController::setVestibularMotionRadius( double value,
     if ( notify )
     {
         emit vestibularMotionRadiusChanged( value );
+    }
+}
+void RotationTabController::setViewRatchettingEnabled( bool value,
+                                                        bool notify )
+{
+    settings::setSetting(
+        settings::BoolSetting::ROTATION_autoturnViewRatchettingEnabled,
+        value );
+    if ( notify )
+    {
+        emit viewRatchettingEnabledChanged( value );
+    }
+}
+void RotationTabController::setViewRatchettingPercent( double value,
+                                                       bool notify )
+{
+    settings::setSetting(
+        settings::DoubleSetting::ROTATION_autoturnViewRatchettingPercent,
+        value );
+    if ( notify )
+    {
+        emit viewRatchettingPercentChanged( value );
     }
 }
 
