@@ -218,9 +218,9 @@ void RotationTabController::doViewRatchetting(
                       hmdToWallYaw - m_ratchettingLastHmdRotation, -M_PI, M_PI )
                   * viewRatchettingPercent();
 
-            parent->m_moveCenterTabController.setRotation( static_cast<int>(
+            parent->m_moveCenterTabController.setRotation(
                 parent->m_moveCenterTabController.rotation()
-                + ( delta_degrees * k_radiansToCentidegrees ) ) );
+                + static_cast<int>( delta_degrees * k_radiansToCentidegrees ) );
         } while ( false );
 
         m_ratchettingLastHmdRotation = hmdToWallYaw;
@@ -359,11 +359,11 @@ void RotationTabController::doAutoTurn(
             {
                 miniDeltaAngle = m_autoTurnLinearSmoothTurnRemaining;
             }
-            int newRotationAngleDeg = reduceAngle<>(
-                static_cast<int>( parent->m_moveCenterTabController.rotation()
-                                  + miniDeltaAngle ),
-                0,
-                36000 );
+            int newRotationAngleDeg
+                = reduceAngle<>( parent->m_moveCenterTabController.rotation()
+                                     + static_cast<int>( miniDeltaAngle ),
+                                 0,
+                                 36000 );
 
             parent->m_moveCenterTabController.setRotation(
                 newRotationAngleDeg );
@@ -503,9 +503,8 @@ void RotationTabController::doAutoTurn(
                     {
                     case AutoTurnModes::SNAP:
                         parent->m_moveCenterTabController.setRotation(
-                            static_cast<int>(
-                                parent->m_moveCenterTabController.rotation()
-                                + delta_degrees ) );
+                            parent->m_moveCenterTabController.rotation()
+                            + static_cast<int>( delta_degrees ) );
                         break;
                     case AutoTurnModes::LINEAR_SMOOTH_TURN:
                         m_autoTurnLinearSmoothTurnRemaining
