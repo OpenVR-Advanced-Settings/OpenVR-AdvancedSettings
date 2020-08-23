@@ -118,7 +118,7 @@ void RotationTabController::eventLoopTick(
 
             if ( true )
             {
-                doViewRatchetting(poseHmd, chaperoneDistances);
+                doViewRatchetting( poseHmd, chaperoneDistances );
             }
 
             m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
@@ -165,11 +165,12 @@ void RotationTabController::doViewRatchetting(
             m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
         }
 
-        // Find the (index of the) nearest wall 
+        // Find the (index of the) nearest wall
         size_t nearestWallIdx = 0;
-        for(size_t i = 0; i < chaperoneDistances.size(); i++)
+        for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
         {
-            if(chaperoneDistances[i].distance < chaperoneDistances[nearestWallIdx].distance)
+            if ( chaperoneDistances[i].distance
+                 < chaperoneDistances[nearestWallIdx].distance )
             {
                 nearestWallIdx = i;
             }
@@ -177,8 +178,8 @@ void RotationTabController::doViewRatchetting(
         const auto& nearestWall = chaperoneDistances[nearestWallIdx];
 
         // Convert pose matrix to quaternion
-        auto hmdQuaternion = quaternion::fromHmdMatrix34(
-                poseHmd.mDeviceToAbsoluteTracking );
+        auto hmdQuaternion
+            = quaternion::fromHmdMatrix34( poseHmd.mDeviceToAbsoluteTracking );
 
         // Get HMD raw yaw
         double hmdYaw = quaternion::getYaw( hmdQuaternion );
@@ -186,8 +187,10 @@ void RotationTabController::doViewRatchetting(
         // Get angle between HMD position and nearest point on
         // wall
         double hmdPositionToWallYaw = static_cast<double>(
-                std::atan2( nearestWall.nearestPoint.v[0] - poseHmd.mDeviceToAbsoluteTracking.m[0][3],
-                    nearestWall.nearestPoint.v[2] - poseHmd.mDeviceToAbsoluteTracking.m[2][3]));
+            std::atan2( nearestWall.nearestPoint.v[0]
+                            - poseHmd.mDeviceToAbsoluteTracking.m[0][3],
+                        nearestWall.nearestPoint.v[2]
+                            - poseHmd.mDeviceToAbsoluteTracking.m[2][3] ) );
 
         // Get angle between HMD and wall
         double hmdToWallYaw
@@ -196,7 +199,8 @@ void RotationTabController::doViewRatchetting(
         do
         {
             // if we change walls, ignore
-            if(nearestWallIdx != m_ratchettingLastWall) {
+            if ( nearestWallIdx != m_ratchettingLastWall )
+            {
                 break;
             }
             double ratchettingFactor = 0.05;
@@ -204,23 +208,32 @@ void RotationTabController::doViewRatchetting(
             // Facing away from the wall is 0, |facing towards the wall| is M_PI
 
             double delta_degrees = 0.0;
-            if(std::abs(hmdToWallYaw) - std::abs(m_ratchettingLastHmdRotation) < 0.0)
+            if ( std::abs( hmdToWallYaw )
+                     - std::abs( m_ratchettingLastHmdRotation )
+                 < 0.0 )
             {
-                // If since the last frame we've turned towards it, multiply that change.
-                // e.g. if the magnitude is greater
-                delta_degrees = reduceAngle<>(hmdToWallYaw - m_ratchettingLastHmdRotation, -M_PI, M_PI) * ratchettingFactor;
-            } else {
-                // If since the last frame we've turned away from it, reduce that change.
-                //delta_degrees = - reduceAngle<>(hmdToWallYaw - m_ratchettingLastHmdRotation, -M_PI, M_PI) * ratchettingFactor;
+                // If since the last frame we've turned towards it, multiply
+                // that change. e.g. if the magnitude is greater
+                delta_degrees = reduceAngle<>(
+                                    hmdToWallYaw - m_ratchettingLastHmdRotation,
+                                    -M_PI,
+                                    M_PI )
+                                * ratchettingFactor;
+            }
+            else
+            {
+                // If since the last frame we've turned away from it, reduce
+                // that change.
+                // delta_degrees = - reduceAngle<>(hmdToWallYaw -
+                // m_ratchettingLastHmdRotation, -M_PI, M_PI) *
+                // ratchettingFactor;
                 delta_degrees = 0.0;
             }
 
-            LOG( INFO ) << delta_degrees;
-            parent->m_moveCenterTabController.setRotation(
-                    static_cast<int>(
-                        parent->m_moveCenterTabController.rotation()
-                        + (delta_degrees * k_radiansToCentidegrees )));
-        } while (false);
+            parent->m_moveCenterTabController.setRotation( static_cast<int>(
+                parent->m_moveCenterTabController.rotation()
+                + ( delta_degrees * k_radiansToCentidegrees ) ) );
+        } while ( false );
 
         m_ratchettingLastHmdRotation = hmdToWallYaw;
         m_ratchettingLastWall = nearestWallIdx;
@@ -228,15 +241,15 @@ void RotationTabController::doViewRatchetting(
 }
 
 void RotationTabController::doVestibularMotion(
-        const vr::TrackedDevicePose_t& poseHmd,
-        const std::vector<utils::ChaperoneQuadData>& chaperoneDistances )
+    const vr::TrackedDevicePose_t& poseHmd,
+    const std::vector<utils::ChaperoneQuadData>& chaperoneDistances )
 {
     if ( m_isHMDActive && poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
-            && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK
-            && !chaperoneDistances.empty() )
+         && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK
+         && !chaperoneDistances.empty() )
     {
         if ( chaperoneDistances.size()
-                != m_autoTurnChaperoneDistancesLast.size() )
+             != m_autoTurnChaperoneDistancesLast.size() )
         {
             m_autoTurnChaperoneDistancesLast = chaperoneDistances;
             m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
@@ -334,15 +347,13 @@ void RotationTabController::doVestibularMotion(
             }
 
             double rotationAmount = arcLength * ( turnLeft ? 1 : -1 );
+            int newRotationAngle
+                = ( parent->m_moveCenterTabController.rotation()
+                    + static_cast<int>( rotationAmount
+                                        * k_radiansToCentidegrees ) )
+                  % 36000;
 
-            double newRotationAngleDeg
-                = std::fmod( parent->m_moveCenterTabController.rotation()
-                                 + ( rotationAmount * k_radiansToCentidegrees ),
-                             360000.0 );
-            int newRotationAngleInt = static_cast<int>( newRotationAngleDeg );
-
-            parent->m_moveCenterTabController.setRotation(
-                newRotationAngleInt );
+            parent->m_moveCenterTabController.setRotation( newRotationAngle );
 
         } while ( false );
     }
