@@ -182,6 +182,7 @@ std::vector<Token>
         }
         if ( const auto c = getModifier( *ch ); c.has_value() )
         {
+            tokens.push_back( Token::TOKEN_NO_KEYUP_NEXT );
             tokens.push_back( *c );
             continue;
         }
