@@ -94,7 +94,6 @@ void RotationTabController::eventLoopTick(
         {
             m_isHMDActive = true;
         }
-        // TODO: this doesn't need to run if both are off
         if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK )
         {
@@ -254,26 +253,21 @@ void RotationTabController::doVestibularMotion(
             m_autoTurnChaperoneDistancesLast = chaperoneDistances;
             m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
         }
-        // Find the nearest wall we're moving TOWARDS and rotate
-        // away from it Rotate dist/(2*pi*r) where r is
+        // Rotate dist/(2*pi*r) where r is
         // m_autoTurnVestibularMotionRadius, as if we had walked
         // however many inches along a circle and the world was
         // turning to compensate
-        
-        // Find the (index of the) nearest wall
-        size_t nearestWallIdx = 0;
-        for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
-        {
-            if ( chaperoneDistances[i].distance
-                 < chaperoneDistances[nearestWallIdx].distance )
-            {
-                nearestWallIdx = i;
-            }
-        }
-        const auto& nearestWall = chaperoneDistances[nearestWallIdx];
 
         do
         {
+            // Find the nearest wall
+            const auto& nearestWall
+                = std::min_element( chaperoneDistances.begin(),
+                                    chaperoneDistances.end(),
+                                    []( const auto& quadA, const auto& quadB ) {
+                                        return quadA.distance < quadB.distance;
+                                    } );
+
             // Convert pose matrix to quaternion
             auto hmdQuaternion = quaternion::fromHmdMatrix34(
                 poseHmd.mDeviceToAbsoluteTracking );
@@ -285,9 +279,9 @@ void RotationTabController::doVestibularMotion(
             // wall
             double hmdPositionToWallYaw = static_cast<double>(
                 std::atan2( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
-                                - nearestWall.nearestPoint.v[0],
+                                - nearestWall->nearestPoint.v[0],
                             poseHmd.mDeviceToAbsoluteTracking.m[2][3]
-                                - nearestWall.nearestPoint.v[2] ) );
+                                - nearestWall->nearestPoint.v[2] ) );
 
             // Get angle between HMD and wall
             double hmdToWallYaw
@@ -326,10 +320,12 @@ void RotationTabController::doVestibularMotion(
             }
 
             double rotationAmount = arcLength * ( turnLeft ? 1 : -1 );
-            int newRotationAngle
-                = reduceAngle<>(parent->m_moveCenterTabController.rotation()
+            int newRotationAngle = reduceAngle<>(
+                parent->m_moveCenterTabController.rotation()
                     + static_cast<int>( rotationAmount
-                                        * k_radiansToCentidegrees ), 0, 36000);
+                                        * k_radiansToCentidegrees ),
+                0,
+                36000 );
 
             parent->m_moveCenterTabController.setRotation( newRotationAngle );
 
@@ -363,7 +359,6 @@ void RotationTabController::doAutoTurn(
                  == AutoTurnModes::LINEAR_SMOOTH_TURN
              && m_autoTurnLinearSmoothTurnRemaining != 0 )
         {
-            // TODO: implement angular acceleration max?
             double deltaSeconds
                 = FrameRates::toDoubleSeconds( m_estimatedFrameRate );
             auto miniDeltaAngle = static_cast<int>(

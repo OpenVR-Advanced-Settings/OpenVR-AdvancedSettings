@@ -108,7 +108,6 @@ private:
     std::vector<bool> m_autoTurnWallActive;
     vr::HmdMatrix34_t m_autoTurnLastHmdUpdate;
     std::vector<utils::ChaperoneQuadData> m_autoTurnChaperoneDistancesLast;
-    double m_autoTurnRoundingError = 0.0;
     std::chrono::steady_clock::time_point::duration m_estimatedFrameRate;
     double m_ratchettingLastHmdRotation = 0.0;
     size_t m_ratchettingLastWall = 0;
