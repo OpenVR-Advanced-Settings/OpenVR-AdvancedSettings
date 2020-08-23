@@ -204,28 +204,19 @@ void RotationTabController::doViewRatchetting(
             }
 
             // Facing away from the wall is 0, |facing towards the wall| is M_PI
-            double delta_degrees = 0.0;
+            // Ignore turning towards the wall (e.g. change in magnitude is
+            // greater than 0)
             if ( std::abs( hmdToWallYaw )
                      - std::abs( m_ratchettingLastHmdRotation )
-                 < 0.0 )
+                 > 0.0 )
             {
-                // If since the last frame we've turned towards it, multiply
-                // that change. e.g. if the magnitude is greater
-                delta_degrees = reduceAngle<>(
-                                    hmdToWallYaw - m_ratchettingLastHmdRotation,
-                                    -M_PI,
-                                    M_PI )
-                                * viewRatchettingPercent();
+                break;
             }
-            else
-            {
-                // If since the last frame we've turned away from it, reduce
-                // that change.
-                // delta_degrees = - reduceAngle<>(hmdToWallYaw -
-                // m_ratchettingLastHmdRotation, -M_PI, M_PI) *
-                // ratchettingFactor;
-                delta_degrees = 0.0;
-            }
+            // Magnify that change
+            double delta_degrees
+                = reduceAngle<>(
+                      hmdToWallYaw - m_ratchettingLastHmdRotation, -M_PI, M_PI )
+                  * viewRatchettingPercent();
 
             parent->m_moveCenterTabController.setRotation( static_cast<int>(
                 parent->m_moveCenterTabController.rotation()
@@ -807,12 +798,10 @@ void RotationTabController::setVestibularMotionRadius( double value,
         emit vestibularMotionRadiusChanged( value );
     }
 }
-void RotationTabController::setViewRatchettingEnabled( bool value,
-                                                        bool notify )
+void RotationTabController::setViewRatchettingEnabled( bool value, bool notify )
 {
     settings::setSetting(
-        settings::BoolSetting::ROTATION_autoturnViewRatchettingEnabled,
-        value );
+        settings::BoolSetting::ROTATION_autoturnViewRatchettingEnabled, value );
     if ( notify )
     {
         emit viewRatchettingEnabledChanged( value );
