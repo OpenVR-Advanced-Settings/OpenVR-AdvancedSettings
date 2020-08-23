@@ -3,6 +3,7 @@
 #include <QApplication>
 #include "../settings/settings.h"
 #include "../overlaycontroller.h"
+#include "../utils/update_rate.h"
 #include <cmath>
 
 namespace advsettings
@@ -15,13 +16,8 @@ void VideoTabController::initStage1()
     synchGain( true );
     resetGain();
 
-    m_videoDashboardUpdateCounter
-        = utils::adjustUpdateRate( k_videoDashboardUpdateCounter );
-
     initBrightnessOverlay();
     initColorOverlay();
-    initMotionSmoothing();
-    initSupersampleOverride();
     m_overlayInit = true;
     reloadVideoConfig();
     reloadVideoProfiles();
@@ -30,6 +26,19 @@ void VideoTabController::initStage1()
     {
         setBrightnessEnabled( true, false, true );
     }
+}
+
+void VideoTabController::initStage2()
+{
+    synchSteamVR();
+}
+
+void VideoTabController::synchSteamVR()
+{
+    setMotionSmoothing( motionSmoothing() );
+    setAllowSupersampleOverride( allowSupersampleOverride() );
+    setSuperSampling( superSampling() );
+    setAllowSupersampleFiltering( allowSupersampleFiltering() );
 }
 
 void VideoTabController::initBrightnessOverlay()
@@ -141,101 +150,17 @@ void VideoTabController::eventLoopTick() {}
 
 void VideoTabController::dashboardLoopTick()
 {
-    if ( settingsUpdateCounter >= m_videoDashboardUpdateCounter )
+    if ( updateRate.shouldSubjectNotRun( UpdateSubject::VideoDashboard ) )
     {
-        vr::EVRSettingsError vrSettingsError;
-
-        // checks supersampling override and resynchs if necessry
-        // also prints error if can't find.
-        auto sso = vr::VRSettings()->GetBool(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_SupersampleManualOverride_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-
-        setAllowSupersampleOverride( sso );
-        // checks supersampling and re-synchs if necessary
-        auto ss = vr::VRSettings()->GetFloat(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_SupersampleScale_Float,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_SupersampleScale_Float
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-            if ( m_superSampling != 1.0f )
-            {
-                LOG( DEBUG ) << "OpenVR returns an error and we have a custom "
-                                "supersampling value: "
-                             << m_superSampling;
-                setSuperSampling( 1.0 );
-            }
-        }
-        else if ( fabs( static_cast<double>( m_superSampling - ss ) ) > 0.05 )
-        {
-            LOG( INFO ) << "OpenVR reports a changed supersampling value: "
-                        << m_superSampling << " => " << ss;
-            setSuperSampling( ss );
-        }
-        // checks if Supersampling filter is on and changes if it has been
-        // changed elsewhere
-
-        auto sf = vr::VRSettings()->GetBool(
-            vr::k_pch_SteamVR_Section,
-            vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
-            &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setAllowSupersampleFiltering( sf );
-
-        // Checks if Motion smoothing setting can be read and synchs adv
-        // settings to steamvr/openvr
-        auto ms
-            = vr::VRSettings()->GetBool( vr::k_pch_SteamVR_Section,
-                                         vr::k_pch_SteamVR_MotionSmoothing_Bool,
-                                         &vrSettingsError );
-        if ( vrSettingsError != vr::VRSettingsError_None )
-        {
-            LOG( WARNING ) << "Could not read \""
-                           << vr::k_pch_SteamVR_MotionSmoothing_Bool
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
-        }
-        setMotionSmoothing( ms );
-
-        // Synch's our saved Values of gain to the SteamVR's version
-        // This will allow other apps to modify Gain.
-
-        bool valueAdjust = true;
-        if ( isOverlayMethodActive() )
-        {
-            valueAdjust = false;
-        }
-        synchGain( valueAdjust );
-
-        settingsUpdateCounter = 0;
+        return;
     }
-    else
+    synchSteamVR();
+    bool valueAdjust = true;
+    if ( isOverlayMethodActive() )
     {
-        settingsUpdateCounter++;
+        valueAdjust = false;
     }
+    synchGain( valueAdjust );
 }
 
 void VideoTabController::reloadVideoConfig()
@@ -247,14 +172,9 @@ void VideoTabController::reloadVideoConfig()
     setColorGreen( colorGreen() );
     setColorBlue( colorBlue() );
 
-    vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
-        m_brightnessOverlayHandle, brightnessOpacityValue() );
-    if ( overlayError != vr::VROverlayError_None )
-    {
-        LOG( ERROR ) << "Could not set alpha for Brightness Overlay: "
-                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                            overlayError );
-    }
+    ovr_overlay_wrapper::setOverlayAlpha( m_brightnessOverlayHandle,
+                                          brightnessOpacityValue() );
+
     loadColorOverlay();
 }
 
@@ -288,7 +208,8 @@ void VideoTabController::setBrightnessEnabled( bool value,
             if ( overlayHandle != vr::k_ulOverlayHandleInvalid )
             {
                 setBrightnessOpacityValue( brightnessOpacityValue(), false );
-                vr::VROverlay()->ShowOverlay( getBrightnessOverlayHandle() );
+                ovr_overlay_wrapper::showOverlay(
+                    getBrightnessOverlayHandle() );
                 LOG( INFO ) << "Brightness Overlay toggled on";
             }
         }
@@ -296,7 +217,8 @@ void VideoTabController::setBrightnessEnabled( bool value,
         {
             if ( overlayHandle != vr::k_ulOverlayHandleInvalid )
             {
-                vr::VROverlay()->HideOverlay( getBrightnessOverlayHandle() );
+                ovr_overlay_wrapper::hideOverlay(
+                    getBrightnessOverlayHandle() );
                 LOG( INFO ) << "Brightness Overlay toggled off";
             }
         }
@@ -326,14 +248,8 @@ void VideoTabController::setBrightnessOpacityValue( float percvalue,
             settings::DoubleSetting::VIDEO_brightnessOpacityValue, 1.0 );
         realvalue = 0;
     }
-    vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayAlpha(
-        m_brightnessOverlayHandle, realvalue );
-    if ( overlayError != vr::VROverlayError_None )
-    {
-        LOG( ERROR ) << "Could not set alpha for brightness overlay: "
-                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                            overlayError );
-    }
+    ovr_overlay_wrapper::setOverlayAlpha( m_brightnessOverlayHandle,
+                                          realvalue );
 
     if ( notify )
     {
@@ -425,7 +341,7 @@ void VideoTabController::setColorOverlayEnabled( bool value,
         {
             if ( overlayHandle != vr::k_ulOverlayHandleInvalid )
             {
-                vr::VROverlay()->ShowOverlay( getColorOverlayHandle() );
+                ovr_overlay_wrapper::showOverlay( getColorOverlayHandle() );
                 LOG( INFO ) << "Color Overlay toggled on";
             }
         }
@@ -433,7 +349,7 @@ void VideoTabController::setColorOverlayEnabled( bool value,
         {
             if ( overlayHandle != vr::k_ulOverlayHandleInvalid )
             {
-                vr::VROverlay()->HideOverlay( getColorOverlayHandle() );
+                ovr_overlay_wrapper::hideOverlay( getColorOverlayHandle() );
                 LOG( INFO ) << "Color Overlay toggled off";
             }
         }
@@ -458,14 +374,7 @@ void VideoTabController::setColorOverlayOpacity( float value, bool notify )
             settings::DoubleSetting::VIDEO_colorOverlayOpacity,
             static_cast<double>( value ) );
 
-        vr::VROverlayError overlayError
-            = vr::VROverlay()->SetOverlayAlpha( m_colorOverlayHandle, value );
-        if ( overlayError != vr::VROverlayError_None )
-        {
-            LOG( ERROR ) << "Could not set alpha for color overlay: "
-                         << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                                overlayError );
-        }
+        ovr_overlay_wrapper::setOverlayAlpha( m_colorOverlayHandle, value );
 
         if ( notify )
         {
@@ -750,54 +659,46 @@ void VideoTabController::setColor( float R,
 
 float VideoTabController::superSampling() const
 {
+    auto p = ovr_settings_wrapper::getFloat(
+        vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_SupersampleScale_Float );
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
     return m_superSampling;
 }
 
 bool VideoTabController::allowSupersampleOverride() const
 {
-    return m_allowSupersampleOverride;
-}
-
-void VideoTabController::initSupersampleOverride()
-{
-    bool temporary = false;
-    vr::EVRSettingsError vrSettingsError;
-    temporary = vr::VRSettings()->GetBool(
+    auto p = ovr_settings_wrapper::getBool(
         vr::k_pch_SteamVR_Section,
-        vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
-        &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
+        vr::k_pch_SteamVR_SupersampleManualOverride_Bool );
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        LOG( WARNING ) << "Could not get SuperSampling Override State \""
-                       << vr::k_pch_SteamVR_SupersampleManualOverride_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
+        return p.second;
     }
-    setAllowSupersampleOverride( temporary, true );
+    return m_allowSupersampleOverride;
 }
 
 void VideoTabController::setSuperSampling( float value, const bool notify )
 {
-    bool override = false;
-    // Mirrors Desktop Clamp
-    if ( value < 0.2f )
+    if ( fabs( static_cast<double>( m_superSampling - value ) ) > .005 )
     {
-        LOG( WARNING ) << "Encountered a supersampling value <= 0.2, setting "
-                          "supersampling to 1.0";
-        value = 1.0f;
-        override = true;
-    }
-
-    if ( override
-         || fabs( static_cast<double>( m_superSampling - value ) ) > .005 )
-    {
+        // Mirrors Desktop Clamp
+        if ( value < 0.2f )
+        {
+            LOG( WARNING )
+                << "Encountered a supersampling value <= 0.2, setting "
+                   "supersampling to 1.0";
+            value = 1.0f;
+        }
         LOG( DEBUG ) << "Supersampling value changed: " << m_superSampling
                      << " => " << value;
         m_superSampling = value;
-        vr::VRSettings()->SetFloat( vr::k_pch_SteamVR_Section,
-                                    vr::k_pch_SteamVR_SupersampleScale_Float,
-                                    m_superSampling );
+        ovr_settings_wrapper::setFloat(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_SupersampleScale_Float,
+            m_superSampling );
         if ( notify )
         {
             emit superSamplingChanged( m_superSampling );
@@ -811,7 +712,7 @@ void VideoTabController::setAllowSupersampleOverride( const bool value,
     if ( m_allowSupersampleOverride != value )
     {
         m_allowSupersampleOverride = value;
-        vr::VRSettings()->SetBool(
+        ovr_settings_wrapper::setBool(
             vr::k_pch_SteamVR_Section,
             vr::k_pch_SteamVR_SupersampleManualOverride_Bool,
             m_allowSupersampleOverride );
@@ -830,6 +731,12 @@ void VideoTabController::setAllowSupersampleOverride( const bool value,
 
 bool VideoTabController::motionSmoothing() const
 {
+    auto p = ovr_settings_wrapper::getBool(
+        vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_MotionSmoothing_Bool );
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
     return m_motionSmoothing;
 }
 
@@ -839,9 +746,9 @@ void VideoTabController::setMotionSmoothing( const bool value,
     if ( m_motionSmoothing != value )
     {
         m_motionSmoothing = value;
-        vr::VRSettings()->SetBool( vr::k_pch_SteamVR_Section,
-                                   vr::k_pch_SteamVR_MotionSmoothing_Bool,
-                                   m_motionSmoothing );
+        ovr_settings_wrapper::setBool( vr::k_pch_SteamVR_Section,
+                                       vr::k_pch_SteamVR_MotionSmoothing_Bool,
+                                       m_motionSmoothing );
         if ( notify )
         {
             emit motionSmoothingChanged( m_motionSmoothing );
@@ -849,27 +756,15 @@ void VideoTabController::setMotionSmoothing( const bool value,
     }
 }
 
-void VideoTabController::initMotionSmoothing()
-{
-    bool temporary = false;
-    vr::EVRSettingsError vrSettingsError;
-    temporary
-        = vr::VRSettings()->GetBool( vr::k_pch_SteamVR_Section,
-                                     vr::k_pch_SteamVR_MotionSmoothing_Bool,
-                                     &vrSettingsError );
-    if ( vrSettingsError != vr::VRSettingsError_None )
-    {
-        LOG( WARNING ) << "Could not get MotionSmoothing State \""
-                       << vr::k_pch_SteamVR_MotionSmoothing_Bool
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
-    }
-    setMotionSmoothing( temporary, true );
-}
-
 bool VideoTabController::allowSupersampleFiltering() const
 {
+    auto p = ovr_settings_wrapper::getBool(
+        vr::k_pch_SteamVR_Section,
+        vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool );
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
     return m_allowSupersampleFiltering;
 }
 
@@ -879,7 +774,7 @@ void VideoTabController::setAllowSupersampleFiltering( const bool value,
     if ( m_allowSupersampleFiltering != value )
     {
         m_allowSupersampleFiltering = value;
-        vr::VRSettings()->SetBool(
+        ovr_settings_wrapper::setBool(
             vr::k_pch_SteamVR_Section,
             vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool,
             m_allowSupersampleFiltering );

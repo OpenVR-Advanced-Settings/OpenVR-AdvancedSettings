@@ -57,4 +57,15 @@ optional<string> settingsDirectory()
     return path.toStdString();
 }
 
+std::optional<std::string> verifyIconFilePath( std::string filename )
+{
+    const auto notifIconPath = paths::binaryDirectoryFindFile( filename );
+    if ( !notifIconPath.has_value() )
+    {
+        LOG( ERROR ) << "Could not find icon \"" << filename << "\"";
+    }
+
+    return notifIconPath;
+}
+
 } // namespace paths

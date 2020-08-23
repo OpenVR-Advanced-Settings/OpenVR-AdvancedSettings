@@ -150,7 +150,6 @@ OverlayController::OverlayController( bool desktopMode,
     m_moveCenterTabController.initStage1();
     m_audioTabController.initStage1();
     m_settingsTabController.initStage1();
-    m_utilitiesTabController.initStage1();
     m_videoTabController.initStage1();
     m_rotationTabController.initStage1();
 
@@ -492,6 +491,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     m_utilitiesTabController.initStage2( this );
     m_moveCenterTabController.initStage2( this );
     m_rotationTabController.initStage2( this );
+    m_videoTabController.initStage2();
 }
 
 void OverlayController::OnRenderRequest()
@@ -705,33 +705,33 @@ void OverlayController::processKeyboardBindings()
         sendStringAsInput( commands );
     }
     // Press Key One
-    if ( m_actions.keyboardPressOne() && !m_keyPressOneState )
+    if ( m_actions.keyPressMisc() && !m_keyPressOneState )
     {
         const auto commands = settings::getSetting(
-            settings::StringSetting::KEYBOARDSHORTCUT_keyboardPressOne );
+            settings::StringSetting::KEYBOARDSHORTCUT_keyPressMisc );
         sendFirstCharAsInput( commands, KeyStatus::Down );
         m_keyPressOneState = true;
     }
-    if ( m_keyPressOneState && !m_actions.keyboardPressOne() )
+    if ( m_keyPressOneState && !m_actions.keyPressMisc() )
     {
         const auto commands = settings::getSetting(
-            settings::StringSetting::KEYBOARDSHORTCUT_keyboardPressOne );
+            settings::StringSetting::KEYBOARDSHORTCUT_keyPressMisc );
         sendFirstCharAsInput( commands, KeyStatus::Up );
         m_keyPressOneState = false;
     }
 
     // Press Key Two
-    if ( m_actions.keyboardPressTwo() && !m_keyPressTwoState )
+    if ( m_actions.keyPressSystem() && !m_keyPressTwoState )
     {
         const auto commands = settings::getSetting(
-            settings::StringSetting::KEYBOARDSHORTCUT_keyboardPressTwo );
+            settings::StringSetting::KEYBOARDSHORTCUT_keyPressSystem );
         sendFirstCharAsInput( commands, KeyStatus::Down );
         m_keyPressTwoState = true;
     }
-    if ( m_keyPressTwoState && !m_actions.keyboardPressTwo() )
+    if ( m_keyPressTwoState && !m_actions.keyPressSystem() )
     {
         const auto commands = settings::getSetting(
-            settings::StringSetting::KEYBOARDSHORTCUT_keyboardPressTwo );
+            settings::StringSetting::KEYBOARDSHORTCUT_keyPressSystem );
         sendFirstCharAsInput( commands, KeyStatus::Up );
         m_keyPressTwoState = false;
     }
@@ -919,6 +919,7 @@ void OverlayController::OnTimeoutPumpEvents()
         {
             mainEventLoop();
             m_customTickRateCounter = 0;
+            updateRate.incrementCounter();
         }
         else
         {
@@ -939,6 +940,7 @@ void OverlayController::OnTimeoutPumpEvents()
             // main event loop. (this function should trigger about every 11ms
             // assuming 90fps compositor)
             mainEventLoop();
+            updateRate.incrementCounter();
 
             // wait for the next frame after executing our main event loop once.
             m_lastFrame = m_currentFrame;

@@ -26,12 +26,7 @@ class SettingsTabController : public QObject
 private:
     OverlayController* parent;
 
-    unsigned settingsUpdateCounter = 0;
-
     bool m_autoStartEnabled = false;
-    bool m_nativeChaperoneToggle = false;
-
-    unsigned int m_settingsTabSettingsUpdateCounter = 157;
 
 public:
     void initStage1();

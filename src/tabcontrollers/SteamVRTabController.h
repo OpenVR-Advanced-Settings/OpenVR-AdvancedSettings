@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "../utils/FrameRateUtils.h"
+#include "../openvr/ovr_settings_wrapper.h"
 
 class QQuickWindow;
 // application namespace
@@ -49,9 +50,7 @@ private:
     bool m_cameraRoom = false;
     bool m_cameraDashboard = false;
 
-    unsigned settingsUpdateCounter = 0;
-
-    unsigned int m_steamVrSettingsUpdateCounter = 97;
+    void synchSteamVR();
 
 public:
     void initStage1();

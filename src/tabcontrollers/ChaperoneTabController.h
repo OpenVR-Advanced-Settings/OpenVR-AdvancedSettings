@@ -33,7 +33,6 @@ struct ChaperoneProfile : settings::ISettingsObject
     vr::HmdMatrix34_t standingCenter;
     float playSpaceAreaX = 0.0f;
     float playSpaceAreaZ = 0.0f;
-
     bool includesVisibility = false;
     float visibility = 0.6f;
 
@@ -324,7 +323,6 @@ class ChaperoneTabController : public QObject
 private:
     OverlayController* parent;
 
-    float m_visibility = 0.6f;
     float m_fadeDistance = 0.7f;
     float m_height = 2.0f;
     bool m_centerMarker = false;
@@ -354,6 +352,7 @@ private:
     int m_chaperoneColorR = 0;
     int m_chaperoneColorG = 255;
     int m_chaperoneColorB = 255;
+    int m_chaperoneColorA = 153;
 
     int m_collisionBoundStyle = 0;
 
@@ -362,8 +361,6 @@ private:
     bool m_autosaveComplete = false;
 
     int m_updateTicksChaperoneReload = 0;
-
-    unsigned int m_chaperoneSettingsUpdateCounter = 101;
 
     vr::VRActionHandle_t m_rightActionHandle;
     vr::VRActionHandle_t m_leftActionHandle;
@@ -399,7 +396,6 @@ public:
 
     void updateCenterMarkerOverlay( vr::HmdMatrix34_t* centerPlaySpaceMatrix );
 
-    float boundsVisibility() const;
     float fadeDistance();
     float height();
     bool centerMarker();
@@ -410,7 +406,8 @@ public:
     int chaperoneColorR();
     int chaperoneColorG();
     int chaperoneColorB();
-    int chaperoneColorA() const;
+    int chaperoneColorA();
+    float boundsVisibility();
 
     bool centerMarkerNew();
     bool m_centerMarkerOverlayNeedsUpdate = false;

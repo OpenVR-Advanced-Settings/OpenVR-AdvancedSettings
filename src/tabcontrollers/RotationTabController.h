@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <QObject>
@@ -7,6 +6,7 @@
 #include <thread>
 #include <openvr.h>
 #include <cmath>
+#include <optional>
 #include "../utils/FrameRateUtils.h"
 #include "../utils/ChaperoneUtils.h"
 #include "../settings/settings_object.h"
@@ -24,6 +24,35 @@ enum class AutoTurnModes
     SNAP,
     LINEAR_SMOOTH_TURN
 };
+
+namespace FrameRates
+{
+    // Each of type std::chrono::time_point::duration
+    constexpr auto RATE_45HZ = std::chrono::duration_cast<
+        std::chrono::steady_clock::time_point::duration>(
+        std::chrono::duration<int, std::ratio<1, 45>>( 1 ) );
+    constexpr auto RATE_60HZ = std::chrono::duration_cast<
+        std::chrono::steady_clock::time_point::duration>(
+        std::chrono::duration<int, std::ratio<1, 60>>( 1 ) );
+    constexpr auto RATE_72HZ = std::chrono::duration_cast<
+        std::chrono::steady_clock::time_point::duration>(
+        std::chrono::duration<int, std::ratio<1, 72>>( 1 ) );
+    constexpr auto RATE_90HZ = std::chrono::duration_cast<
+        std::chrono::steady_clock::time_point::duration>(
+        std::chrono::duration<int, std::ratio<1, 90>>( 1 ) );
+    constexpr auto RATE_120HZ = std::chrono::duration_cast<
+        std::chrono::steady_clock::time_point::duration>(
+        std::chrono::duration<int, std::ratio<1, 120>>( 1 ) );
+    constexpr auto RATE_144HZ = std::chrono::duration_cast<
+        std::chrono::steady_clock::time_point::duration>(
+        std::chrono::duration<int, std::ratio<1, 144>>( 1 ) );
+
+    template <typename T> double toDoubleSeconds( T duration )
+    {
+        return ( static_cast<double>( duration.count() ) * T::period::num )
+               / T::period::den;
+    }
+} // namespace FrameRates
 
 class RotationTabController : public QObject
 {
@@ -54,9 +83,24 @@ class RotationTabController : public QObject
     Q_PROPERTY(
         double vestibularMotionRadius READ vestibularMotionRadius WRITE
             setVestibularMotionRadius NOTIFY vestibularMotionRadiusChanged )
+    Q_PROPERTY(
+        bool autoTurnShowNotification READ autoTurnShowNotification WRITE
+            setAutoTurnShowNotification NOTIFY autoTurnShowNotificationChanged )
 
 private:
     OverlayController* parent;
+
+    struct
+    {
+        vr::VROverlayHandle_t overlayHandle = vr::k_ulOverlayHandleInvalid;
+        std::string autoturnPath;
+        std::string noautoturnPath;
+    } m_autoturnValues;
+
+    virtual vr::VROverlayHandle_t getNotificationOverlayHandle()
+    {
+        return m_autoturnValues.overlayHandle;
+    }
 
     // Variables
     int m_autoTurnLinearSmoothTurnRemaining = 0;
@@ -65,6 +109,10 @@ private:
     vr::HmdMatrix34_t m_autoTurnLastHmdUpdate;
     std::vector<utils::ChaperoneQuadData> m_autoTurnChaperoneDistancesLast;
     double m_autoTurnRoundingError = 0.0;
+    std::chrono::steady_clock::time_point::duration m_estimatedFrameRate;
+
+    std::optional<std::chrono::steady_clock::time_point>
+        m_autoTurnNotificationTimestamp;
 
     bool m_isHMDActive = false;
 
@@ -87,6 +135,7 @@ public:
     float autoTurnActivationDistance() const;
     float autoTurnDeactivationDistance() const;
     bool autoTurnUseCornerAngle() const;
+    bool autoTurnShowNotification() const;
     double cordDetangleAngle() const;
     double minCordTangle() const;
     int autoTurnSpeed() const;
@@ -97,6 +146,7 @@ public:
 
 public slots:
     void setAutoTurnEnabled( bool value, bool notify = true );
+    void setAutoTurnShowNotification( bool value, bool notify = true );
     void setAutoTurnActivationDistance( float value, bool notify = true );
     void setAutoTurnDeactivationDistance( float value, bool notify = true );
     void setAutoTurnUseCornerAngle( bool value, bool notify = true );
@@ -109,7 +159,9 @@ public slots:
 
 signals:
 
+    void defaultProfileDisplay();
     void autoTurnEnabledChanged( bool value );
+    void autoTurnShowNotificationChanged( bool value );
     void autoTurnActivationDistanceChanged( float value );
     void autoTurnDeactivationDistanceChanged( float value );
     void autoTurnUseCornerAngleChanged( bool value );

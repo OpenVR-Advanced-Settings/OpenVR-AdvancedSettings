@@ -11,6 +11,9 @@ MyStackViewPage {
     content: ScrollView{
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        clip: true
 
             ColumnLayout {
             spacing: 18
@@ -85,6 +88,13 @@ MyStackViewPage {
                 text: "Force Use SteamVR (Disable Oculus API [experimental])"
                 onCheckedChanged: {
                     SettingsTabController.setOculusSdkToggle(this.checked, true)
+                }
+            }
+            MyToggleButton {
+                id: spaceAdjustChaperoneToggle
+                text: "Adjust Chaperone"
+                onCheckedChanged: {
+                    MoveCenterTabController.adjustChaperone = this.checked
                 }
             }
 
@@ -248,6 +258,7 @@ MyStackViewPage {
                 oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
 
                 seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
+                spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
             }
 
         Connections {
@@ -279,6 +290,9 @@ MyStackViewPage {
             onEnableSeatedMotionChanged: {
                 enableSeatedMotionToggle.checked = MoveCenterTabController.enableSeatedMotion
                 seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
+            }
+            onAdjustChaperoneChanged: {
+                spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
             }
         }
 

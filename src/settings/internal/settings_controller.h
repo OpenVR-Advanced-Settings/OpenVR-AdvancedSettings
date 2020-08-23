@@ -275,6 +275,12 @@ private:
                           SettingCategory::Playspace,
                           QtInfo{ "simpleRecenter" },
                           false },
+        // TODO Replace Back to Adjust Chaperone When Breaking Change is done.
+        // Needed New Setting defaulted to off w/ SVR 1.13.x release
+        BoolSettingValue{ BoolSetting::PLAYSPACE_adjustChaperone2,
+                          SettingCategory::Playspace,
+                          QtInfo{ "adjustChaperone2" },
+                          false },
 
         BoolSettingValue{ BoolSetting::APPLICATION_disableVersionCheck,
                           SettingCategory::Application,
@@ -387,6 +393,10 @@ private:
                           SettingCategory::Rotation,
                           QtInfo{ "autoturnVestibularMotionEnabled" },
                           false },
+        BoolSettingValue{ BoolSetting::ROTATION_autoturnShowNotification,
+                          SettingCategory::Rotation,
+                          QtInfo{ "autoturnShowNotification" },
+                          true }
     };
 
     constexpr static auto doubleSettingSize
@@ -481,7 +491,7 @@ private:
     constexpr static auto stringSettingsSize
         = static_cast<int>( StringSetting::LAST_ENUMERATOR ) + 1;
     constexpr static auto discordDefaultMuteKeybinding = "^>m";
-    constexpr static auto pressDefaultOne = "F9";
+    constexpr static auto pressDefault = "F9";
     std::array<StringSettingValue, stringSettingsSize> m_stringSettings{
         StringSettingValue{ StringSetting::KEYBOARDSHORTCUT_keyboardOne,
                             SettingCategory::KeyboardShortcut,
@@ -495,14 +505,14 @@ private:
                             SettingCategory::KeyboardShortcut,
                             QtInfo{ "keyboardThree" },
                             discordDefaultMuteKeybinding },
-        StringSettingValue{ StringSetting::KEYBOARDSHORTCUT_keyboardPressOne,
+        StringSettingValue{ StringSetting::KEYBOARDSHORTCUT_keyPressMisc,
                             SettingCategory::KeyboardShortcut,
-                            QtInfo{ "keyboardPressOne" },
-                            pressDefaultOne },
-        StringSettingValue{ StringSetting::KEYBOARDSHORTCUT_keyboardPressTwo,
+                            QtInfo{ "keyPressmisc" },
+                            pressDefault },
+        StringSettingValue{ StringSetting::KEYBOARDSHORTCUT_keyPressSystem,
                             SettingCategory::KeyboardShortcut,
-                            QtInfo{ "keyboardPressTwo" },
-                            pressDefaultOne },
+                            QtInfo{ "keyPressSystem" },
+                            pressDefault },
     };
 
     constexpr static auto intSettingsSize

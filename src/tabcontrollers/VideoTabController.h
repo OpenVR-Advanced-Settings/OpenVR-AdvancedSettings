@@ -4,6 +4,8 @@
 #include <QString>
 #include <QVariant>
 #include <openvr.h>
+#include "../openvr/ovr_settings_wrapper.h"
+#include "../openvr/ovr_overlay_wrapper.h"
 #include "../utils/FrameRateUtils.h"
 #include "../settings/settings_object.h"
 
@@ -156,9 +158,6 @@ private:
                    bool keepValue = false );
     void resetGain();
 
-    void initSupersampleOverride();
-    void initMotionSmoothing();
-
     void initColorOverlay();
     void loadColorOverlay();
 
@@ -167,6 +166,7 @@ private:
     void initBrightnessOverlay();
 
     void synchGain( bool setValue = false );
+    void synchSteamVR();
 
     std::vector<VideoProfile> videoProfiles;
 
@@ -204,6 +204,7 @@ public:
     bool isOverlayMethodActive() const;
 
     void initStage1();
+    void initStage2();
     void eventLoopTick();
     void dashboardLoopTick();
 

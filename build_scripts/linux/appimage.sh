@@ -43,4 +43,14 @@ qmake --version
 
 $PROJECT_DIR/linuxdeployqt-continuous-x86_64.AppImage -version --appimage-extract-and-run
 
-$PROJECT_DIR/linuxdeployqt-continuous-x86_64.AppImage $EXE_DIR/usr/share/applications/AdvancedSettings.desktop --appimage-extract-and-run -appimage -verbose=2 -always-overwrite -qmldir=$PROJECT_DIR/src/res/qml -exclude-libs=libxcb-randr.so.0,libxkbcommon-x11.so.0
+APPIMAGE_COMMAND="$PROJECT_DIR/linuxdeployqt-continuous-x86_64.AppImage $EXE_DIR/usr/share/applications/AdvancedSettings.desktop --appimage-extract-and-run -appimage -verbose=2 -always-overwrite -qmldir=$PROJECT_DIR/src/res/qml -exclude-libs=libxcb-randr.so.0,libxkbcommon-x11.so.0"
+
+$APPIMAGE_COMMAND
+
+# Disable AppImageLauncher integration for Steam versions
+echo "X-AppImage-Integrate=false" >> $EXE_DIR/usr/share/applications/AdvancedSettings.desktop
+echo "X-AppImage-Integrate=false" >> $EXE_DIR/AdvancedSettings.desktop
+export VERSION="$(git rev-parse --short HEAD)-STEAM"
+
+$APPIMAGE_COMMAND
+

@@ -99,6 +99,12 @@ unsigned int tokenToKeySym( const Token token )
         return XK_F8;
     case Token::KEY_F9:
         return XK_F9;
+    case Token::KEY_F10:
+        return XK_F10;
+    case Token::KEY_F11:
+        return XK_F11;
+    case Token::KEY_F12:
+        return XK_F12;
 
     case Token::KEY_BACKSPACE:
         return XK_BackSpace;

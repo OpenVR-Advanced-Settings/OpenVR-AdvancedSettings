@@ -22,6 +22,7 @@ enum class BoolSetting
     PLAYSPACE_adjustChaperone,
     PLAYSPACE_showLogMatricesButton,
     PLAYSPACE_simpleRecenter,
+    PLAYSPACE_adjustChaperone2,
 
     APPLICATION_disableVersionCheck,
     APPLICATION_previousShutdownSafe,
@@ -54,8 +55,9 @@ enum class BoolSetting
     ROTATION_autoturnEnabled,
     ROTATION_autoturnUseCornerAngle,
     ROTATION_autoturnVestibularMotionEnabled,
+    ROTATION_autoturnShowNotification,
     // LAST_ENUMERATOR must always be set to the last value
-    LAST_ENUMERATOR = ROTATION_autoturnVestibularMotionEnabled,
+    LAST_ENUMERATOR = ROTATION_autoturnShowNotification,
 };
 
 enum class DoubleSetting
@@ -90,10 +92,10 @@ enum class StringSetting
     KEYBOARDSHORTCUT_keyboardOne,
     KEYBOARDSHORTCUT_keyboardTwo,
     KEYBOARDSHORTCUT_keyboardThree,
-    KEYBOARDSHORTCUT_keyboardPressOne,
-    KEYBOARDSHORTCUT_keyboardPressTwo,
+    KEYBOARDSHORTCUT_keyPressMisc,
+    KEYBOARDSHORTCUT_keyPressSystem,
     // LAST_ENUMERATOR must always be set to the last value
-    LAST_ENUMERATOR = KEYBOARDSHORTCUT_keyboardPressTwo,
+    LAST_ENUMERATOR = KEYBOARDSHORTCUT_keyPressSystem,
 };
 
 enum class IntSetting
