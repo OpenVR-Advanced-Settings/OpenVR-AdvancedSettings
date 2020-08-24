@@ -43,6 +43,7 @@ enum class Token
     KEY_KPMINUS,
     KEY_KPPLUS,
     KEY_ENTER,
+    KEY_BACKSLASH,
 
     // Misc tokens
     TOKEN_NEW_SEQUENCE,
