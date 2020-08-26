@@ -563,7 +563,7 @@ private:
         IntSettingValue{ IntSetting::ROTATION_autoturnLinearTurnSpeed,
                          SettingCategory::Rotation,
                          QtInfo{ "autoturnLinearTurnSpeed" },
-                         9000 },
+                         45000 },
         IntSettingValue{ IntSetting::ROTATION_autoturnMode,
                          SettingCategory::Rotation,
                          QtInfo{ "autoturnMode" },
