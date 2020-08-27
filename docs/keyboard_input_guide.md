@@ -78,6 +78,7 @@
 | Keypad Minus | `KPMINUS` |
 | Keypad Plus | `KPPLUS` |
 | Enter | `ENTER` |
+| Backslash | `BACKSLASH` |
 
 
 ### Misc symbols

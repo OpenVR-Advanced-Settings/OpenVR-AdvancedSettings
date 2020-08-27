@@ -70,6 +70,7 @@ A token is either a modifier symbol, literal symbol, symbol sequence or space ch
 | Keypad Minus | `KPMINUS` |
 | Keypad Plus | `KPPLUS` |
 | Enter | `ENTER` |
+| Backslash | `BACKSLASH` |
 
 
 ### Misc symbols
