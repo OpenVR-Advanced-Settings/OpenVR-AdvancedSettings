@@ -18,29 +18,18 @@ inline void sendTokensAsInput( const std::vector<Token> tokens )
     initOsSystems();
 
     std::vector<Token> heldInputs = {};
-    bool noKeyUp = false;
     for ( const auto& token : tokens )
     {
+        // maintained for support w/o altering other binds/parsers
         if ( token == Token::TOKEN_NO_KEYUP_NEXT )
         {
-            noKeyUp = true;
             continue;
         }
-        else
-        {
-            noKeyUp = false;
-        }
+        // Modifiers always push to held
         if ( isModifier( token ) )
         {
             sendKeyPress( token, KeyStatus::Down );
-            if ( noKeyUp )
-            {
-                heldInputs.push_back( token );
-            }
-            else
-            {
-                sendKeyPress( token, KeyStatus::Up );
-            }
+            heldInputs.push_back( token );
             continue;
         }
         if ( isLiteral( token ) )
