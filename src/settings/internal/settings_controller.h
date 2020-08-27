@@ -484,7 +484,7 @@ private:
             DoubleSetting::ROTATION_autoturnVestibularMotionRadius,
             SettingCategory::Rotation,
             QtInfo{ "autoturnVestibularMotionRadius" },
-            11.0 },
+            22.0 },
 
     };
 
@@ -563,7 +563,7 @@ private:
         IntSettingValue{ IntSetting::ROTATION_autoturnLinearTurnSpeed,
                          SettingCategory::Rotation,
                          QtInfo{ "autoturnLinearTurnSpeed" },
-                         9000 },
+                         45000 },
         IntSettingValue{ IntSetting::ROTATION_autoturnMode,
                          SettingCategory::Rotation,
                          QtInfo{ "autoturnMode" },
