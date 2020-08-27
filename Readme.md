@@ -407,7 +407,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **DeActivation Distance**:  The minimum distance (activation + deactivation) you must be from the wall before autoturn will activate again.
   - **Use Corner Angle**: When already against a wall and reaching a corner, turn the angle of that corner rather than the angle of your headset to the wall (reccomended)
   - **Use Smooth Turn**: Toggles between a smooth turn and a snap turn.
-  - **Turn Speed**: How fast you rotate in Degrees per second.
+  - **Turn Speed**: How fast you rotate in Degrees per second. Use more for a more comfortable experience, less for natural movement in social/physical VR games.
   - **Detangle Angle**: Settings attempting to keep your cord untangled while using the Auto-Turn feature.
     - **Min Rotations(deg)**: The amount of rotation before Auto-Turn starts to try and un-tangle your cord.
     - **Max Wall Angle(deg)**: When the angle of your headset to the wall is less than Max Wall Angle, it will turn you whichever way will start to untangle your cord. Otherwise it will turn you whichever way is closest. Set to '0' if you have a cordless setup 
