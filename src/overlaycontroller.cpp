@@ -332,6 +332,11 @@ OverlayController::~OverlayController()
     Shutdown();
 }
 
+void OverlayController::toggleExclusiveInput()
+{
+    m_actions.exclusiveInputActiveToggle();
+}
+
 void OverlayController::exitApp()
 {
     // save to settings that shutdown was safe

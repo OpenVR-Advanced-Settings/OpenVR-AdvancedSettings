@@ -6,6 +6,7 @@
 #include "ivrinput_action_set.h"
 #include "ivrinput_input_source.h"
 #include <array>
+#include <atomic>
 
 namespace input
 {
@@ -163,6 +164,11 @@ public:
     bool keyPressMisc();
     bool keyPressSystem();
 
+    void exclusiveInputActiveToggle();
+
+    // false is all Sets, True IS System + haptics
+    std::atomic<bool> m_exclusiveInputSetToggle = false;
+
     vr::VRActionHandle_t leftHapticActionHandle();
     vr::VRActionHandle_t rightHapticActionHandle();
 
@@ -253,6 +259,7 @@ private:
 
     // Initialize the set of actions after everything else.
     ActiveActionSets m_sets;
+    ActiveActionSets m_systemActionSets;
 };
 
 } // namespace input

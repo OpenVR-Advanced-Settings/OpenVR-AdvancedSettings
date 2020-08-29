@@ -91,6 +91,13 @@ MyStackViewPage {
                 }
             }
             MyToggleButton {
+                id: exclusiveInputToggleButton
+                text: "ExclusiveInputToggle"
+                onCheckedChanged: {
+                    OverlayController.toggleExclusiveInput()
+                }
+            }
+            MyToggleButton {
                 id: spaceAdjustChaperoneToggle
                 text: "Adjust Chaperone"
                 onCheckedChanged: {

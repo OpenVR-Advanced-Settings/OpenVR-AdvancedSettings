@@ -152,7 +152,9 @@ SteamIVRInput::SteamIVRInput()
                 m_music.activeActionSet(),
                 m_motion.activeActionSet(),
                 m_misc.activeActionSet(),
-                m_system.activeActionSet() } )
+                m_system.activeActionSet() } ),
+      m_systemActionSets(
+          { m_haptics.activeActionSet(), m_system.activeActionSet() } )
 {
 }
 /*!
@@ -360,6 +362,11 @@ bool SteamIVRInput::keyPressSystem()
     return isDigitalActionActivatedConstant( m_keyPressSystem );
 }
 
+void SteamIVRInput::exclusiveInputActiveToggle()
+{
+    m_exclusiveInputSetToggle = !m_exclusiveInputSetToggle;
+}
+
 /*!
 Returns the action handle of the Left Haptic Action
 */
@@ -400,10 +407,19 @@ update state.
 */
 void SteamIVRInput::UpdateStates()
 {
-    const auto error
-        = vr::VRInput()->UpdateActionState( m_sets.data(),
-                                            sizeof( vr::VRActiveActionSet_t ),
-                                            action_sets::numberOfSets );
+    vr::EVRInputError error;
+    if ( !m_exclusiveInputSetToggle )
+    {
+        error = vr::VRInput()->UpdateActionState(
+            m_sets.data(),
+            sizeof( vr::VRActiveActionSet_t ),
+            action_sets::numberOfSets );
+    }
+    else
+    {
+        error = vr::VRInput()->UpdateActionState(
+            m_systemActionSets.data(), sizeof( vr::VRActiveActionSet_t ), 2 );
+    }
 
     if ( error != vr::EVRInputError::VRInputError_None )
     {
