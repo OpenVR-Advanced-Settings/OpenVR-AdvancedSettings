@@ -169,7 +169,9 @@ private:
     void processChaperoneBindings();
     void processKeyboardBindings();
     void processRotationBindings();
+    void processExclusiveInputBinding();
 
+    bool m_exclusiveState = false;
     bool m_keyPressOneState = false;
     bool m_keyPressTwoState = false;
 

@@ -743,6 +743,13 @@ void OverlayController::processKeyboardBindings()
         m_keyPressTwoState = false;
     }
 }
+
+void OverlayController::processExclusiveInputBinding()
+{
+    m_actions.exclusiveInputActiveToggle( !m_exclusiveState );
+    m_actions.actionSetPriorityToggle( m_exclusiveState );
+}
+
 void OverlayController::processRotationBindings()
 {
     if ( m_actions.autoTurnToggle() )
@@ -757,6 +764,8 @@ it has been.
 */
 void OverlayController::processInputBindings()
 {
+    processExclusiveInputBinding();
+
     processMediaKeyBindings();
 
     processMotionBindings();
