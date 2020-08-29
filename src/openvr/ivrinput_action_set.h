@@ -25,9 +25,14 @@ public:
             = vr::k_ulInvalidInputValueHandle;
         m_activeActionSet.nPriority = 0;
     }
-    vr::VRActiveActionSet_t* activeActionSet()
+    void setPriority( int32_t priority )
     {
-        return &m_activeActionSet;
+        m_activeActionSet.nPriority = priority;
+    }
+
+    vr::VRActiveActionSet_t activeActionSet()
+    {
+        return m_activeActionSet;
     }
 
 private:

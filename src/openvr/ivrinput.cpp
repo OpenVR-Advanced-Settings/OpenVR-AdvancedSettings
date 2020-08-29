@@ -149,13 +149,13 @@ SteamIVRInput::SteamIVRInput()
       m_addRightHapticClick( action_keys::addRightHapticClick ),
       m_proxSensor( action_keys::proxSensor ),
       m_leftHand( input_keys::leftHand ), m_rightHand( input_keys::rightHand ),
-      m_sets( { *m_haptics.activeActionSet(),
-                *m_music.activeActionSet(),
-                *m_motion.activeActionSet(),
-                *m_misc.activeActionSet(),
-                *m_system.activeActionSet() } ),
+      m_sets( { m_haptics.activeActionSet(),
+                m_music.activeActionSet(),
+                m_motion.activeActionSet(),
+                m_misc.activeActionSet(),
+                m_system.activeActionSet() } ),
       m_systemActionSets(
-          { *m_haptics.activeActionSet(), *m_system.activeActionSet() } )
+          { m_haptics.activeActionSet(), m_system.activeActionSet() } )
 {
 }
 /*!
@@ -378,18 +378,16 @@ void SteamIVRInput::actionSetPriorityToggle( bool value )
 {
     if ( value )
     {
-        for ( vr::VRActiveActionSet_t x : m_sets )
+        for ( unsigned int i = 0; i < action_sets::numberOfSets; i++ )
         {
-            // Desktop Portal + OVR toolkit use this value as well, should be
-            // considered the "standard" value this should allow co-priority.
-            x.nPriority = 0x01000001;
+            m_sets.at( i ).nPriority = 0x01000001;
         }
     }
     else
     {
-        for ( vr::VRActiveActionSet_t x : m_sets )
+        for ( unsigned int i = 0; i < action_sets::numberOfSets; i++ )
         {
-            x.nPriority = 0;
+            m_sets.at( i ).nPriority = 0;
         }
     }
 }

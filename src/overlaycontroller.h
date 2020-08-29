@@ -181,7 +181,7 @@ public:
 
     void Shutdown();
     Q_INVOKABLE void exitApp();
-    Q_INVOKABLE void toggleExclusiveInput( bool value );
+    Q_INVOKABLE void toggleExclusiveInput();
 
     bool isDashboardVisible()
     {

@@ -332,10 +332,10 @@ OverlayController::~OverlayController()
     Shutdown();
 }
 
-void OverlayController::toggleExclusiveInput( bool value )
+void OverlayController::toggleExclusiveInput()
 {
-    m_actions.exclusiveInputActiveToggle( value );
-    m_actions.actionSetPriorityToggle( value );
+    // m_actions.exclusiveInputActiveToggle( value );
+    // m_actions.actionSetPriorityToggle( value );
 }
 
 void OverlayController::exitApp()
@@ -746,8 +746,12 @@ void OverlayController::processKeyboardBindings()
 
 void OverlayController::processExclusiveInputBinding()
 {
-    m_actions.exclusiveInputActiveToggle( !m_exclusiveState );
-    m_actions.actionSetPriorityToggle( m_exclusiveState );
+    if ( m_actions.exclusiveInputToggle() )
+    {
+        m_exclusiveState = !m_exclusiveState;
+        m_actions.exclusiveInputActiveToggle( !m_exclusiveState );
+        m_actions.actionSetPriorityToggle( m_exclusiveState );
+    }
 }
 
 void OverlayController::processRotationBindings()
