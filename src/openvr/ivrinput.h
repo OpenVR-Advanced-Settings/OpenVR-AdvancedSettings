@@ -59,6 +59,9 @@ namespace action_keys
     constexpr auto keyPressMisc = "/actions/misc/in/KeyPressMisc";
     constexpr auto keyPressSystem = "/actions/system/in/KeyPressSystem";
 
+    constexpr auto exclusiveInputToggle
+        = "/actions/system/in/ExclusiveInputToggle";
+
     constexpr auto hapticsLeft = "/actions/haptic/out/HapticsLeft";
     constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
     constexpr auto proxSensor = "/actions/haptic/in/ProxSensor";
@@ -158,13 +161,16 @@ public:
 
     bool pushToTalk();
 
+    bool exclusiveInputToggle();
+
     bool keyboardOne();
     bool keyboardTwo();
     bool keyboardThree();
     bool keyPressMisc();
     bool keyPressSystem();
 
-    void exclusiveInputActiveToggle();
+    void exclusiveInputActiveToggle( bool value );
+    void actionSetPriorityToggle( bool value );
 
     // false is all Sets, True IS System + haptics
     std::atomic<bool> m_exclusiveInputSetToggle = false;
@@ -243,6 +249,9 @@ private:
 
     // Push To Talk
     DigitalAction m_pushToTalk;
+
+    // Exclusive Input Toggle
+    DigitalAction m_exclusiveInputToggle;
 
     // haptic bindings
     DigitalAction m_leftHaptic;

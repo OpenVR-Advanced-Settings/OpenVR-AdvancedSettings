@@ -142,19 +142,20 @@ SteamIVRInput::SteamIVRInput()
       m_keyPressSystem( action_keys::keyPressSystem ),
       m_chaperoneToggle( action_keys::chaperoneToggle ),
       m_pushToTalk( action_keys::pushToTalk ),
+      m_exclusiveInputToggle( action_keys::exclusiveInputToggle ),
       m_leftHaptic( action_keys::hapticsLeft ),
       m_rightHaptic( action_keys::hapticsRight ),
       m_addLeftHapticClick( action_keys::addLeftHapticClick ),
       m_addRightHapticClick( action_keys::addRightHapticClick ),
       m_proxSensor( action_keys::proxSensor ),
       m_leftHand( input_keys::leftHand ), m_rightHand( input_keys::rightHand ),
-      m_sets( { m_haptics.activeActionSet(),
-                m_music.activeActionSet(),
-                m_motion.activeActionSet(),
-                m_misc.activeActionSet(),
-                m_system.activeActionSet() } ),
+      m_sets( { *m_haptics.activeActionSet(),
+                *m_music.activeActionSet(),
+                *m_motion.activeActionSet(),
+                *m_misc.activeActionSet(),
+                *m_system.activeActionSet() } ),
       m_systemActionSets(
-          { m_haptics.activeActionSet(), m_system.activeActionSet() } )
+          { *m_haptics.activeActionSet(), *m_system.activeActionSet() } )
 {
 }
 /*!
@@ -361,10 +362,36 @@ bool SteamIVRInput::keyPressSystem()
 {
     return isDigitalActionActivatedConstant( m_keyPressSystem );
 }
-
-void SteamIVRInput::exclusiveInputActiveToggle()
+bool SteamIVRInput::exclusiveInputToggle()
 {
-    m_exclusiveInputSetToggle = !m_exclusiveInputSetToggle;
+    return isDigitalActionActivatedOnce( m_exclusiveInputToggle );
+}
+// Controls which action Sets are active, false = all, true = system + haptics
+// Adjusts in update state call.
+void SteamIVRInput::exclusiveInputActiveToggle( bool value )
+{
+    m_exclusiveInputSetToggle = value;
+}
+
+// Sets Action Set Priority
+void SteamIVRInput::actionSetPriorityToggle( bool value )
+{
+    if ( value )
+    {
+        for ( vr::VRActiveActionSet_t x : m_sets )
+        {
+            // Desktop Portal + OVR toolkit use this value as well, should be
+            // considered the "standard" value this should allow co-priority.
+            x.nPriority = 0x01000001;
+        }
+    }
+    else
+    {
+        for ( vr::VRActiveActionSet_t x : m_sets )
+        {
+            x.nPriority = 0;
+        }
+    }
 }
 
 /*!

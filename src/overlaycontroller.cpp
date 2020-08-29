@@ -332,9 +332,10 @@ OverlayController::~OverlayController()
     Shutdown();
 }
 
-void OverlayController::toggleExclusiveInput()
+void OverlayController::toggleExclusiveInput( bool value )
 {
-    m_actions.exclusiveInputActiveToggle();
+    m_actions.exclusiveInputActiveToggle( value );
+    m_actions.actionSetPriorityToggle( value );
 }
 
 void OverlayController::exitApp()
@@ -434,8 +435,9 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                          << thumbiconFilename << "\"";
         }
 
-        // Too many render calls in too short time overwhelm Qt and an assertion
-        // gets thrown. Therefore we use an timer to delay render calls
+        // Too many render calls in too short time overwhelm Qt and an
+        // assertion gets thrown. Therefore we use an timer to delay render
+        // calls
         m_pRenderTimer.reset( new QTimer() );
         m_pRenderTimer->setSingleShot( true );
         m_pRenderTimer->setInterval( 5 );
@@ -525,8 +527,8 @@ void OverlayController::renderOverlay()
         if ( unTexture != 0 )
         {
 #if defined _WIN64 || defined _LP64
-            // To avoid any compiler warning because of cast to a larger pointer
-            // type (warning C4312 on VC)
+            // To avoid any compiler warning because of cast to a larger
+            // pointer type (warning C4312 on VC)
             vr::Texture_t texture = { reinterpret_cast<void*>(
                                           static_cast<uint64_t>( unTexture ) ),
                                       vr::TextureType_OpenGL,
@@ -589,9 +591,9 @@ void OverlayController::processMediaKeyBindings()
 
 void OverlayController::processMotionBindings()
 {
-    // Execution order for moveCenterTabController actions is important. Don't
-    // reorder these. Override actions must always come after normal because
-    // active priority is set based on which action is "newest"
+    // Execution order for moveCenterTabController actions is important.
+    // Don't reorder these. Override actions must always come after normal
+    // because active priority is set based on which action is "newest"
     // normal actions:
     m_moveCenterTabController.leftHandSpaceDrag(
         m_actions.leftHandSpaceDrag() );
@@ -658,8 +660,8 @@ void OverlayController::processPushToTalkBindings()
             m_audioTabController.setMicMuted( true );
             return;
         }
-        // strictly speaking this is not the most elegant solution, but should
-        // work well enough.
+        // strictly speaking this is not the most elegant solution, but
+        // should work well enough.
         else if ( !pushToTalkEnabled )
         {
             m_audioTabController.setMicMuted( false );
@@ -750,8 +752,8 @@ void OverlayController::processRotationBindings()
     }
 }
 /*!
-Checks if an action has been activated and dispatches the related action if it
-has been.
+Checks if an action has been activated and dispatches the related action if
+it has been.
 */
 void OverlayController::processInputBindings()
 {
@@ -913,8 +915,8 @@ void OverlayController::setCustomTickRateMs( int value, bool notify )
 
 // vsync implementation:
 // this function triggers every 1ms
-// this function should remain lightweight and only check if it's time to run
-// mainEventLoop() or not.
+// this function should remain lightweight and only check if it's time to
+// run mainEventLoop() or not.
 void OverlayController::OnTimeoutPumpEvents()
 {
     if ( vsyncDisabled() )
@@ -942,21 +944,22 @@ void OverlayController::OnTimeoutPumpEvents()
         if ( m_currentFrame > m_lastFrame )
         {
             // If the frame has advanced since last check, it's time for our
-            // main event loop. (this function should trigger about every 11ms
-            // assuming 90fps compositor)
+            // main event loop. (this function should trigger about every
+            // 11ms assuming 90fps compositor)
             mainEventLoop();
             updateRate.incrementCounter();
 
-            // wait for the next frame after executing our main event loop once.
+            // wait for the next frame after executing our main event loop
+            // once.
             m_lastFrame = m_currentFrame;
             m_vsyncTooLateCounter = 0;
         }
         else if ( m_vsyncTooLateCounter >= k_nonVsyncTickRate )
         {
             mainEventLoop();
-            // m_lastFrame = m_currentFrame + 1 skips the next vsync frame in
-            // case it was just about to trigger, to prevent double updates
-            // faster than 11ms.
+            // m_lastFrame = m_currentFrame + 1 skips the next vsync frame
+            // in case it was just about to trigger, to prevent double
+            // updates faster than 11ms.
             m_lastFrame = m_currentFrame + 1;
             m_vsyncTooLateCounter = 0;
         }
@@ -1357,11 +1360,12 @@ void OverlayController::AddOffsetToCollisionBounds( unsigned axisId,
 void OverlayController::AddOffsetToCollisionBounds( float offset[3],
                                                     bool commit )
 {
-    // Apparently Valve sanity-checks the y-coordinates of the collision bounds
-    // (and only the y-coordinates) I can move the bounds on the xz-plane, I can
-    // make the "ceiling" of the chaperone cage lower/higher, but when I dare to
-    // set one single lower corner to something non-zero, every corner gets its
-    // y-coordinates reset to the defaults.
+    // Apparently Valve sanity-checks the y-coordinates of the collision
+    // bounds (and only the y-coordinates) I can move the bounds on the
+    // xz-plane, I can make the "ceiling" of the chaperone cage
+    // lower/higher, but when I dare to set one single lower corner to
+    // something non-zero, every corner gets its y-coordinates reset to the
+    // defaults.
     if ( commit )
     {
         vr::VRChaperoneSetup()->HideWorkingSetPreview();
@@ -1382,10 +1386,10 @@ void OverlayController::AddOffsetToCollisionBounds( float offset[3],
             {
                 collisionBounds[b].vCorners[c].v[0] += offset[0];
 
-                // keep the lower corners on the ground so it doesn't reset all
-                // y cooridinates. this causes the caperone to "grow" up instead
-                // of not moving up at all. note that Valve still forces a
-                // minimum height so we can't go into the ground
+                // keep the lower corners on the ground so it doesn't reset
+                // all y cooridinates. this causes the caperone to "grow" up
+                // instead of not moving up at all. note that Valve still
+                // forces a minimum height so we can't go into the ground
                 if ( collisionBounds[b].vCorners[c].v[1] != 0 )
                 {
                     collisionBounds[b].vCorners[c].v[1] += offset[1];
@@ -1568,8 +1572,8 @@ void OverlayController::OnNetworkReply( QNetworkReply* reply )
                       .toString();
 
             // this is a little convoluted to ensure if our local version is
-            // somehow higher than remote, it doesn't detect an update from just
-            // higher remote "minor" or "patch" values.
+            // somehow higher than remote, it doesn't detect an update from
+            // just higher remote "minor" or "patch" values.
             if ( ( m_remoteVersionMajor > m_localVersionMajor )
                  || ( m_remoteVersionMajor == m_localVersionMajor
                       && m_remoteVersionMinor > m_localVersionMinor )
@@ -1603,8 +1607,8 @@ void OverlayController::OnNetworkReply( QNetworkReply* reply )
                     setVersionCheckText( m_optionalMessage );
                 }
                 setNewVersionDetected( false );
-                LOG( INFO )
-                    << "Version Check: Installed version is latest release.";
+                LOG( INFO ) << "Version Check: Installed version is latest "
+                               "release.";
             }
         }
         else
