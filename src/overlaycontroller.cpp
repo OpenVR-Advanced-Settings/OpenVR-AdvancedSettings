@@ -795,6 +795,12 @@ void OverlayController::setExclusiveInputEnabled( bool value, bool notify )
     // processexclusivebindings
     if ( value )
     {
+        // Re-Enable Required SteamVR key every toggle just in case.
+        ovr_settings_wrapper::setBool(
+            vr::k_pch_SteamVR_Section,
+            vr::k_pch_SteamVR_AllowGlobalActionSetPriority,
+            value );
+
         // To setup Exclusive Input OVRAS actions should be off besides System
         // (+haptics) which are always on.
         m_actions.systemActionSetOnlyEnabled( true );
@@ -805,7 +811,6 @@ void OverlayController::setExclusiveInputEnabled( bool value, bool notify )
         m_actions.systemActionSetOnlyEnabled( false );
         // Remove All priority
         m_actions.actionSetPriorityToggle( false );
-        // TODO clean-up
     }
     if ( notify )
     {
