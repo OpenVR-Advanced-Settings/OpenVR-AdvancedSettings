@@ -788,10 +788,11 @@ void OverlayController::setExclusiveInputEnabled( bool value, bool notify )
     settings::setSetting(
         settings::BoolSetting::APPLICATION_enableExclusiveInput, value );
     // Note: These Calls technically modify data that could be accessed
-    // elsewhere and cause threading issues. Since this should only be accessible
-    // in dashboard, and input is disabled while dashboard is up, there should be
-    // no reason to lock it. If it becomes an issue this needs to be locked with
-    // a mutex or similiar + the processexclusivebindings
+    // elsewhere and cause threading issues. Since this should only be
+    // accessible in dashboard, and input is disabled while dashboard is up,
+    // there should be no reason to lock it. If it becomes an issue this needs
+    // to be locked with a mutex or similiar against the
+    // processexclusivebindings
     if ( value )
     {
         // To setup Exclusive Input OVRAS actions should be off besides System
