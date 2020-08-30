@@ -39,7 +39,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
   * [Command Line Arguments](#command-line-arguments)
   * [INI File Options](#ini-file-options)
   * [Preview builds](#preview-builds)
-  * [Un-Install](#uninstall)
+  * [Un-Installing](#un-installing)
 * [Documentation](#documentation)
   * [Top Page](#top-page)
   * [- SteamVR Page](#--steamvr-page)
