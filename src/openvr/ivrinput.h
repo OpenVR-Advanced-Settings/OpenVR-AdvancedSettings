@@ -169,7 +169,7 @@ public:
     bool keyPressMisc();
     bool keyPressSystem();
 
-    void exclusiveInputActiveToggle( bool value );
+    void systemActionSetOnlyEnabled( bool value );
     void actionSetPriorityToggle( bool value );
 
     // false is all Sets, True IS System + haptics

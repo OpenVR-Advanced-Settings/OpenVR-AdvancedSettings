@@ -92,9 +92,9 @@ MyStackViewPage {
             }
             MyToggleButton {
                 id: exclusiveInputToggleButton
-                text: "ExclusiveInputToggle"
+                text: "Exclusive Input Toggle (This enables Key Binding to Toggle state)"
                 onCheckedChanged: {
-                    OverlayController.toggleExclusiveInput()
+                    OverlayController.setExclusiveInputEnabled(this.checked, true)
                 }
             }
             MyToggleButton {
@@ -263,6 +263,7 @@ MyStackViewPage {
                 disableVersionCheckToggle.checked = OverlayController.disableVersionCheck
                 nativeChaperoneToggleButton.checked = SettingsTabController.nativeChaperoneToggle
                 oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
+                exclusiveInputToggleButton.checked = SettingsTabController.exclusiveInputEnabled
 
                 seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
                 spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
@@ -278,6 +279,9 @@ MyStackViewPage {
             }
             onOculusSdkToggleChanged:{
                 oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
+            }
+            onExclusiveInputEnabledChanged:{
+                exclusiveInputToggleButton.checked = SettingsTabController.exclusiveInputEnabled
             }
         }
 

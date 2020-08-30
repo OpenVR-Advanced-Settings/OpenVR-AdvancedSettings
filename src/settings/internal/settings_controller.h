@@ -302,7 +302,10 @@ private:
                           SettingCategory::Application,
                           QtInfo{ "enableDebug" },
                           false },
-
+        BoolSettingValue{ BoolSetting::APPLICATION_enableExclusiveInput,
+                          SettingCategory::Application,
+                          QtInfo{ "enableExclusiveInput" },
+                          false },
         BoolSettingValue{ BoolSetting::AUDIO_pttEnabled,
                           SettingCategory::Audio,
                           QtInfo{ "pttEnabled" },

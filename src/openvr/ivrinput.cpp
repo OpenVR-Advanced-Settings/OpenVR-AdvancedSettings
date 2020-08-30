@@ -368,7 +368,7 @@ bool SteamIVRInput::exclusiveInputToggle()
 }
 // Controls which action Sets are active, false = all, true = system + haptics
 // Adjusts in update state call.
-void SteamIVRInput::exclusiveInputActiveToggle( bool value )
+void SteamIVRInput::systemActionSetOnlyEnabled( bool value )
 {
     m_exclusiveInputSetToggle = value;
 }
