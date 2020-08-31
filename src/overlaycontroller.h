@@ -24,7 +24,6 @@
 #include <QNetworkRequest>
 #include <memory>
 #include <easylogging++.h>
-#include <mutex>
 
 #include "openvr/openvr_init.h"
 
@@ -148,8 +147,6 @@ private:
     QJsonDocument m_remoteVersionJsonDocument = QJsonDocument();
     QJsonObject m_remoteVersionJsonObject;
 
-    std::mutex priorityMutex;
-
 public: // I know it's an ugly hack to make them public to enable external
         // access, but I am too lazy to implement getters.
     SteamVRTabController m_steamVRTabController;
@@ -184,7 +181,6 @@ public:
 
     void Shutdown();
     Q_INVOKABLE void exitApp();
-    // Q_INVOKABLE void toggleExclusiveInput();
 
     bool isDashboardVisible()
     {
