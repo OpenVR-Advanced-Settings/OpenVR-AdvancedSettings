@@ -180,6 +180,11 @@
       "requirement": "optional",
       "type": "boolean"
     },
+    {
+      "name": "/actions/system/in/ExclusiveInputToggle",
+      "requirement": "optional",
+      "type": "boolean"
+    },
 	  {
       "name": "/actions/misc/in/ChaperoneToggle",
       "requirement": "optional",
@@ -284,6 +289,7 @@
         "/actions/misc/in/YAxisLockToggle" : "Y-Axis Lock Toggle",
         "/actions/misc/in/ZAxisLockToggle" : "Z-Axis Lock Toggle",
         "/actions/system/in/PushToTalk" : "Push To Talk",
+		"/actions/system/in/ExclusiveInputToggle" : "Exclusive Input Toggle",
 		"/actions/misc/in/ChaperoneToggle" : "Chaperone Toggle",
         "/actions/haptic/in/ProxSensor" : "Proximity Sensor",
         "/actions/misc/in/KeyboardOne" : "Keyboard Shortcut One",

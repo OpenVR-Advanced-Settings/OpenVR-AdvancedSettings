@@ -90,6 +90,9 @@ class OverlayController : public QObject
                     setCustomTickRateMs NOTIFY customTickRateMsChanged )
     Q_PROPERTY( int debugState READ debugState WRITE setDebugState NOTIFY
                     debugStateChanged )
+    Q_PROPERTY(
+        bool exclusiveInputEnabled READ exclusiveInputEnabled WRITE
+            setExclusiveInputEnabled NOTIFY exclusiveInputEnabledChanged )
 
 private:
     vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
@@ -166,7 +169,9 @@ private:
     void processChaperoneBindings();
     void processKeyboardBindings();
     void processRotationBindings();
+    void processExclusiveInputBinding();
 
+    bool m_exclusiveState = false;
     bool m_keyPressOneState = false;
     bool m_keyPressTwoState = false;
 
@@ -232,6 +237,7 @@ public:
     void mainEventLoop();
 
     bool crashRecoveryDisabled() const;
+    bool exclusiveInputEnabled() const;
     bool enableDebug() const;
     bool disableVersionCheck() const;
     bool newVersionDetected() const;
@@ -256,6 +262,7 @@ public slots:
     void cancelAlarm01Sound();
 
     void setCrashRecoveryDisabled( bool value, bool notify = true );
+    void setExclusiveInputEnabled( bool value, bool notify = true );
     void setEnableDebug( bool value, bool notify = true );
     void setDisableVersionCheck( bool value, bool notify = true );
     void setNewVersionDetected( bool value, bool notify = true );
@@ -267,6 +274,7 @@ public slots:
 signals:
     void keyBoardInputSignal( QString input, unsigned long userValue = 0 );
     void crashRecoveryDisabledChanged( bool value );
+    void exclusiveInputEnabledChanged( bool value );
     void enableDebugChanged( bool value );
     void disableVersionCheckChanged( bool value );
     void newVersionDetectedChanged( bool value );

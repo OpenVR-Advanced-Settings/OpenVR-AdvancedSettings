@@ -29,6 +29,7 @@ enum class BoolSetting
     APPLICATION_vsyncDisabled,
     APPLICATION_crashRecoveryDisabled,
     APPLICATION_enableDebug,
+    APPLICATION_enableExclusiveInput,
 
     AUDIO_pttEnabled,
     AUDIO_pttShowNotification,

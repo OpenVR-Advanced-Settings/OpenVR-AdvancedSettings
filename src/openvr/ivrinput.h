@@ -6,6 +6,7 @@
 #include "ivrinput_action_set.h"
 #include "ivrinput_input_source.h"
 #include <array>
+#include <atomic>
 
 namespace input
 {
@@ -57,6 +58,9 @@ namespace action_keys
     constexpr auto keyboardThree = "/actions/misc/in/KeyboardThree";
     constexpr auto keyPressMisc = "/actions/misc/in/KeyPressMisc";
     constexpr auto keyPressSystem = "/actions/system/in/KeyPressSystem";
+
+    constexpr auto exclusiveInputToggle
+        = "/actions/system/in/ExclusiveInputToggle";
 
     constexpr auto hapticsLeft = "/actions/haptic/out/HapticsLeft";
     constexpr auto hapticsRight = "/actions/haptic/out/HapticsRight";
@@ -157,11 +161,19 @@ public:
 
     bool pushToTalk();
 
+    bool exclusiveInputToggle();
+
     bool keyboardOne();
     bool keyboardTwo();
     bool keyboardThree();
     bool keyPressMisc();
     bool keyPressSystem();
+
+    void systemActionSetOnlyEnabled( bool value );
+    void actionSetPriorityToggle( bool value );
+
+    // false is all Sets, True IS System + haptics
+    std::atomic<bool> m_exclusiveInputSetToggle = false;
 
     vr::VRActionHandle_t leftHapticActionHandle();
     vr::VRActionHandle_t rightHapticActionHandle();
@@ -238,6 +250,9 @@ private:
     // Push To Talk
     DigitalAction m_pushToTalk;
 
+    // Exclusive Input Toggle
+    DigitalAction m_exclusiveInputToggle;
+
     // haptic bindings
     DigitalAction m_leftHaptic;
     DigitalAction m_rightHaptic;
@@ -253,6 +268,7 @@ private:
 
     // Initialize the set of actions after everything else.
     ActiveActionSets m_sets;
+    ActiveActionSets m_systemActionSets;
 };
 
 } // namespace input

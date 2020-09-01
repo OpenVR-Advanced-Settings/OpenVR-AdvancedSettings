@@ -142,6 +142,7 @@ SteamIVRInput::SteamIVRInput()
       m_keyPressSystem( action_keys::keyPressSystem ),
       m_chaperoneToggle( action_keys::chaperoneToggle ),
       m_pushToTalk( action_keys::pushToTalk ),
+      m_exclusiveInputToggle( action_keys::exclusiveInputToggle ),
       m_leftHaptic( action_keys::hapticsLeft ),
       m_rightHaptic( action_keys::hapticsRight ),
       m_addLeftHapticClick( action_keys::addLeftHapticClick ),
@@ -152,7 +153,9 @@ SteamIVRInput::SteamIVRInput()
                 m_music.activeActionSet(),
                 m_motion.activeActionSet(),
                 m_misc.activeActionSet(),
-                m_system.activeActionSet() } )
+                m_system.activeActionSet() } ),
+      m_systemActionSets(
+          { m_haptics.activeActionSet(), m_system.activeActionSet() } )
 {
 }
 /*!
@@ -359,6 +362,35 @@ bool SteamIVRInput::keyPressSystem()
 {
     return isDigitalActionActivatedConstant( m_keyPressSystem );
 }
+bool SteamIVRInput::exclusiveInputToggle()
+{
+    return isDigitalActionActivatedOnce( m_exclusiveInputToggle );
+}
+// Controls which action Sets are active, false = all, true = system + haptics
+// Adjusts in update state call.
+void SteamIVRInput::systemActionSetOnlyEnabled( bool value )
+{
+    m_exclusiveInputSetToggle = value;
+}
+
+// Sets Action Set Priority
+void SteamIVRInput::actionSetPriorityToggle( bool value )
+{
+    if ( value )
+    {
+        for ( unsigned int i = 0; i < action_sets::numberOfSets; i++ )
+        {
+            m_sets.at( i ).nPriority = 0x01000001;
+        }
+    }
+    else
+    {
+        for ( unsigned int i = 0; i < action_sets::numberOfSets; i++ )
+        {
+            m_sets.at( i ).nPriority = 0;
+        }
+    }
+}
 
 /*!
 Returns the action handle of the Left Haptic Action
@@ -400,10 +432,19 @@ update state.
 */
 void SteamIVRInput::UpdateStates()
 {
-    const auto error
-        = vr::VRInput()->UpdateActionState( m_sets.data(),
-                                            sizeof( vr::VRActiveActionSet_t ),
-                                            action_sets::numberOfSets );
+    vr::EVRInputError error;
+    if ( !m_exclusiveInputSetToggle )
+    {
+        error = vr::VRInput()->UpdateActionState(
+            m_sets.data(),
+            sizeof( vr::VRActiveActionSet_t ),
+            action_sets::numberOfSets );
+    }
+    else
+    {
+        error = vr::VRInput()->UpdateActionState(
+            m_systemActionSets.data(), sizeof( vr::VRActiveActionSet_t ), 2 );
+    }
 
     if ( error != vr::EVRInputError::VRInputError_None )
     {
