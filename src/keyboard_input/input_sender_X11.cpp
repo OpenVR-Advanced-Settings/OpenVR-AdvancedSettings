@@ -150,6 +150,8 @@ unsigned int tokenToKeySym( const Token token )
         return XK_KP_Add;
     case Token::KEY_ENTER:
         return XK_Return;
+    case Token::KEY_BACKSLASH:
+        return XK_backslash;
 
     case Token::MODIFIER_CTRL:
         return XK_Control_L;

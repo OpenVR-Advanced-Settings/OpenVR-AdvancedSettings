@@ -18,29 +18,26 @@ inline void sendTokensAsInput( const std::vector<Token> tokens )
     initOsSystems();
 
     std::vector<Token> heldInputs = {};
-    bool noKeyUp = false;
     for ( const auto& token : tokens )
     {
+        // maintained for support w/o altering other binds/parsers
         if ( token == Token::TOKEN_NO_KEYUP_NEXT )
         {
-            noKeyUp = true;
             continue;
         }
-
+        // Modifiers always push to held
         if ( isModifier( token ) )
         {
             sendKeyPress( token, KeyStatus::Down );
-            if ( noKeyUp )
-            {
-                heldInputs.push_back( token );
-            }
-            else
-            {
-                sendKeyPress( token, KeyStatus::Up );
-            }
+            heldInputs.push_back( token );
             continue;
         }
-
+        if ( isLiteral( token ) )
+        {
+            sendKeyPress( token, KeyStatus::Down );
+            sendKeyPress( token, KeyStatus::Up );
+            continue;
+        }
         if ( token == Token::TOKEN_NEW_SEQUENCE )
         {
             for ( const auto& h : heldInputs )
@@ -48,26 +45,6 @@ inline void sendTokensAsInput( const std::vector<Token> tokens )
                 sendKeyPress( h, KeyStatus::Up );
             }
             heldInputs.clear();
-            continue;
-        }
-
-        if ( isLiteral( token ) )
-        {
-            sendKeyPress( token, KeyStatus::Down );
-            if ( noKeyUp )
-            {
-                heldInputs.push_back( token );
-            }
-            else
-            {
-                sendKeyPress( token, KeyStatus::Up );
-            }
-            continue;
-        }
-
-        if ( token != Token::TOKEN_NO_KEYUP_NEXT )
-        {
-            noKeyUp = false;
             continue;
         }
     }
