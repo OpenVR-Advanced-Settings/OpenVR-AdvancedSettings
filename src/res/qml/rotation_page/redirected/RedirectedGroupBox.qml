@@ -104,57 +104,63 @@ GroupBox {
                 }
             }
       }
+      RowLayout{
+          Layout.fillWidth: true
+          MyToggleButton{
+              id: viewRatchetToggleBtn
+              text: "View Ratchetting"
+              Layout.preferredWidth: 275
+              onCheckedChanged: {
+                  RotationTabController.setViewRatchettingEnabled(this.checked, true);
+              }
+          }
+          Item{
+          Layout.preferredWidth: 150
+          }
+
+          MySlider {
+              id: viewRatchetSlider
+              from: 0.00
+              to: 0.1
+              stepSize: 0.01
+              value: .05
+              Layout.fillWidth: true
+              onPositionChanged: {
+                  var val = this.value
+                  viewRatchetText.text = val.toFixed(2)
+              }
+              onValueChanged: {
+
+                  RotationTabController.setViewRatchettingPercent(value, true)
+              }
+          }
+
+          MyTextField {
+              id: viewRatchetText
+              text: "0.05"
+              keyBoardUID: 1007
+              Layout.preferredWidth: 100
+              Layout.leftMargin: 10
+              horizontalAlignment: Text.AlignHCenter
+              function onInputEvent(input) {
+                  var val = parseFloat(input)
+                  if (!isNaN(val)) {
+                      if (val < 0) {
+                          val = 0
+                      } else if (val > 1) {
+                          val = 1
+                      }
+                          viewRatchetSlider.value = val.toFixed(2);
+                  }
+                  text =  RotationTabController.setViewRatchettingPercent.toFixed(2);
+              }
+          }
+
+
+
+      }
     }
-    RowLayout{
-        MyToggleButton{
-            id: viewRatchetToggleBtn
-            text: "View Ratchetting"
-            Layout.preferredWidth: 225
-            onCheckedChanged: {
-                RotationTabController.setViewRatchettingEnabled(this.checked, true);
 
-            }
-            MySlider {
-                id: viewRatchetSlider
-                from: 0.00
-                to: 0.1
-                stepSize: 0.01
-                value: .05
-                Layout.fillWidth: true
-                onPositionChanged: {
-                    var val = this.value
-                    viewRatchetText.text = val.toFixed(2)
-                }
-                onValueChanged: {
-
-                    RotationTabController.setViewRatchettingPercent(value, true)
-                }
-            }
-
-            MyTextField {
-                id: viewRatchetText
-                text: "0.05"
-                keyBoardUID: 1007
-                Layout.preferredWidth: 100
-                Layout.leftMargin: 10
-                horizontalAlignment: Text.AlignHCenter
-                function onInputEvent(input) {
-                    var val = parseFloat(input)
-                    if (!isNaN(val)) {
-                        if (val < 0) {
-                            val = 0
-                        } else if (val > 1) {
-                            val = 1
-                        }
-                            viewRatchetSlider.value = val.toFixed(2);
-                    }
-                    text =  RotationTabController.setViewRatchettingPercent.toFixed(2);
-                }
-            }
-
-        }
-
-    }
 
     Component.onCompleted: {
         redirectedWalkingRadiusText.text = ((RotationTabController.vestibularMotionRadius).toFixed(2))
