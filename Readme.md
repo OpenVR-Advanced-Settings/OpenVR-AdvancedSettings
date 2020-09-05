@@ -15,9 +15,11 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
 * [Features](#features)
 * [Usage](#usage)
   * [Windows](#windows)
+     * [Steam](#steam)
      * [Installer](#installer)
      * [Standalone](#standalone)
   * [Linux](#linux)
+     * [Steam for Linux](#SteamLinux)
      * [AppImage](#appimage)
      * [Arch/Manjaro](#archmanjaro)
      * [Building from Source](#building-from-source)
@@ -37,6 +39,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
   * [Command Line Arguments](#command-line-arguments)
   * [INI File Options](#ini-file-options)
   * [Preview builds](#preview-builds)
+  * [Un-Installing](#un-installing)
 * [Documentation](#documentation)
   * [Top Page](#top-page)
   * [- SteamVR Page](#--steamvr-page)
@@ -88,6 +91,12 @@ Do all this without leaving VR:
 
 ## Windows
 
+### Steam
+
+Get it on Steam at [OVR Advanced Settings](https://store.steampowered.com/app/1009850/OVR_Advanced_Settings/)
+
+**Note:** Please Un-install Other Versions Before Installing Via Steam.
+
 ### Installer
 
 Download the newest installer from the [release section](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/releases) and run it.
@@ -103,6 +112,12 @@ To install for the first time simply start AdvancedSettings.exe once while Steam
 To upgrade an existing installation first stop SteamVR and delete the old application folder (or override it). Then start SteamVR and run AdvancedSettings.exe once.
 
 ## Linux
+
+### Steam for Linux
+
+Get it on Steam at [OVR Advanced Settings](https://store.steampowered.com/app/1009850/OVR_Advanced_Settings/)
+
+**Note:** Please Un-install Other Versions Before Installing Via Steam.
 
 ### AppImage
 
@@ -125,7 +140,7 @@ Detailed instructions are available [here](docs/building_for_linux.md).
 
 ### Overall Feature Overview Guides
 
-- [Kung's 3.0 New Feature Guide (video/youtube)[https://youtu.be/2ZHdjOfnqOU]
+- [Kung's 3.0 New Feature Guide (video/youtube)]( https://youtu.be/2ZHdjOfnqOU )
 
 ### SteamVR Input System (keybinds for app)
 
@@ -206,6 +221,7 @@ Actions That will stay active regardless of the situation.
 | Add Left Haptic Click | Binary/Button | simulates a "click" with controller haptics. (left hand)
 | Add Right Haptic Click | Binary/Button | simulates a "click" with controller haptics. (right hand)
 | Key Press System | Binary/Button | Sends the key press defined in the settings file. Defaults to F9 |
+| Exclusive Input Toggle | Binary/Button | Switches between App and OVRAS keybinds, *note:* system Key-Binds remain active all the time
 
 ### Haptics.
 
@@ -301,6 +317,21 @@ Under `[applicationSettings]` adding `enableDebug=true` will show a "Debug State
 If you want to try latest and greatest unreleased features, you can download the latest from the CI (Continuous Integration) server for [Windows](https://ci.appveyor.com/project/OVRAdvancedSettings/openvr-advancedsettings/branch/master)and [Linux](https://circleci.com/gh/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings) (`gcc` build, CircleCI issue requires login to see artifact tab).
 
 These version are not stable and this should be considered for advanced users only.
+
+## Un-Installing
+
+### Windows
+
+- Automatically
+  - Run the un-installer, It should be wherever you isntalled OVRAS
+- Semi-Manually
+  - Run AdvancedSettings.exe with the command --force-remove-manifest
+  - delete install directory
+  - (optional) delete logs and settings `%appdata%/AdvancedSettings-Team` (`C:\Users\<username>\AppData\Roaming\AdvancedSettings-Team`)
+- Manually
+	- go to steam install/config directory (C:\Program Files (x86)\Steam\config by default)
+    - edit the appconfig.json to remove the path pointed to Advanced Settings (`C:\\Program Files\\OpenVR-AdvancedSettings\\manifest.vrmanifest` by default)
+    - delete install folder, settings and log files manually
 
 # Documentation
 
@@ -407,7 +438,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **DeActivation Distance**:  The minimum distance (activation + deactivation) you must be from the wall before autoturn will activate again.
   - **Use Corner Angle**: When already against a wall and reaching a corner, turn the angle of that corner rather than the angle of your headset to the wall (reccomended)
   - **Use Smooth Turn**: Toggles between a smooth turn and a snap turn.
-  - **Turn Speed**: How fast you rotate in Degrees per second.
+  - **Turn Speed**: How fast you rotate in Degrees per second. Use more for a more comfortable experience, less for natural movement in social/physical VR games.
   - **Detangle Angle**: Settings attempting to keep your cord untangled while using the Auto-Turn feature.
     - **Min Rotations(deg)**: The amount of rotation before Auto-Turn starts to try and un-tangle your cord.
     - **Max Wall Angle(deg)**: When the angle of your headset to the wall is less than Max Wall Angle, it will turn you whichever way will start to untangle your cord. Otherwise it will turn you whichever way is closest. Set to '0' if you have a cordless setup 
@@ -511,6 +542,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Disable Notification of Newer Version Availability**: This turns off the on start-up check for a new version. (You can refresh this to do a manual check.)
 - **Force Use SteamVR Chaperone**: This feature is currently experimental, when using third party headsets this will allow you to use SteamVR's chaperone, as if it was a native headset.
 - **Force Use SteamVR (Disable Oculus API)**: This feature is currently experimental, it should disable Oculus API preventing games with both SteamVR and Oculus API to only run as SteamVR
+- ** Exclusive Input Toggle: This feature Enables Exclusive Input Mode, while in this mode you will only send OVRAS keybinds or App keybinds [with the exception of OVRAS system keybinds always working]
 - **Disable App Vsync:** Allows setting a custom base update rate for Advanced Settings. (Might be useful on HMDs with very high or very low refresh rates).
 - **Shutdown OVRAS** Shuts-Down Advanced Settings without closing out of VR.
 

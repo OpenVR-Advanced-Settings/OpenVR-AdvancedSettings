@@ -94,6 +94,8 @@ WORD convertToVirtualKeycode( const Token token )
         return VK_LWIN;
     case Token::MODIFIER_TILDE:
         return VK_OEM_3;
+    case Token::KEY_BACKSLASH:
+        return VK_OEM_5;
 
     default:
         return 0;

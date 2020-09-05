@@ -164,6 +164,10 @@ std::optional<Token> checkIfLegalCapitalLiteral( std::string input ) noexcept
     {
         return Token::KEY_ENTER;
     }
+    if ( input == "BACKSLASH" )
+    {
+        return Token::KEY_BACKSLASH;
+    }
 
     return std::nullopt;
 }
@@ -182,6 +186,7 @@ std::vector<Token>
         }
         if ( const auto c = getModifier( *ch ); c.has_value() )
         {
+            tokens.push_back( Token::TOKEN_NO_KEYUP_NEXT );
             tokens.push_back( *c );
             continue;
         }
@@ -516,6 +521,8 @@ bool isLiteral( const Token token ) noexcept
     case Token::KEY_KPPLUS:
         return true;
     case Token::KEY_ENTER:
+        return true;
+    case Token::KEY_BACKSLASH:
         return true;
 
     default:

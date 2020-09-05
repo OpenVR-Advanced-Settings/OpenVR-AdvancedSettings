@@ -302,7 +302,10 @@ private:
                           SettingCategory::Application,
                           QtInfo{ "enableDebug" },
                           false },
-
+        BoolSettingValue{ BoolSetting::APPLICATION_enableExclusiveInput,
+                          SettingCategory::Application,
+                          QtInfo{ "enableExclusiveInput" },
+                          false },
         BoolSettingValue{ BoolSetting::AUDIO_pttEnabled,
                           SettingCategory::Audio,
                           QtInfo{ "pttEnabled" },
@@ -494,7 +497,6 @@ private:
             SettingCategory::Rotation,
             QtInfo{ "autoturnViewRatchettingPercent" },
             0.05 },
-
     };
 
     constexpr static auto stringSettingsSize
@@ -572,7 +574,7 @@ private:
         IntSettingValue{ IntSetting::ROTATION_autoturnLinearTurnSpeed,
                          SettingCategory::Rotation,
                          QtInfo{ "autoturnLinearTurnSpeed" },
-                         9000 },
+                         45000 },
         IntSettingValue{ IntSetting::ROTATION_autoturnMode,
                          SettingCategory::Rotation,
                          QtInfo{ "autoturnMode" },
