@@ -64,5 +64,7 @@ SettingsError handleErrors( std::string settingsKey,
                             vr::EVRSettingsError,
                             std::string customErrorMsg );
 
+extern bool unsetSettingErrorEnabled;
+
 void resetAllSettings();
 } // namespace ovr_settings_wrapper

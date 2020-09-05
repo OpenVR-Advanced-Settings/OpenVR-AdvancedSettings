@@ -2,15 +2,31 @@
 
 namespace ovr_settings_wrapper
 {
+// cludgey solution, long term solution we should apply defaults that make sense
+// (most likely false)
+bool unsetSettingErrorEnabled = true;
+
 SettingsError handleErrors( std::string settingsKey,
                             vr::EVRSettingsError error,
                             std::string customErrorMsg )
 {
     if ( error != vr::VRSettingsError_None )
     {
+        if ( !unsetSettingErrorEnabled
+             && error
+                    == vr::EVRSettingsError::
+                        VRSettingsError_UnsetSettingHasNoDefault )
+        {
+            return SettingsError::UndefinedError;
+        }
         LOG( ERROR ) << "Could not access \"" << settingsKey << "\" setting: "
                      << vr::VRSettings()->GetSettingsErrorNameFromEnum( error )
                      << " " << customErrorMsg;
+        if ( error
+             == vr::EVRSettingsError::VRSettingsError_UnsetSettingHasNoDefault )
+        {
+            unsetSettingErrorEnabled = false;
+        }
 
         return SettingsError::UndefinedError;
     }
