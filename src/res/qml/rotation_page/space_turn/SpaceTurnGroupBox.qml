@@ -11,7 +11,7 @@ GroupBox {
     label: MyText {
         leftPadding: 10
         text: "Space Turn (for manual redirected walking)"
-        bottomPadding: -10
+        bottomPadding: -12
     }
     background: Rectangle {
         color: "transparent"
@@ -26,7 +26,7 @@ GroupBox {
             color: "#ffffff"
             height: 1
             Layout.fillWidth: true
-            Layout.bottomMargin: 5
+            Layout.bottomMargin: 3
         }
 
         RowLayout {
