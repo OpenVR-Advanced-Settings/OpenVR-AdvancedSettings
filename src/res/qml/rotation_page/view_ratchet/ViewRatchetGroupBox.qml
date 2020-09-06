@@ -5,7 +5,7 @@ import ovras.advsettings 1.0
 import "../../common"
 
 GroupBox {
-    id: snapTurnGroupBox
+    id: viewRatchetGroupBox
     Layout.fillWidth: true
 
     ColumnLayout {
@@ -13,101 +13,76 @@ GroupBox {
 
         RowLayout {
             Layout.fillWidth: true
+            MyToggleButton{
+                id: viewRatchetToggleBtn
+                text: "View Ratchetting"
+                Layout.preferredWidth: 275
+                onCheckedChanged: {
+                    RotationTabController.setViewRatchettingEnabled(this.checked, true);
+                }
+            }
+            Item{
+            Layout.preferredWidth: 25
+            }
 
-            MyText {
-                text: "Snap Turn Angle:"
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 2
+            MySlider {
+                id: viewRatchetSlider
+                from: 0.00
+                to: 0.1
+                stepSize: 0.01
+                Layout.fillWidth: true
+                onMoved: {
+                    viewRatchetText.text = this.value.toFixed(2)
+                    RotationTabController.setViewRatchettingPercent(this.value, true)
+                }
+
             }
 
             MyTextField {
-                id: snapTurnAngleText
-                text: "45°"
-                keyBoardUID: 154
+                id: viewRatchetText
+                text: "0.05"
+                keyBoardUID: 1007
                 Layout.preferredWidth: 100
                 Layout.leftMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        val = val % 180
-                        MoveCenterTabController.snapTurnAngle = val.toFixed(2) * 100
-                        text = ( Math.round( MoveCenterTabController.snapTurnAngle / 100 ) ) + "°"
-                    } else {
-                        text = ( Math.round( MoveCenterTabController.snapTurnAngle / 100 ) ) + "°"
+                        if (val < 0) {
+                            val = 0
+                        } else if (val > 1) {
+                            val = 1
+                        }
+                        RotationTabController.setViewRatchettingPercent(val.toFixed(2), true)
+                        if(val > 0.1){
+                        viewRatchetSlider.value = 0.1
+                        }else{
+                        viewRatchetSlider.value = val
+                        }
                     }
+                    text =  RotationTabController.viewRatchettingPercent.toFixed(2);
                 }
             }
-
-            MyPushButton {
-                id: snapTurnButton45
-                Layout.preferredWidth: 90
-                text:"45°"
-                onClicked: {
-                    MoveCenterTabController.snapTurnAngle = 4500
-                }
-           }
-            MyPushButton {
-                id: snapTurnButton90
-                Layout.preferredWidth: 90
-                text:"90°"
-                onClicked: {
-                    MoveCenterTabController.snapTurnAngle = 9000
-                }
-           }
-            MyPushButton {
-                id: snapTurnButton180
-                Layout.preferredWidth: 90
-                text:"180°"
-                onClicked: {
-                    MoveCenterTabController.snapTurnAngle = 18000
-                }
-           }
-
-           Item {
-               Layout.fillWidth: true
-           }
-
-           MyText {
-               text: "Smooth Turn Rate:"
-               horizontalAlignment: Text.AlignRight
-               Layout.rightMargin: 2
-           }
-
-           MyTextField {
-               id: smoothTurnRateText
-               text: "100%"
-               keyBoardUID: 155
-               Layout.preferredWidth: 130
-               Layout.leftMargin: 10
-               horizontalAlignment: Text.AlignHCenter
-               function onInputEvent(input) {
-                   var val = parseInt(input)
-                   if (!isNaN(val)) {
-                       MoveCenterTabController.smoothTurnRate = val
-                       text = MoveCenterTabController.smoothTurnRate + "%"
-                   } else {
-                       text = MoveCenterTabController.smoothTurnRate + "%"
-                   }
-               }
-           }
-
         }
     }
 
     Component.onCompleted: {
-        snapTurnAngleText.text = ( Math.round( MoveCenterTabController.snapTurnAngle / 100 ) ) + "°"
-        smoothTurnRateText.text = MoveCenterTabController.smoothTurnRate + "%"
+        viewRatchetToggleBtn.checked = RotationTabController.viewRatchettingEnabled
+        var ratchetPercVal = RotationTabController.viewRatchettingPercent
+        viewRatchetSlider.value = ratchetPercVal
+        viewRatchetText.text = ratchetPercVal.toFixed(2)
     }
 
     Connections {
-        target: MoveCenterTabController
+        target: RotationTabController
 
-        onSnapTurnAngleChanged: {
-            snapTurnAngleText.text = ( Math.round( MoveCenterTabController.snapTurnAngle / 100 ) ) + "°"
+        onViewRatchettingEnabledChanged:{
+            viewRatchetToggleBtn.checked = RotationTabController.viewRatchettingEnabled
         }
-        onSmoothTurnRateChanged: {
-            smoothTurnRateText.text = MoveCenterTabController.smoothTurnRate + "%"
+        onViewRatchettingPercentChanged:{
+            var ratchetPercVal = RotationTabController.viewRatchettingPercent
+            viewRatchetSlider.value = ratchetPercVal
+            viewRatchetText.text = ratchetPercVal.toFixed(2)
         }
     }
 }

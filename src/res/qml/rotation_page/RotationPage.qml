@@ -6,6 +6,7 @@ import "../common"
 import "redirected"
 import "space_turn"
 import "snap_turn"
+import "view_ratchet"
 
 
 MyStackViewPage {
@@ -20,7 +21,9 @@ MyStackViewPage {
         RedirectedGroupBox{
             id: redirectedGroupBox
         }
-
+        ViewRatchetGroupBox{
+            id: viewRatchetGroupBox
+        }
         SpaceTurnGroupBox{
             id:spaceTurnGroupBox
         }
