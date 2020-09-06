@@ -56,7 +56,7 @@ GroupBox {
                 stepSize: 0.01
                 value: 1.0
                 Layout.fillWidth: true
-                onPositionChanged: {
+                onMoved: {
                     var val = (this.value * 100)
                     brightnessValueText.text = Math.round(val) + "%"
                     VideoTabController.setBrightnessOpacityValue(value.toFixed(2), true)
@@ -80,6 +80,9 @@ GroupBox {
                         }
                         var v = (val/100)
                         VideoTabController.setBrightnessOpacityValue(v.toFixed(2), true)
+                        if(v<.05){
+                        v = .05
+                        }
                             brightnessSlider.value = v
                     }
                     text = Math.round(VideoTabController.brightnessOpacityValue * 100) + "%"
