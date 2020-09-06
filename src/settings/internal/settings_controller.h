@@ -491,7 +491,7 @@ private:
             DoubleSetting::ROTATION_autoturnVestibularMotionRadius,
             SettingCategory::Rotation,
             QtInfo{ "autoturnVestibularMotionRadius" },
-            11.0 },
+            22.0 },
         DoubleSettingValue{
             DoubleSetting::ROTATION_autoturnViewRatchettingPercent,
             SettingCategory::Rotation,
