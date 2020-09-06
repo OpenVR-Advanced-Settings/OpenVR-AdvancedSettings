@@ -115,7 +115,7 @@ GroupBox {
               }
           }
           Item{
-          Layout.preferredWidth: 150
+          Layout.preferredWidth: 25
           }
 
           MySlider {
@@ -123,16 +123,12 @@ GroupBox {
               from: 0.00
               to: 0.1
               stepSize: 0.01
-              value: .05
               Layout.fillWidth: true
-              onPositionChanged: {
-                  var val = this.value
-                  viewRatchetText.text = val.toFixed(2)
+              onMoved: {
+                  viewRatchetText.text = this.value.toFixed(2)
+                  RotationTabController.setViewRatchettingPercent(this.value, true)
               }
-              onValueChanged: {
 
-                  RotationTabController.setViewRatchettingPercent(value, true)
-              }
           }
 
           MyTextField {
@@ -150,9 +146,14 @@ GroupBox {
                       } else if (val > 1) {
                           val = 1
                       }
-                          viewRatchetSlider.value = val.toFixed(2);
+                      RotationTabController.setViewRatchettingPercent(val.toFixed(2), true)
+                      if(val > 0.1){
+                      viewRatchetSlider.value = 0.1
+                      }else{
+                      viewRatchetSlider.value = val
+                      }
                   }
-                  text =  RotationTabController.setViewRatchettingPercent.toFixed(2);
+                  text =  RotationTabController.viewRatchettingPercent.toFixed(2);
               }
           }
 
@@ -166,6 +167,9 @@ GroupBox {
         redirectedWalkingRadiusText.text = ((RotationTabController.vestibularMotionRadius).toFixed(2))
         redirectedModeToggle.checked = RotationTabController.vestibularMotionEnabled
         viewRatchetToggleBtn.checked = RotationTabController.viewRatchettingEnabled
+        var ratchetPercVal = RotationTabController.viewRatchettingPercent
+        viewRatchetSlider.value = ratchetPercVal
+        viewRatchetText.text = ratchetPercVal.toFixed(2)
 
     }
 
@@ -182,7 +186,9 @@ GroupBox {
             viewRatchetToggleBtn.checked = RotationTabController.viewRatchettingEnabled
         }
         onViewRatchettingPercentChanged:{
-            viewRatchetText.text = ((RotationTabController.viewRatchettingPercent).toFixed(2))
+            var ratchetPercVal = RotationTabController.viewRatchettingPercent
+            viewRatchetSlider.value = ratchetPercVal
+            viewRatchetText.text = ratchetPercVal.toFixed(2)
         }
     }
 
