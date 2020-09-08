@@ -94,7 +94,6 @@ void RotationTabController::eventLoopTick(
         {
             m_isHMDActive = true;
         }
-        // TODO: this doesn't need to run if both are off
         if ( poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
              && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK )
         {
@@ -116,6 +115,12 @@ void RotationTabController::eventLoopTick(
                 doVestibularMotion( poseHmd, chaperoneDistances );
             }
 
+            if ( RotationTabController::viewRatchettingEnabled() )
+            {
+                doViewRatchetting( poseHmd, chaperoneDistances );
+            }
+
+            m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
             m_autoTurnChaperoneDistancesLast = std::move( chaperoneDistances );
         }
     }
@@ -144,6 +149,85 @@ void RotationTabController::eventLoopTick(
     }
 }
 
+void RotationTabController::doViewRatchetting(
+    const vr::TrackedDevicePose_t& poseHmd,
+    const std::vector<utils::ChaperoneQuadData>& chaperoneDistances )
+{
+    if ( m_isHMDActive && poseHmd.bPoseIsValid && poseHmd.bDeviceIsConnected
+         && poseHmd.eTrackingResult == vr::TrackingResult_Running_OK
+         && !chaperoneDistances.empty() )
+    {
+        if ( chaperoneDistances.size()
+             != m_autoTurnChaperoneDistancesLast.size() )
+        {
+            m_autoTurnChaperoneDistancesLast = chaperoneDistances;
+            m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
+        }
+
+        // Find the (index of the) nearest wall
+        size_t nearestWallIdx = 0;
+        for ( size_t i = 0; i < chaperoneDistances.size(); i++ )
+        {
+            if ( chaperoneDistances[i].distance
+                 < chaperoneDistances[nearestWallIdx].distance )
+            {
+                nearestWallIdx = i;
+            }
+        }
+        const auto& nearestWall = chaperoneDistances[nearestWallIdx];
+
+        // Convert pose matrix to quaternion
+        auto hmdQuaternion
+            = quaternion::fromHmdMatrix34( poseHmd.mDeviceToAbsoluteTracking );
+
+        // Get HMD raw yaw
+        double hmdYaw = quaternion::getYaw( hmdQuaternion );
+
+        // Get angle between HMD position and nearest point on
+        // wall
+        double hmdPositionToWallYaw = static_cast<double>(
+            std::atan2( nearestWall.nearestPoint.v[0]
+                            - poseHmd.mDeviceToAbsoluteTracking.m[0][3],
+                        nearestWall.nearestPoint.v[2]
+                            - poseHmd.mDeviceToAbsoluteTracking.m[2][3] ) );
+
+        // Get angle between HMD and wall
+        double hmdToWallYaw
+            = reduceAngle<>( hmdYaw - hmdPositionToWallYaw, -M_PI, M_PI );
+
+        do
+        {
+            // if we change walls, ignore
+            if ( nearestWallIdx != m_ratchettingLastWall )
+            {
+                break;
+            }
+
+            // Facing away from the wall is 0, |facing towards the wall| is M_PI
+            // Ignore turning towards the wall (e.g. change in magnitude is
+            // greater than 0)
+            if ( std::abs( hmdToWallYaw )
+                     - std::abs( m_ratchettingLastHmdRotation )
+                 > 0.0 )
+            {
+                break;
+            }
+            // Magnify that change
+            double delta_degrees
+                = reduceAngle<>(
+                      hmdToWallYaw - m_ratchettingLastHmdRotation, -M_PI, M_PI )
+                  * viewRatchettingPercent();
+
+            parent->m_moveCenterTabController.setRotation(
+                parent->m_moveCenterTabController.rotation()
+                + static_cast<int>( delta_degrees * k_radiansToCentidegrees ) );
+        } while ( false );
+
+        m_ratchettingLastHmdRotation = hmdToWallYaw;
+        m_ratchettingLastWall = nearestWallIdx;
+    }
+}
+
 void RotationTabController::doVestibularMotion(
     const vr::TrackedDevicePose_t& poseHmd,
     const std::vector<utils::ChaperoneQuadData>& chaperoneDistances )
@@ -158,37 +242,20 @@ void RotationTabController::doVestibularMotion(
             m_autoTurnChaperoneDistancesLast = chaperoneDistances;
             m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
         }
-        // Find the nearest wall we're moving TOWARDS and rotate
-        // away from it Rotate dist/(2*pi*r) where r is
+        // Rotate dist/(2*pi*r) where r is
         // m_autoTurnVestibularMotionRadius, as if we had walked
         // however many inches along a circle and the world was
         // turning to compensate
 
         do
         {
-            // find nearest wall we're moving towards
-            auto nearestWall = chaperoneDistances.end();
-            auto itrLast = m_autoTurnChaperoneDistancesLast.begin();
-            for ( auto itr = chaperoneDistances.begin();
-                  itr != chaperoneDistances.end();
-                  itr++ )
-            {
-                itrLast++;
-                // if ( itr->distance > itrLast->distance )
-                //{
-                //    continue;
-                //}
-
-                if ( nearestWall == chaperoneDistances.end()
-                     || itr->distance < nearestWall->distance )
-                {
-                    nearestWall = itr;
-                }
-            }
-            if ( nearestWall == chaperoneDistances.end() )
-            {
-                break;
-            }
+            // Find the nearest wall
+            const auto& nearestWall
+                = std::min_element( chaperoneDistances.begin(),
+                                    chaperoneDistances.end(),
+                                    []( const auto& quadA, const auto& quadB ) {
+                                        return quadA.distance < quadB.distance;
+                                    } );
 
             // Convert pose matrix to quaternion
             auto hmdQuaternion = quaternion::fromHmdMatrix34(
@@ -210,6 +277,19 @@ void RotationTabController::doVestibularMotion(
                 = reduceAngle<>( hmdYaw - hmdPositionToWallYaw, -M_PI, M_PI );
             bool turnLeft = hmdToWallYaw > 0.0;
 
+            // Only turn if moving forward
+            double hmdMovementDirection = static_cast<double>(
+                std::atan2( m_autoTurnLastHmdUpdate.m[0][3]
+                                - poseHmd.mDeviceToAbsoluteTracking.m[0][3],
+                            m_autoTurnLastHmdUpdate.m[2][3]
+                                - poseHmd.mDeviceToAbsoluteTracking.m[2][3] ) );
+            if ( std::abs( hmdYaw - hmdMovementDirection )
+                     * k_radiansToCentidegrees
+                 >= 7000 )
+            {
+                break;
+            }
+
             // Get the distance between previous and current
             // position
             double distanceChange = static_cast<double>(
@@ -229,20 +309,16 @@ void RotationTabController::doVestibularMotion(
             }
 
             double rotationAmount = arcLength * ( turnLeft ? 1 : -1 );
+            int newRotationAngle = reduceAngle<>(
+                parent->m_moveCenterTabController.rotation()
+                    + static_cast<int>( rotationAmount
+                                        * k_radiansToCentidegrees ),
+                0,
+                36000 );
 
-            double newRotationAngleDeg
-                = std::fmod( parent->m_moveCenterTabController.rotation()
-                                 + ( rotationAmount * k_radiansToCentidegrees )
-                                 + m_autoTurnRoundingError,
-                             360000.0 );
-            int newRotationAngleInt = static_cast<int>( newRotationAngleDeg );
-            m_autoTurnRoundingError = newRotationAngleDeg - newRotationAngleInt;
-
-            parent->m_moveCenterTabController.setRotation(
-                newRotationAngleInt );
+            parent->m_moveCenterTabController.setRotation( newRotationAngle );
 
         } while ( false );
-        m_autoTurnLastHmdUpdate = poseHmd.mDeviceToAbsoluteTracking;
     }
 }
 
@@ -272,7 +348,6 @@ void RotationTabController::doAutoTurn(
                  == AutoTurnModes::LINEAR_SMOOTH_TURN
              && m_autoTurnLinearSmoothTurnRemaining != 0 )
         {
-            // TODO: implement angular acceleration max?
             double deltaSeconds
                 = FrameRates::toDoubleSeconds( m_estimatedFrameRate );
             auto miniDeltaAngle = static_cast<int>(
@@ -284,11 +359,11 @@ void RotationTabController::doAutoTurn(
             {
                 miniDeltaAngle = m_autoTurnLinearSmoothTurnRemaining;
             }
-            int newRotationAngleDeg = reduceAngle<>(
-                static_cast<int>( parent->m_moveCenterTabController.rotation()
-                                  + miniDeltaAngle ),
-                0,
-                36000 );
+            int newRotationAngleDeg
+                = reduceAngle<>( parent->m_moveCenterTabController.rotation()
+                                     + static_cast<int>( miniDeltaAngle ),
+                                 0,
+                                 36000 );
 
             parent->m_moveCenterTabController.setRotation(
                 newRotationAngleDeg );
@@ -428,9 +503,8 @@ void RotationTabController::doAutoTurn(
                     {
                     case AutoTurnModes::SNAP:
                         parent->m_moveCenterTabController.setRotation(
-                            static_cast<int>(
-                                parent->m_moveCenterTabController.rotation()
-                                + delta_degrees ) );
+                            parent->m_moveCenterTabController.rotation()
+                            + static_cast<int>( delta_degrees ) );
                         break;
                     case AutoTurnModes::LINEAR_SMOOTH_TURN:
                         m_autoTurnLinearSmoothTurnRemaining
@@ -577,6 +651,18 @@ double RotationTabController::vestibularMotionRadius() const
         settings::DoubleSetting::ROTATION_autoturnVestibularMotionRadius );
 }
 
+bool RotationTabController::viewRatchettingEnabled() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::ROTATION_autoturnViewRatchettingEnabled );
+}
+
+double RotationTabController::viewRatchettingPercent() const
+{
+    return settings::getSetting(
+        settings::DoubleSetting::ROTATION_autoturnViewRatchettingPercent );
+}
+
 // Setters
 
 void RotationTabController::setAutoTurnEnabled( bool value, bool notify )
@@ -709,6 +795,26 @@ void RotationTabController::setVestibularMotionRadius( double value,
     if ( notify )
     {
         emit vestibularMotionRadiusChanged( value );
+    }
+}
+void RotationTabController::setViewRatchettingEnabled( bool value, bool notify )
+{
+    settings::setSetting(
+        settings::BoolSetting::ROTATION_autoturnViewRatchettingEnabled, value );
+    if ( notify )
+    {
+        emit viewRatchettingEnabledChanged( value );
+    }
+}
+void RotationTabController::setViewRatchettingPercent( double value,
+                                                       bool notify )
+{
+    settings::setSetting(
+        settings::DoubleSetting::ROTATION_autoturnViewRatchettingPercent,
+        value );
+    if ( notify )
+    {
+        emit viewRatchettingPercentChanged( value );
     }
 }
 

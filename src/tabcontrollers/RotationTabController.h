@@ -84,6 +84,12 @@ class RotationTabController : public QObject
         double vestibularMotionRadius READ vestibularMotionRadius WRITE
             setVestibularMotionRadius NOTIFY vestibularMotionRadiusChanged )
     Q_PROPERTY(
+        bool viewRatchettingEnabled READ viewRatchettingEnabled WRITE
+            setViewRatchettingEnabled NOTIFY viewRatchettingEnabledChanged )
+    Q_PROPERTY(
+        double viewRatchettingPercent READ viewRatchettingPercent WRITE
+            setViewRatchettingPercent NOTIFY viewRatchettingPercentChanged )
+    Q_PROPERTY(
         bool autoTurnShowNotification READ autoTurnShowNotification WRITE
             setAutoTurnShowNotification NOTIFY autoTurnShowNotificationChanged )
 
@@ -108,8 +114,9 @@ private:
     std::vector<bool> m_autoTurnWallActive;
     vr::HmdMatrix34_t m_autoTurnLastHmdUpdate;
     std::vector<utils::ChaperoneQuadData> m_autoTurnChaperoneDistancesLast;
-    double m_autoTurnRoundingError = 0.0;
     std::chrono::steady_clock::time_point::duration m_estimatedFrameRate;
+    double m_ratchettingLastHmdRotation = 0.0;
+    size_t m_ratchettingLastWall = 0;
 
     std::optional<std::chrono::steady_clock::time_point>
         m_autoTurnNotificationTimestamp;
@@ -120,6 +127,9 @@ private:
         const vr::TrackedDevicePose_t& poseHmd,
         const std::vector<utils::ChaperoneQuadData>& chaperoneDistances );
     void doVestibularMotion(
+        const vr::TrackedDevicePose_t& poseHmd,
+        const std::vector<utils::ChaperoneQuadData>& chaperoneDistances );
+    void doViewRatchetting(
         const vr::TrackedDevicePose_t& poseHmd,
         const std::vector<utils::ChaperoneQuadData>& chaperoneDistances );
 
@@ -143,6 +153,8 @@ public:
     int autoTurnMode() const;
     bool vestibularMotionEnabled() const;
     double vestibularMotionRadius() const;
+    bool viewRatchettingEnabled() const;
+    double viewRatchettingPercent() const;
 
 public slots:
     void setAutoTurnEnabled( bool value, bool notify = true );
@@ -156,6 +168,8 @@ public slots:
     void setAutoTurnMode( int value, bool notify = true );
     void setVestibularMotionEnabled( bool value, bool notify = true );
     void setVestibularMotionRadius( double value, bool notify = true );
+    void setViewRatchettingEnabled( bool value, bool notify = true );
+    void setViewRatchettingPercent( double value, bool notify = true );
 
 signals:
 
@@ -171,6 +185,8 @@ signals:
     void autoTurnModeChanged( int value );
     void vestibularMotionEnabledChanged( bool value );
     void vestibularMotionRadiusChanged( double value );
+    void viewRatchettingEnabledChanged( bool value );
+    void viewRatchettingPercentChanged( double value );
 };
 
 // Would be nice to do <typename T, T min, T max> but the standard doesn't allow

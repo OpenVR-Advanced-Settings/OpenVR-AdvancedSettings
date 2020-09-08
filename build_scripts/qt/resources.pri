@@ -60,6 +60,7 @@ DISTFILES += \
     src/res/qml/rotation_page/redirected/* \
     src/res/qml/rotation_page/snap_turn/* \
     src/res/qml/rotation_page/space_turn/* \
+	src/res/qml/rotation_page/view_ratchet/* \
     src/res/qml/common/*
 
 win32:RC_ICONS += src/res/img/icons/advicon256px.ico

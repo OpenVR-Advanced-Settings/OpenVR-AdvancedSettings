@@ -56,6 +56,7 @@ enum class BoolSetting
     ROTATION_autoturnEnabled,
     ROTATION_autoturnUseCornerAngle,
     ROTATION_autoturnVestibularMotionEnabled,
+    ROTATION_autoturnViewRatchettingEnabled,
     ROTATION_autoturnShowNotification,
     // LAST_ENUMERATOR must always be set to the last value
     LAST_ENUMERATOR = ROTATION_autoturnShowNotification,
@@ -84,8 +85,9 @@ enum class DoubleSetting
     ROTATION_cordDetanglingAngle,
     ROTATION_autoturnMinCordTangle,
     ROTATION_autoturnVestibularMotionRadius,
+    ROTATION_autoturnViewRatchettingPercent,
     // LAST_ENUMERATOR must always be set to the last value
-    LAST_ENUMERATOR = ROTATION_autoturnVestibularMotionRadius,
+    LAST_ENUMERATOR = ROTATION_autoturnViewRatchettingPercent,
 };
 
 enum class StringSetting

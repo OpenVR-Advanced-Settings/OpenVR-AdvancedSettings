@@ -11,7 +11,7 @@ GroupBox {
     label: MyText {
         leftPadding: 10
         text: "Vestibular Motion (for continuous redirected walking)"
-        bottomPadding: -10
+        bottomPadding: -12
     }
     background: Rectangle {
         color: "transparent"
@@ -26,13 +26,13 @@ GroupBox {
             color: "#ffffff"
             height: 1
             Layout.fillWidth: true
-            Layout.bottomMargin: 5
+            Layout.bottomMargin: 3
         }
 
       RowLayout{
             MyToggleButton {
                 id: redirectedModeToggle
-                text: "On"
+                text: "Toggle On/Off"
                 Layout.preferredWidth: 225
                 onCheckedChanged: {
                     RotationTabController.setVestibularMotionEnabled(this.checked, true);
@@ -105,6 +105,7 @@ GroupBox {
             }
       }
     }
+
 
     Component.onCompleted: {
         redirectedWalkingRadiusText.text = ((RotationTabController.vestibularMotionRadius).toFixed(2))

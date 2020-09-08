@@ -6,13 +6,14 @@ import "../common"
 import "redirected"
 import "space_turn"
 import "snap_turn"
+import "view_ratchet"
 
 
 MyStackViewPage {
     width: 1200
     headerText: "Rotation Settings"
     content: ColumnLayout {
-        spacing: 10
+        spacing: 8
         AutoTurnGroupBox{
             id: autoTurnGroupBox
         }
@@ -20,7 +21,9 @@ MyStackViewPage {
         RedirectedGroupBox{
             id: redirectedGroupBox
         }
-
+        ViewRatchetGroupBox{
+            id: vgiiewRatchetGroupBox
+        }
         SpaceTurnGroupBox{
             id:spaceTurnGroupBox
         }
