@@ -221,7 +221,7 @@ Actions That will stay active regardless of the situation.
 | Add Left Haptic Click | Binary/Button | simulates a "click" with controller haptics. (left hand)
 | Add Right Haptic Click | Binary/Button | simulates a "click" with controller haptics. (right hand)
 | Key Press System | Binary/Button | Sends the key press defined in the settings file. Defaults to F9 |
-| Exclusive Input Toggle | Binary/Button | Switches between App and OVRAS keybinds, *note:* system Key-Binds remain active all the time
+| Exclusive Input Toggle | Binary/Button | Switches between App and OVRAS keybinds, *note:* OVRAS's system Key-Binds remain active all the time
 
 ### Haptics.
 
@@ -445,8 +445,8 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Redirected Walking**: Adds rotation as you walk to turn you away from the nearest wall you're moving towards. At 'Imperceptable' and 'Slight' angles should be subtle enough to feel as if you're walking in a straight line, effectively making your playspace feel bigger. 
   - **On**: Toggles Feature on/off
   - **Radius**: Radius in meters of how big a circle would be drawn to keep you walking in a straight line inside a game.
-
-
+- **View Ratchetting**: Steers you away from your nearest wall by rotating your world more than you turn in Real Life, based on head movements.
+  - **Slider**: Amplification percent 0 = no amplification, .10 means 10% (direct input up to 1.0).
 - **Space Turn**: Allows rotating your playspace by rotating your controller. Binds must be set via SteamVR Input system.
   - **Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
   - **Comfort Mode**: Limits the rate at which your rotation updates, reducing smoothness so that perceived rotation starts to feel more like mini-snap-turns. Higher values reduce smoothness more.
