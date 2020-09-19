@@ -1,0 +1,106 @@
+{
+   "alias_info" : {},
+   "app_key" : "steam.overlay.1009850",
+   "bindings" : {
+      "/actions/haptic" : {
+         "haptics" : [
+            {
+               "output" : "/actions/haptic/out/hapticsleft",
+               "path" : "/user/hand/left/output/haptic"
+            },
+            {
+               "output" : "/actions/haptic/out/hapticsright",
+               "path" : "/user/hand/right/output/haptic"
+            }
+         ],
+         "sources" : [
+            {
+               "inputs" : {},
+               "mode" : "none",
+               "path" : "/user/hand/left/input/y"
+            },
+            {
+               "inputs" : {},
+               "mode" : "none",
+               "path" : "/user/hand/right/input/b"
+            }
+         ]
+      },
+      "/actions/system" : {
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/system/in/pushtotalk"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/trigger"
+            }
+         ]
+      },
+      "/actions/motion" : {
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/lefthandspaceturn"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/y"
+            },
+            {
+               "inputs" : {
+                  "double" : {
+                     "output" : "/actions/motion/in/optionaloverridelefthandspacedrag"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/y"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/swapspacedragtolefthandoverride"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/y"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/righthandspaceturn"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/b"
+            },
+            {
+               "inputs" : {
+                  "double" : {
+                     "output" : "/actions/motion/in/optionaloverriderighthandspacedrag"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/b"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/swapspacedragtorighthandoverride"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/right/input/b"
+            }
+         ]
+      }
+   },
+   "controller_type" : "hpmotioncontroller",
+   "description" : "",
+   "name" : "OVRAS HP WMR Default",
+   "options" : {},
+   "simulated_actions" : []
+}
