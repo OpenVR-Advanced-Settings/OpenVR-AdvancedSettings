@@ -542,7 +542,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Disable Notification of Newer Version Availability**: This turns off the on start-up check for a new version. (You can refresh this to do a manual check.)
 - **Force Use SteamVR Chaperone**: This feature is currently experimental, when using third party headsets this will allow you to use SteamVR's chaperone, as if it was a native headset.
 - **Force Use SteamVR (Disable Oculus API)**: This feature is currently experimental, it should disable Oculus API preventing games with both SteamVR and Oculus API to only run as SteamVR
-- ** Exclusive Input Toggle: This feature Enables Exclusive Input Mode, while in this mode you will only send OVRAS keybinds or App keybinds [with the exception of OVRAS system keybinds always working]
+- **Exclusive Input Toggle**: This feature Enables Exclusive Input Mode, while in this mode you will only send OVRAS keybinds or App keybinds [with the exception of OVRAS system keybinds always working]
 - **Disable App Vsync:** Allows setting a custom base update rate for Advanced Settings. (Might be useful on HMDs with very high or very low refresh rates).
 - **Shutdown OVRAS** Shuts-Down Advanced Settings without closing out of VR.
 
