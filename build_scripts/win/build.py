@@ -139,7 +139,10 @@ def build():
         say(f"{BUILD_DEBUG_VAR_NAME} not defined. Building '{COMPILE_MODE}' version.")
 
     add_line_to_run_bat_file("@ECHO Running qmake:")
-    add_line_to_run_bat_file('"' + QMAKE_LOC + '"' +  " -spec " + COMPILER + " CONFIG+=X86_64 " + "CONFIG+=" + COMPILE_MODE)
+    if is_env_var_set("OVRAS_WARNINGS_AS_ERRORS"):
+    	add_line_to_run_bat_file('"' + QMAKE_LOC + '"' +  " -spec " + COMPILER + " CONFIG+=X86_64 " + "CONFIG+=" + COMPILE_MODE + " CONFIG+=warnings_as_errors")
+    else:
+    	add_line_to_run_bat_file('"' + QMAKE_LOC + '"' +  " -spec " + COMPILER + " CONFIG+=X86_64 " + "CONFIG+=" + COMPILE_MODE)
     add_error_handling_line_to_bat_file()
     add_line_to_run_bat_file("@ECHO qmake done.")
 

@@ -13,6 +13,7 @@ environment:
     LLVM_LOC: '"C:\Program Files\LLVM\bin\"'
     PYTHON_LOC: '"C:\Python37\"'
     BUILD_PACKAGE: "1"
+    OVRAS_WARNINGS_AS_ERRORS: "1"
     
   - QT_LOC: '"C:\Qt\5.12\msvc2017_64\bin\"'
     VS_LOC: '"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"'
@@ -23,6 +24,7 @@ environment:
     PYTHON_LOC: '"C:\Python37\"'
     BUILD_PACKAGE: "1"
     BUILD_CLANG: '"1"'
+    OVRAS_WARNINGS_AS_ERRORS: "1"
     
 
 clone_depth: 1

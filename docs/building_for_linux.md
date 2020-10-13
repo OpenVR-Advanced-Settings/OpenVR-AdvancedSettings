@@ -343,6 +343,7 @@ The following values can be appended to the `CONFIG` internal variable in order 
 | `noDBUS` | Disables DBUS specific features (control media players). |
 | `noPulse` | Disables PulseAudio specific features (change audio devices). |
 | `debugSymbolsAndLogs` | Enables debug symbols and debug logging calls (while still having release optimizations). |
+| `warnings_as_errors` | Makes compiler warnings failing errors (not needed unless you're changing the source). |
 
 The values are case sensitive.
 
@@ -359,6 +360,11 @@ qmake CONFIG+=noX11 CONFIG+=noDBUS
 If you want to disable X11, DBUS and PulseAudio features you would type
 ```bash
 qmake CONFIG+=noX11 CONFIG+=noDBUS CONFIG+=noPulse
+```
+
+If you want to compile with warnings as errors you would type
+```bash
+qmake CONFIG+=warnings_as_errors
 ```
 
 The location for `make install` can be configured in the `qmake` step.

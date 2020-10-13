@@ -123,3 +123,7 @@ debugSymbolsAndLogs {
     CONFIG += force_debug_info
     DEFINES += ENABLE_DEBUG_LOGGING
 }
+
+warnings_as_errors {
+    message(Warnings as errors enabled.)
+}
