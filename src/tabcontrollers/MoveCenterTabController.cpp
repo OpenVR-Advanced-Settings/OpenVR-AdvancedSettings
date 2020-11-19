@@ -354,27 +354,27 @@ void MoveCenterTabController::setRotation( int value, bool notify )
 
         vr::HmdMatrix34_t oldHmdPos
             = devicePosesForRot[0].mDeviceToAbsoluteTracking;
-		vr::HmdVector3_t oldHmdPos3 = {
-			oldHmdPos.m[0][3],
-			oldHmdPos.m[1][3],
-			oldHmdPos.m[2][3]
-		};
-        setRotationAroundPivot(value, notify, oldHmdPos3);
+        vr::HmdVector3_t oldHmdPos3
+            = { oldHmdPos.m[0][3], oldHmdPos.m[1][3], oldHmdPos.m[2][3] };
+        setRotationAroundPivot( value, notify, oldHmdPos3 );
     }
 }
 
-void MoveCenterTabController::setRotationAroundPivot( int value, bool notify, const vr::HmdVector3_t& pivot )
+void MoveCenterTabController::setRotationAroundPivot(
+    int value,
+    bool notify,
+    const vr::HmdVector3_t& pivot )
 {
     if ( m_rotation != value )
     {
         double angle = ( value - m_rotation ) * k_centidegreesToRadians;
         // Set up xyz coordinate values from pose matrix.
         double oldXyz[3] = { static_cast<double>( pivot.v[0] ),
-                                static_cast<double>( pivot.v[1] ),
-                                static_cast<double>( pivot.v[2] ) };
+                             static_cast<double>( pivot.v[1] ),
+                             static_cast<double>( pivot.v[2] ) };
         double newXyz[3] = { static_cast<double>( pivot.v[0] ),
-                                static_cast<double>( pivot.v[1] ),
-                                static_cast<double>( pivot.v[2] ) };
+                             static_cast<double>( pivot.v[1] ),
+                             static_cast<double>( pivot.v[2] ) };
 
         // Convert oldXyz into un-rotated coordinates.
         double oldAngle = -m_rotation * k_centidegreesToRadians;
@@ -1013,7 +1013,7 @@ void MoveCenterTabController::reset()
     m_lastMoveHand = vr::TrackedControllerRole_Invalid;
     m_lastRotateHand = vr::TrackedControllerRole_Invalid;
     applyChaperoneResetData();
-    m_lastControllerPosition = {0.0f, 0.0f, 0.0f};
+    m_lastControllerPosition = { 0.0f, 0.0f, 0.0f };
 
     // For Center Marker
     // Needs to happen after apply chaperone
@@ -2220,48 +2220,48 @@ void MoveCenterTabController::updateHmdRotationCounter(
     m_lastHmdQuaternion = m_hmdQuaternion;
 }
 
-vr::HmdVector3_t MoveCenterTabController::relativeToAbsolute(const vr::HmdVector3_t& relative) const
+vr::HmdVector3_t MoveCenterTabController::relativeToAbsolute(
+    const vr::HmdVector3_t& relative ) const
 {
-	double relativeControllerPosition[] = {
-        static_cast<double>( relative.v[0] ),
-        static_cast<double>( relative.v[1] ),
-        static_cast<double>( relative.v[2] )
-    };
-    rotateCoordinates( relativeControllerPosition, -m_rotation * k_centidegreesToRadians);
-	vr::HmdVector3_t absoluteControllerPosition = {
+    double relativeControllerPosition[]
+        = { static_cast<double>( relative.v[0] ),
+            static_cast<double>( relative.v[1] ),
+            static_cast<double>( relative.v[2] ) };
+    rotateCoordinates( relativeControllerPosition,
+                       -m_rotation * k_centidegreesToRadians );
+    vr::HmdVector3_t absoluteControllerPosition = {
         static_cast<float>( relativeControllerPosition[0] ) + m_offsetX,
         static_cast<float>( relativeControllerPosition[1] ) + m_offsetY,
         static_cast<float>( relativeControllerPosition[2] ) + m_offsetZ,
     };
-	return absoluteControllerPosition;
+    return absoluteControllerPosition;
 }
 
-vr::HmdVector3_t MoveCenterTabController::absoluteToRelative(const vr::HmdVector3_t& absolute) const
+vr::HmdVector3_t MoveCenterTabController::absoluteToRelative(
+    const vr::HmdVector3_t& absolute ) const
 {
-	double absoluteControllerPosition[] = {
-        static_cast<double>( absolute.v[0] - m_offsetX),
-        static_cast<double>( absolute.v[1] - m_offsetY),
-        static_cast<double>( absolute.v[2] - m_offsetZ)
-    };
-    rotateCoordinates( absoluteControllerPosition, m_rotation * k_centidegreesToRadians);
-	vr::HmdVector3_t relativeControllerPosition = {
-        static_cast<float>( absoluteControllerPosition[0] ),
-        static_cast<float>( absoluteControllerPosition[1] ),
-        static_cast<float>( absoluteControllerPosition[2] )
-    };
-	return relativeControllerPosition;
+    double absoluteControllerPosition[]
+        = { static_cast<double>( absolute.v[0] - m_offsetX ),
+            static_cast<double>( absolute.v[1] - m_offsetY ),
+            static_cast<double>( absolute.v[2] - m_offsetZ ) };
+    rotateCoordinates( absoluteControllerPosition,
+                       m_rotation * k_centidegreesToRadians );
+    vr::HmdVector3_t relativeControllerPosition
+        = { static_cast<float>( absoluteControllerPosition[0] ),
+            static_cast<float>( absoluteControllerPosition[1] ),
+            static_cast<float>( absoluteControllerPosition[2] ) };
+    return relativeControllerPosition;
 }
 
-// Displace the entire universe by some difference. Both 'from' and 'to' are in absolute coordinates.
-void MoveCenterTabController::displaceUniverse(const vr::HmdVector3_t& from, const vr::HmdVector3_t& to)
+// Displace the entire universe by some difference. Both 'from' and 'to' are in
+// absolute coordinates.
+void MoveCenterTabController::displaceUniverse( const vr::HmdVector3_t& from,
+                                                const vr::HmdVector3_t& to )
 {
     double diff[3] = {
-        static_cast<double>( to.v[0]
-                - from.v[0] ),
-        static_cast<double>( to.v[1]
-                - from.v[1] ),
-        static_cast<double>( to.v[2]
-                - from.v[2] ),
+        static_cast<double>( to.v[0] - from.v[0] ),
+        static_cast<double>( to.v[1] - from.v[1] ),
+        static_cast<double>( to.v[2] - from.v[2] ),
     };
 
     // offset is un-rotated coordinates
@@ -2269,7 +2269,7 @@ void MoveCenterTabController::displaceUniverse(const vr::HmdVector3_t& from, con
     // prevent positional glitches from exceeding max openvr offset clamps.
     // We do this by detecting a drag larger than 100m in a single frame.
     if ( abs( diff[0] ) > 100.0 || abs( diff[1] ) > 100.0
-            || abs( diff[2] ) > 100.0 )
+         || abs( diff[2] ) > 100.0 )
     {
         reset();
     }
@@ -2290,22 +2290,21 @@ void MoveCenterTabController::displaceUniverse(const vr::HmdVector3_t& from, con
 
     double secondsSinceLastDragUpdate
         = std::chrono::duration<double>( std::chrono::steady_clock::now()
-                - m_lastDragUpdateTimePoint )
-        .count();
+                                         - m_lastDragUpdateTimePoint )
+              .count();
 
-    // TODO: Add 'effects fling' boolean? or simply return diff[] as a HmdVect3_t
+    // TODO: Add 'effects fling' boolean? or simply return diff[] as a
+    // HmdVect3_t
     m_velocity[0] = ( diff[0] / secondsSinceLastDragUpdate )
-        * static_cast<double>( flingStrength() );
+                    * static_cast<double>( flingStrength() );
     m_velocity[1] = ( diff[1] / secondsSinceLastDragUpdate )
-        * static_cast<double>( flingStrength() );
+                    * static_cast<double>( flingStrength() );
     m_velocity[2] = ( diff[2] / secondsSinceLastDragUpdate )
-        * static_cast<double>( flingStrength() );
-
+                    * static_cast<double>( flingStrength() );
 }
 
 void MoveCenterTabController::updateHandDrag(
-    vr::TrackedDevicePose_t* devicePoses
-	)
+    vr::TrackedDevicePose_t* devicePoses )
 {
     auto moveHandId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
         m_activeDragHand );
@@ -2353,17 +2352,18 @@ void MoveCenterTabController::updateHandDrag(
         return;
     }
 
-    vr::HmdVector3_t relativeControllerPosition = {
-        movePose->mDeviceToAbsoluteTracking.m[0][3],
-        movePose->mDeviceToAbsoluteTracking.m[1][3],
-        movePose->mDeviceToAbsoluteTracking.m[2][3]
-    };
-	auto absoluteControllerPosition = relativeToAbsolute(relativeControllerPosition);
+    vr::HmdVector3_t relativeControllerPosition
+        = { movePose->mDeviceToAbsoluteTracking.m[0][3],
+            movePose->mDeviceToAbsoluteTracking.m[1][3],
+            movePose->mDeviceToAbsoluteTracking.m[2][3] };
+    auto absoluteControllerPosition
+        = relativeToAbsolute( relativeControllerPosition );
 
-	if ( m_lastMoveHand == m_activeDragHand )
+    if ( m_lastMoveHand == m_activeDragHand )
     {
         // Displace from last controller position to current
-        displaceUniverse(m_lastControllerPosition, absoluteControllerPosition);
+        displaceUniverse( m_lastControllerPosition,
+                          absoluteControllerPosition );
     }
     m_lastControllerPosition = absoluteControllerPosition;
     m_lastMoveHand = m_activeDragHand;

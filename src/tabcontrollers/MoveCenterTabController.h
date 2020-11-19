@@ -283,11 +283,16 @@ public:
     void incomingSeatedReset();
     void setBoundsBasisHeight( float newHeight );
     float getBoundsBasisMaxY();
-    void setRotationAroundPivot( int value, bool notify, const vr::HmdVector3_t& pivot );
-    void displaceUniverse( const vr::HmdVector3_t& from, const vr::HmdVector3_t& to );
+    void setRotationAroundPivot( int value,
+                                 bool notify,
+                                 const vr::HmdVector3_t& pivot );
+    void displaceUniverse( const vr::HmdVector3_t& from,
+                           const vr::HmdVector3_t& to );
 
-	vr::HmdVector3_t relativeToAbsolute(const vr::HmdVector3_t& coordinates_in) const;
-	vr::HmdVector3_t absoluteToRelative(const vr::HmdVector3_t& absolute) const;
+    vr::HmdVector3_t
+        relativeToAbsolute( const vr::HmdVector3_t& coordinates_in ) const;
+    vr::HmdVector3_t
+        absoluteToRelative( const vr::HmdVector3_t& absolute ) const;
 
     void updateChaperoneResetData();
 
