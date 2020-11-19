@@ -121,7 +121,7 @@ private:
     std::optional<std::chrono::steady_clock::time_point>
         m_autoTurnNotificationTimestamp;
 
-    std::vector<vr::TrackedDevicePose_t> autoAlignPoints;
+    std::vector<vr::HmdVector3_t> autoAlignPoints;
     vr::TrackedDevicePose_t lastHandPose;
 
     bool m_isHMDActive = false;
