@@ -102,11 +102,23 @@ void RotationTabController::eventLoopTick(
         auto leftHandId
             = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
                 vr::TrackedControllerRole_LeftHand );
-        lastLeftHandPose = devicePoses[leftHandId];
+        if ( vr::k_unTrackedDeviceIndexInvalid
+             && devicePoses[leftHandId].bPoseIsValid
+             && devicePoses[leftHandId].eTrackingResult
+                    == vr::TrackingResult_Running_OK )
+        {
+            lastLeftHandPose = devicePoses[leftHandId];
+        }
         auto rightHandId
             = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
                 vr::TrackedControllerRole_RightHand );
-        lastRightHandPose = devicePoses[rightHandId];
+        if ( vr::k_unTrackedDeviceIndexInvalid
+             && devicePoses[rightHandId].bPoseIsValid
+             && devicePoses[rightHandId].eTrackingResult
+                    == vr::TrackingResult_Running_OK )
+        {
+            lastRightHandPose = devicePoses[rightHandId];
+        }
 
         m_isHMDActive = false;
         std::lock_guard<std::recursive_mutex> lock(
@@ -627,6 +639,41 @@ void RotationTabController::addAutoAlignPoint( bool rightHanded )
         = parent->m_moveCenterTabController.relativeToAbsolute( new_point );
     autoAlignPoints.push_back( absolute_point );
 
+    switch ( autoAlignPoints.size() )
+    {
+    case 1:
+        vr::VROverlay()->SetOverlayFromFile(
+            m_autoturnValues.overlayHandle,
+            m_autoturnValues.alignPointOnePath.c_str() );
+        break;
+    case 2:
+        vr::VROverlay()->SetOverlayFromFile(
+            m_autoturnValues.overlayHandle,
+            m_autoturnValues.alignPointTwoPath.c_str() );
+        break;
+    case 3:
+        vr::VROverlay()->SetOverlayFromFile(
+            m_autoturnValues.overlayHandle,
+            m_autoturnValues.alignPointThreePath.c_str() );
+        break;
+    case 4:
+        vr::VROverlay()->SetOverlayFromFile(
+            m_autoturnValues.overlayHandle,
+            m_autoturnValues.alignPointFourPath.c_str() );
+        break;
+    }
+
+    // TODO: configure whether auto-align has HUD popup independently
+    if ( autoTurnShowNotification()
+         && getNotificationOverlayHandle() != vr::k_ulOverlayHandleInvalid )
+    {
+        vr::VROverlay()->SetOverlayAlpha( getNotificationOverlayHandle(),
+                                          1.0f );
+        vr::VROverlay()->ShowOverlay( getNotificationOverlayHandle() );
+        m_autoTurnNotificationTimestamp.emplace(
+            std::chrono::steady_clock::now() );
+    }
+
     // if we have exactly 4 points, go into main loop
     if ( autoAlignPoints.size() == 4 )
     {
@@ -668,40 +715,6 @@ void RotationTabController::addAutoAlignPoint( bool rightHanded )
 
         // end of main loop, clear autoAlignPoints
         autoAlignPoints.clear();
-    }
-    switch ( autoAlignPoints.size() )
-    {
-    case 1:
-        vr::VROverlay()->SetOverlayFromFile(
-            m_autoturnValues.overlayHandle,
-            m_autoturnValues.alignPointOnePath.c_str() );
-        break;
-    case 2:
-        vr::VROverlay()->SetOverlayFromFile(
-            m_autoturnValues.overlayHandle,
-            m_autoturnValues.alignPointTwoPath.c_str() );
-        break;
-    case 3:
-        vr::VROverlay()->SetOverlayFromFile(
-            m_autoturnValues.overlayHandle,
-            m_autoturnValues.alignPointThreePath.c_str() );
-        break;
-    case 4:
-        vr::VROverlay()->SetOverlayFromFile(
-            m_autoturnValues.overlayHandle,
-            m_autoturnValues.alignPointFourPath.c_str() );
-        break;
-    }
-
-    // TODO: configure whether auto-align has HUD popup independently
-    if ( autoTurnShowNotification()
-         && getNotificationOverlayHandle() != vr::k_ulOverlayHandleInvalid )
-    {
-        vr::VROverlay()->SetOverlayAlpha( getNotificationOverlayHandle(),
-                                          1.0f );
-        vr::VROverlay()->ShowOverlay( getNotificationOverlayHandle() );
-        m_autoTurnNotificationTimestamp.emplace(
-            std::chrono::steady_clock::now() );
     }
 }
 // getters
