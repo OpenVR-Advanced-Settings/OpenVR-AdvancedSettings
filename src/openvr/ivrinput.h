@@ -47,7 +47,8 @@ namespace action_keys
     constexpr auto smoothTurnLeft = "/actions/motion/in/SmoothTurnLeft";
     constexpr auto smoothTurnRight = "/actions/motion/in/SmoothTurnRight";
     constexpr auto autoTurnToggle = "/actions/motion/in/AutoTurnToggle";
-    constexpr auto addAutoAlignPoint = "/actions/motion/in/AddAutoAlignPoint";
+    constexpr auto addAutoAlignPointLeft = "/actions/motion/in/AddAutoAlignPointLeft";
+    constexpr auto addAutoAlignPointRight = "/actions/motion/in/AddAutoAlignPointRight";
 
     constexpr auto xAxisLockToggle = "/actions/misc/in/XAxisLockToggle";
     constexpr auto yAxisLockToggle = "/actions/misc/in/YAxisLockToggle";
@@ -152,7 +153,8 @@ public:
     bool smoothTurnLeft();
     bool smoothTurnRight();
     bool autoTurnToggle();
-    bool addAutoAlignPoint();
+    bool addAutoAlignPointLeft();
+    bool addAutoAlignPointRight();
     bool xAxisLockToggle();
     bool yAxisLockToggle();
     bool zAxisLockToggle();
@@ -235,7 +237,8 @@ private:
     DigitalAction m_smoothTurnLeft;
     DigitalAction m_smoothTurnRight;
     DigitalAction m_autoTurnToggle;
-    DigitalAction m_addAutoAlignPoint;
+    DigitalAction m_addAutoAlignPointLeft;
+    DigitalAction m_addAutoAlignPointRight;
     DigitalAction m_xAxisLockToggle;
     DigitalAction m_yAxisLockToggle;
     DigitalAction m_zAxisLockToggle;

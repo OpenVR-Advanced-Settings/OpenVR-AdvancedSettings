@@ -38,11 +38,23 @@ void RotationTabController::initStage2( OverlayController* var_parent )
 
     constexpr auto autoturnIconFilepath = "/res/img/rotation/autoturn.png";
     constexpr auto noautoturnIconFilepath = "/res/img/rotation/noautoturn.png";
+    constexpr auto alignPointOneIconFilepath = "/res/img/rotation/autoalign1.png";
+    constexpr auto alignPointTwoIconFilepath = "/res/img/rotation/autoalign2.png";
+    constexpr auto alignPointThreeIconFilepath = "/res/img/rotation/autoalign3.png";
+    constexpr auto alignPointFourIconFilepath = "/res/img/rotation/autoalign4.png";
 
     const auto autoturnIconFilePath
         = paths::verifyIconFilePath( autoturnIconFilepath );
     const auto noautoturnIconFilePath
         = paths::verifyIconFilePath( noautoturnIconFilepath );
+    const auto alignPointOneIconFilePath
+        = paths::verifyIconFilePath( alignPointOneIconFilepath );
+    const auto alignPointTwoIconFilePath
+        = paths::verifyIconFilePath( alignPointTwoIconFilepath );
+    const auto alignPointThreeIconFilePath
+        = paths::verifyIconFilePath( alignPointThreeIconFilepath );
+    const auto alignPointFourIconFilePath
+        = paths::verifyIconFilePath( alignPointFourIconFilepath );
 
     if ( !autoturnIconFilePath.has_value()
          || !noautoturnIconFilePath.has_value() )
@@ -53,6 +65,10 @@ void RotationTabController::initStage2( OverlayController* var_parent )
 
     m_autoturnValues.autoturnPath = *autoturnIconFilePath;
     m_autoturnValues.noautoturnPath = *noautoturnIconFilePath;
+    m_autoturnValues.alignPointOnePath = *alignPointOneIconFilePath;
+    m_autoturnValues.alignPointTwoPath = *alignPointTwoIconFilePath;
+    m_autoturnValues.alignPointThreePath = *alignPointThreeIconFilePath;
+    m_autoturnValues.alignPointFourPath = *alignPointFourIconFilePath;
 
     auto pushToPath = m_autoturnValues.autoturnPath.c_str();
 
@@ -79,10 +95,14 @@ void RotationTabController::eventLoopTick(
 {
     if ( devicePoses )
     {
-        auto moveHandId
+        auto leftHandId
+            = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
+                vr::TrackedControllerRole_LeftHand );
+        lastLeftHandPose = devicePoses[leftHandId];
+        auto rightHandId
             = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
                 vr::TrackedControllerRole_RightHand );
-        lastHandPose = devicePoses[moveHandId];
+        lastRightHandPose = devicePoses[rightHandId];
 
         m_isHMDActive = false;
         std::lock_guard<std::recursive_mutex> lock(
@@ -583,15 +603,17 @@ void RotationTabController::doAutoTurn(
     }
 }
 
-void RotationTabController::addAutoAlignPoint()
+void RotationTabController::addAutoAlignPoint(bool rightHanded)
 {
     // TODO: State machine: if we have >2 align points, freeze vestibular
     // motion/ratchetting/etc remain frozen until after we move away from the
     // aligned area
+	const auto& lastHandPose = rightHanded ?
+		lastRightHandPose :
+		lastLeftHandPose;
 
-    LOG( INFO ) << "point added: " << autoAlignPoints.size();
-    // get the location of right hand, push_back onto autoAlignPoints
-    // TODO:
+    LOG( DEBUG ) << "point added: " << autoAlignPoints.size();
+    // get the location of hand, push_back onto autoAlignPoints
     vr::HmdVector3_t new_point
         = { lastHandPose.mDeviceToAbsoluteTracking.m[0][3],
             lastHandPose.mDeviceToAbsoluteTracking.m[1][3],
@@ -643,6 +665,40 @@ void RotationTabController::addAutoAlignPoint()
 
         // end of main loop, clear autoAlignPoints
         autoAlignPoints.clear();
+    }
+	switch(autoAlignPoints.size())
+	{
+		case 1:
+        	vr::VROverlay()->SetOverlayFromFile(
+            	m_autoturnValues.overlayHandle,
+            	m_autoturnValues.alignPointOnePath.c_str() );
+			break;
+		case 2:
+        	vr::VROverlay()->SetOverlayFromFile(
+            	m_autoturnValues.overlayHandle,
+            	m_autoturnValues.alignPointTwoPath.c_str() );
+			break;
+		case 3:
+        	vr::VROverlay()->SetOverlayFromFile(
+            	m_autoturnValues.overlayHandle,
+            	m_autoturnValues.alignPointThreePath.c_str() );
+			break;
+		case 4:
+        	vr::VROverlay()->SetOverlayFromFile(
+            	m_autoturnValues.overlayHandle,
+            	m_autoturnValues.alignPointFourPath.c_str() );
+			break;
+	}
+
+	// TODO: configure whether auto-align has HUD popup independently
+    if ( autoTurnShowNotification()
+         && getNotificationOverlayHandle() != vr::k_ulOverlayHandleInvalid )
+    {
+        vr::VROverlay()->SetOverlayAlpha( getNotificationOverlayHandle(),
+                                          1.0f );
+        vr::VROverlay()->ShowOverlay( getNotificationOverlayHandle() );
+        m_autoTurnNotificationTimestamp.emplace(
+            std::chrono::steady_clock::now() );
     }
 }
 // getters
