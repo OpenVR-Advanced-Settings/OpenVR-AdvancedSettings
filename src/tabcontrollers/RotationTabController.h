@@ -101,10 +101,10 @@ private:
         vr::VROverlayHandle_t overlayHandle = vr::k_ulOverlayHandleInvalid;
         std::string autoturnPath;
         std::string noautoturnPath;
-		std::string alignPointOnePath;
-		std::string alignPointTwoPath;
-		std::string alignPointThreePath;
-		std::string alignPointFourPath;
+        std::string alignPointOnePath;
+        std::string alignPointTwoPath;
+        std::string alignPointThreePath;
+        std::string alignPointFourPath;
     } m_autoturnValues;
 
     virtual vr::VROverlayHandle_t getNotificationOverlayHandle()
