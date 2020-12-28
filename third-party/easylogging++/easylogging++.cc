@@ -4,17 +4,17 @@
 //  Easylogging++ v9.96.7
 //  Cross-platform logging library for C++ applications
 //
-//  Copyright (c) 2012-2018 Zuhd Web Services
+//  Copyright (c) 2012-2018 Amrayn Web Services
 //  Copyright (c) 2012-2018 @abumusamq
 //
 //  This library is released under the MIT Licence.
-//  https://github.com/zuhd-org/easyloggingpp/blob/master/LICENSE
+//  https://github.com/amrayn/easyloggingpp/blob/master/LICENSE
 //
-//  https://zuhd.org
+//  https://amrayn.com
 //  http://muflihun.com
 //
 
-#include <easylogging++.h>
+#include "easylogging++.h"
 
 #if defined(AUTO_INITIALIZE_EASYLOGGINGPP)
 INITIALIZE_EASYLOGGINGPP
@@ -64,7 +64,7 @@ static const char* kDateTimeFormatSpecifierForFilename            =      "%datet
 // Date/time
 static const char* kDays[7]                         =      { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 static const char* kDaysAbbrev[7]                   =      { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-static const char* kMonths[12]                      =      { "January", "February", "March", "Apri", "May", "June", "July", "August",
+static const char* kMonths[12]                      =      { "January", "February", "March", "April", "May", "June", "July", "August",
                                                              "September", "October", "November", "December"
                                                            };
 static const char* kMonthsAbbrev[12]                =      { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
@@ -79,7 +79,7 @@ static const char* kNullPointer                            =      "nullptr";
 #if ELPP_VARIADIC_TEMPLATES_SUPPORTED
 #endif  // ELPP_VARIADIC_TEMPLATES_SUPPORTED
 static const base::type::VerboseLevel kMaxVerboseLevel     =      9;
-static const char* kUnknownUser                            =      "user";
+static const char* kUnknownUser                            =      "unknown-user";
 static const char* kUnknownHost                            =      "unknown-host";
 
 
@@ -292,7 +292,7 @@ Configurations::Configurations(const std::string& configurationFile, bool useDef
 }
 
 bool Configurations::parseFromFile(const std::string& configurationFile, Configurations* base) {
-  // We initial assertion with true because if we have assertion diabled, we want to pass this
+  // We initial assertion with true because if we have assertion disabled, we want to pass this
   // check and if assertion is enabled we will have values re-assigned any way.
   bool assertionPassed = true;
   ELPP_ASSERT((assertionPassed = base::utils::File::pathExists(configurationFile.c_str(), true)) == true,
@@ -599,7 +599,7 @@ void LogBuilder::convertToColoredOutput(base::type::string_t* logLine, Level lev
 
 // Logger
 
-Logger::Logger(const std::string& id, base::LogStreamsReferenceMap* logStreamsReference) :
+Logger::Logger(const std::string& id, base::LogStreamsReferenceMapPtr logStreamsReference) :
   m_id(id),
   m_typedConfigurations(nullptr),
   m_parentApplicationName(std::string()),
@@ -609,7 +609,7 @@ Logger::Logger(const std::string& id, base::LogStreamsReferenceMap* logStreamsRe
 }
 
 Logger::Logger(const std::string& id, const Configurations& configurations,
-               base::LogStreamsReferenceMap* logStreamsReference) :
+               base::LogStreamsReferenceMapPtr logStreamsReference) :
   m_id(id),
   m_typedConfigurations(nullptr),
   m_parentApplicationName(std::string()),
@@ -794,22 +794,22 @@ bool File::createPath(const std::string& path) {
   if (path[0] == '/') {
     builtPath = "/";
   }
-  currPath = STRTOK(currPath, base::consts::kFilePathSeperator, 0);
+  currPath = STRTOK(currPath, base::consts::kFilePathSeparator, 0);
 #elif ELPP_OS_WINDOWS
   // Use secure functions API
   char* nextTok_ = nullptr;
-  currPath = STRTOK(currPath, base::consts::kFilePathSeperator, &nextTok_);
+  currPath = STRTOK(currPath, base::consts::kFilePathSeparator, &nextTok_);
   ELPP_UNUSED(nextTok_);
 #endif  // ELPP_OS_UNIX
   while (currPath != nullptr) {
     builtPath.append(currPath);
-    builtPath.append(base::consts::kFilePathSeperator);
+    builtPath.append(base::consts::kFilePathSeparator);
 #if ELPP_OS_UNIX
     status = mkdir(builtPath.c_str(), ELPP_LOG_PERMS);
-    currPath = STRTOK(nullptr, base::consts::kFilePathSeperator, 0);
+    currPath = STRTOK(nullptr, base::consts::kFilePathSeparator, 0);
 #elif ELPP_OS_WINDOWS
     status = _mkdir(builtPath.c_str());
-    currPath = STRTOK(nullptr, base::consts::kFilePathSeperator, &nextTok_);
+    currPath = STRTOK(nullptr, base::consts::kFilePathSeparator, &nextTok_);
 #endif  // ELPP_OS_UNIX
   }
   if (status == -1) {
@@ -1013,7 +1013,7 @@ char* Str::clearBuff(char buff[], std::size_t lim) {
   return buff;
 }
 
-/// @brief Converst wchar* to char*
+/// @brief Converts wchar* to char*
 ///        NOTE: Need to free return value after use!
 char* Str::wcharPtrToCharPtr(const wchar_t* line) {
   std::size_t len_ = wcslen(line) + 1;
@@ -1190,7 +1190,7 @@ std::string DateTime::timevalToString(struct timeval tval, const char* format,
   buildTimeInfo(&tval, &timeInfo);
   const int kBuffSize = 30;
   char buff_[kBuffSize] = "";
-  parseFormat(buff_, kBuffSize, format, &timeInfo, static_cast<size_t>(static_cast<unsigned long>(tval.tv_usec) / ssPrec->m_offset),
+  parseFormat(buff_, kBuffSize, format, &timeInfo, static_cast<std::size_t>(tval.tv_usec / ssPrec->m_offset),
               ssPrec);
   return std::string(buff_);
 }
@@ -1199,7 +1199,7 @@ base::type::string_t DateTime::formatTime(unsigned long long time, base::Timesta
   base::type::EnumType start = static_cast<base::type::EnumType>(timestampUnit);
   const base::type::char_t* unit = base::consts::kTimeFormats[start].unit;
   for (base::type::EnumType i = start; i < base::consts::kTimeFormatsCount - 1; ++i) {
-    if (static_cast<double>(time) <= base::consts::kTimeFormats[i].value) {
+    if (time <= static_cast<decltype(time)>(base::consts::kTimeFormats[i].value)) {
       break;
     }
     if (base::consts::kTimeFormats[i].value == 1000.0 && static_cast<float>(time) / 1000.0f < 1.9f) {
@@ -1264,7 +1264,7 @@ char* DateTime::parseFormat(char* buf, std::size_t bufSz, const char* format, co
         --format;
         break;
       case 'd':  // Day
-        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_mday), 2, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_mday, 2, buf, bufLim);
         continue;
       case 'a':  // Day of week (short)
         buf = base::utils::Str::addToBuff(base::consts::kDaysAbbrev[tInfo->tm_wday], buf, bufLim);
@@ -1273,7 +1273,7 @@ char* DateTime::parseFormat(char* buf, std::size_t bufSz, const char* format, co
         buf = base::utils::Str::addToBuff(base::consts::kDays[tInfo->tm_wday], buf, bufLim);
         continue;
       case 'M':  // month
-        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_mon + 1), 2, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_mon + 1, 2, buf, bufLim);
         continue;
       case 'b':  // month (short)
         buf = base::utils::Str::addToBuff(base::consts::kMonthsAbbrev[tInfo->tm_mon], buf, bufLim);
@@ -1282,22 +1282,22 @@ char* DateTime::parseFormat(char* buf, std::size_t bufSz, const char* format, co
         buf = base::utils::Str::addToBuff(base::consts::kMonths[tInfo->tm_mon], buf, bufLim);
         continue;
       case 'y':  // year (two digits)
-        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_year + base::consts::kYearBase), 2, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_year + base::consts::kYearBase, 2, buf, bufLim);
         continue;
       case 'Y':  // year (four digits)
-        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_year + base::consts::kYearBase), 4, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_year + base::consts::kYearBase, 4, buf, bufLim);
         continue;
       case 'h':  // hour (12-hour)
         buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_hour % 12, 2, buf, bufLim);
         continue;
       case 'H':  // hour (24-hour)
-        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_hour), 2, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_hour, 2, buf, bufLim);
         continue;
       case 'm':  // minute
-        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_min), 2, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_min, 2, buf, bufLim);
         continue;
       case 's':  // second
-        buf = base::utils::Str::convertAndAddToBuff(static_cast<size_t>(tInfo->tm_sec), 2, buf, bufLim);
+        buf = base::utils::Str::convertAndAddToBuff(tInfo->tm_sec, 2, buf, bufLim);
         continue;
       case 'z':  // subsecond part
       case 'g':
@@ -1524,7 +1524,7 @@ void LogFormat::parseFromFormat(const base::type::string_t& userFormat) {
   // For date/time we need to extract user's date format first
   std::size_t dateIndex = std::string::npos;
   if ((dateIndex = formatCopy.find(base::consts::kDateTimeFormatSpecifier)) != std::string::npos) {
-    while (dateIndex > 0 && formatCopy[dateIndex - 1] == base::consts::kFormatSpecifierChar) {
+    while (dateIndex != std::string::npos && dateIndex > 0 && formatCopy[dateIndex - 1] == base::consts::kFormatSpecifierChar) {
       dateIndex = formatCopy.find(base::consts::kDateTimeFormatSpecifier, dateIndex + 1);
     }
     if (dateIndex != std::string::npos) {
@@ -1553,7 +1553,7 @@ void LogFormat::updateDateFormat(std::size_t index, base::type::string_t& currFo
       }
       ss << static_cast<char>(*ptr);
     }
-    currFormat.erase(index, static_cast<size_t>(count));
+    currFormat.erase(index, count);
     m_dateTimeFormat = ss.str();
   } else {
     // No format provided, use default
@@ -1615,7 +1615,7 @@ void LogFormat::updateFormatSpec(void) {
 // TypedConfigurations
 
 TypedConfigurations::TypedConfigurations(Configurations* configurations,
-    base::LogStreamsReferenceMap* logStreamsReference) {
+    LogStreamsReferenceMapPtr logStreamsReference) {
   m_configurations = configurations;
   m_logStreamsReference = logStreamsReference;
   build(m_configurations);
@@ -1691,7 +1691,7 @@ void TypedConfigurations::build(Configurations* configurations) {
       // We do not yet configure filename but we will configure in another
       // loop. This is because if file cannot be created, we will force ToFile
       // to be false. Because configuring logger is not necessarily performance
-      // sensative operation, we can live with another loop; (by the way this loop
+      // sensitive operation, we can live with another loop; (by the way this loop
       // is not very heavy either)
     } else if (conf->configurationType() == ConfigurationType::Format) {
       setValue(conf->level(), base::LogFormat(conf->level(),
@@ -1737,7 +1737,7 @@ unsigned long TypedConfigurations::getULong(std::string confVal) {
     ELPP_ASSERT(valid, "Configuration value not a valid integer [" << confVal << "]");
     return 0;
   }
-  return static_cast<unsigned long>(atol(confVal.c_str()));
+  return atol(confVal.c_str());
 }
 
 std::string TypedConfigurations::resolveFilename(const std::string& filename) {
@@ -1765,7 +1765,7 @@ std::string TypedConfigurations::resolveFilename(const std::string& filename) {
           }
           ss << *ptr;
         }
-        resultingFilename.erase(dateIndex + dateTimeFormatSpecifierStr.size(), static_cast<size_t>(count));
+        resultingFilename.erase(dateIndex + dateTimeFormatSpecifierStr.size(), count);
         fmt = ss.str();
       } else {
         fmt = std::string(base::consts::kDefaultDateTimeFormatInFilename);
@@ -1785,34 +1785,34 @@ void TypedConfigurations::insertFile(Level level, const std::string& fullFilenam
     std::cerr << "Could not load empty file for logging, please re-check your configurations for level ["
               << LevelHelper::convertToString(level) << "]";
   }
-  std::string filePath = base::utils::File::extractPathFromFilename(resolvedFilename, base::consts::kFilePathSeperator);
+  std::string filePath = base::utils::File::extractPathFromFilename(resolvedFilename, base::consts::kFilePathSeparator);
   if (filePath.size() < resolvedFilename.size()) {
     base::utils::File::createPath(filePath);
   }
-  auto create = [&](Level level_var) {
+  auto create = [&](Level var_level) {
     base::LogStreamsReferenceMap::iterator filestreamIter = m_logStreamsReference->find(resolvedFilename);
     base::type::fstream_t* fs = nullptr;
     if (filestreamIter == m_logStreamsReference->end()) {
       // We need a completely new stream, nothing to share with
       fs = base::utils::File::newFileStream(resolvedFilename);
-      m_filenameMap.insert(std::make_pair(level_var, resolvedFilename));
-      m_fileStreamMap.insert(std::make_pair(level_var, base::FileStreamPtr(fs)));
-      m_logStreamsReference->insert(std::make_pair(resolvedFilename, base::FileStreamPtr(m_fileStreamMap.at(level_var))));
+      m_filenameMap.insert(std::make_pair(var_level, resolvedFilename));
+      m_fileStreamMap.insert(std::make_pair(var_level, base::FileStreamPtr(fs)));
+      m_logStreamsReference->insert(std::make_pair(resolvedFilename, base::FileStreamPtr(m_fileStreamMap.at(var_level))));
     } else {
       // Woops! we have an existing one, share it!
-      m_filenameMap.insert(std::make_pair(level_var, filestreamIter->first));
-      m_fileStreamMap.insert(std::make_pair(level_var, base::FileStreamPtr(filestreamIter->second)));
+      m_filenameMap.insert(std::make_pair(var_level, filestreamIter->first));
+      m_fileStreamMap.insert(std::make_pair(var_level, base::FileStreamPtr(filestreamIter->second)));
       fs = filestreamIter->second.get();
     }
     if (fs == nullptr) {
       // We display bad file error from newFileStream()
       ELPP_INTERNAL_ERROR("Setting [TO_FILE] of ["
-                          << LevelHelper::convertToString(level_var) << "] to FALSE", false);
-      setValue(level_var, false, &m_toFileMap);
+                          << LevelHelper::convertToString(var_level) << "] to FALSE", false);
+      setValue(var_level, false, &m_toFileMap);
     }
   };
-  // If we dont have file conf for any level, create it for Level::Global first
-  // otherwise create for specified level
+  // If we dont have file conf for any var_level, create it for Level::Global first
+  // otherwise create for specified var_level
   create(m_filenameMap.empty() && m_fileStreamMap.empty() ? Level::Global : level);
 }
 
@@ -1885,6 +1885,7 @@ bool RegisteredHitCounters::validateNTimes(const char* filename, base::type::Lin
 RegisteredLoggers::RegisteredLoggers(const LogBuilderPtr& defaultLogBuilder) :
   m_defaultLogBuilder(defaultLogBuilder) {
   m_defaultConfigurations.setToDefault();
+  m_logStreamsReference = std::make_shared<base::LogStreamsReferenceMap>();
 }
 
 Logger* RegisteredLoggers::get(const std::string& id, bool forceCreation) {
@@ -1896,11 +1897,11 @@ Logger* RegisteredLoggers::get(const std::string& id, bool forceCreation) {
       ELPP_ASSERT(validId, "Invalid logger ID [" << id << "]. Not registering this logger.");
       return nullptr;
     }
-    logger_ = new Logger(id, m_defaultConfigurations, &m_logStreamsReference);
+    logger_ = new Logger(id, m_defaultConfigurations, m_logStreamsReference);
     logger_->m_logBuilder = m_defaultLogBuilder;
     registerNew(id, logger_);
     LoggerRegistrationCallback* callback = nullptr;
-    for (const std::pair<std::string, base::type::LoggerRegistrationCallbackPtr>& h
+    for (const std::pair<std::string, base::type::LoggerRegistrationCallbackPtr> h
          : m_loggerRegistrationCallbacks) {
       callback = h.second.get();
       if (callback != nullptr && callback->enabled()) {
@@ -1926,8 +1927,8 @@ bool RegisteredLoggers::remove(const std::string& id) {
 
 void RegisteredLoggers::unsafeFlushAll(void) {
   ELPP_INTERNAL_INFO(1, "Flushing all log files");
-  for (base::LogStreamsReferenceMap::iterator it = m_logStreamsReference.begin();
-       it != m_logStreamsReference.end(); ++it) {
+  for (base::LogStreamsReferenceMap::iterator it = m_logStreamsReference->begin();
+       it != m_logStreamsReference->end(); ++it) {
     if (it->second.get() == nullptr) continue;
     it->second->flush();
   }
@@ -2184,16 +2185,18 @@ void Storage::setApplicationArguments(int argc, char** argv) {
 } // namespace base
 
 // LogDispatchCallback
-void LogDispatchCallback::handle(const LogDispatchData* data) {
 #if defined(ELPP_THREAD_SAFE)
+void LogDispatchCallback::handle(const LogDispatchData* data) {
   base::threading::ScopedLock scopedLock(m_fileLocksMapLock);
   std::string filename = data->logMessage()->logger()->typedConfigurations()->filename(data->logMessage()->level());
   auto lock = m_fileLocks.find(filename);
   if (lock == m_fileLocks.end()) {
     m_fileLocks.emplace(std::make_pair(filename, std::unique_ptr<base::threading::Mutex>(new base::threading::Mutex)));
   }
-#endif
 }
+#else
+void LogDispatchCallback::handle(const LogDispatchData* /*data*/) {}
+#endif
 
 base::threading::Mutex& LogDispatchCallback::fileHandle(const LogDispatchData* data) {
   auto it = m_fileLocks.find(data->logMessage()->logger()->typedConfigurations()->filename(data->logMessage()->level()));
@@ -2219,7 +2222,7 @@ void DefaultLogDispatchCallback::dispatch(base::type::string_t&& logLine) {
       base::type::fstream_t* fs = m_data->logMessage()->logger()->m_typedConfigurations->fileStream(
                                     m_data->logMessage()->level());
       if (fs != nullptr) {
-        fs->write(logLine.c_str(), static_cast<std::streamsize>(logLine.size()));
+        fs->write(logLine.c_str(), logLine.size());
         if (fs->fail()) {
           ELPP_INTERNAL_ERROR("Unable to write log to file ["
                               << m_data->logMessage()->logger()->m_typedConfigurations->filename(m_data->logMessage()->level()) << "].\n"
@@ -2480,7 +2483,7 @@ void LogDispatcher::dispatch(void) {
   }
 #ifndef ELPP_NO_GLOBAL_LOCK
   // see https://github.com/muflihun/easyloggingpp/issues/580
-  // global lock is turned off by default unless
+  // global lock is turned on by default unless
   // ELPP_NO_GLOBAL_LOCK is defined
   base::threading::ScopedLock scopedLock(ELPP->lock());
 #endif
@@ -2490,7 +2493,7 @@ void LogDispatcher::dispatch(void) {
   }
   LogDispatchCallback* callback = nullptr;
   LogDispatchData data;
-  for (const std::pair<std::string, base::type::LogDispatchCallbackPtr>& h
+  for (const std::pair<std::string, base::type::LogDispatchCallbackPtr> h
        : ELPP->m_logDispatchCallbacks) {
     callback = h.second.get();
     if (callback != nullptr && callback->enabled()) {
@@ -2505,7 +2508,7 @@ void LogDispatcher::dispatch(void) {
 
 void MessageBuilder::initialize(Logger* logger) {
   m_logger = logger;
-  m_containerLogSeperator = ELPP->hasFlag(LoggingFlag::NewLineForContainer) ?
+  m_containerLogSeparator = ELPP->hasFlag(LoggingFlag::NewLineForContainer) ?
                             ELPP_LITERAL("\n    ") : ELPP_LITERAL(", ");
 }
 
@@ -2541,7 +2544,7 @@ Writer& Writer::construct(int count, const char* loggerIds, ...) {
     va_list loggersList;
     va_start(loggersList, loggerIds);
     const char* id = loggerIds;
-    m_loggerIds.reserve(static_cast<size_t>(count));
+    m_loggerIds.reserve(count);
     for (int i = 0; i < count; ++i) {
       m_loggerIds.push_back(std::string(id));
       id = va_arg(loggersList, const char*);
@@ -2625,30 +2628,37 @@ void Writer::processDispatch() {
 }
 
 void Writer::triggerDispatch(void) {
-  if (m_proceed) {
-    if (m_msg == nullptr) {
-      LogMessage msg(m_level, m_file, m_line, m_func, m_verboseLevel,
-                     m_logger);
-      base::LogDispatcher(m_proceed, &msg, m_dispatchAction).dispatch();
-    } else {
-      base::LogDispatcher(m_proceed, m_msg, m_dispatchAction).dispatch();
-    }
-  }
-  if (m_logger != nullptr) {
-    m_logger->stream().str(ELPP_LITERAL(""));
-    m_logger->releaseLock();
-  }
-  if (m_proceed && m_level == Level::Fatal
-      && !ELPP->hasFlag(LoggingFlag::DisableApplicationAbortOnFatalLog)) {
-    base::Writer(Level::Warning, m_file, m_line, m_func).construct(1, base::consts::kDefaultLoggerId)
-        << "Aborting application. Reason: Fatal log at [" << m_file << ":" << m_line << "]";
-    std::stringstream reasonStream;
-    reasonStream << "Fatal log at [" << m_file << ":" << m_line << "]"
-                 << " If you wish to disable 'abort on fatal log' please use "
-                 << "el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog)";
-    base::utils::abort(1, reasonStream.str());
-  }
-  m_proceed = false;
+  try {
+	  if (m_proceed) {
+	    if (m_msg == nullptr) {
+	      LogMessage msg(m_level, m_file, m_line, m_func, m_verboseLevel,
+	                     m_logger);
+	      base::LogDispatcher(m_proceed, &msg, m_dispatchAction).dispatch();
+	    } else {
+	      base::LogDispatcher(m_proceed, m_msg, m_dispatchAction).dispatch();
+	    }
+	  }
+	  if (m_logger != nullptr) {
+	    m_logger->stream().str(ELPP_LITERAL(""));
+	    m_logger->releaseLock();
+	  }
+	  if (m_proceed && m_level == Level::Fatal
+	      && !ELPP->hasFlag(LoggingFlag::DisableApplicationAbortOnFatalLog)) {
+	    base::Writer(Level::Warning, m_file, m_line, m_func).construct(1, base::consts::kDefaultLoggerId)
+	        << "Aborting application. Reason: Fatal log at [" << m_file << ":" << m_line << "]";
+	    std::stringstream reasonStream;
+	    reasonStream << "Fatal log at [" << m_file << ":" << m_line << "]"
+	                 << " If you wish to disable 'abort on fatal log' please use "
+	                 << "el::Loggers::addFlag(el::LoggingFlag::DisableApplicationAbortOnFatalLog)";
+	    base::utils::abort(1, reasonStream.str());
+	  }
+	  m_proceed = false;
+	  }
+	catch(std::exception & ex){
+	    // Unused variable. Errors on MSVC.
+	    (void)ex;
+		// Extremely low memory situation; don't let exception be unhandled.
+	}
 }
 
 // PErrorWriter
@@ -2677,7 +2687,7 @@ PerformanceTracker::PerformanceTracker(const std::string& blockName,
   m_level(level), m_hasChecked(false), m_lastCheckpointId(std::string()), m_enabled(false) {
 #if !defined(ELPP_DISABLE_PERFORMANCE_TRACKING) && ELPP_LOGGING_ENABLED
   // We store it locally so that if user happen to change configuration by the end of scope
-  // or before calling checkpoint, we still depend on state of configuraton at time of construction
+  // or before calling checkpoint, we still depend on state of configuration at time of construction
   el::Logger* loggerPtr = ELPP->registeredLoggers()->get(loggerId, false);
   m_enabled = loggerPtr != nullptr && loggerPtr->m_typedConfigurations->performanceTracking(m_level);
   if (m_enabled) {
@@ -2786,7 +2796,7 @@ std::ostream& operator<<(std::ostream& os, const StackTrace& st) {
 }
 
 void StackTrace::generateNew(void) {
-#if ELPP_STACKTRACE
+#ifdef HAVE_EXECINFO
   m_stack.clear();
   void* stack[kMaxStack];
   unsigned int size = backtrace(stack, kMaxStack);
@@ -3005,7 +3015,7 @@ const Configurations* Loggers::defaultConfigurations(void) {
   return ELPP->registeredLoggers()->defaultConfigurations();
 }
 
-const base::LogStreamsReferenceMap* Loggers::logStreamsReference(void) {
+const base::LogStreamsReferenceMapPtr Loggers::logStreamsReference(void) {
   return ELPP->registeredLoggers()->logStreamsReference();
 }
 
