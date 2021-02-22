@@ -1,6 +1,12 @@
 #include "utils/setup.h"
 #include "settings/settings.h"
 #include "openvr/ovr_settings_wrapper.h"
+#ifdef _WIN64
+#    include <windows.h>
+extern "C" __declspec( dllexport ) DWORD NvOptimusEnablement = 0x00000001;
+extern "C" __declspec( dllexport ) DWORD
+    AmdPowerXpressRequestHighPerformance = 0x00000001;
+#endif
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -14,6 +20,7 @@ int main( int argc, char* argv[] )
     LOG( INFO ) << settings::getSettingsAndValues();
 
     QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
+    QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
     MyQApplication mainEventLoop( argc, argv );
     mainEventLoop.setOrganizationName(
         application_strings::applicationOrganizationName );
