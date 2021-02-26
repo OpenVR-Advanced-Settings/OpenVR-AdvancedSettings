@@ -128,6 +128,7 @@ class VideoTabController : public QObject
                     setColorOverlayOpacity NOTIFY colorOverlayOpacityChanged )
 
 private:
+    static constexpr uint32_t sortMax = 0xffffffff;
     unsigned settingsUpdateCounter = 0;
 
     // how far away the overlay is, any OVERLAY closer will not be dimmed.
