@@ -238,11 +238,11 @@ vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index )
         {
             vr::VROverlay()->SetOverlayFromFile(
                 handle, batteryIconPath.toStdString().c_str() );
-            vr::VROverlay()->SetOverlayWidthInMeters( handle, 0.05f );
+            vr::VROverlay()->SetOverlayWidthInMeters( handle, 0.045f );
             vr::HmdMatrix34_t notificationTransform
                 = { { { 1.0f, 0.0f, 0.0f, 0.00f },
-                      { 0.0f, -1.0f, 0.0f, 0.01f },
-                      { 0.0f, 0.0f, -1.0f, -0.013f } } };
+                      { 0.0f, -1.0f, 0.0f, 0.0081f },
+                      { 0.0f, 0.0f, -1.0f, -0.0178f } } };
             vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
                 handle, index, &notificationTransform );
             LOG( INFO ) << "Created battery overlay for device " << index;
