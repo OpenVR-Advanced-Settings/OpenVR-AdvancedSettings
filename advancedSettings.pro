@@ -1,5 +1,5 @@
 QT       += core gui qml quick multimedia widgets
-CONFIG   += c++1z file_copies optimize_full
+CONFIG   += c++1z file_copies optimize_full debugSymbolsAndLogs
 
 DEFINES += ELPP_THREAD_SAFE ELPP_QT_LOGGING ELPP_NO_DEFAULT_LOG_FILE
 
