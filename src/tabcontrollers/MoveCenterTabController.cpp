@@ -1962,6 +1962,14 @@ void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
     }
 }
 
+void MoveCenterTabController::applyOffsets( bool applyOffsetsJustPressed )
+{
+    if ( applyOffsetsJustPressed )
+    {
+        zeroOffsets();
+    }
+}
+
 void MoveCenterTabController::snapTurnLeft( bool snapTurnLeftJustPressed )
 {
     if ( !snapTurnLeftJustPressed )

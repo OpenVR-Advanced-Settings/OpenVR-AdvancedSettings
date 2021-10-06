@@ -306,6 +306,7 @@ public:
     void gravityReverseAction( bool gravityReverseHeld );
     void heightToggleAction( bool heightToggleJustPressed );
     void resetOffsets( bool resetOffsetsJustPressed );
+    void applyOffsets( bool applyOffsetsJustPressed );
     void snapTurnLeft( bool snapTurnLeftJustPressed );
     void snapTurnRight( bool snapTurnRightJustPressed );
     void smoothTurnLeft( bool smoothTurnLeftActive );

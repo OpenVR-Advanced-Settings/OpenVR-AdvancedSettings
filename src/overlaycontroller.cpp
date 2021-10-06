@@ -602,6 +602,7 @@ void OverlayController::processMotionBindings()
         m_actions.gravityReverse() );
     m_moveCenterTabController.heightToggleAction( m_actions.heightToggle() );
     m_moveCenterTabController.resetOffsets( m_actions.resetOffsets() );
+    m_moveCenterTabController.applyOffsets( m_actions.applyOffsets() );
     m_moveCenterTabController.snapTurnLeft( m_actions.snapTurnLeft() );
     m_moveCenterTabController.snapTurnRight( m_actions.snapTurnRight() );
     m_moveCenterTabController.smoothTurnLeft( m_actions.smoothTurnLeft() );
