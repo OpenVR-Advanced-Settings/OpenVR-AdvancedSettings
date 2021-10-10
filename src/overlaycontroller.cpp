@@ -821,13 +821,13 @@ void OverlayController::setExclusiveInputEnabled( bool value, bool notify )
 bool OverlayController::crashRecoveryDisabled() const
 {
     return settings::getSetting(
-        settings::BoolSetting::APPLICATION_crashRecoveryDisabled );
+        settings::BoolSetting::APPLICATION_crashRecoveryDisabled2 );
 }
 
 void OverlayController::setCrashRecoveryDisabled( bool value, bool notify )
 {
     settings::setSetting(
-        settings::BoolSetting::APPLICATION_crashRecoveryDisabled, value );
+        settings::BoolSetting::APPLICATION_crashRecoveryDisabled2, value );
     if ( notify )
     {
         emit crashRecoveryDisabledChanged( value );

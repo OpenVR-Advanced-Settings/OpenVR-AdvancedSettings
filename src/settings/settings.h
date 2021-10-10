@@ -23,6 +23,7 @@ enum class BoolSetting
     PLAYSPACE_showLogMatricesButton,
     PLAYSPACE_simpleRecenter,
     PLAYSPACE_adjustChaperone2,
+    PLAYSPACE_enableUncalMotion,
 
     APPLICATION_disableVersionCheck,
     APPLICATION_previousShutdownSafe,
@@ -30,6 +31,7 @@ enum class BoolSetting
     APPLICATION_crashRecoveryDisabled,
     APPLICATION_enableDebug,
     APPLICATION_enableExclusiveInput,
+    APPLICATION_crashRecoveryDisabled2,
 
     AUDIO_pttEnabled,
     AUDIO_pttShowNotification,

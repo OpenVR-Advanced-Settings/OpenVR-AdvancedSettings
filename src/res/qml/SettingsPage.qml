@@ -62,6 +62,14 @@ MyStackViewPage {
             }
 
             MyToggleButton {
+                id: enableUnccalMotionToggle
+                text: "Enable Motion Features When in Uncalibrated Mode (Experimental)"
+                onCheckedChanged: {
+                    MoveCenterTabController.setEnableUncalMotion(checked, true);
+                }
+            }
+
+            MyToggleButton {
                 id: disableCrashRecoveryToggle
                 text: "Disable Automatic Crash Recovery of Chaperone Config"
                 onCheckedChanged: {
@@ -251,6 +259,7 @@ MyStackViewPage {
                 oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
                 enableSeatedMotionToggle.checked = MoveCenterTabController.enableSeatedMotion
+                enableUnccalMotionToggle.checked = MoveCenterTabController.enableUncalMotion
 
                 disableCrashRecoveryToggle.checked = OverlayController.crashRecoveryDisabled
                 customTickRateText.text = OverlayController.customTickRateMs
@@ -298,6 +307,9 @@ MyStackViewPage {
             onEnableSeatedMotionChanged: {
                 enableSeatedMotionToggle.checked = MoveCenterTabController.enableSeatedMotion
                 seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
+            }
+            onEnableUncalMotionChanged: {
+                enableUnccalMotionToggle.checked = MoveCenterTabController.enableUncalMotion
             }
             onAdjustChaperoneChanged: {
                 spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
