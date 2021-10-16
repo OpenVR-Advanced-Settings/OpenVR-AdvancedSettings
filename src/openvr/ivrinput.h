@@ -41,6 +41,7 @@ namespace action_keys
     constexpr auto gravityToggle = "/actions/motion/in/GravityToggle";
     constexpr auto gravityReverse = "/actions/motion/in/GravityReverse";
     constexpr auto resetOffsets = "/actions/motion/in/ResetOffsets";
+    constexpr auto applyOffsets = "/actions/motion/in/ApplyOffsets";
     constexpr auto heightToggle = "/actions/motion/in/HeightToggle";
     constexpr auto snapTurnLeft = "/actions/motion/in/SnapTurnLeft";
     constexpr auto snapTurnRight = "/actions/motion/in/SnapTurnRight";
@@ -146,6 +147,7 @@ public:
     bool gravityReverse();
     bool heightToggle();
     bool resetOffsets();
+    bool applyOffsets();
     bool snapTurnLeft();
     bool snapTurnRight();
     bool smoothTurnLeft();
@@ -228,6 +230,7 @@ private:
     DigitalAction m_gravityReverse;
     DigitalAction m_heightToggle;
     DigitalAction m_resetOffsets;
+    DigitalAction m_applyOffsets;
     DigitalAction m_snapTurnLeft;
     DigitalAction m_snapTurnRight;
     DigitalAction m_smoothTurnLeft;

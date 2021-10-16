@@ -187,6 +187,7 @@ Override actions will take priority over non-override actions during simultaneou
 | Gravity Toggle | Binary/Button |  Toggles Gravity state when pressed. |
 | Gravity Reverse | Binary/Button |  Temporarily Reverses Gravity while held. |
 | Reset Offsets | Binary/Button |  Resets your offset and rotation to 0. |
+| Apply Offsets | Binary/Button | Recalibrates center/rotation from offsets |
 | Height Toggle | Binary/Button |  Shifts the gravity floor level by offset configured in motion tab. If gravity is inactive: also shifts the user's current y-axis position by offset configured in motion tab. |
 | Snap-Turn Left | Binary/Button |  Rotates a set value to the left based on settings in motion tab. |
 | Snap-Turn Right | Binary/Button |  Rotates a set value to the right based on settings in motion tab. |
