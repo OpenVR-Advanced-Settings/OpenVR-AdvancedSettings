@@ -128,7 +128,7 @@ If you choose the wrong Ubuntu version you will get an error from `apt` about th
 
 ### Arch/Manjaro
 
-The `qt5-declarative` and `qt5-multimedia` packages are required.
+The `qt5-declarative`, `qt5-quickcontrols` and `qt5-multimedia` packages are required.
 
 ## `qtchooser` and versions
 
