@@ -346,6 +346,9 @@ bool SteamVRTabController::searchRXTX()
         {
             txrxItem.TX_Serial = QString( "N/A" );
             m_controllerList.push_back( QString( "Not Connected" ) );
+        }else
+        {
+            u
         }
     }
     return output;

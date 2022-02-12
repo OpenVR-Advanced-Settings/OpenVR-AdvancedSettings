@@ -4,6 +4,12 @@
 #include <QObject>
 #include "../utils/FrameRateUtils.h"
 #include "../openvr/ovr_settings_wrapper.h"
+#include "../openvr/lh_console_util.h"
+#include <QStringListModel>
+#include <QTableWidget>
+#include "../openvr/lh_console_util.h"
+#include <filesystem>
+#include <QDir>
 
 class QQuickWindow;
 // application namespace
@@ -49,6 +55,13 @@ private:
     bool m_cameraBounds = false;
     bool m_cameraRoom = false;
     bool m_cameraDashboard = false;
+    bool m_pathRXTXInit = false;
+    QTableWidget m_txrxListModel;
+    lh_con_util::LHCUtil* m_LHUtil;
+
+    std::vector<QString> m_controllerList;
+
+    void initLHCUtil();
 
     void synchSteamVR();
 
@@ -69,8 +82,17 @@ public:
     bool cameraBounds() const;
     bool cameraRoom() const;
     bool cameraDashboard() const;
+    void clearTXRXUI();
+    void createTXRXListUI( std::vector<std::string> txlist,
+                           std::vector<std::string> rxlist );
+
+    Q_INVOKABLE bool searchRXTX();
 
     Q_INVOKABLE void launchBindingUI();
+
+    Q_INVOKABLE unsigned getRXTXCount();
+    Q_INVOKABLE QString getTXList( int i );
+    Q_INVOKABLE QString getRXList( int i );
 
 public slots:
 

@@ -23,6 +23,16 @@ MyStackViewPage {
         RowLayout {
             Layout.fillWidth: true
 
+            MyPushButton {
+                text: "TX/RX information"
+                Layout.preferredWidth: 250
+
+                onClicked: {
+                    MyResources.playFocusChangedSound()
+                    mainView.push(steamVRTXRXPage)
+                }
+            }
+
             Item { Layout.fillWidth: true}
 
             MyPushButton {
