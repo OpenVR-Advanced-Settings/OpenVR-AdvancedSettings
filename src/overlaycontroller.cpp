@@ -1240,6 +1240,11 @@ void OverlayController::mainEventLoop()
             = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
     }
     auto universe = vr::VRCompositor()->GetTrackingSpace();
+    if (universe == vr::TrackingUniverseRawAndUncalibrated && vr::VRApplications()->GetApplicationProcessId("openvr.tool.steamvr_room_setup") == 0) {
+        // OpenXR applications will appear as RawAndUncalibrated.
+        // Unless Room Setup is running, treat this case as Standing.
+        universe = vr::TrackingUniverseStanding;
+    }
 
     m_moveCenterTabController.eventLoopTick( universe, devicePoses );
     m_utilitiesTabController.eventLoopTick();
