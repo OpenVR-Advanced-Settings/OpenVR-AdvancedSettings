@@ -15,45 +15,72 @@ MyStackViewPage {
         ListElement{
             TX:"Controller"
             RX:"Reciever"
+            Dev:"device"
+            DT: "Dongle Type"
         }
     }
-    headerText: "SteamVR Device Pairing Information"
+    headerText: "Device Pairing Information"
     content:
         ColumnLayout {
                 spacing: 10
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                MyPushButton{
-                    text: "Search"
-                    id: searchButton
-                    onClicked: {
-                        getRXTX()
+                RowLayout{
+                    MyText{
+                        text: "dongles used: "
+                        Layout.preferredWidth: 200
+                    }
+                    MyText{
+                        id: donglesUse
+                        text: ""
+                        Layout.preferredWidth: 100
                     }
 
+                    Item{
+                        Layout.fillWidth: true
+                    }
+                    MyPushButton{
+                        Layout.preferredWidth: 250
+                        text: "Refresh Device List"
+                        id: searchButton
+                        onClicked: {
+                            getRXTX()
+                        }
+
+                    }
                 }
                 RowLayout{
                     Layout.fillHeight: true
                     Layout.fillWidth: true
-                    ScrollView{
-                        ScrollBar.vertical.policy: ScrollBar.AlwaysOn
                         ListView{
+                            id: lvDevInfo
                             model: listModelRXTX
                             spacing: 20
+                            Layout.fillHeight: true
+                            Layout.fillWidth:  true
+                            clip: true
                             delegate:
-                                GroupBox {
-                                    id: chaperoneTypeGroupBox
-                                    Layout.fillWidth: true
+                            GroupBox {
+                                id: chaperoneTypeGroupBox
+                                Layout.fillWidth: true
 
-                                    label: MyText {
+                                label: RowLayout{
+                                    MyText {
                                         leftPadding: 10
-                                        text: "Device"
+                                        text: "Device: "
                                         bottomPadding: -10
                                     }
-                                    background: Rectangle {
-                                        color: "transparent"
-                                        border.color: "#ffffff"
-                                        radius: 8
+                                    MyText {
+                                        leftPadding: 10
+                                        text: Dev
+                                        bottomPadding: -10
                                     }
+                                }
+                                background: Rectangle {
+                                    color: "transparent"
+                                    border.color: "#ffffff"
+                                    radius: 8
+                                }
                                 ColumnLayout{
                                     anchors.fill: parent
 
@@ -68,22 +95,6 @@ MyStackViewPage {
                                         Layout.fillWidth: true
                                         clip: true
                                         MyText{
-                                            Layout.preferredWidth: 300
-                                            text: "Connected Dongle Type: "
-                                        }
-                                        Item{
-                                            Layout.preferredWidth: 150
-                                        }
-                                        MyText{
-                                            Layout.preferredWidth: 250
-                                            text: "TODO"
-                                        }
-                                    }
-                                    RowLayout{
-                                        Layout.fillHeight: true
-                                        Layout.fillWidth: true
-                                        clip: true
-                                        MyText{
                                             Layout.preferredWidth: 150
                                             text: "Device ID: "
                                         }
@@ -92,7 +103,24 @@ MyStackViewPage {
                                             text: TX
                                         }
                                         Item{
-                                            Layout.preferredWidth: 200
+                                            Layout.preferredWidth: 50
+                                        }
+                                        MyText{
+                                            Layout.preferredWidth: 300
+                                            text: "Connected Dongle Type: "
+                                        }
+                                        MyText{
+                                            Layout.preferredWidth: 250
+                                            text: DT
+                                        }
+                                    }
+                                    RowLayout{
+                                        Layout.fillHeight: true
+                                        Layout.fillWidth: true
+                                        clip: true
+
+                                        Item{
+                                            Layout.preferredWidth: 600
                                         }
                                         MyText{
                                             Layout.preferredWidth: 150
@@ -104,23 +132,28 @@ MyStackViewPage {
                                         }
                                     }
                                 }
-                            }
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
                         }
+                        ScrollBar{
+                        clip: true
+                        visible: true}
+
                     }
                 }
         }
-
+    Component.onCompleted: {
+        getRXTX()
+    }
     function getRXTX() {
         listModelRXTX.clear();
         SteamVRTabController.searchRXTX();
-         listModelRXTX.append({RX:"rec", TX:"Controller"})
+        donglesUse.text = SteamVRTabController.getDongleUsage();
         var pairCount = SteamVRTabController.getRXTXCount()
         for (var i = 0; i < pairCount; i++) {
             var RXget = SteamVRTabController.getRXList(i);
             var TXget = SteamVRTabController.getTXList(i);
-            listModelRXTX.append({RX:RXget, TX:TXget})
+            var nameGet = SteamVRTabController.getDeviceName(i)
+            var dongletyp = SteamVRTabController.getDongleType(i)
+            listModelRXTX.append({RX:RXget, TX:TXget, Dev:nameGet, DT:dongletyp})
         }
     }
 }

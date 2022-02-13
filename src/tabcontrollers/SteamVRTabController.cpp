@@ -14,42 +14,7 @@ void SteamVRTabController::initStage1()
 void SteamVRTabController::initStage2( OverlayController* var_parent )
 {
     this->parent = var_parent;
-    initLHCUtil();
     synchSteamVR();
-}
-
-void SteamVRTabController::initLHCUtil()
-{
-    vr::EVRApplicationError error;
-    const uint32_t bufferMax = 4096;
-    char cStringOut[bufferMax];
-    vr::VRApplications()->GetApplicationPropertyString(
-        "steam.overlay.250820",
-        vr::VRApplicationProperty_BinaryPath_String,
-        cStringOut,
-        bufferMax,
-        &error );
-    std::string FileInProg( cStringOut );
-    std::filesystem::path overlayPath( FileInProg );
-    overlayPath.remove_filename();
-    auto lhPath = overlayPath / ".." / ".." / "tools" / "lighthouse" / "bin"
-                  / "win64" / "lighthouse_Console.exe";
-    if ( error != vr::VRApplicationError_None )
-    {
-        LOG( WARNING ) << "Could Not Find Path To Lighthouse Console";
-        LOG( WARNING )
-            << vr::VRApplications()->GetApplicationsErrorNameFromEnum( error );
-        m_pathRXTXInit = false;
-    }
-    else
-    {
-        m_pathRXTXInit = true;
-    }
-    auto path
-        = QDir::toNativeSeparators( QString::fromStdString( lhPath.string() ) );
-    auto qdir = QDir( path );
-    m_LHUtil = new lh_con_util::LHCUtil( qdir.path() );
-    LOG( WARNING ) << "path is" << qdir.path().toStdString();
 }
 
 void SteamVRTabController::dashboardLoopTick()
@@ -324,31 +289,111 @@ bool SteamVRTabController::cameraDashboard() const
     return m_cameraDashboard;
 }
 
-void SteamVRTabController::clearTXRXUI() {}
-
-void SteamVRTabController::createTXRXListUI( std::vector<std::string> txlist,
-                                             std::vector<std::string> rxlist )
+void SteamVRTabController::searchRXTX()
 {
-}
-
-bool SteamVRTabController::searchRXTX()
-{
-    if ( !m_pathRXTXInit )
+    deviceList.clear();
+    int hmdIndex = -1;
+    auto indexList = ovr_system_wrapper::getAllConnectedDevices( true );
+    m_dongleCountCur = 0;
+    for ( auto device : indexList )
     {
-        initLHCUtil();
-    }
-    m_controllerList.clear();
-    bool output = m_LHUtil->FindAll();
-    for ( auto& txrxItem : m_LHUtil->RXTX_Pairs_ )
-    {
-        std::string TX = txrxItem.TX_Serial.toStdString();
-        if ( TX.empty() || TX == " " )
+        if ( vr::TrackedDeviceClass_HMD
+             == ovr_system_wrapper::getDeviceClass( device ) )
         {
-            txrxItem.TX_Serial = QString( "N/A" );
-            m_controllerList.push_back( QString( "Not Connected" ) );
+            hmdIndex = device;
+            continue;
+        }
+        deviceList.push_back( DeviceInfo{ device } );
+        GatherDeviceInfo( deviceList.back() );
+    }
+
+    if ( hmdIndex != -1 )
+    {
+        auto dongleList
+            = ovr_system_wrapper::getStringTrackedProperty(
+                  hmdIndex, vr::Prop_AllWirelessDongleDescriptions_String )
+                  .second;
+        int count = 0;
+        if ( !dongleList.empty() )
+        {
+            count++;
+        }
+        for ( auto c : dongleList )
+        {
+            if ( c == ';' )
+            {
+                count++;
+            }
+        }
+        m_dongleCountMax = count;
+    }
+    return;
+}
+void SteamVRTabController::GatherDeviceInfo( DeviceInfo& device )
+{
+    std::string cd = ovr_system_wrapper::getStringTrackedProperty(
+                         device.index, vr::Prop_ConnectedWirelessDongle_String )
+                         .second;
+    if ( cd.empty() || cd == " " )
+    {
+        cd = "n/a";
+        device.dongleType = "n/a";
+    }
+    else
+    {
+        m_dongleCountCur++;
+        if ( cd.find( "-RYB" ) != std::string::npos
+             || cd.find( "-LYM" ) != std::string::npos )
+        {
+            device.dongleType = "Headset";
+        }
+        // TODO 1yx SN
+        else if ( std::regex_match( cd, std::regex( "(.*)(-[0-9]YX)" ) ) )
+        {
+            device.dongleType = "Tundra Dongle";
+        }
+        else
+        {
+            device.dongleType = "Standard Dongle";
         }
     }
-    return output;
+    device.conDongle = cd;
+
+    std::string dd = ovr_system_wrapper::getStringTrackedProperty(
+                         device.index, vr::Prop_SerialNumber_String )
+                         .second;
+    if ( dd.empty() || dd == " " )
+    {
+        dd = "n/a";
+    }
+    device.txName = dd;
+
+    auto devClass = ovr_system_wrapper::getDeviceClass( device.index );
+    if ( devClass == vr::TrackedDeviceClass_HMD
+         || devClass == vr::TrackedDeviceClass_Controller
+         || devClass == vr::TrackedDeviceClass_GenericTracker )
+    {
+        device.hasName = true;
+        device.deviceName = ovr_system_wrapper::getDeviceName( device.index );
+    }
+    else
+    {
+        if ( device.txName.find( "LHB-" ) != std::string::npos )
+        {
+            device.deviceName = "Lighthouse";
+        }
+    }
+    int role = ovr_system_wrapper::getInt32TrackedProperty(
+                   device.index, vr::Prop_ControllerRoleHint_Int32 )
+                   .second;
+    if ( role == 1 )
+    {
+        device.deviceName += " (L)";
+    }
+    else if ( role == 2 )
+    {
+        device.deviceName += " (R)";
+    }
 }
 
 void SteamVRTabController::launchBindingUI()
@@ -399,21 +444,30 @@ void SteamVRTabController::restartSteamVR()
 
 Q_INVOKABLE unsigned SteamVRTabController::getRXTXCount()
 {
-    LOG( WARNING ) << m_LHUtil->RXTX_Pairs_.size() << "size expected";
-    return static_cast<unsigned>( m_LHUtil->RXTX_Pairs_.size() );
+    return static_cast<unsigned>( deviceList.size() );
 }
 
 Q_INVOKABLE QString SteamVRTabController::getTXList( int i )
 {
-    LOG( WARNING ) << m_LHUtil->RXTX_Pairs_[i].TX_Serial.toStdString()
-                   << " TX expected";
-    return m_LHUtil->RXTX_Pairs_[i].TX_Serial;
+    return QString::fromStdString( deviceList[i].txName );
+}
+
+Q_INVOKABLE QString SteamVRTabController::getDeviceName( int i )
+{
+    return QString::fromStdString( deviceList[i].deviceName );
 }
 
 Q_INVOKABLE QString SteamVRTabController::getRXList( int i )
 {
-    LOG( WARNING ) << m_LHUtil->RXTX_Pairs_[i].RX_Serial.toStdString()
-                   << " RX expected";
-    return m_LHUtil->RXTX_Pairs_[i].RX_Serial;
+    return QString::fromStdString( deviceList[i].conDongle );
+}
+Q_INVOKABLE QString SteamVRTabController::getDongleType( int i )
+{
+    return QString::fromStdString( deviceList[i].dongleType );
+}
+Q_INVOKABLE QString SteamVRTabController::getDongleUsage()
+{
+    return QString::fromStdString( std::to_string( m_dongleCountCur ) + "/"
+                                   + std::to_string( m_dongleCountMax ) );
 }
 } // namespace advsettings

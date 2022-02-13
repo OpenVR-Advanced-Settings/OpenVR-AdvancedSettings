@@ -24,8 +24,8 @@ MyStackViewPage {
             Layout.fillWidth: true
 
             MyPushButton {
-                text: "TX/RX information"
-                Layout.preferredWidth: 250
+                text: "Device Pairing Information"
+                Layout.preferredWidth: 350
 
                 onClicked: {
                     MyResources.playFocusChangedSound()
