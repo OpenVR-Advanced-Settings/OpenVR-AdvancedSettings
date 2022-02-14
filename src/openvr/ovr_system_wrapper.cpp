@@ -13,6 +13,10 @@ SystemError handleTrackedPropertyErrors( vr::TrackedDeviceProperty tdp,
                      << "\" property: "
                      << "todo"
                      << " " << customErrorMsg;
+        if ( tdp == vr::Prop_TrackedDeviceProperty_Max )
+        {
+            // Just for Error OPPS todo
+        }
         return SystemError::UndefinedError;
     }
     return SystemError::NoError;
