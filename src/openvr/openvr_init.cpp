@@ -49,7 +49,8 @@ void initializeOpenVR( const OpenVrInitializationType initType )
     // The function call and error message was the same for all version checks.
     // Specific error messages are unlikely to be necessary since both the type
     // and version are in the string and will be output.
-    auto reportVersionError = []( const char* const interfaceAndVersion ) {
+    auto reportVersionError = []( const char* const interfaceAndVersion )
+    {
         QMessageBox::critical(
             nullptr,
             "OpenVR Advanced Settings Overlay",

@@ -81,7 +81,7 @@ void saveQtSetting( const SettingCategory category,
     getQSettings().endGroup();
 }
 
-template <typename Value>[[nodiscard]] bool isValidQVariant( const QVariant v )
+template <typename Value> [[nodiscard]] bool isValidQVariant( const QVariant v )
 {
     auto savedSettingIsValid = v.isValid() && !v.isNull();
 

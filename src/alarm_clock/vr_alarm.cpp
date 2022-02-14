@@ -82,7 +82,8 @@ void VrAlarm::checkAlarmStatus()
         setAlarmEnabled( false );
 
         std::thread t(
-            []( vr::VROverlayHandle_t overlayHandle ) {
+            []( vr::VROverlayHandle_t overlayHandle )
+            {
                 // This will freeze the overlay for 3 seconds
                 std::this_thread::sleep_for( std::chrono::seconds( 3 ) );
                 ovr_overlay_wrapper::hideOverlay( overlayHandle );
