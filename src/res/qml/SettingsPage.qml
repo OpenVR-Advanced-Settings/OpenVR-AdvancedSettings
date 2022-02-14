@@ -71,7 +71,7 @@ MyStackViewPage {
 
             MyToggleButton {
                 id: openXRFixToggle
-                text: "OpenXR Fix (force standing universe)"
+                text: "OpenXR Fix (force standing universe [Experimental])"
                 onCheckedChanged: {
                     OverlayController.setOpenXRFixEnabled(checked, true);
                 }
