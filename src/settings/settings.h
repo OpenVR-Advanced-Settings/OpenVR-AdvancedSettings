@@ -32,6 +32,7 @@ enum class BoolSetting
     APPLICATION_enableDebug,
     APPLICATION_enableExclusiveInput,
     APPLICATION_crashRecoveryDisabled2,
+    APPLICATION_openXRWorkAround,
 
     AUDIO_pttEnabled,
     AUDIO_pttShowNotification,

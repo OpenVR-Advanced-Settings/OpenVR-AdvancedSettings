@@ -182,7 +182,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "OverlayController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = objectAddress;
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -196,7 +197,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "SteamVRTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_steamVRTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -206,7 +208,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "ChaperoneTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_chaperoneTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -216,7 +219,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "MoveCenterTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_moveCenterTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -226,7 +230,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "FixFloorTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_fixFloorTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -236,7 +241,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "AudioTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_audioTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -246,7 +252,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "StatisticsTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_statisticsTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -256,7 +263,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "SettingsTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_settingsTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -266,7 +274,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "UtilitiesTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_utilitiesTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -276,7 +285,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "VideoTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_videoTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -286,13 +296,19 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "RotationTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_rotationTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
     qmlRegisterSingletonType<alarm_clock::VrAlarm>(
-        qmlSingletonImportName, 1, 0, "VrAlarm", []( QQmlEngine*, QJSEngine* ) {
+        qmlSingletonImportName,
+        1,
+        0,
+        "VrAlarm",
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_alarm );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -819,6 +835,22 @@ void OverlayController::setExclusiveInputEnabled( bool value, bool notify )
     }
 }
 
+void OverlayController::setOpenXRFixEnabled( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::APPLICATION_openXRWorkAround,
+                          value );
+    if ( notify )
+    {
+        emit openXRFixEnabledChanged( value );
+    }
+}
+
+bool OverlayController::openXRFixEnabled() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::APPLICATION_openXRWorkAround );
+}
+
 bool OverlayController::crashRecoveryDisabled() const
 {
     return settings::getSetting(
@@ -1241,6 +1273,18 @@ void OverlayController::mainEventLoop()
             = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
     }
     auto universe = vr::VRCompositor()->GetTrackingSpace();
+    // This Fix is hopefully temporary as OpenVR doesn't appear to have a way to
+    // tell if an application is OpenXR outside of VR_init which we don't have
+    // control over
+    if ( vr::VRApplications()->GetApplicationProcessId(
+             "openvr.tool.steamvr_room_setup" )
+             == 0
+         && openXRFixEnabled() )
+    {
+        // OpenXR applications will appear as RawAndUncalibrated.
+        // Unless Room Setup is running, treat this case as Standing.
+        universe = vr::TrackingUniverseStanding;
+    }
 
     m_moveCenterTabController.eventLoopTick( universe, devicePoses );
     m_utilitiesTabController.eventLoopTick();
