@@ -21,6 +21,7 @@ For pushing changes to the repo:
 
 
 2. Clang format. Part of the [LLVM collection](https://releases.llvm.org/download.html).
+ - **note** use version 9.0.1/9.0.0 of LLVM
 
 Additionally, for fully building portable and installer release versions:
 
