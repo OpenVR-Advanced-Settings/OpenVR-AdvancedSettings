@@ -8,7 +8,6 @@
 #include <QStringListModel>
 #include <QTableWidget>
 #include "../openvr/lh_console_util.h"
-#include <filesystem>
 #include <QDir>
 #include "../openvr/ovr_system_wrapper.h"
 #include <regex>
