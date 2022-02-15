@@ -148,29 +148,4 @@ QString LHCUtil::GetLinkedRX( QString TXSerial )
     return "";
 }
 
-// std::vector<std::string> LHCUtil::exec( const char* cmd )
-//{
-//    char buffer[16384];
-//    std::string result = "";
-//    std::vector<std::string> output;
-//    FILE* pipe = _popen( cmd, "r" );
-//    if ( !pipe )
-//        throw std::runtime_error( "popen() failed!" );
-//    try
-//    {
-//        while ( fgets( buffer, sizeof buffer, pipe ) != NULL )
-//        {
-//            output.push_back( buffer );
-//        }
-//    }
-//    catch ( ... )
-//    {
-//        _pclose( pipe );
-//        throw;
-//    }
-//    _pclose( pipe );
-//
-//   return output;
-//}
-
 } // namespace lh_con_util

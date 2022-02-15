@@ -8,7 +8,6 @@
 #include <stdexcept>
 #include <string>
 #include <array>
-#include <Windows.h>
 #include <QProcess>
 #include <QString>
 #include <QStringList>
@@ -28,7 +27,6 @@ class LHCUtil
 {
 private:
     QString path_;
-    std::vector<std::string> exec( const char* cmd );
     bool InPairs( std::string RXSerial );
     bool FindAllRX();
     bool FindAllTX();
