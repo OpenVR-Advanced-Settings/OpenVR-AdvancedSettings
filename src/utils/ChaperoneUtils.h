@@ -82,14 +82,14 @@ public:
             return ret;
         }
 
-        return *std::min_element(
-            distances.begin(),
-            distances.end(),
-            []( const ChaperoneQuadData& quadA, const ChaperoneQuadData& quadB )
-            {
-                return std::isnan( quadA.distance )
-                       || ( quadA.distance < quadB.distance );
-            } );
+        return *std::min_element( distances.begin(),
+                                  distances.end(),
+                                  []( const ChaperoneQuadData& quadA,
+                                      const ChaperoneQuadData& quadB ) {
+                                      return std::isnan( quadA.distance )
+                                             || ( quadA.distance
+                                                  < quadB.distance );
+                                  } );
     }
 };
 

@@ -182,8 +182,7 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "OverlayController",
-        []( QQmlEngine*, QJSEngine* )
-        {
+        []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = objectAddress;
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -197,8 +196,7 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "SteamVRTabController",
-        []( QQmlEngine*, QJSEngine* )
-        {
+        []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_steamVRTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -208,8 +206,7 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "ChaperoneTabController",
-        []( QQmlEngine*, QJSEngine* )
-        {
+        []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_chaperoneTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -219,8 +216,7 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "MoveCenterTabController",
-        []( QQmlEngine*, QJSEngine* )
-        {
+        []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_moveCenterTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -230,8 +226,7 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "FixFloorTabController",
-        []( QQmlEngine*, QJSEngine* )
-        {
+        []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_fixFloorTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -241,8 +236,7 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "AudioTabController",
-        []( QQmlEngine*, QJSEngine* )
-        {
+        []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_audioTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -252,8 +246,7 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "StatisticsTabController",
-        []( QQmlEngine*, QJSEngine* )
-        {
+        []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_statisticsTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -263,8 +256,7 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "SettingsTabController",
-        []( QQmlEngine*, QJSEngine* )
-        {
+        []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_settingsTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -274,8 +266,7 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "UtilitiesTabController",
-        []( QQmlEngine*, QJSEngine* )
-        {
+        []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_utilitiesTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -285,8 +276,7 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "VideoTabController",
-        []( QQmlEngine*, QJSEngine* )
-        {
+        []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_videoTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -296,19 +286,13 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "RotationTabController",
-        []( QQmlEngine*, QJSEngine* )
-        {
+        []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_rotationTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
     qmlRegisterSingletonType<alarm_clock::VrAlarm>(
-        qmlSingletonImportName,
-        1,
-        0,
-        "VrAlarm",
-        []( QQmlEngine*, QJSEngine* )
-        {
+        qmlSingletonImportName, 1, 0, "VrAlarm", []( QQmlEngine*, QJSEngine* ) {
             QObject* obj = &( objectAddress->m_alarm );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
