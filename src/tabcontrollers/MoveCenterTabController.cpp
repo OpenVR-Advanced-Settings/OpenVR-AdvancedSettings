@@ -904,8 +904,16 @@ bool MoveCenterTabController::enableUncalMotion() const
 
 void MoveCenterTabController::setEnableUncalMotion( bool value, bool notify )
 {
+    if ( !value && m_initComplete )
+    {
+        reset();
+    }
     settings::setSetting( settings::BoolSetting::PLAYSPACE_enableUncalMotion,
                           value );
+    if ( !value && m_initComplete )
+    {
+        m_pendingZeroOffsets = true;
+    }
 
     if ( notify )
     {
