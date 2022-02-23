@@ -127,6 +127,7 @@ SteamIVRInput::SteamIVRInput()
       m_gravityReverse( action_keys::gravityReverse ),
       m_heightToggle( action_keys::heightToggle ),
       m_resetOffsets( action_keys::resetOffsets ),
+      m_applyOffsets( action_keys::applyOffsets ),
       m_snapTurnLeft( action_keys::snapTurnLeft ),
       m_snapTurnRight( action_keys::snapTurnRight ),
       m_smoothTurnLeft( action_keys::smoothTurnLeft ),
@@ -275,6 +276,11 @@ bool SteamIVRInput::heightToggle()
 bool SteamIVRInput::resetOffsets()
 {
     return isDigitalActionActivatedOnce( m_resetOffsets );
+}
+
+bool SteamIVRInput::applyOffsets()
+{
+    return isDigitalActionActivatedOnce( m_applyOffsets );
 }
 
 bool SteamIVRInput::snapTurnLeft()

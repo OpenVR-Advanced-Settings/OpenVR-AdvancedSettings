@@ -62,10 +62,26 @@ MyStackViewPage {
             }
 
             MyToggleButton {
-                id: disableCrashRecoveryToggle
-                text: "Disable Automatic Crash Recovery of Chaperone Config"
+                id: enableUnccalMotionToggle
+                text: "Enable Motion Features When in Uncalibrated Mode (Experimental)"
                 onCheckedChanged: {
-                    OverlayController.setCrashRecoveryDisabled(checked, true)
+                    MoveCenterTabController.setEnableUncalMotion(checked, true);
+                }
+            }
+
+            MyToggleButton {
+                id: openXRFixToggle
+                text: "OpenXR Fix (force standing universe [Experimental])"
+                onCheckedChanged: {
+                    OverlayController.setOpenXRFixEnabled(checked, true);
+                }
+            }
+
+            MyToggleButton {
+                id: disableCrashRecoveryToggle
+                text: "Enable Automatic Crash Recovery of Chaperone Config"
+                onCheckedChanged: {
+                    OverlayController.setCrashRecoveryDisabled(!checked, true)
                 }
             }
 
@@ -251,8 +267,9 @@ MyStackViewPage {
                 oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
                 enableSeatedMotionToggle.checked = MoveCenterTabController.enableSeatedMotion
+                enableUnccalMotionToggle.checked = MoveCenterTabController.enableUncalMotion
 
-                disableCrashRecoveryToggle.checked = OverlayController.crashRecoveryDisabled
+                disableCrashRecoveryToggle.checked = !OverlayController.crashRecoveryDisabled
                 customTickRateText.text = OverlayController.customTickRateMs
                 vsyncDisabledToggle.checked = OverlayController.vsyncDisabled
                 customTickRateText.visible = vsyncDisabledToggle.checked
@@ -264,6 +281,8 @@ MyStackViewPage {
                 nativeChaperoneToggleButton.checked = SettingsTabController.nativeChaperoneToggle
                 oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
                 exclusiveInputToggleButton.checked = OverlayController.exclusiveInputEnabled
+                openXRFixToggle.checked = OverlayController.openXRFixEnabled
+
 
                 seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
                 spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
@@ -299,6 +318,9 @@ MyStackViewPage {
                 enableSeatedMotionToggle.checked = MoveCenterTabController.enableSeatedMotion
                 seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
             }
+            onEnableUncalMotionChanged: {
+                enableUnccalMotionToggle.checked = MoveCenterTabController.enableUncalMotion
+            }
             onAdjustChaperoneChanged: {
                 spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
             }
@@ -313,7 +335,7 @@ MyStackViewPage {
                 customTickRateMsLabel.visible = vsyncDisabledToggle.checked
             }
             onCrashRecoveryDisabledChanged: {
-                disableCrashRecoveryToggle.checked = OverlayController.crashRecoveryDisabled
+                disableCrashRecoveryToggle.checked = !OverlayController.crashRecoveryDisabled
             }
 
             onCustomTickRateMsChanged: {
@@ -332,6 +354,9 @@ MyStackViewPage {
             }
             onExclusiveInputEnabledChanged:{
                 exclusiveInputToggleButton.checked = OverlayController.exclusiveInputEnabled
+            }
+            onOpenXRFixEnabledChanged:{
+                openXRFixToggle.checked = OverlayController.openXRFixEnabled
             }
         }
     } // end scroll

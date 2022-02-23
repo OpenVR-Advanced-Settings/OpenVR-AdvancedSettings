@@ -139,6 +139,8 @@ class MoveCenterTabController : public QObject
                     setEnableSeatedMotion NOTIFY enableSeatedMotionChanged )
     Q_PROPERTY( bool simpleRecenter READ simpleRecenter WRITE setSimpleRecenter
                     NOTIFY simpleRecenterChanged )
+    Q_PROPERTY( bool enableUncalMotion READ enableUncalMotion WRITE
+                    setEnableUncalMotion NOTIFY enableUncalMotionChanged )
 
 private:
     OverlayController* parent;
@@ -276,6 +278,7 @@ public:
     bool oldStyleMotion() const;
     bool universeCenteredRotation() const;
     bool enableSeatedMotion() const;
+    bool enableUncalMotion() const;
     bool simpleRecenter() const;
     bool isInitComplete() const;
     double getHmdYawTotal();
@@ -306,6 +309,7 @@ public:
     void gravityReverseAction( bool gravityReverseHeld );
     void heightToggleAction( bool heightToggleJustPressed );
     void resetOffsets( bool resetOffsetsJustPressed );
+    void applyOffsets( bool applyOffsetsJustPressed );
     void snapTurnLeft( bool snapTurnLeftJustPressed );
     void snapTurnRight( bool snapTurnRightJustPressed );
     void smoothTurnLeft( bool smoothTurnLeftActive );
@@ -356,6 +360,7 @@ public slots:
     void setOldStyleMotion( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
     void setEnableSeatedMotion( bool value, bool notify = true );
+    void setEnableUncalMotion( bool value, bool notify = true );
     void setSimpleRecenter( bool value, bool notify = true );
 
     void shutdown();
@@ -403,6 +408,7 @@ signals:
     void universeCenteredRotationChanged( bool value );
     void enableSeatedMotionChanged( bool value );
     void simpleRecenterChanged( bool value );
+    void enableUncalMotionChanged( bool value );
 
     void offsetProfilesUpdated();
 };

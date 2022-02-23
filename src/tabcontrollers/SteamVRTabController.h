@@ -4,6 +4,13 @@
 #include <QObject>
 #include "../utils/FrameRateUtils.h"
 #include "../openvr/ovr_settings_wrapper.h"
+#include "../openvr/lh_console_util.h"
+#include <QStringListModel>
+#include <QTableWidget>
+#include "../openvr/lh_console_util.h"
+#include <QDir>
+#include "../openvr/ovr_system_wrapper.h"
+#include <regex>
 
 class QQuickWindow;
 // application namespace
@@ -11,6 +18,18 @@ namespace advsettings
 {
 // forward declaration
 class OverlayController;
+
+struct DeviceInfo
+{
+    int index = -1;
+    std::string conDongle = "";
+    std::string txName = "";
+    std::string deviceName = "";
+    std::string hand = "";
+    std::string dongleType = "n/a";
+    std::string serialNumber = "";
+    bool hasName = false;
+};
 
 class SteamVRTabController : public QObject
 {
@@ -49,7 +68,13 @@ private:
     bool m_cameraBounds = false;
     bool m_cameraRoom = false;
     bool m_cameraDashboard = false;
+    bool m_pathRXTXInit = false;
+    int m_dongleCountCur = 0;
+    int m_dongleCountMax = 0;
 
+    std::vector<DeviceInfo> deviceList;
+
+    void GatherDeviceInfo( DeviceInfo& device );
     void synchSteamVR();
 
 public:
@@ -70,7 +95,16 @@ public:
     bool cameraRoom() const;
     bool cameraDashboard() const;
 
+    Q_INVOKABLE void searchRXTX();
+
     Q_INVOKABLE void launchBindingUI();
+
+    Q_INVOKABLE unsigned getRXTXCount();
+    Q_INVOKABLE QString getTXList( int i );
+    Q_INVOKABLE QString getRXList( int i );
+    Q_INVOKABLE QString getDeviceName( int i );
+    Q_INVOKABLE QString getDongleType( int i );
+    Q_INVOKABLE QString getDongleUsage();
 
 public slots:
 

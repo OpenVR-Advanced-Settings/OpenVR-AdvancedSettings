@@ -10,6 +10,7 @@ import "../chaperone_page"
 import "../steamvr_page"
 import "../rotation_page"
 import "../chaperone_page/chaperone_additional"
+import "../steamvr_page/steamvr_additional"
 
 Rectangle {
     id: root
@@ -37,6 +38,11 @@ Rectangle {
     }
 
     property ChaperoneAdditionalPage chaperoneAdditionalPage: ChaperoneAdditionalPage{
+        stackView: mainView
+        visible: false
+    }
+
+    property SteamVRTXRXPage steamVRTXRXPage: SteamVRTXRXPage{
         stackView: mainView
         visible: false
     }

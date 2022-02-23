@@ -289,6 +289,113 @@ bool SteamVRTabController::cameraDashboard() const
     return m_cameraDashboard;
 }
 
+void SteamVRTabController::searchRXTX()
+{
+    deviceList.clear();
+    int hmdIndex = -1;
+    auto indexList = ovr_system_wrapper::getAllConnectedDevices( true );
+    m_dongleCountCur = 0;
+    for ( auto device : indexList )
+    {
+        if ( vr::TrackedDeviceClass_HMD
+             == ovr_system_wrapper::getDeviceClass( device ) )
+        {
+            hmdIndex = device;
+            continue;
+        }
+        deviceList.push_back( DeviceInfo{ device } );
+        GatherDeviceInfo( deviceList.back() );
+    }
+
+    if ( hmdIndex != -1 )
+    {
+        auto dongleList
+            = ovr_system_wrapper::getStringTrackedProperty(
+                  hmdIndex, vr::Prop_AllWirelessDongleDescriptions_String )
+                  .second;
+        int count = 0;
+        if ( !dongleList.empty() )
+        {
+            count++;
+        }
+        for ( auto c : dongleList )
+        {
+            if ( c == ';' )
+            {
+                count++;
+            }
+        }
+        m_dongleCountMax = count;
+    }
+    return;
+}
+void SteamVRTabController::GatherDeviceInfo( DeviceInfo& device )
+{
+    std::string cd = ovr_system_wrapper::getStringTrackedProperty(
+                         device.index, vr::Prop_ConnectedWirelessDongle_String )
+                         .second;
+    if ( cd.empty() || cd == " " )
+    {
+        cd = "n/a";
+        device.dongleType = "n/a";
+    }
+    else
+    {
+        m_dongleCountCur++;
+        if ( cd.find( "-RYB" ) != std::string::npos
+             || cd.find( "-LYM" ) != std::string::npos )
+        {
+            device.dongleType = "Headset";
+        }
+        // TODO 1yx SN
+        else if ( std::regex_match( cd, std::regex( "(.*)(-[0-9]YX)" ) ) )
+        {
+            device.dongleType = "Tundra Dongle";
+        }
+        else
+        {
+            device.dongleType = "Standard Dongle";
+        }
+    }
+    device.conDongle = cd;
+
+    std::string dd = ovr_system_wrapper::getStringTrackedProperty(
+                         device.index, vr::Prop_SerialNumber_String )
+                         .second;
+    if ( dd.empty() || dd == " " )
+    {
+        dd = "n/a";
+    }
+    device.txName = dd;
+
+    auto devClass = ovr_system_wrapper::getDeviceClass( device.index );
+    if ( devClass == vr::TrackedDeviceClass_HMD
+         || devClass == vr::TrackedDeviceClass_Controller
+         || devClass == vr::TrackedDeviceClass_GenericTracker )
+    {
+        device.hasName = true;
+        device.deviceName = ovr_system_wrapper::getDeviceName( device.index );
+    }
+    else
+    {
+        if ( device.txName.find( "LHB-" ) != std::string::npos )
+        {
+            device.deviceName = "Lighthouse";
+        }
+    }
+    int role = ovr_system_wrapper::getInt32TrackedProperty(
+                   device.index, vr::Prop_ControllerRoleHint_Int32 )
+                   .second;
+    if ( role == 1 )
+    {
+        device.deviceName += " (L)";
+    }
+    else if ( role == 2 )
+    {
+        device.deviceName += " (R)";
+    }
+}
+
 void SteamVRTabController::launchBindingUI()
 {
     vr::VRActionSetHandle_t actionHandle = 0;
@@ -335,4 +442,32 @@ void SteamVRTabController::restartSteamVR()
     QProcess::startDetached( cmd );
 }
 
+Q_INVOKABLE unsigned SteamVRTabController::getRXTXCount()
+{
+    return static_cast<unsigned>( deviceList.size() );
+}
+
+Q_INVOKABLE QString SteamVRTabController::getTXList( int i )
+{
+    return QString::fromStdString( deviceList[i].txName );
+}
+
+Q_INVOKABLE QString SteamVRTabController::getDeviceName( int i )
+{
+    return QString::fromStdString( deviceList[i].deviceName );
+}
+
+Q_INVOKABLE QString SteamVRTabController::getRXList( int i )
+{
+    return QString::fromStdString( deviceList[i].conDongle );
+}
+Q_INVOKABLE QString SteamVRTabController::getDongleType( int i )
+{
+    return QString::fromStdString( deviceList[i].dongleType );
+}
+Q_INVOKABLE QString SteamVRTabController::getDongleUsage()
+{
+    return QString::fromStdString( std::to_string( m_dongleCountCur ) + "/"
+                                   + std::to_string( m_dongleCountMax ) );
+}
 } // namespace advsettings

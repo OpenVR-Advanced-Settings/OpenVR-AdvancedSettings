@@ -131,7 +131,12 @@
       "requirement": "optional",
       "type": "boolean"
     },
-    
+    {
+      "name": "/actions/motion/in/ApplyOffsets",
+      "requirement": "optional",
+      "type": "boolean"
+    },
+
     {
 
       "name": "/actions/motion/in/HeightToggle",
@@ -282,6 +287,7 @@
         "/actions/motion/in/GravityToggle" : "Gravity Toggle",
         "/actions/motion/in/GravityReverse" : "Gravity Reverse",
         "/actions/motion/in/ResetOffsets" : "Reset Offsets",
+        "/actions/motion/in/ApplyOffsets" : "Apply Offsets",
         "/actions/motion/in/HeightToggle" : "Height Toggle",
         "/actions/motion/in/SnapTurnLeft" : "Snap-Turn Left",
         "/actions/motion/in/SnapTurnRight" : "Snap-Turn Right",

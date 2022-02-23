@@ -892,7 +892,32 @@ void MoveCenterTabController::setEnableSeatedMotion( bool value, bool notify )
 
     if ( notify )
     {
-        emit enableSeatedMotionChanged( value );
+        emit enableUncalMotionChanged( value );
+    }
+}
+
+bool MoveCenterTabController::enableUncalMotion() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_enableUncalMotion );
+}
+
+void MoveCenterTabController::setEnableUncalMotion( bool value, bool notify )
+{
+    if ( !value && m_initComplete )
+    {
+        reset();
+    }
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_enableUncalMotion,
+                          value );
+    if ( !value && m_initComplete )
+    {
+        m_pendingZeroOffsets = true;
+    }
+
+    if ( notify )
+    {
+        emit enableUncalMotionChanged( value );
     }
 }
 
@@ -976,7 +1001,7 @@ void MoveCenterTabController::incomingSeatedReset()
 
 void MoveCenterTabController::reset()
 {
-    if ( !m_chaperoneBasisAcquired )
+    if ( !m_chaperoneBasisAcquired && !enableUncalMotion() )
     {
         LOG( WARNING ) << "WARNING: Attempted reset offsets before chaperone "
                           "basis is acquired!";
@@ -1115,7 +1140,8 @@ void MoveCenterTabController::zeroOffsets()
 
     // finished checking if out of bounds, proceed with normal zeroing offsets
     if ( vr::VRChaperone()->GetCalibrationState()
-         == vr::ChaperoneCalibrationState_OK )
+             == vr::ChaperoneCalibrationState_OK
+         || enableUncalMotion() )
     {
         m_oldOffsetX = 0.0f;
         m_oldOffsetY = 0.0f;
@@ -1131,7 +1157,7 @@ void MoveCenterTabController::zeroOffsets()
         emit rotationChanged( m_rotation );
         updateChaperoneResetData();
         m_pendingZeroOffsets = false;
-        if ( !m_chaperoneBasisAcquired )
+        if ( !m_chaperoneBasisAcquired && !enableUncalMotion() )
         {
             m_chaperoneBasisAcquired = true;
             if ( !m_initComplete )
@@ -1959,6 +1985,14 @@ void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
     if ( resetOffsetsJustPressed )
     {
         reset();
+    }
+}
+
+void MoveCenterTabController::applyOffsets( bool applyOffsetsJustPressed )
+{
+    if ( applyOffsetsJustPressed )
+    {
+        zeroOffsets();
     }
 }
 
@@ -2933,6 +2967,7 @@ void MoveCenterTabController::eventLoopTick(
             vr::VRChaperoneSetup()->RevertWorkingCopy();
         }
         setTrackingUniverse( int( universe ) );
+        // TODO set to allow.
         return;
     }
 
@@ -2958,7 +2993,9 @@ void MoveCenterTabController::eventLoopTick(
     // if we were in room setup, but got this far in the loop, universe is no
     // longer raw mode and we detect room setup exit and zeroOffsets() to apply
     // new setup.
-    if ( m_pendingZeroOffsets || m_roomSetupModeDetected )
+
+    if ( m_pendingZeroOffsets
+         || ( m_roomSetupModeDetected && !enableUncalMotion() ) )
     {
         zeroOffsets();
         // m_roomSetupModeDetected is set to false in zeroOffsets() if it's

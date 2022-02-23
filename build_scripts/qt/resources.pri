@@ -37,6 +37,7 @@ DISTFILES += \
     src/res/qml/SettingsPage.qml \
     src/res/qml/StatisticsPage.qml \
     src/res/qml/steamvr_page/SteamVRPage.qml \
+	src/res/qml/steamvr_page/steamvr_additional/* \
     src/res/qml/steamvr_page/camera/* \
     src/res/qml/steamvr_page/steamvrmisc/* \
     src/res/qml/utilities_page/* \
