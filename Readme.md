@@ -539,11 +539,14 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Old-Style Motion:** Uses the old system of writing the chaperone universe center and bounds to disk every frame. Use this option only if you experience issues with playspace motion such as snapping back to reset position after releasing a space-drag. This old mode is smooth on most systems but is in theory less performant than the normal method.
 - **Universe-Centered Rotation:** Causes Rotation to be applied to Universe Center Rather than HMD (Disables offsets automatically compensating to pivot at the HMD).
 - **Enable Motion Features When in Seated Mode:** Uncheck this if Advanced Settings causes strange positioning in a seated application. (Different apps handle seated mode in different ways, some are less compatible with Advanced Settings). Note: if unchecked, all Space Offsets and Motion tab features will be disabled.
-- **Disable Automatic Crash Recovery of Chaperone Config:** This prevents applying of the last good autosaved chaperone profile when starting up after not shutting down properly.
+- **Enable Motion Features When in Uncalibrated Mode:** TBA
+- **OpenXR Fix (force standing universe):** TBA
+- **Enable Automatic Crash Recovery of Chaperone Config:** This applies the last good autosaved chaperone profile when starting up after not shutting down properly.
 - **Disable Notification of Newer Version Availability**: This turns off the on start-up check for a new version. (You can refresh this to do a manual check.)
 - **Force Use SteamVR Chaperone**: This feature is currently experimental, when using third party headsets this will allow you to use SteamVR's chaperone, as if it was a native headset.
 - **Force Use SteamVR (Disable Oculus API)**: This feature is currently experimental, it should disable Oculus API preventing games with both SteamVR and Oculus API to only run as SteamVR
-- **Exclusive Input Toggle**: This feature Enables Exclusive Input Mode, while in this mode you will only send OVRAS keybinds or App keybinds [with the exception of OVRAS system keybinds always working]
+- **Exclusive Input Toggle**: This feature Enables Exclusive Input Mode, while in this mode you will only send OVRAS keybinds or App keybinds (OVRAS system keybinds will always work)
+- **Adjust Chaperone:** TBA
 - **Disable App Vsync:** Allows setting a custom base update rate for Advanced Settings. (Might be useful on HMDs with very high or very low refresh rates).
 - **Shutdown OVRAS** Shuts-Down Advanced Settings without closing out of VR.
 
