@@ -33,7 +33,7 @@ RUN sudo apt-get update -qq
 RUN sudo apt-get install build-essential libgl1-mesa-dev -y
 
 # Install Qt packages
-RUN sudo apt-get install qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2 qt512quickcontrols qt512tools qt512imageformats qt512svg qt512base qtchooser -y
+RUN sudo apt-get install qt512-meta-minimal qt512multimedia qt512declarative qt512quickcontrols2 qt512quickcontrols qt512tools qt512imageformats qt512svg qt512base qt512network qt512websockets qtchooser -y
 
 # Install X11 packages
 RUN sudo apt-get install libx11-dev libxt-dev libxtst-dev -y
