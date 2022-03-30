@@ -74,6 +74,7 @@ private:
     bool m_pathRXTXInit = false;
     int m_dongleCountCur = 0;
     int m_dongleCountMax = 0;
+    QString m_unparsedDongleString = "";
     QString m_last_pair_sn = "";
 
     std::vector<DeviceInfo> m_deviceList;
@@ -82,6 +83,7 @@ private:
     void AddUnPairedDevice( DeviceInfo& device, std::string donSN );
     void synchSteamVR();
     std::vector<QString> getDongleSerialList( std::string deviceString );
+    bool isSteamVRTracked( QString sn );
 
 public:
     void initStage1();

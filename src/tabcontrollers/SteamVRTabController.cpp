@@ -315,8 +315,8 @@ void SteamVRTabController::searchRXTX()
             = ovr_system_wrapper::getStringTrackedProperty(
                   hmdIndex, vr::Prop_AllWirelessDongleDescriptions_String )
                   .second;
+        m_unparsedDongleString = QString::fromStdString( dongleList );
         int count = 0;
-        LOG( INFO ) << dongleList;
         if ( !dongleList.empty() )
         {
             count++;
@@ -332,7 +332,6 @@ void SteamVRTabController::searchRXTX()
         if ( static_cast<int>( m_deviceList.size() ) < m_dongleCountMax )
         {
             auto DSNFullList = getDongleSerialList( dongleList );
-            LOG( INFO ) << "DSNFULLLIST SIZE: " << DSNFullList.size();
             for ( auto dSN : DSNFullList )
             {
                 bool isPaired = false;
@@ -348,7 +347,6 @@ void SteamVRTabController::searchRXTX()
                 {
                     continue;
                 }
-                LOG( INFO ) << "added empty";
                 m_deviceList.push_back( DeviceInfo{} );
                 AddUnPairedDevice( m_deviceList.back(), dSN.toStdString() );
                 // TODO create
@@ -525,6 +523,12 @@ Q_INVOKABLE QString SteamVRTabController::getDongleUsage()
 }
 Q_INVOKABLE void SteamVRTabController::pairDevice( QString sn )
 {
+    if ( !isSteamVRTracked( sn ) )
+    {
+        LOG( WARNING ) << sn.toStdString()
+                       << " Is Not a SteamVR Dongle, skipping Pair";
+        return;
+    }
     m_last_pair_sn = sn;
     auto req = QNetworkRequest();
     req.setUrl( QUrl( "ws://127.0.0.1:27062" ) );
@@ -547,6 +551,10 @@ Q_INVOKABLE void SteamVRTabController::pairDevice( QString sn )
              &SteamVRTabController::onMsgRec );
     return;
 }
+bool SteamVRTabController::isSteamVRTracked( QString sn )
+{
+    return m_unparsedDongleString.contains( sn );
+}
 void SteamVRTabController::onConnected()
 {
     m_webSocket.sendTextMessage( QStringLiteral( "mailbox_open OVRAS_pair" ) );
@@ -565,6 +573,7 @@ void SteamVRTabController::onConnected()
 }
 void SteamVRTabController::onDisconnect()
 {
+    LOG( INFO ) << "Pair WS disconnect";
     m_webSocket.close();
 }
 void SteamVRTabController::onMsgRec( QString Msg )
@@ -587,7 +596,6 @@ std::vector<QString>
 
     while ( ( pos = deviceString.find( ',' ) ) != std::string::npos )
     {
-        LOG( INFO ) << "device String: " << deviceString;
         dongleList.push_back(
             QString::fromStdString( deviceString.substr( 0, pos ) ) );
         pos = deviceString.find( ';' );
