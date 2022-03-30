@@ -101,6 +101,7 @@ MyStackViewPage {
                                         MyText{
                                             Layout.preferredWidth: 250
                                             text: TX
+                                            clip: true
                                         }
                                         Item{
                                             Layout.preferredWidth: 50
@@ -112,15 +113,23 @@ MyStackViewPage {
                                         MyText{
                                             Layout.preferredWidth: 250
                                             text: DT
+                                            clip: true
                                         }
                                     }
                                     RowLayout{
                                         Layout.fillHeight: true
                                         Layout.fillWidth: true
                                         clip: true
+                                        MyPushButton{
+                                            Layout.preferredWidth: 200
+                                            text: "Pair"
+                                            onClicked: {
+                                                SteamVRTabController.pairDevice(rxtext.text)
+                                            }
+                                        }
 
                                         Item{
-                                            Layout.preferredWidth: 600
+                                            Layout.preferredWidth: 400
                                         }
                                         MyText{
                                             Layout.preferredWidth: 150
@@ -128,6 +137,7 @@ MyStackViewPage {
                                         }
                                         MyText{
                                             Layout.preferredWidth: 250
+                                            id: rxtext
                                             text: RX
                                         }
                                     }
@@ -143,6 +153,10 @@ MyStackViewPage {
     Component.onCompleted: {
         getRXTX()
     }
+    Connections{
+        target: SteamVRTabController
+    }
+
     function getRXTX() {
         listModelRXTX.clear();
         SteamVRTabController.searchRXTX();

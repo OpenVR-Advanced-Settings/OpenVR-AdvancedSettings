@@ -3,6 +3,8 @@
 #include "../overlaycontroller.h"
 #include "../utils/update_rate.h"
 
+QT_USE_NAMESPACE
+
 // application namespace
 namespace advsettings
 {
@@ -291,7 +293,7 @@ bool SteamVRTabController::cameraDashboard() const
 
 void SteamVRTabController::searchRXTX()
 {
-    deviceList.clear();
+    m_deviceList.clear();
     int hmdIndex = -1;
     auto indexList = ovr_system_wrapper::getAllConnectedDevices( true );
     m_dongleCountCur = 0;
@@ -303,8 +305,8 @@ void SteamVRTabController::searchRXTX()
             hmdIndex = device;
             continue;
         }
-        deviceList.push_back( DeviceInfo{ device } );
-        GatherDeviceInfo( deviceList.back() );
+        m_deviceList.push_back( DeviceInfo{ device } );
+        GatherDeviceInfo( m_deviceList.back() );
     }
 
     if ( hmdIndex != -1 )
@@ -314,6 +316,7 @@ void SteamVRTabController::searchRXTX()
                   hmdIndex, vr::Prop_AllWirelessDongleDescriptions_String )
                   .second;
         int count = 0;
+        LOG( INFO ) << dongleList;
         if ( !dongleList.empty() )
         {
             count++;
@@ -326,9 +329,59 @@ void SteamVRTabController::searchRXTX()
             }
         }
         m_dongleCountMax = count;
+        if ( static_cast<int>( m_deviceList.size() ) < m_dongleCountMax )
+        {
+            auto DSNFullList = getDongleSerialList( dongleList );
+            LOG( INFO ) << "DSNFULLLIST SIZE: " << DSNFullList.size();
+            for ( auto dSN : DSNFullList )
+            {
+                bool isPaired = false;
+                for ( auto pairedDev : m_deviceList )
+                {
+                    if ( QString::fromStdString( pairedDev.conDongle ) == dSN )
+                    {
+                        isPaired = true;
+                        break;
+                    }
+                }
+                if ( isPaired )
+                {
+                    continue;
+                }
+                LOG( INFO ) << "added empty";
+                m_deviceList.push_back( DeviceInfo{} );
+                AddUnPairedDevice( m_deviceList.back(), dSN.toStdString() );
+                // TODO create
+            }
+        }
     }
     return;
 }
+
+void SteamVRTabController::AddUnPairedDevice( DeviceInfo& device,
+                                              std::string donSN )
+{
+    device.conDongle = donSN;
+    if ( donSN.find( "-RYB" ) != std::string::npos
+         || donSN.find( "-LYM" ) != std::string::npos )
+    {
+        device.dongleType = "Headset";
+    }
+    // TODO 1yx SN
+    else if ( std::regex_match( donSN, std::regex( "(.*)(-[0-9]YX)" ) ) )
+    {
+        device.dongleType = "Tundra Dongle";
+    }
+    else
+    {
+        device.dongleType = "Standard Dongle";
+    }
+    device.index = -1;
+    device.txName = "No Connection";
+    device.serialNumber = "n/a";
+    device.deviceName = "No Connection";
+}
+
 void SteamVRTabController::GatherDeviceInfo( DeviceInfo& device )
 {
     std::string cd = ovr_system_wrapper::getStringTrackedProperty(
@@ -444,30 +497,118 @@ void SteamVRTabController::restartSteamVR()
 
 Q_INVOKABLE unsigned SteamVRTabController::getRXTXCount()
 {
-    return static_cast<unsigned>( deviceList.size() );
+    return static_cast<unsigned>( m_deviceList.size() );
 }
 
 Q_INVOKABLE QString SteamVRTabController::getTXList( int i )
 {
-    return QString::fromStdString( deviceList[i].txName );
+    return QString::fromStdString( m_deviceList[i].txName );
 }
 
 Q_INVOKABLE QString SteamVRTabController::getDeviceName( int i )
 {
-    return QString::fromStdString( deviceList[i].deviceName );
+    return QString::fromStdString( m_deviceList[i].deviceName );
 }
 
 Q_INVOKABLE QString SteamVRTabController::getRXList( int i )
 {
-    return QString::fromStdString( deviceList[i].conDongle );
+    return QString::fromStdString( m_deviceList[i].conDongle );
 }
 Q_INVOKABLE QString SteamVRTabController::getDongleType( int i )
 {
-    return QString::fromStdString( deviceList[i].dongleType );
+    return QString::fromStdString( m_deviceList[i].dongleType );
 }
 Q_INVOKABLE QString SteamVRTabController::getDongleUsage()
 {
     return QString::fromStdString( std::to_string( m_dongleCountCur ) + "/"
                                    + std::to_string( m_dongleCountMax ) );
+}
+Q_INVOKABLE void SteamVRTabController::pairDevice( QString sn )
+{
+    m_last_pair_sn = sn;
+    auto req = QNetworkRequest();
+    req.setUrl( QUrl( "ws://127.0.0.1:27062" ) );
+    req.setRawHeader(
+        QByteArray( "Referer" ),
+        QByteArray(
+            "http://localhost:27062/lighthouse/webinterface/pairing.html" ) );
+    m_webSocket.open( req );
+    connect( &m_webSocket,
+             &QWebSocket::connected,
+             this,
+             &SteamVRTabController::onConnected );
+    connect( &m_webSocket,
+             &QWebSocket::disconnected,
+             this,
+             &SteamVRTabController::onDisconnect );
+    connect( &m_webSocket,
+             &QWebSocket::textMessageReceived,
+             this,
+             &SteamVRTabController::onMsgRec );
+    return;
+}
+void SteamVRTabController::onConnected()
+{
+    m_webSocket.sendTextMessage( QStringLiteral( "mailbox_open OVRAS_pair" ) );
+    QString messageout = "mailbox_send lighthouse_pairing "
+                         "{\"type\":\"start_pairing\", "
+                         "\"returnAddress\":\"OVRAS_pair\", "
+                         "\"serial\":\"";
+    messageout.append( m_last_pair_sn );
+    messageout.append( QString::fromStdString( "\", \"timeoutSeconds\":15}" ) );
+    if ( m_last_pair_sn == "" )
+    {
+        LOG( ERROR ) << "No Last SN to pair, this shouldn't happen";
+    }
+    m_webSocket.sendTextMessage( messageout );
+    // m_webSocket.close();
+}
+void SteamVRTabController::onDisconnect()
+{
+    m_webSocket.close();
+}
+void SteamVRTabController::onMsgRec( QString Msg )
+{
+    if ( Msg.contains( "success" ) )
+    {
+        LOG( INFO ) << "Pair Success";
+    }
+    if ( Msg.contains( "timeout" ) )
+    {
+        LOG( INFO ) << "Pair Timeout";
+    }
+    m_webSocket.close();
+}
+std::vector<QString>
+    SteamVRTabController::getDongleSerialList( std::string deviceString )
+{
+    std::vector<QString> dongleList;
+    size_t pos = 0;
+
+    while ( ( pos = deviceString.find( ',' ) ) != std::string::npos )
+    {
+        LOG( INFO ) << "device String: " << deviceString;
+        dongleList.push_back(
+            QString::fromStdString( deviceString.substr( 0, pos ) ) );
+        pos = deviceString.find( ';' );
+        if ( pos != std::string::npos )
+        {
+            deviceString.erase( 0, pos + 1 );
+            continue;
+        }
+        else
+        {
+            pos = deviceString.find( ',' );
+            if ( pos == std::string::npos )
+            {
+                break;
+            }
+            dongleList.push_back(
+                QString::fromStdString( deviceString.substr( 0, pos ) ) );
+            break;
+        }
+        break;
+    }
+    return dongleList;
 }
 } // namespace advsettings
