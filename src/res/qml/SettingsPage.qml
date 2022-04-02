@@ -31,7 +31,7 @@ MyStackViewPage {
                 text: "Allow External App Chaperone Edits (Danger)"
                 onCheckedChanged: {
                     MoveCenterTabController.setAllowExternalEdits(checked, true)
-                    seatedOldExternalWarning.visible = checked && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
+                    seatedOldExternalWarning.visible = checked && MoveCenterTabController.oldStyleMotion
                 }
             }
 
@@ -40,7 +40,7 @@ MyStackViewPage {
                 text: "Old-Style Motion (per-frame disk writes)"
                 onCheckedChanged: {
                     MoveCenterTabController.setOldStyleMotion(checked, true)
-                    seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && checked && MoveCenterTabController.enableSeatedMotion
+                    seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && checked
                 }
             }
 
@@ -52,30 +52,6 @@ MyStackViewPage {
                 }
             }
 
-            MyToggleButton {
-                id: enableSeatedMotionToggle
-                text: "Enable Motion Features When in Seated Mode (Experimental)"
-                onCheckedChanged: {
-                    MoveCenterTabController.setEnableSeatedMotion(checked, true)
-                    seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && checked
-                }
-            }
-
-            MyToggleButton {
-                id: enableUnccalMotionToggle
-                text: "Enable Motion Features When in Uncalibrated Mode (Experimental)"
-                onCheckedChanged: {
-                    MoveCenterTabController.setEnableUncalMotion(checked, true);
-                }
-            }
-
-            MyToggleButton {
-                id: openXRFixToggle
-                text: "OpenXR Fix (force standing universe [Experimental])"
-                onCheckedChanged: {
-                    OverlayController.setOpenXRFixEnabled(checked, true);
-                }
-            }
 
             MyToggleButton {
                 id: disableCrashRecoveryToggle
@@ -99,6 +75,48 @@ MyStackViewPage {
                     SettingsTabController.setNativeChaperoneToggle(this.checked, true)
                 }
             }
+            RowLayout {
+                spacing: 18
+
+                MyToggleButton {
+                    id: autoApplyChaperoneToggleButton
+                    text: "Auto Apply Chaperone Profile:"
+                    onCheckedChanged: {
+                        OverlayController.setAutoApplyChaperoneEnabled(this.checked, true)
+                    }
+                }
+
+                MyComboBox {
+                    id: summaryChaperoneProfileComboBox
+                    Layout.leftMargin: 47
+                    Layout.maximumWidth: 378
+                    Layout.minimumWidth: 378
+                    Layout.preferredWidth: 378
+                    Layout.fillWidth: true
+                    model: [""]
+                    onCurrentIndexChanged: {
+                        if (currentIndex > 0) {
+                            summaryChaperoneProfileApplyButton.enabled = true
+                        } else {
+                            summaryChaperoneProfileApplyButton.enabled = false
+                        }
+                    }
+                }
+
+                MyPushButton {
+                    id: summaryChaperoneProfileApplyButton
+                    enabled: false
+                    Layout.preferredWidth: 150
+                    text: "Select"
+                    onClicked: {
+                        if (summaryChaperoneProfileComboBox.currentIndex > 0) {
+                            ChaperoneTabController.applyChaperoneProfile(summaryChaperoneProfileComboBox.currentIndex - 1)
+                            OverlayController.setAutoChapProfileName(summaryChaperoneProfileComboBox.currentIndex - 1)
+                            summaryChaperoneProfileComboBox.currentIndex = 0
+                        }
+                    }
+                }
+            }
             MyToggleButton {
                 id: oculusSdkToggleButton
                 text: "Force Use SteamVR (Disable Oculus API [experimental])"
@@ -111,13 +129,6 @@ MyStackViewPage {
                 text: "Exclusive Input Toggle (This enables Key Binding to Toggle state)"
                 onCheckedChanged: {
                     OverlayController.setExclusiveInputEnabled(this.checked, true)
-                }
-            }
-            MyToggleButton {
-                id: spaceAdjustChaperoneToggle
-                text: "Adjust Chaperone"
-                onCheckedChanged: {
-                    MoveCenterTabController.adjustChaperone = this.checked
                 }
             }
 
@@ -266,8 +277,6 @@ MyStackViewPage {
                 allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
                 oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
-                enableSeatedMotionToggle.checked = MoveCenterTabController.enableSeatedMotion
-                enableUnccalMotionToggle.checked = MoveCenterTabController.enableUncalMotion
 
                 disableCrashRecoveryToggle.checked = !OverlayController.crashRecoveryDisabled
                 customTickRateText.text = OverlayController.customTickRateMs
@@ -281,11 +290,11 @@ MyStackViewPage {
                 nativeChaperoneToggleButton.checked = SettingsTabController.nativeChaperoneToggle
                 oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
                 exclusiveInputToggleButton.checked = OverlayController.exclusiveInputEnabled
-                openXRFixToggle.checked = OverlayController.openXRFixEnabled
+                autoApplyChaperoneToggleButton.checked = OverlayController.autoApplyChaperoneEnabled
 
 
-                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
-                spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
+                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion
+                reloadChaperoneProfiles()
             }
 
         Connections {
@@ -305,24 +314,14 @@ MyStackViewPage {
             target: MoveCenterTabController
             onAllowExternalEditsChanged: {
                 allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
-                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
+                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion
             }
             onOldStyleMotionChanged: {
                 oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
-                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
+                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion
             }
             onUniverseCenteredRotationChanged: {
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
-            }
-            onEnableSeatedMotionChanged: {
-                enableSeatedMotionToggle.checked = MoveCenterTabController.enableSeatedMotion
-                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion && MoveCenterTabController.enableSeatedMotion
-            }
-            onEnableUncalMotionChanged: {
-                enableUnccalMotionToggle.checked = MoveCenterTabController.enableUncalMotion
-            }
-            onAdjustChaperoneChanged: {
-                spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
             }
         }
 
@@ -355,9 +354,24 @@ MyStackViewPage {
             onExclusiveInputEnabledChanged:{
                 exclusiveInputToggleButton.checked = OverlayController.exclusiveInputEnabled
             }
-            onOpenXRFixEnabledChanged:{
-                openXRFixToggle.checked = OverlayController.openXRFixEnabled
+            onAutoApplyChaperoneEnabledChanged: {
+               autoApplyChaperoneToggleButton.checked = OverlayController.autoApplyChaperoneEnabled
+            }
+        }
+        Connections{
+            target: ChaperoneTabController
+            onChaperoneProfilesUpdated: {
+                reloadChaperoneProfiles()
             }
         }
     } // end scroll
+    function reloadChaperoneProfiles() {
+        var profiles = [""]
+        var profileCount = ChaperoneTabController.getChaperoneProfileCount()
+        for (var i = 0; i < profileCount; i++) {
+            profiles.push(ChaperoneTabController.getChaperoneProfileName(i))
+        }
+        summaryChaperoneProfileComboBox.currentIndex = 0
+        summaryChaperoneProfileComboBox.model = profiles
+    }
 }

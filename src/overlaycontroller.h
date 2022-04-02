@@ -93,8 +93,9 @@ class OverlayController : public QObject
     Q_PROPERTY(
         bool exclusiveInputEnabled READ exclusiveInputEnabled WRITE
             setExclusiveInputEnabled NOTIFY exclusiveInputEnabledChanged )
-    Q_PROPERTY( bool openXRFixEnabled READ openXRFixEnabled WRITE
-                    setOpenXRFixEnabled NOTIFY openXRFixEnabledChanged )
+    Q_PROPERTY( bool autoApplyChaperoneEnabled READ autoApplyChaperoneEnabled
+                    WRITE setAutoApplyChaperoneEnabled NOTIFY
+                        autoApplyChaperoneEnabledChanged )
 
 private:
     vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
@@ -183,6 +184,7 @@ public:
 
     void Shutdown();
     Q_INVOKABLE void exitApp();
+    Q_INVOKABLE void setAutoChapProfileName( int index );
 
     bool isDashboardVisible()
     {
@@ -240,7 +242,7 @@ public:
 
     bool crashRecoveryDisabled() const;
     bool exclusiveInputEnabled() const;
-    bool openXRFixEnabled() const;
+    bool autoApplyChaperoneEnabled() const;
     bool enableDebug() const;
     bool disableVersionCheck() const;
     bool newVersionDetected() const;
@@ -248,6 +250,7 @@ public:
     QString versionCheckText() const;
     int customTickRateMs() const;
     int debugState() const;
+    std::string autoApplyChaperoneName();
 
 public slots:
     void renderOverlay();
@@ -273,7 +276,7 @@ public slots:
     void setVsyncDisabled( bool value, bool notify = true );
     void setCustomTickRateMs( int value, bool notify = true );
     void setDebugState( int value, bool notify = true );
-    void setOpenXRFixEnabled( bool value, bool notify = true );
+    void setAutoApplyChaperoneEnabled( bool value, bool notify = true );
 
 signals:
     void keyBoardInputSignal( QString input, unsigned long userValue = 0 );
@@ -286,7 +289,7 @@ signals:
     void vsyncDisabledChanged( bool value );
     void customTickRateMsChanged( int value );
     void debugStateChanged( int value );
-    void openXRFixEnabledChanged( bool value );
+    void autoApplyChaperoneEnabledChanged( bool value );
 };
 
 } // namespace advsettings

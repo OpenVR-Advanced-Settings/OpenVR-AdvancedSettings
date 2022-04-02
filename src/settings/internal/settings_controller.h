@@ -318,6 +318,10 @@ private:
                           SettingCategory::Application,
                           QtInfo{ "openXRWorkAround" },
                           false },
+        BoolSettingValue{ BoolSetting::APPLICATION_autoApplyChaperone,
+                          SettingCategory::Application,
+                          QtInfo{ "autoApplyChaperoneToggle" },
+                          false },
         BoolSettingValue{ BoolSetting::AUDIO_pttEnabled,
                           SettingCategory::Audio,
                           QtInfo{ "pttEnabled" },
@@ -515,6 +519,7 @@ private:
         = static_cast<int>( StringSetting::LAST_ENUMERATOR ) + 1;
     constexpr static auto discordDefaultMuteKeybinding = "^>m";
     constexpr static auto pressDefault = "F9";
+    constexpr static auto nameDefault = "«none»";
     std::array<StringSettingValue, stringSettingsSize> m_stringSettings{
         StringSettingValue{ StringSetting::KEYBOARDSHORTCUT_keyboardOne,
                             SettingCategory::KeyboardShortcut,
@@ -536,6 +541,10 @@ private:
                             SettingCategory::KeyboardShortcut,
                             QtInfo{ "keyPressSystem" },
                             pressDefault },
+        StringSettingValue{ StringSetting::APPLICATION_autoApplyChaperoneName,
+                            SettingCategory::Application,
+                            QtInfo{ "autoApplyChaperoneName" },
+                            nameDefault },
     };
 
     constexpr static auto intSettingsSize

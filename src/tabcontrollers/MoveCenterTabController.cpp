@@ -1001,7 +1001,7 @@ void MoveCenterTabController::incomingSeatedReset()
 
 void MoveCenterTabController::reset()
 {
-    if ( !m_chaperoneBasisAcquired && !enableUncalMotion() )
+    if ( !m_chaperoneBasisAcquired ) //&& !enableUncalMotion() )
     {
         LOG( WARNING ) << "WARNING: Attempted reset offsets before chaperone "
                           "basis is acquired!";
@@ -1140,8 +1140,7 @@ void MoveCenterTabController::zeroOffsets()
 
     // finished checking if out of bounds, proceed with normal zeroing offsets
     if ( vr::VRChaperone()->GetCalibrationState()
-             == vr::ChaperoneCalibrationState_OK
-         || enableUncalMotion() )
+         == vr::ChaperoneCalibrationState_OK ) //|| enableUncalMotion() )
     {
         m_oldOffsetX = 0.0f;
         m_oldOffsetY = 0.0f;
@@ -1157,7 +1156,7 @@ void MoveCenterTabController::zeroOffsets()
         emit rotationChanged( m_rotation );
         updateChaperoneResetData();
         m_pendingZeroOffsets = false;
-        if ( !m_chaperoneBasisAcquired && !enableUncalMotion() )
+        if ( !m_chaperoneBasisAcquired ) // && !enableUncalMotion() )
         {
             m_chaperoneBasisAcquired = true;
             if ( !m_initComplete )
@@ -1199,6 +1198,7 @@ void MoveCenterTabController::zeroOffsets()
     }
     else
     {
+        LOG( WARNING ) << "Chaperone not calibrated?";
         if ( !m_pendingZeroOffsets )
         {
             LOG( INFO ) << "PENDING: Chaperone Data Update and Offsets zeroing";
@@ -2951,7 +2951,12 @@ void MoveCenterTabController::eventLoopTick(
 
 {
     // detect if room setup is running
-    if ( universe == vr::TrackingUniverseRawAndUncalibrated )
+    // TODO
+    // if "detected"
+    if ( universe == vr::TrackingUniverseRawAndUncalibrated
+         && vr::VRApplications()->GetApplicationProcessId(
+                "openvr.tool.steamvr_room_setup" )
+                != 0 )
     {
         if ( !m_roomSetupModeDetected )
         {
@@ -2995,7 +3000,7 @@ void MoveCenterTabController::eventLoopTick(
     // new setup.
 
     if ( m_pendingZeroOffsets
-         || ( m_roomSetupModeDetected && !enableUncalMotion() ) )
+         || ( m_roomSetupModeDetected ) ) //&& !enableUncalMotion() ) )
     {
         zeroOffsets();
         // m_roomSetupModeDetected is set to false in zeroOffsets() if it's
@@ -3023,10 +3028,10 @@ void MoveCenterTabController::eventLoopTick(
 
         // stop everything before processing motion if we're in seated mode and
         // don't have seated motion enabled
-        if ( m_seatedModeDetected && !enableSeatedMotion() )
+        /*if ( m_seatedModeDetected && !enableSeatedMotion() )
         {
             return;
-        }
+        }*/
 
         // only update dynamic motion if the dash is closed
         if ( !parent->isDashboardVisible() )
@@ -3102,5 +3107,5 @@ void MoveCenterTabController::eventLoopTick(
         }
         updateSpace();
     }
-}
+} // namespace advsettings
 } // namespace advsettings
