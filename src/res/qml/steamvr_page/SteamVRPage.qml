@@ -30,6 +30,7 @@ MyStackViewPage {
                 onClicked: {
                     MyResources.playFocusChangedSound()
                     mainView.push(steamVRTXRXPage)
+                    SteamVRTabController.updateRXTXList()
                 }
             }
 

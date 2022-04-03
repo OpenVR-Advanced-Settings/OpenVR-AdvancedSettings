@@ -86,13 +86,6 @@ MyStackViewPage {
             }
         }
 
-        MyText {
-            id: seatedDisableWarningText
-            visible: false
-            wrapMode: Text.WordWrap
-            text: "Settings Tab: 'Enable Motion Features in Seated Mode' not checked"
-        }
-
         ColumnLayout {
             id: profileSection
             Layout.bottomMargin: 32
@@ -521,28 +514,10 @@ MyStackViewPage {
             if (MoveCenterTabController.trackingUniverse === 0) {
                 spaceModeText.text = "Sitting"
                 spaceSeatedRecenter.visible = true
-                var boolEnableSeatedMotion = MoveCenterTabController.enableSeatedMotion
-                offsetsGroupBox.visible = boolEnableSeatedMotion
-                rotationGroupBox.visible = boolEnableSeatedMotion
-                resetButtonRow.visible = boolEnableSeatedMotion
-                profileSection.visible = boolEnableSeatedMotion
-                seatedDisableWarningText.visible = !boolEnableSeatedMotion
-
             } else if (MoveCenterTabController.trackingUniverse === 1) {
                 spaceModeText.text = "Standing"
-                spaceSeatedRecenter.visible = true
-                offsetsGroupBox.visible = true
-                rotationGroupBox.visible = true
-                resetButtonRow.visible = true
-                profileSection.visible = true
-                seatedDisableWarningText.visible = false
             } else {
                 spaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
-                offsetsGroupBox.visible = false
-                rotationGroupBox.visible = false
-                resetButtonRow.visible = false
-                profileSection.visible = false
-                seatedDisableWarningText.visible = false
             }
             reloadOffsetProfiles()
         }
@@ -575,43 +550,14 @@ MyStackViewPage {
 			onLockZToggleChanged: {
 				lockZToggle.checked = MoveCenterTabController.lockZToggle
 			}
-            onEnableSeatedMotionChanged: {
-                if (MoveCenterTabController.trackingUniverse === 0) {
-                    spaceModeText.text = "Sitting"
-                    spaceSeatedRecenter.visible = true
-                    var boolEnableSeatedMotion = MoveCenterTabController.enableSeatedMotion
-                    offsetsGroupBox.visible = boolEnableSeatedMotion
-                    rotationGroupBox.visible = boolEnableSeatedMotion
-                    resetButtonRow.visible = boolEnableSeatedMotion
-                    profileSection.visible = boolEnableSeatedMotion
-                    seatedDisableWarningText.visible = !boolEnableSeatedMotion
-                }
-            }
             onTrackingUniverseChanged: {
                 if (MoveCenterTabController.trackingUniverse === 0) {
                     spaceModeText.text = "Sitting"
                     spaceSeatedRecenter.visible = true
-                    var boolEnableSeatedMotion = MoveCenterTabController.enableSeatedMotion
-                    offsetsGroupBox.visible = boolEnableSeatedMotion
-                    rotationGroupBox.visible = boolEnableSeatedMotion
-                    resetButtonRow.visible = boolEnableSeatedMotion
-                    profileSection.visible = boolEnableSeatedMotion
-                    seatedDisableWarningText.visible = !boolEnableSeatedMotion
                 } else if (MoveCenterTabController.trackingUniverse === 1) {
                     spaceModeText.text = "Standing"
-                    spaceSeatedRecenter.visible = true
-                    offsetsGroupBox.visible = true
-                    rotationGroupBox.visible = true
-                    resetButtonRow.visible = true
-                    profileSection.visible = true
-                    seatedDisableWarningText.visible = false
                 } else {
                     spaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
-                    offsetsGroupBox.visible = false
-                    rotationGroupBox.visible = false
-                    resetButtonRow.visible = false
-                    profileSection.visible = false
-                    seatedDisableWarningText.visible = false
                 }
             }
             onOffsetProfilesUpdated: {

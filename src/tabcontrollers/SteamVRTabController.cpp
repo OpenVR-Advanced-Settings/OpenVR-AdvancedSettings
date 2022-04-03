@@ -291,6 +291,11 @@ bool SteamVRTabController::cameraDashboard() const
     return m_cameraDashboard;
 }
 
+void SteamVRTabController::updateRXTXList()
+{
+    emit updateRXTX( true );
+}
+
 void SteamVRTabController::searchRXTX()
 {
     m_deviceList.clear();
@@ -564,6 +569,7 @@ void SteamVRTabController::onConnected()
                          "\"serial\":\"";
     messageout.append( m_last_pair_sn );
     messageout.append( QString::fromStdString( "\", \"timeoutSeconds\":15}" ) );
+    emit pairStatusChanged( QString( "Pairing..." ) );
     if ( m_last_pair_sn == "" )
     {
         LOG( ERROR ) << "No Last SN to pair, this shouldn't happen";
@@ -581,10 +587,12 @@ void SteamVRTabController::onMsgRec( QString Msg )
     if ( Msg.contains( "success" ) )
     {
         LOG( INFO ) << "Pair Success";
+        emit pairStatusChanged( QString( "Success" ) );
     }
     if ( Msg.contains( "timeout" ) )
     {
         LOG( INFO ) << "Pair Timeout";
+        emit pairStatusChanged( QString( "Timeout" ) );
     }
     m_webSocket.close();
 }
@@ -619,4 +627,5 @@ std::vector<QString>
     }
     return dongleList;
 }
+
 } // namespace advsettings

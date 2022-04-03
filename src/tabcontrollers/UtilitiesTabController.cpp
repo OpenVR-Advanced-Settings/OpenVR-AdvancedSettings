@@ -245,7 +245,7 @@ vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index,
             {
                 notificationTransform = { { { 1.0f, 0.0f, 0.0f, 0.00f },
                                             { 0.0f, -1.0f, 0.0f, 0.0081f },
-                                            { 0.0f, 0.0f, -1.0f, -0.0250f } } };
+                                            { 0.0f, 0.0f, -1.0f, -0.028f } } };
             }
             else
             {
@@ -305,8 +305,7 @@ void UtilitiesTabController::eventLoopTick()
                 }
 
                 LOG( INFO ) << "Creating battery overlay for device " << i;
-                m_batteryOverlayHandles[i] = createBatteryOverlay(
-                    i, vr::Prop_RenderModelName_String );
+                m_batteryOverlayHandles[i] = createBatteryOverlay( i, style );
                 m_batteryVisible[i] = true;
             }
 

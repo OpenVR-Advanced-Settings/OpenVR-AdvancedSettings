@@ -20,6 +20,7 @@ class QQuickWindow;
 namespace advsettings
 {
 // forward declaration
+
 class OverlayController;
 
 struct DeviceInfo
@@ -116,6 +117,7 @@ public:
     Q_INVOKABLE QString getDongleType( int i );
     Q_INVOKABLE QString getDongleUsage();
     Q_INVOKABLE void pairDevice( QString sn );
+    Q_INVOKABLE void updateRXTXList();
 
 public slots:
     void onConnected();
@@ -146,6 +148,9 @@ signals:
     void cameraBoundsChanged( bool value );
     void cameraRoomChanged( bool value );
     void cameraDashboardChanged( bool value );
+
+    void pairStatusChanged( QString value );
+    void updateRXTX( bool value );
 };
 
 } // namespace advsettings

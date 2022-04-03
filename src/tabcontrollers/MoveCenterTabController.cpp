@@ -879,48 +879,6 @@ bool MoveCenterTabController::isInitComplete() const
     return m_initComplete;
 }
 
-bool MoveCenterTabController::enableSeatedMotion() const
-{
-    return settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_enableSeatedMotion );
-}
-
-void MoveCenterTabController::setEnableSeatedMotion( bool value, bool notify )
-{
-    settings::setSetting( settings::BoolSetting::PLAYSPACE_enableSeatedMotion,
-                          value );
-
-    if ( notify )
-    {
-        emit enableUncalMotionChanged( value );
-    }
-}
-
-bool MoveCenterTabController::enableUncalMotion() const
-{
-    return settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_enableUncalMotion );
-}
-
-void MoveCenterTabController::setEnableUncalMotion( bool value, bool notify )
-{
-    if ( !value && m_initComplete )
-    {
-        reset();
-    }
-    settings::setSetting( settings::BoolSetting::PLAYSPACE_enableUncalMotion,
-                          value );
-    if ( !value && m_initComplete )
-    {
-        m_pendingZeroOffsets = true;
-    }
-
-    if ( notify )
-    {
-        emit enableUncalMotionChanged( value );
-    }
-}
-
 bool MoveCenterTabController::simpleRecenter() const
 {
     return settings::getSetting(
@@ -982,26 +940,23 @@ void MoveCenterTabController::shutdown()
 
 void MoveCenterTabController::incomingSeatedReset()
 {
-    if ( enableSeatedMotion() )
+    // if we didn't send the request from OVRAS, we need to send another
+    // ResetSeatedZeroPose(). It seems that only after this is sent from
+    // OVRAS does ReloadFromDisk return valid info on WMR.
+    if ( !m_selfRequestedSeatedRecenter && !simpleRecenter() )
     {
-        // if we didn't send the request from OVRAS, we need to send another
-        // ResetSeatedZeroPose(). It seems that only after this is sent from
-        // OVRAS does ReloadFromDisk return valid info on WMR.
-        if ( !m_selfRequestedSeatedRecenter && !simpleRecenter() )
-        {
-            m_selfRequestedSeatedRecenter = true;
-            vr::VRSystem()->ResetSeatedZeroPose();
-        }
-        else
-        {
-            updateSeatedResetData();
-        }
+        m_selfRequestedSeatedRecenter = true;
+        vr::VRSystem()->ResetSeatedZeroPose();
+    }
+    else
+    {
+        updateSeatedResetData();
     }
 }
 
 void MoveCenterTabController::reset()
 {
-    if ( !m_chaperoneBasisAcquired ) //&& !enableUncalMotion() )
+    if ( !m_chaperoneBasisAcquired )
     {
         LOG( WARNING ) << "WARNING: Attempted reset offsets before chaperone "
                           "basis is acquired!";
@@ -1140,7 +1095,7 @@ void MoveCenterTabController::zeroOffsets()
 
     // finished checking if out of bounds, proceed with normal zeroing offsets
     if ( vr::VRChaperone()->GetCalibrationState()
-         == vr::ChaperoneCalibrationState_OK ) //|| enableUncalMotion() )
+         == vr::ChaperoneCalibrationState_OK )
     {
         m_oldOffsetX = 0.0f;
         m_oldOffsetY = 0.0f;
@@ -1156,7 +1111,7 @@ void MoveCenterTabController::zeroOffsets()
         emit rotationChanged( m_rotation );
         updateChaperoneResetData();
         m_pendingZeroOffsets = false;
-        if ( !m_chaperoneBasisAcquired ) // && !enableUncalMotion() )
+        if ( !m_chaperoneBasisAcquired )
         {
             m_chaperoneBasisAcquired = true;
             if ( !m_initComplete )
@@ -1764,7 +1719,7 @@ void MoveCenterTabController::swapSpaceDragToRightHandOverride(
 
 // END of drag bindings
 
-// START of turn bindgins
+// START of turn bindings
 
 void MoveCenterTabController::leftHandSpaceTurn( bool leftHandTurnActive )
 {
@@ -2320,6 +2275,8 @@ void MoveCenterTabController::updateHandDrag(
         };
 
         // offset is un-rotated coordinates
+
+        // TODO drag multiplier (no fling?)
 
         // prevent positional glitches from exceeding max openvr offset clamps.
         // We do this by detecting a drag larger than 100m in a single frame.
@@ -2951,8 +2908,6 @@ void MoveCenterTabController::eventLoopTick(
 
 {
     // detect if room setup is running
-    // TODO
-    // if "detected"
     if ( universe == vr::TrackingUniverseRawAndUncalibrated
          && vr::VRApplications()->GetApplicationProcessId(
                 "openvr.tool.steamvr_room_setup" )
@@ -2999,8 +2954,7 @@ void MoveCenterTabController::eventLoopTick(
     // longer raw mode and we detect room setup exit and zeroOffsets() to apply
     // new setup.
 
-    if ( m_pendingZeroOffsets
-         || ( m_roomSetupModeDetected ) ) //&& !enableUncalMotion() ) )
+    if ( m_pendingZeroOffsets || ( m_roomSetupModeDetected ) )
     {
         zeroOffsets();
         // m_roomSetupModeDetected is set to false in zeroOffsets() if it's
@@ -3025,13 +2979,6 @@ void MoveCenterTabController::eventLoopTick(
         {
             m_hmdRotationStatsUpdateCounter++;
         }
-
-        // stop everything before processing motion if we're in seated mode and
-        // don't have seated motion enabled
-        /*if ( m_seatedModeDetected && !enableSeatedMotion() )
-        {
-            return;
-        }*/
 
         // only update dynamic motion if the dash is closed
         if ( !parent->isDashboardVisible() )
@@ -3107,5 +3054,5 @@ void MoveCenterTabController::eventLoopTick(
         }
         updateSpace();
     }
-} // namespace advsettings
+}
 } // namespace advsettings
