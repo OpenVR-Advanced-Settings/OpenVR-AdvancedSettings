@@ -367,9 +367,10 @@ These version are not stable and this should be considered for advanced users on
   - **Camera for Room View**: You will have a Tron/Shadow version of the room when double-clicking system button.
 - **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
 
+## - SteamVR Pair Page
+
 <img src="docs/screenshots/SteamVRPairPage.png" width="600" alt="SteamVR Pair Page">
 
-## - SteamVR Pair Page
  - **Status**: Will display "ready to pair", "pairing...", "success", or "Timeout" based on current status of pairing
  - **dongles used**: Displays the Number of Lighthouse/Watchman/SteamVR Dongles attached to the system, and amount currently in use.
  - **Refresh Device List**: Refreshes the list of attached devices
@@ -377,7 +378,7 @@ These version are not stable and this should be considered for advanced users on
    - **Device**: Displays type of device, and roles if any assigned
    - **Device ID**: Displays a unique ID for the Device this **IS NOT** the serial number, but an identifier of the Transmitter in the device.
    - **Connected Dongle Type**: Displays whether the dongle is a headset dongle, Tundra Dongle, or a Standard Dongle (htc/flashed steam controller/Unknown)
-   - **Dongle ID: Unique ID for the radio of the dongle.
+   - **Dongle ID**: Unique ID for the radio of the dongle.
    - **Pair**: Attempts to pair the device to the selected dongle.
    **Note:** Pairing mode varies per controller see [Pairing Cheat Sheet (text)](docs/pairing_guide.md).
 
