@@ -88,6 +88,60 @@ GroupBox {
                 }
             }
         }
+        RowLayout{
+            Item{
+                Layout.fillWidth: true
+            }
+
+            MyText {
+                text: "Drag Multiplier:"
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: 2
+            }
+
+            MyTextField {
+                id: dragMultText
+                text: "1.0"
+                keyBoardUID: 153
+                Layout.preferredWidth: 120
+                Layout.leftMargin: 10
+                Layout.rightMargin: 10
+                horizontalAlignment: Text.AlignHCenter
+                function onInputEvent(input) {
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        MoveCenterTabController.dragMult = val.toFixed(2)
+                        text = MoveCenterTabController.dragMult.toFixed(2)
+                    } else {
+                        text = MoveCenterTabController.dragMult.toFixed(2)
+                    }
+                }
+            }
+
+            MyPushButton2 {
+                Layout.preferredWidth: 50
+                text: "1x"
+                onClicked: {
+                    MoveCenterTabController.dragMult = 1.0
+                }
+            }
+
+            MyPushButton2 {
+                Layout.preferredWidth: 50
+                text: "2x"
+                onClicked: {
+                    MoveCenterTabController.dragMult = 2.0
+                }
+            }
+
+            MyPushButton2 {
+                Layout.preferredWidth: 50
+                text: "3x"
+                onClicked: {
+                    MoveCenterTabController.dragMult = 3.0
+                }
+            }
+        }
     }
 
     Component.onCompleted: {
@@ -95,6 +149,7 @@ GroupBox {
         moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight
         dragComfortSlider.value = MoveCenterTabController.dragComfortFactor
         dragBounds.checked = MoveCenterTabController.dragBounds
+        dragMultText.text = MoveCenterTabController.dragMult.toFixed(2)
     }
 
     Connections {
@@ -111,6 +166,9 @@ GroupBox {
         }
         onDragBoundsChanged: {
             dragBounds.checked = MoveCenterTabController.dragBounds
+        }
+        onDragMultChanged: {
+            dragMultText.text = MoveCenterTabController.dragMult.toFixed(2)
         }
     }
 }

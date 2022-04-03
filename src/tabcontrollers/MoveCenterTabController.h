@@ -137,6 +137,8 @@ class MoveCenterTabController : public QObject
             setUniverseCenteredRotation NOTIFY universeCenteredRotationChanged )
     Q_PROPERTY( bool simpleRecenter READ simpleRecenter WRITE setSimpleRecenter
                     NOTIFY simpleRecenterChanged )
+    Q_PROPERTY(
+        float dragMult READ dragMult WRITE setDragMult NOTIFY dragMultChanged )
 
 private:
     OverlayController* parent;
@@ -264,6 +266,7 @@ public:
     float heightToggleOffset() const;
     float gravityStrength() const;
     float flingStrength() const;
+    float dragMult() const;
     bool gravityActive() const;
     bool momentumSave() const;
     bool lockXToggle() const;
@@ -339,6 +342,7 @@ public slots:
     void setHeightToggleOffset( float value, bool notify = true );
     void setGravityStrength( float value, bool notify = true );
     void setFlingStrength( float value, bool notify = true );
+    void setDragMult( float value, bool notify = true );
     void setGravityActive( bool value, bool notify = true );
     void setMomentumSave( bool value, bool notify = true );
 
@@ -389,6 +393,7 @@ signals:
     void heightToggleOffsetChanged( float value );
     void gravityStrengthChanged( float value );
     void flingStrengthChanged( float value );
+    void dragMultChanged( float value );
     void gravityActiveChanged( bool value );
     void momentumSaveChanged( bool value );
     void requireLockXChanged( bool value );

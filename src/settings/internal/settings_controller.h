@@ -437,6 +437,10 @@ private:
                             SettingCategory::Playspace,
                             QtInfo{ "flingStrength" },
                             1.0 },
+        DoubleSettingValue{ DoubleSetting::PLAYSPACE_dragMult,
+                            SettingCategory::Playspace,
+                            QtInfo{ "dragMult" },
+                            1.0 },
 
         DoubleSettingValue{ DoubleSetting::VIDEO_brightnessOpacityValue,
                             SettingCategory::Video,
