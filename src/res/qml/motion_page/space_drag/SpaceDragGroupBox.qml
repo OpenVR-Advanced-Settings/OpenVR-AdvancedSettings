@@ -102,7 +102,7 @@ GroupBox {
             MyTextField {
                 id: dragMultText
                 text: "1.0"
-                keyBoardUID: 153
+                keyBoardUID: 157
                 Layout.preferredWidth: 120
                 Layout.leftMargin: 10
                 Layout.rightMargin: 10
