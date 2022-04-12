@@ -11,12 +11,16 @@
 #include <QDir>
 #include "../openvr/ovr_system_wrapper.h"
 #include <regex>
+#include <QtWebSockets/QWebSocket>
+#include <QUrl>
+#include <QNetworkRequest>
 
 class QQuickWindow;
 // application namespace
 namespace advsettings
 {
 // forward declaration
+
 class OverlayController;
 
 struct DeviceInfo
@@ -71,11 +75,16 @@ private:
     bool m_pathRXTXInit = false;
     int m_dongleCountCur = 0;
     int m_dongleCountMax = 0;
+    QString m_unparsedDongleString = "";
+    QString m_last_pair_sn = "";
 
-    std::vector<DeviceInfo> deviceList;
+    std::vector<DeviceInfo> m_deviceList;
 
     void GatherDeviceInfo( DeviceInfo& device );
+    void AddUnPairedDevice( DeviceInfo& device, std::string donSN );
     void synchSteamVR();
+    std::vector<QString> getDongleSerialList( std::string deviceString );
+    bool isSteamVRTracked( QString sn );
 
 public:
     void initStage1();
@@ -94,6 +103,8 @@ public:
     bool cameraBounds() const;
     bool cameraRoom() const;
     bool cameraDashboard() const;
+    QNetworkProxy m_proxy;
+    QWebSocket m_webSocket;
 
     Q_INVOKABLE void searchRXTX();
 
@@ -105,9 +116,13 @@ public:
     Q_INVOKABLE QString getDeviceName( int i );
     Q_INVOKABLE QString getDongleType( int i );
     Q_INVOKABLE QString getDongleUsage();
+    Q_INVOKABLE void pairDevice( QString sn );
+    Q_INVOKABLE void updateRXTXList();
 
 public slots:
-
+    void onConnected();
+    void onDisconnect();
+    void onMsgRec( QString Msg );
     void setPerformanceGraph( bool value, bool notify = true );
     void setSystemButton( bool value, bool notify = true );
     void setNoFadeToGrid( bool value, bool notify = true );
@@ -133,6 +148,9 @@ signals:
     void cameraBoundsChanged( bool value );
     void cameraRoomChanged( bool value );
     void cameraDashboardChanged( bool value );
+
+    void pairStatusChanged( QString value );
+    void updateRXTX( bool value );
 };
 
 } // namespace advsettings

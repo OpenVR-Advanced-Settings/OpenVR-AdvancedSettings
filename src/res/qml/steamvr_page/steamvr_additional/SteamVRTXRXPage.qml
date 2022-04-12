@@ -27,6 +27,18 @@ MyStackViewPage {
                 Layout.fillHeight: true
                 RowLayout{
                     MyText{
+                        text: "Status: "
+                        Layout.preferredWidth: 200
+                    }
+                    MyText{
+                        id: statusText
+                        text: "Ready to Pair"
+                        Layout.fillWidth: true
+                    }
+                }
+
+                RowLayout{
+                    MyText{
                         text: "dongles used: "
                         Layout.preferredWidth: 200
                     }
@@ -46,8 +58,20 @@ MyStackViewPage {
                         onClicked: {
                             getRXTX()
                         }
-
                     }
+                }
+                RowLayout{
+                    MyText{
+                        text: "Instructions: Set Device to pairing mode and then hit pair on desired un-connected Dongle. To pair to a currently used dongle turn-off the attached device and refresh the list"
+                        Layout.fillWidth: true
+                        wrapMode: Text.WordWrap
+                    }
+               }
+                Rectangle {
+                    color: "#ffffff"
+                    height: 1
+                    Layout.fillWidth: true
+                    Layout.bottomMargin: 5
                 }
                 RowLayout{
                     Layout.fillHeight: true
@@ -101,6 +125,7 @@ MyStackViewPage {
                                         MyText{
                                             Layout.preferredWidth: 250
                                             text: TX
+                                            clip: true
                                         }
                                         Item{
                                             Layout.preferredWidth: 50
@@ -112,15 +137,29 @@ MyStackViewPage {
                                         MyText{
                                             Layout.preferredWidth: 250
                                             text: DT
+                                            clip: true
                                         }
                                     }
                                     RowLayout{
                                         Layout.fillHeight: true
                                         Layout.fillWidth: true
                                         clip: true
+                                        MyPushButton{
+                                            Layout.preferredWidth: 200
+                                            text: "Pair"
+                                            id: pairBtn
+                                            onClicked: {
+                                                SteamVRTabController.pairDevice(rxtext.text)
+                                            }
+                                            Component.onCompleted: {
+                                                if(Dev != "No Connection"){
+                                                    this.enabled = false;
+                                                }
+                                            }
+                                        }
 
                                         Item{
-                                            Layout.preferredWidth: 600
+                                            Layout.preferredWidth: 400
                                         }
                                         MyText{
                                             Layout.preferredWidth: 150
@@ -128,6 +167,7 @@ MyStackViewPage {
                                         }
                                         MyText{
                                             Layout.preferredWidth: 250
+                                            id: rxtext
                                             text: RX
                                         }
                                     }
@@ -143,6 +183,18 @@ MyStackViewPage {
     Component.onCompleted: {
         getRXTX()
     }
+    Connections{
+        target: SteamVRTabController
+            onPairStatusChanged: {
+                statusText.text = value;
+                getRXTX()
+            }
+            onUpdateRXTX:{
+                getRXTX()
+            }
+
+    }
+
     function getRXTX() {
         listModelRXTX.clear();
         SteamVRTabController.searchRXTX();

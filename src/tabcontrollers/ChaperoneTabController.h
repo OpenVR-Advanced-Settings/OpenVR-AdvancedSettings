@@ -408,6 +408,7 @@ public:
     int chaperoneColorB();
     int chaperoneColorA();
     float boundsVisibility();
+    int getChaperoneProfileIndex();
 
     bool centerMarkerNew();
     bool m_centerMarkerOverlayNeedsUpdate = false;

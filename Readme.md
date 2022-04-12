@@ -43,6 +43,7 @@ Adds an overlay to the OpenVR dashboard that allows access to advanced settings 
 * [Documentation](#documentation)
   * [Top Page](#top-page)
   * [- SteamVR Page](#--steamvr-page)
+  * [- SteamVR Pair Page](#--steamvr-pair-page)
   * [- Chaperone Page](#--chaperone-page)
   * [- Chaperone Proximity Warning Settings Page](#--chaperone-proximity-warning-settings-page)
   * [- Space Offset Page](#--space-offset-page)
@@ -149,6 +150,10 @@ Detailed instructions are available [here](docs/building_for_linux.md).
 ### Keyboard Binding System
 
 - [Keyboard Input Guide (text)](docs/keyboard_input_guide.md)
+
+### Pairing Cheat Sheet
+
+- [Pairing Cheat Sheet (text)](docs/pairing_guide.md)
 
 ## Bindings
 
@@ -362,6 +367,21 @@ These version are not stable and this should be considered for advanced users on
   - **Camera for Room View**: You will have a Tron/Shadow version of the room when double-clicking system button.
 - **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
 
+## - SteamVR Pair Page
+
+<img src="docs/screenshots/SteamVRPairPage.png" width="600" alt="SteamVR Pair Page">
+
+ - **Status**: Will display "ready to pair", "pairing...", "success", or "Timeout" based on current status of pairing
+ - **dongles used**: Displays the Number of Lighthouse/Watchman/SteamVR Dongles attached to the system, and amount currently in use.
+ - **Refresh Device List**: Refreshes the list of attached devices
+ - **Device Information**
+   - **Device**: Displays type of device, and roles if any assigned
+   - **Device ID**: Displays a unique ID for the Device this **IS NOT** the serial number, but an identifier of the Transmitter in the device.
+   - **Connected Dongle Type**: Displays whether the dongle is a headset dongle, Tundra Dongle, or a Standard Dongle (htc/flashed steam controller/Unknown)
+   - **Dongle ID**: Unique ID for the radio of the dongle.
+   - **Pair**: Attempts to pair the device to the selected dongle.
+   **Note:** Pairing mode varies per controller see [Pairing Cheat Sheet (text)](docs/pairing_guide.md).
+
 ## - Chaperone Page
 
 <img src="docs/screenshots/ChaperonePage.png" width="600" alt="Chaperone Page">
@@ -417,6 +437,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
   - **Comfort Mode**: Limits the rate at which your movement updates, reducing smoothness so that perceived motion starts to feel more like mini-teleports. Higher values reduce smoothness more.
   - **Force Bounds**: Forces the display of the chaperone bounds during Space Drag.
+  - **Drag Multiplier**: Adds a Multiplier to the distance of your drag.
 - **Height Toggle**: Toggle between zero and an offset for gravity floor height. If gravity is inactive the user is also moved to this offset. (Example: allows for quick switching between a seated and standing height.) Can be bound via SteamVr Input System.
   - **On**: Current toggle state, Binds directly modify this.
   - **Height Offset**: The amount of the offset (+ is down.)
@@ -426,7 +447,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **Gravity Strength**: Gravity simulation's downward acceleration in meters per second squared. Planet buttons provide quick settings for well known gravity strengths. Values can also be typed in directly.
   - **Friction**: Slows down motion over time.
   - **Save Momentum**: whether your momentum is saved between on/off toggles of gravity.
-  - **fling Strength**: adjusts the strength at which you "throw" yourself with space drag feature.
+  - **Fling Strength**: adjusts the strength at which you "throw" yourself with space drag feature.
 
 
 ## - Rotation Page
@@ -538,15 +559,12 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 - **Allow External App Chaperone Edits:** Incorporates changes to the chaperone and universe center made by other applications. These changes could come from anywhere, including apps with unpredictable interactions with Advanced Settings. Therefore, this option opens the potential for chaperone misalignment or corruption. However it also allows other chaperone tweaking tools to function in tandem with Advanced Settings. **This option should only be checked if required for compatibility with other apps.** *Note: Changes will only take effect when offsets and rotation are all zero.*
 - **Old-Style Motion:** Uses the old system of writing the chaperone universe center and bounds to disk every frame. Use this option only if you experience issues with playspace motion such as snapping back to reset position after releasing a space-drag. This old mode is smooth on most systems but is in theory less performant than the normal method.
 - **Universe-Centered Rotation:** Causes Rotation to be applied to Universe Center Rather than HMD (Disables offsets automatically compensating to pivot at the HMD).
-- **Enable Motion Features When in Seated Mode:** Uncheck this if Advanced Settings causes strange positioning in a seated application. (Different apps handle seated mode in different ways, some are less compatible with Advanced Settings). Note: if unchecked, all Space Offsets and Motion tab features will be disabled.
-- **Enable Motion Features When in Uncalibrated Mode:** TBA
-- **OpenXR Fix (force standing universe):** TBA
 - **Enable Automatic Crash Recovery of Chaperone Config:** This applies the last good autosaved chaperone profile when starting up after not shutting down properly.
 - **Disable Notification of Newer Version Availability**: This turns off the on start-up check for a new version. (You can refresh this to do a manual check.)
-- **Force Use SteamVR Chaperone**: This feature is currently experimental, when using third party headsets this will allow you to use SteamVR's chaperone, as if it was a native headset.
+- **Force Use SteamVR Chaperone**: This feature is currently beta, when using third party headsets this will allow you to use SteamVR's chaperone, as if it was a native headset.
+- **Auto Apply Chaperone Profile**: This feature automatically applies a chaperone profile on launch, this pairs well with the "Force Use SteamVR Chaperone" option.
 - **Force Use SteamVR (Disable Oculus API)**: This feature is currently experimental, it should disable Oculus API preventing games with both SteamVR and Oculus API to only run as SteamVR
 - **Exclusive Input Toggle**: This feature Enables Exclusive Input Mode, while in this mode you will only send OVRAS keybinds or App keybinds (OVRAS system keybinds will always work)
-- **Adjust Chaperone:** TBA
 - **Disable App Vsync:** Allows setting a custom base update rate for Advanced Settings. (Might be useful on HMDs with very high or very low refresh rates).
 - **Shutdown OVRAS** Shuts-Down Advanced Settings without closing out of VR.
 

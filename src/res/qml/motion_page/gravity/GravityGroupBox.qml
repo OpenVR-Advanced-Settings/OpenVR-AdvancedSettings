@@ -171,10 +171,10 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        MoveCenterTabController.flingStrength = val.toFixed(1)
-                        text = MoveCenterTabController.flingStrength.toFixed(1)
+                        MoveCenterTabController.flingStrength = val.toFixed(2)
+                        text = MoveCenterTabController.flingStrength.toFixed(2)
                     } else {
-                        text = MoveCenterTabController.flingStrength.toFixed(1)
+                        text = MoveCenterTabController.flingStrength.toFixed(2)
                     }
                 }
             }

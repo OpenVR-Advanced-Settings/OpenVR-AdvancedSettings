@@ -493,6 +493,29 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     m_moveCenterTabController.initStage2( this );
     m_rotationTabController.initStage2( this );
     m_videoTabController.initStage2();
+
+    if ( autoApplyChaperoneEnabled() )
+    {
+        m_chaperoneTabController.reloadChaperoneProfiles();
+        auto chapindex
+            = m_chaperoneTabController.getChaperoneProfileIndexFromName(
+                autoApplyChaperoneName() );
+        if ( chapindex.first )
+        {
+            m_chaperoneTabController.applyChaperoneProfile( chapindex.second );
+            vr::VRApplications()->CancelApplicationLaunch(
+                "openvr.tool.steamvr_room_setup" );
+            if ( vr::VRApplications()->GetApplicationProcessId(
+                     "openvr.tool.steamvr_room_setup" )
+                 != 0 )
+            {
+                LOG( INFO ) << "room setup running after applying chaperone "
+                               "exiting roomsetup";
+                vr::VRApplications()->LaunchApplication(
+                    "openvr.tool.steamvr_environments" );
+            }
+        }
+    }
 }
 
 void OverlayController::OnRenderRequest()
@@ -819,7 +842,7 @@ void OverlayController::setExclusiveInputEnabled( bool value, bool notify )
     }
 }
 
-void OverlayController::setOpenXRFixEnabled( bool value, bool notify )
+/*void OverlayController::setOpenXRFixEnabled( bool value, bool notify )
 {
     settings::setSetting( settings::BoolSetting::APPLICATION_openXRWorkAround,
                           value );
@@ -833,6 +856,37 @@ bool OverlayController::openXRFixEnabled() const
 {
     return settings::getSetting(
         settings::BoolSetting::APPLICATION_openXRWorkAround );
+}*/
+
+void OverlayController::setAutoApplyChaperoneEnabled( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::APPLICATION_autoApplyChaperone,
+                          value );
+    if ( notify )
+    {
+        emit autoApplyChaperoneEnabledChanged( value );
+    }
+}
+
+std::string OverlayController::autoApplyChaperoneName()
+{
+    return settings::getSetting(
+        settings::StringSetting::APPLICATION_autoApplyChaperoneName );
+}
+
+Q_INVOKABLE void OverlayController::setAutoChapProfileName( int index )
+{
+    std::string value
+        = m_chaperoneTabController.getChaperoneProfileName( index )
+              .toStdString();
+    settings::setSetting(
+        settings::StringSetting::APPLICATION_autoApplyChaperoneName, value );
+}
+
+bool OverlayController::autoApplyChaperoneEnabled() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::APPLICATION_autoApplyChaperone );
 }
 
 bool OverlayController::crashRecoveryDisabled() const
@@ -1260,6 +1314,7 @@ void OverlayController::mainEventLoop()
     // This Fix is hopefully temporary as OpenVR doesn't appear to have a way to
     // tell if an application is OpenXR outside of VR_init which we don't have
     // control over
+    /*
     if ( vr::VRApplications()->GetApplicationProcessId(
              "openvr.tool.steamvr_room_setup" )
              == 0
@@ -1269,7 +1324,7 @@ void OverlayController::mainEventLoop()
         // Unless Room Setup is running, treat this case as Standing.
         universe = vr::TrackingUniverseStanding;
     }
-
+    */
     m_moveCenterTabController.eventLoopTick( universe, devicePoses );
     m_utilitiesTabController.eventLoopTick();
     m_statisticsTabController.eventLoopTick(

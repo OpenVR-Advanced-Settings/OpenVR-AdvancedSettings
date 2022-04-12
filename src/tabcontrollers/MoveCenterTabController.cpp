@@ -705,6 +705,28 @@ void MoveCenterTabController::setFlingStrength( float value, bool notify )
     }
 }
 
+float MoveCenterTabController::dragMult() const
+{
+    return static_cast<float>(
+        settings::getSetting( settings::DoubleSetting::PLAYSPACE_dragMult ) );
+}
+
+void MoveCenterTabController::setDragMult( float value, bool notify )
+{
+    double valuesubmit = static_cast<double>( value );
+    if ( value > 20.0f )
+    {
+        valuesubmit = 20.0;
+    }
+    settings::setSetting( settings::DoubleSetting::PLAYSPACE_dragMult,
+                          static_cast<double>( valuesubmit ) );
+
+    if ( notify )
+    {
+        emit dragMultChanged( value );
+    }
+}
+
 bool MoveCenterTabController::gravityActive() const
 {
     return m_gravityActive;
@@ -879,48 +901,6 @@ bool MoveCenterTabController::isInitComplete() const
     return m_initComplete;
 }
 
-bool MoveCenterTabController::enableSeatedMotion() const
-{
-    return settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_enableSeatedMotion );
-}
-
-void MoveCenterTabController::setEnableSeatedMotion( bool value, bool notify )
-{
-    settings::setSetting( settings::BoolSetting::PLAYSPACE_enableSeatedMotion,
-                          value );
-
-    if ( notify )
-    {
-        emit enableUncalMotionChanged( value );
-    }
-}
-
-bool MoveCenterTabController::enableUncalMotion() const
-{
-    return settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_enableUncalMotion );
-}
-
-void MoveCenterTabController::setEnableUncalMotion( bool value, bool notify )
-{
-    if ( !value && m_initComplete )
-    {
-        reset();
-    }
-    settings::setSetting( settings::BoolSetting::PLAYSPACE_enableUncalMotion,
-                          value );
-    if ( !value && m_initComplete )
-    {
-        m_pendingZeroOffsets = true;
-    }
-
-    if ( notify )
-    {
-        emit enableUncalMotionChanged( value );
-    }
-}
-
 bool MoveCenterTabController::simpleRecenter() const
 {
     return settings::getSetting(
@@ -982,26 +962,23 @@ void MoveCenterTabController::shutdown()
 
 void MoveCenterTabController::incomingSeatedReset()
 {
-    if ( enableSeatedMotion() )
+    // if we didn't send the request from OVRAS, we need to send another
+    // ResetSeatedZeroPose(). It seems that only after this is sent from
+    // OVRAS does ReloadFromDisk return valid info on WMR.
+    if ( !m_selfRequestedSeatedRecenter && !simpleRecenter() )
     {
-        // if we didn't send the request from OVRAS, we need to send another
-        // ResetSeatedZeroPose(). It seems that only after this is sent from
-        // OVRAS does ReloadFromDisk return valid info on WMR.
-        if ( !m_selfRequestedSeatedRecenter && !simpleRecenter() )
-        {
-            m_selfRequestedSeatedRecenter = true;
-            vr::VRSystem()->ResetSeatedZeroPose();
-        }
-        else
-        {
-            updateSeatedResetData();
-        }
+        m_selfRequestedSeatedRecenter = true;
+        vr::VRSystem()->ResetSeatedZeroPose();
+    }
+    else
+    {
+        updateSeatedResetData();
     }
 }
 
 void MoveCenterTabController::reset()
 {
-    if ( !m_chaperoneBasisAcquired && !enableUncalMotion() )
+    if ( !m_chaperoneBasisAcquired )
     {
         LOG( WARNING ) << "WARNING: Attempted reset offsets before chaperone "
                           "basis is acquired!";
@@ -1039,8 +1016,8 @@ void MoveCenterTabController::reset()
         if ( m_trackingUniverse == vr::TrackingUniverseSeated )
         {
             vr::HmdMatrix34_t temp;
-            // This is not the floor it should be ~ chair height... this seems
-            // to be intended behaviour from openvr
+            // This is not the floor it should be ~ chair height... this
+            // seems to be intended behaviour from openvr
             vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
                 &temp );
             m_offsetmatrix.m[1][3] = temp.m[1][3];
@@ -1083,13 +1060,14 @@ void MoveCenterTabController::zeroOffsets()
                     << currentCenterXyz[0] << " )";
         LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
         outputLogHmdMatrix( currentCenter );
-        // if reset happens before init is complete we set the universe center
-        // to the raw tracking zero point
+        // if reset happens before init is complete we set the universe
+        // center to the raw tracking zero point
         reset();
         if ( !m_chaperoneBasisAcquired )
         {
             LOG( WARNING )
-                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS ACQUIRED<[!]><[!]> "
+                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS "
+                   "ACQUIRED<[!]><[!]> "
                    "Setting universe center to raw tracking zero point.";
         }
         else
@@ -1103,13 +1081,14 @@ void MoveCenterTabController::zeroOffsets()
                     << currentCenterXyz[1] << " )";
         LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
         outputLogHmdMatrix( currentCenter );
-        // if reset happens before init is complete we set the universe center
-        // to the raw tracking zero point
+        // if reset happens before init is complete we set the universe
+        // center to the raw tracking zero point
         reset();
         if ( !m_chaperoneBasisAcquired )
         {
             LOG( WARNING )
-                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS ACQUIRED<[!]><[!]> "
+                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS "
+                   "ACQUIRED<[!]><[!]> "
                    "Setting universe center to raw tracking zero point.";
         }
         else
@@ -1129,7 +1108,8 @@ void MoveCenterTabController::zeroOffsets()
         if ( !m_chaperoneBasisAcquired )
         {
             LOG( WARNING )
-                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS ACQUIRED<[!]><[!]> "
+                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS "
+                   "ACQUIRED<[!]><[!]> "
                    "Setting universe center to raw tracking zero point.";
         }
         else
@@ -1138,10 +1118,10 @@ void MoveCenterTabController::zeroOffsets()
         }
     }
 
-    // finished checking if out of bounds, proceed with normal zeroing offsets
+    // finished checking if out of bounds, proceed with normal zeroing
+    // offsets
     if ( vr::VRChaperone()->GetCalibrationState()
-             == vr::ChaperoneCalibrationState_OK
-         || enableUncalMotion() )
+         == vr::ChaperoneCalibrationState_OK )
     {
         m_oldOffsetX = 0.0f;
         m_oldOffsetY = 0.0f;
@@ -1157,7 +1137,7 @@ void MoveCenterTabController::zeroOffsets()
         emit rotationChanged( m_rotation );
         updateChaperoneResetData();
         m_pendingZeroOffsets = false;
-        if ( !m_chaperoneBasisAcquired && !enableUncalMotion() )
+        if ( !m_chaperoneBasisAcquired )
         {
             m_chaperoneBasisAcquired = true;
             if ( !m_initComplete )
@@ -1179,13 +1159,14 @@ void MoveCenterTabController::zeroOffsets()
                     {
                         parent->m_chaperoneTabController
                             .applyAutosavedProfile();
-                        LOG( INFO )
-                            << "Applying last good chaperone profile autosave";
+                        LOG( INFO ) << "Applying last good chaperone "
+                                       "profile autosave";
                     }
                 }
-                // Now mark previous shutdown as unsafe in case we crash some
-                // time during this session. Previous shutdown will be marked as
-                // being safe once more just before our app shuts down properly.
+                // Now mark previous shutdown as unsafe in case we crash
+                // some time during this session. Previous shutdown will be
+                // marked as being safe once more just before our app shuts
+                // down properly.
                 parent->setPreviousShutdownSafe( false );
             }
         }
@@ -1199,6 +1180,7 @@ void MoveCenterTabController::zeroOffsets()
     }
     else
     {
+        LOG( WARNING ) << "Chaperone not calibrated?";
         if ( !m_pendingZeroOffsets )
         {
             LOG( INFO ) << "PENDING: Chaperone Data Update and Offsets zeroing";
@@ -1253,10 +1235,11 @@ void MoveCenterTabController::updateSeatedResetData()
     emit offsetZChanged( m_offsetZ );
     emit rotationChanged( m_rotation );
     vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
-    // done with this recenter, so set self request back to false for next time.
+    // done with this recenter, so set self request back to false for next
+    // time.
     m_selfRequestedSeatedRecenter = false;
-    // set pending update here, will be processed on next instance of motion or
-    // running the reset() function.
+    // set pending update here, will be processed on next instance of motion
+    // or running the reset() function.
     m_pendingSeatedRecenter = true;
 }
 
@@ -1297,8 +1280,8 @@ void MoveCenterTabController::updateCollisionBoundsForOffset()
             = std::atan2( m_universeCenterForReset.m[0][2],
                           m_universeCenterForReset.m[2][2] );
 
-        // we want to store m_collisionBoundsForOffset as spacially relative to
-        // m_universeCenterForReset, so:
+        // we want to store m_collisionBoundsForOffset as spacially relative
+        // to m_universeCenterForReset, so:
 
         // for every quad in the chaperone bounds...
         for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset; quad++ )
@@ -1668,14 +1651,14 @@ void MoveCenterTabController::swapSpaceDragToLeftHandOverride(
         }
     }
     m_swapDragToLeftHandPressed = swapDragToLeftHand;
-    // we only set activated flag when the swap was successfull, but we always
-    // deactivate when swap action isn't pressed.
+    // we only set activated flag when the swap was successfull, but we
+    // always deactivate when swap action isn't pressed.
     if ( !swapDragToLeftHand )
     {
         m_swapDragToLeftHandActivated = false;
     }
-    // deactivate turning even when not detecting a new press as long as a swap
-    // is successfully activated now
+    // deactivate turning even when not detecting a new press as long as a
+    // swap is successfully activated now
     if ( m_swapDragToLeftHandActivated )
     {
         m_activeTurnHand = vr::TrackedControllerRole_Invalid;
@@ -1748,14 +1731,14 @@ void MoveCenterTabController::swapSpaceDragToRightHandOverride(
 
     m_swapDragToRightHandPressed = swapDragToRightHand;
 
-    // we only set activated flag when the swap was successfull, but we always
-    // deactivate when swap action isn't pressed.
+    // we only set activated flag when the swap was successfull, but we
+    // always deactivate when swap action isn't pressed.
     if ( !swapDragToRightHand )
     {
         m_swapDragToRightHandActivated = false;
     }
-    // deactivate turning even when not detecting a new press as long as a swap
-    // is successfully activated now
+    // deactivate turning even when not detecting a new press as long as a
+    // swap is successfully activated now
     if ( m_swapDragToRightHandActivated )
     {
         m_activeTurnHand = vr::TrackedControllerRole_Invalid;
@@ -1764,7 +1747,7 @@ void MoveCenterTabController::swapSpaceDragToRightHandOverride(
 
 // END of drag bindings
 
-// START of turn bindgins
+// START of turn bindings
 
 void MoveCenterTabController::leftHandSpaceTurn( bool leftHandTurnActive )
 {
@@ -2045,9 +2028,9 @@ void MoveCenterTabController::smoothTurnLeft( bool smoothTurnLeftActive )
         return;
     }
 
-    // Activates every tick. smoothTurnRate() effectively becomes a percentage
-    // of a degree per tick. A setting of 100 would equal 90 degrees/sec or 15
-    // RPM with a framerate of 90fps
+    // Activates every tick. smoothTurnRate() effectively becomes a
+    // percentage of a degree per tick. A setting of 100 would equal 90
+    // degrees/sec or 15 RPM with a framerate of 90fps
     int newRotationAngleDeg = m_rotation - smoothTurnRate();
     // Keep angle within -18000 ~ 18000 centidegrees
     if ( newRotationAngleDeg > 18000 )
@@ -2069,9 +2052,9 @@ void MoveCenterTabController::smoothTurnRight( bool smoothTurnRightActive )
         return;
     }
 
-    // Activates every tick. smoothTurnRate() effectively becomes a percentage
-    // of a degree per tick. A setting of 100 would equal 90 degrees/sec or 15
-    // RPM with a framerate of 90fps
+    // Activates every tick. smoothTurnRate() effectively becomes a
+    // percentage of a degree per tick. A setting of 100 would equal 90
+    // degrees/sec or 15 RPM with a framerate of 90fps
     int newRotationAngleDeg = m_rotation + smoothTurnRate();
     // Keep angle within -18000 ~ 18000 centidegrees
     if ( newRotationAngleDeg > 18000 )
@@ -2157,8 +2140,8 @@ void MoveCenterTabController::saveUncommittedChaperone()
     }
 }
 
-// NOTE this function will create bad output if User Rotates 180 Degrees in 1/7*
-// frame-rate. (Worst Case 30 fps = ~770 deg/s)
+// NOTE this function will create bad output if User Rotates 180 Degrees in
+// 1/7* frame-rate. (Worst Case 30 fps = ~770 deg/s)
 void MoveCenterTabController::updateHmdRotationCounter(
     vr::TrackedDevicePose_t hmdPose,
     double angle )
@@ -2321,8 +2304,13 @@ void MoveCenterTabController::updateHandDrag(
 
         // offset is un-rotated coordinates
 
-        // prevent positional glitches from exceeding max openvr offset clamps.
-        // We do this by detecting a drag larger than 100m in a single frame.
+        diff[0] = diff[0] * static_cast<double>( dragMult() );
+        diff[1] = diff[1] * static_cast<double>( dragMult() );
+        diff[2] = diff[2] * static_cast<double>( dragMult() );
+
+        // prevent positional glitches from exceeding max openvr offset
+        // clamps. We do this by detecting a drag larger than 100m in a
+        // single frame.
         if ( abs( diff[0] ) > 100.0 || abs( diff[1] ) > 100.0
              || abs( diff[2] ) > 100.0 )
         {
@@ -2612,9 +2600,9 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         updateChaperoneResetData();
     }
 
-    // do a late on-demand setting of seated center basis when we need it for
-    // motion. This gives the reload from disk a little more time to complete
-    // before we apply the new seated basis.
+    // do a late on-demand setting of seated center basis when we need it
+    // for motion. This gives the reload from disk a little more time to
+    // complete before we apply the new seated basis.
     if ( m_pendingSeatedRecenter )
     {
         vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
@@ -2766,8 +2754,8 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             &offsetSeatedCenter );
     }
 
-    // As of SVR 1.13.1 The Chaperone will follow Universe Center NOT raw Center
-    // as such this should be off by defualt.
+    // As of SVR 1.13.1 The Chaperone will follow Universe Center NOT raw
+    // Center as such this should be off by defualt.
 
     if ( adjustChaperone() )
     {
@@ -2794,14 +2782,15 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
                     = m_collisionBoundsForOffset[quad].vCorners[corner].v[2];
 
                 // cancel universe center's xyz offsets to each corner's
-                // position and shift over by original center position so that
-                // we are mirroring the offset as reflected about the original
-                // origin
+                // position and shift over by original center position so
+                // that we are mirroring the offset as reflected about the
+                // original origin
                 updatedBounds[quad].vCorners[corner].v[0]
                     -= offsetUniverseCenter.m[0][3]
                        - offsetUniverseCenter.m[0][3];
                 //- m_universeCenterForReset.m[0][3];
-                // but don't touch y=0 values to keep floor corners rooted down
+                // but don't touch y=0 values to keep floor corners rooted
+                // down
                 if ( updatedBounds[quad].vCorners[corner].v[1] != 0 )
                 {
                     updatedBounds[quad].vCorners[corner].v[1]
@@ -2932,8 +2921,8 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         m_chaperoneCommitted = false;
     }
 
-    // loadChaperoneData( false ), false so that we don't load live data, and
-    // reference the working set instead.
+    // loadChaperoneData( false ), false so that we don't load live data,
+    // and reference the working set instead.
     if ( m_collisionBoundsCountForReset > 0 )
     {
         parent->chaperoneUtils().loadChaperoneData( false );
@@ -2951,14 +2940,17 @@ void MoveCenterTabController::eventLoopTick(
 
 {
     // detect if room setup is running
-    if ( universe == vr::TrackingUniverseRawAndUncalibrated )
+    if ( universe == vr::TrackingUniverseRawAndUncalibrated
+         && vr::VRApplications()->GetApplicationProcessId(
+                "openvr.tool.steamvr_room_setup" )
+                != 0 )
     {
         if ( !m_roomSetupModeDetected )
         {
             m_roomSetupModeDetected = true;
 
-            // give up on any pending zero offsets so they aren't applied in the
-            // middle of room setup.
+            // give up on any pending zero offsets so they aren't applied in
+            // the middle of room setup.
             m_pendingZeroOffsets = false;
 
             LOG( INFO ) << "room setup ENTRY detected";
@@ -2986,16 +2978,15 @@ void MoveCenterTabController::eventLoopTick(
         LOG( INFO ) << "seated mode EXIT detected";
     }
 
-    // If we're trying to redifine the origin point, but can't becaues of bad
-    // chaperone calibration, we keep trying and hold off on motion features
-    // until we get ChaperoneCalibrationState_OK
+    // If we're trying to redifine the origin point, but can't becaues of
+    // bad chaperone calibration, we keep trying and hold off on motion
+    // features until we get ChaperoneCalibrationState_OK
 
-    // if we were in room setup, but got this far in the loop, universe is no
-    // longer raw mode and we detect room setup exit and zeroOffsets() to apply
-    // new setup.
+    // if we were in room setup, but got this far in the loop, universe is
+    // no longer raw mode and we detect room setup exit and zeroOffsets() to
+    // apply new setup.
 
-    if ( m_pendingZeroOffsets
-         || ( m_roomSetupModeDetected && !enableUncalMotion() ) )
+    if ( m_pendingZeroOffsets || ( m_roomSetupModeDetected ) )
     {
         zeroOffsets();
         // m_roomSetupModeDetected is set to false in zeroOffsets() if it's
@@ -3008,8 +2999,8 @@ void MoveCenterTabController::eventLoopTick(
         // get current space rotation in radians
         double angle = m_rotation * k_centidegreesToRadians;
 
-        // hmd rotations stats counting doesn't need to be smooth, so we skip
-        // some frames for performance
+        // hmd rotations stats counting doesn't need to be smooth, so we
+        // skip some frames for performance
         if ( m_hmdRotationStatsUpdateCounter >= k_hmdRotationCounterUpdateRate )
         {
             // device pose index 0 is always the hmd
@@ -3021,26 +3012,20 @@ void MoveCenterTabController::eventLoopTick(
             m_hmdRotationStatsUpdateCounter++;
         }
 
-        // stop everything before processing motion if we're in seated mode and
-        // don't have seated motion enabled
-        if ( m_seatedModeDetected && !enableSeatedMotion() )
-        {
-            return;
-        }
-
         // only update dynamic motion if the dash is closed
         if ( !parent->isDashboardVisible() )
         {
             // detect new dash closed
             if ( m_dashWasOpenPreviousFrame )
             {
-                // reset velocity time points on dash closed so we don't factor
-                // in the time motion was paused during the open dash
+                // reset velocity time points on dash closed so we don't
+                // factor in the time motion was paused during the open dash
                 m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
                 m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
             }
 
-            // force chaperone bounds visible if turn or drag settings require
+            // force chaperone bounds visible if turn or drag settings
+            // require
             if ( dragBounds()
                  && m_activeDragHand != vr::TrackedControllerRole_Invalid )
             {
@@ -3058,9 +3043,9 @@ void MoveCenterTabController::eventLoopTick(
                     parent->m_chaperoneTabController.forceBounds() );
             }
 
-            // Smooth turn motion can cause sim-sickness so we check if the user
-            // wants to skip frames to reduce vection. We use the factor squared
-            // because of logarithmic human perception.
+            // Smooth turn motion can cause sim-sickness so we check if the
+            // user wants to skip frames to reduce vection. We use the
+            // factor squared because of logarithmic human perception.
             if ( m_turnComfortFrameSkipCounter >= static_cast<unsigned>(
                      ( turnComfortFactor() * turnComfortFactor() ) ) )
             {
@@ -3072,9 +3057,9 @@ void MoveCenterTabController::eventLoopTick(
                 m_turnComfortFrameSkipCounter++;
             }
 
-            // Smooth drag motion can cause sim-sickness so we check if the user
-            // wants to skip frames to reduce vection. We use the factor squared
-            // because of logarithmic human perception.
+            // Smooth drag motion can cause sim-sickness so we check if the
+            // user wants to skip frames to reduce vection. We use the
+            // factor squared because of logarithmic human perception.
             if ( m_dragComfortFrameSkipCounter >= static_cast<unsigned>(
                      ( dragComfortFactor() * dragComfortFactor() ) ) )
             {

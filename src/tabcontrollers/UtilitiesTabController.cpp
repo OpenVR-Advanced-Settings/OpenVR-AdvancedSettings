@@ -224,7 +224,8 @@ QString getBatteryIconPath( int batteryState )
     return QString::fromStdString( *batteryPath );
 }
 
-vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index )
+vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index,
+                                            unsigned style = 0 )
 {
     vr::VROverlayHandle_t handle = vr::k_ulOverlayHandleInvalid;
     std::string batteryKey = std::string( application_strings::applicationKey )
@@ -239,10 +240,19 @@ vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index )
             vr::VROverlay()->SetOverlayFromFile(
                 handle, batteryIconPath.toStdString().c_str() );
             vr::VROverlay()->SetOverlayWidthInMeters( handle, 0.045f );
-            vr::HmdMatrix34_t notificationTransform
-                = { { { 1.0f, 0.0f, 0.0f, 0.00f },
-                      { 0.0f, -1.0f, 0.0f, 0.0081f },
-                      { 0.0f, 0.0f, -1.0f, -0.0178f } } };
+            vr::HmdMatrix34_t notificationTransform;
+            if ( style == 1 )
+            {
+                notificationTransform = { { { 1.0f, 0.0f, 0.0f, 0.00f },
+                                            { 0.0f, -1.0f, 0.0f, 0.0081f },
+                                            { 0.0f, 0.0f, -1.0f, -0.028f } } };
+            }
+            else
+            {
+                notificationTransform = { { { 1.0f, 0.0f, 0.0f, 0.00f },
+                                            { 0.0f, -1.0f, 0.0f, 0.0081f },
+                                            { 0.0f, 0.0f, -1.0f, -0.0178f } } };
+            }
             vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
                 handle, index, &notificationTransform );
             LOG( INFO ) << "Created battery overlay for device " << index;
@@ -283,8 +293,19 @@ void UtilitiesTabController::eventLoopTick()
         {
             if ( m_batteryOverlayHandles[i] == 0 )
             {
+                auto type = ovr_system_wrapper::getStringTrackedProperty(
+                    i, vr::Prop_RenderModelName_String );
+                unsigned style = 0;
+                if ( type.first == ovr_system_wrapper::SystemError::NoError )
+                {
+                    if ( type.second.find( "tundra" ) != std::string::npos )
+                    {
+                        style = 1;
+                    }
+                }
+
                 LOG( INFO ) << "Creating battery overlay for device " << i;
-                m_batteryOverlayHandles[i] = createBatteryOverlay( i );
+                m_batteryOverlayHandles[i] = createBatteryOverlay( i, style );
                 m_batteryVisible[i] = true;
             }
 

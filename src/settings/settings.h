@@ -33,6 +33,7 @@ enum class BoolSetting
     APPLICATION_enableExclusiveInput,
     APPLICATION_crashRecoveryDisabled2,
     APPLICATION_openXRWorkAround,
+    APPLICATION_autoApplyChaperone,
 
     AUDIO_pttEnabled,
     AUDIO_pttShowNotification,
@@ -70,6 +71,7 @@ enum class DoubleSetting
     PLAYSPACE_heightToggleOffset,
     PLAYSPACE_gravityStrength,
     PLAYSPACE_flingStrength,
+    PLAYSPACE_dragMult,
 
     VIDEO_brightnessOpacityValue,
     VIDEO_colorOverlayOpacity,
@@ -100,8 +102,11 @@ enum class StringSetting
     KEYBOARDSHORTCUT_keyboardThree,
     KEYBOARDSHORTCUT_keyPressMisc,
     KEYBOARDSHORTCUT_keyPressSystem,
+
+    APPLICATION_autoApplyChaperoneName,
+
     // LAST_ENUMERATOR must always be set to the last value
-    LAST_ENUMERATOR = KEYBOARDSHORTCUT_keyPressSystem,
+    LAST_ENUMERATOR = APPLICATION_autoApplyChaperoneName,
 };
 
 enum class IntSetting

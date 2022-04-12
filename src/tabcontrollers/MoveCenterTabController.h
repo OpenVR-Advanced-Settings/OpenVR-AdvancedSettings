@@ -135,12 +135,10 @@ class MoveCenterTabController : public QObject
     Q_PROPERTY(
         bool universeCenteredRotation READ universeCenteredRotation WRITE
             setUniverseCenteredRotation NOTIFY universeCenteredRotationChanged )
-    Q_PROPERTY( bool enableSeatedMotion READ enableSeatedMotion WRITE
-                    setEnableSeatedMotion NOTIFY enableSeatedMotionChanged )
     Q_PROPERTY( bool simpleRecenter READ simpleRecenter WRITE setSimpleRecenter
                     NOTIFY simpleRecenterChanged )
-    Q_PROPERTY( bool enableUncalMotion READ enableUncalMotion WRITE
-                    setEnableUncalMotion NOTIFY enableUncalMotionChanged )
+    Q_PROPERTY(
+        float dragMult READ dragMult WRITE setDragMult NOTIFY dragMultChanged )
 
 private:
     OverlayController* parent;
@@ -268,6 +266,7 @@ public:
     float heightToggleOffset() const;
     float gravityStrength() const;
     float flingStrength() const;
+    float dragMult() const;
     bool gravityActive() const;
     bool momentumSave() const;
     bool lockXToggle() const;
@@ -277,8 +276,6 @@ public:
     bool allowExternalEdits() const;
     bool oldStyleMotion() const;
     bool universeCenteredRotation() const;
-    bool enableSeatedMotion() const;
-    bool enableUncalMotion() const;
     bool simpleRecenter() const;
     bool isInitComplete() const;
     double getHmdYawTotal();
@@ -345,6 +342,7 @@ public slots:
     void setHeightToggleOffset( float value, bool notify = true );
     void setGravityStrength( float value, bool notify = true );
     void setFlingStrength( float value, bool notify = true );
+    void setDragMult( float value, bool notify = true );
     void setGravityActive( bool value, bool notify = true );
     void setMomentumSave( bool value, bool notify = true );
 
@@ -359,8 +357,6 @@ public slots:
     void setAllowExternalEdits( bool value, bool notify = true );
     void setOldStyleMotion( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
-    void setEnableSeatedMotion( bool value, bool notify = true );
-    void setEnableUncalMotion( bool value, bool notify = true );
     void setSimpleRecenter( bool value, bool notify = true );
 
     void shutdown();
@@ -397,6 +393,7 @@ signals:
     void heightToggleOffsetChanged( float value );
     void gravityStrengthChanged( float value );
     void flingStrengthChanged( float value );
+    void dragMultChanged( float value );
     void gravityActiveChanged( bool value );
     void momentumSaveChanged( bool value );
     void requireLockXChanged( bool value );
@@ -406,9 +403,7 @@ signals:
     void allowExternalEditsChanged( bool value );
     void oldStyleMotionChanged( bool value );
     void universeCenteredRotationChanged( bool value );
-    void enableSeatedMotionChanged( bool value );
     void simpleRecenterChanged( bool value );
-    void enableUncalMotionChanged( bool value );
 
     void offsetProfilesUpdated();
 };
