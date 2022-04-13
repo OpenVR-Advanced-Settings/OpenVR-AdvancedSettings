@@ -141,6 +141,8 @@ Section "Install" SecInstall
 	;Create uninstaller
 	WriteUninstaller "$INSTDIR\Uninstall.exe"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRAdvancedSettings" "DisplayName" "OpenVR Advanced Settings"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRAdvancedSettings" "DisplayVersion" "${VERSION_STRING}"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRAdvancedSettings" "Publisher" "OVRAS Team"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\OpenVRAdvancedSettings" "UninstallString" "$\"$INSTDIR\Uninstall.exe$\""
 
 	; If SteamVR is already running, execute the dashboard as the user
