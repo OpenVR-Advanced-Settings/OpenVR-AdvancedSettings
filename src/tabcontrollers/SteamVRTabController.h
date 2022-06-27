@@ -14,6 +14,7 @@
 #include <QtWebSockets/QWebSocket>
 #include <QUrl>
 #include <QNetworkRequest>
+#include "../utils/json.hpp"
 
 class QQuickWindow;
 // application namespace
