@@ -231,4 +231,78 @@ std::vector<int> getAllConnectedDevices( bool onlyWearable )
     return output;
 }
 
+std::string getControllerName()
+{
+    // This call is deprecated but probably exactly what we need
+    int found = 0;
+    bool hasHMD = false;
+    uint32_t hmdIdx = 999;
+    uint32_t lftIdx = 999;
+    uint32_t rightIdx = 999;
+    for ( uint32_t i = 0; i < vr::k_unMaxTrackedDeviceCount; i++ )
+    {
+        auto trackedDeviceClass = vr::VRSystem()->GetTrackedDeviceClass( i );
+        if ( trackedDeviceClass == vr::TrackedDeviceClass_HMD )
+        {
+            hmdIdx = i;
+            hasHMD = true;
+        }
+        if ( trackedDeviceClass == vr::TrackedDeviceClass_Controller )
+        {
+            auto handRole = getInt32TrackedProperty(
+                                i, vr::Prop_ControllerRoleHint_Int32 )
+                                .second;
+            switch ( handRole )
+            {
+            case vr::TrackedControllerRole_LeftHand:
+                lftIdx = i;
+                found |= 0b100;
+                break;
+            case vr::TrackedControllerRole_RightHand:
+                lftIdx = i;
+                found |= 0b010;
+                break;
+            default:
+                break;
+            }
+        }
+        if ( found == 0b110 )
+        {
+            break;
+        }
+    }
+    bool isRightCon = false, isLeftCon = false;
+    std::string right, left;
+    if ( found == 0b110 || found == 0b100 )
+    {
+        isLeftCon = vr::VRSystem()->IsTrackedDeviceConnected( lftIdx );
+        if ( isLeftCon )
+        {
+            auto left = getStringTrackedProperty(
+                            lftIdx, vr::Prop_ControllerType_String )
+                            .second;
+        }
+    }
+    if ( found == 0b110 || found == 0b010 )
+    {
+        isRightCon = vr::VRSystem()->IsTrackedDeviceConnected( rightIdx );
+        if ( isRightCon )
+        {
+            auto right = getStringTrackedProperty(
+                             rightIdx, vr::Prop_ControllerType_String )
+                             .second;
+        }
+    }
+    if ( !isLeftCon && !isRightCon && hasHMD )
+    {
+        LOG( WARNING ) << "WARNING: No Controllers assuming based on HMD";
+        return "knuckles";
+    }
+    if ( right != left )
+    {
+        LOG( WARNING ) << "WARNING: Left and Right Controllers are Different";
+    }
+    return right;
+}
+
 } // namespace ovr_system_wrapper

@@ -14,8 +14,11 @@
 #include <QtWebSockets/QWebSocket>
 #include <QUrl>
 #include <QNetworkRequest>
+#include <QNetworkAccessManager>
 #include "../utils/json.hpp"
+#include <QNetworkReply>
 
+using namespace nlohmann;
 class QQuickWindow;
 // application namespace
 namespace advsettings
@@ -68,6 +71,9 @@ private:
     bool m_noFadeToGridToggle = false;
     bool m_multipleDriverToggle = false;
     bool m_dnd = false;
+    QNetworkAccessManager m_networkManager;
+    QNetworkRequest m_networkRequest;
+    QNetworkReply* m_networkReply;
 
     bool m_cameraActive = false;
     bool m_cameraBounds = false;
@@ -76,8 +82,10 @@ private:
     bool m_pathRXTXInit = false;
     int m_dongleCountCur = 0;
     int m_dongleCountMax = 0;
+    bool m_pendingReply = false;
     QString m_unparsedDongleString = "";
     QString m_last_pair_sn = "";
+    std::string m_lastAppID = "";
 
     std::vector<DeviceInfo> m_deviceList;
 
@@ -86,6 +94,7 @@ private:
     void synchSteamVR();
     std::vector<QString> getDongleSerialList( std::string deviceString );
     bool isSteamVRTracked( QString sn );
+    std::string onGetBindingUrlResponse();
 
 public:
     void initStage1();
@@ -106,6 +115,13 @@ public:
     bool cameraDashboard() const;
     QNetworkProxy m_proxy;
     QWebSocket m_webSocket;
+
+    bool m_adjustBinding = true;
+    void getBindingUrlReq( std::string appID );
+    void getBindingDataReq( std::string steamURL,
+                            std::string appID,
+                            std::string ctrlType );
+    json onGetBindingDataResponse();
 
     Q_INVOKABLE void searchRXTX();
 

@@ -1275,6 +1275,11 @@ void OverlayController::mainEventLoop()
             }
         }
         break;
+        case vr::VREvent_ActionBindingReloaded:
+        {
+            m_steamVRTabController.getBindingUrlReq( "steam.overlay.1009850" );
+        }
+        break;
         }
     }
 

@@ -628,4 +628,80 @@ std::vector<QString>
     return dongleList;
 }
 
+// Binding Functions
+void SteamVRTabController::getBindingUrlReq( std::string appID )
+{
+    m_lastAppID = appID;
+    std::string urls
+        = "http://localhost:27062/input/getactions.json?app_key=" + appID;
+    QUrl url = QUrl( urls.c_str() );
+    QNetworkRequest request;
+    request.setUrl( url );
+    // This is Important as otherwise Valve's VRWebServerWillIgnore the Request
+    request.setRawHeader(
+        QByteArray( "Referer" ),
+        QByteArray(
+            "http://localhost:27062/dashboard/controllerbinding.html" ) );
+    // TODO start Timeout timer?
+    m_networkReply = m_networkManager.get( request );
+    connect( m_networkReply,
+             &QNetworkReply::finished,
+             this,
+             &SteamVRTabController::onGetBindingUrlResponse );
+    return;
+}
+std::string SteamVRTabController::onGetBindingUrlResponse()
+{
+    QString data = QString::fromUtf8( m_networkReply->readAll() );
+    // TODO convert data to
+    json jsonfull = json::parse( data.toStdString() );
+    std::string controllerName = ovr_system_wrapper::getControllerName();
+    if ( controllerName == "" )
+    {
+        LOG( WARNING ) << "No Controller Detected Skipping Bindings";
+        return "";
+    }
+    std::string filepath
+        = jsonfull["current_binding_url"][controllerName].get<std::string>();
+    LOG( INFO ) << filepath;
+    m_networkReply->abort();
+    m_pendingReply = false;
+    // TODOLogic on when to get Data vs skip
+    getBindingDataReq( filepath, controllerName, m_lastAppID );
+
+    return "";
+}
+
+void SteamVRTabController::getBindingDataReq( std::string steamURL,
+                                              std::string appID,
+                                              std::string ctrlType )
+{
+    std::string urls = "http://localhost:27062/input/"
+                       "loadbindingfromurl.json?binding_url="
+                       + steamURL + "&controller_type=" + ctrlType
+                       + "&app_key=" + appID;
+    QUrl url = QUrl( urls.c_str() );
+    QNetworkRequest request;
+    request.setUrl( url );
+    // This is Important as otherwise Valve's VRWebServerWillIgnore the Request
+    request.setRawHeader(
+        QByteArray( "Referer" ),
+        QByteArray(
+            "http://localhost:27062/dashboard/controllerbinding.html" ) );
+    // TODO start Timeout timer?
+    m_networkReply = m_networkManager.get( request );
+    connect( m_networkReply,
+             &QNetworkReply::finished,
+             this,
+             &SteamVRTabController::onGetBindingDataResponse );
+    return;
+}
+json SteamVRTabController::onGetBindingDataResponse()
+{
+    json output = "";
+    QString data = QString::fromUtf8( m_networkReply->readAll() );
+    LOG( WARNING ) << data.toStdString();
+    return output;
+}
+
 } // namespace advsettings
