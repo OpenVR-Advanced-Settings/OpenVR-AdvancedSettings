@@ -1280,6 +1280,8 @@ void OverlayController::mainEventLoop()
             m_steamVRTabController.getBindingUrlReq( "steam.overlay.1009850" );
         }
         break;
+        default:
+            break;
         }
     }
 

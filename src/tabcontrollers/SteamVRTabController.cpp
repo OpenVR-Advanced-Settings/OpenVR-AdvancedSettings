@@ -654,20 +654,20 @@ std::string SteamVRTabController::onGetBindingUrlResponse()
 {
     QString data = QString::fromUtf8( m_networkReply->readAll() );
     // TODO convert data to
-    json jsonfull = json::parse( data.toStdString() );
     std::string controllerName = ovr_system_wrapper::getControllerName();
     if ( controllerName == "" )
     {
         LOG( WARNING ) << "No Controller Detected Skipping Bindings";
         return "";
     }
+    json jsonfull = json::parse( data.toStdString() );
     std::string filepath
         = jsonfull["current_binding_url"][controllerName].get<std::string>();
     LOG( INFO ) << filepath;
     m_networkReply->abort();
     m_pendingReply = false;
     // TODOLogic on when to get Data vs skip
-    getBindingDataReq( filepath, controllerName, m_lastAppID );
+    getBindingDataReq( filepath, m_lastAppID, controllerName );
 
     return "";
 }
@@ -701,7 +701,30 @@ json SteamVRTabController::onGetBindingDataResponse()
     json output = "";
     QString data = QString::fromUtf8( m_networkReply->readAll() );
     LOG( WARNING ) << data.toStdString();
+    json jsonfull = json::parse( data.toStdString() );
+    output = jsonfull["binding_config"];
+    saveBind( "m_lastAppID", "knuckles", output );
     return output;
+}
+
+bool SteamVRTabController::saveBind( std::string appID,
+                                     std::string ctrlType,
+                                     json binds )
+{
+    QFileInfo fi(
+        QString::fromStdString( settings::initializeAndGetSettingsPath() ) );
+    QDir directory = fi.absolutePath();
+    QString Fn = QString::fromStdString( appID + "appid2" + ".json" );
+    QString absPath = directory.absolutePath() + "/" + Fn;
+    LOG( WARNING ) << "Bind File saved at:" << absPath.toStdString();
+
+    QFile bindFile( absPath );
+    bindFile.open( QIODevice::ReadWrite | QIODevice::Truncate
+                   | QIODevice::Text );
+    QByteArray qba = binds.dump().c_str();
+    bindFile.write( qba );
+    bindFile.flush();
+    bindFile.close();
 }
 
 } // namespace advsettings

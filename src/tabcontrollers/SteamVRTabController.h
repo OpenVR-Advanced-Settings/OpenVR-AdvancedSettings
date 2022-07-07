@@ -122,6 +122,7 @@ public:
                             std::string appID,
                             std::string ctrlType );
     json onGetBindingDataResponse();
+    bool saveBind( std::string appID, std::string ctrlType, json binds );
 
     Q_INVOKABLE void searchRXTX();
 
