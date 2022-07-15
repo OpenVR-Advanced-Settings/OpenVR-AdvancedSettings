@@ -18,6 +18,8 @@
 #include <QNetworkAccessManager>
 #include "../utils/json.hpp"
 #include <QNetworkReply>
+#include <set>
+#include <regex>
 
 using namespace nlohmann;
 class QQuickWindow;
@@ -99,7 +101,7 @@ private:
     std::vector<QString> getDongleSerialList( std::string deviceString );
     bool isSteamVRTracked( QString sn );
     std::string onGetBindingUrlResponse();
-    void applyBindingReq( std::string appID, bool def = false );
+    void applyBindingReq( std::string appID );
     void onApplyBindingResponse();
 
 public:
@@ -142,6 +144,7 @@ public:
                    bool def = false );
 
     bool perAppBindEnabled() const;
+    void applyAllCustomBindings();
 
     Q_INVOKABLE void searchRXTX();
 

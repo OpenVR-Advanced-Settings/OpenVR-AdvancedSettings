@@ -822,7 +822,7 @@ void SteamVRTabController::setCustomBind( std::string appID,
     }
 }
 
-void SteamVRTabController::applyBindingReq( std::string appID, bool def )
+void SteamVRTabController::applyBindingReq( std::string appID )
 {
     std::string ctrlType = ovr_system_wrapper::getControllerName();
     QFileInfo fi(
@@ -836,15 +836,20 @@ void SteamVRTabController::applyBindingReq( std::string appID, bool def )
         return;
     }
 
-    if ( def )
+    Fn = QString::fromStdString( "ovl" + appID + "scene" + sceneAppID + "ctrl"
+                                 + ctrlType + ".json" );
+    if ( !QFileInfo::exists( Fn ) )
     {
-        QString::fromStdString( "defovl" + appID + "ctrl" + ctrlType
-                                + ".json" );
-    }
-    else
-    {
-        Fn = QString::fromStdString( "ovl" + appID + "scene" + sceneAppID
-                                     + "ctrl" + ctrlType + ".json" );
+        LOG( INFO ) << "No Specific Binding Detected for: " + appID
+                           + "for Scene: " + sceneAppID + " Checking Default";
+        Fn = QString::fromStdString( "defovl" + appID + "ctrl" + ctrlType
+                                     + ".json" );
+        if ( !QFileInfo::exists( Fn ) )
+        {
+            LOG( INFO ) << "No Def Binding Detected for: " + appID
+                               + " Not Adjusting Bindings";
+            return;
+        }
     }
     QString absPath = directory.absolutePath() + "/" + Fn;
     std::string filePath = "file:///" + absPath.toStdString();
@@ -897,6 +902,39 @@ void SteamVRTabController::setPerAppBindEnabled( bool value, bool notify )
     if ( notify )
     {
         emit perAppBindEnabledChanged( value );
+    }
+}
+
+void SteamVRTabController::applyAllCustomBindings()
+{
+    QFileInfo fi(
+        QString::fromStdString( settings::initializeAndGetSettingsPath() ) );
+    QDir directory = fi.absolutePath();
+    QStringList bindings = directory.entryList( QStringList() << "*.json"
+                                                              << "*.JSON",
+                                                QDir::Files );
+    std::set<std::string> appIDs;
+    std::regex r1( "ovl(.*)scene" );
+    std::regex r2( "defovl(.*)ctrl" );
+    foreach ( QString filename, bindings )
+    {
+        std::smatch m;
+        std::string s = filename.toStdString();
+
+        if ( regex_search( s, m, r1 ) )
+        {
+            appIDs.insert( m.suffix().str() );
+            continue;
+        }
+        if ( regex_search( s, m, r2 ) )
+        {
+            appIDs.insert( m.suffix().str() );
+            continue;
+        }
+    }
+    foreach ( std::string appID, appIDs )
+    {
+        applyBindingReq( appID );
     }
 }
 
