@@ -63,6 +63,8 @@ class SteamVRTabController : public QObject
                     cameraRoomChanged )
     Q_PROPERTY( bool cameraDashboard READ cameraDashboard WRITE
                     setCameraDashboard NOTIFY cameraDashboardChanged )
+    Q_PROPERTY( bool perAppBindEnabled READ perAppBindEnabled WRITE
+                    setPerAppBindEnabled NOTIFY perAppBindEnabledChanged )
 
 private:
     OverlayController* parent;
@@ -87,6 +89,7 @@ private:
     QString m_unparsedDongleString = "";
     QString m_last_pair_sn = "";
     std::string m_lastAppID = "steam.overlay.1009850";
+    bool m_setDefault = false;
 
     std::vector<DeviceInfo> m_deviceList;
 
@@ -138,6 +141,8 @@ public:
                    json binds,
                    bool def = false );
 
+    bool perAppBindEnabled() const;
+
     Q_INVOKABLE void searchRXTX();
 
     Q_INVOKABLE void launchBindingUI();
@@ -150,6 +155,7 @@ public:
     Q_INVOKABLE QString getDongleUsage();
     Q_INVOKABLE void pairDevice( QString sn );
     Q_INVOKABLE void updateRXTXList();
+    Q_INVOKABLE void setBindingQMLWrapper( QString appID, bool def = false );
 
 public slots:
     void onConnected();
@@ -165,6 +171,8 @@ public slots:
     void setCameraBounds( bool value, bool notify = true );
     void setCameraRoom( bool value, bool notify = true );
     void setCameraDashboard( bool value, bool notify = true );
+
+    void setPerAppBindEnabled( bool value, bool notify = true );
 
     void restartSteamVR();
 
@@ -183,6 +191,8 @@ signals:
 
     void pairStatusChanged( QString value );
     void updateRXTX( bool value );
+
+    void perAppBindEnabledChanged( bool value );
 };
 
 } // namespace advsettings

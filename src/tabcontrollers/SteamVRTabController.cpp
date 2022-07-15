@@ -704,7 +704,7 @@ json SteamVRTabController::onGetBindingDataResponse()
     output = jsonfull["binding_config"];
     std::string sceneAppID = ovr_application_wrapper::getSceneAppID();
     std::string ctrl = ovr_system_wrapper::getControllerName();
-    saveBind( m_lastAppID, sceneAppID, ctrl, output );
+    saveBind( m_lastAppID, sceneAppID, ctrl, output, m_setDefault );
     return output;
 }
 
@@ -714,6 +714,7 @@ bool SteamVRTabController::saveBind( std::string appID,
                                      json binds,
                                      bool def )
 {
+    m_setDefault = false;
     QFileInfo fi(
         QString::fromStdString( settings::initializeAndGetSettingsPath() ) );
     QDir directory = fi.absolutePath();
@@ -874,6 +875,29 @@ void SteamVRTabController::onApplyBindingResponse()
     LOG( WARNING ) << data.toStdString();
     // TODO error handling?
     return;
+}
+
+void SteamVRTabController::setBindingQMLWrapper( QString appID, bool def )
+{
+    m_setDefault = def;
+    std::string aID = appID.toStdString();
+    getBindingUrlReq( aID );
+}
+
+bool SteamVRTabController::perAppBindEnabled() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::STEAMVR_perappBindEnabled );
+}
+void SteamVRTabController::setPerAppBindEnabled( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::STEAMVR_perappBindEnabled,
+                          value );
+
+    if ( notify )
+    {
+        emit perAppBindEnabledChanged( value );
+    }
 }
 
 } // namespace advsettings

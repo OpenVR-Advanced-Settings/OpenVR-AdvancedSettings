@@ -37,7 +37,16 @@ GroupBox {
                 text: "Enable Per-App Bindings For Overlays"
                 Layout.preferredWidth: 300
                 onCheckedChanged: {
-                    //SteamVRTabController.setPerformanceGraph(this.checked, false)
+                    SteamVRTabController.setPerAppBindEnabled(this.checked, false)
+                    if(!steamvrBindingToggle.checked){
+                        appSelect.enabled = false;
+                        setDefaultBtn.enabled = false;
+                        setBinding.enabled = false;
+                    }else{
+                        appSelect.enabled = true;
+                        setDefaultBtn.enabled = true;
+                        setBinding.enabled = true;
+                    }
                 }
             }
             MyText {
@@ -88,13 +97,22 @@ GroupBox {
     }
 
     Component.onCompleted: {
-            steamvrPerformanceGraphToggle.checked = SteamVRTabController.performanceGraph
+            steamvrBindingToggle.checked = SteamVRTabController.perAppBindEnabled
+        if(!steamvrBindingToggle.checked){
+            appSelect.enabled = false;
+            setDefaultBtn.enabled = false;
+            setBinding.enabled = false;
+        }else{
+            appSelect.enabled = true;
+            setDefaultBtn.enabled = true;
+            setBinding.enabled = true;
+        }
     }
 
     Connections {
         target: SteamVRTabController
         onPerformanceGraphChanged:{
-            steamvrPerformanceGraphToggle.checked = SteamVRTabController.performanceGraph
+            steamvrBindingToggle.checked = SteamVRTabController.perAppBindEnabled
         }
 
     }
