@@ -666,7 +666,6 @@ std::string SteamVRTabController::onGetBindingUrlResponse()
     LOG( INFO ) << filepath;
     m_networkReply->abort();
     m_pendingReply = false;
-    // TODOLogic on when to get Data vs skip
     getBindingDataReq( filepath, m_lastAppID, controllerName );
 
     return "";
@@ -703,20 +702,33 @@ json SteamVRTabController::onGetBindingDataResponse()
     LOG( WARNING ) << data.toStdString();
     json jsonfull = json::parse( data.toStdString() );
     output = jsonfull["binding_config"];
-    saveBind( "m_lastAppID", "knuckles", output );
+    std::string sceneAppID = ovr_application_wrapper::getSceneAppID();
+    std::string ctrl = ovr_system_wrapper::getControllerName();
+    saveBind( m_lastAppID, sceneAppID, ctrl, output );
     return output;
 }
 
 bool SteamVRTabController::saveBind( std::string appID,
+                                     std::string sceneAppID,
                                      std::string ctrlType,
-                                     json binds )
+                                     json binds,
+                                     bool def )
 {
     QFileInfo fi(
         QString::fromStdString( settings::initializeAndGetSettingsPath() ) );
     QDir directory = fi.absolutePath();
-    QString Fn = QString::fromStdString( appID + "appid2" + ".json" );
+    QString Fn;
+    if ( def )
+    {
+        QString::fromStdString( "defovl" + appID + "ctrl" + ctrlType
+                                + ".json" );
+    }
+    else
+    {
+        Fn = QString::fromStdString( "ovl" + appID + "scene" + sceneAppID
+                                     + "ctrl" + ctrlType + ".json" );
+    }
     QString absPath = directory.absolutePath() + "/" + Fn;
-    LOG( WARNING ) << "Bind File saved at:" << absPath.toStdString();
 
     QFile bindFile( absPath );
     bindFile.open( QIODevice::ReadWrite | QIODevice::Truncate
@@ -725,6 +737,143 @@ bool SteamVRTabController::saveBind( std::string appID,
     bindFile.write( qba );
     bindFile.flush();
     bindFile.close();
+    if ( bindFile.exists() )
+    {
+        LOG( INFO ) << "Bind File saved at:" << absPath.toStdString();
+        return true;
+    }
+    return false;
+}
+
+bool SteamVRTabController::customBindExists( std::string appID,
+                                             std::string sceneAppID,
+                                             std::string ctrl )
+{
+    if ( appID == "" )
+    {
+        appID = m_lastAppID;
+    }
+    if ( sceneAppID == "" )
+    {
+        sceneAppID = ovr_application_wrapper::getSceneAppID();
+    }
+    if ( ctrl == "" )
+    {
+        ctrl = ovr_system_wrapper::getControllerName();
+    }
+    QFileInfo fi( QString::fromStdString(
+        settings::initializeAndGetSettingsPath() + "ovl" + appID + "scene"
+        + sceneAppID + "ctrl" + ctrl + ".json" ) );
+    if ( fi.exists() )
+    {
+        return true;
+    }
+    return false;
+}
+
+bool SteamVRTabController::defBindExists( std::string appID, std::string ctrl )
+{
+    if ( appID == "" )
+    {
+        appID = m_lastAppID;
+    }
+    if ( ctrl == "" )
+    {
+        ctrl = ovr_system_wrapper::getControllerName();
+    }
+    QFileInfo fi( QString::fromStdString(
+        settings::initializeAndGetSettingsPath() + "defovl" + appID + "ctrl"
+        + ctrl + ".json" ) );
+    if ( fi.exists() )
+    {
+        return true;
+    }
+    return false;
+}
+
+void SteamVRTabController::setCustomBind( std::string appID,
+                                          std::string sceneAppID,
+                                          std::string ctrl )
+{
+    if ( sceneAppID == "" )
+    {
+        sceneAppID = ovr_application_wrapper::getSceneAppID();
+    }
+    if ( ctrl == "" )
+    {
+        ctrl = ovr_system_wrapper::getControllerName();
+    }
+    if ( !customBindExists( appID, sceneAppID, ctrl ) )
+    {
+        LOG( INFO ) << "No Custom Bind Exists for ovl app: " + appID
+                           + "for scene: " + sceneAppID
+                           + "for controller: " + ctrl + " attempting default";
+        if ( !defBindExists() )
+        {
+            LOG( WARNING ) << "No Default Bind Exists for ovl app: " + appID
+                                  + "for controller: " + ctrl;
+            LOG( WARNING ) << "Not Adjust Bindings";
+            return;
+        }
+        // TODO set logic for def
+
+        return;
+    }
+}
+
+void SteamVRTabController::applyBindingReq( std::string appID, bool def )
+{
+    std::string ctrlType = ovr_system_wrapper::getControllerName();
+    QFileInfo fi(
+        QString::fromStdString( settings::initializeAndGetSettingsPath() ) );
+    QDir directory = fi.absolutePath();
+    QString Fn;
+    std::string sceneAppID = ovr_application_wrapper::getSceneAppID();
+    if ( sceneAppID == "" )
+    {
+        LOG( ERROR ) << "NO Scene App Detected unable to apply bindings";
+        return;
+    }
+
+    if ( def )
+    {
+        QString::fromStdString( "defovl" + appID + "ctrl" + ctrlType
+                                + ".json" );
+    }
+    else
+    {
+        Fn = QString::fromStdString( "ovl" + appID + "scene" + sceneAppID
+                                     + "ctrl" + ctrlType + ".json" );
+    }
+    QString absPath = directory.absolutePath() + "/" + Fn;
+    std::string filePath = "file:///" + absPath.toStdString();
+    std::string url = "http://localhost:27062/input/selectconfig.action";
+    QUrl urls = QUrl( url.c_str() );
+    QNetworkRequest request;
+    request.setUrl( urls );
+    // This is Important as otherwise Valve's VRWebServerWillIgnore the Request
+    request.setHeader( QNetworkRequest::ContentTypeHeader, "application/json" );
+    request.setRawHeader(
+        QByteArray( "Referer" ),
+        QByteArray(
+            "http://localhost:27062/dashboard/controllerbinding.html" ) );
+    QByteArray data = ( "{\"app_key\":\"" + appID + "\",\"controller_type\":\""
+                        + ctrlType + "\",\"url\":\"" + filePath + "\"}" )
+                          .c_str();
+    m_networkReply = m_networkManager.post( request, data );
+    connect( m_networkReply,
+             &QNetworkReply::finished,
+             this,
+             &SteamVRTabController::onApplyBindingResponse );
+}
+
+void SteamVRTabController::onApplyBindingResponse()
+{
+    json output = "";
+    QString data = QString::fromUtf8( m_networkReply->readAll() );
+    LOG( WARNING ) << data.toStdString();
+    // TODO error handling?
+    return;
 }
 
 } // namespace advsettings

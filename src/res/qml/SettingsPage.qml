@@ -157,7 +157,7 @@ MyStackViewPage {
                 MyTextField {
                     id: customTickRateText
                     text: "20"
-                    keyBoardUID: 1001
+                    keyBoardUID: 501
                     Layout.preferredWidth: 140
                     Layout.leftMargin: 10
                     Layout.rightMargin: 1
@@ -200,7 +200,7 @@ MyStackViewPage {
                 MyTextField {
                     id: debugStateText
                     text: "0"
-                    keyBoardUID: 1002
+                    keyBoardUID: 502
                     Layout.preferredWidth: 140
                     Layout.leftMargin: 10
                     Layout.rightMargin: 1

@@ -4,6 +4,7 @@
 #include <QObject>
 #include "../utils/FrameRateUtils.h"
 #include "../openvr/ovr_settings_wrapper.h"
+#include "../openvr/ovr_application_wrapper.h"
 #include "../openvr/lh_console_util.h"
 #include <QStringListModel>
 #include <QTableWidget>
@@ -85,7 +86,7 @@ private:
     bool m_pendingReply = false;
     QString m_unparsedDongleString = "";
     QString m_last_pair_sn = "";
-    std::string m_lastAppID = "";
+    std::string m_lastAppID = "steam.overlay.1009850";
 
     std::vector<DeviceInfo> m_deviceList;
 
@@ -95,6 +96,8 @@ private:
     std::vector<QString> getDongleSerialList( std::string deviceString );
     bool isSteamVRTracked( QString sn );
     std::string onGetBindingUrlResponse();
+    void applyBindingReq( std::string appID, bool def = false );
+    void onApplyBindingResponse();
 
 public:
     void initStage1();
@@ -122,7 +125,18 @@ public:
                             std::string appID,
                             std::string ctrlType );
     json onGetBindingDataResponse();
-    bool saveBind( std::string appID, std::string ctrlType, json binds );
+    bool customBindExists( std::string appID = "",
+                           std::string sceneAppID = "",
+                           std::string ctrl = "" );
+    bool defBindExists( std::string appID = "", std::string ctrl = "" );
+    void setCustomBind( std::string appID,
+                        std::string sceneAppID = "",
+                        std::string ctrl = "" );
+    bool saveBind( std::string appID,
+                   std::string sceneAppID,
+                   std::string ctrlType,
+                   json binds,
+                   bool def = false );
 
     Q_INVOKABLE void searchRXTX();
 

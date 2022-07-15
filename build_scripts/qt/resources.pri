@@ -40,6 +40,7 @@ DISTFILES += \
 	src/res/qml/steamvr_page/steamvr_additional/* \
     src/res/qml/steamvr_page/camera/* \
     src/res/qml/steamvr_page/steamvrmisc/* \
+	src/res/qml/steamvr_page/steamvrbind/* \
     src/res/qml/utilities_page/* \
     src/res/qml/utilities_page/media_keys/* \
     src/res/qml/utilities_page/keyboard_utils/* \
