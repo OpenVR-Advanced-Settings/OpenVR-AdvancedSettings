@@ -858,7 +858,8 @@ void SteamVRTabController::applyBindingReq( std::string appID )
     QNetworkRequest request;
     request.setUrl( urls );
     // This is Important as otherwise Valve's VRWebServerWillIgnore the Request
-    request.setHeader( QNetworkRequest::ContentTypeHeader, "application/json" );
+    request.setHeader( QNetworkRequest::ContentTypeHeader,
+                       "application/x-www-form-urlencoded" );
     request.setRawHeader(
         QByteArray( "Referer" ),
         QByteArray(
