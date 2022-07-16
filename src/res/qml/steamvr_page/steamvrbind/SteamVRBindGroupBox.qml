@@ -5,12 +5,12 @@ import ovras.advsettings 1.0
 import "../../common"
 
 GroupBox {
-    id: steamVRMiscGroupBox
+    id: steamVRBindGroupBox
     Layout.fillWidth: true
 
     label: MyText {
         leftPadding: 10
-        text: "Misc:"
+        text: "Binds:"
         bottomPadding: -10
     }
     background: Rectangle {
@@ -34,8 +34,8 @@ GroupBox {
 
             MyToggleButton {
                 id: steamvrBindingToggle
-                text: "Enable Per-App Bindings For Overlays"
-                Layout.preferredWidth: 300
+                text: "Enable Per-App Bindings"
+                Layout.preferredWidth: 350
                 onCheckedChanged: {
                     SteamVRTabController.setPerAppBindEnabled(this.checked, false)
                     if(!steamvrBindingToggle.checked){
@@ -56,6 +56,7 @@ GroupBox {
 
             MyText {
                 text: "Application: "
+                Layout.preferredWidth: 200
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 2
             }
@@ -78,7 +79,7 @@ GroupBox {
                     id: setDefaultBtn
                     text:"Set Current Bind as Default"
                     onClicked: {
-                        //TODO
+                        SteamVRTabController.setBindingQMLWrapper(appSelect.text,true)
                     }
             }
             MyText {
@@ -89,7 +90,7 @@ GroupBox {
                     id: setBinding
                     text:"Set Current Bind For Current App"
                     onClicked: {
-                        //TODO
+                        SteamVRTabController.setBindingQMLWrapper(appSelect.text)
                     }
             }
         }

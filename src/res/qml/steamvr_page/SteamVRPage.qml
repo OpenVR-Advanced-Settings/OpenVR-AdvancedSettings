@@ -5,6 +5,7 @@ import ovras.advsettings 1.0
 import "../common"
 import "camera"
 import "steamvrmisc"
+import "steamvrbind"
 
 MyStackViewPage {
     width: 1200
@@ -17,6 +18,9 @@ MyStackViewPage {
         id: steamVRMiscGroupBox}
         CameraGroupBox {
         id:  cameraGroupBox}
+        SteamVRBindGroupBox{
+            id: steamVRBindGroupBox
+        }
 
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
 
