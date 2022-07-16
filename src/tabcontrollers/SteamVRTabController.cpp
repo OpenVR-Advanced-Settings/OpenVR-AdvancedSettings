@@ -699,7 +699,7 @@ json SteamVRTabController::onGetBindingDataResponse()
 {
     json output = "";
     QString data = QString::fromUtf8( m_networkReply->readAll() );
-    LOG( WARNING ) << data.toStdString();
+    // LOG( WARNING ) << data.toStdString();
     json jsonfull = json::parse( data.toStdString() );
     output = jsonfull["binding_config"];
     std::string sceneAppID = ovr_application_wrapper::getSceneAppID();
@@ -721,8 +721,8 @@ bool SteamVRTabController::saveBind( std::string appID,
     QString Fn;
     if ( def )
     {
-        QString::fromStdString( "defovl" + appID + "ctrl" + ctrlType
-                                + ".json" );
+        Fn = QString::fromStdString( "defovl" + appID + "ctrl" + ctrlType
+                                     + ".json" );
     }
     else
     {

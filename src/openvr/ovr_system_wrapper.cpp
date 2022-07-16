@@ -259,7 +259,7 @@ std::string getControllerName()
                 found |= 0b100;
                 break;
             case vr::TrackedControllerRole_RightHand:
-                lftIdx = i;
+                rightIdx = i;
                 found |= 0b010;
                 break;
             default:
@@ -278,9 +278,9 @@ std::string getControllerName()
         isLeftCon = vr::VRSystem()->IsTrackedDeviceConnected( lftIdx );
         if ( isLeftCon )
         {
-            auto left = getStringTrackedProperty(
-                            lftIdx, vr::Prop_ControllerType_String )
-                            .second;
+            left = getStringTrackedProperty( lftIdx,
+                                             vr::Prop_ControllerType_String )
+                       .second;
         }
     }
     if ( found == 0b110 || found == 0b010 )
@@ -288,9 +288,9 @@ std::string getControllerName()
         isRightCon = vr::VRSystem()->IsTrackedDeviceConnected( rightIdx );
         if ( isRightCon )
         {
-            auto right = getStringTrackedProperty(
-                             rightIdx, vr::Prop_ControllerType_String )
-                             .second;
+            right = getStringTrackedProperty( rightIdx,
+                                              vr::Prop_ControllerType_String )
+                        .second;
         }
     }
     if ( !isLeftCon && !isRightCon && hasHMD )
@@ -301,6 +301,10 @@ std::string getControllerName()
     if ( right != left )
     {
         LOG( WARNING ) << "WARNING: Left and Right Controllers are Different";
+    }
+    if ( rightIdx == 999 )
+    {
+        return left;
     }
     return right;
 }
