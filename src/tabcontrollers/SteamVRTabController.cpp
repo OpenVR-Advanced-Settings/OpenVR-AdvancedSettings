@@ -921,15 +921,21 @@ void SteamVRTabController::applyAllCustomBindings()
         std::smatch m;
         std::string s = filename.toStdString();
 
-        if ( regex_search( s, m, r1 ) )
+        if ( regex_match( s, m, r1 ) )
         {
-            appIDs.insert( m.suffix().str() );
-            continue;
+            if ( m.size() == 2 )
+            {
+                appIDs.insert( m[1].str() );
+                continue;
+            }
         }
-        if ( regex_search( s, m, r2 ) )
+        if ( regex_match( s, m, r2 ) )
         {
-            appIDs.insert( m.suffix().str() );
-            continue;
+            if ( m.size() == 2 )
+            {
+                appIDs.insert( m[1].str() );
+                continue;
+            }
         }
     }
     foreach ( std::string appID, appIDs )
