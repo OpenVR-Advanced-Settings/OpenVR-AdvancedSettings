@@ -836,15 +836,16 @@ void SteamVRTabController::applyBindingReq( std::string appID )
         return;
     }
 
+    // TODO check forward slash compatibility with linux
     Fn = QString::fromStdString( "ovl" + appID + "scene" + sceneAppID + "ctrl"
                                  + ctrlType + ".json" );
-    if ( !QFileInfo::exists( Fn ) )
+    if ( !QFileInfo::exists( fi.absolutePath() + Fn ) )
     {
         LOG( INFO ) << "No Specific Binding Detected for: " + appID
                            + "for Scene: " + sceneAppID + " Checking Default";
         Fn = QString::fromStdString( "defovl" + appID + "ctrl" + ctrlType
                                      + ".json" );
-        if ( !QFileInfo::exists( Fn ) )
+        if ( !QFileInfo::exists( QString( "/" ) + fi.absolutePath() + Fn ) )
         {
             LOG( INFO ) << "No Def Binding Detected for: " + appID
                                + " Not Adjusting Bindings";
@@ -852,7 +853,8 @@ void SteamVRTabController::applyBindingReq( std::string appID )
         }
     }
     QString absPath = directory.absolutePath() + "/" + Fn;
-    std::string filePath = "file:///" + absPath.toStdString();
+    QUrl urlized( absPath );
+    // 00 std::string filePath = "file:///" + absPath.toStdString();
     std::string url = "http://localhost:27062/input/selectconfig.action";
     QUrl urls = QUrl( url.c_str() );
     QNetworkRequest request;
@@ -864,10 +866,12 @@ void SteamVRTabController::applyBindingReq( std::string appID )
         QByteArray( "Referer" ),
         QByteArray(
             "http://localhost:27062/dashboard/controllerbinding.html" ) );
-    QByteArray data = ( "{\"app_key\":\"" + appID + "\",\"controller_type\":\""
-                        + ctrlType + "\",\"url\":\"" + filePath + "\"}" )
-                          .c_str();
+    QByteArray data
+        = ( "{\"app_key\":\"" + appID + "\",\"controller_type\":\"" + ctrlType
+            + "\",\"url\":\"" + urlized.toEncoded().toStdString() + "\"}" )
+              .c_str();
     m_networkReply = m_networkManager.post( request, data );
+    LOG( INFO ) << "Sending Binding Set Request";
     connect( m_networkReply,
              &QNetworkReply::finished,
              this,
@@ -878,6 +882,7 @@ void SteamVRTabController::onApplyBindingResponse()
 {
     json output = "";
     QString data = QString::fromUtf8( m_networkReply->readAll() );
+    LOG( INFO ) << "Got Binding Set Response";
     LOG( WARNING ) << data.toStdString();
     // TODO error handling?
     return;
@@ -922,7 +927,7 @@ void SteamVRTabController::applyAllCustomBindings()
         std::smatch m;
         std::string s = filename.toStdString();
 
-        if ( regex_match( s, m, r1 ) )
+        if ( regex_search( s, m, r1 ) )
         {
             if ( m.size() == 2 )
             {
@@ -930,7 +935,7 @@ void SteamVRTabController::applyAllCustomBindings()
                 continue;
             }
         }
-        if ( regex_match( s, m, r2 ) )
+        if ( regex_search( s, m, r2 ) )
         {
             if ( m.size() == 2 )
             {
@@ -944,5 +949,4 @@ void SteamVRTabController::applyAllCustomBindings()
         applyBindingReq( appID );
     }
 }
-
 } // namespace advsettings
