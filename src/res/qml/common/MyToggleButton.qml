@@ -15,7 +15,7 @@ CheckBox {
 		implicitHeight: 28
 		x: parent.leftPadding
 		y: parent.height / 2 - height / 2
-        color: parent.enabled ? (parent.down ? "#e0e0e0" : "#ffffff") : "#a0a0a0"
+        color: parent.enabled ? (parent.down ? "#181a1e" : "#3d4450") : "#181a1e"
         border.width: 0
         Path {
             startX: 0
@@ -43,11 +43,11 @@ CheckBox {
         horizontalAlignment: Text.AlignLeft
 		verticalAlignment: Text.AlignVCenter
         leftPadding: parent.indicator.width + parent.spacing
-        color: parent.enabled ? "#ffffff" : "#909090"
+        color: parent.enabled ? "#d9dbe0" : "#65676b"
 	}
 
 	background: Rectangle {
-		color: "#2c435d"
+        color: "#2a2e35"
         opacity: parent.activeFocus ? 1.0 : 0
     }
 

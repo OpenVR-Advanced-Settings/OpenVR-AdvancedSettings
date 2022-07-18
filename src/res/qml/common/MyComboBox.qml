@@ -7,7 +7,7 @@ ComboBox {
     id: myComboBox
     hoverEnabled: true
     background: Rectangle {
-        color: parent.pressed ? "#406288" : (parent.activeFocus ? "#365473" : "#2c435d")
+        color: parent.pressed ? "#181a1e" : (parent.activeFocus ? "#586170" : "#3d4450")
     }
 
     contentItem: MyText {
@@ -27,10 +27,10 @@ ComboBox {
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             text: parent.text
-            color: parent.enabled ? "#ffffff" : "#909090"
+            color: parent.enabled ? "#d9dbe0" : "#65676b"
         }
         background: Rectangle {
-            color: parent.pressed ? "#406288" : (parent.hovered ? "#365473" : "#2c435d")
+            color: parent.pressed ? "#181a1e" : (parent.hovered ? "#586170" : "#3d4450")
         }
     }
 
@@ -68,6 +68,6 @@ ComboBox {
     }
 
     Component.onCompleted: {
-        popup.background.color = "#2c435d"
+        popup.background.color = "#2a2e35"
     }
 }

@@ -6,14 +6,14 @@ TextField {
 	property int keyBoardUID: 0
     property string savedText: ""
     id: myTextField
-    color: "#cccccc"
+    color: "#d9dbe0"
     text: ""
     font.pointSize: 20
     background: Button {
         hoverEnabled: true
         background: Rectangle {
-            color: parent.hovered ? "#2c435d" : "#1b2939"
-            border.color: "#cccccc"
+            color: parent.hovered ? "#484f5b" : "#2a2e35"
+            border.color: "#d9dbe0"
             border.width: 2
         }
         onClicked: {

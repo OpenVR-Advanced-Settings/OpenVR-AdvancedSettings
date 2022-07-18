@@ -6,7 +6,7 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 import ".."
 
 Rectangle {
-    color: "#1b2939"
+    color: "#2a2e35"
     width: 1200
     height: 800
 
@@ -33,7 +33,7 @@ Rectangle {
                 }
                 background: Rectangle {
                     opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-                    color: "#406288"
+                    color: "#2a2e35"
                     radius: 4
                     anchors.fill: parent
                 }

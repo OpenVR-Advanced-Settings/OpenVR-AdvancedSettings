@@ -8,7 +8,7 @@ RadioButton {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: parent.text
-        color: parent.enabled ? "#ffffff" : "#909090"
+        color: parent.enabled ? "#d9dbe0" : "#65676b"
     }
     onHoveredChanged: {
         if (hovered) {
