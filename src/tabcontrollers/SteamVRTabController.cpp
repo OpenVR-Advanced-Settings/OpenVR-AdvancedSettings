@@ -643,32 +643,36 @@ void SteamVRTabController::getBindingUrlReq( std::string appID )
         QByteArray(
             "http://localhost:27062/dashboard/controllerbinding.html" ) );
     // TODO start Timeout timer?
-    m_networkReply = m_networkManager.get( request );
-    connect( m_networkReply,
-             &QNetworkReply::finished,
+    connect( &m_networkManagerUrl,
+             SIGNAL( finished( QNetworkReply* ) ),
              this,
-             &SteamVRTabController::onGetBindingUrlResponse );
+             SLOT( onGetBindingUrlResponse( QNetworkReply* ) ) );
+    m_networkManagerUrl.get( request );
     return;
 }
-std::string SteamVRTabController::onGetBindingUrlResponse()
+void SteamVRTabController::onGetBindingUrlResponse( QNetworkReply* reply )
 {
-    QString data = QString::fromUtf8( m_networkReply->readAll() );
-    // TODO convert data to
+    QString data = QString::fromUtf8( reply->readAll() );
+    if ( data.size() < 2 )
+    {
+        return;
+    }
     std::string controllerName = ovr_system_wrapper::getControllerName();
     if ( controllerName == "" )
     {
         LOG( WARNING ) << "No Controller Detected Skipping Bindings";
-        return "";
+        return;
     }
     json jsonfull = json::parse( data.toStdString() );
+    //    LOG( INFO ) << "URL RESPOSNE XXXXXXX";
+    //    LOG( INFO ) << jsonfull.dump().c_str();
     std::string filepath
         = jsonfull["current_binding_url"][controllerName].get<std::string>();
-    LOG( INFO ) << filepath;
-    m_networkReply->abort();
-    m_pendingReply = false;
+    LOG( INFO ) << "binding url at " << filepath;
+    // TODO perhaps some form of error checking if packet wrong?
+    reply->close();
     getBindingDataReq( filepath, m_lastAppID, controllerName );
-
-    return "";
+    return;
 }
 
 void SteamVRTabController::getBindingDataReq( std::string steamURL,
@@ -688,24 +692,39 @@ void SteamVRTabController::getBindingDataReq( std::string steamURL,
         QByteArray(
             "http://localhost:27062/dashboard/controllerbinding.html" ) );
     // TODO start Timeout timer?
-    m_networkReply = m_networkManager.get( request );
-    connect( m_networkReply,
-             &QNetworkReply::finished,
+    connect( &m_networkManagerBind,
+             SIGNAL( finished( QNetworkReply* ) ),
              this,
-             &SteamVRTabController::onGetBindingDataResponse );
+             SLOT( onGetBindingDataResponse( QNetworkReply* ) ) );
+    m_networkManagerBind.get( request );
     return;
 }
-json SteamVRTabController::onGetBindingDataResponse()
+void SteamVRTabController::onGetBindingDataResponse( QNetworkReply* reply )
 {
     json output = "";
-    QString data = QString::fromUtf8( m_networkReply->readAll() );
-    // LOG( WARNING ) << data.toStdString();
+    QString data = QString::fromUtf8( reply->readAll() );
+    if ( data.size() < 2 )
+    {
+        return;
+    }
+    //    LOG( WARNING ) << "DATA RESPONSE";
+    //    LOG( WARNING ) << data.toStdString();
     json jsonfull = json::parse( data.toStdString() );
+    if ( !jsonfull.contains( "success" ) )
+    {
+        LOG( ERROR ) << "Binding Data Packet Mal-Formed?";
+    }
+    if ( !jsonfull["success"].get<bool>() )
+    {
+        // TODO better error handling?
+        LOG( ERROR ) << "Binding Data Request Failed";
+    }
+    reply->close();
     output = jsonfull["binding_config"];
     std::string sceneAppID = ovr_application_wrapper::getSceneAppID();
     std::string ctrl = ovr_system_wrapper::getControllerName();
     saveBind( m_lastAppID, sceneAppID, ctrl, output, m_setDefault );
-    return output;
+    return;
 }
 
 bool SteamVRTabController::saveBind( std::string appID,
@@ -740,7 +759,7 @@ bool SteamVRTabController::saveBind( std::string appID,
     bindFile.close();
     if ( bindFile.exists() )
     {
-        LOG( INFO ) << "Bind File saved at:" << absPath.toStdString();
+        LOG( INFO ) << "Binding File saved at:" << absPath.toStdString();
         return true;
     }
     return false;
@@ -792,36 +811,6 @@ bool SteamVRTabController::defBindExists( std::string appID, std::string ctrl )
     return false;
 }
 
-void SteamVRTabController::setCustomBind( std::string appID,
-                                          std::string sceneAppID,
-                                          std::string ctrl )
-{
-    if ( sceneAppID == "" )
-    {
-        sceneAppID = ovr_application_wrapper::getSceneAppID();
-    }
-    if ( ctrl == "" )
-    {
-        ctrl = ovr_system_wrapper::getControllerName();
-    }
-    if ( !customBindExists( appID, sceneAppID, ctrl ) )
-    {
-        LOG( INFO ) << "No Custom Bind Exists for ovl app: " + appID
-                           + "for scene: " + sceneAppID
-                           + "for controller: " + ctrl + " attempting default";
-        if ( !defBindExists() )
-        {
-            LOG( WARNING ) << "No Default Bind Exists for ovl app: " + appID
-                                  + "for controller: " + ctrl;
-            LOG( WARNING ) << "Not Adjust Bindings";
-            return;
-        }
-        // TODO set logic for def
-
-        return;
-    }
-}
-
 void SteamVRTabController::applyBindingReq( std::string appID )
 {
     std::string ctrlType = ovr_system_wrapper::getControllerName();
@@ -839,27 +828,30 @@ void SteamVRTabController::applyBindingReq( std::string appID )
     // TODO check forward slash compatibility with linux
     Fn = QString::fromStdString( "ovl" + appID + "scene" + sceneAppID + "ctrl"
                                  + ctrlType + ".json" );
-    if ( !QFileInfo::exists( fi.absolutePath() + Fn ) )
+    if ( !QFileInfo::exists( fi.absolutePath() + QString( "/" ) + Fn ) )
     {
         LOG( INFO ) << "No Specific Binding Detected for: " + appID
                            + "for Scene: " + sceneAppID + " Checking Default";
         Fn = QString::fromStdString( "defovl" + appID + "ctrl" + ctrlType
                                      + ".json" );
-        if ( !QFileInfo::exists( QString( "/" ) + fi.absolutePath() + Fn ) )
+        if ( !QFileInfo::exists( fi.absolutePath() + QString( "/" ) + Fn ) )
         {
             LOG( INFO ) << "No Def Binding Detected for: " + appID
                                + " Not Adjusting Bindings";
             return;
         }
     }
+    // TODO possible linux compatibility issue
     QString absPath = directory.absolutePath() + "/" + Fn;
-    QUrl urlized( absPath );
-    // 00 std::string filePath = "file:///" + absPath.toStdString();
+    QUrl urlized = QUrl::fromLocalFile( absPath );
+    // std::string filePath = "file:///" + absPath.toStdString();
     std::string url = "http://localhost:27062/input/selectconfig.action";
+    LOG( INFO ) << urlized.toEncoded().toStdString();
     QUrl urls = QUrl( url.c_str() );
     QNetworkRequest request;
     request.setUrl( urls );
     // This is Important as otherwise Valve's VRWebServerWillIgnore the Request
+    // If referrer is wrong
     request.setHeader( QNetworkRequest::ContentTypeHeader,
                        "application/x-www-form-urlencoded" );
     request.setRawHeader(
@@ -868,23 +860,43 @@ void SteamVRTabController::applyBindingReq( std::string appID )
             "http://localhost:27062/dashboard/controllerbinding.html" ) );
     QByteArray data
         = ( "{\"app_key\":\"" + appID + "\",\"controller_type\":\"" + ctrlType
-            + "\",\"url\":\"" + urlized.toEncoded().toStdString() + "\"}" )
+            + "\",\"url\":\""
+            + urlized.toEncoded( QUrl::EncodeSpaces | QUrl::EncodeReserved )
+                  .toStdString()
+            + "\"}" )
               .c_str();
-    m_networkReply = m_networkManager.post( request, data );
-    LOG( INFO ) << "Sending Binding Set Request";
-    connect( m_networkReply,
-             &QNetworkReply::finished,
+    //    LOG( INFO ) << "Sending Binding Set Request";
+    //    LOG( INFO ) << data.toStdString();
+    connect( &m_networkManagerApply,
+             SIGNAL( finished( QNetworkReply* ) ),
              this,
-             &SteamVRTabController::onApplyBindingResponse );
+             SLOT( onApplyBindingResponse( QNetworkReply* ) ) );
+    m_networkManagerApply.post( request, data );
 }
 
-void SteamVRTabController::onApplyBindingResponse()
+void SteamVRTabController::onApplyBindingResponse( QNetworkReply* reply )
 {
     json output = "";
-    QString data = QString::fromUtf8( m_networkReply->readAll() );
-    LOG( INFO ) << "Got Binding Set Response";
-    LOG( WARNING ) << data.toStdString();
-    // TODO error handling?
+    QString data = QString::fromUtf8( reply->readAll() );
+    if ( data.size() < 2 )
+    {
+        return;
+    }
+    //    LOG( INFO ) << "APPLY RESPONSE";
+    //    LOG( INFO ) << data.toStdString();
+    reply->close();
+    json jsonfull = json::parse( data.toStdString() );
+    if ( !jsonfull.contains( "success" ) )
+    {
+        LOG( ERROR ) << "Apply Binding Packet Mal-Formed?";
+        return;
+    }
+    if ( !jsonfull["success"].get<bool>() )
+    {
+        // TODO better error handling?
+        LOG( ERROR ) << "Binding Failed To Apply";
+    }
+    LOG( INFO ) << "New Binding Applied";
     return;
 }
 
@@ -949,4 +961,5 @@ void SteamVRTabController::applyAllCustomBindings()
         applyBindingReq( appID );
     }
 }
+
 } // namespace advsettings

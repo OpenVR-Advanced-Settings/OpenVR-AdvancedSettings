@@ -76,9 +76,11 @@ private:
     bool m_noFadeToGridToggle = false;
     bool m_multipleDriverToggle = false;
     bool m_dnd = false;
-    QNetworkAccessManager m_networkManager;
+    QNetworkAccessManager m_networkManagerApply;
+    QNetworkAccessManager m_networkManagerUrl;
+    QNetworkAccessManager m_networkManagerBind;
     QNetworkRequest m_networkRequest;
-    QNetworkReply* m_networkReply;
+    // QNetworkReply* m_networkReply;
 
     bool m_cameraActive = false;
     bool m_cameraBounds = false;
@@ -87,7 +89,6 @@ private:
     bool m_pathRXTXInit = false;
     int m_dongleCountCur = 0;
     int m_dongleCountMax = 0;
-    bool m_pendingReply = false;
     QString m_unparsedDongleString = "";
     QString m_last_pair_sn = "";
     std::string m_lastAppID = "steam.overlay.1009850";
@@ -100,9 +101,7 @@ private:
     void synchSteamVR();
     std::vector<QString> getDongleSerialList( std::string deviceString );
     bool isSteamVRTracked( QString sn );
-    std::string onGetBindingUrlResponse();
     void applyBindingReq( std::string appID );
-    void onApplyBindingResponse();
 
 public:
     void initStage1();
@@ -129,14 +128,13 @@ public:
     void getBindingDataReq( std::string steamURL,
                             std::string appID,
                             std::string ctrlType );
-    json onGetBindingDataResponse();
     bool customBindExists( std::string appID = "",
                            std::string sceneAppID = "",
                            std::string ctrl = "" );
     bool defBindExists( std::string appID = "", std::string ctrl = "" );
-    void setCustomBind( std::string appID,
-                        std::string sceneAppID = "",
-                        std::string ctrl = "" );
+    //    void setCustomBind( std::string appID,
+    //                        std::string sceneAppID = "",
+    //                        std::string ctrl = "" );
     bool saveBind( std::string appID,
                    std::string sceneAppID,
                    std::string ctrlType,
@@ -178,6 +176,9 @@ public slots:
     void setPerAppBindEnabled( bool value, bool notify = true );
 
     void restartSteamVR();
+    void onGetBindingUrlResponse( QNetworkReply* reply );
+    void onApplyBindingResponse( QNetworkReply* reply );
+    void onGetBindingDataResponse( QNetworkReply* reply );
 
 signals:
 

@@ -1275,8 +1275,9 @@ void OverlayController::mainEventLoop()
             }
         }
         break;
-        case vr::VREvent_ActionBindingReloaded:
+        case vr::VREvent_Input_ActionManifestReloaded:
         {
+            // LOG( WARNING ) << "Action Manifest Reloaded";
             if ( m_steamVRTabController.perAppBindEnabled() )
             {
                 m_steamVRTabController.applyAllCustomBindings();
