@@ -846,7 +846,7 @@ void SteamVRTabController::applyBindingReq( std::string appID )
     QUrl urlized = QUrl::fromLocalFile( absPath );
     // std::string filePath = "file:///" + absPath.toStdString();
     std::string url = "http://localhost:27062/input/selectconfig.action";
-    LOG( INFO ) << urlized.toEncoded().toStdString();
+    // LOG( INFO ) << urlized.toEncoded().toStdString();
     QUrl urls = QUrl( url.c_str() );
     QNetworkRequest request;
     request.setUrl( urls );
