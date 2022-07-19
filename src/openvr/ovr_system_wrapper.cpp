@@ -236,7 +236,7 @@ std::string getControllerName()
     // This call is deprecated but probably exactly what we need
     int found = 0;
     bool hasHMD = false;
-    uint32_t hmdIdx = 999;
+    // uint32_t hmdIdx = 999;
     uint32_t lftIdx = 999;
     uint32_t rightIdx = 999;
     for ( uint32_t i = 0; i < vr::k_unMaxTrackedDeviceCount; i++ )
@@ -244,7 +244,7 @@ std::string getControllerName()
         auto trackedDeviceClass = vr::VRSystem()->GetTrackedDeviceClass( i );
         if ( trackedDeviceClass == vr::TrackedDeviceClass_HMD )
         {
-            hmdIdx = i;
+            // hmdIdx = i;
             hasHMD = true;
         }
         if ( trackedDeviceClass == vr::TrackedDeviceClass_Controller )
