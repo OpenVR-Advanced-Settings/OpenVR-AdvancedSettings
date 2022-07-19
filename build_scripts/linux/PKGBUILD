@@ -9,6 +9,7 @@ url="https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings"
 license=("GPL")
 depends=("qt5-declarative"
          "qt5-multimedia"
+         "qt5-websockets"
          "libudev0-shim"
          "mesa")
 optdepends=("dbus: media player support"
