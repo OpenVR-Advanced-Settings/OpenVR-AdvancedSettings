@@ -16,7 +16,7 @@
 #include <QUrl>
 #include <QNetworkRequest>
 #include <QNetworkAccessManager>
-#include "../utils/json.hpp"
+#include "../../third-party/nlhomann/json.hpp"
 #include <QNetworkReply>
 #include <set>
 #include <regex>
