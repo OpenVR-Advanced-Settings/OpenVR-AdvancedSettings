@@ -34,8 +34,8 @@ Slider {
         implicitWidth: 20
         implicitHeight: 40
         radius: 4
-        color: parent.pressed ? "#586170" : "#181a1e"
-        border.color: "#65676b"
+        color: parent.pressed ? "#586170" : "#3d4450"
+        border.color: "#181a1e"
     }
 
     onHoveredChanged: {

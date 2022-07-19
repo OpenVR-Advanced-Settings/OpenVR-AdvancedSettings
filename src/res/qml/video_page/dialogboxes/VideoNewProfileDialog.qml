@@ -22,7 +22,7 @@ MyDialogOkCancelPopup {
             MyTextField {
                 id: videoNewProfileName
                 keyBoardUID: 990
-                color: "#cccccc"
+                color: "#d9dbe0"
                 text: ""
                 Layout.fillWidth: true
                 font.pointSize: 20
