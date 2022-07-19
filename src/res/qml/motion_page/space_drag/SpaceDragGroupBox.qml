@@ -91,7 +91,7 @@ GroupBox {
         RowLayout{
             MyPushButton{
                 text:"Ignore Boundary State"
-                Layout.preferredWidth: 250
+                Layout.preferredWidth: 300
                 onClicked:{
                     MoveCenterTabController.setIgnoreChaperoneState();
                 }
