@@ -89,13 +89,13 @@ GroupBox {
             spacing: 16
             MyText {
                 text: "Save Current Binding of Selected App: "
-                Layout.preferredWidth: 550
-                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 500
+                horizontalAlignment: Text.AlignLeft
                 Layout.rightMargin: 2
             }
             MyPushButton {
                     id: setBinding
-                    text:"For This Game"
+                    text:"For Current Game"
                     onClicked: {
                         SteamVRTabController.setBindingQMLWrapper(appSelect.text)
                     }
