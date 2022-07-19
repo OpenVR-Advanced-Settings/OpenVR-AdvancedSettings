@@ -16,7 +16,7 @@ Button {
         color: parent.enabled ? "#d9dbe0" : "#65676b"
 	}
 	background: Rectangle {
-        color: parent.down ? "#181a1e" : (parent.activeFocus ? "#586170" : "#3d4450")
+        color: parent.enabled? (parent.down ? "#181a1e" : (parent.activeFocus ? "#586170" : "#3d4450")): "#181a1e"
     }
 
     Image {
