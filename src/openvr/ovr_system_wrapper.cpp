@@ -236,7 +236,7 @@ std::string getControllerName()
     // This call is deprecated but probably exactly what we need
     int found = 0;
     bool hasHMD = false;
-    // uint32_t hmdIdx = 999;
+    uint32_t hmdIdx = 999;
     uint32_t lftIdx = 999;
     uint32_t rightIdx = 999;
     for ( uint32_t i = 0; i < vr::k_unMaxTrackedDeviceCount; i++ )
@@ -244,7 +244,7 @@ std::string getControllerName()
         auto trackedDeviceClass = vr::VRSystem()->GetTrackedDeviceClass( i );
         if ( trackedDeviceClass == vr::TrackedDeviceClass_HMD )
         {
-            // hmdIdx = i;
+            hmdIdx = i;
             hasHMD = true;
         }
         if ( trackedDeviceClass == vr::TrackedDeviceClass_Controller )
@@ -296,11 +296,39 @@ std::string getControllerName()
     if ( !isLeftCon && !isRightCon && hasHMD )
     {
         LOG( WARNING ) << "WARNING: No Controllers assuming based on HMD";
-        return "knuckles";
+        auto hmdName
+            = getStringTrackedProperty( hmdIdx, vr::Prop_ControllerType_String )
+                  .second;
+        if ( hmdName == "indexhmd" )
+        {
+            return "knuckles";
+        }
+        if ( hmdName == "vive" )
+        {
+            return "vive_controller";
+        }
+        if ( hmdName == "vive_pro" )
+        {
+            LOG( WARNING )
+                << "Vive Pro Detected, Assuming Knuckles this may be wrong";
+            return "knuckles";
+        }
+        if ( hmdName == "holographic_hmd" )
+        {
+            LOG( WARNING ) << "WMR detected, Assuming HP CONTROLLERS";
+            return "hpmotioncontroller";
+        }
+        if ( hmdName == "rift" )
+        {
+            return "oculus_touch";
+        }
+        LOG( WARNING ) << "Headset Not recognized Assuming touch controllers";
+        return "oculus_touch";
     }
     if ( right != left )
     {
-        LOG( WARNING ) << "WARNING: Left and Right Controllers are Different";
+        LOG( WARNING ) << "WARNING: Left and Right Controllers are Different, "
+                          "Prioritizing right";
     }
     if ( rightIdx == 999 )
     {
