@@ -322,7 +322,8 @@ std::string getControllerName()
         {
             return "oculus_touch";
         }
-        LOG( WARNING ) << "Headset Not recognized Assuming touch controllers";
+        LOG( WARNING ) << "Headset Not recognized Assuming touch controllers "
+                              + hmdName;
         return "oculus_touch";
     }
     if ( right != left )
