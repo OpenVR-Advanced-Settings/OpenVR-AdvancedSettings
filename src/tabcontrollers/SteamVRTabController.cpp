@@ -722,6 +722,11 @@ void SteamVRTabController::onGetBindingDataResponse( QNetworkReply* reply )
     reply->close();
     output = jsonfull["binding_config"];
     std::string sceneAppID = ovr_application_wrapper::getSceneAppID();
+    if ( sceneAppID == "error" )
+    {
+        LOG( ERROR ) << "aborting bind save, could not find scene app ID";
+        return;
+    }
     std::string ctrl = ovr_system_wrapper::getControllerName();
     saveBind( m_lastAppID, sceneAppID, ctrl, output, m_setDefault );
     return;
