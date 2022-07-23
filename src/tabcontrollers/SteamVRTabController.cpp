@@ -759,7 +759,11 @@ bool SteamVRTabController::saveBind( std::string appID,
     bindFile.close();
     if ( bindFile.exists() )
     {
-        LOG( INFO ) << "Binding File saved at:" << absPath.toStdString();
+        std::string defstate = def ? "Default " : ( sceneAppID + " " );
+        LOG( INFO ) << defstate + "Binding File saved at:"
+                    << absPath.toStdString();
+        std::string jsonstring = binds.dump().c_str();
+        LOG( INFO ) << jsonstring;
         return true;
     }
     return false;
@@ -850,6 +854,10 @@ void SteamVRTabController::applyBindingReq( std::string appID )
     QUrl urls = QUrl( url.c_str() );
     QNetworkRequest request;
     request.setUrl( urls );
+    LOG( INFO ) << "Attempting to Apply Binding at: "
+                << urlized
+                       .toEncoded( QUrl::EncodeSpaces | QUrl::EncodeReserved )
+                       .toStdString();
     // This is Important as otherwise Valve's VRWebServerWillIgnore the Request
     // If referrer is wrong
     request.setHeader( QNetworkRequest::ContentTypeHeader,
