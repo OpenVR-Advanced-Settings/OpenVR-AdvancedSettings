@@ -759,8 +759,8 @@ bool SteamVRTabController::saveBind( std::string appID,
     bindFile.close();
     if ( bindFile.exists() )
     {
-        std::string defstate = def ? "Default " : ( sceneAppID + " " );
-        LOG( INFO ) << defstate + "Binding File saved at:"
+        LOG( INFO ) << ( def ? "Default " : ( sceneAppID + " " ) )
+                           + "Binding File saved at:"
                     << absPath.toStdString();
         std::string jsonstring = binds.dump().c_str();
         LOG( INFO ) << jsonstring;
