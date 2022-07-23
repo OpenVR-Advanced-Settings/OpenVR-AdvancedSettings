@@ -1124,6 +1124,11 @@ void MoveCenterTabController::zeroOffsets()
     if ( chaperoneState < vr::ChaperoneCalibrationState_Error
          || m_ignoreChaperoneState )
     {
+        if ( !m_chaperoneInit )
+        {
+            m_chaperoneInit = true;
+            LOG( INFO ) << "Chaperone Initially Calibrated";
+        }
         if ( chaperoneState > vr::ChaperoneCalibrationState_OK )
         {
             LOG( WARNING )
@@ -1187,7 +1192,6 @@ void MoveCenterTabController::zeroOffsets()
     }
     else
     {
-        LOG( WARNING ) << "Chaperone not calibrated?";
         if ( !m_pendingZeroOffsets )
         {
             LOG( INFO ) << "PENDING: Chaperone Data Update and Offsets zeroing";
