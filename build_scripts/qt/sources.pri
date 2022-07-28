@@ -17,6 +17,7 @@ SOURCES += src/main.cpp\
     src/openvr/ovr_overlay_wrapper.cpp \
 	src/openvr/ovr_system_wrapper.cpp \
 	src/openvr/lh_console_util.cpp \
+	src/openvr/ovr_application_wrapper.cpp \
     src/utils/setup.cpp \
     src/utils/paths.cpp \
     src/utils/FrameRateUtils.cpp \
@@ -55,6 +56,7 @@ HEADERS += src/overlaycontroller.h \
     src/openvr/ovr_settings_wrapper.h \
     src/openvr/ovr_overlay_wrapper.h \
 	src/openvr/ovr_system_wrapper.h \
+	src/openvr/ovr_application_wrapper.h \
 	src/openvr/lh_console_util.h \
     src/utils/setup.h \
     src/utils/paths.h \

@@ -1120,9 +1120,21 @@ void MoveCenterTabController::zeroOffsets()
 
     // finished checking if out of bounds, proceed with normal zeroing
     // offsets
-    if ( vr::VRChaperone()->GetCalibrationState()
-         == vr::ChaperoneCalibrationState_OK )
+    auto chaperoneState = vr::VRChaperone()->GetCalibrationState();
+    if ( chaperoneState < vr::ChaperoneCalibrationState_Error
+         || m_ignoreChaperoneState )
     {
+        if ( !m_chaperoneInit )
+        {
+            m_chaperoneInit = true;
+            LOG( INFO ) << "Chaperone Initially Calibrated";
+        }
+        if ( chaperoneState > vr::ChaperoneCalibrationState_OK )
+        {
+            LOG( WARNING )
+                << "Chaperone Cal State Is warning during zero offsets: "
+                << chaperoneState;
+        }
         m_oldOffsetX = 0.0f;
         m_oldOffsetY = 0.0f;
         m_oldOffsetZ = 0.0f;
@@ -1180,7 +1192,6 @@ void MoveCenterTabController::zeroOffsets()
     }
     else
     {
-        LOG( WARNING ) << "Chaperone not calibrated?";
         if ( !m_pendingZeroOffsets )
         {
             LOG( INFO ) << "PENDING: Chaperone Data Update and Offsets zeroing";
@@ -3088,4 +3099,11 @@ void MoveCenterTabController::eventLoopTick(
         updateSpace();
     }
 }
+
+void MoveCenterTabController::setIgnoreChaperoneState()
+{
+    m_ignoreChaperoneState = true;
+    LOG( INFO ) << "Ignoring Chaperone State for Zero Offsets";
+}
+
 } // namespace advsettings

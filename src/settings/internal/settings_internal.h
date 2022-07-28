@@ -17,6 +17,7 @@ enum class SettingCategory
     Chaperone,
     ChaperoneProfiles,
     Rotation,
+    SteamVR,
 };
 
 struct QtInfo
@@ -56,6 +57,8 @@ struct QtInfo
         return "chaperoneProfiles";
     case SettingCategory::Rotation:
         return "rotationSettings";
+    case SettingCategory::SteamVR:
+        return "steamVRSettings";
     }
     return "no-value";
 }

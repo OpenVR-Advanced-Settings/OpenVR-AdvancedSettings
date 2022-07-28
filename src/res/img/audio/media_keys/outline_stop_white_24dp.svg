@@ -1,1 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0V0z"/><path fill="white" d="M16 8v8H8V8h8m2-2H6v12h12V6z"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   version="1.1"
+   id="svg623"
+   sodipodi:docname="outline_stop_white_24dp.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs627" />
+  <sodipodi:namedview
+     id="namedview625"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="41.75"
+     inkscape:cx="12.035928"
+     inkscape:cy="12"
+     inkscape:window-width="2560"
+     inkscape:window-height="1387"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg623" />
+  <path
+     fill="none"
+     d="M0 0h24v24H0V0z"
+     id="path619" />
+  <path
+     fill="d9dbe0"
+     d="M16 8v8H8V8h8m2-2H6v12h12V6z"
+     id="path621" />
+  <path
+     style="fill:#d9dbe0;stroke-width:0.0239521"
+     d="M 6.011976,12 V 6 H 12 17.988024 v 6 6 H 12 6.011976 Z M 16,12 V 7.988024 H 12 8 V 12 16.011976 h 4 4 z"
+     id="path720" />
+</svg>

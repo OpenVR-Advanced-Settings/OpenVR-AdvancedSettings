@@ -30,7 +30,7 @@ MyPushButton2 {
     background: Rectangle {
         // Provides feedback for mousing over and clicking buttons.
         opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-        color: "#406288"
+        color: "#3d4450"
         radius: 4
         anchors.fill: parent
     }

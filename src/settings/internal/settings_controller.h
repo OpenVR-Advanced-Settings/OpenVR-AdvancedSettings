@@ -419,7 +419,11 @@ private:
         BoolSettingValue{ BoolSetting::ROTATION_autoturnShowNotification,
                           SettingCategory::Rotation,
                           QtInfo{ "autoturnShowNotification" },
-                          true }
+                          true },
+        BoolSettingValue{ BoolSetting::STEAMVR_perappBindEnabled,
+                          SettingCategory::SteamVR,
+                          QtInfo{ "perappBindEnabled" },
+                          false }
     };
 
     constexpr static auto doubleSettingSize

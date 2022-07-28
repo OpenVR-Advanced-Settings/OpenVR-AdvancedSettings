@@ -161,6 +161,7 @@ private:
     float m_lastControllerPosition[3];
     bool m_heightToggle = false;
     float m_gravityFloor = 0.0f;
+    bool m_ignoreChaperoneState = false;
     // Set lastHandQuaternion.w to -1000.0 when last hand is invalid.
     vr::HmdQuaternion_t m_lastHandQuaternion
         = { k_quaternionInvalidValue, 0.0, 0.0, 0.0 };
@@ -205,6 +206,8 @@ private:
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
     unsigned m_turnComfortFrameSkipCounter = 0;
+
+    bool m_chaperoneInit = true;
 
     // Matrix used For Center Marker
     vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
@@ -290,6 +293,7 @@ public:
     void saveOffsetProfiles();
     Q_INVOKABLE unsigned getOffsetProfileCount();
     Q_INVOKABLE QString getOffsetProfileName( unsigned index );
+    Q_INVOKABLE void setIgnoreChaperoneState();
 
     // actions:
     void leftHandSpaceDrag( bool leftHandDragActive );

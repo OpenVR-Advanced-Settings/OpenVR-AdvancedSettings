@@ -4,6 +4,7 @@
 #include <QObject>
 #include "../utils/FrameRateUtils.h"
 #include "../openvr/ovr_settings_wrapper.h"
+#include "../openvr/ovr_application_wrapper.h"
 #include "../openvr/lh_console_util.h"
 #include <QStringListModel>
 #include <QTableWidget>
@@ -14,7 +15,13 @@
 #include <QtWebSockets/QWebSocket>
 #include <QUrl>
 #include <QNetworkRequest>
+#include <QNetworkAccessManager>
+#include "../../third-party/nlhomann/json.hpp"
+#include <QNetworkReply>
+#include <set>
+#include <regex>
 
+using namespace nlohmann;
 class QQuickWindow;
 // application namespace
 namespace advsettings
@@ -58,6 +65,8 @@ class SteamVRTabController : public QObject
                     cameraRoomChanged )
     Q_PROPERTY( bool cameraDashboard READ cameraDashboard WRITE
                     setCameraDashboard NOTIFY cameraDashboardChanged )
+    Q_PROPERTY( bool perAppBindEnabled READ perAppBindEnabled WRITE
+                    setPerAppBindEnabled NOTIFY perAppBindEnabledChanged )
 
 private:
     OverlayController* parent;
@@ -67,6 +76,11 @@ private:
     bool m_noFadeToGridToggle = false;
     bool m_multipleDriverToggle = false;
     bool m_dnd = false;
+    QNetworkAccessManager m_networkManagerApply;
+    QNetworkAccessManager m_networkManagerUrl;
+    QNetworkAccessManager m_networkManagerBind;
+    QNetworkRequest m_networkRequest;
+    // QNetworkReply* m_networkReply;
 
     bool m_cameraActive = false;
     bool m_cameraBounds = false;
@@ -77,6 +91,8 @@ private:
     int m_dongleCountMax = 0;
     QString m_unparsedDongleString = "";
     QString m_last_pair_sn = "";
+    std::string m_lastAppID = "steam.overlay.1009850";
+    bool m_setDefault = false;
 
     std::vector<DeviceInfo> m_deviceList;
 
@@ -85,6 +101,7 @@ private:
     void synchSteamVR();
     std::vector<QString> getDongleSerialList( std::string deviceString );
     bool isSteamVRTracked( QString sn );
+    void applyBindingReq( std::string appID );
 
 public:
     void initStage1();
@@ -106,6 +123,27 @@ public:
     QNetworkProxy m_proxy;
     QWebSocket m_webSocket;
 
+    bool m_adjustBinding = true;
+    void getBindingUrlReq( std::string appID );
+    void getBindingDataReq( std::string steamURL,
+                            std::string appID,
+                            std::string ctrlType );
+    bool customBindExists( std::string appID = "",
+                           std::string sceneAppID = "",
+                           std::string ctrl = "" );
+    bool defBindExists( std::string appID = "", std::string ctrl = "" );
+    //    void setCustomBind( std::string appID,
+    //                        std::string sceneAppID = "",
+    //                        std::string ctrl = "" );
+    bool saveBind( std::string appID,
+                   std::string sceneAppID,
+                   std::string ctrlType,
+                   json binds,
+                   bool def = false );
+
+    bool perAppBindEnabled() const;
+    void applyAllCustomBindings();
+
     Q_INVOKABLE void searchRXTX();
 
     Q_INVOKABLE void launchBindingUI();
@@ -118,6 +156,7 @@ public:
     Q_INVOKABLE QString getDongleUsage();
     Q_INVOKABLE void pairDevice( QString sn );
     Q_INVOKABLE void updateRXTXList();
+    Q_INVOKABLE void setBindingQMLWrapper( QString appID, bool def = false );
 
 public slots:
     void onConnected();
@@ -134,7 +173,12 @@ public slots:
     void setCameraRoom( bool value, bool notify = true );
     void setCameraDashboard( bool value, bool notify = true );
 
+    void setPerAppBindEnabled( bool value, bool notify = true );
+
     void restartSteamVR();
+    void onGetBindingUrlResponse( QNetworkReply* reply );
+    void onApplyBindingResponse( QNetworkReply* reply );
+    void onGetBindingDataResponse( QNetworkReply* reply );
 
 signals:
 
@@ -151,6 +195,8 @@ signals:
 
     void pairStatusChanged( QString value );
     void updateRXTX( bool value );
+
+    void perAppBindEnabledChanged( bool value );
 };
 
 } // namespace advsettings

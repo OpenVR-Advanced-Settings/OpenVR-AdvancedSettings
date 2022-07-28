@@ -47,7 +47,7 @@ MyStackViewPage {
                 MyTextField {
                     id: chaperoneNewProfileName
                     keyBoardUID: 390
-                    color: "#cccccc"
+                    color: "#d9dbe0"
                     text: ""
                     Layout.fillWidth: true
                     font.pointSize: 20

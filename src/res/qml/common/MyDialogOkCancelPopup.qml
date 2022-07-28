@@ -35,8 +35,8 @@ Popup {
             implicitHeight: dialogHeight
             anchors.centerIn: parent
             radius: 24
-            color: "#1b2939"
-            border.color: "#cccccc"
+            color: "#2a2e35"
+            border.color: "#d9dbe0"
             border.width: 2
             ColumnLayout {
                 anchors.fill: parent
@@ -47,7 +47,7 @@ Popup {
                     text: dialogTitle
                 }
                 Rectangle {
-                    color: "#cccccc"
+                    color: "#2a2e35"
                     height: 1
                     Layout.fillWidth: true
                 }

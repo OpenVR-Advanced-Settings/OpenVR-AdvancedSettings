@@ -53,5 +53,6 @@ vr::ETrackedDeviceClass getDeviceClass( int index );
 
 std::vector<int> getAllConnectedDevices( bool onlyWearable = false );
 std::string getDeviceName( int index );
+std::string getControllerName();
 
 } // namespace ovr_system_wrapper

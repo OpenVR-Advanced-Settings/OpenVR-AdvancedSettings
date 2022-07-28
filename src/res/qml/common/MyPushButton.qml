@@ -13,10 +13,10 @@ Button {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: parent.text
-        color: parent.enabled ? "#ffffff" : "#909090"
+        color: parent.enabled ? "#d9dbe0" : "#65676b"
 	}
 	background: Rectangle {
-        color: parent.down ? "#406288" : (parent.activeFocus ? "#365473" : "#2c435d")
+        color: parent.enabled? (parent.down ? "#181a1e" : (parent.activeFocus ? "#586170" : "#3d4450")): "#181a1e"
     }
 
     Image {

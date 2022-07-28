@@ -14,7 +14,7 @@ import "../steamvr_page/steamvr_additional"
 
 Rectangle {
     id: root
-    color: "#1b2939"
+    color: "#2a2e35"
     width: 1200
     height: 800
 

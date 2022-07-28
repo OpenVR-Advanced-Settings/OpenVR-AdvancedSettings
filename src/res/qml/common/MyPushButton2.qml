@@ -8,11 +8,11 @@ Button {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: parent.text
-        color: parent.enabled ? "#ffffff" : "#909090"
+        color: parent.enabled ? "#d9dbe0" : "#65676b"
     }
     background: Rectangle {
-        color: parent.down ? "#406288" : (parent.activeFocus ? "#365473" : "transparent")
-        border.color: parent.enabled ? "#ffffff" : "#909090"
+        color: parent.down ? "#282b31" : (parent.activeFocus ? "#484f5b" : "transparent")
+        border.color: parent.enabled ? "#d9dbe0" : "#65676b"
         radius: 8
     }
     onHoveredChanged: {

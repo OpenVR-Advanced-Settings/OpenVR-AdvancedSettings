@@ -8,7 +8,7 @@ import ".."
 // Insert inside a ColumnLayout containing this and a RowLayout
 // to neatly separate header and buttons.
 Rectangle {
-    color: "#ffffff"
+    color: "#d9dbe0"
     height: 1
     Layout.fillWidth: true
     Layout.bottomMargin: 5

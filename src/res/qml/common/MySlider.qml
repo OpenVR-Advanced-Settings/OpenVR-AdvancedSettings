@@ -17,14 +17,14 @@ Slider {
         width: parent.availableWidth
         height: parent.availableHeight
         radius: 2
-        color: parent.activeFocus ? "#2c435d" : "#1b2939"
+        color: parent.activeFocus ? "#484f5b" : "#2a2e35"
         Rectangle {
             y: parent.height / 2 - height / 2
             implicitHeight: 4
             width: parent.width
             height: implicitHeight
             radius: 2
-            color: "#bdbebf"
+            color: "#181a1e"
         }
     }
 
@@ -34,8 +34,8 @@ Slider {
         implicitWidth: 20
         implicitHeight: 40
         radius: 4
-        color: parent.pressed ? "#ffffff" : "#eeeeee"
-        border.color: "#bdbebf"
+        color: parent.pressed ? "#586170" : "#3d4450"
+        border.color: "#181a1e"
     }
 
     onHoveredChanged: {

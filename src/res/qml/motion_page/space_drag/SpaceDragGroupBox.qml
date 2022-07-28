@@ -15,7 +15,7 @@ GroupBox {
     }
     background: Rectangle {
         color: "transparent"
-        border.color: "#ffffff"
+        border.color: "#d9dbe0"
         radius: 8
     }
 
@@ -23,7 +23,7 @@ GroupBox {
         anchors.fill: parent
 
         Rectangle {
-            color: "#ffffff"
+            color: "#d9dbe0"
             height: 1
             Layout.fillWidth: true
             Layout.bottomMargin: 5
@@ -89,6 +89,14 @@ GroupBox {
             }
         }
         RowLayout{
+            MyPushButton{
+                text:"Ignore Boundary State"
+                Layout.preferredWidth: 300
+                onClicked:{
+                    MoveCenterTabController.setIgnoreChaperoneState();
+                }
+            }
+
             Item{
                 Layout.fillWidth: true
             }
