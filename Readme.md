@@ -365,6 +365,20 @@ These version are not stable and this should be considered for advanced users on
   - **Camera for Bounds**: Your camera view will replace your vr view as you near/exit chaperone
   - **Camera for Dashboard**: You will have a small camera view attached to your controller when you have the dashboard active.
   - **Camera for Room View**: You will have a Tron/Shadow version of the room when double-clicking system button.
+- **Binds**
+  - **Enable Per-App**: Enables Per App Binding Feature
+  - **Application**: Application to set Per app Bindings
+    - **Common Overlay App Keys** 
+      - (default) [OVR Advanced Settings](https://store.steampowered.com/app/1009850/OVR_Advanced_Settings/) = steam.overlay.1009850
+      -  [OVR Toolkit](https://store.steampowered.com/app/1068820/OVR_Toolkit/) = steam.overlay.1068820
+      -  [XSOverlay](https://store.steampowered.com/app/1173510/XSOverlay/) = steam.overlay.1173510 
+      -  [Desktop +](https://store.steampowered.com/app/1494460/Desktop/) = steam.overlay.1494460
+      -  [fpsVR](https://store.steampowered.com/app/908520/fpsVR/) =  steam.overlay.908520
+      -  [LIV](https://store.steampowered.com/app/755540/LIV/) = steam.overlay.755540
+  - **Open Bindings**: another shortcut to the SteamVR Binding Menu
+  - **Save Current Binding of Selected App**:
+    - **For Current Game**: Saves your Current Binding of the selected game to be used on a per-app basis for this game.
+    - **As Default**: Saves your Current Binding of the selected game to be used if no other bindings are found when a new game loads.
 - **Restart SteamVR**: Restart SteamVR (May crash the Steam overlay when SteamVR Home is running when you restart. Therefore I advice that you close SteamVR Home before restarting).
 
 ## - SteamVR Pair Page
@@ -437,6 +451,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **Left/Right Hand**: Toggles functionality (must be active in addition to binding via input system to work.)
   - **Comfort Mode**: Limits the rate at which your movement updates, reducing smoothness so that perceived motion starts to feel more like mini-teleports. Higher values reduce smoothness more.
   - **Force Bounds**: Forces the display of the chaperone bounds during Space Drag.
+  - **Ignore Boundary State**: Will for this session, ignroe the current state of the chaperone(boundary), this should improve compatibility with third party hmd's
   - **Drag Multiplier**: Adds a Multiplier to the distance of your drag.
 - **Height Toggle**: Toggle between zero and an offset for gravity floor height. If gravity is inactive the user is also moved to this offset. (Example: allows for quick switching between a seated and standing height.) Can be bound via SteamVr Input System.
   - **On**: Current toggle state, Binds directly modify this.
