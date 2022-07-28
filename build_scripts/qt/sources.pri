@@ -46,7 +46,6 @@ HEADERS += src/overlaycontroller.h \
     src/media_keys/media_keys.h \
     src/utils/Matrix.h \
     src/utils/ChaperoneUtils.h \
-	src/utils/json.hpp \
     src/quaternion/quaternion.h \
     src/openvr/openvr_init.h \
     src/openvr/ivrinput_action.h \

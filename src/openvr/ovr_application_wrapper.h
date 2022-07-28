@@ -16,7 +16,7 @@ namespace ovr_application_wrapper
 // might make sense to mirror ovr's errors exactly, but for now this is more
 // than sufficient
 
-enum class SystemError
+enum class ApplicationError
 {
     NoError,
     UndefinedError,
