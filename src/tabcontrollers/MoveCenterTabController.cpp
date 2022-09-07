@@ -2248,27 +2248,27 @@ void MoveCenterTabController::updateFootDrag(
     vr::TrackedDevicePose_t* devicePoses,
     double angle )
 {
-    double diff[3] = {0.0, 0.0, 0.0};
-    const char * device_paths[2] = {
-        k_pchPathUserFootLeft,
-        k_pchPathUserFootRight
-    };
-    for(size_t i = 0; i < 2; i++)
+    double diff[3] = { 0.0, 0.0, 0.0 };
+    const char* device_paths[2]
+        = { k_pchPathUserFootLeft, k_pchPathUserFootRight };
+    for ( size_t i = 0; i < 2; i++ )
     {
-        // There's not tracked device role specific to feet, but there's a static
-        // device path role k_pchPathUserFootLeft = "/user/foot/left";
+        // There's not tracked device role specific to feet, but there's a
+        // static device path role k_pchPathUserFootLeft = "/user/foot/left";
         // this should probably be cached
         vr::VRInputValueHandle_t inputHandle = 0;
         auto error2 = vr::VRInput()->GetInputSourceHandle( device_paths[i],
-                &inputHandle);
+                                                           &inputHandle );
         if ( error2 != vr::VRInputError_None )
         {
             LOG( ERROR ) << "failed to get input handle? foot inactive?";
             continue;
         }
         vr::InputOriginInfo_t deviceInfo;
-        // Populate deviceInfo with some data about the corresponding device, including deviceIndex
-        vr::VRInput()->GetOriginTrackedDeviceInfo(inputHandle, &deviceInfo, sizeof(deviceInfo));
+        // Populate deviceInfo with some data about the corresponding device,
+        // including deviceIndex
+        vr::VRInput()->GetOriginTrackedDeviceInfo(
+            inputHandle, &deviceInfo, sizeof( deviceInfo ) );
         auto moveFootId = deviceInfo.trackedDeviceIndex;
 
         vr::TrackedDevicePose_t* movePose;
@@ -2310,33 +2310,40 @@ void MoveCenterTabController::updateFootDrag(
         // if below activation height
         // TODO: option to work with non-flat omni treadmills. Possibly based on
         // relative foot position, otherwise just use a half-sphere?
-        if (absoluteControllerPosition[1] <= m_footDragActivationHeight)
+        if ( absoluteControllerPosition[1] <= m_footDragActivationHeight )
         {
             // if diff is already populated, average the differences
-            if(diff[0] == 0.0) {
+            if ( diff[0] == 0.0 )
+            {
                 diff[0] = static_cast<double>( absoluteControllerPosition[0]
-                            - m_lastFootPosition[i][0] );
+                                               - m_lastFootPosition[i][0] );
                 diff[1] = static_cast<double>( absoluteControllerPosition[1]
-                            - m_lastFootPosition[i][1] );
+                                               - m_lastFootPosition[i][1] );
                 diff[2] = static_cast<double>( absoluteControllerPosition[2]
-                            - m_lastFootPosition[i][2] );
-            } else {
-                diff[0] = static_cast<double>( (diff[0]/2.0) +
-                        ((absoluteControllerPosition[0]
-                          - m_lastFootPosition[i][0] )/2.0));
-                diff[1] = static_cast<double>( (diff[1]/2.0) +
-                        ((absoluteControllerPosition[1]
-                          - m_lastFootPosition[i][1] )/2.0));
-                diff[2] = static_cast<double>( (diff[2]/2.0) +
-                        ((absoluteControllerPosition[2]
-                          - m_lastFootPosition[i][2] )/2.0));
+                                               - m_lastFootPosition[i][2] );
+            }
+            else
+            {
+                diff[0] = ( diff[0] / 2.0 )
+                          + static_cast<double>( ( absoluteControllerPosition[0]
+                                                   - m_lastFootPosition[i][0] )
+                                                 / 2.0f );
+                diff[1] = ( diff[1] / 2.0 )
+                          + static_cast<double>( ( absoluteControllerPosition[1]
+                                                   - m_lastFootPosition[i][1] )
+                                                 / 2.0f );
+                diff[2] = ( diff[2] / 2.0 )
+                          + static_cast<double>( ( absoluteControllerPosition[2]
+                                                   - m_lastFootPosition[i][2] )
+                                                 / 2.0f );
             }
         }
         m_lastFootPosition[i][0] = absoluteControllerPosition[0];
         m_lastFootPosition[i][1] = absoluteControllerPosition[1];
         m_lastFootPosition[i][2] = absoluteControllerPosition[2];
     }
-    if(diff[0] != 0.0) {
+    if ( diff[0] != 0.0 )
+    {
         // prevent positional glitches from exceeding max openvr offset
         // clamps. We do this by detecting a drag larger than 100m in a
         // single frame.
