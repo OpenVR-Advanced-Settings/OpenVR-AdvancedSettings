@@ -159,6 +159,8 @@ private:
     bool m_moveShortcutLeftPressed = false;
     vr::TrackedDeviceIndex_t m_activeMoveController;
     float m_lastControllerPosition[3];
+    float m_lastFootPosition[2][3];
+    float m_footDragActivationHeight = 0.2f;
     bool m_heightToggle = false;
     float m_gravityFloor = 0.0f;
     bool m_ignoreChaperoneState = false;
@@ -230,6 +232,7 @@ private:
 
     void updateHmdRotationCounter( vr::TrackedDevicePose_t hmdPose,
                                    double angle );
+    void updateFootDrag( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateHandDrag( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateHandTurn( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateGravity();

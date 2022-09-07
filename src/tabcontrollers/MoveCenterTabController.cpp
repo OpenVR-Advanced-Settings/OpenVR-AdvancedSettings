@@ -3,6 +3,7 @@
 #include "../overlaycontroller.h"
 #include "../quaternion/quaternion.h"
 #include "../settings/settings.h"
+#include <openvr_capi.h>
 
 void rotateCoordinates( double coordinates[3], double angle )
 {
@@ -2239,6 +2240,124 @@ void MoveCenterTabController::updateHmdRotationCounter(
     m_lastHmdQuaternion = m_hmdQuaternion;
 }
 
+// TODO: setting m_footDragActivationHeight
+// TODO: UI options to enable/disable this feature
+// Unlike hand drag, for any foot detected as 'active', we take an average
+// of the changes instead of the most recent one.
+void MoveCenterTabController::updateFootDrag(
+    vr::TrackedDevicePose_t* devicePoses,
+    double angle )
+{
+    double diff[3] = {0.0, 0.0, 0.0};
+    const char * device_paths[2] = {
+        k_pchPathUserFootLeft,
+        k_pchPathUserFootRight
+    };
+    for(size_t i = 0; i < 2; i++)
+    {
+        // There's not tracked device role specific to feet, but there's a static
+        // device path role k_pchPathUserFootLeft = "/user/foot/left";
+        // this should probably be cached
+        vr::VRInputValueHandle_t inputHandle = 0;
+        auto error2 = vr::VRInput()->GetInputSourceHandle( device_paths[i],
+                &inputHandle);
+        if ( error2 != vr::VRInputError_None )
+        {
+            LOG( ERROR ) << "failed to get input handle? foot inactive?";
+            continue;
+        }
+        vr::InputOriginInfo_t deviceInfo;
+        // Populate deviceInfo with some data about the corresponding device, including deviceIndex
+        vr::VRInput()->GetOriginTrackedDeviceInfo(inputHandle, &deviceInfo, sizeof(deviceInfo));
+        auto moveFootId = deviceInfo.trackedDeviceIndex;
+
+        vr::TrackedDevicePose_t* movePose;
+        if ( m_seatedModeDetected )
+        {
+            vr::TrackedDevicePose_t
+                seatedDevicePoses[vr::k_unMaxTrackedDeviceCount];
+            vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+                vr::TrackingUniverseSeated,
+                0.0f,
+                seatedDevicePoses,
+                vr::k_unMaxTrackedDeviceCount );
+            movePose = seatedDevicePoses + moveFootId;
+        }
+        else
+        {
+            movePose = devicePoses + moveFootId;
+        }
+
+        if ( !movePose->bPoseIsValid || !movePose->bDeviceIsConnected
+             || movePose->eTrackingResult != vr::TrackingResult_Running_OK )
+        {
+            continue;
+        }
+
+        double relativeControllerPosition[] = {
+            static_cast<double>( movePose->mDeviceToAbsoluteTracking.m[0][3] ),
+            static_cast<double>( movePose->mDeviceToAbsoluteTracking.m[1][3] ),
+            static_cast<double>( movePose->mDeviceToAbsoluteTracking.m[2][3] )
+        };
+
+        rotateCoordinates( relativeControllerPosition, -angle );
+        float absoluteControllerPosition[] = {
+            static_cast<float>( relativeControllerPosition[0] ) + m_offsetX,
+            static_cast<float>( relativeControllerPosition[1] ) + m_offsetY,
+            static_cast<float>( relativeControllerPosition[2] ) + m_offsetZ,
+        };
+
+        // if below activation height
+        // TODO: option to work with non-flat omni treadmills. Possibly based on
+        // relative foot position, otherwise just use a half-sphere?
+        if (absoluteControllerPosition[1] <= m_footDragActivationHeight)
+        {
+            // if diff is already populated, average the differences
+            if(diff[0] == 0.0) {
+                diff[0] = static_cast<double>( absoluteControllerPosition[0]
+                            - m_lastFootPosition[i][0] );
+                diff[1] = static_cast<double>( absoluteControllerPosition[1]
+                            - m_lastFootPosition[i][1] );
+                diff[2] = static_cast<double>( absoluteControllerPosition[2]
+                            - m_lastFootPosition[i][2] );
+            } else {
+                diff[0] = static_cast<double>( (diff[0]/2.0) +
+                        ((absoluteControllerPosition[0]
+                          - m_lastFootPosition[i][0] )/2.0));
+                diff[1] = static_cast<double>( (diff[1]/2.0) +
+                        ((absoluteControllerPosition[1]
+                          - m_lastFootPosition[i][1] )/2.0));
+                diff[2] = static_cast<double>( (diff[2]/2.0) +
+                        ((absoluteControllerPosition[2]
+                          - m_lastFootPosition[i][2] )/2.0));
+            }
+        }
+        m_lastFootPosition[i][0] = absoluteControllerPosition[0];
+        m_lastFootPosition[i][1] = absoluteControllerPosition[1];
+        m_lastFootPosition[i][2] = absoluteControllerPosition[2];
+    }
+    if(diff[0] != 0.0) {
+        // prevent positional glitches from exceeding max openvr offset
+        // clamps. We do this by detecting a drag larger than 100m in a
+        // single frame.
+        if ( abs( diff[0] ) > 100.0 || abs( diff[1] ) > 100.0
+             || abs( diff[2] ) > 100.0 )
+        {
+            reset();
+        }
+
+        // prevents updating if axis movement is locked
+        if ( !lockXToggle() )
+        {
+            m_offsetX += static_cast<float>( diff[0] );
+        }
+        if ( !lockZToggle() )
+        {
+            m_offsetZ += static_cast<float>( diff[2] );
+        }
+    }
+}
+
 void MoveCenterTabController::updateHandDrag(
     vr::TrackedDevicePose_t* devicePoses,
     double angle )
@@ -3082,6 +3201,7 @@ void MoveCenterTabController::eventLoopTick(
             {
                 m_dragComfortFrameSkipCounter++;
             }
+            updateFootDrag( devicePoses, angle );
 
             if ( m_gravityActive
                  && m_activeDragHand == vr::TrackedControllerRole_Invalid )
