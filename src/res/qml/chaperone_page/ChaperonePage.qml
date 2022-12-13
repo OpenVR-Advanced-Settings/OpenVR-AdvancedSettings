@@ -244,6 +244,7 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
+                id: chaperoneVisibilityMinus
                 text: "-"
                 Layout.preferredWidth: 40
                 onClicked: {
@@ -268,6 +269,7 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
+                id: chaperoneVisibilityPlus
                 text: "+"
                 Layout.preferredWidth: 40
                 onClicked: {
@@ -573,6 +575,18 @@ MyStackViewPage {
                 chaperoneFadeDistanceSlider.enabled = true;
                 chaperoneFadeDistanceText.enabled = true;
             }
+            var dim = ChaperoneTabController.chaperoneDimHeight
+            if (dim > 0.0) {
+                chaperoneVisibilityMinus.enabled = false;
+                chaperoneVisibilityPlus.enabled = false;
+                chaperoneVisibilitySlider.enabled = false;
+                chaperoneVisibilityText.enabled = false;
+            } else {
+                chaperoneVisibilityMinus.enabled = true;
+                chaperoneVisibilityPlus.enabled = true;
+                chaperoneVisibilitySlider.enabled = true;
+                chaperoneVisibilityText.enabled = true;
+            }
             reloadChaperoneProfiles()
         }
 
@@ -597,7 +611,20 @@ MyStackViewPage {
                 }
                 chaperoneHeightText.text = h
             }
-
+            onChaperoneDimHeightChanged: {
+                var d = ChaperoneTabController.chaperoneDimHeight
+                if (d > 0.0) {
+                    chaperoneVisibilityMinus.enabled = false;
+                    chaperoneVisibilityPlus.enabled = false;
+                    chaperoneVisibilitySlider.enabled = false;
+                    chaperoneVisibilityText.enabled = false;
+                } else {
+                    chaperoneVisibilityMinus.enabled = true;
+                    chaperoneVisibilityPlus.enabled = true;
+                    chaperoneVisibilitySlider.enabled = true;
+                    chaperoneVisibilityText.enabled = true;
+                }
+            }
             onCenterMarkerNewChanged: {
                 chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarkerNew
             }

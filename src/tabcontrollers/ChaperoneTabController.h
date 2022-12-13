@@ -69,6 +69,7 @@ struct ChaperoneProfile : settings::ISettingsObject
     bool enableChaperoneShowDashboard = false;
     float chaperoneShowDashboardDistance = 0.0f;
     bool centerMarkerNew = false;
+    float chaperoneDimHeight = 0.0f;
 
     virtual settings::SettingsObjectData saveSettings() const override
     {
@@ -147,6 +148,7 @@ struct ChaperoneProfile : settings::ISettingsObject
         o.addValue( enableChaperoneShowDashboard );
         o.addValue( static_cast<double>( chaperoneShowDashboardDistance ) );
         o.addValue( centerMarkerNew );
+        o.addValue( static_cast<double>( chaperoneDimHeight ) );
 
         return o;
     }
@@ -238,6 +240,8 @@ struct ChaperoneProfile : settings::ISettingsObject
         chaperoneShowDashboardDistance
             = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
         centerMarkerNew = obj.getNextValueOrDefault( false );
+        chaperoneDimHeight
+            = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
     }
 
     virtual std::string settingsName() const override
@@ -297,6 +301,9 @@ class ChaperoneTabController : public QObject
         float chaperoneAlarmSoundDistance READ chaperoneAlarmSoundDistance WRITE
             setChaperoneAlarmSoundDistance NOTIFY
                 chaperoneAlarmSoundDistanceChanged )
+
+    Q_PROPERTY( float chaperoneDimHeight READ chaperoneDimHeight WRITE
+                    setChaperoneDimHeight NOTIFY chaperoneDimHeightChanged )
 
     Q_PROPERTY(
         bool chaperoneShowDashboardEnabled READ isChaperoneShowDashboardEnabled
@@ -380,6 +387,10 @@ private:
     int m_rotationCurrent = 0;
     bool m_centerMarkerOverlayIsInit = false;
 
+    bool m_dimmingActive = false;
+    std::optional<std::chrono::steady_clock::time_point>
+        m_dimNotificationTimestamp;
+
     vr::ETrackingUniverseOrigin m_trackingUniverse
         = vr::TrackingUniverseRawAndUncalibrated;
 
@@ -416,6 +427,8 @@ public:
     bool chaperoneFloorToggle();
 
     int collisionBoundStyle();
+
+    float chaperoneDimHeight() const;
 
     void setRightHapticActionHandle( vr::VRActionHandle_t handle );
     void setLeftHapticActionHandle( vr::VRActionHandle_t handle );
@@ -477,6 +490,8 @@ public slots:
     void setChaperoneShowDashboardEnabled( bool value, bool notify = true );
     void setChaperoneShowDashboardDistance( float value, bool notify = true );
 
+    void setChaperoneDimHeight( float value, bool notify = true );
+
     void setChaperoneColorR( int value, bool notify = true );
     void setChaperoneColorG( int value, bool notify = true );
     void setChaperoneColorB( int value, bool notify = true );
@@ -515,6 +530,7 @@ signals:
     void boundsVisibilityChanged( float value );
     void fadeDistanceChanged( float value );
     void heightChanged( float value );
+    void chaperoneDimHeightChanged( float value );
     void centerMarkerChanged( bool value );
     void playSpaceMarkerChanged( bool value );
     void forceBoundsChanged( bool value );

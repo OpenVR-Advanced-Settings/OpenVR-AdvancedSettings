@@ -85,6 +85,7 @@ enum class DoubleSetting
     CHAPERONE_alarmSoundDistance,
     CHAPERONE_showDashboardDistance,
     CHAPERONE_fadeDistanceRemembered,
+    CHAPERONE_dimHeight,
 
     ROTATION_activationDistance,
     ROTATION_deactivateDistance,
