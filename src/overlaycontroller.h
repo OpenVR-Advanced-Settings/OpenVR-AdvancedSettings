@@ -96,6 +96,8 @@ class OverlayController : public QObject
     Q_PROPERTY( bool autoApplyChaperoneEnabled READ autoApplyChaperoneEnabled
                     WRITE setAutoApplyChaperoneEnabled NOTIFY
                         autoApplyChaperoneEnabledChanged )
+    Q_PROPERTY( double soundVolume READ soundVolume WRITE setSoundVolume NOTIFY
+                    soundVolumeChanged )
 
 private:
     vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
@@ -252,6 +254,8 @@ public:
     int debugState() const;
     std::string autoApplyChaperoneName();
 
+    double soundVolume() const;
+
 public slots:
     void renderOverlay();
     void OnRenderRequest();
@@ -277,6 +281,7 @@ public slots:
     void setCustomTickRateMs( int value, bool notify = true );
     void setDebugState( int value, bool notify = true );
     void setAutoApplyChaperoneEnabled( bool value, bool notify = true );
+    void setSoundVolume( double value, bool notify = true );
 
 signals:
     void keyBoardInputSignal( QString input, unsigned long userValue = 0 );
@@ -290,6 +295,7 @@ signals:
     void customTickRateMsChanged( int value );
     void debugStateChanged( int value );
     void autoApplyChaperoneEnabledChanged( bool value );
+    void soundVolumeChanged( float value );
 };
 
 } // namespace advsettings

@@ -246,6 +246,72 @@ MyStackViewPage {
                         }
                     }
             }
+            RowLayout{
+                MyText {
+                    text: "AppVolume:"
+                    Layout.rightMargin: 12
+                }
+
+                MyPushButton2 {
+                    text: "-"
+                    Layout.preferredWidth: 40
+                    onClicked: {
+                        volumeSlider.value -= 0.05
+                    }
+                }
+
+                MySlider {
+                    id: volumeSlider
+                    from: 0.0
+                    to: 1.0
+                    stepSize: 0.01
+                    value: 0.7
+                    Layout.fillWidth: true
+                    onPositionChanged: {
+                        var val = (this.value * 100)
+                        volumeText.text = Math.round(val) + "%"
+                    }
+                    onValueChanged: {
+                        OverlayController.setSoundVolume(value, false)
+                    }
+                }
+
+                MyPushButton2 {
+                    text: "+"
+                    Layout.preferredWidth: 40
+                    onClicked: {
+                        volumeSlider.value += 0.05
+                    }
+                }
+
+
+                MyTextField {
+                    id: volumeText
+                    text: "70%"
+                    keyBoardUID: 503
+                    Layout.preferredWidth: 100
+                    Layout.leftMargin: 10
+                    horizontalAlignment: Text.AlignHCenter
+                    function onInputEvent(input) {
+                        var val = parseFloat(input)
+                        if (!isNaN(val)) {
+                            if (val < 0) {
+                                val = 0
+                            } else if (val > 100.0) {
+                                val = 100.0
+                            }
+
+                            var v = (val/100).toFixed(0)
+                            if (v <= volumeSlider.to) {
+                                chaperoneVisibilitySlider.value = v
+                            } else {
+                                ChaperoneTabController.setBoundsVisibility(v, false)
+                            }
+                        }
+                        text = Math.round(ChaperoneTabController.boundsVisibility * 100) + "%"
+                    }
+                }
+            }
 
             Item {
                 Layout.fillHeight: true
@@ -295,6 +361,7 @@ MyStackViewPage {
 
                 seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion
                 reloadChaperoneProfiles()
+                volumeSlider.value = OverlayController.soundVolume
             }
 
         Connections {
@@ -356,6 +423,9 @@ MyStackViewPage {
             }
             onAutoApplyChaperoneEnabledChanged: {
                autoApplyChaperoneToggleButton.checked = OverlayController.autoApplyChaperoneEnabled
+            }
+            onSoundVolumeChanged:{
+                volumeSlider.value = OverlayController.soundVolume
             }
         }
         Connections{
