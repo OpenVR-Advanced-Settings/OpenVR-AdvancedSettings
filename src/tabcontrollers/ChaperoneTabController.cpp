@@ -257,13 +257,15 @@ void ChaperoneTabController::eventLoopTick(
         if ( count > 10000 )
         {
             m_dimNotificationTimestamp.reset();
-            setChaperoneColorA( static_cast<int>( 0.f ) );
+            setFadeDistance( 0.0f, true );
         }
         else
         {
             float pct = std::min(
                 1.0f, 2.0f - static_cast<float>( count ) / 5000.0f );
-            setChaperoneColorA( static_cast<int>( pct * 0.6f * 255.0f ) );
+            // Originally this used opacity, but steam will override that it
+            // seems
+            setFadeDistance( pct * 0.4f, true );
         }
     }
 
@@ -313,7 +315,7 @@ void ChaperoneTabController::eventLoopTick(
                                  >= chaperoneDimHeight() )
                 {
                     m_dimmingActive = false;
-                    setChaperoneColorA( static_cast<int>( 0.6f * 255.0f ) );
+                    setFadeDistance( 0.4f, true );
                 }
             }
         }

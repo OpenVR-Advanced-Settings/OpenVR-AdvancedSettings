@@ -563,7 +563,13 @@ MyStackViewPage {
             chaperonePlaySpaceToggle.checked = ChaperoneTabController.playSpaceMarker
             chaperoneForceBoundsToggle.checked = ChaperoneTabController.forceBounds
             chaperoneDisableChaperone.checked = ChaperoneTabController.disableChaperone
-            if(chaperoneDisableChaperone.checked){
+            var dim = ChaperoneTabController.chaperoneDimHeight
+            if(dim > 0.0){
+                chaperoneDisableChaperone.enabled = false;
+            }else{
+                chaperoneDisableChaperone.enabled = true;
+            }
+            if(dim > 0.0 || chaperoneDisableChaperone.checked){
                 chaperoneFadeDistanceMinus.enabled = false;
                 chaperoneFadeDistancePlus.enabled = false;
                 chaperoneFadeDistanceSlider.enabled = false;
@@ -574,18 +580,6 @@ MyStackViewPage {
                 chaperoneFadeDistancePlus.enabled = true;
                 chaperoneFadeDistanceSlider.enabled = true;
                 chaperoneFadeDistanceText.enabled = true;
-            }
-            var dim = ChaperoneTabController.chaperoneDimHeight
-            if (dim > 0.0) {
-                chaperoneVisibilityMinus.enabled = false;
-                chaperoneVisibilityPlus.enabled = false;
-                chaperoneVisibilitySlider.enabled = false;
-                chaperoneVisibilityText.enabled = false;
-            } else {
-                chaperoneVisibilityMinus.enabled = true;
-                chaperoneVisibilityPlus.enabled = true;
-                chaperoneVisibilitySlider.enabled = true;
-                chaperoneVisibilityText.enabled = true;
             }
             reloadChaperoneProfiles()
         }
@@ -612,17 +606,23 @@ MyStackViewPage {
                 chaperoneHeightText.text = h
             }
             onChaperoneDimHeightChanged: {
-                var d = ChaperoneTabController.chaperoneDimHeight
-                if (d > 0.0) {
-                    chaperoneVisibilityMinus.enabled = false;
-                    chaperoneVisibilityPlus.enabled = false;
-                    chaperoneVisibilitySlider.enabled = false;
-                    chaperoneVisibilityText.enabled = false;
-                } else {
-                    chaperoneVisibilityMinus.enabled = true;
-                    chaperoneVisibilityPlus.enabled = true;
-                    chaperoneVisibilitySlider.enabled = true;
-                    chaperoneVisibilityText.enabled = true;
+                var dim = ChaperoneTabController.chaperoneDimHeight
+                if(dim > 0.0){
+                    chaperoneDisableChaperone.enabled = false;
+                }else{
+                    chaperoneDisableChaperone.enabled = true;
+                }
+                if(dim > 0.0 || chaperoneDisableChaperone.checked){
+                    chaperoneFadeDistanceMinus.enabled = false;
+                    chaperoneFadeDistancePlus.enabled = false;
+                    chaperoneFadeDistanceSlider.enabled = false;
+                    chaperoneFadeDistanceText.enabled = false;
+
+                }else{
+                    chaperoneFadeDistanceMinus.enabled = true;
+                    chaperoneFadeDistancePlus.enabled = true;
+                    chaperoneFadeDistanceSlider.enabled = true;
+                    chaperoneFadeDistanceText.enabled = true;
                 }
             }
             onCenterMarkerNewChanged: {
