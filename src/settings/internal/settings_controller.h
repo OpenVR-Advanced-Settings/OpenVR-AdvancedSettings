@@ -446,6 +446,11 @@ private:
                             QtInfo{ "dragMult" },
                             1.0 },
 
+        DoubleSettingValue{ DoubleSetting::APPLICATION_appVolume,
+                            SettingCategory::Application,
+                            QtInfo{ "appVolume" },
+                            0.7 },
+
         DoubleSettingValue{ DoubleSetting::VIDEO_brightnessOpacityValue,
                             SettingCategory::Video,
                             QtInfo{ "brightnessOpacityValue" },

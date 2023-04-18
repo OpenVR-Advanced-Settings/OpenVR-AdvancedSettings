@@ -69,6 +69,7 @@ OverlayController::OverlayController( bool desktopMode,
     m_runtimePathUrl = QUrl::fromLocalFile( tempRuntimePath );
     LOG( INFO ) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
+    const double initVol = soundVolume();
     constexpr auto clickSoundURL = "res/sounds/click.wav";
     const auto activationSoundFile
         = paths::binaryDirectoryFindFile( clickSoundURL );
@@ -77,7 +78,7 @@ OverlayController::OverlayController( bool desktopMode,
     {
         m_activationSoundEffect.setSource( QUrl::fromLocalFile(
             QString::fromStdString( ( *activationSoundFile ) ) ) );
-        m_activationSoundEffect.setVolume( 0.7 );
+        m_activationSoundEffect.setVolume( initVol );
     }
     else
     {
@@ -92,7 +93,7 @@ OverlayController::OverlayController( bool desktopMode,
     {
         m_focusChangedSoundEffect.setSource( QUrl::fromLocalFile(
             QString::fromStdString( ( *focusChangedSoundFile ) ) ) );
-        m_focusChangedSoundEffect.setVolume( 0.7 );
+        m_focusChangedSoundEffect.setVolume( initVol );
     }
     else
     {
@@ -1646,6 +1647,26 @@ void OverlayController::setKeyboardPos()
     empty.vTopLeft = emptyvec;
     empty.vBottomRight = emptyvec;
     vr::VROverlay()->SetKeyboardPositionForOverlay( m_ulOverlayHandle, empty );
+}
+
+void OverlayController::setSoundVolume( double value, bool notify )
+{
+    m_activationSoundEffect.setVolume( value );
+    m_focusChangedSoundEffect.setVolume( value );
+    // leaving alarm sound alone for now as chaperone warning setting effects it
+    // m_alarm01SoundEffect.setVolume( value);
+    settings::setSetting( settings::DoubleSetting::APPLICATION_appVolume,
+                          value );
+    if ( notify )
+    {
+        emit soundVolumeChanged( value );
+    }
+}
+
+double OverlayController::soundVolume() const
+{
+    return settings::getSetting(
+        settings::DoubleSetting::APPLICATION_appVolume );
 }
 
 void OverlayController::playActivationSound()

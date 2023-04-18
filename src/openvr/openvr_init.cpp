@@ -26,15 +26,25 @@ void initializeProperly( const OpenVrInitializationType initType )
         if ( initError == vr::VRInitError_Init_HmdNotFound
              || initError == vr::VRInitError_Init_HmdNotFoundPresenceFailed )
         {
-            QMessageBox::critical( nullptr,
-                                   "OpenVR Advanced Settings Overlay",
-                                   "Could not find HMD!" );
+            // In particular in some setups these errors are thrown while
+            // nothing is wrong with their setup presumably this is some sort of
+            // race condition
+            LOG( WARNING ) << "HMD not Found During Startup";
+            LOG( WARNING ) << "steamvr error: "
+                                  + std::string(
+                                      vr::VR_GetVRInitErrorAsEnglishDescription(
+                                          initError ) );
+            return;
         }
         LOG( ERROR ) << "Failed to initialize OpenVR: "
                             + std::string(
                                 vr::VR_GetVRInitErrorAsEnglishDescription(
                                     initError ) );
-        exit( EXIT_FAILURE );
+        // Going to stop Exiting App, This may lead to crashes if OpenVR
+        // actually fails to start, HOWEVER based on the HMD errors we are
+        // probably pre-maturely killing ourselves from some sort of OpenVR race
+        // condition
+        // exit( EXIT_FAILURE );
     }
     else
     {

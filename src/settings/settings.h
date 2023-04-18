@@ -74,6 +74,8 @@ enum class DoubleSetting
     PLAYSPACE_flingStrength,
     PLAYSPACE_dragMult,
 
+    APPLICATION_appVolume,
+
     VIDEO_brightnessOpacityValue,
     VIDEO_colorOverlayOpacity,
     VIDEO_colorRed,
