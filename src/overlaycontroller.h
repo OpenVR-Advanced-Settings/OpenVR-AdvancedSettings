@@ -295,7 +295,7 @@ signals:
     void customTickRateMsChanged( int value );
     void debugStateChanged( int value );
     void autoApplyChaperoneEnabledChanged( bool value );
-    void soundVolumeChanged( float value );
+    void soundVolumeChanged( double value );
 };
 
 } // namespace advsettings
