@@ -74,6 +74,8 @@ enum class DoubleSetting
     PLAYSPACE_flingStrength,
     PLAYSPACE_dragMult,
 
+    APPLICATION_appVolume,
+
     VIDEO_brightnessOpacityValue,
     VIDEO_colorOverlayOpacity,
     VIDEO_colorRed,
@@ -85,6 +87,7 @@ enum class DoubleSetting
     CHAPERONE_alarmSoundDistance,
     CHAPERONE_showDashboardDistance,
     CHAPERONE_fadeDistanceRemembered,
+    CHAPERONE_dimHeight,
 
     ROTATION_activationDistance,
     ROTATION_deactivateDistance,

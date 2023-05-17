@@ -446,6 +446,11 @@ private:
                             QtInfo{ "dragMult" },
                             1.0 },
 
+        DoubleSettingValue{ DoubleSetting::APPLICATION_appVolume,
+                            SettingCategory::Application,
+                            QtInfo{ "appVolume" },
+                            0.7 },
+
         DoubleSettingValue{ DoubleSetting::VIDEO_brightnessOpacityValue,
                             SettingCategory::Video,
                             QtInfo{ "brightnessOpacityValue" },
@@ -495,6 +500,10 @@ private:
                             SettingCategory::Chaperone,
                             QtInfo{ "fadeDistanceRemembered" },
                             0.5 },
+        DoubleSettingValue{ DoubleSetting::CHAPERONE_dimHeight,
+                            SettingCategory::Chaperone,
+                            QtInfo{ "dimHeight" },
+                            0.0 },
         DoubleSettingValue{ DoubleSetting::ROTATION_activationDistance,
                             SettingCategory::Rotation,
                             QtInfo{ "activationDistance" },

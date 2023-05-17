@@ -248,6 +248,27 @@ void ChaperoneTabController::eventLoopTick(
         checkCenterMarkerOverlayRotationCount();
     }
 
+    if ( m_dimmingActive && m_dimNotificationTimestamp )
+    {
+        auto count = std::chrono::duration_cast<std::chrono::milliseconds>(
+                         std::chrono::steady_clock::now()
+                         - *m_dimNotificationTimestamp )
+                         .count();
+        if ( count > 10000 )
+        {
+            m_dimNotificationTimestamp.reset();
+            setFadeDistance( 0.0f, true );
+        }
+        else
+        {
+            float pct = std::min(
+                1.0f, 2.0f - static_cast<float>( count ) / 5000.0f );
+            // Originally this used opacity, but steam will override that it
+            // seems
+            setFadeDistance( pct * 0.4f, true );
+        }
+    }
+
     if ( devicePoses )
     {
         m_isHMDActive = false;
@@ -276,6 +297,26 @@ void ChaperoneTabController::eventLoopTick(
             if ( !std::isnan( distanceHmd.distance ) )
             {
                 minDistance = distanceHmd.distance;
+            }
+            if ( chaperoneDimHeight() > 0.0f )
+            {
+                // Both of these only activate on state changes (e.g. when first
+                // going above/below chaperoneDimHeight())
+                if ( !m_dimmingActive
+                     && poseHmd.mDeviceToAbsoluteTracking.m[1][3]
+                            < chaperoneDimHeight() )
+                {
+                    m_dimmingActive = true;
+                    m_dimNotificationTimestamp.emplace(
+                        std::chrono::steady_clock::now() );
+                }
+                else if ( m_dimmingActive
+                          && poseHmd.mDeviceToAbsoluteTracking.m[1][3]
+                                 >= chaperoneDimHeight() )
+                {
+                    m_dimmingActive = false;
+                    setFadeDistance( 0.4f, true );
+                }
             }
         }
         auto leftIndex = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
@@ -554,6 +595,12 @@ bool ChaperoneTabController::disableChaperone() const
 {
     return settings::getSetting(
         settings::BoolSetting::CHAPERONE_disableChaperone );
+}
+
+float ChaperoneTabController::chaperoneDimHeight() const
+{
+    return static_cast<float>(
+        settings::getSetting( settings::DoubleSetting::CHAPERONE_dimHeight ) );
 }
 
 float ChaperoneTabController::chaperoneAlarmSoundDistance() const
@@ -1061,6 +1108,17 @@ void ChaperoneTabController::setChaperoneAlarmSoundAdjustVolume( bool value,
     }
 }
 
+void ChaperoneTabController::setChaperoneDimHeight( float value, bool notify )
+{
+    settings::setSetting( settings::DoubleSetting::CHAPERONE_dimHeight,
+                          static_cast<double>( value ) );
+
+    if ( notify )
+    {
+        emit chaperoneDimHeightChanged( value );
+    }
+}
+
 void ChaperoneTabController::setChaperoneAlarmSoundDistance( float value,
                                                              bool notify )
 {
@@ -1221,6 +1279,7 @@ void ChaperoneTabController::addChaperoneProfile(
     if ( includeFadeDistance )
     {
         profile->fadeDistance = m_fadeDistance;
+        profile->chaperoneDimHeight = chaperoneDimHeight();
     }
     profile->includesCenterMarker = includeCenterMarker;
     if ( includeCenterMarker )
@@ -1312,6 +1371,7 @@ void ChaperoneTabController::applyChaperoneProfile( unsigned index )
         if ( profile.includesFadeDistance )
         {
             setFadeDistance( profile.fadeDistance );
+            setChaperoneDimHeight( profile.chaperoneDimHeight );
         }
         if ( profile.includesCenterMarker )
         {

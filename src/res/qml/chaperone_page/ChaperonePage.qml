@@ -244,6 +244,7 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
+                id: chaperoneVisibilityMinus
                 text: "-"
                 Layout.preferredWidth: 40
                 onClicked: {
@@ -268,6 +269,7 @@ MyStackViewPage {
             }
 
             MyPushButton2 {
+                id: chaperoneVisibilityPlus
                 text: "+"
                 Layout.preferredWidth: 40
                 onClicked: {
@@ -561,7 +563,13 @@ MyStackViewPage {
             chaperonePlaySpaceToggle.checked = ChaperoneTabController.playSpaceMarker
             chaperoneForceBoundsToggle.checked = ChaperoneTabController.forceBounds
             chaperoneDisableChaperone.checked = ChaperoneTabController.disableChaperone
-            if(chaperoneDisableChaperone.checked){
+            var dim = ChaperoneTabController.chaperoneDimHeight
+            if(dim > 0.0){
+                chaperoneDisableChaperone.enabled = false;
+            }else{
+                chaperoneDisableChaperone.enabled = true;
+            }
+            if(dim > 0.0 || chaperoneDisableChaperone.checked){
                 chaperoneFadeDistanceMinus.enabled = false;
                 chaperoneFadeDistancePlus.enabled = false;
                 chaperoneFadeDistanceSlider.enabled = false;
@@ -597,7 +605,26 @@ MyStackViewPage {
                 }
                 chaperoneHeightText.text = h
             }
+            onChaperoneDimHeightChanged: {
+                var dim = ChaperoneTabController.chaperoneDimHeight
+                if(dim > 0.0){
+                    chaperoneDisableChaperone.enabled = false;
+                }else{
+                    chaperoneDisableChaperone.enabled = true;
+                }
+                if(dim > 0.0 || chaperoneDisableChaperone.checked){
+                    chaperoneFadeDistanceMinus.enabled = false;
+                    chaperoneFadeDistancePlus.enabled = false;
+                    chaperoneFadeDistanceSlider.enabled = false;
+                    chaperoneFadeDistanceText.enabled = false;
 
+                }else{
+                    chaperoneFadeDistanceMinus.enabled = true;
+                    chaperoneFadeDistancePlus.enabled = true;
+                    chaperoneFadeDistanceSlider.enabled = true;
+                    chaperoneFadeDistanceText.enabled = true;
+                }
+            }
             onCenterMarkerNewChanged: {
                 chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarkerNew
             }
