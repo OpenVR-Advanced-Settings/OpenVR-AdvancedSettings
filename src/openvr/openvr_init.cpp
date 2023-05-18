@@ -60,14 +60,22 @@ void initializeOpenVR( const OpenVrInitializationType initType )
     // Specific error messages are unlikely to be necessary since both the type
     // and version are in the string and will be output.
     auto reportVersionError = []( const char* const interfaceAndVersion ) {
-        QMessageBox::critical(
-            nullptr,
-            "OpenVR Advanced Settings Overlay",
-            "OpenVR version is too outdated. Please update OpenVR." );
-        throw std::runtime_error(
-            std::string( "OpenVR version is too outdated: Interface version " )
-            + std::string( interfaceAndVersion )
-            + std::string( " not found." ) );
+        // 5.7.1
+        // Stop behavior from exiting out, again seems to be related to some
+        // sort of race condition in non-native Headsets (i.e. not lighthouse)
+
+        //        QMessageBox::critical(
+        //            nullptr,
+        //            "OpenVR Advanced Settings Overlay",
+        //            "OpenVR version is too outdated. Please update OpenVR." );
+
+        LOG( WARNING ) << "OpenVR version is invalid: Interface version "
+                       << interfaceAndVersion << " not found.";
+        //        throw std::runtime_error(
+        //            std::string( "OpenVR version is too outdated: Interface
+        //            version " )
+        //            + std::string( interfaceAndVersion )
+        //            + std::string( " not found." ) );
     };
 
     // Check whether OpenVR is too outdated
