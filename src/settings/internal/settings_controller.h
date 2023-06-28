@@ -289,7 +289,7 @@ private:
                           SettingCategory::Playspace,
                           QtInfo{ "adjustChaperone3" },
                           true },
-        BoolSettingValue{ BoolSetting::PLAYSPACE_adjustChaperone3,
+        BoolSettingValue{ BoolSetting::PLAYSPACE_adjustChaperone4,
                           SettingCategory::Playspace,
                           QtInfo{ "adjustChaperone4" },
                           false },
