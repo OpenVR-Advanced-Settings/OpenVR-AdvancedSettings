@@ -110,6 +110,21 @@ MyStackViewPage {
                     seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && checked
                 }
             }
+            RowLayout{
+
+                MyText {
+                    id: seatedOldExternalWarning
+                    wrapMode: Text.WordWrap
+                    font.pointSize: 20
+                    color: "#FFA500"
+                    text: "WARNING: 'Allow External App Chaperone Edits' + 'Old-Style Motion' + 'Enable Motion Features When in Seated Mode' active together may cause space center misalignment. Load the «Autosaved Profile» in the 'Chaperone' tab to fix."
+                    horizontalAlignment: Text.AlignHCenter
+                    Layout.leftMargin: 20
+                    Layout.rightMargin: 20
+                    Layout.preferredWidth: 900
+                    //Layout.fillWidth: true
+                }
+            }
 
             MyToggleButton {
                 id: universeCenteredRotationToggle
@@ -196,6 +211,13 @@ MyStackViewPage {
                 text: "Exclusive Input Toggle (This enables Key Binding to Toggle state)"
                 onCheckedChanged: {
                     OverlayController.setExclusiveInputEnabled(this.checked, true)
+                }
+            }
+            MyToggleButton {
+                id: spaceAdjustChaperoneToggle
+                text: "Adjust Chaperone"
+                onCheckedChanged: {
+                    MoveCenterTabController.adjustChaperone = this.checked
                 }
             }
 
@@ -287,20 +309,6 @@ MyStackViewPage {
                 }
             }
             RowLayout{
-
-                MyText {
-                    id: seatedOldExternalWarning
-                    wrapMode: Text.WordWrap
-                    font.pointSize: 20
-                    color: "#FFA500"
-                    text: "WARNING: 'Allow External App Chaperone Edits' + 'Old-Style Motion' + 'Enable Motion Features When in Seated Mode' active together may cause space center misalignment. Load the «Autosaved Profile» in the 'Chaperone' tab to fix."
-                    horizontalAlignment: Text.AlignHCenter
-                    Layout.leftMargin: 20
-                    Layout.rightMargin: 20
-                    Layout.fillWidth: true
-                }
-            }
-            RowLayout{
                 Item {
                     Layout.fillWidth: true
                 }
@@ -358,6 +366,7 @@ MyStackViewPage {
                 oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
                 exclusiveInputToggleButton.checked = OverlayController.exclusiveInputEnabled
                 autoApplyChaperoneToggleButton.checked = OverlayController.autoApplyChaperoneEnabled
+                spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
 
 
                 seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion
@@ -390,6 +399,9 @@ MyStackViewPage {
             }
             onUniverseCenteredRotationChanged: {
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
+            }
+            onAdjustChaperoneChanged:{
+                spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
             }
         }
 

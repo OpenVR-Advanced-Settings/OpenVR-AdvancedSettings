@@ -285,6 +285,10 @@ private:
                           SettingCategory::Playspace,
                           QtInfo{ "enableUncalMotion" },
                           false },
+        BoolSettingValue{ BoolSetting::PLAYSPACE_adjustChaperone3,
+                          SettingCategory::Playspace,
+                          QtInfo{ "adjustChaperone3" },
+                          true },
 
         BoolSettingValue{ BoolSetting::APPLICATION_disableVersionCheck,
                           SettingCategory::Application,
