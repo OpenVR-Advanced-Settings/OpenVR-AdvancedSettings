@@ -457,12 +457,12 @@ void MoveCenterTabController::setFrictionPercent( int value, bool notify )
 bool MoveCenterTabController::adjustChaperone() const
 {
     return settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_adjustChaperone2 );
+        settings::BoolSetting::PLAYSPACE_adjustChaperone3 );
 }
 
 void MoveCenterTabController::setAdjustChaperone( bool value, bool notify )
 {
-    settings::setSetting( settings::BoolSetting::PLAYSPACE_adjustChaperone2,
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_adjustChaperone3,
                           value );
 
     if ( notify )
@@ -2767,9 +2767,14 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
 
     // As of SVR 1.13.1 The Chaperone will follow Universe Center NOT raw
     // Center as such this should be off by defualt.
+    // As of SVR 1.26.3 The chaperone seems to Have reverted back to pre 1.13.1
+    // behavior
+    // as of SVR 1.26.3 instead of 2x offset we have 1x offset and universe
+    // centerS
 
     if ( adjustChaperone() )
     {
+        // outputLogPoses();
         // make a copy of our bounds and
         // reorient relative to new universe center
 
@@ -2798,21 +2803,22 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
                 // original origin
                 updatedBounds[quad].vCorners[corner].v[0]
                     -= offsetUniverseCenter.m[0][3]
-                       - offsetUniverseCenter.m[0][3];
-                //- m_universeCenterForReset.m[0][3];
-                // but don't touch y=0 values to keep floor corners rooted
-                // down
+                       // - offsetUniverseCenter.m[0][3];
+                       - m_universeCenterForReset.m[0][3];
+                // but don't touch y=0 values to keep floor corners
+                // rooted down
+
                 if ( updatedBounds[quad].vCorners[corner].v[1] != 0 )
                 {
                     updatedBounds[quad].vCorners[corner].v[1]
                         -= offsetUniverseCenter.m[1][3]
-                           - offsetUniverseCenter.m[1][3];
-                    //- m_universeCenterForReset.m[1][3];
+                           //- offsetUniverseCenter.m[1][3];
+                           - m_universeCenterForReset.m[1][3];
                 }
                 updatedBounds[quad].vCorners[corner].v[2]
                     -= offsetUniverseCenter.m[2][3]
-                       - offsetUniverseCenter.m[2][3];
-                //- m_universeCenterForReset.m[2][3];
+                       // - offsetUniverseCenter.m[2][3];
+                       - m_universeCenterForReset.m[2][3];
 
                 // rotate by universe center's yaw
                 rotateFloatCoordinates(
