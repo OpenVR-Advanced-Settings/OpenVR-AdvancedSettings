@@ -457,12 +457,12 @@ void MoveCenterTabController::setFrictionPercent( int value, bool notify )
 bool MoveCenterTabController::adjustChaperone() const
 {
     return settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_adjustChaperone3 );
+        settings::BoolSetting::PLAYSPACE_adjustChaperone4 );
 }
 
 void MoveCenterTabController::setAdjustChaperone( bool value, bool notify )
 {
-    settings::setSetting( settings::BoolSetting::PLAYSPACE_adjustChaperone3,
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_adjustChaperone4,
                           value );
 
     if ( notify )
@@ -2771,6 +2771,9 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     // behavior
     // as of SVR 1.26.3 instead of 2x offset we have 1x offset and universe
     // centerS
+    // as of SVR 1.26.4 1.26.3 changes are reverted as Such Adjust Chaperone
+    // Should Not Be Needed We Will leave in Adjust Chaperone at this point but
+    // make sure it defaults to off
 
     if ( adjustChaperone() )
     {
