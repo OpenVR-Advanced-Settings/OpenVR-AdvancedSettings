@@ -289,6 +289,10 @@ private:
                           SettingCategory::Playspace,
                           QtInfo{ "adjustChaperone3" },
                           true },
+        BoolSettingValue{ BoolSetting::PLAYSPACE_adjustChaperone4,
+                          SettingCategory::Playspace,
+                          QtInfo{ "adjustChaperone4" },
+                          false },
 
         BoolSettingValue{ BoolSetting::APPLICATION_disableVersionCheck,
                           SettingCategory::Application,
