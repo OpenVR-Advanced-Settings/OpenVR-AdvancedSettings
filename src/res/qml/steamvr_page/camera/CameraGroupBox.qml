@@ -40,11 +40,9 @@ GroupBox {
                        SteamVRTabController.setCameraActive(this.checked, false)
                     if(this.checked){
                         steamvrCameraBoundsToggle.enabled = true
-                        steamvrCameraDashboardToggle.enabled = true
                         steamvrCameraContToggle.enabled = true
                     }else{
                         steamvrCameraBoundsToggle.enabled = false
-                        steamvrCameraDashboardToggle.enabled = false
                         steamvrCameraContToggle.enabled = false
                     }
                 }
