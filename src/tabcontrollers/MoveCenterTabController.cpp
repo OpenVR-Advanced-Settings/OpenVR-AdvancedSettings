@@ -1122,6 +1122,8 @@ void MoveCenterTabController::zeroOffsets()
     // offsets
     auto chaperoneState = vr::VRChaperone()->GetCalibrationState();
     if ( chaperoneState < vr::ChaperoneCalibrationState_Error
+         || chaperoneState
+                == vr::ChaperoneCalibrationState_Error_PlayAreaInvalid
          || m_ignoreChaperoneState )
     {
         if ( !m_chaperoneInit )
