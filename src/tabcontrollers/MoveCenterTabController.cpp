@@ -968,7 +968,7 @@ void MoveCenterTabController::incomingSeatedReset()
     if ( !m_selfRequestedSeatedRecenter && !simpleRecenter() )
     {
         m_selfRequestedSeatedRecenter = true;
-        vr::VRSystem()->ResetSeatedZeroPose();
+        vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
     }
     else
     {
