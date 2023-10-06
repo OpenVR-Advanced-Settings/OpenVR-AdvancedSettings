@@ -1226,12 +1226,6 @@ void OverlayController::mainEventLoop()
             m_moveCenterTabController.incomingSeatedReset();
             LOG( INFO ) << "Game/SteamVR Triggered Seated Zero-Position Reset";
         }
-        //        case vr::VREvent_StandingZeroPoseReset:
-        //        {
-        //            LOG( INFO )
-        //                << "Game/SteamVR Triggered Standing Zero-Position
-        //                Reset";
-        //        }
         break;
 
         // Multiple ChaperoneUniverseHasChanged are often emitted at the

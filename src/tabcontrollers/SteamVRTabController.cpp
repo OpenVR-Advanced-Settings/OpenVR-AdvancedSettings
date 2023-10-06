@@ -38,8 +38,7 @@ void SteamVRTabController::synchSteamVR()
     setDND( dnd() );
     setNoFadeToGrid( noFadeToGrid() );
     setCameraActive( cameraActive() );
-    setCameraRoom( cameraRoom() );
-    setCameraDashboard( cameraDashboard() );
+    setCameraCont( cameraCont() );
     setCameraBounds( cameraBounds() );
 }
 
@@ -249,46 +248,31 @@ void SteamVRTabController::setCameraBounds( const bool value,
     }
 }
 
-bool SteamVRTabController::cameraRoom() const
+bool SteamVRTabController::cameraCont() const
 {
     auto p = ovr_settings_wrapper::getBool(
-        vr::k_pch_Camera_Section,
-        vr::k_pch_Camera_EnableCameraForRoomView_Bool );
+        vr::k_pch_Camera_Section, vr::k_pch_Camera_ShowOnController_Bool );
 
     if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
     {
         return p.second;
     }
-    return m_cameraRoom;
+    return m_cameraCont;
 }
 
-void SteamVRTabController::setCameraRoom( const bool value, const bool notify )
+void SteamVRTabController::setCameraCont( const bool value, const bool notify )
 {
-    if ( m_cameraRoom != value )
+    if ( m_cameraCont != value )
     {
-        m_cameraRoom = value;
-        ovr_settings_wrapper::setBool(
-            vr::k_pch_Camera_Section,
-            vr::k_pch_Camera_EnableCameraForRoomView_Bool,
-            m_cameraRoom );
+        m_cameraCont = value;
+        ovr_settings_wrapper::setBool( vr::k_pch_Camera_Section,
+                                       vr::k_pch_Camera_ShowOnController_Bool,
+                                       m_cameraCont );
         if ( notify )
         {
-            emit cameraRoomChanged( m_cameraRoom );
+            emit cameraContChanged( m_cameraCont );
         }
     }
-}
-
-bool SteamVRTabController::cameraDashboard() const
-{
-    auto p = ovr_settings_wrapper::getBool(
-        vr::k_pch_Camera_Section,
-        vr::k_pch_Camera_EnableCameraInDashboard_Bool );
-
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
-    {
-        return p.second;
-    }
-    return m_cameraDashboard;
 }
 
 void SteamVRTabController::updateRXTXList()
@@ -471,24 +455,6 @@ void SteamVRTabController::launchBindingUI()
         LOG( ERROR ) << "Input Error: " << error;
     }
 }
-
-void SteamVRTabController::setCameraDashboard( const bool value,
-                                               const bool notify )
-{
-    if ( m_cameraDashboard != value )
-    {
-        m_cameraDashboard = value;
-        ovr_settings_wrapper::setBool(
-            vr::k_pch_Camera_Section,
-            vr::k_pch_Camera_EnableCameraInDashboard_Bool,
-            m_cameraDashboard );
-        if ( notify )
-        {
-            emit cameraDashboardChanged( m_cameraDashboard );
-        }
-    }
-}
-
 void SteamVRTabController::restartSteamVR()
 {
     QString cmd = QString( "cmd.exe /C restartvrserver.bat \"" )
