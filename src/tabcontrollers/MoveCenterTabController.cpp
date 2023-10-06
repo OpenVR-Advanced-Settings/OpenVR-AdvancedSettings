@@ -1204,7 +1204,7 @@ void MoveCenterTabController::zeroOffsets()
 
 void MoveCenterTabController::sendSeatedRecenter()
 {
-    vr::VRSystem()->ResetSeatedZeroPose();
+    vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
 }
 
 double MoveCenterTabController::getHmdYawTotal()
