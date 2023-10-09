@@ -61,10 +61,8 @@ class SteamVRTabController : public QObject
                     cameraActiveChanged )
     Q_PROPERTY( bool cameraBounds READ cameraBounds WRITE setCameraBounds NOTIFY
                     cameraBoundsChanged )
-    Q_PROPERTY( bool cameraRoom READ cameraRoom WRITE setCameraRoom NOTIFY
-                    cameraRoomChanged )
-    Q_PROPERTY( bool cameraDashboard READ cameraDashboard WRITE
-                    setCameraDashboard NOTIFY cameraDashboardChanged )
+    Q_PROPERTY( bool cameraCont READ cameraCont WRITE setCameraCont NOTIFY
+                    cameraContChanged )
     Q_PROPERTY( bool perAppBindEnabled READ perAppBindEnabled WRITE
                     setPerAppBindEnabled NOTIFY perAppBindEnabledChanged )
 
@@ -84,8 +82,7 @@ private:
 
     bool m_cameraActive = false;
     bool m_cameraBounds = false;
-    bool m_cameraRoom = false;
-    bool m_cameraDashboard = false;
+    bool m_cameraCont = false;
     bool m_pathRXTXInit = false;
     int m_dongleCountCur = 0;
     int m_dongleCountMax = 0;
@@ -118,8 +115,7 @@ public:
 
     bool cameraActive() const;
     bool cameraBounds() const;
-    bool cameraRoom() const;
-    bool cameraDashboard() const;
+    bool cameraCont() const;
     QNetworkProxy m_proxy;
     QWebSocket m_webSocket;
 
@@ -170,8 +166,7 @@ public slots:
 
     void setCameraActive( bool value, bool notify = true );
     void setCameraBounds( bool value, bool notify = true );
-    void setCameraRoom( bool value, bool notify = true );
-    void setCameraDashboard( bool value, bool notify = true );
+    void setCameraCont( bool value, bool notify = true );
 
     void setPerAppBindEnabled( bool value, bool notify = true );
 
@@ -190,8 +185,7 @@ signals:
 
     void cameraActiveChanged( bool value );
     void cameraBoundsChanged( bool value );
-    void cameraRoomChanged( bool value );
-    void cameraDashboardChanged( bool value );
+    void cameraContChanged( bool value );
 
     void pairStatusChanged( QString value );
     void updateRXTX( bool value );

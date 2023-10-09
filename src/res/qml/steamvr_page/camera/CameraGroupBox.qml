@@ -40,12 +40,10 @@ GroupBox {
                        SteamVRTabController.setCameraActive(this.checked, false)
                     if(this.checked){
                         steamvrCameraBoundsToggle.enabled = true
-                        steamvrCameraDashboardToggle.enabled = true
-                        steamvrCameraRoomToggle.enabled = true
+                        steamvrCameraContToggle.enabled = true
                     }else{
                         steamvrCameraBoundsToggle.enabled = false
-                        steamvrCameraDashboardToggle.enabled = false
-                        steamvrCameraRoomToggle.enabled = false
+                        steamvrCameraContToggle.enabled = false
                     }
                 }
             }
@@ -57,27 +55,21 @@ GroupBox {
 
             MyToggleButton {
                 id: steamvrCameraBoundsToggle
-                text: "Camera for Bounds"
-                Layout.preferredWidth: 300
+                text: "Show camera on bounds collision"
+                Layout.preferredWidth: 400
                 onCheckedChanged: {
                        SteamVRTabController.setCameraBounds(this.checked, false)
                 }
             }
-
-            MyToggleButton {
-                id: steamvrCameraDashboardToggle
-                text: "Camera for Dashboard"
-                Layout.preferredWidth: 300
-                onCheckedChanged: {
-                    SteamVRTabController.setCameraDashboard(this.checked, false)
-                }
+            Item{
+                Layout.preferredWidth: 100
             }
 
             MyToggleButton {
-                id: steamvrCameraRoomToggle
-                text: "Camera for Room View"
+                id: steamvrCameraContToggle
+                text: "Show camera on controller"
                 onCheckedChanged: {
-                    SteamVRTabController.setCameraRoom(this.checked, false)
+                    SteamVRTabController.setCameraCont(this.checked, false)
                 }
             }
         }
@@ -88,11 +80,10 @@ GroupBox {
         var c1 = SteamVRTabController.cameraActive
         steamvrCameraActiveToggle.checked = c1
         steamvrCameraBoundsToggle.checked = SteamVRTabController.cameraBounds
-        steamvrCameraDashboardToggle.checked = SteamVRTabController.cameraDashboard
-        steamvrCameraRoomToggle.checked = SteamVRTabController.cameraRoom
+        steamvrCameraContToggle.checked = SteamVRTabController.cameraCont
 
         if(!c1){
-            steamvrCameraDashboardToggle.enabled = false;
+
             steamvrCameraBoundsToggle.enabled = false;
             steamvrCameraRoomToggle.enabled = false;
         }
@@ -104,11 +95,8 @@ GroupBox {
         onCameraActiveChanged: {
             steamvrCameraActiveToggle.checked = SteamVRTabController.cameraActive
         }
-        onCameraRoomChanged: {
-            steamvrCameraRoomToggle.checked = SteamVRTabController.cameraRoom
-        }
-        onCameraDashboardChanged: {
-            steamvrCameraDashboardToggle.checked = SteamVRTabController.cameraDashboard
+        onCameraContChanged: {
+            steamvrCameraContToggle.checked = SteamVRTabController.cameraCont
         }
         onCameraBoundsChanged: {
             steamvrCameraBoundsToggle.checked = SteamVRTabController.cameraBounds

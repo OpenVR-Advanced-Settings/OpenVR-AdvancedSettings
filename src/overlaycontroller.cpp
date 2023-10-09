@@ -1224,7 +1224,7 @@ void OverlayController::mainEventLoop()
         case vr::VREvent_SeatedZeroPoseReset:
         {
             m_moveCenterTabController.incomingSeatedReset();
-            LOG( INFO ) << "Game Triggered Seated Zero-Position Reset";
+            LOG( INFO ) << "Game/SteamVR Triggered Seated Zero-Position Reset";
         }
         break;
 

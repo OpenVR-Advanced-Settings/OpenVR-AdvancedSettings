@@ -968,7 +968,7 @@ void MoveCenterTabController::incomingSeatedReset()
     if ( !m_selfRequestedSeatedRecenter && !simpleRecenter() )
     {
         m_selfRequestedSeatedRecenter = true;
-        vr::VRSystem()->ResetSeatedZeroPose();
+        vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
     }
     else
     {
@@ -1122,6 +1122,8 @@ void MoveCenterTabController::zeroOffsets()
     // offsets
     auto chaperoneState = vr::VRChaperone()->GetCalibrationState();
     if ( chaperoneState < vr::ChaperoneCalibrationState_Error
+         || chaperoneState
+                == vr::ChaperoneCalibrationState_Error_PlayAreaInvalid
          || m_ignoreChaperoneState )
     {
         if ( !m_chaperoneInit )
@@ -1202,7 +1204,7 @@ void MoveCenterTabController::zeroOffsets()
 
 void MoveCenterTabController::sendSeatedRecenter()
 {
-    vr::VRSystem()->ResetSeatedZeroPose();
+    vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
 }
 
 double MoveCenterTabController::getHmdYawTotal()
