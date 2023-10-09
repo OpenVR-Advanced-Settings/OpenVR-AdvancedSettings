@@ -260,7 +260,7 @@ These Actions are Hidden, They are bound by default. They allow the application 
   - **Single Click**: Swap Active Space Drag (override) (respective hand)
 - Trigger (left hand)
   - **Click**: Push-to-Talk
-- Haptics boun
+- Haptics bound
 
 ### WMR
 
