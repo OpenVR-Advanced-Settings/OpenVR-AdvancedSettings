@@ -79,41 +79,54 @@ void initializeOpenVR( const OpenVrInitializationType initType )
     };
 
     // Check whether OpenVR is too outdated
+
+    // Sleep duration is an attempt to hopefully alleviate a possible race
+    // condition in steamvr
+    std::chrono::seconds dur( 5 );
     if ( !vr::VR_IsInterfaceVersionValid( vr::IVRSystem_Version ) )
     {
         reportVersionError( vr::IVRSystem_Version );
+        std::this_thread::sleep_for( dur );
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRSettings_Version ) )
     {
         reportVersionError( vr::IVRSettings_Version );
+        std::this_thread::sleep_for( dur );
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVROverlay_Version ) )
     {
         reportVersionError( vr::IVROverlay_Version );
+        std::this_thread::sleep_for( dur );
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRApplications_Version ) )
     {
         reportVersionError( vr::IVRApplications_Version );
+        std::this_thread::sleep_for( dur );
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRChaperone_Version ) )
     {
         reportVersionError( vr::IVRChaperone_Version );
+        std::this_thread::sleep_for( dur );
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRChaperoneSetup_Version ) )
     {
         reportVersionError( vr::IVRChaperoneSetup_Version );
+        std::this_thread::sleep_for( dur );
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRCompositor_Version ) )
     {
         reportVersionError( vr::IVRCompositor_Version );
+        std::this_thread::sleep_for( dur );
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRNotifications_Version ) )
     {
         reportVersionError( vr::IVRNotifications_Version );
+        std::this_thread::sleep_for( dur );
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRInput_Version ) )
     {
         reportVersionError( vr::IVRInput_Version );
+        std::this_thread::sleep_for( dur );
     }
 }
 
