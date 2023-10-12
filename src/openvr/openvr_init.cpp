@@ -7,7 +7,7 @@
 
 namespace openvr_init
 {
-void initializeProperly( const OpenVrInitializationType initType )
+bool initializeProperly( const OpenVrInitializationType initType )
 {
     auto initializationType = vr::EVRApplicationType::VRApplication_Other;
     if ( initType == OpenVrInitializationType::Overlay )
@@ -34,7 +34,7 @@ void initializeProperly( const OpenVrInitializationType initType )
                                   + std::string(
                                       vr::VR_GetVRInitErrorAsEnglishDescription(
                                           initError ) );
-            return;
+            return false;
         }
         LOG( ERROR ) << "Failed to initialize OpenVR: "
                             + std::string(
@@ -45,16 +45,16 @@ void initializeProperly( const OpenVrInitializationType initType )
         // probably pre-maturely killing ourselves from some sort of OpenVR race
         // condition
         // exit( EXIT_FAILURE );
+        return false;
     }
-    else
-    {
-        LOG( INFO ) << "OpenVR initialized successfully.";
-    }
+
+    LOG( INFO ) << "OpenVR initialized successfully.";
+    return true;
 }
 
-void initializeOpenVR( const OpenVrInitializationType initType )
+void initializeOpenVR( const OpenVrInitializationType initType, int count )
 {
-    initializeProperly( initType );
+    bool success = initializeProperly( initType );
 
     // The function call and error message was the same for all version checks.
     // Specific error messages are unlikely to be necessary since both the type
@@ -82,51 +82,62 @@ void initializeOpenVR( const OpenVrInitializationType initType )
 
     // Sleep duration is an attempt to hopefully alleviate a possible race
     // condition in steamvr
-    std::chrono::seconds dur( 5 );
     if ( !vr::VR_IsInterfaceVersionValid( vr::IVRSystem_Version ) )
     {
         reportVersionError( vr::IVRSystem_Version );
-        std::this_thread::sleep_for( dur );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRSettings_Version ) )
     {
         reportVersionError( vr::IVRSettings_Version );
-        std::this_thread::sleep_for( dur );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVROverlay_Version ) )
     {
         reportVersionError( vr::IVROverlay_Version );
-        std::this_thread::sleep_for( dur );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRApplications_Version ) )
     {
         reportVersionError( vr::IVRApplications_Version );
-        std::this_thread::sleep_for( dur );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRChaperone_Version ) )
     {
         reportVersionError( vr::IVRChaperone_Version );
-        std::this_thread::sleep_for( dur );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRChaperoneSetup_Version ) )
     {
         reportVersionError( vr::IVRChaperoneSetup_Version );
-        std::this_thread::sleep_for( dur );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRCompositor_Version ) )
     {
         reportVersionError( vr::IVRCompositor_Version );
-        std::this_thread::sleep_for( dur );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRNotifications_Version ) )
     {
         reportVersionError( vr::IVRNotifications_Version );
-        std::this_thread::sleep_for( dur );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRInput_Version ) )
     {
         reportVersionError( vr::IVRInput_Version );
-        std::this_thread::sleep_for( dur );
+        success = false;
+    }
+    if ( !success && count < 3 )
+    {
+        LOG( WARNING ) << "An error occured on initialization of "
+                          "openvr/steamvr attempting again "
+                       << std::to_string( count + 1 ) << " of 3 Attempts";
+        std::this_thread::sleep_for( std::chrono::seconds( 5 ) );
+        initializeOpenVR( initType, ( count + 1 ) );
+    }
+    if ( count >= 3 )
+    {
+        LOG( ERROR ) << "initialization errors persist proceeding anyways";
     }
 }
 
