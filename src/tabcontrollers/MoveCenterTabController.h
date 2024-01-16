@@ -195,7 +195,7 @@ private:
     bool m_swapDragToRightHandActivated = false;
     bool m_gravityActive = false;
     bool m_gravityReversed = false;
-    bool m_chaperoneCommitted = true;
+    // bool m_chaperoneCommitted = true;
     bool m_pendingZeroOffsets = true;
     bool m_pendingSeatedRecenter = false;
     bool m_selfRequestedSeatedRecenter = false;
@@ -236,7 +236,7 @@ private:
     void updateSpace( bool forceUpdate = false );
     void clampVelocity( double* velocity );
     void applyChaperoneResetData();
-    void saveUncommittedChaperone();
+    // void saveUncommittedChaperone();
     void outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix );
 
     std::vector<OffsetProfile> m_offsetProfiles;
@@ -293,7 +293,7 @@ public:
     void saveOffsetProfiles();
     Q_INVOKABLE unsigned getOffsetProfileCount();
     Q_INVOKABLE QString getOffsetProfileName( unsigned index );
-    Q_INVOKABLE void setIgnoreChaperoneState();
+    // Q_INVOKABLE void setIgnoreChaperoneState();
 
     // actions:
     void leftHandSpaceDrag( bool leftHandDragActive );

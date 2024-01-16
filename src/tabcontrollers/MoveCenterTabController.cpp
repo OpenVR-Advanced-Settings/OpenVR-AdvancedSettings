@@ -1120,86 +1120,86 @@ void MoveCenterTabController::zeroOffsets()
 
     // finished checking if out of bounds, proceed with normal zeroing
     // offsets
-    auto chaperoneState = vr::VRChaperone()->GetCalibrationState();
-    if ( chaperoneState < vr::ChaperoneCalibrationState_Error
-         || chaperoneState
-                == vr::ChaperoneCalibrationState_Error_PlayAreaInvalid
-         || m_ignoreChaperoneState )
-    {
-        if ( !m_chaperoneInit )
-        {
-            m_chaperoneInit = true;
-            LOG( INFO ) << "Chaperone Initially Calibrated";
-        }
-        if ( chaperoneState > vr::ChaperoneCalibrationState_OK )
-        {
-            LOG( WARNING )
-                << "Chaperone Cal State Is warning during zero offsets: "
-                << chaperoneState;
-        }
-        m_oldOffsetX = 0.0f;
-        m_oldOffsetY = 0.0f;
-        m_oldOffsetZ = 0.0f;
-        m_oldRotation = 0;
-        m_offsetX = 0.0f;
-        m_offsetY = 0.0f;
-        m_offsetZ = 0.0f;
-        m_rotation = 0;
-        emit offsetXChanged( m_offsetX );
-        emit offsetYChanged( m_offsetY );
-        emit offsetZChanged( m_offsetZ );
-        emit rotationChanged( m_rotation );
-        updateChaperoneResetData();
-        m_pendingZeroOffsets = false;
-        if ( !m_chaperoneBasisAcquired )
-        {
-            m_chaperoneBasisAcquired = true;
-            if ( !m_initComplete )
-            {
-                setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
-                if ( parent->isPreviousShutdownSafe() )
-                {
-                    // all init complete, safe to autosave chaperone profile
-                    parent->m_chaperoneTabController.createNewAutosaveProfile();
-                    m_initComplete = true;
-                }
-                else
-                {
-                    // shutdown was unsafe last session!
-                    LOG( WARNING )
-                        << "DETECTED UNSAFE SHUTDOWN FROM LAST SESSION";
-                    m_initComplete = true;
-                    if ( !parent->crashRecoveryDisabled() )
-                    {
-                        parent->m_chaperoneTabController
-                            .applyAutosavedProfile();
-                        LOG( INFO ) << "Applying last good chaperone "
-                                       "profile autosave";
-                    }
-                }
-                // Now mark previous shutdown as unsafe in case we crash
-                // some time during this session. Previous shutdown will be
-                // marked as being safe once more just before our app shuts
-                // down properly.
-                parent->setPreviousShutdownSafe( false );
-            }
-        }
-        if ( m_roomSetupModeDetected )
-        {
-            LOG( INFO ) << "room setup EXIT detected";
-            m_roomSetupModeDetected = false;
-        }
+    // auto chaperoneState = vr::VRChaperone()->GetCalibrationState();
 
-        LOG( INFO ) << "SUCCESS: Chaperone Data Updated and Offsets zeroed out";
-    }
-    else
+    //    if ( chaperoneState < vr::ChaperoneCalibrationState_Error
+    //         || chaperoneState
+    //                == vr::ChaperoneCalibrationState_Error_PlayAreaInvalid
+    //         || m_ignoreChaperoneState )
+    //{
+    if ( !m_chaperoneInit )
     {
-        if ( !m_pendingZeroOffsets )
-        {
-            LOG( INFO ) << "PENDING: Chaperone Data Update and Offsets zeroing";
-        }
-        m_pendingZeroOffsets = true;
+        m_chaperoneInit = true;
+        LOG( INFO ) << "Chaperone Initially Calibrated";
     }
+    //    if ( chaperoneState > vr::ChaperoneCalibrationState_OK )
+    //    {
+    //        LOG( WARNING ) << "Chaperone Cal State Is warning during zero
+    //        offsets: "
+    //                       << chaperoneState;
+    //    }
+    m_oldOffsetX = 0.0f;
+    m_oldOffsetY = 0.0f;
+    m_oldOffsetZ = 0.0f;
+    m_oldRotation = 0;
+    m_offsetX = 0.0f;
+    m_offsetY = 0.0f;
+    m_offsetZ = 0.0f;
+    m_rotation = 0;
+    emit offsetXChanged( m_offsetX );
+    emit offsetYChanged( m_offsetY );
+    emit offsetZChanged( m_offsetZ );
+    emit rotationChanged( m_rotation );
+    updateChaperoneResetData();
+    m_pendingZeroOffsets = false;
+    if ( !m_chaperoneBasisAcquired )
+    {
+        m_chaperoneBasisAcquired = true;
+        if ( !m_initComplete )
+        {
+            setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
+            if ( parent->isPreviousShutdownSafe() )
+            {
+                // all init complete, safe to autosave chaperone profile
+                parent->m_chaperoneTabController.createNewAutosaveProfile();
+                m_initComplete = true;
+            }
+            else
+            {
+                // shutdown was unsafe last session!
+                LOG( WARNING ) << "DETECTED UNSAFE SHUTDOWN FROM LAST SESSION";
+                m_initComplete = true;
+                if ( !parent->crashRecoveryDisabled() )
+                {
+                    parent->m_chaperoneTabController.applyAutosavedProfile();
+                    LOG( INFO ) << "Applying last good chaperone "
+                                   "profile autosave";
+                }
+            }
+            // Now mark previous shutdown as unsafe in case we crash
+            // some time during this session. Previous shutdown will be
+            // marked as being safe once more just before our app shuts
+            // down properly.
+            parent->setPreviousShutdownSafe( false );
+        }
+    }
+    if ( m_roomSetupModeDetected )
+    {
+        LOG( INFO ) << "room setup EXIT detected";
+        m_roomSetupModeDetected = false;
+    }
+
+    LOG( INFO ) << "SUCCESS: Chaperone Data Updated and Offsets zeroed out";
+    //}
+    //    else
+    //    {
+    //        if ( !m_pendingZeroOffsets )
+    //        {
+    //            LOG( INFO ) << "PENDING: Chaperone Data Update and Offsets
+    //            zeroing";
+    //        }
+    //        m_pendingZeroOffsets = true;
+    //    }
 }
 
 void MoveCenterTabController::sendSeatedRecenter()
@@ -1235,14 +1235,11 @@ void MoveCenterTabController::updateSeatedResetData()
 {
     m_heightToggle = false;
     emit heightToggleChanged( m_heightToggle );
-    m_oldOffsetX = 0.0f;
-    m_oldOffsetY = 0.0f;
-    m_oldOffsetZ = 0.0f;
-    m_oldRotation = 0;
-    m_offsetX = 0.0f;
-    m_offsetY = 0.0f;
-    m_offsetZ = 0.0f;
-    m_rotation = 0;
+
+    m_oldOffsetX = m_oldOffsetY = m_oldOffsetZ = 0.0f;
+    m_oldRotation = m_rotation = 0;
+    m_offsetX = m_offsetY = m_offsetZ = 0.0f;
+
     emit offsetXChanged( m_offsetX );
     emit offsetYChanged( m_offsetY );
     emit offsetZChanged( m_offsetZ );
@@ -2135,23 +2132,24 @@ void MoveCenterTabController::zAxisLockToggle( bool zAxisLockToggleJustPressed )
 
 // END of other bindings
 
-void MoveCenterTabController::saveUncommittedChaperone()
-{
-    if ( !m_chaperoneCommitted )
-    {
-        vr::VRChaperoneSetup()->CommitWorkingCopy(
-            vr::EChaperoneConfigFile_Live );
-        vr::VRChaperoneSetup()->HideWorkingSetPreview();
-        m_chaperoneCommitted = true;
-        unsigned checkQuadCount = 0;
-        vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
-            nullptr, &checkQuadCount );
-        if ( checkQuadCount > 0 )
-        {
-            parent->chaperoneUtils().loadChaperoneData( false );
-        }
-    }
-}
+// space drag update this is never called?
+// void MoveCenterTabController::saveUncommittedChaperone()
+//{
+//    if ( !m_chaperoneCommitted )
+//    {
+//        vr::VRChaperoneSetup()->CommitWorkingCopy(
+//            vr::EChaperoneConfigFile_Live );
+//        vr::VRChaperoneSetup()->HideWorkingSetPreview();
+//        m_chaperoneCommitted = true;
+//        unsigned checkQuadCount = 0;
+//        vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
+//            nullptr, &checkQuadCount );
+//        if ( checkQuadCount > 0 )
+//        {
+//            parent->chaperoneUtils().loadChaperoneData( false );
+//        }
+//    }
+//}
 
 // NOTE this function will create bad output if User Rotates 180 Degrees in
 // 1/7* frame-rate. (Worst Case 30 fps = ~770 deg/s)
@@ -2769,74 +2767,76 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
 
     // As of SVR 1.13.1 The Chaperone will follow Universe Center NOT raw
     // Center as such this should be off by defualt.
-    // As of SVR 1.26.3 The chaperone seems to Have reverted back to pre 1.13.1
-    // behavior
-    // as of SVR 1.26.3 instead of 2x offset we have 1x offset and universe
-    // centerS
-    // as of SVR 1.26.4 1.26.3 changes are reverted as Such Adjust Chaperone
-    // Should Not Be Needed We Will leave in Adjust Chaperone at this point but
-    // make sure it defaults to off
+    // As of SVR 1.26.3 The chaperone seems to Have reverted back to
+    // pre 1.13.1 behavior as of SVR 1.26.3 instead of 2x offset we have 1x
+    // offset and universe centerS as of SVR 1.26.4 1.26.3 changes are
+    // reverted as Such Adjust Chaperone Should Not Be Needed We Will leave
+    // in Adjust Chaperone at this point but make sure it defaults to off
 
-    if ( adjustChaperone() )
-    {
-        // outputLogPoses();
-        // make a copy of our bounds and
-        // reorient relative to new universe center
+    //    if ( adjustChaperone() )
+    //    {
+    //        // outputLogPoses();
+    //        // make a copy of our bounds and
+    //        // reorient relative to new universe center
 
-        vr::HmdQuad_t* updatedBounds
-            = new vr::HmdQuad_t[m_collisionBoundsCountForReset];
+    //        vr::HmdQuad_t* updatedBounds
+    //            = new vr::HmdQuad_t[m_collisionBoundsCountForReset];
 
-        // for every quad in the chaperone bounds...
-        for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset; quad++ )
-        {
-            // at every corner in that quad...
-            for ( unsigned corner = 0; corner < 4; corner++ )
-            {
-                // copy the corner's xyz coordinates
-                updatedBounds[quad].vCorners[corner].v[0]
-                    = m_collisionBoundsForOffset[quad].vCorners[corner].v[0];
+    //        // for every quad in the chaperone bounds...
+    //        for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset;
+    //        quad++ )
+    //        {
+    //            // at every corner in that quad...
+    //            for ( unsigned corner = 0; corner < 4; corner++ )
+    //            {
+    //                // copy the corner's xyz coordinates
+    //                updatedBounds[quad].vCorners[corner].v[0]
+    //                    =
+    //                    m_collisionBoundsForOffset[quad].vCorners[corner].v[0];
 
-                updatedBounds[quad].vCorners[corner].v[1]
-                    = m_collisionBoundsForOffset[quad].vCorners[corner].v[1];
+    //                updatedBounds[quad].vCorners[corner].v[1]
+    //                    =
+    //                    m_collisionBoundsForOffset[quad].vCorners[corner].v[1];
 
-                updatedBounds[quad].vCorners[corner].v[2]
-                    = m_collisionBoundsForOffset[quad].vCorners[corner].v[2];
+    //                updatedBounds[quad].vCorners[corner].v[2]
+    //                    =
+    //                    m_collisionBoundsForOffset[quad].vCorners[corner].v[2];
 
-                // cancel universe center's xyz offsets to each corner's
-                // position and shift over by original center position so
-                // that we are mirroring the offset as reflected about the
-                // original origin
-                updatedBounds[quad].vCorners[corner].v[0]
-                    -= offsetUniverseCenter.m[0][3]
-                       // - offsetUniverseCenter.m[0][3];
-                       - m_universeCenterForReset.m[0][3];
-                // but don't touch y=0 values to keep floor corners
-                // rooted down
+    //                // cancel universe center's xyz offsets to each corner's
+    //                // position and shift over by original center position so
+    //                // that we are mirroring the offset as reflected about the
+    //                // original origin
+    //                updatedBounds[quad].vCorners[corner].v[0]
+    //                    -= offsetUniverseCenter.m[0][3]
+    //                       // - offsetUniverseCenter.m[0][3];
+    //                       - m_universeCenterForReset.m[0][3];
+    //                // but don't touch y=0 values to keep floor corners
+    //                // rooted down
 
-                if ( updatedBounds[quad].vCorners[corner].v[1] != 0 )
-                {
-                    updatedBounds[quad].vCorners[corner].v[1]
-                        -= offsetUniverseCenter.m[1][3]
-                           //- offsetUniverseCenter.m[1][3];
-                           - m_universeCenterForReset.m[1][3];
-                }
-                updatedBounds[quad].vCorners[corner].v[2]
-                    -= offsetUniverseCenter.m[2][3]
-                       // - offsetUniverseCenter.m[2][3];
-                       - m_universeCenterForReset.m[2][3];
+    //                if ( updatedBounds[quad].vCorners[corner].v[1] != 0 )
+    //                {
+    //                    updatedBounds[quad].vCorners[corner].v[1]
+    //                        -= offsetUniverseCenter.m[1][3]
+    //                           //- offsetUniverseCenter.m[1][3];
+    //                           - m_universeCenterForReset.m[1][3];
+    //                }
+    //                updatedBounds[quad].vCorners[corner].v[2]
+    //                    -= offsetUniverseCenter.m[2][3]
+    //                       // - offsetUniverseCenter.m[2][3];
+    //                       - m_universeCenterForReset.m[2][3];
 
-                // rotate by universe center's yaw
-                rotateFloatCoordinates(
-                    updatedBounds[quad].vCorners[corner].v,
-                    static_cast<float>( offsetUniverseCenterYaw ) );
-            }
-        }
+    //                // rotate by universe center's yaw
+    //                rotateFloatCoordinates(
+    //                    updatedBounds[quad].vCorners[corner].v,
+    //                    static_cast<float>( offsetUniverseCenterYaw ) );
+    //            }
+    //        }
 
-        // update chaperone working set preview (this does not commit)
-        vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
-            updatedBounds, m_collisionBoundsCountForReset );
-        delete[] updatedBounds;
-    }
+    //        // update chaperone working set preview (this does not commit)
+    //        vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
+    //            updatedBounds, m_collisionBoundsCountForReset );
+    //        delete[] updatedBounds;
+    //    }
 
     // Center Marker for playspace.
     if ( parent->m_chaperoneTabController.m_centerMarkerOverlayNeedsUpdate )
@@ -2885,63 +2885,66 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &offsetUniverseCenter );
 
-    if ( oldStyleMotion() )
-    {
-        // check if universe center is outside of OpenVR commit bounds (1km)
-        if ( abs( offsetUniverseCenterXyz[0] ) > k_maxOpenvrCommitOffset )
-        {
-            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of commit "
-                           "bounds ( X: "
-                        << offsetUniverseCenterXyz[0] << " )";
-            vr::HmdMatrix34_t standingZero;
-            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-                &standingZero );
-            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
-            outputLogHmdMatrix( standingZero );
-            reset();
-            parent->m_chaperoneTabController.applyAutosavedProfile();
-            LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
-            return;
-        }
-        if ( abs( offsetUniverseCenterXyz[1] ) > k_maxOpenvrCommitOffset )
-        {
-            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of commit "
-                           "bounds ( Y: "
-                        << offsetUniverseCenterXyz[1] << " )";
-            vr::HmdMatrix34_t standingZero;
-            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-                &standingZero );
-            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
-            outputLogHmdMatrix( standingZero );
-            reset();
-            parent->m_chaperoneTabController.applyAutosavedProfile();
-            LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
-            return;
-        }
-        if ( abs( offsetUniverseCenterXyz[2] ) > k_maxOpenvrCommitOffset )
-        {
-            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of commit "
-                           "bounds ( Z: "
-                        << offsetUniverseCenterXyz[2] << " )";
-            vr::HmdMatrix34_t standingZero;
-            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-                &standingZero );
-            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
-            outputLogHmdMatrix( standingZero );
-            reset();
-            parent->m_chaperoneTabController.applyAutosavedProfile();
-            LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
-            return;
-        }
-        vr::VRChaperoneSetup()->CommitWorkingCopy(
-            vr::EChaperoneConfigFile_Live );
-        m_chaperoneCommitted = true;
-    }
-    else
-    {
-        vr::VRChaperoneSetup()->ShowWorkingSetPreview();
-        m_chaperoneCommitted = false;
-    }
+    //    if ( oldStyleMotion() )
+    //    {
+    //        // check if universe center is outside of OpenVR commit bounds
+    //        (1km) if ( abs( offsetUniverseCenterXyz[0] ) >
+    //        k_maxOpenvrCommitOffset )
+    //        {
+    //            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of
+    //            commit "
+    //                           "bounds ( X: "
+    //                        << offsetUniverseCenterXyz[0] << " )";
+    //            vr::HmdMatrix34_t standingZero;
+    //            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+    //                &standingZero );
+    //            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+    //            outputLogHmdMatrix( standingZero );
+    //            reset();
+    //            parent->m_chaperoneTabController.applyAutosavedProfile();
+    //            LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
+    //            return;
+    //        }
+    //        if ( abs( offsetUniverseCenterXyz[1] ) > k_maxOpenvrCommitOffset )
+    //        {
+    //            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of
+    //            commit "
+    //                           "bounds ( Y: "
+    //                        << offsetUniverseCenterXyz[1] << " )";
+    //            vr::HmdMatrix34_t standingZero;
+    //            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+    //                &standingZero );
+    //            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+    //            outputLogHmdMatrix( standingZero );
+    //            reset();
+    //            parent->m_chaperoneTabController.applyAutosavedProfile();
+    //            LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
+    //            return;
+    //        }
+    //        if ( abs( offsetUniverseCenterXyz[2] ) > k_maxOpenvrCommitOffset )
+    //        {
+    //            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of
+    //            commit "
+    //                           "bounds ( Z: "
+    //                        << offsetUniverseCenterXyz[2] << " )";
+    //            vr::HmdMatrix34_t standingZero;
+    //            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+    //                &standingZero );
+    //            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+    //            outputLogHmdMatrix( standingZero );
+    //            reset();
+    //            parent->m_chaperoneTabController.applyAutosavedProfile();
+    //            LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
+    //            return;
+    //        }
+    //        vr::VRChaperoneSetup()->CommitWorkingCopy(
+    //            vr::EChaperoneConfigFile_Live );
+    //        m_chaperoneCommitted = true;
+    //    }
+    //
+    vr::VRChaperoneSetup()->ShowWorkingSetPreview();
+    // m_chaperoneCommitted = false;
+    //}
 
     // loadChaperoneData( false ), false so that we don't load live data,
     // and reference the working set instead.
@@ -3109,12 +3112,6 @@ void MoveCenterTabController::eventLoopTick(
         }
         updateSpace();
     }
-}
-
-void MoveCenterTabController::setIgnoreChaperoneState()
-{
-    m_ignoreChaperoneState = true;
-    LOG( INFO ) << "Ignoring Chaperone State for Zero Offsets";
 }
 
 } // namespace advsettings
