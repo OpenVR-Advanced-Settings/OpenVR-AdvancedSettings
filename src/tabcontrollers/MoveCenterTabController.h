@@ -130,8 +130,9 @@ class MoveCenterTabController : public QObject
             setShowLogMatricesButton NOTIFY showLogMatricesButtonChanged )
     Q_PROPERTY( bool allowExternalEdits READ allowExternalEdits WRITE
                     setAllowExternalEdits NOTIFY allowExternalEditsChanged )
-    Q_PROPERTY( bool oldStyleMotion READ oldStyleMotion WRITE setOldStyleMotion
-                    NOTIFY oldStyleMotionChanged )
+    //    Q_PROPERTY( bool oldStyleMotion READ oldStyleMotion WRITE
+    //    setOldStyleMotion
+    //                    NOTIFY oldStyleMotionChanged )
     Q_PROPERTY(
         bool universeCenteredRotation READ universeCenteredRotation WRITE
             setUniverseCenteredRotation NOTIFY universeCenteredRotationChanged )
@@ -278,7 +279,7 @@ public:
     bool lockZToggle() const;
     bool showLogMatricesButton() const;
     bool allowExternalEdits() const;
-    bool oldStyleMotion() const;
+    // bool oldStyleMotion() const;
     bool universeCenteredRotation() const;
     //    bool simpleRecenter() const;
     bool isInitComplete() const;
@@ -360,7 +361,7 @@ public slots:
     void setLockZ( bool value, bool notify = true );
     void setShowLogMatricesButton( bool value, bool notify = true );
     void setAllowExternalEdits( bool value, bool notify = true );
-    void setOldStyleMotion( bool value, bool notify = true );
+    // void setOldStyleMotion( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
     //    void setSimpleRecenter( bool value, bool notify = true );
 
@@ -406,7 +407,7 @@ signals:
     void requireLockZChanged( bool value );
     void showLogMatricesButtonChanged( bool value );
     void allowExternalEditsChanged( bool value );
-    void oldStyleMotionChanged( bool value );
+    // void oldStyleMotionChanged( bool value );
     void universeCenteredRotationChanged( bool value );
     //    void simpleRecenterChanged( bool value );
 

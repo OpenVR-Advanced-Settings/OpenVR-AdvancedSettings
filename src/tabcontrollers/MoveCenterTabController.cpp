@@ -855,28 +855,28 @@ void MoveCenterTabController::setAllowExternalEdits( bool value, bool notify )
     }
 }
 
-bool MoveCenterTabController::oldStyleMotion() const
-{
-    return settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_oldStyleMotion );
-}
+// bool MoveCenterTabController::oldStyleMotion() const
+//{
+//     return settings::getSetting(
+//         settings::BoolSetting::PLAYSPACE_oldStyleMotion );
+// }
 
-void MoveCenterTabController::setOldStyleMotion( bool value, bool notify )
-{
-    // detect incoming change to old style, and hide working set
-    if ( value && !oldStyleMotion() )
-    {
-        vr::VRChaperoneSetup()->HideWorkingSetPreview();
-    }
+// void MoveCenterTabController::setOldStyleMotion( bool value, bool notify )
+//{
+//     // detect incoming change to old style, and hide working set
+//     if ( value && !oldStyleMotion() )
+//     {
+//         vr::VRChaperoneSetup()->HideWorkingSetPreview();
+//     }
 
-    settings::setSetting( settings::BoolSetting::PLAYSPACE_oldStyleMotion,
-                          value );
+//    settings::setSetting( settings::BoolSetting::PLAYSPACE_oldStyleMotion,
+//                          value );
 
-    if ( notify )
-    {
-        emit oldStyleMotionChanged( value );
-    }
-}
+//    if ( notify )
+//    {
+//        emit oldStyleMotionChanged( value );
+//    }
+//}
 
 bool MoveCenterTabController::universeCenteredRotation() const
 {
@@ -2271,6 +2271,7 @@ void MoveCenterTabController::updateHandDrag(
     }
 
     vr::TrackedDevicePose_t* movePose;
+    movePose = devicePoses + moveHandId;
     if ( m_seatedModeDetected )
     {
         vr::TrackedDevicePose_t
@@ -2281,10 +2282,6 @@ void MoveCenterTabController::updateHandDrag(
             seatedDevicePoses,
             vr::k_unMaxTrackedDeviceCount );
         movePose = seatedDevicePoses + moveHandId;
-    }
-    else
-    {
-        movePose = devicePoses + moveHandId;
     }
 
     if ( !movePose->bPoseIsValid || !movePose->bDeviceIsConnected
@@ -2327,8 +2324,7 @@ void MoveCenterTabController::updateHandDrag(
         // prevent positional glitches from exceeding max openvr offset
         // clamps. We do this by detecting a drag larger than 100m in a
         // single frame.
-        if ( abs( diff[0] ) > 100.0 || abs( diff[1] ) > 100.0
-             || abs( diff[2] ) > 100.0 )
+        if ( ( abs( diff[0] ) + abs( diff[1] ) + abs( diff[2] ) ) > 100.0 )
         {
             reset();
         }
