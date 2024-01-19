@@ -2595,9 +2595,10 @@ void MoveCenterTabController::updateGravity()
 void MoveCenterTabController::updateSpace( bool forceUpdate )
 {
     // Do nothing if all offsets and rotation are still the same...
-    if ( m_offsetX == m_oldOffsetX && m_offsetY == m_oldOffsetY
-         && m_offsetZ == m_oldOffsetZ && m_rotation == m_oldRotation
-         && !forceUpdate )
+    if ( ( abs( m_offsetX - m_oldOffsetX ) + abs( m_offsetY - m_oldOffsetY )
+           + abs( m_offsetZ - m_oldOffsetZ ) )
+             == 0
+         && m_rotation == m_oldRotation && !forceUpdate )
     {
         return;
     }
