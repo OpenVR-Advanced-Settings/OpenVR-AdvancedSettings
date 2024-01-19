@@ -2604,8 +2604,10 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     }
 
     // reload from disk if we're at zero offsets and allow external edits
-    if ( allowExternalEdits() && m_oldOffsetX == 0.0f && m_oldOffsetY == 0.0f
-         && m_oldOffsetZ == 0.0f && m_oldRotation == 0 )
+    if ( allowExternalEdits()
+         && ( abs( m_oldOffsetX ) + abs( m_oldOffsetY ) + abs( m_oldOffsetZ )
+              + abs( m_oldRotation ) )
+                == 0 )
     {
         vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
         vr::VRChaperoneSetup()->CommitWorkingCopy(
