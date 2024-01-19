@@ -135,8 +135,9 @@ class MoveCenterTabController : public QObject
     Q_PROPERTY(
         bool universeCenteredRotation READ universeCenteredRotation WRITE
             setUniverseCenteredRotation NOTIFY universeCenteredRotationChanged )
-    Q_PROPERTY( bool simpleRecenter READ simpleRecenter WRITE setSimpleRecenter
-                    NOTIFY simpleRecenterChanged )
+    //    Q_PROPERTY( bool simpleRecenter READ simpleRecenter WRITE
+    //    setSimpleRecenter
+    //                    NOTIFY simpleRecenterChanged )
     Q_PROPERTY(
         float dragMult READ dragMult WRITE setDragMult NOTIFY dragMultChanged )
 
@@ -279,7 +280,7 @@ public:
     bool allowExternalEdits() const;
     bool oldStyleMotion() const;
     bool universeCenteredRotation() const;
-    bool simpleRecenter() const;
+    //    bool simpleRecenter() const;
     bool isInitComplete() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
@@ -361,7 +362,7 @@ public slots:
     void setAllowExternalEdits( bool value, bool notify = true );
     void setOldStyleMotion( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
-    void setSimpleRecenter( bool value, bool notify = true );
+    //    void setSimpleRecenter( bool value, bool notify = true );
 
     void shutdown();
     void reset();
@@ -407,7 +408,7 @@ signals:
     void allowExternalEditsChanged( bool value );
     void oldStyleMotionChanged( bool value );
     void universeCenteredRotationChanged( bool value );
-    void simpleRecenterChanged( bool value );
+    //    void simpleRecenterChanged( bool value );
 
     void offsetProfilesUpdated();
 };

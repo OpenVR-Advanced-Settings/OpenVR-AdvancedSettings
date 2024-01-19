@@ -901,22 +901,22 @@ bool MoveCenterTabController::isInitComplete() const
     return m_initComplete;
 }
 
-bool MoveCenterTabController::simpleRecenter() const
-{
-    return settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_simpleRecenter );
-}
+// bool MoveCenterTabController::simpleRecenter() const
+//{
+//     return settings::getSetting(
+//         settings::BoolSetting::PLAYSPACE_simpleRecenter );
+// }
 
-void MoveCenterTabController::setSimpleRecenter( bool value, bool notify )
-{
-    settings::setSetting( settings::BoolSetting::PLAYSPACE_simpleRecenter,
-                          value );
+// void MoveCenterTabController::setSimpleRecenter( bool value, bool notify )
+//{
+//     settings::setSetting( settings::BoolSetting::PLAYSPACE_simpleRecenter,
+//                           value );
 
-    if ( notify )
-    {
-        emit simpleRecenterChanged( value );
-    }
-}
+//    if ( notify )
+//    {
+//        emit simpleRecenterChanged( value );
+//    }
+//}
 
 void MoveCenterTabController::modOffsetX( float value, bool notify )
 {
@@ -965,15 +965,19 @@ void MoveCenterTabController::incomingSeatedReset()
     // if we didn't send the request from OVRAS, we need to send another
     // ResetSeatedZeroPose(). It seems that only after this is sent from
     // OVRAS does ReloadFromDisk return valid info on WMR.
-    if ( !m_selfRequestedSeatedRecenter && !simpleRecenter() )
+    if ( !m_selfRequestedSeatedRecenter )
     {
+        LOG( INFO ) << "steamvr center?";
         m_selfRequestedSeatedRecenter = true;
         vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
+        vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseStanding );
     }
     else
     {
+        LOG( INFO ) << "not our receneter";
         updateSeatedResetData();
     }
+    // vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
 }
 
 void MoveCenterTabController::reset()
@@ -1205,6 +1209,7 @@ void MoveCenterTabController::zeroOffsets()
 void MoveCenterTabController::sendSeatedRecenter()
 {
     vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
+    vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseStanding );
 }
 
 double MoveCenterTabController::getHmdYawTotal()
