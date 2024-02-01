@@ -970,7 +970,6 @@ void MoveCenterTabController::incomingSeatedReset()
         LOG( INFO ) << "steamvr center?";
         m_selfRequestedSeatedRecenter = true;
         vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
-        vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseStanding );
     }
     else
     {
@@ -1209,7 +1208,7 @@ void MoveCenterTabController::zeroOffsets()
 void MoveCenterTabController::sendSeatedRecenter()
 {
     vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
-    vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseStanding );
+    // vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseStanding );
 }
 
 double MoveCenterTabController::getHmdYawTotal()
