@@ -1363,7 +1363,7 @@ void OverlayController::mainEventLoop()
 
     m_alarm.eventLoopTick();
 
-    if ( vr::VROverlay()->IsDashboardVisible() )
+    if ( vr::VROverlay()->IsDashboardVisible() || m_desktopMode )
     {
         m_settingsTabController.dashboardLoopTick();
         m_steamVRTabController.dashboardLoopTick();

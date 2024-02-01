@@ -359,6 +359,10 @@ private:
                           SettingCategory::Utility,
                           QtInfo{ "vrcDebug" },
                           false },
+        BoolSettingValue{ BoolSetting::UTILITY_trackerOverlayEnabled,
+                          SettingCategory::Utility,
+                          QtInfo{ "trackerOverlayEnabled" },
+                          true },
 
         BoolSettingValue{ BoolSetting::VIDEO_brightnessEnabled,
                           SettingCategory::Video,

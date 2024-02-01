@@ -45,6 +45,7 @@ enum class BoolSetting
     UTILITY_alarmEnabled,
     UTILITY_alarmIsModal,
     UTILITY_vrcDebug,
+    UTILITY_trackerOverlayEnabled,
 
     VIDEO_brightnessEnabled,
     VIDEO_isOverlayMethodActive,
