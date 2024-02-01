@@ -2,6 +2,7 @@
 #include <QQuickWindow>
 #include "../overlaycontroller.h"
 #include "../utils/update_rate.h"
+#include <QDesktopServices>
 
 QT_USE_NAMESPACE
 
@@ -447,6 +448,12 @@ void SteamVRTabController::launchBindingUI()
     {
         LOG( ERROR )
             << "failed to get input handle? is your right controller on?";
+    }
+    if ( parent->isDesktopMode() )
+    {
+        QDesktopServices::openUrl(
+            QUrl( "http://127.0.0.1:27062/dashboard/controllerbinding.html" ) );
+        return;
     }
     auto error = vr::VRInput()->OpenBindingUI(
         application_strings::applicationKey, actionHandle, inputHandle, false );
