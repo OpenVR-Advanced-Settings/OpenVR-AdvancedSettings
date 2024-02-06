@@ -957,7 +957,8 @@ void MoveCenterTabController::modOffsetZ( float value, bool notify )
 void MoveCenterTabController::shutdown()
 {
     reset();
-    vr::VRChaperoneSetup()->HideWorkingSetPreview();
+    // vr::VRChaperoneSetup()->HideWorkingSetPreview();
+    vr::VRChaperoneSetup()->RevertWorkingCopy();
 }
 
 void MoveCenterTabController::incomingSeatedReset()
@@ -2323,7 +2324,8 @@ void MoveCenterTabController::updateHandDrag(
         // prevent positional glitches from exceeding max openvr offset
         // clamps. We do this by detecting a drag larger than 100m in a
         // single frame.
-        if ( ( abs( diff[0] ) + abs( diff[1] ) + abs( diff[2] ) ) > 100.0 )
+        if ( abs( diff[0] ) > 100.0 || abs( diff[1] ) > 100.0
+             || abs( diff[2] ) > 100.0 )
         {
             reset();
         }
