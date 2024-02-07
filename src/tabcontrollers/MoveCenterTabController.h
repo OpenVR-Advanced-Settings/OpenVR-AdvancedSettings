@@ -89,8 +89,6 @@ class MoveCenterTabController : public QObject
                     NOTIFY smoothTurnRateChanged )
     Q_PROPERTY( int frictionPercent READ frictionPercent WRITE
                     setFrictionPercent NOTIFY frictionPercentChanged )
-    Q_PROPERTY( bool adjustChaperone READ adjustChaperone WRITE
-                    setAdjustChaperone NOTIFY adjustChaperoneChanged )
     Q_PROPERTY( bool moveShortcutRight READ moveShortcutRight WRITE
                     setMoveShortcutRight NOTIFY moveShortcutRightChanged )
     Q_PROPERTY( bool moveShortcutLeft READ moveShortcutLeft WRITE
@@ -258,7 +256,6 @@ public:
     int snapTurnAngle() const;
     int smoothTurnRate() const;
     int frictionPercent() const;
-    bool adjustChaperone() const;
     bool moveShortcutRight() const;
     bool moveShortcutLeft() const;
     bool turnBindRight() const;
@@ -279,9 +276,7 @@ public:
     bool lockZToggle() const;
     bool showLogMatricesButton() const;
     bool allowExternalEdits() const;
-    // bool oldStyleMotion() const;
     bool universeCenteredRotation() const;
-    //    bool simpleRecenter() const;
     bool isInitComplete() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
@@ -335,7 +330,6 @@ public slots:
     void setSmoothTurnRate( int value, bool notify = true );
     void setFrictionPercent( int value, bool notify = true );
 
-    void setAdjustChaperone( bool value, bool notify = true );
     void setMoveShortcutRight( bool value, bool notify = true );
     void setMoveShortcutLeft( bool value, bool notify = true );
     void setTurnBindRight( bool value, bool notify = true );
@@ -386,7 +380,6 @@ signals:
     void snapTurnAngleChanged( int value );
     void smoothTurnRateChanged( int value );
     void frictionPercentChanged( int value );
-    void adjustChaperoneChanged( bool value );
     void moveShortcutRightChanged( bool value );
     void moveShortcutLeftChanged( bool value );
     void turnBindRightChanged( bool value );

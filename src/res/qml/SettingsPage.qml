@@ -195,13 +195,6 @@ MyStackViewPage {
                     OverlayController.setExclusiveInputEnabled(this.checked, true)
                 }
             }
-            MyToggleButton {
-                id: spaceAdjustChaperoneToggle
-                text: "Adjust Chaperone"
-                onCheckedChanged: {
-                    MoveCenterTabController.adjustChaperone = this.checked
-                }
-            }
 
             RowLayout {
                 Layout.fillWidth: true
@@ -347,7 +340,6 @@ MyStackViewPage {
                 oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
                 exclusiveInputToggleButton.checked = OverlayController.exclusiveInputEnabled
                 autoApplyChaperoneToggleButton.checked = OverlayController.autoApplyChaperoneEnabled
-                spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
                 desktopModeToggleButton.checked = OverlayController.desktopModeToggle
 
 
@@ -375,9 +367,6 @@ MyStackViewPage {
             }
             onUniverseCenteredRotationChanged: {
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
-            }
-            onAdjustChaperoneChanged:{
-                spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
             }
         }
 

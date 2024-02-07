@@ -454,23 +454,6 @@ void MoveCenterTabController::setFrictionPercent( int value, bool notify )
     }
 }
 
-bool MoveCenterTabController::adjustChaperone() const
-{
-    return settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_adjustChaperone4 );
-}
-
-void MoveCenterTabController::setAdjustChaperone( bool value, bool notify )
-{
-    settings::setSetting( settings::BoolSetting::PLAYSPACE_adjustChaperone4,
-                          value );
-
-    if ( notify )
-    {
-        emit adjustChaperoneChanged( value );
-    }
-}
-
 bool MoveCenterTabController::moveShortcutRight() const
 {
     return settings::getSetting(
