@@ -36,6 +36,7 @@ enum class BoolSetting
     APPLICATION_crashRecoveryDisabled2,
     APPLICATION_openXRWorkAround,
     APPLICATION_autoApplyChaperone,
+    APPLICATION_desktopModeToggle,
 
     AUDIO_pttEnabled,
     AUDIO_pttShowNotification,

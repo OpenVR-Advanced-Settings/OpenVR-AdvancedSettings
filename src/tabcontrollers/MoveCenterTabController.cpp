@@ -855,29 +855,6 @@ void MoveCenterTabController::setAllowExternalEdits( bool value, bool notify )
     }
 }
 
-// bool MoveCenterTabController::oldStyleMotion() const
-//{
-//     return settings::getSetting(
-//         settings::BoolSetting::PLAYSPACE_oldStyleMotion );
-// }
-
-// void MoveCenterTabController::setOldStyleMotion( bool value, bool notify )
-//{
-//     // detect incoming change to old style, and hide working set
-//     if ( value && !oldStyleMotion() )
-//     {
-//         vr::VRChaperoneSetup()->HideWorkingSetPreview();
-//     }
-
-//    settings::setSetting( settings::BoolSetting::PLAYSPACE_oldStyleMotion,
-//                          value );
-
-//    if ( notify )
-//    {
-//        emit oldStyleMotionChanged( value );
-//    }
-//}
-
 bool MoveCenterTabController::universeCenteredRotation() const
 {
     return settings::getSetting(
@@ -900,23 +877,6 @@ bool MoveCenterTabController::isInitComplete() const
 {
     return m_initComplete;
 }
-
-// bool MoveCenterTabController::simpleRecenter() const
-//{
-//     return settings::getSetting(
-//         settings::BoolSetting::PLAYSPACE_simpleRecenter );
-// }
-
-// void MoveCenterTabController::setSimpleRecenter( bool value, bool notify )
-//{
-//     settings::setSetting( settings::BoolSetting::PLAYSPACE_simpleRecenter,
-//                           value );
-
-//    if ( notify )
-//    {
-//        emit simpleRecenterChanged( value );
-//    }
-//}
 
 void MoveCenterTabController::modOffsetX( float value, bool notify )
 {
@@ -956,9 +916,10 @@ void MoveCenterTabController::modOffsetZ( float value, bool notify )
 
 void MoveCenterTabController::shutdown()
 {
-    reset();
-    // vr::VRChaperoneSetup()->HideWorkingSetPreview();
-    vr::VRChaperoneSetup()->RevertWorkingCopy();
+    vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+    // reset();
+    //  vr::VRChaperoneSetup()->HideWorkingSetPreview();
+    // vr::VRChaperoneSetup()->RevertWorkingCopy();
 }
 
 void MoveCenterTabController::incomingSeatedReset()
@@ -2769,79 +2730,6 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
             &offsetSeatedCenter );
     }
-
-    // As of SVR 1.13.1 The Chaperone will follow Universe Center NOT raw
-    // Center as such this should be off by defualt.
-    // As of SVR 1.26.3 The chaperone seems to Have reverted back to
-    // pre 1.13.1 behavior as of SVR 1.26.3 instead of 2x offset we have 1x
-    // offset and universe centerS as of SVR 1.26.4 1.26.3 changes are
-    // reverted as Such Adjust Chaperone Should Not Be Needed We Will leave
-    // in Adjust Chaperone at this point but make sure it defaults to off
-
-    //    if ( adjustChaperone() )
-    //    {
-    //        // outputLogPoses();
-    //        // make a copy of our bounds and
-    //        // reorient relative to new universe center
-
-    //        vr::HmdQuad_t* updatedBounds
-    //            = new vr::HmdQuad_t[m_collisionBoundsCountForReset];
-
-    //        // for every quad in the chaperone bounds...
-    //        for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset;
-    //        quad++ )
-    //        {
-    //            // at every corner in that quad...
-    //            for ( unsigned corner = 0; corner < 4; corner++ )
-    //            {
-    //                // copy the corner's xyz coordinates
-    //                updatedBounds[quad].vCorners[corner].v[0]
-    //                    =
-    //                    m_collisionBoundsForOffset[quad].vCorners[corner].v[0];
-
-    //                updatedBounds[quad].vCorners[corner].v[1]
-    //                    =
-    //                    m_collisionBoundsForOffset[quad].vCorners[corner].v[1];
-
-    //                updatedBounds[quad].vCorners[corner].v[2]
-    //                    =
-    //                    m_collisionBoundsForOffset[quad].vCorners[corner].v[2];
-
-    //                // cancel universe center's xyz offsets to each corner's
-    //                // position and shift over by original center position so
-    //                // that we are mirroring the offset as reflected about the
-    //                // original origin
-    //                updatedBounds[quad].vCorners[corner].v[0]
-    //                    -= offsetUniverseCenter.m[0][3]
-    //                       // - offsetUniverseCenter.m[0][3];
-    //                       - m_universeCenterForReset.m[0][3];
-    //                // but don't touch y=0 values to keep floor corners
-    //                // rooted down
-
-    //                if ( updatedBounds[quad].vCorners[corner].v[1] != 0 )
-    //                {
-    //                    updatedBounds[quad].vCorners[corner].v[1]
-    //                        -= offsetUniverseCenter.m[1][3]
-    //                           //- offsetUniverseCenter.m[1][3];
-    //                           - m_universeCenterForReset.m[1][3];
-    //                }
-    //                updatedBounds[quad].vCorners[corner].v[2]
-    //                    -= offsetUniverseCenter.m[2][3]
-    //                       // - offsetUniverseCenter.m[2][3];
-    //                       - m_universeCenterForReset.m[2][3];
-
-    //                // rotate by universe center's yaw
-    //                rotateFloatCoordinates(
-    //                    updatedBounds[quad].vCorners[corner].v,
-    //                    static_cast<float>( offsetUniverseCenterYaw ) );
-    //            }
-    //        }
-
-    //        // update chaperone working set preview (this does not commit)
-    //        vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
-    //            updatedBounds, m_collisionBoundsCountForReset );
-    //        delete[] updatedBounds;
-    //    }
 
     // Center Marker for playspace.
     if ( parent->m_chaperoneTabController.m_centerMarkerOverlayNeedsUpdate )

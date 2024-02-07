@@ -116,6 +116,13 @@ OverlayController::OverlayController( bool desktopMode,
         LOG( ERROR ) << "Could not find alarm01 sound file " << alarmFileName;
     }
 
+    // If we have desktop mode flag ignore waht toggle says otherwise we use
+    // toggle
+    if ( !m_desktopMode )
+    {
+        m_desktopMode = desktopModeToggle();
+    }
+
     QSurfaceFormat format;
     // Qt's QOpenGLPaintDevice is not compatible with OpenGL versions >= 3.0
     // NVIDIA does not care, but unfortunately AMD does
@@ -1683,6 +1690,22 @@ double OverlayController::soundVolume() const
 {
     return settings::getSetting(
         settings::DoubleSetting::APPLICATION_appVolume );
+}
+
+void OverlayController::setDesktopModeToggle( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::APPLICATION_desktopModeToggle,
+                          value );
+    if ( notify )
+    {
+        emit desktopModeToggleChanged( value );
+    }
+    settings::saveAllSettings();
+}
+bool OverlayController::desktopModeToggle() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::APPLICATION_desktopModeToggle );
 }
 
 void OverlayController::playActivationSound()

@@ -330,6 +330,11 @@ private:
                           SettingCategory::Application,
                           QtInfo{ "autoApplyChaperoneToggle" },
                           false },
+        BoolSettingValue{ BoolSetting::APPLICATION_desktopModeToggle,
+                          SettingCategory::Application,
+                          QtInfo{ "desktopModeToggle" },
+                          false },
+
         BoolSettingValue{ BoolSetting::AUDIO_pttEnabled,
                           SettingCategory::Audio,
                           QtInfo{ "pttEnabled" },

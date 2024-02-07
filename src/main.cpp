@@ -103,7 +103,9 @@ int main( int argc, char* argv[] )
             }
         }
 
-        if ( commandLineArgs.desktopMode )
+        if ( commandLineArgs.desktopMode
+             || settings::getSetting(
+                 settings::BoolSetting::APPLICATION_desktopModeToggle ) )
         {
             auto m_pWindow = new QQuickWindow();
             qobject_cast<QQuickItem*>( quickObj )

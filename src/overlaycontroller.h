@@ -98,6 +98,8 @@ class OverlayController : public QObject
                         autoApplyChaperoneEnabledChanged )
     Q_PROPERTY( double soundVolume READ soundVolume WRITE setSoundVolume NOTIFY
                     soundVolumeChanged )
+    Q_PROPERTY( bool desktopModeToggle READ desktopModeToggle WRITE
+                    setDesktopModeToggle NOTIFY desktopModeToggleChanged )
 
 private:
     vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
@@ -255,6 +257,7 @@ public:
     std::string autoApplyChaperoneName();
 
     double soundVolume() const;
+    bool desktopModeToggle() const;
 
 public slots:
     void renderOverlay();
@@ -282,6 +285,7 @@ public slots:
     void setDebugState( int value, bool notify = true );
     void setAutoApplyChaperoneEnabled( bool value, bool notify = true );
     void setSoundVolume( double value, bool notify = true );
+    void setDesktopModeToggle( bool value, bool notify = true );
 
 signals:
     void keyBoardInputSignal( QString input, unsigned long userValue = 0 );
@@ -296,6 +300,7 @@ signals:
     void debugStateChanged( int value );
     void autoApplyChaperoneEnabledChanged( bool value );
     void soundVolumeChanged( double value );
+    void desktopModeToggleChanged( bool value );
 };
 
 } // namespace advsettings
