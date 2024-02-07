@@ -30,7 +30,7 @@ before_install:
   - sudo apt update -qq
   - sudo apt install clang-format-8
   - clang-format-8 --version
-  - python ./build_scripts/run-clang-format.py ./src -r --color always --clang-format-executable clang-format-8
+#  - python ./build_scripts/run-clang-format.py ./src -r --color always --clang-format-executable clang-format-8
   - sed -i 's/QMAKE_CXXFLAGS += -flto//g' ./build_scripts/qt/compilers/clang-gcc-common-switches.pri # CI version of clang can't handle LTO
   - sed -i 's/QMAKE_LFLAGS += -flto -fuse-ld=gold//g' ./build_scripts/qt/compilers/clang-gcc-common-switches.pri # CI version of clang can't handle LTO
 

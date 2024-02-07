@@ -2081,25 +2081,6 @@ void MoveCenterTabController::zAxisLockToggle( bool zAxisLockToggleJustPressed )
 
 // END of other bindings
 
-// space drag update this is never called?
-// void MoveCenterTabController::saveUncommittedChaperone()
-//{
-//    if ( !m_chaperoneCommitted )
-//    {
-//        vr::VRChaperoneSetup()->CommitWorkingCopy(
-//            vr::EChaperoneConfigFile_Live );
-//        vr::VRChaperoneSetup()->HideWorkingSetPreview();
-//        m_chaperoneCommitted = true;
-//        unsigned checkQuadCount = 0;
-//        vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
-//            nullptr, &checkQuadCount );
-//        if ( checkQuadCount > 0 )
-//        {
-//            parent->chaperoneUtils().loadChaperoneData( false );
-//        }
-//    }
-//}
-
 // NOTE this function will create bad output if User Rotates 180 Degrees in
 // 1/7* frame-rate. (Worst Case 30 fps = ~770 deg/s)
 void MoveCenterTabController::updateHmdRotationCounter(
@@ -2761,69 +2742,8 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &offsetUniverseCenter );
 
-    //    if ( oldStyleMotion() )
-    //    {
-    //        // check if universe center is outside of OpenVR commit bounds
-    //        (1km) if ( abs( offsetUniverseCenterXyz[0] ) >
-    //        k_maxOpenvrCommitOffset )
-    //        {
-    //            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of
-    //            commit "
-    //                           "bounds ( X: "
-    //                        << offsetUniverseCenterXyz[0] << " )";
-    //            vr::HmdMatrix34_t standingZero;
-    //            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-    //                &standingZero );
-    //            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
-    //            outputLogHmdMatrix( standingZero );
-    //            reset();
-    //            parent->m_chaperoneTabController.applyAutosavedProfile();
-    //            LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
-    //            return;
-    //        }
-    //        if ( abs( offsetUniverseCenterXyz[1] ) > k_maxOpenvrCommitOffset )
-    //        {
-    //            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of
-    //            commit "
-    //                           "bounds ( Y: "
-    //                        << offsetUniverseCenterXyz[1] << " )";
-    //            vr::HmdMatrix34_t standingZero;
-    //            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-    //                &standingZero );
-    //            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
-    //            outputLogHmdMatrix( standingZero );
-    //            reset();
-    //            parent->m_chaperoneTabController.applyAutosavedProfile();
-    //            LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
-    //            return;
-    //        }
-    //        if ( abs( offsetUniverseCenterXyz[2] ) > k_maxOpenvrCommitOffset )
-    //        {
-    //            LOG( INFO ) << "COMMIT FAILED: Raw universe center out of
-    //            commit "
-    //                           "bounds ( Z: "
-    //                        << offsetUniverseCenterXyz[2] << " )";
-    //            vr::HmdMatrix34_t standingZero;
-    //            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-    //                &standingZero );
-    //            LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
-    //            outputLogHmdMatrix( standingZero );
-    //            reset();
-    //            parent->m_chaperoneTabController.applyAutosavedProfile();
-    //            LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
-    //            return;
-    //        }
-    //        vr::VRChaperoneSetup()->CommitWorkingCopy(
-    //            vr::EChaperoneConfigFile_Live );
-    //        m_chaperoneCommitted = true;
-    //    }
-    //
     vr::VRChaperoneSetup()->ShowWorkingSetPreview();
-    // m_chaperoneCommitted = false;
-    //}
 
-    // loadChaperoneData( false ), false so that we don't load live data,
-    // and reference the working set instead.
     if ( m_collisionBoundsCountForReset > 0 )
     {
         parent->chaperoneUtils().loadChaperoneData( false );
