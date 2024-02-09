@@ -20,6 +20,13 @@ enum class Token
     KEY_F10,
     KEY_F11,
     KEY_F12,
+    KEY_F13,
+    KEY_F14,
+    KEY_F15,
+    KEY_F16,
+    KEY_F17,
+    KEY_F18,
+    KEY_F19,
 
     KEY_BACKSPACE,
     KEY_SPACE,
