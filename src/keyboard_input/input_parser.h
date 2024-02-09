@@ -28,7 +28,7 @@ enum class Token
     KEY_F18,
     KEY_F19,
 
-    KEY_BACKSPACE,
+    KEY_BACKSPACE = 150,
     KEY_SPACE,
     KEY_TAB,
     KEY_ESC,

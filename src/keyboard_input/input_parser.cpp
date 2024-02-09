@@ -489,6 +489,20 @@ bool isLiteral( const Token token ) noexcept
         return true;
     case Token::KEY_F12:
         return true;
+    case Token::KEY_F13:
+        return true;
+    case Token::KEY_F14:
+        return true;
+    case Token::KEY_F15:
+        return true;
+    case Token::KEY_F16:
+        return true;
+    case Token::KEY_F17:
+        return true;
+    case Token::KEY_F18:
+        return true;
+    case Token::KEY_F19:
+        return true;
 
     case Token::KEY_BACKSPACE:
         return true;
