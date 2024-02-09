@@ -62,7 +62,7 @@ void initializeOpenVR( const OpenVrInitializationType initType, int count )
     auto reportVersionError
         = []( const char* const interfaceAndVersion, const int trynumber )
     {
-        // as of 5.8.1 Based on some information on valve, if ANY interface
+        // as of 5.8.1 Based on some information from valve, if ANY interface
         // fails to load we should have issues. we will re-initialize a few
         // times if that is the case and hope that fixes things
         LOG( WARNING ) << "OpenVR version is invalid: Interface version "

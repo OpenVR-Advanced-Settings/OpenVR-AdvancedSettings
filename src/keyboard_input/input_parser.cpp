@@ -65,8 +65,20 @@ std::optional<Token> getFunctionNumberExtended( const char& character ) noexcept
         return Token::KEY_F11;
     case '2':
         return Token::KEY_F12;
-    // Theoretically we could extende out to f19, but as F12 is the only
-    // function key on Standard Keyboard.
+    case '3':
+        return Token::KEY_F13;
+    case '4':
+        return Token::KEY_F14;
+    case '5':
+        return Token::KEY_F15;
+    case '6':
+        return Token::KEY_F16;
+    case '7':
+        return Token::KEY_F17;
+    case '8':
+        return Token::KEY_F18;
+    case '9':
+        return Token::KEY_F19;
     default:
         LOG( INFO ) << "Unknown function key number: " << character;
         return std::nullopt;
