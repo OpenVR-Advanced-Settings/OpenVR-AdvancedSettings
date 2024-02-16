@@ -15,10 +15,11 @@
 #include <QCursor>
 #include <QProcess>
 #include <QMessageBox>
+#include <QtLogging>
+#include <QtDebug>
 #include <iostream>
 #include <cmath>
 #include <openvr.h>
-#include <easylogging++.h>
 #include "utils/Matrix.h"
 #include "keyboard_input/input_sender.h"
 #include "settings/settings.h"
@@ -60,14 +61,13 @@ OverlayController::OverlayController( bool desktopMode,
     // Throw Error If over 16k characters in path string
     if ( !pathIsGood )
     {
-        LOG( ERROR ) << "Error Finding VR Runtime Path, Attempting Recovery: ";
+        qCritical() << "Error Finding VR Runtime Path, Attempting Recovery: ";
         uint32_t maxLengthRe = requiredLength;
-        LOG( INFO ) << "Open VR reporting Required path length of: "
-                    << maxLengthRe;
+        qInfo() << "Open VR reporting Required path length of: " << maxLengthRe;
     }
 
     m_runtimePathUrl = QUrl::fromLocalFile( tempRuntimePath );
-    LOG( INFO ) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
+    qInfo() << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
     const double initVol = soundVolume();
     constexpr auto clickSoundURL = "res/sounds/click.wav";
@@ -82,8 +82,7 @@ OverlayController::OverlayController( bool desktopMode,
     }
     else
     {
-        LOG( ERROR ) << "Could not find activation sound file "
-                     << clickSoundURL;
+        qCritical() << "Could not find activation sound file " << clickSoundURL;
     }
     constexpr auto focusChangedSoundURL = "res/sounds/focus.wav";
     const auto focusChangedSoundFile
@@ -97,8 +96,8 @@ OverlayController::OverlayController( bool desktopMode,
     }
     else
     {
-        LOG( ERROR ) << "Could not find focus Changed sound file "
-                     << focusChangedSoundURL;
+        qCritical() << "Could not find focus Changed sound file "
+                    << focusChangedSoundURL;
     }
 
     constexpr auto alarmFileName = "res/sounds/alarm01.wav";
@@ -113,7 +112,7 @@ OverlayController::OverlayController( bool desktopMode,
     }
     else
     {
-        LOG( ERROR ) << "Could not find alarm01 sound file " << alarmFileName;
+        qCritical() << "Could not find alarm01 sound file " << alarmFileName;
     }
 
     // If we have desktop mode flag ignore waht toggle says otherwise we use
@@ -344,11 +343,11 @@ OverlayController::OverlayController( bool desktopMode,
     }
     else
     {
-        LOG( INFO ) << "Version Check: Feature disabled. Not checking version.";
+        qInfo() << "Version Check: Feature disabled. Not checking version.";
     }
 
-    LOG( INFO ) << "OPENSSL VERSION: "
-                << QSslSocket::sslLibraryBuildVersionString();
+    qInfo() << "OPENSSL VERSION: "
+            << QSslSocket::sslLibraryBuildVersionString();
 }
 
 OverlayController::~OverlayController()
@@ -373,7 +372,7 @@ void OverlayController::exitApp()
     Shutdown();
     QApplication::exit();
 
-    LOG( INFO ) << "All systems exited.";
+    qInfo() << "All systems exited.";
     exit( EXIT_SUCCESS );
     // Does not fallthrough
 }
@@ -449,8 +448,8 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         }
         else
         {
-            LOG( ERROR ) << "Could not find thumbnail icon \""
-                         << thumbiconFilename << "\"";
+            qCritical() << "Could not find thumbnail icon \""
+                        << thumbiconFilename << "\"";
         }
 
         // Too many render calls in too short time overwhelm Qt and an
@@ -473,7 +472,10 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             static_cast<int>( quickItem->height() ),
             fboFormat ) );
 
-        m_window.setRenderTarget( m_pFbo.get() );
+        m_pRenderTarget = ( QQuickRenderTarget::fromOpenGLTexture(
+            m_pFbo->texture(), m_pFbo->size() ) );
+
+        m_window.setRenderTarget( m_pRenderTarget );
         quickItem->setParentItem( m_window.contentItem() );
         m_window.setGeometry( 0,
                               0,
@@ -526,7 +528,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                 autoApplyChaperoneName() );
         if ( chapindex.first )
         {
-            LOG( INFO ) << "Auto Applying Chaperone";
+            qInfo() << "Auto Applying Chaperone";
             m_chaperoneTabController.applyChaperoneProfile( chapindex.second );
             // This should be the way to stop room-setup from starting... as it
             // sends steamvr a signal that it is completed
@@ -534,7 +536,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                 vr::EChaperoneConfigFile_Live );
             return;
         }
-        LOG( WARNING ) << "Profile Not Found for Auto Apply Chaperone!";
+        qWarning() << "Profile Not Found for Auto Apply Chaperone!";
     }
 }
 
@@ -988,7 +990,7 @@ QString OverlayController::versionCheckText() const
 void OverlayController::setVersionCheckText( QString value, bool notify )
 {
     m_versionCheckText = value;
-    LOG( INFO ) << "m_versionCheckText = " << m_versionCheckText;
+    qInfo() << "m_versionCheckText = " << m_versionCheckText;
     if ( notify )
     {
         emit versionCheckTextChanged( m_versionCheckText );
@@ -1188,7 +1190,7 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_Quit:
         {
-            LOG( INFO ) << "Received quit request.";
+            qInfo() << "Received quit request.";
             vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some
                                                        // time just in case
 
@@ -1200,14 +1202,14 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_DashboardActivated:
         {
-            LOG( DEBUG ) << "Dashboard activated";
+            qDebug() << "Dashboard activated";
             m_dashboardVisible = true;
         }
         break;
 
         case vr::VREvent_DashboardDeactivated:
         {
-            LOG( DEBUG ) << "Dashboard deactivated";
+            qDebug() << "Dashboard deactivated";
             m_dashboardVisible = false;
             settings::saveChangedSettings();
         }
@@ -1243,9 +1245,8 @@ void OverlayController::mainEventLoop()
                 = vrEvent.data.chaperone.m_nPreviousUniverse;
             uint64_t currentUniverseId
                 = vrEvent.data.chaperone.m_nCurrentUniverse;
-            LOG( INFO )
-                << "(VREvent) ChaperoneUniverseHasChanged... Previous : "
-                << previousUniverseId << " Current:" << currentUniverseId;
+            qInfo() << "(VREvent) ChaperoneUniverseHasChanged... Previous : "
+                    << previousUniverseId << " Current:" << currentUniverseId;
             if ( !chaperoneDataAlreadyUpdated )
             {
                 m_chaperoneUtils.loadChaperoneData();
@@ -1260,7 +1261,7 @@ void OverlayController::mainEventLoop()
         break;
         case vr::VREvent_Input_ActionManifestReloaded:
         {
-            // LOG( WARNING ) << "Action Manifest Reloaded";
+            // qWarning() << "Action Manifest Reloaded";
             if ( m_steamVRTabController.perAppBindEnabled() )
             {
                 m_steamVRTabController.applyAllCustomBindings();
@@ -1274,7 +1275,7 @@ void OverlayController::mainEventLoop()
     if ( m_incomingReset )
     {
         m_incomingReset = false;
-        LOG( INFO ) << "Reset zero event recorded";
+        qInfo() << "Reset zero event recorded";
         m_moveCenterTabController.incomingZeroReset();
     }
 
@@ -1641,7 +1642,7 @@ void OverlayController::OnNetworkReply( QNetworkReply* reply )
     if ( reply->error() == QNetworkReply::NoError )
     {
         QByteArray replyByteData = reply->readAll();
-        LOG( INFO ) << "Version Check: Recieved Data: " << replyByteData;
+        qInfo() << "Version Check: Recieved Data: " << replyByteData;
         QJsonParseError parseError;
         m_remoteVersionJsonDocument
             = QJsonDocument::fromJson( replyByteData, &parseError );
@@ -1684,10 +1685,9 @@ void OverlayController::OnNetworkReply( QNetworkReply* reply )
                         + QString::number( m_remoteVersionPatch )
                         + ") available." );
                 }
-                LOG( INFO )
-                    << "Version Check: Newer version (" << m_remoteVersionMajor
-                    << "." << m_remoteVersionMinor << "."
-                    << m_remoteVersionPatch << ") available.";
+                qInfo() << "Version Check: Newer version ("
+                        << m_remoteVersionMajor << "." << m_remoteVersionMinor
+                        << "." << m_remoteVersionPatch << ") available.";
             }
             else
             {
@@ -1696,22 +1696,22 @@ void OverlayController::OnNetworkReply( QNetworkReply* reply )
                     setVersionCheckText( m_optionalMessage );
                 }
                 setNewVersionDetected( false );
-                LOG( INFO ) << "Version Check: Installed version is latest "
-                               "release.";
+                qInfo() << "Version Check: Installed version is latest "
+                           "release.";
             }
         }
         else
         {
-            LOG( ERROR )
+            qCritical()
                 << "Version Check: Error parsing json. QJsonParseError = "
                 << parseError.error;
         }
     }
     else
     {
-        LOG( ERROR ) << "Version Check: Error connecting to network. "
-                        "QNetworkReply::NetworkError = "
-                     << reply->error();
+        qCritical() << "Version Check: Error connecting to network. "
+                       "QNetworkReply::NetworkError = "
+                    << reply->error();
     }
     reply->deleteLater();
 }

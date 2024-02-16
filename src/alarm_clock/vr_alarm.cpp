@@ -1,8 +1,11 @@
-#include <easylogging++.h>
 #include "../tabcontrollers/UtilitiesTabController.h"
 #include "vr_alarm.h"
 #include "../openvr/ovr_overlay_wrapper.h"
 #include "../utils/update_rate.h"
+#include <thread>
+
+#include <QtLogging>
+#include <QtDebug>
 
 namespace alarm_clock
 {
@@ -76,13 +79,14 @@ void VrAlarm::checkAlarmStatus()
                                && timeToAlarmActivation > 0;
     if ( activateAlarm )
     {
-        LOG( INFO ) << "Alarm fired at " << m_alarm.hour() << ":"
-                    << m_alarm.minute() << ":" << m_alarm.second() << ".";
+        qInfo() << "Alarm fired at " << m_alarm.hour() << ":"
+                << m_alarm.minute() << ":" << m_alarm.second() << ".";
         showAlarmNotification();
         setAlarmEnabled( false );
 
         std::thread t(
-            []( vr::VROverlayHandle_t overlayHandle ) {
+            []( vr::VROverlayHandle_t overlayHandle )
+            {
                 // This will freeze the overlay for 3 seconds
                 std::this_thread::sleep_for( std::chrono::seconds( 3 ) );
                 ovr_overlay_wrapper::hideOverlay( overlayHandle );
@@ -102,9 +106,9 @@ void VrAlarm::setAlarmTime( const int hour, const int minute, const int second )
 {
     if ( !QTime::isValid( hour, minute, second ) )
     {
-        LOG( ERROR ) << "setAlarmTime passed invalid time values: '" << hour
-                     << "' hours, '" << minute << "' minutes, '" << second
-                     << "' seconds.";
+        qCritical() << "setAlarmTime passed invalid time values: '" << hour
+                    << "' hours, '" << minute << "' minutes, '" << second
+                    << "' seconds.";
     }
 
     setSetting( IntSetting::UTILITY_alarmHour, hour );
@@ -119,20 +123,20 @@ void VrAlarm::modAlarmTime( const int hour, const int minute, const int second )
 {
     if ( hour > 22 || hour < -22 )
     {
-        LOG( ERROR ) << "modAlarmTime called with incorrect hour value: '"
-                     << hour << "'. Values not applied.";
+        qCritical() << "modAlarmTime called with incorrect hour value: '"
+                    << hour << "'. Values not applied.";
         return;
     }
     if ( minute > 58 || minute < -58 )
     {
-        LOG( ERROR ) << "modAlarmTime called with incorrect minute value: '"
-                     << minute << "'. Values not applied.";
+        qCritical() << "modAlarmTime called with incorrect minute value: '"
+                    << minute << "'. Values not applied.";
         return;
     }
     if ( second > 58 || minute < -58 )
     {
-        LOG( ERROR ) << "modAlarmTime called with incorrect second value: '"
-                     << second << "'. Values not applied.";
+        qCritical() << "modAlarmTime called with incorrect second value: '"
+                    << second << "'. Values not applied.";
         return;
     }
 

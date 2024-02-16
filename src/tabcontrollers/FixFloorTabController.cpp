@@ -1,5 +1,7 @@
 #include "FixFloorTabController.h"
 #include <QQuickWindow>
+#include <QtLogging>
+#include <QtDebug>
 #include "../overlaycontroller.h"
 
 // application namespace
@@ -153,7 +155,7 @@ void FixFloorTabController::dashboardLoopTick(
 
                         /*
                         floorOffsetY = static_cast<float>(tempOffsetY);
-                        LOG(INFO) << "Offset For Knuckles up is: " <<
+                        qInfo() << "Offset For Knuckles up is: " <<
                         floorOffsetY;
                         */
                     }
@@ -183,7 +185,7 @@ void FixFloorTabController::dashboardLoopTick(
 
                         /*
                         floorOffsetY = static_cast<float>(tempOffsetY);
-                        LOG(INFO) << "Offset For Knuckles up is: " <<
+                        qInfo() << "Offset For Knuckles up is: " <<
                         floorOffsetY;
                         */
                     }
@@ -196,10 +198,9 @@ void FixFloorTabController::dashboardLoopTick(
                 floorOffsetX = static_cast<float>( tempOffsetX );
                 floorOffsetZ = static_cast<float>( tempOffsetZ );
 
-                LOG( INFO )
-                    << "Fix Floor and adjust space center: Floor Offset = ["
-                    << floorOffsetX << ", " << floorOffsetY << ", "
-                    << floorOffsetZ << "]";
+                qInfo() << "Fix Floor and adjust space center: Floor Offset = ["
+                        << floorOffsetX << ", " << floorOffsetY << ", "
+                        << floorOffsetZ << "]";
                 float offset[3] = { 0, 0, 0 };
                 offset[1] = floorOffsetY;
                 if ( state == 2 )
@@ -243,12 +244,12 @@ int FixFloorTabController::getControllerType(
         &error );
     if ( error != vr::TrackedProp_Success )
     {
-        LOG( ERROR ) << "Error With Controller Type: "
-                     << vr::VRSystem()->GetPropErrorNameFromEnum( error );
+        qCritical() << "Error With Controller Type: "
+                    << vr::VRSystem()->GetPropErrorNameFromEnum( error );
     }
     else if ( stringLength == 0 )
     {
-        LOG( ERROR ) << "Device Index not valid";
+        qCritical() << "Device Index not valid";
     }
     else if ( strcmp( controllerTypeString, "knuckles" ) == 0 )
     {
@@ -308,8 +309,8 @@ void FixFloorTabController::undoFixFloorClicked()
 {
     float off[3] = { -floorOffsetX, -floorOffsetY, -floorOffsetZ };
     parent->m_moveCenterTabController.addOffset( off );
-    LOG( INFO ) << "Fix Floor: Undo Floor Offset = [" << -floorOffsetX << ", "
-                << -floorOffsetY << ", " << -floorOffsetZ << "]";
+    qInfo() << "Fix Floor: Undo Floor Offset = [" << -floorOffsetX << ", "
+            << -floorOffsetY << ", " << -floorOffsetZ << "]";
     floorOffsetY = 0.0f;
     statusMessage = "Undo ... OK";
     statusMessageTimeout = 1.0;

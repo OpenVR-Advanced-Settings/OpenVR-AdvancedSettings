@@ -1,7 +1,8 @@
 #pragma once
 #include <pulse/pulseaudio.h>
 #include <string>
-#include <easylogging++.h>
+#include <QtLogging>
+#include <QtDebug>
 #include "AudioManager.h"
 
 // Used to get the compiler to shut up about C4100: unreferenced formal
@@ -66,58 +67,58 @@ void customPulseLoop()
 // Error function
 void dumpPulseAudioState()
 {
-    LOG( ERROR ) << "____";
+    qCritical() << "____";
 
-    LOG( ERROR ) << "Dumping PulseAudio state: ";
-    LOG( ERROR ) << "mainLoop: " << pulseAudioPointers.mainLoop;
-    LOG( ERROR ) << "api: " << pulseAudioPointers.api;
-    LOG( ERROR ) << "context: " << pulseAudioPointers.context;
+    qCritical() << "Dumping PulseAudio state: ";
+    qCritical() << "mainLoop: " << pulseAudioPointers.mainLoop;
+    qCritical() << "api: " << pulseAudioPointers.api;
+    qCritical() << "context: " << pulseAudioPointers.context;
 
-    LOG( ERROR ) << "";
+    qCritical() << "";
 
-    LOG( ERROR ) << "Data:";
-    LOG( ERROR ) << "\tdefaultSinkOutputDeviceId: "
-                 << pulseAudioData.defaultSinkOutputDeviceId;
-    LOG( ERROR ) << "\tdefaultSourceInputDeviceId: "
-                 << pulseAudioData.defaultSourceInputDeviceId;
+    qCritical() << "Data:";
+    qCritical() << "\tdefaultSinkOutputDeviceId: "
+                << pulseAudioData.defaultSinkOutputDeviceId;
+    qCritical() << "\tdefaultSourceInputDeviceId: "
+                << pulseAudioData.defaultSourceInputDeviceId;
 
-    LOG( ERROR ) << "";
+    qCritical() << "";
 
-    LOG( ERROR ) << "\tcurrentDefaultSinkInfo name: "
-                 << pulseAudioData.currentDefaultSinkInfo.name;
-    LOG( ERROR ) << "\tcurrentDefaultSourceInfo name: "
-                 << pulseAudioData.currentDefaultSourceInfo.name;
+    qCritical() << "\tcurrentDefaultSinkInfo name: "
+                << pulseAudioData.currentDefaultSinkInfo.name;
+    qCritical() << "\tcurrentDefaultSourceInfo name: "
+                << pulseAudioData.currentDefaultSourceInfo.name;
 
-    LOG( ERROR ) << "";
+    qCritical() << "";
 
-    LOG( ERROR ) << "sinkOutputDevices: ";
-    LOG_IF( pulseAudioData.sinkOutputDevices.size() == 0, ERROR )
-        << "\tOutput devices size zero.";
+    qCritical() << "sinkOutputDevices: ";
+    if ( pulseAudioData.sinkOutputDevices.size() == 0 )
+        qCritical() << "\tOutput devices size zero.";
     for ( const auto& device : pulseAudioData.sinkOutputDevices )
     {
-        LOG( ERROR ) << "\tDevice Name: " << device.name();
-        LOG( ERROR ) << "\tDevice Id: " << device.id();
+        qCritical() << "\tDevice Name: " << device.name();
+        qCritical() << "\tDevice Id: " << device.id();
     }
 
-    LOG( ERROR ) << "";
+    qCritical() << "";
 
-    LOG( ERROR ) << "sourceInputDevices: ";
-    LOG_IF( pulseAudioData.sourceInputDevices.size() == 0, ERROR )
-        << "\tInput devices size zero.";
+    qCritical() << "sourceInputDevices: ";
+    if ( pulseAudioData.sourceInputDevices.size() == 0 )
+        qCritical() << "\tInput devices size zero.";
     for ( const auto& device : pulseAudioData.sourceInputDevices )
     {
-        LOG( ERROR ) << "\tDevice Name: " << device.name();
-        LOG( ERROR ) << "\tDevice Id: " << device.id();
+        qCritical() << "\tDevice Name: " << device.name();
+        qCritical() << "\tDevice Id: " << device.id();
     }
 
-    LOG( ERROR ) << "____";
+    qCritical() << "____";
 }
 
 PulseAudioIsLastMeaning getIsLastMeaning( const int isLast ) noexcept
 {
     if ( isLast < 0 )
     {
-        LOG( ERROR ) << "Error in isLast.";
+        qCritical() << "Error in isLast.";
         dumpPulseAudioState();
         return PulseAudioIsLastMeaning::Error;
     }
@@ -134,14 +135,14 @@ std::string getDeviceName( pa_proplist* p )
 {
     if ( !p )
     {
-        LOG( ERROR ) << "proplist not valid.";
+        qCritical() << "proplist not valid.";
     }
 
     constexpr auto deviceDescription = "device.description";
     if ( !pa_proplist_contains( p, deviceDescription ) )
     {
-        LOG( ERROR ) << "proplist does not contain '" << deviceDescription
-                     << "'.";
+        qCritical() << "proplist does not contain '" << deviceDescription
+                    << "'.";
         return "ERROR";
     }
 
@@ -166,7 +167,7 @@ template <class T> void deviceCallback( const T* i, const int isLast )
     }
     else if ( deviceState == PulseAudioIsLastMeaning::Error )
     {
-        LOG( ERROR ) << "Error in deviceCallback function.";
+        qCritical() << "Error in deviceCallback function.";
         dumpPulseAudioState();
         loopControl = PulseAudioLoopControl::Stop;
         return;
@@ -179,8 +180,8 @@ template <class T> void deviceCallback( const T* i, const int isLast )
             pulseAudioData.currentDefaultSourceInfo = *i;
         }
 
-        LOG( DEBUG ) << "Adding device to input: '" << i->name << "', '"
-                     << getDeviceName( i->proplist ) << "'.";
+        qDebug() << "Adding device to input: '" << i->name << "', '"
+                 << getDeviceName( i->proplist ) << "'.";
         pulseAudioData.sourceInputDevices.push_back(
             AudioDevice( i->name, getDeviceName( i->proplist ) ) );
     }
@@ -192,8 +193,8 @@ template <class T> void deviceCallback( const T* i, const int isLast )
             pulseAudioData.currentDefaultSinkInfo = *i;
         }
 
-        LOG( DEBUG ) << "Adding device to output: '" << i->name << "', '"
-                     << getDeviceName( i->proplist ) << "'.";
+        qDebug() << "Adding device to output: '" << i->name << "', '"
+                 << getDeviceName( i->proplist ) << "'.";
         pulseAudioData.sinkOutputDevices.push_back(
             AudioDevice( i->name, getDeviceName( i->proplist ) ) );
     }
@@ -230,7 +231,7 @@ void getDefaultDevicesCallback( pa_context* c,
 
     if ( !i )
     {
-        LOG( ERROR ) << "i == 0";
+        qCritical() << "i == 0";
         pulseAudioData.defaultSinkOutputDeviceId = "DDO:ERROR";
         pulseAudioData.defaultSourceInputDeviceId = "DDI:ERROR";
         return;
@@ -242,10 +243,10 @@ void getDefaultDevicesCallback( pa_context* c,
 
     loopControl = PulseAudioLoopControl::Stop;
 
-    LOG( DEBUG ) << "getDefaultDevicesCallback done with sink output device: '"
-                 << pulseAudioData.defaultSinkOutputDeviceId
-                 << "' and source input '"
-                 << pulseAudioData.defaultSourceInputDeviceId << "'.";
+    qDebug() << "getDefaultDevicesCallback done with sink output device: '"
+             << pulseAudioData.defaultSinkOutputDeviceId
+             << "' and source input '"
+             << pulseAudioData.defaultSourceInputDeviceId << "'.";
 }
 
 void stateCallbackFunction( pa_context* c, void* userdata )
@@ -256,27 +257,27 @@ void stateCallbackFunction( pa_context* c, void* userdata )
     switch ( pa_context_get_state( c ) )
     {
     case PA_CONTEXT_TERMINATED:
-        LOG( ERROR ) << "PA_CONTEXT_TERMINATED in stateCallbackFunction";
+        qCritical() << "PA_CONTEXT_TERMINATED in stateCallbackFunction";
         dumpPulseAudioState();
         return;
     case PA_CONTEXT_CONNECTING:
-        LOG( DEBUG ) << "PA_CONTEXT_CONNECTING";
+        qDebug() << "PA_CONTEXT_CONNECTING";
         return;
     case PA_CONTEXT_AUTHORIZING:
-        LOG( DEBUG ) << "PA_CONTEXT_AUTHORIZING";
+        qDebug() << "PA_CONTEXT_AUTHORIZING";
         return;
     case PA_CONTEXT_SETTING_NAME:
-        LOG( DEBUG ) << "PA_CONTEXT_SETTING_NAME";
+        qDebug() << "PA_CONTEXT_SETTING_NAME";
         return;
     case PA_CONTEXT_UNCONNECTED:
-        LOG( DEBUG ) << "PA_CONTEXT_UNCONNECTED";
+        qDebug() << "PA_CONTEXT_UNCONNECTED";
         return;
     case PA_CONTEXT_FAILED:
-        LOG( DEBUG ) << "PA_CONTEXT_FAILED";
+        qDebug() << "PA_CONTEXT_FAILED";
         return;
 
     case PA_CONTEXT_READY:
-        LOG( DEBUG ) << "PA_CONTEXT_READY";
+        qDebug() << "PA_CONTEXT_READY";
         loopControl = PulseAudioLoopControl::Stop;
         return;
     }
@@ -302,7 +303,7 @@ void updateAllPulseData()
         pulseAudioPointers.context, setInputDevicesCallback, noCustomUserdata );
     customPulseLoop();
 
-    LOG( DEBUG ) << "updateAllPulseData done.";
+    qDebug() << "updateAllPulseData done.";
 }
 
 void successCallback( pa_context* c, int success, void* successVariable )
@@ -316,7 +317,7 @@ void successCallback( pa_context* c, int success, void* successVariable )
 
     if ( !success )
     {
-        LOG( ERROR ) << "Non successful callback operation.";
+        qCritical() << "Non successful callback operation.";
         dumpPulseAudioState();
     }
 
@@ -335,12 +336,12 @@ void setPlaybackDeviceInternal( const std::string& id )
 
     if ( !success )
     {
-        LOG( ERROR ) << "setPlaybackDeviceInternal failed to set default sink "
-                        "for device '"
-                     << id << "'.";
+        qCritical() << "setPlaybackDeviceInternal failed to set default sink "
+                       "for device '"
+                    << id << "'.";
     }
 
-    LOG( DEBUG ) << "setPlaybackDeviceInternal done with id: " << id;
+    qDebug() << "setPlaybackDeviceInternal done with id: " << id;
 }
 
 std::string getCurrentDefaultPlaybackDeviceName()
@@ -351,12 +352,12 @@ std::string getCurrentDefaultPlaybackDeviceName()
     {
         if ( dev.id() == pulseAudioData.defaultSinkOutputDeviceId )
         {
-            LOG( DEBUG ) << "getCurrentDefaultPlaybackDeviceName done with "
-                         << dev.name();
+            qDebug() << "getCurrentDefaultPlaybackDeviceName done with "
+                     << dev.name();
             return dev.name();
         }
     }
-    LOG( ERROR ) << "Unable to find default playback device.";
+    qCritical() << "Unable to find default playback device.";
 
     return "ERROR";
 }
@@ -365,8 +366,8 @@ std::string getCurrentDefaultPlaybackDeviceId()
 {
     updateAllPulseData();
 
-    LOG( DEBUG ) << "getCurrentDefaultPlaybackDeviceId done with "
-                 << pulseAudioData.defaultSinkOutputDeviceId;
+    qDebug() << "getCurrentDefaultPlaybackDeviceId done with "
+             << pulseAudioData.defaultSinkOutputDeviceId;
 
     return pulseAudioData.defaultSinkOutputDeviceId;
 }
@@ -379,12 +380,12 @@ std::string getCurrentDefaultRecordingDeviceName()
     {
         if ( dev.id() == pulseAudioData.defaultSourceInputDeviceId )
         {
-            LOG( DEBUG ) << "getCurrentDefaultRecordingDeviceName done with: "
-                         << dev.name();
+            qDebug() << "getCurrentDefaultRecordingDeviceName done with: "
+                     << dev.name();
             return dev.name();
         }
     }
-    LOG( ERROR ) << "Unable to find default playback device.";
+    qCritical() << "Unable to find default playback device.";
 
     return "ERROR";
 }
@@ -393,8 +394,8 @@ std::string getCurrentDefaultRecordingDeviceId()
 {
     updateAllPulseData();
 
-    LOG( DEBUG ) << "getCurrentDefaultRecordingDeviceId done with "
-                 << pulseAudioData.defaultSourceInputDeviceId;
+    qDebug() << "getCurrentDefaultRecordingDeviceId done with "
+             << pulseAudioData.defaultSourceInputDeviceId;
 
     return pulseAudioData.defaultSourceInputDeviceId;
 }
@@ -452,7 +453,7 @@ void sourceOutputCallback( pa_context* c,
     }
     else if ( deviceState == PulseAudioIsLastMeaning::Error )
     {
-        LOG( ERROR ) << "Error in sourceOutputCallback function.";
+        qCritical() << "Error in sourceOutputCallback function.";
         dumpPulseAudioState();
         return;
     }
@@ -460,9 +461,9 @@ void sourceOutputCallback( pa_context* c,
     const auto sourceOutputIndex = i->index;
     const auto sourceIndex = pulseAudioData.currentDefaultSourceInfo.index;
 
-    LOG( DEBUG ) << "Attempting to move sourceOutputIndex: '"
-                 << sourceOutputIndex << "' to sourceIndex '" << sourceIndex
-                 << "' with source output name " << i->name << ".";
+    qDebug() << "Attempting to move sourceOutputIndex: '" << sourceOutputIndex
+             << "' to sourceIndex '" << sourceIndex
+             << "' with source output name " << i->name << ".";
 
     pa_context_move_source_output_by_index(
         c, sourceOutputIndex, sourceIndex, successCallback, &success );
@@ -470,7 +471,7 @@ void sourceOutputCallback( pa_context* c,
 
 void setMicrophoneDevice( const std::string& id )
 {
-    LOG( DEBUG ) << "setMicrophoneDevice called with 'id': " << id;
+    qDebug() << "setMicrophoneDevice called with 'id': " << id;
 
     updateAllPulseData();
 
@@ -482,7 +483,7 @@ void setMicrophoneDevice( const std::string& id )
 
     if ( !success )
     {
-        LOG( ERROR ) << "Error setting microphone device for '" << id << "'.";
+        qCritical() << "Error setting microphone device for '" << id << "'.";
     }
 
     updateAllPulseData();
@@ -494,17 +495,17 @@ void setMicrophoneDevice( const std::string& id )
 
     if ( !success )
     {
-        LOG( ERROR ) << "Error in moving source outputs to new source.";
+        qCritical() << "Error in moving source outputs to new source.";
     }
 
     updateAllPulseData();
 
-    LOG( DEBUG ) << "setMicrophoneDevice done.";
+    qDebug() << "setMicrophoneDevice done.";
 }
 
 bool setPlaybackVolume( const float volume )
 {
-    LOG( DEBUG ) << "setPlaybackVolume called with 'volume': " << volume;
+    qDebug() << "setPlaybackVolume called with 'volume': " << volume;
 
     updateAllPulseData();
 
@@ -525,19 +526,19 @@ bool setPlaybackVolume( const float volume )
 
     if ( !success )
     {
-        LOG( ERROR ) << "setPlaybackVolume failed to set volume '" << volume
-                     << "' for device '"
-                     << pulseAudioData.defaultSinkOutputDeviceId << "'.";
+        qCritical() << "setPlaybackVolume failed to set volume '" << volume
+                    << "' for device '"
+                    << pulseAudioData.defaultSinkOutputDeviceId << "'.";
     }
 
-    LOG( DEBUG ) << "setPlaybackVolume done with 'success': " << success;
+    qDebug() << "setPlaybackVolume done with 'success': " << success;
 
     return success;
 }
 
 bool setMicrophoneVolume( const float volume )
 {
-    LOG( DEBUG ) << "setMicrophoneVolume called with 'volume': " << volume;
+    qDebug() << "setMicrophoneVolume called with 'volume': " << volume;
 
     updateAllPulseData();
 
@@ -558,19 +559,19 @@ bool setMicrophoneVolume( const float volume )
 
     if ( !success )
     {
-        LOG( ERROR ) << "seMicrophoneVolume failed to set volume '" << volume
-                     << "' for device '"
-                     << pulseAudioData.defaultSourceInputDeviceId << "'.";
+        qCritical() << "seMicrophoneVolume failed to set volume '" << volume
+                    << "' for device '"
+                    << pulseAudioData.defaultSourceInputDeviceId << "'.";
     }
 
-    LOG( DEBUG ) << "setMicrophoneVolume done with 'success': " << success;
+    qDebug() << "setMicrophoneVolume done with 'success': " << success;
 
     return success;
 }
 
 bool setMicMuteState( const bool muted )
 {
-    LOG( DEBUG ) << "setMicMuteState called with 'muted': " << muted;
+    qDebug() << "setMicMuteState called with 'muted': " << muted;
     bool success = false;
 
     pa_context_set_source_mute_by_name(
@@ -584,19 +585,19 @@ bool setMicMuteState( const bool muted )
 
     if ( !success )
     {
-        LOG( ERROR ) << "setMicMuteState failed to set muted '" << muted
-                     << "' for device '"
-                     << pulseAudioData.defaultSourceInputDeviceId << "'.";
+        qCritical() << "setMicMuteState failed to set muted '" << muted
+                    << "' for device '"
+                    << pulseAudioData.defaultSourceInputDeviceId << "'.";
     }
 
-    LOG( DEBUG ) << "setMicMuteState done with 'success': " << success;
+    qDebug() << "setMicMuteState done with 'success': " << success;
 
     return success;
 }
 
 void restorePulseAudioState()
 {
-    LOG( DEBUG ) << "restorePulseAudioState called.";
+    qDebug() << "restorePulseAudioState called.";
 
     setPlaybackDeviceInternal( pulseAudioData.originalDefaultOutputDeviceId );
     setPlaybackVolume( pulseAudioData.originalDefaultOutputDeviceVolume );
@@ -604,12 +605,12 @@ void restorePulseAudioState()
     setMicrophoneDevice( pulseAudioData.originalDefaultInputDeviceId );
     setMicrophoneVolume( pulseAudioData.originalDefaultInputDeviceVolume );
 
-    LOG( DEBUG ) << "restorePulseAudioState done.";
+    qDebug() << "restorePulseAudioState done.";
 }
 
 void initializePulseAudio()
 {
-    LOG( DEBUG ) << "initializePulseAudio called.";
+    qDebug() << "initializePulseAudio called.";
 
     pulseAudioPointers.mainLoop = pa_mainloop_new();
 
@@ -644,6 +645,6 @@ void initializePulseAudio()
         = static_cast<float>( pa_sw_volume_to_linear(
             pa_cvolume_avg( &pulseAudioData.currentDefaultSinkInfo.volume ) ) );
 
-    LOG( DEBUG ) << "initializePulseAudio finished.";
+    qDebug() << "initializePulseAudio finished.";
 }
 } // namespace advsettings

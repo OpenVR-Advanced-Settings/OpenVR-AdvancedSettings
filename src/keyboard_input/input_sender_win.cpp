@@ -2,6 +2,8 @@
 #include <vector>
 #include <Windows.h>
 #include <cctype>
+#include <QtLogging>
+#include <QtDebug>
 
 WORD convertToVirtualKeycode( const Token token )
 {
@@ -183,13 +185,13 @@ void sendKeyboardInputRaw( std::vector<INPUT> inputs )
                              0,
                              nullptr ) )
         {
-            LOG( ERROR )
+            qCritical()
                 << "Error calling SendInput(): Could not get error message ("
                 << errCode << ")";
         }
         else
         {
-            LOG( ERROR ) << "Error calling SendInput(): " << err;
+            qCritical() << "Error calling SendInput(): " << err;
         }
     }
 }

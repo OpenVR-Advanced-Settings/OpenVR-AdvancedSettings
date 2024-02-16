@@ -3,7 +3,8 @@
 #include <QCoreApplication>
 #include <QString>
 #include <QFileInfo>
-#include <easylogging++.h>
+#include <QtLogging>
+#include <QtDebug>
 #include <QDir>
 
 namespace paths
@@ -14,7 +15,7 @@ optional<string> binaryDirectory()
 
     if ( path == "" )
     {
-        LOG( ERROR ) << "Could not find binary directory.";
+        qCritical() << "Could not find binary directory.";
         return std::nullopt;
     }
 
@@ -36,8 +37,8 @@ optional<string> binaryDirectoryFindFile( const string fileName )
 
     if ( !file.exists() )
     {
-        LOG( ERROR ) << "Could not find file '" << fileName.c_str()
-                     << "' in binary directory.";
+        qCritical() << "Could not find file '" << fileName.c_str()
+                    << "' in binary directory.";
         return std::nullopt;
     }
 
@@ -50,7 +51,7 @@ optional<string> settingsDirectory()
         = QStandardPaths::writableLocation( QStandardPaths::AppDataLocation );
     if ( path == "" )
     {
-        LOG( ERROR ) << "Could not find settings directory.";
+        qCritical() << "Could not find settings directory.";
         return std::nullopt;
     }
 
@@ -62,7 +63,7 @@ std::optional<std::string> verifyIconFilePath( std::string filename )
     const auto notifIconPath = paths::binaryDirectoryFindFile( filename );
     if ( !notifIconPath.has_value() )
     {
-        LOG( ERROR ) << "Could not find icon \"" << filename << "\"";
+        qCritical() << "Could not find icon \"" << filename << "\"";
     }
 
     return notifIconPath;

@@ -1,4 +1,7 @@
 #include "lh_console_util.h"
+#include <QtLogging>
+#include <QtDebug>
+#include <QRegularExpression>
 
 namespace lh_con_util
 {
@@ -6,12 +9,12 @@ bool LHCUtil::FindAll()
 {
     if ( !FindAllRX() )
     {
-        LOG( ERROR ) << "Find All Recievers Failed";
+        qCritical() << "Find All Recievers Failed";
         return false;
     }
     if ( !FindAllTX() )
     {
-        LOG( ERROR ) << "Find All Transmitters Failed";
+        qCritical() << "Find All Transmitters Failed";
         return false;
     }
     return true;
@@ -26,7 +29,7 @@ bool LHCUtil::FindAllRX()
 
     QString output = QString( lhProcess->readAllStandardOutput() );
     QStringList outputLines
-        = output.split( QRegExp( "[\r\n]" ), QString::SkipEmptyParts );
+        = output.split( QRegularExpression( "[\r\n]" ), Qt::SkipEmptyParts );
     bool RecieverStart = false;
 
     for ( auto OutputLine : outputLines )
@@ -44,7 +47,7 @@ bool LHCUtil::FindAllRX()
             }
             OutputLine.simplified().remove( " " );
             OutputLine.remove( 0, 1 );
-            // LOG( WARNING ) << OutputLine << std::endl;
+            //  qWarning()  << OutputLine << std::endl;
             RXTX_Pairs_.push_back( RXTX_Pair{ OutputLine, " ", true, false } );
         }
     }
@@ -53,21 +56,21 @@ bool LHCUtil::FindAllRX()
 
 bool LHCUtil::FindConnectedTX( QString RXSerial )
 {
-    LOG( WARNING ) << RXSerial;
+    qWarning() << RXSerial;
     QProcess* lhProcess = new QProcess();
     lhProcess->start( path_, QStringList() << "/serial" << RXSerial << "exit" );
     lhProcess->waitForFinished();
 
     QString output = QString( lhProcess->readAllStandardOutput() );
     QStringList outputLines
-        = output.split( QRegExp( "[\r\n]" ), QString::SkipEmptyParts );
+        = output.split( QRegularExpression( "[\r\n]" ), Qt::SkipEmptyParts );
     // std::vector<std::string> OutputLines
     //   = exec( ( "\"" + path_ + "\" /serial " + RXSerial + " exit" ).c_str()
     //   );
     bool lhConFound = false;
     for ( auto outputLine : outputLines )
     {
-        // LOG( WARNING ) << outputLine;
+        //  qWarning()  << outputLine;
         if ( outputLine.contains( "Connected to receiver" ) )
         {
             auto splitList = outputLine.split( ":" );
@@ -84,7 +87,7 @@ bool LHCUtil::FindConnectedTX( QString RXSerial )
                     rxtx.TX_Serial = TXSerial;
                     rxtx.Is_Paired = true;
                     rxtx.Is_Init = true;
-                    LOG( WARNING )
+                    qWarning()
                         << "tx serial stored: " << TXSerial.toStdString();
                     return true;
                 }
@@ -102,7 +105,7 @@ bool LHCUtil::FindConnectedTX( QString RXSerial )
                 rxtx.TX_Serial = "";
                 rxtx.Is_Paired = false;
                 rxtx.Is_Init = true;
-                LOG( WARNING ) << "tx oops";
+                qWarning() << "tx oops";
                 return true;
             }
         }
