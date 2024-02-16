@@ -22,8 +22,8 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QQuickRenderTarget>
 #include <memory>
-#include <easylogging++.h>
 
 #include "openvr/openvr_init.h"
 
@@ -109,6 +109,7 @@ private:
     QQuickRenderControl m_renderControl;
     QQuickWindow m_window{ &m_renderControl };
     std::unique_ptr<QOpenGLFramebufferObject> m_pFbo;
+    QQuickRenderTarget m_pRenderTarget;
     QOpenGLContext m_openGLContext;
     QOffscreenSurface m_offscreenSurface;
 
@@ -117,7 +118,7 @@ private:
     bool m_dashboardVisible = false;
 
     QPoint m_ptLastMouse;
-    Qt::MouseButtons m_lastMouseButtons = nullptr;
+    Qt::MouseButtons m_lastMouseButtons;
 
     bool m_desktopMode;
     bool m_noSound;

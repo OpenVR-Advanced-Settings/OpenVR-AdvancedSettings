@@ -1,6 +1,10 @@
 #include "utils/setup.h"
 #include "settings/settings.h"
 #include "openvr/ovr_settings_wrapper.h"
+
+#include <QtLogging>
+#include <QtDebug>
+
 #ifdef _WIN64
 #    include <windows.h>
 extern "C" __declspec( dllexport ) DWORD NvOptimusEnablement = 0x00000001;
@@ -8,16 +12,13 @@ extern "C" __declspec( dllexport ) DWORD AmdPowerXpressRequestHighPerformance
     = 0x00000001;
 #endif
 
-INITIALIZE_EASYLOGGINGPP
-
 int main( int argc, char* argv[] )
 {
     setUpLogging();
 
-    LOG( INFO ) << "Settings File: "
-                << settings::initializeAndGetSettingsPath();
+    qInfo() << "Settings File: " << settings::initializeAndGetSettingsPath();
 
-    LOG( INFO ) << settings::getSettingsAndValues();
+    qInfo() << settings::getSettingsAndValues();
 
     QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
     QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
@@ -29,8 +30,6 @@ int main( int argc, char* argv[] )
         application_strings::applicationDisplayName );
     mainEventLoop.setApplicationVersion(
         application_strings::applicationVersionString );
-
-    qInstallMessageHandler( mainQtMessageHandler );
 
     const auto commandLineArgs
         = argument::returnCommandLineParser( mainEventLoop );
@@ -60,7 +59,7 @@ int main( int argc, char* argv[] )
 
         if ( !path.has_value() )
         {
-            LOG( ERROR ) << "Unable to find file '" << widgetPath << "'.";
+            qCritical() << "Unable to find file '" << widgetPath << "'.";
             throw std::runtime_error(
                 "Unable to find critical file. See log for more information." );
         }
@@ -72,8 +71,8 @@ int main( int argc, char* argv[] )
         auto errors = component.errors();
         for ( auto& e : errors )
         {
-            LOG( ERROR ) << "QML Error: " << e.toString().toStdString()
-                         << std::endl;
+            qCritical() << "QML Error: "
+                        << e.toString().toStdString(); //<< std::endl;
         }
         auto quickObj = component.create();
         controller.SetWidget( qobject_cast<QQuickItem*>( quickObj ),
@@ -99,7 +98,7 @@ int main( int argc, char* argv[] )
             }
             catch ( std::exception& e )
             {
-                LOG( ERROR ) << e.what();
+                qCritical() << e.what();
             }
         }
 
@@ -129,7 +128,7 @@ int main( int argc, char* argv[] )
     }
     catch ( const std::exception& e )
     {
-        LOG( FATAL ) << e.what();
+        qFatal() << e.what();
         return ReturnErrorCode::GENERAL_FAILURE;
     }
 }

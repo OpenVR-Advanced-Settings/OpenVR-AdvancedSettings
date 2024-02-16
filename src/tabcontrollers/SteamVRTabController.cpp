@@ -1,5 +1,7 @@
 #include "SteamVRTabController.h"
 #include <QQuickWindow>
+#include <QtLogging>
+#include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../utils/update_rate.h"
 #include <QDesktopServices>
@@ -504,7 +506,7 @@ void SteamVRTabController::launchBindingUI()
                                                        &inputHandle );
     if ( error2 != vr::VRInputError_None )
     {
-        LOG( ERROR )
+        qCritical()
             << "failed to get input handle? is your right controller on?";
     }
     if ( parent->isDesktopMode() )
@@ -517,7 +519,7 @@ void SteamVRTabController::launchBindingUI()
         application_strings::applicationKey, actionHandle, inputHandle, false );
     if ( error != vr::VRInputError_None )
     {
-        LOG( ERROR ) << "Input Error: " << error;
+        qCritical() << "Input Error: " << error;
     }
 }
 void SteamVRTabController::restartSteamVR()
@@ -525,7 +527,7 @@ void SteamVRTabController::restartSteamVR()
     QString cmd = QString( "cmd.exe /C restartvrserver.bat \"" )
                   + parent->getVRRuntimePathUrl().toLocalFile()
                   + QString( "\"" );
-    LOG( INFO ) << "SteamVR Restart Command: " << cmd;
+    qInfo() << "SteamVR Restart Command: " << cmd;
     QProcess::startDetached( cmd );
 }
 
@@ -561,8 +563,8 @@ Q_INVOKABLE void SteamVRTabController::pairDevice( QString sn )
 {
     if ( !isSteamVRTracked( sn ) )
     {
-        LOG( WARNING ) << sn.toStdString()
-                       << " Is Not a SteamVR Dongle, skipping Pair";
+        qWarning() << sn.toStdString()
+                   << " Is Not a SteamVR Dongle, skipping Pair";
         return;
     }
     m_last_pair_sn = sn;
@@ -603,26 +605,26 @@ void SteamVRTabController::onConnected()
     emit pairStatusChanged( QString( "Pairing..." ) );
     if ( m_last_pair_sn == "" )
     {
-        LOG( ERROR ) << "No Last SN to pair, this shouldn't happen";
+        qCritical() << "No Last SN to pair, this shouldn't happen";
     }
     m_webSocket.sendTextMessage( messageout );
     // m_webSocket.close();
 }
 void SteamVRTabController::onDisconnect()
 {
-    LOG( INFO ) << "Pair WS disconnect";
+    qInfo() << "Pair WS disconnect";
     m_webSocket.close();
 }
 void SteamVRTabController::onMsgRec( QString Msg )
 {
     if ( Msg.contains( "success" ) )
     {
-        LOG( INFO ) << "Pair Success";
+        qInfo() << "Pair Success";
         emit pairStatusChanged( QString( "Success" ) );
     }
     if ( Msg.contains( "timeout" ) )
     {
-        LOG( INFO ) << "Pair Timeout";
+        qInfo() << "Pair Timeout";
         emit pairStatusChanged( QString( "Timeout" ) );
     }
     m_webSocket.close();
@@ -691,15 +693,15 @@ void SteamVRTabController::onGetBindingUrlResponse( QNetworkReply* reply )
     std::string controllerName = ovr_system_wrapper::getControllerName();
     if ( controllerName == "" )
     {
-        LOG( WARNING ) << "No Controller Detected Skipping Bindings";
+        qWarning() << "No Controller Detected Skipping Bindings";
         return;
     }
     json jsonfull = json::parse( data.toStdString() );
-    //    LOG( INFO ) << "URL RESPOSNE XXXXXXX";
-    //    LOG( INFO ) << jsonfull.dump().c_str();
+    //     qInfo () << "URL RESPOSNE XXXXXXX";
+    //     qInfo () << jsonfull.dump().c_str();
     std::string filepath
         = jsonfull["current_binding_url"][controllerName].get<std::string>();
-    LOG( INFO ) << "binding url at " << filepath;
+    qInfo() << "binding url at " << filepath;
     // TODO perhaps some form of error checking if packet wrong?
     reply->close();
     getBindingDataReq( filepath, m_lastAppID, controllerName );
@@ -738,24 +740,24 @@ void SteamVRTabController::onGetBindingDataResponse( QNetworkReply* reply )
     {
         return;
     }
-    //    LOG( WARNING ) << "DATA RESPONSE";
-    //    LOG( WARNING ) << data.toStdString();
+    //     qWarning () << "DATA RESPONSE";
+    //     qWarning () << data.toStdString();
     json jsonfull = json::parse( data.toStdString() );
     if ( !jsonfull.contains( "success" ) )
     {
-        LOG( ERROR ) << "Binding Data Packet Mal-Formed?";
+        qCritical() << "Binding Data Packet Mal-Formed?";
     }
     if ( !jsonfull["success"].get<bool>() )
     {
         // TODO better error handling?
-        LOG( ERROR ) << "Binding Data Request Failed";
+        qCritical() << "Binding Data Request Failed";
     }
     reply->close();
     output = jsonfull["binding_config"];
     std::string sceneAppID = ovr_application_wrapper::getSceneAppID();
     if ( sceneAppID == "error" )
     {
-        LOG( ERROR ) << "aborting bind save, could not find scene app ID";
+        qCritical() << "aborting bind save, could not find scene app ID";
         return;
     }
     std::string ctrl = ovr_system_wrapper::getControllerName();
@@ -795,11 +797,11 @@ bool SteamVRTabController::saveBind( std::string appID,
     bindFile.close();
     if ( bindFile.exists() )
     {
-        LOG( INFO ) << ( def ? "Default " : ( sceneAppID + " " ) )
-                           + "Binding File saved at:"
-                    << absPath.toStdString();
+        qInfo() << ( def ? "Default " : ( sceneAppID + " " ) )
+                       + "Binding File saved at:"
+                << absPath.toStdString();
         std::string jsonstring = binds.dump().c_str();
-        LOG( INFO ) << jsonstring;
+        qInfo() << jsonstring;
         return true;
     }
     return false;
@@ -861,7 +863,7 @@ void SteamVRTabController::applyBindingReq( std::string appID )
     std::string sceneAppID = ovr_application_wrapper::getSceneAppID();
     if ( sceneAppID == "" )
     {
-        LOG( ERROR ) << "NO Scene App Detected unable to apply bindings";
+        qCritical() << "NO Scene App Detected unable to apply bindings";
         return;
     }
 
@@ -870,14 +872,14 @@ void SteamVRTabController::applyBindingReq( std::string appID )
                                  + ctrlType + ".json" );
     if ( !QFileInfo::exists( fi.absolutePath() + QString( "/" ) + Fn ) )
     {
-        LOG( INFO ) << "No Specific Binding Detected for: " + appID
-                           + "for Scene: " + sceneAppID + " Checking Default";
+        qInfo() << "No Specific Binding Detected for: " + appID
+                       + "for Scene: " + sceneAppID + " Checking Default";
         Fn = QString::fromStdString( "defovl" + appID + "ctrl" + ctrlType
                                      + ".json" );
         if ( !QFileInfo::exists( fi.absolutePath() + QString( "/" ) + Fn ) )
         {
-            LOG( INFO ) << "No Def Binding Detected for: " + appID
-                               + " Not Adjusting Bindings";
+            qInfo() << "No Def Binding Detected for: " + appID
+                           + " Not Adjusting Bindings";
             return;
         }
     }
@@ -886,14 +888,13 @@ void SteamVRTabController::applyBindingReq( std::string appID )
     QUrl urlized = QUrl::fromLocalFile( absPath );
     // std::string filePath = "file:///" + absPath.toStdString();
     std::string url = "http://localhost:27062/input/selectconfig.action";
-    // LOG( INFO ) << urlized.toEncoded().toStdString();
+    //  qInfo () << urlized.toEncoded().toStdString();
     QUrl urls = QUrl( url.c_str() );
     QNetworkRequest request;
     request.setUrl( urls );
-    LOG( INFO ) << "Attempting to Apply Binding at: "
-                << urlized
-                       .toEncoded( QUrl::EncodeSpaces | QUrl::EncodeReserved )
-                       .toStdString();
+    qInfo() << "Attempting to Apply Binding at: "
+            << urlized.toEncoded( QUrl::EncodeSpaces | QUrl::EncodeReserved )
+                   .toStdString();
     // This is Important as otherwise Valve's VRWebServerWillIgnore the Request
     // If referrer is wrong
     request.setHeader( QNetworkRequest::ContentTypeHeader,
@@ -909,8 +910,8 @@ void SteamVRTabController::applyBindingReq( std::string appID )
                   .toStdString()
             + "\"}" )
               .c_str();
-    //    LOG( INFO ) << "Sending Binding Set Request";
-    //    LOG( INFO ) << data.toStdString();
+    //     qInfo () << "Sending Binding Set Request";
+    //     qInfo () << data.toStdString();
     connect( &m_networkManagerApply,
              SIGNAL( finished( QNetworkReply* ) ),
              this,
@@ -926,21 +927,21 @@ void SteamVRTabController::onApplyBindingResponse( QNetworkReply* reply )
     {
         return;
     }
-    //    LOG( INFO ) << "APPLY RESPONSE";
-    //    LOG( INFO ) << data.toStdString();
+    //     qInfo () << "APPLY RESPONSE";
+    //     qInfo () << data.toStdString();
     reply->close();
     json jsonfull = json::parse( data.toStdString() );
     if ( !jsonfull.contains( "success" ) )
     {
-        LOG( ERROR ) << "Apply Binding Packet Mal-Formed?";
+        qCritical() << "Apply Binding Packet Mal-Formed?";
         return;
     }
     if ( !jsonfull["success"].get<bool>() )
     {
         // TODO better error handling?
-        LOG( ERROR ) << "Binding Failed To Apply";
+        qCritical() << "Binding Failed To Apply";
     }
-    LOG( INFO ) << "New Binding Applied";
+    qInfo() << "New Binding Applied";
     return;
 }
 
