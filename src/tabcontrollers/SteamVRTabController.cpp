@@ -41,6 +41,8 @@ void SteamVRTabController::synchSteamVR()
     setCameraActive( cameraActive() );
     setCameraCont( cameraCont() );
     setCameraBounds( cameraBounds() );
+    setControllerPower( controllerPower() );
+    setNoHMD( noHMD() );
 }
 
 bool SteamVRTabController::performanceGraph() const
@@ -67,6 +69,33 @@ void SteamVRTabController::setPerformanceGraph( const bool value,
         if ( notify )
         {
             emit performanceGraphChanged( m_performanceGraphToggle );
+        }
+    }
+}
+
+bool SteamVRTabController::noHMD() const
+{
+    auto p = ovr_settings_wrapper::getBool(
+        vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RequireHmd_String );
+
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
+    return m_noHMD;
+}
+
+void SteamVRTabController::setNoHMD( const bool value, const bool notify )
+{
+    if ( m_noHMD != value )
+    {
+        m_noHMD = value;
+        ovr_settings_wrapper::setBool( vr::k_pch_SteamVR_Section,
+                                       vr::k_pch_SteamVR_RequireHmd_String,
+                                       m_noHMD );
+        if ( notify )
+        {
+            emit noHMDChanged( m_noHMD );
         }
     }
 }
@@ -125,6 +154,35 @@ void SteamVRTabController::setNoFadeToGrid( const bool value,
         if ( notify )
         {
             emit noFadeToGridChanged( m_noFadeToGridToggle );
+        }
+    }
+}
+
+bool SteamVRTabController::controllerPower() const
+{
+    auto p = ovr_settings_wrapper::getBool(
+        vr::k_pch_Power_Section,
+        vr::k_pch_Power_AutoLaunchSteamVROnButtonPress );
+    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    {
+        return p.second;
+    }
+    return m_controllerPower;
+}
+
+void SteamVRTabController::setControllerPower( const bool value,
+                                               const bool notify )
+{
+    if ( m_controllerPower != value )
+    {
+        m_controllerPower = value;
+        ovr_settings_wrapper::setBool(
+            vr::k_pch_Power_Section,
+            vr::k_pch_Power_AutoLaunchSteamVROnButtonPress,
+            m_controllerPower );
+        if ( notify )
+        {
+            emit controllerPowerChanged( m_controllerPower );
         }
     }
 }

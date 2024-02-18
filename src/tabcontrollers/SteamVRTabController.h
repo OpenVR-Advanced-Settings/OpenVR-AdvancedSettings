@@ -65,6 +65,9 @@ class SteamVRTabController : public QObject
                     cameraContChanged )
     Q_PROPERTY( bool perAppBindEnabled READ perAppBindEnabled WRITE
                     setPerAppBindEnabled NOTIFY perAppBindEnabledChanged )
+    Q_PROPERTY( bool controllerPower READ controllerPower WRITE
+                    setControllerPower NOTIFY controllerPowerChanged )
+    Q_PROPERTY( bool noHMD READ noHMD WRITE setNoHMD NOTIFY noHMDChanged )
 
 private:
     OverlayController* parent;
@@ -74,6 +77,8 @@ private:
     bool m_noFadeToGridToggle = false;
     bool m_multipleDriverToggle = false;
     bool m_dnd = false;
+    bool m_controllerPower = false;
+    bool m_noHMD = false;
     QNetworkAccessManager m_networkManagerApply;
     QNetworkAccessManager m_networkManagerUrl;
     QNetworkAccessManager m_networkManagerBind;
@@ -112,6 +117,8 @@ public:
     bool multipleDriver() const;
     bool systemButton() const;
     bool dnd() const;
+    bool controllerPower() const;
+    bool noHMD() const;
 
     bool cameraActive() const;
     bool cameraBounds() const;
@@ -163,6 +170,8 @@ public slots:
     void setNoFadeToGrid( bool value, bool notify = true );
     void setMultipleDriver( bool value, bool notify = true );
     void setDND( bool value, bool notify = true );
+    void setControllerPower( bool value, bool notify = true );
+    void setNoHMD( bool value, bool notify = true );
 
     void setCameraActive( bool value, bool notify = true );
     void setCameraBounds( bool value, bool notify = true );
@@ -182,6 +191,8 @@ signals:
     void systemButtonChanged( bool value );
     void noFadeToGridChanged( bool value );
     void dNDChanged( bool value );
+    void controllerPowerChanged( bool value );
+    void noHMDChanged( bool value );
 
     void cameraActiveChanged( bool value );
     void cameraBoundsChanged( bool value );

@@ -35,7 +35,7 @@ GroupBox {
             MyToggleButton {
                 id: steamvrPerformanceGraphToggle
                 text: "Enable Timing Overlay"
-                Layout.preferredWidth: 400
+                Layout.preferredWidth: 300
                 onCheckedChanged: {
                     SteamVRTabController.setPerformanceGraph(this.checked, false)
                 }
@@ -44,32 +44,18 @@ GroupBox {
                 Layout.preferredWidth: 20
                 text: " "
             }
-
             MyToggleButton {
-                id: steamvrSystemButtonToggle
-                Layout.fillWidth: true
-                text: "Enable System Button Binding"
+                id: steamvrNoHMDToggle
+                text: "Require HMD"
+                Layout.preferredWidth: 300
                 onCheckedChanged: {
-                    SteamVRTabController.setSystemButton(this.checked, false)
-                }
-            }
-        }
-        RowLayout {
-            spacing: 16
-
-            MyToggleButton {
-                id: steamvrMultipleDriverToggle
-                Layout.preferredWidth: 400
-                text: "Allow Multiple Drivers"
-                onCheckedChanged: {
-                    SteamVRTabController.setMultipleDriver(this.checked, false)
+                    SteamVRTabController.noHMD(this.checked, false)
                 }
             }
             MyText {
                 Layout.preferredWidth: 20
                 text: " "
             }
-
             MyToggleButton {
                 id: steamvrNoFadeToGridToggle
                 Layout.fillWidth: true
@@ -79,6 +65,31 @@ GroupBox {
                 }
             }
         }
+        RowLayout {
+            spacing: 16
+
+            MyToggleButton {
+                id: steamvrMultipleDriverToggle
+                Layout.preferredWidth: 300
+                text: "Allow Multiple Drivers"
+                onCheckedChanged: {
+                    SteamVRTabController.setMultipleDriver(this.checked, false)
+                }
+            }
+            MyText {
+                Layout.preferredWidth: 20
+                text: " "
+            }
+            MyToggleButton {
+                id: steamvrSystemButtonToggle
+                Layout.fillWidth: true
+                text: "Enable System Button Binding"
+                onCheckedChanged: {
+                    SteamVRTabController.setSystemButton(this.checked, false)
+                }
+            }
+
+        }
 
         RowLayout {
             spacing: 16
@@ -86,7 +97,7 @@ GroupBox {
             MyToggleButton {
                 id: steamvrNotificationToggle
                 text: "Disable Notifications"
-                 Layout.preferredWidth: 400
+                 Layout.preferredWidth: 300
                 onCheckedChanged: {
                     SteamVRTabController.setDND(this.checked, false)
                 }
@@ -94,6 +105,14 @@ GroupBox {
             MyText {
                 Layout.preferredWidth: 20
                 text: " "
+            }
+            MyToggleButton {
+                id: steamvrControllerPowerToggle
+                Layout.fillWidth: true
+                text: "Controller Power Turns on SteamVR"
+                onCheckedChanged: {
+                    SteamVRTabController.setControllerPower(this.checked, false)
+                }
             }
 
         }
@@ -106,6 +125,8 @@ GroupBox {
         steamvrMultipleDriverToggle.checked = SteamVRTabController.multipleDriver
         steamvrNoFadeToGridToggle.checked = SteamVRTabController.noFadeToGrid
         steamvrNotificationToggle.checked = SteamVRTabController.dnd
+        steamvrControllerPowerToggle.checked = SteamVRTabController.controllerPower
+        steamvrNoHMDToggle.checked = SteamVRTabController.noHMD
     }
 
     Connections {
@@ -124,6 +145,12 @@ GroupBox {
         }
         onDNDChanged:{
             steamvrNotificationToggle.checked = SteamVRTabController.dnd
+        }
+        onNoHMDChanged:{
+            steamvrNoHMDToggle.checked = SteamVRTabController.noHMD
+        }
+        onControllerPowerChanged:{
+            steamvrControllerPowerToggle.checked = SteamVRTabController.controllerPower
         }
 
     }
