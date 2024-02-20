@@ -298,6 +298,10 @@ void UtilitiesTabController::destroyBatteryOverlays()
 {
     for ( auto& el : m_batteryOverlayHandles )
     {
+        if ( el == 0 )
+        {
+            continue;
+        }
         auto err = vr::VROverlay()->DestroyOverlay( el );
         el = 0;
         if ( err != vr::VROverlayError_None )
