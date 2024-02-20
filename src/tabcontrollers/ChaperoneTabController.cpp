@@ -128,7 +128,8 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
                 }
                 m_chaperoneHapticFeedbackActive = true;
                 m_chaperoneHapticFeedbackThread = std::thread(
-                    [&]( ChaperoneTabController* _this ) {
+                    [&]( ChaperoneTabController* _this )
+                    {
                         auto leftIndex
                             = vr::VRSystem()
                                   ->GetTrackedDeviceIndexForControllerRole(

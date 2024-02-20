@@ -527,8 +527,11 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         if ( chapindex.first )
         {
             m_chaperoneTabController.applyChaperoneProfile( chapindex.second );
-            vr::VRApplications()->CancelApplicationLaunch(
+            bool success = vr::VRApplications()->CancelApplicationLaunch(
                 "openvr.tool.steamvr_room_setup" );
+            auto successsstr = success ? "true" : "false";
+
+            LOG( INFO ) << "Attempted to stop roomsetup: " << successsstr;
             if ( vr::VRApplications()->GetApplicationProcessId(
                      "openvr.tool.steamvr_room_setup" )
                  != 0 )

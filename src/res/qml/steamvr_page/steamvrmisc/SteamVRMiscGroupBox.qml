@@ -49,7 +49,7 @@ GroupBox {
                 text: "Require HMD"
                 Layout.preferredWidth: 300
                 onCheckedChanged: {
-                    SteamVRTabController.noHMD(this.checked, false)
+                    SteamVRTabController.setNoHMD(this.checked, false)
                 }
             }
             MyText {

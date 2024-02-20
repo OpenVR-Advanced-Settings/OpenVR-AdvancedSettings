@@ -899,10 +899,12 @@ void MoveCenterTabController::modOffsetZ( float value, bool notify )
 
 void MoveCenterTabController::shutdown()
 {
-    vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
-    // reset();
-    //  vr::VRChaperoneSetup()->HideWorkingSetPreview();
-    // vr::VRChaperoneSetup()->RevertWorkingCopy();
+    // vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live
+    // );
+    //  vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
+    //   reset();
+    //    vr::VRChaperoneSetup()->HideWorkingSetPreview();
+    vr::VRChaperoneSetup()->RevertWorkingCopy();
 }
 
 void MoveCenterTabController::incomingSeatedReset()
@@ -1075,11 +1077,11 @@ void MoveCenterTabController::zeroOffsets()
     //                == vr::ChaperoneCalibrationState_Error_PlayAreaInvalid
     //         || m_ignoreChaperoneState )
     //{
-    if ( !m_chaperoneInit )
-    {
-        m_chaperoneInit = true;
-        LOG( INFO ) << "Chaperone Initially Calibrated";
-    }
+    //    if ( !m_chaperoneInit )
+    //    {
+    //        m_chaperoneInit = true;
+    //        LOG( INFO ) << "Chaperone Initially Calibrated";
+    //    }
     //    if ( chaperoneState > vr::ChaperoneCalibrationState_OK )
     //    {
     //        LOG( WARNING ) << "Chaperone Cal State Is warning during zero
