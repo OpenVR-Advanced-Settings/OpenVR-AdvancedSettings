@@ -128,15 +128,9 @@ class MoveCenterTabController : public QObject
             setShowLogMatricesButton NOTIFY showLogMatricesButtonChanged )
     Q_PROPERTY( bool allowExternalEdits READ allowExternalEdits WRITE
                     setAllowExternalEdits NOTIFY allowExternalEditsChanged )
-    //    Q_PROPERTY( bool oldStyleMotion READ oldStyleMotion WRITE
-    //    setOldStyleMotion
-    //                    NOTIFY oldStyleMotionChanged )
     Q_PROPERTY(
         bool universeCenteredRotation READ universeCenteredRotation WRITE
             setUniverseCenteredRotation NOTIFY universeCenteredRotationChanged )
-    //    Q_PROPERTY( bool simpleRecenter READ simpleRecenter WRITE
-    //    setSimpleRecenter
-    //                    NOTIFY simpleRecenterChanged )
     Q_PROPERTY(
         float dragMult READ dragMult WRITE setDragMult NOTIFY dragMultChanged )
 
@@ -195,7 +189,6 @@ private:
     bool m_swapDragToRightHandActivated = false;
     bool m_gravityActive = false;
     bool m_gravityReversed = false;
-    // bool m_chaperoneCommitted = true;
     bool m_pendingZeroOffsets = true;
     bool m_pendingSeatedRecenter = false;
     bool m_selfRequestedSeatedRecenter = false;
@@ -206,8 +199,6 @@ private:
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
     unsigned m_turnComfortFrameSkipCounter = 0;
-
-    // bool m_chaperoneInit = true;
 
     // Matrix used For Center Marker
     vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
@@ -355,9 +346,7 @@ public slots:
     void setLockZ( bool value, bool notify = true );
     void setShowLogMatricesButton( bool value, bool notify = true );
     void setAllowExternalEdits( bool value, bool notify = true );
-    // void setOldStyleMotion( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
-    //    void setSimpleRecenter( bool value, bool notify = true );
 
     void shutdown();
     void reset();
@@ -400,10 +389,7 @@ signals:
     void requireLockZChanged( bool value );
     void showLogMatricesButtonChanged( bool value );
     void allowExternalEditsChanged( bool value );
-    // void oldStyleMotionChanged( bool value );
     void universeCenteredRotationChanged( bool value );
-    //    void simpleRecenterChanged( bool value );
-
     void offsetProfilesUpdated();
 };
 

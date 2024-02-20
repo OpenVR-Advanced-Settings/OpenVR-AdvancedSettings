@@ -1271,15 +1271,7 @@ void OverlayController::mainEventLoop()
 
             if ( !chaperoneDataAlreadyUpdated )
             {
-                // LOG(INFO) << "Re-loading chaperone data ...";
                 m_chaperoneUtils.loadChaperoneData();
-                // LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() <<
-                // " chaperone quads."; if
-                // (m_chaperoneUtils.isChaperoneWellFormed()) { LOG(INFO) <<
-                // "Chaperone data seems to be well-formed.";
-                //} else {
-                // LOG(INFO) << "Chaperone data is NOT well-formed.";
-                //}
                 chaperoneDataAlreadyUpdated = true;
             }
         }
@@ -1289,15 +1281,7 @@ void OverlayController::mainEventLoop()
         {
             if ( !chaperoneDataAlreadyUpdated )
             {
-                // LOG(INFO) << "Re-loading chaperone data ...";
                 m_chaperoneUtils.loadChaperoneData();
-                // LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() <<
-                // " chaperone quads."; if
-                // (m_chaperoneUtils.isChaperoneWellFormed()) { LOG(INFO) <<
-                // "Chaperone data seems to be well-formed.";
-                //} else {
-                // LOG(INFO) << "Chaperone data is NOT well-formed.";
-                //}
                 chaperoneDataAlreadyUpdated = true;
             }
         }
@@ -1349,20 +1333,6 @@ void OverlayController::mainEventLoop()
             = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
     }
     auto universe = vr::VRCompositor()->GetTrackingSpace();
-    // This Fix is hopefully temporary as OpenVR doesn't appear to have a way to
-    // tell if an application is OpenXR outside of VR_init which we don't have
-    // control over
-    /*
-    if ( vr::VRApplications()->GetApplicationProcessId(
-             "openvr.tool.steamvr_room_setup" )
-             == 0
-         && openXRFixEnabled() )
-    {
-        // OpenXR applications will appear as RawAndUncalibrated.
-        // Unless Room Setup is running, treat this case as Standing.
-        universe = vr::TrackingUniverseStanding;
-    }
-    */
     m_moveCenterTabController.eventLoopTick( universe, devicePoses );
     m_utilitiesTabController.eventLoopTick();
     m_statisticsTabController.eventLoopTick(

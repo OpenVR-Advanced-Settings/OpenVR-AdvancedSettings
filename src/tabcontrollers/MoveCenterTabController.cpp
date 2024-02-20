@@ -899,11 +899,6 @@ void MoveCenterTabController::modOffsetZ( float value, bool notify )
 
 void MoveCenterTabController::shutdown()
 {
-    // vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live
-    // );
-    //  vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
-    //   reset();
-    //    vr::VRChaperoneSetup()->HideWorkingSetPreview();
     vr::VRChaperoneSetup()->RevertWorkingCopy();
 }
 
@@ -1067,27 +1062,6 @@ void MoveCenterTabController::zeroOffsets()
             LOG( INFO ) << "-Resetting offsets-";
         }
     }
-
-    // finished checking if out of bounds, proceed with normal zeroing
-    // offsets
-    // auto chaperoneState = vr::VRChaperone()->GetCalibrationState();
-
-    //    if ( chaperoneState < vr::ChaperoneCalibrationState_Error
-    //         || chaperoneState
-    //                == vr::ChaperoneCalibrationState_Error_PlayAreaInvalid
-    //         || m_ignoreChaperoneState )
-    //{
-    //    if ( !m_chaperoneInit )
-    //    {
-    //        m_chaperoneInit = true;
-    //        LOG( INFO ) << "Chaperone Initially Calibrated";
-    //    }
-    //    if ( chaperoneState > vr::ChaperoneCalibrationState_OK )
-    //    {
-    //        LOG( WARNING ) << "Chaperone Cal State Is warning during zero
-    //        offsets: "
-    //                       << chaperoneState;
-    //    }
     m_oldOffsetX = 0.0f;
     m_oldOffsetY = 0.0f;
     m_oldOffsetZ = 0.0f;
@@ -1140,16 +1114,6 @@ void MoveCenterTabController::zeroOffsets()
     }
 
     LOG( INFO ) << "SUCCESS: Chaperone Data Updated and Offsets zeroed out";
-    //}
-    //    else
-    //    {
-    //        if ( !m_pendingZeroOffsets )
-    //        {
-    //            LOG( INFO ) << "PENDING: Chaperone Data Update and Offsets
-    //            zeroing";
-    //        }
-    //        m_pendingZeroOffsets = true;
-    //    }
 }
 
 void MoveCenterTabController::sendSeatedRecenter()
