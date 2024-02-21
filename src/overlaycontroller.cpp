@@ -472,8 +472,8 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             static_cast<int>( quickItem->height() ),
             fboFormat ) );
 
-        m_pRenderTarget = ( QQuickRenderTarget::fromOpenGLTexture(
-            m_pFbo->texture(), m_pFbo->size() ) );
+        m_pRenderTarget = QQuickRenderTarget::fromOpenGLTexture(
+            m_pFbo->texture(), m_pFbo->size() );
 
         m_window.setRenderTarget( m_pRenderTarget );
         quickItem->setParentItem( m_window.contentItem() );
@@ -481,7 +481,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                               0,
                               static_cast<int>( quickItem->width() ),
                               static_cast<int>( quickItem->height() ) );
-        m_renderControl.initialize( &m_openGLContext );
+        m_renderControl.initialize();
 
         vr::HmdVector2_t vecWindowSize
             = { static_cast<float>( quickItem->width() ),
@@ -598,14 +598,14 @@ bool OverlayController::pollNextEvent( vr::VROverlayHandle_t ulOverlayHandle,
     }
 }
 
-QPoint OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
+QPointF OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
 {
     float y = mouse.y;
 #ifdef __linux__
     float h = static_cast<float>( m_window.height() );
     y = h - y;
 #endif
-    return QPoint( static_cast<int>( mouse.x ), static_cast<int>( y ) );
+    return QPointF( mouse.x, y );
 }
 
 void OverlayController::processMediaKeyBindings()
@@ -1111,7 +1111,7 @@ void OverlayController::mainEventLoop()
         {
         case vr::VREvent_MouseMove:
         {
-            QPoint ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
+            QPointF ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
             if ( ptNewMouse != m_ptLastMouse )
             {
                 QMouseEvent mouseEvent( QEvent::MouseMove,
@@ -1119,6 +1119,7 @@ void OverlayController::mainEventLoop()
                                         m_window.mapToGlobal( ptNewMouse ),
                                         Qt::NoButton,
                                         m_lastMouseButtons,
+                                        Qt::KeyboardModifiers::fromInt( 0 ),
                                         nullptr );
                 m_ptLastMouse = ptNewMouse;
                 QCoreApplication::sendEvent( &m_window, &mouseEvent );
@@ -1129,7 +1130,7 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_MouseButtonDown:
         {
-            QPoint ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
+            QPointF ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
             Qt::MouseButton button
                 = vrEvent.data.mouse.button == vr::VRMouseButton_Right
                       ? Qt::RightButton
@@ -1140,6 +1141,7 @@ void OverlayController::mainEventLoop()
                                     m_window.mapToGlobal( ptNewMouse ),
                                     button,
                                     m_lastMouseButtons,
+                                    Qt::KeyboardModifiers::fromInt( 0 ),
                                     nullptr );
             QCoreApplication::sendEvent( &m_window, &mouseEvent );
         }
@@ -1147,7 +1149,7 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_MouseButtonUp:
         {
-            QPoint ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
+            QPointF ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
             Qt::MouseButton button
                 = vrEvent.data.mouse.button == vr::VRMouseButton_Right
                       ? Qt::RightButton
@@ -1158,6 +1160,7 @@ void OverlayController::mainEventLoop()
                                     m_window.mapToGlobal( ptNewMouse ),
                                     button,
                                     m_lastMouseButtons,
+                                    Qt::KeyboardModifiers::fromInt( 0 ),
                                     nullptr );
             QCoreApplication::sendEvent( &m_window, &mouseEvent );
         }
@@ -1174,10 +1177,10 @@ void OverlayController::mainEventLoop()
                                           * ( 360.0f * 8.0f ) ),
                         static_cast<int>( vrEvent.data.scroll.ydelta
                                           * ( 360.0f * 8.0f ) ) ),
-                0,
-                Qt::Vertical,
                 m_lastMouseButtons,
-                nullptr );
+                Qt::KeyboardModifiers::fromInt( 0 ),
+                Qt::ScrollPhase::NoScrollPhase,
+                false );
             QCoreApplication::sendEvent( &m_window, &wheelEvent );
         }
         break;
