@@ -63,6 +63,18 @@ target_compile_definitions(AdvancedSettings PRIVATE
     APPLICATION_VERSION=\"${PROJECT_VERSION}\"
 )
 
+find_library(OPENVR_LIBRARIES
+    NAMES
+      openvr_api
+    PATHS
+      ${CMAKE_CURRENT_SOURCE_DIR}/third-party/openvr/bin
+      ${CMAKE_CURRENT_SOURCE_DIR}/third-party/openvr/lib
+    PATH_SUFFIXES
+      linux64
+      win64
+    NO_DEFAULT_PATH
+    NO_CMAKE_FIND_ROOT_PATH)
+
 target_link_libraries(AdvancedSettings PRIVATE
     Qt::Core
     Qt::Gui
@@ -71,7 +83,7 @@ target_link_libraries(AdvancedSettings PRIVATE
     Qt::Quick
     Qt::WebSockets
     Qt::Widgets
-    openvr_api
+    ${OPENVR_LIBRARIES}
 )
 
 
@@ -318,13 +330,6 @@ if(WIN32)
     endif()
 endif()
 
-if(UNIX)
-    target_link_libraries(AdvancedSettings PRIVATE
-        # Remove: L"${CMAKE_CURRENT_SOURCE_DIR}/../..//third-party/openvr/lib/linux64"
-    )
-endif()
-
-
 if(GCC)
     target_compile_options(AdvancedSettings
         -Wcast-align
@@ -402,6 +407,7 @@ if(UNIX AND NOT MACOS)
 
         target_link_libraries(AdvancedSettings PRIVATE
             Xtst
+            X11
         )
     endif()
 
@@ -432,9 +438,7 @@ if(UNIX AND NOT MACOS)
             pulse
         )
     endif()
-endif()
-
-if(MACOS)
+elseif(MACOS)
     target_sources(AdvancedSettings PUBLIC
         src/keyboard_input/input_sender_dummy.cpp
         src/media_keys/media_keys_dummy.cpp

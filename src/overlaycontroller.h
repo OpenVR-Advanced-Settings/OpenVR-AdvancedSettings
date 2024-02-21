@@ -117,7 +117,7 @@ private:
     std::unique_ptr<QTimer> m_pRenderTimer;
     bool m_dashboardVisible = false;
 
-    QPoint m_ptLastMouse;
+    QPointF m_ptLastMouse;
     Qt::MouseButtons m_lastMouseButtons;
 
     bool m_desktopMode;
@@ -170,7 +170,7 @@ public: // I know it's an ugly hack to make them public to enable external
     bool m_incomingReset = false;
 
 private:
-    QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
+    QPointF getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
     void processInputBindings();
     void processMediaKeyBindings();
     void processMotionBindings();
