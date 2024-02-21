@@ -89,8 +89,6 @@ class MoveCenterTabController : public QObject
                     NOTIFY smoothTurnRateChanged )
     Q_PROPERTY( int frictionPercent READ frictionPercent WRITE
                     setFrictionPercent NOTIFY frictionPercentChanged )
-    Q_PROPERTY( bool adjustChaperone READ adjustChaperone WRITE
-                    setAdjustChaperone NOTIFY adjustChaperoneChanged )
     Q_PROPERTY( bool moveShortcutRight READ moveShortcutRight WRITE
                     setMoveShortcutRight NOTIFY moveShortcutRightChanged )
     Q_PROPERTY( bool moveShortcutLeft READ moveShortcutLeft WRITE
@@ -130,13 +128,9 @@ class MoveCenterTabController : public QObject
             setShowLogMatricesButton NOTIFY showLogMatricesButtonChanged )
     Q_PROPERTY( bool allowExternalEdits READ allowExternalEdits WRITE
                     setAllowExternalEdits NOTIFY allowExternalEditsChanged )
-    Q_PROPERTY( bool oldStyleMotion READ oldStyleMotion WRITE setOldStyleMotion
-                    NOTIFY oldStyleMotionChanged )
     Q_PROPERTY(
         bool universeCenteredRotation READ universeCenteredRotation WRITE
             setUniverseCenteredRotation NOTIFY universeCenteredRotationChanged )
-    Q_PROPERTY( bool simpleRecenter READ simpleRecenter WRITE setSimpleRecenter
-                    NOTIFY simpleRecenterChanged )
     Q_PROPERTY(
         float dragMult READ dragMult WRITE setDragMult NOTIFY dragMultChanged )
 
@@ -195,7 +189,6 @@ private:
     bool m_swapDragToRightHandActivated = false;
     bool m_gravityActive = false;
     bool m_gravityReversed = false;
-    bool m_chaperoneCommitted = true;
     bool m_pendingZeroOffsets = true;
     bool m_pendingSeatedRecenter = false;
     bool m_selfRequestedSeatedRecenter = false;
@@ -206,8 +199,6 @@ private:
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
     unsigned m_turnComfortFrameSkipCounter = 0;
-
-    bool m_chaperoneInit = true;
 
     // Matrix used For Center Marker
     vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
@@ -236,7 +227,7 @@ private:
     void updateSpace( bool forceUpdate = false );
     void clampVelocity( double* velocity );
     void applyChaperoneResetData();
-    void saveUncommittedChaperone();
+    // void saveUncommittedChaperone();
     void outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix );
 
     std::vector<OffsetProfile> m_offsetProfiles;
@@ -256,7 +247,6 @@ public:
     int snapTurnAngle() const;
     int smoothTurnRate() const;
     int frictionPercent() const;
-    bool adjustChaperone() const;
     bool moveShortcutRight() const;
     bool moveShortcutLeft() const;
     bool turnBindRight() const;
@@ -277,9 +267,7 @@ public:
     bool lockZToggle() const;
     bool showLogMatricesButton() const;
     bool allowExternalEdits() const;
-    bool oldStyleMotion() const;
     bool universeCenteredRotation() const;
-    bool simpleRecenter() const;
     bool isInitComplete() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
@@ -293,7 +281,7 @@ public:
     void saveOffsetProfiles();
     Q_INVOKABLE unsigned getOffsetProfileCount();
     Q_INVOKABLE QString getOffsetProfileName( unsigned index );
-    Q_INVOKABLE void setIgnoreChaperoneState();
+    // Q_INVOKABLE void setIgnoreChaperoneState();
 
     // actions:
     void leftHandSpaceDrag( bool leftHandDragActive );
@@ -333,7 +321,6 @@ public slots:
     void setSmoothTurnRate( int value, bool notify = true );
     void setFrictionPercent( int value, bool notify = true );
 
-    void setAdjustChaperone( bool value, bool notify = true );
     void setMoveShortcutRight( bool value, bool notify = true );
     void setMoveShortcutLeft( bool value, bool notify = true );
     void setTurnBindRight( bool value, bool notify = true );
@@ -359,9 +346,7 @@ public slots:
     void setLockZ( bool value, bool notify = true );
     void setShowLogMatricesButton( bool value, bool notify = true );
     void setAllowExternalEdits( bool value, bool notify = true );
-    void setOldStyleMotion( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
-    void setSimpleRecenter( bool value, bool notify = true );
 
     void shutdown();
     void reset();
@@ -384,7 +369,6 @@ signals:
     void snapTurnAngleChanged( int value );
     void smoothTurnRateChanged( int value );
     void frictionPercentChanged( int value );
-    void adjustChaperoneChanged( bool value );
     void moveShortcutRightChanged( bool value );
     void moveShortcutLeftChanged( bool value );
     void turnBindRightChanged( bool value );
@@ -405,10 +389,7 @@ signals:
     void requireLockZChanged( bool value );
     void showLogMatricesButtonChanged( bool value );
     void allowExternalEditsChanged( bool value );
-    void oldStyleMotionChanged( bool value );
     void universeCenteredRotationChanged( bool value );
-    void simpleRecenterChanged( bool value );
-
     void offsetProfilesUpdated();
 };
 

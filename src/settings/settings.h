@@ -36,6 +36,7 @@ enum class BoolSetting
     APPLICATION_crashRecoveryDisabled2,
     APPLICATION_openXRWorkAround,
     APPLICATION_autoApplyChaperone,
+    APPLICATION_desktopModeToggle,
 
     AUDIO_pttEnabled,
     AUDIO_pttShowNotification,
@@ -45,6 +46,7 @@ enum class BoolSetting
     UTILITY_alarmEnabled,
     UTILITY_alarmIsModal,
     UTILITY_vrcDebug,
+    UTILITY_trackerOverlayEnabled,
 
     VIDEO_brightnessEnabled,
     VIDEO_isOverlayMethodActive,

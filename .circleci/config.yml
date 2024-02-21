@@ -29,18 +29,18 @@ jobs:
                     sudo add-apt-repository 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main'
                     sudo add-apt-repository 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main'
                     sudo apt-get update -qq
-            - run:
-                name: Install LLVM-8 binaries
-                # clang is required due to a check by Qmake.
-                # clang-tidy-8 has new errors compared to clang-tidy-7, so we haven't upgraded.
-                command: |
-                    sudo apt-get install clang-format-8 -y
-                    sudo apt-get install clang-tidy-7 -y
-                    sudo apt-get install clang-8 -y
-                    sudo apt-get install clang -y
-            - run:
-                name: Run clang-format
-                command: python ./build_scripts/run-clang-format.py ./src -r --color always --clang-format-executable clang-format-8
+            #- run:
+            #    name: Install LLVM-8 binaries
+            #    # clang is required due to a check by Qmake.
+            #    # clang-tidy-8 has new errors compared to clang-tidy-7, so we haven't upgraded.
+            #    command: |
+            #        sudo apt-get install clang-format-8 -y
+            #        sudo apt-get install clang-tidy-7 -y
+            #        sudo apt-get install clang-8 -y
+            #        sudo apt-get install clang -y
+            #- run:
+            #    name: Run clang-format
+            #    command: python ./build_scripts/run-clang-format.py ./src -r --color always --clang-format-executable clang-format-8
             - run:
                 name: Install g++
                 command: |

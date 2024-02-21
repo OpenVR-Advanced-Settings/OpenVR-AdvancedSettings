@@ -7,7 +7,7 @@
 
 namespace openvr_init
 {
-void initializeProperly( const OpenVrInitializationType initType )
+bool initializeProperly( const OpenVrInitializationType initType )
 {
     auto initializationType = vr::EVRApplicationType::VRApplication_Other;
     if ( initType == OpenVrInitializationType::Overlay )
@@ -34,7 +34,7 @@ void initializeProperly( const OpenVrInitializationType initType )
                                   + std::string(
                                       vr::VR_GetVRInitErrorAsEnglishDescription(
                                           initError ) );
-            return;
+            return false;
         }
         LOG( ERROR ) << "Failed to initialize OpenVR: "
                             + std::string(
@@ -45,75 +45,92 @@ void initializeProperly( const OpenVrInitializationType initType )
         // probably pre-maturely killing ourselves from some sort of OpenVR race
         // condition
         // exit( EXIT_FAILURE );
+        return false;
     }
-    else
-    {
-        LOG( INFO ) << "OpenVR initialized successfully.";
-    }
+
+    LOG( INFO ) << "OpenVR initialized successfully.";
+    return true;
 }
 
-void initializeOpenVR( const OpenVrInitializationType initType )
+void initializeOpenVR( const OpenVrInitializationType initType, int count )
 {
-    initializeProperly( initType );
+    bool success = initializeProperly( initType );
 
     // The function call and error message was the same for all version checks.
     // Specific error messages are unlikely to be necessary since both the type
     // and version are in the string and will be output.
-    auto reportVersionError = []( const char* const interfaceAndVersion ) {
-        // 5.7.1
-        // Stop behavior from exiting out, again seems to be related to some
-        // sort of race condition in non-native Headsets (i.e. not lighthouse)
-
-        //        QMessageBox::critical(
-        //            nullptr,
-        //            "OpenVR Advanced Settings Overlay",
-        //            "OpenVR version is too outdated. Please update OpenVR." );
-
+    auto reportVersionError
+        = []( const char* const interfaceAndVersion, const int trynumber )
+    {
+        // as of 5.8.1 Based on some information from valve, if ANY interface
+        // fails to load we should have issues. we will re-initialize a few
+        // times if that is the case and hope that fixes things
         LOG( WARNING ) << "OpenVR version is invalid: Interface version "
-                       << interfaceAndVersion << " not found.";
-        //        throw std::runtime_error(
-        //            std::string( "OpenVR version is too outdated: Interface
-        //            version " )
-        //            + std::string( interfaceAndVersion )
-        //            + std::string( " not found." ) );
+                       << interfaceAndVersion << " not found. attempt number: "
+                       << std::to_string( trynumber );
     };
 
     // Check whether OpenVR is too outdated
+
+    // Sleep duration is an attempt to hopefully alleviate a possible race
+    // condition in steamvr
     if ( !vr::VR_IsInterfaceVersionValid( vr::IVRSystem_Version ) )
     {
-        reportVersionError( vr::IVRSystem_Version );
+        reportVersionError( vr::IVRSystem_Version, count );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRSettings_Version ) )
     {
-        reportVersionError( vr::IVRSettings_Version );
+        reportVersionError( vr::IVRSettings_Version, count );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVROverlay_Version ) )
     {
-        reportVersionError( vr::IVROverlay_Version );
+        reportVersionError( vr::IVROverlay_Version, count );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRApplications_Version ) )
     {
-        reportVersionError( vr::IVRApplications_Version );
+        reportVersionError( vr::IVRApplications_Version, count );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRChaperone_Version ) )
     {
-        reportVersionError( vr::IVRChaperone_Version );
+        reportVersionError( vr::IVRChaperone_Version, count );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRChaperoneSetup_Version ) )
     {
-        reportVersionError( vr::IVRChaperoneSetup_Version );
+        reportVersionError( vr::IVRChaperoneSetup_Version, count );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRCompositor_Version ) )
     {
-        reportVersionError( vr::IVRCompositor_Version );
+        reportVersionError( vr::IVRCompositor_Version, count );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRNotifications_Version ) )
     {
-        reportVersionError( vr::IVRNotifications_Version );
+        reportVersionError( vr::IVRNotifications_Version, count );
+        success = false;
     }
     else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRInput_Version ) )
     {
-        reportVersionError( vr::IVRInput_Version );
+        reportVersionError( vr::IVRInput_Version, count );
+        success = false;
+    }
+    if ( !success && count < 3 )
+    {
+        LOG( WARNING ) << "An error occured on initialization of "
+                          "openvr/steamvr attempting again "
+                       << std::to_string( count + 1 ) << " of 3 Attempts";
+        std::this_thread::sleep_for( std::chrono::seconds( 5 ) );
+        // 5.8.1 Unknown if VR shutdown needs to be callled if vr init fails
+        initializeOpenVR( initType, ( count + 1 ) );
+    }
+    if ( count >= 3 )
+    {
+        LOG( ERROR ) << "initialization errors persist proceeding anyways";
     }
 }
 

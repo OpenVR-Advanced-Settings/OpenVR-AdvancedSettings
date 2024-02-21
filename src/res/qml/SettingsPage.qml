@@ -92,37 +92,19 @@ MyStackViewPage {
                     SettingsTabController.setAutoStartEnabled(checked, false)
                 }
             }
+            MyToggleButton {
+                id: desktopModeToggleButton
+                text: "Desktop Mode (restart required)"
+                onCheckedChanged: {
+                    OverlayController.setDesktopModeToggle(this.checked, false)
+                }
+            }
 
             MyToggleButton {
                 id: allowExternalEditsToggle
                 text: "Allow External App Chaperone Edits (Danger)"
                 onCheckedChanged: {
                     MoveCenterTabController.setAllowExternalEdits(checked, true)
-                    seatedOldExternalWarning.visible = checked && MoveCenterTabController.oldStyleMotion
-                }
-            }
-
-            MyToggleButton {
-                id: oldStyleMotionToggle
-                text: "Old-Style Motion (per-frame disk writes)"
-                onCheckedChanged: {
-                    MoveCenterTabController.setOldStyleMotion(checked, true)
-                    seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && checked
-                }
-            }
-            RowLayout{
-
-                MyText {
-                    id: seatedOldExternalWarning
-                    wrapMode: Text.WordWrap
-                    font.pointSize: 20
-                    color: "#FFA500"
-                    text: "WARNING: 'Allow External App Chaperone Edits' + 'Old-Style Motion' + 'Enable Motion Features When in Seated Mode' active together may cause space center misalignment. Load the «Autosaved Profile» in the 'Chaperone' tab to fix."
-                    horizontalAlignment: Text.AlignHCenter
-                    Layout.leftMargin: 20
-                    Layout.rightMargin: 20
-                    Layout.preferredWidth: 900
-                    //Layout.fillWidth: true
                 }
             }
 
@@ -211,13 +193,6 @@ MyStackViewPage {
                 text: "Exclusive Input Toggle (This enables Key Binding to Toggle state)"
                 onCheckedChanged: {
                     OverlayController.setExclusiveInputEnabled(this.checked, true)
-                }
-            }
-            MyToggleButton {
-                id: spaceAdjustChaperoneToggle
-                text: "Adjust Chaperone"
-                onCheckedChanged: {
-                    MoveCenterTabController.adjustChaperone = this.checked
                 }
             }
 
@@ -350,7 +325,6 @@ MyStackViewPage {
                 settingsAutoStartToggle.checked = SettingsTabController.autoStartEnabled
 
                 allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
-                oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
 
                 disableCrashRecoveryToggle.checked = !OverlayController.crashRecoveryDisabled
@@ -366,10 +340,9 @@ MyStackViewPage {
                 oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
                 exclusiveInputToggleButton.checked = OverlayController.exclusiveInputEnabled
                 autoApplyChaperoneToggleButton.checked = OverlayController.autoApplyChaperoneEnabled
-                spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
+                desktopModeToggleButton.checked = OverlayController.desktopModeToggle
 
 
-                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion
                 reloadChaperoneProfiles()
                 volumeSlider.value = OverlayController.soundVolume
             }
@@ -391,17 +364,9 @@ MyStackViewPage {
             target: MoveCenterTabController
             onAllowExternalEditsChanged: {
                 allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
-                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion
-            }
-            onOldStyleMotionChanged: {
-                oldStyleMotionToggle.checked = MoveCenterTabController.oldStyleMotion
-                seatedOldExternalWarning.visible = MoveCenterTabController.allowExternalEdits && MoveCenterTabController.oldStyleMotion
             }
             onUniverseCenteredRotationChanged: {
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
-            }
-            onAdjustChaperoneChanged:{
-                spaceAdjustChaperoneToggle.checked = MoveCenterTabController.adjustChaperone
             }
         }
 
@@ -439,6 +404,9 @@ MyStackViewPage {
             }
             onSoundVolumeChanged:{
                 volumeSlider.value = OverlayController.soundVolume
+            }
+            onDesktopModeToggleChanged:{
+                desktopModeToggleButton.checked = OverlayController.desktopModeToggle
             }
         }
         Connections{

@@ -6,6 +6,7 @@ import "media_keys"
 import "alarm_clock"
 import "keyboard_utils"
 import "../common"
+import "misc"
 
 MyStackViewPage {
     headerText: "Utilities"
@@ -23,6 +24,10 @@ MyStackViewPage {
 
         MediaControllerKeys {
             id: mediaKeysGroupBox
+        }
+
+        MiscBox{
+            id:utilMiscGroupBox
         }
 
         Item {

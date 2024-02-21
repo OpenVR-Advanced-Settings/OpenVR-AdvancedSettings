@@ -204,6 +204,26 @@ void UtilitiesTabController::setVrcDebug( bool value, bool notify )
     }
 }
 
+bool UtilitiesTabController::trackerOvlEnabled() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::UTILITY_trackerOverlayEnabled );
+}
+
+void UtilitiesTabController::setTrackerOvlEnabled( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::UTILITY_trackerOverlayEnabled,
+                          value );
+    if ( notify )
+    {
+        emit trackerOvlEnabledChanged( value );
+    }
+    if ( !value )
+    {
+        destroyBatteryOverlays();
+    }
+}
+
 QString getBatteryIconPath( int batteryState )
 {
     constexpr auto batteryPrefix = "/res/img/battery/battery_";
@@ -224,8 +244,9 @@ QString getBatteryIconPath( int batteryState )
     return QString::fromStdString( *batteryPath );
 }
 
-vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index,
-                                            unsigned style = 0 )
+vr::VROverlayHandle_t UtilitiesTabController::createBatteryOverlay(
+    vr::TrackedDeviceIndex_t index,
+    unsigned style )
 {
     vr::VROverlayHandle_t handle = vr::k_ulOverlayHandleInvalid;
     std::string batteryKey = std::string( application_strings::applicationKey )
@@ -273,14 +294,26 @@ vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index,
     return handle;
 }
 
-void UtilitiesTabController::eventLoopTick()
+void UtilitiesTabController::destroyBatteryOverlays()
 {
-    if ( updateRate.shouldSubjectNotRun(
-             UpdateSubject::UtilitiesTabController ) )
+    for ( auto& el : m_batteryOverlayHandles )
     {
-        return;
+        if ( el == 0 )
+        {
+            continue;
+        }
+        auto err = vr::VROverlay()->DestroyOverlay( el );
+        el = 0;
+        if ( err != vr::VROverlayError_None )
+        {
+            LOG( ERROR ) << "Could not Delete Battery Overlay: "
+                         << vr::VROverlay()->GetOverlayErrorNameFromEnum( err );
+        }
     }
+}
 
+void UtilitiesTabController::handleTrackerBatOvl()
+{
     // attach battery overlay to all tracked devices that aren't a
     // controller or hmd
     for ( vr::TrackedDeviceIndex_t i = 0; i < vr::k_unMaxTrackedDeviceCount;
@@ -361,6 +394,19 @@ void UtilitiesTabController::eventLoopTick()
                 }
             }
         }
+    }
+}
+
+void UtilitiesTabController::eventLoopTick()
+{
+    if ( updateRate.shouldSubjectNotRun(
+             UpdateSubject::UtilitiesTabController ) )
+    {
+        return;
+    }
+    if ( trackerOvlEnabled() )
+    {
+        handleTrackerBatOvl();
     }
 }
 

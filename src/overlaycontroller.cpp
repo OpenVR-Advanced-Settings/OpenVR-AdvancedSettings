@@ -116,6 +116,13 @@ OverlayController::OverlayController( bool desktopMode,
         LOG( ERROR ) << "Could not find alarm01 sound file " << alarmFileName;
     }
 
+    // If we have desktop mode flag ignore waht toggle says otherwise we use
+    // toggle
+    if ( !m_desktopMode )
+    {
+        m_desktopMode = desktopModeToggle();
+    }
+
     QSurfaceFormat format;
     // Qt's QOpenGLPaintDevice is not compatible with OpenGL versions >= 3.0
     // NVIDIA does not care, but unfortunately AMD does
@@ -183,7 +190,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "OverlayController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = objectAddress;
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -197,7 +205,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "SteamVRTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_steamVRTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -207,7 +216,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "ChaperoneTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_chaperoneTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -217,7 +227,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "MoveCenterTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_moveCenterTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -227,7 +238,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "FixFloorTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_fixFloorTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -237,7 +249,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "AudioTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_audioTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -247,7 +260,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "StatisticsTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_statisticsTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -257,7 +271,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "SettingsTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_settingsTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -267,7 +282,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "UtilitiesTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_utilitiesTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -277,7 +293,8 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "VideoTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_videoTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -287,13 +304,19 @@ OverlayController::OverlayController( bool desktopMode,
         1,
         0,
         "RotationTabController",
-        []( QQmlEngine*, QJSEngine* ) {
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_rotationTabController );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
         } );
     qmlRegisterSingletonType<alarm_clock::VrAlarm>(
-        qmlSingletonImportName, 1, 0, "VrAlarm", []( QQmlEngine*, QJSEngine* ) {
+        qmlSingletonImportName,
+        1,
+        0,
+        "VrAlarm",
+        []( QQmlEngine*, QJSEngine* )
+        {
             QObject* obj = &( objectAddress->m_alarm );
             QQmlEngine::setObjectOwnership( obj, QQmlEngine::CppOwnership );
             return obj;
@@ -504,8 +527,11 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         if ( chapindex.first )
         {
             m_chaperoneTabController.applyChaperoneProfile( chapindex.second );
-            vr::VRApplications()->CancelApplicationLaunch(
+            bool success = vr::VRApplications()->CancelApplicationLaunch(
                 "openvr.tool.steamvr_room_setup" );
+            auto successsstr = success ? "true" : "false";
+
+            LOG( INFO ) << "Attempted to stop roomsetup: " << successsstr;
             if ( vr::VRApplications()->GetApplicationProcessId(
                      "openvr.tool.steamvr_room_setup" )
                  != 0 )
@@ -1245,15 +1271,7 @@ void OverlayController::mainEventLoop()
 
             if ( !chaperoneDataAlreadyUpdated )
             {
-                // LOG(INFO) << "Re-loading chaperone data ...";
                 m_chaperoneUtils.loadChaperoneData();
-                // LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() <<
-                // " chaperone quads."; if
-                // (m_chaperoneUtils.isChaperoneWellFormed()) { LOG(INFO) <<
-                // "Chaperone data seems to be well-formed.";
-                //} else {
-                // LOG(INFO) << "Chaperone data is NOT well-formed.";
-                //}
                 chaperoneDataAlreadyUpdated = true;
             }
         }
@@ -1263,15 +1281,7 @@ void OverlayController::mainEventLoop()
         {
             if ( !chaperoneDataAlreadyUpdated )
             {
-                // LOG(INFO) << "Re-loading chaperone data ...";
                 m_chaperoneUtils.loadChaperoneData();
-                // LOG(INFO) << "Found " << m_chaperoneUtils.quadsCount() <<
-                // " chaperone quads."; if
-                // (m_chaperoneUtils.isChaperoneWellFormed()) { LOG(INFO) <<
-                // "Chaperone data seems to be well-formed.";
-                //} else {
-                // LOG(INFO) << "Chaperone data is NOT well-formed.";
-                //}
                 chaperoneDataAlreadyUpdated = true;
             }
         }
@@ -1323,20 +1333,6 @@ void OverlayController::mainEventLoop()
             = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
     }
     auto universe = vr::VRCompositor()->GetTrackingSpace();
-    // This Fix is hopefully temporary as OpenVR doesn't appear to have a way to
-    // tell if an application is OpenXR outside of VR_init which we don't have
-    // control over
-    /*
-    if ( vr::VRApplications()->GetApplicationProcessId(
-             "openvr.tool.steamvr_room_setup" )
-             == 0
-         && openXRFixEnabled() )
-    {
-        // OpenXR applications will appear as RawAndUncalibrated.
-        // Unless Room Setup is running, treat this case as Standing.
-        universe = vr::TrackingUniverseStanding;
-    }
-    */
     m_moveCenterTabController.eventLoopTick( universe, devicePoses );
     m_utilitiesTabController.eventLoopTick();
     m_statisticsTabController.eventLoopTick(
@@ -1347,7 +1343,7 @@ void OverlayController::mainEventLoop()
 
     m_alarm.eventLoopTick();
 
-    if ( vr::VROverlay()->IsDashboardVisible() )
+    if ( vr::VROverlay()->IsDashboardVisible() || m_desktopMode )
     {
         m_settingsTabController.dashboardLoopTick();
         m_steamVRTabController.dashboardLoopTick();
@@ -1667,6 +1663,22 @@ double OverlayController::soundVolume() const
 {
     return settings::getSetting(
         settings::DoubleSetting::APPLICATION_appVolume );
+}
+
+void OverlayController::setDesktopModeToggle( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::APPLICATION_desktopModeToggle,
+                          value );
+    if ( notify )
+    {
+        emit desktopModeToggleChanged( value );
+    }
+    settings::saveAllSettings();
+}
+bool OverlayController::desktopModeToggle() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::APPLICATION_desktopModeToggle );
 }
 
 void OverlayController::playActivationSound()

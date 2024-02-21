@@ -8,6 +8,6 @@ enum class OpenVrInitializationType
     Utility,
 };
 
-void initializeOpenVR( const OpenVrInitializationType initType );
+void initializeOpenVR( const OpenVrInitializationType initType, int count = 0 );
 
 } // namespace openvr_init

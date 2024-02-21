@@ -4,8 +4,8 @@
 #ifdef _WIN64
 #    include <windows.h>
 extern "C" __declspec( dllexport ) DWORD NvOptimusEnablement = 0x00000001;
-extern "C" __declspec( dllexport ) DWORD
-    AmdPowerXpressRequestHighPerformance = 0x00000001;
+extern "C" __declspec( dllexport ) DWORD AmdPowerXpressRequestHighPerformance
+    = 0x00000001;
 #endif
 
 INITIALIZE_EASYLOGGINGPP
@@ -81,7 +81,7 @@ int main( int argc, char* argv[] )
                               application_strings::applicationKey );
 
         // Attempts to install the application manifest on all "regular" starts.
-        if ( !commandLineArgs.desktopMode && !commandLineArgs.forceNoManifest )
+        if ( !commandLineArgs.forceNoManifest )
         {
             try
             {
@@ -103,7 +103,9 @@ int main( int argc, char* argv[] )
             }
         }
 
-        if ( commandLineArgs.desktopMode )
+        if ( commandLineArgs.desktopMode
+             || settings::getSetting(
+                 settings::BoolSetting::APPLICATION_desktopModeToggle ) )
         {
             auto m_pWindow = new QQuickWindow();
             qobject_cast<QQuickItem*>( quickObj )

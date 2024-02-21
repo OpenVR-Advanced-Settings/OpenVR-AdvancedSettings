@@ -21,6 +21,8 @@ class UtilitiesTabController : public QObject
     Q_OBJECT
     Q_PROPERTY(
         bool vrcDebug READ vrcDebug WRITE setVrcDebug NOTIFY vrcDebugChanged )
+    Q_PROPERTY( bool trackerOvlEnabled READ trackerOvlEnabled WRITE
+                    setTrackerOvlEnabled NOTIFY trackerOvlEnabledChanged )
 
 private:
     OverlayController* m_parent;
@@ -31,6 +33,10 @@ private:
         = { 0 };
     int m_batteryState[vr::k_unMaxTrackedDeviceCount];
     bool m_batteryVisible[vr::k_unMaxTrackedDeviceCount];
+    void handleTrackerBatOvl();
+    vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index,
+                                                unsigned style = 0 );
+    void destroyBatteryOverlays();
 
 public:
     void initStage2( OverlayController* var_parent );
@@ -38,6 +44,7 @@ public:
     void eventLoopTick();
 
     bool vrcDebug() const;
+    bool trackerOvlEnabled() const;
 
 public slots:
     void sendKeyboardInput( QString input );
@@ -76,9 +83,11 @@ public slots:
     Q_INVOKABLE void sendKeyboardThree();
 
     void setVrcDebug( bool value, bool notify = true );
+    void setTrackerOvlEnabled( bool value, bool notify = true );
 
 signals:
     void vrcDebugChanged( bool value );
+    void trackerOvlEnabledChanged( bool value );
 };
 
 } // namespace advsettings

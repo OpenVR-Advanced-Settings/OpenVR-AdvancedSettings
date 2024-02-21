@@ -36,6 +36,20 @@ WORD convertToVirtualKeycode( const Token token )
         return VK_F11;
     case Token::KEY_F12:
         return VK_F12;
+    case Token::KEY_F13:
+        return VK_F13;
+    case Token::KEY_F14:
+        return VK_F14;
+    case Token::KEY_F15:
+        return VK_F15;
+    case Token::KEY_F16:
+        return VK_F16;
+    case Token::KEY_F17:
+        return VK_F17;
+    case Token::KEY_F18:
+        return VK_F18;
+    case Token::KEY_F19:
+        return VK_F19;
 
     case Token::KEY_BACKSPACE:
         return VK_BACK;

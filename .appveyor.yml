@@ -34,7 +34,7 @@ init:
 
 build_script:
   - python ./build_scripts/append_to_version_file.py %APPVEYOR_REPO_COMMIT:~0,8%
-  - python ./build_scripts/run-clang-format.py ./src -r --clang-format-executable "C:\Program Files\LLVM\bin\clang-format.exe" --color always
+#  - python ./build_scripts/run-clang-format.py ./src -r --clang-format-executable "C:\Program Files\LLVM\bin\clang-format.exe" --color always
   - call "build_windows.cmd"
 
 artifacts:
