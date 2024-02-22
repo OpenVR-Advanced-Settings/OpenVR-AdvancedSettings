@@ -85,7 +85,6 @@ GroupBox {
         if(!c1){
 
             steamvrCameraBoundsToggle.enabled = false;
-            steamvrCameraRoomToggle.enabled = false;
         }
 
     }
