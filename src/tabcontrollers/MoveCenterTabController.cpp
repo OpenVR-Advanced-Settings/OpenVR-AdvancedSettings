@@ -1106,6 +1106,7 @@ void MoveCenterTabController::zeroOffsets()
             // down properly.
             parent->setPreviousShutdownSafe( false );
         }
+        m_pendingZeroOffsets = true;
     }
     if ( m_roomSetupModeDetected )
     {
