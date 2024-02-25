@@ -112,7 +112,7 @@ GroupBox {
 
     Connections {
         target: ChaperoneTabController
-        onCollisionBoundStyleChanged:{
+        function onCollisionBoundStyleChanged(){
             var collisiontype = ChaperoneTabController.collisionBoundStyle
             switch(collisiontype){
             case 0: denseRadio.checked = true; break;

@@ -89,7 +89,7 @@ ColumnLayout {
     }
     Connections {
         target: AudioTabController
-        onMirrorDeviceIndexChanged: {
+        function onMirrorDeviceIndexChanged() {
             if (index < 0) {
                 audioMirrorNameCombo.deviceIndex = 0
                 audioMirrorVolumeMinusButton.enabled = false
@@ -104,13 +104,13 @@ ColumnLayout {
                 audioMirrorNameCombo.deviceIndex = index + 1
             }
         }
-        onMirrorVolumeChanged: {
+        function onMirrorVolumeChanged() {
             audioMirrorVolumeSlider.value = AudioTabController.mirrorVolume
         }
-        onMirrorMutedChanged: {
+        function onMirrorMutedChanged() {
             audioMirrorMuteToggle.checked = AudioTabController.mirrorMuted
         }
-        onPlaybackDeviceListChanged: {
+        function onPlaybackDeviceListChanged() {
             if (AudioTabController.mirrorDeviceIndex < 0) {
                 audioMirrorVolumeMinusButton.enabled = false
                 audioMirrorVolumeSlider.enabled = false

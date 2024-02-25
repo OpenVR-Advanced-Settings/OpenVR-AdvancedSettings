@@ -73,14 +73,14 @@ GroupBox {
 
     Connections {
         target: VideoTabController
-        onAllowSupersampleFilteringChanged: {
+        function onAllowSupersampleFilteringChanged() {
             videoAllowSupersampleFilteringToggle.checked = VideoTabController.allowSupersampleFiltering
         }
 
-        onMotionSmoothingChanged: {
+        function onMotionSmoothingChanged() {
             videoMotionSmoothingToggle.checked = VideoTabController.motionSmoothing
         }
-        onIsOverlayMethodActiveChanged:{
+        function onIsOverlayMethodActiveChanged(){
             videoUseOverlayToggle.checked = VideoTabController.isOverlayMethodActive
         }
 
