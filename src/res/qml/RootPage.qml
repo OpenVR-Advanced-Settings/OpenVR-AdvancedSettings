@@ -473,7 +473,7 @@ MyStackViewPage {
 
    Connections {
        target: OverlayController
-       onNewVersionDetectedChanged: {
+       function onNewVersionDetectedChanged() {
            if (OverlayController.newVersionDetected)
            {
                summaryVersionCheckTextRect.color = "#ff0000"
@@ -481,10 +481,10 @@ MyStackViewPage {
                summaryVersionCheckTextRect.color = "#2a2e35"
            }
        }
-       onVersionCheckTextChanged: {
+       function onVersionCheckTextChanged() {
            summaryVersionCheckText.text = OverlayController.versionCheckText
        }
-       onDisableVersionCheckChanged: {
+       function onDisableVersionCheckChanged() {
            if (OverlayController.disableVersionCheck)
            {
                summaryVersionCheckText.visible = false
@@ -503,34 +503,34 @@ MyStackViewPage {
 
    Connections {
        target: ChaperoneTabController
-       onChaperoneProfilesUpdated: {
+       function onChaperoneProfilesUpdated() {
            reloadChaperoneProfiles()
        }
    }
 
    Connections {
        target: VideoTabController
-       onVideoProfilesUpdated: {
+       function onVideoProfilesUpdated() {
            reloadVideoProfiles()
        }
    }
 
    Connections {
        target: AudioTabController
-       onMicVolumeChanged: {
+       function onMicVolumeChanged() {
            summaryMicVolumeSlider.value = AudioTabController.micVolume
        }
-       onMicMutedChanged: {
+       function onMicMutedChanged() {
            summaryMicMuteToggle.checked = AudioTabController.micMuted
        }
-       onPttEnabledChanged: {
+       function onPttEnabledChanged() {
            summaryPttToggle.checked = AudioTabController.pttEnabled
        }
    }
 
    Connections {
        target: MoveCenterTabController
-       onTrackingUniverseChanged: {
+       function onTrackingUniverseChanged() {
            if (MoveCenterTabController.trackingUniverse === 0) {
                summaryPlaySpaceModeText.text = "Sitting"
            } else if (MoveCenterTabController.trackingUniverse === 1) {

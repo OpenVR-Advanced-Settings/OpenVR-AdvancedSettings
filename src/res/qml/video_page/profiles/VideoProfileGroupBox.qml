@@ -108,10 +108,10 @@ GroupBox {
     }
     Connections {
         target: VideoTabController
-        onVideoProfilesUpdated: {
+        function onVideoProfilesUpdated() {
             reloadVideoProfiles()
         }
-        onVideoProfileAdded: {
+        function onVideoProfileAdded() {
             videoProfileComboBox.currentIndex = VideoTabController.getVideoProfileCount()
         }
 

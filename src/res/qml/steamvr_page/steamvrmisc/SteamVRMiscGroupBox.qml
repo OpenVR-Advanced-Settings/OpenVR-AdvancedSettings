@@ -131,19 +131,19 @@ GroupBox {
 
     Connections {
         target: SteamVRTabController
-        onPerformanceGraphChanged:{
+        function onPerformanceGraphChanged(){
             steamvrPerformanceGraphToggle.checked = SteamVRTabController.performanceGraph
         }
-        onSystemButtonChanged:{
+        function onSystemButtonChanged(){
             steamvrSystemButtonToggle.checked = SteamVRTabController.systemButton
         }
-        onMultipleDriverChanged:{
+        function onMultipleDriverChanged(){
             steamvrMultipleDriverToggle.checked = SteamVRTabController.multipleDriver
         }
-        onNoFadeToGridChanged:{
+        function onNoFadeToGridChanged(){
             steamvrNoFadeToGridToggle.checked = SteamVRTabController.noFadeToGrid
         }
-        onDNDChanged:{
+        function onDNDChanged(){
             steamvrNotificationToggle.checked = SteamVRTabController.dnd
         }
         onNoHMDChanged:{

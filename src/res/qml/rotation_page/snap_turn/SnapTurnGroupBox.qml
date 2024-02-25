@@ -103,10 +103,10 @@ GroupBox {
     Connections {
         target: MoveCenterTabController
 
-        onSnapTurnAngleChanged: {
+        function onSnapTurnAngleChanged() {
             snapTurnAngleText.text = ( Math.round( MoveCenterTabController.snapTurnAngle / 100 ) ) + "°"
         }
-        onSmoothTurnRateChanged: {
+        function onSmoothTurnRateChanged() {
             smoothTurnRateText.text = MoveCenterTabController.smoothTurnRate + "%"
         }
     }

@@ -140,7 +140,7 @@ MyStackViewPage {
 
         Connections {
             target: FixFloorTabController
-            onStatusMessageSignal: {
+            function onStatusMessageSignal() {
                 if (statusMessageTimer.running) {
                     statusMessageTimer.stop()
                 }
@@ -148,15 +148,15 @@ MyStackViewPage {
                 statusMessageTimer.interval = FixFloorTabController.currentStatusMessageTimeout() * 1000
                 statusMessageTimer.start()
             }
-            onMeasureStartSignal: {
+            function onMeasureStartSignal() {
                 fixButton.enabled = false
                 undoFixButton.enabled = false
             }
-            onMeasureEndSignal: {
+            function onMeasureEndSignal() {
                 fixButton.enabled = true
                 // undoFixButton.enabled = FixFloorTabController.canUndo
             }
-            onCanUndoChanged: {
+            function onCanUndoChanged() {
                 //undoFixButton.enabled = FixFloorTabController.canUndo
                 // revert below to this -^
                 undoFixButton.enabled = false
@@ -165,7 +165,7 @@ MyStackViewPage {
 
         Connections {
             target: MoveCenterTabController
-            onTrackingUniverseChanged: {
+            function onTrackingUniverseChanged() {
                 if (MoveCenterTabController.trackingUniverse === 0) {
                     fixButton.enabled = false
                     recenterButton.enabled = false

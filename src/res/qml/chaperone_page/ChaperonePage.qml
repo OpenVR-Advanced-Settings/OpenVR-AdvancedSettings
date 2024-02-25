@@ -586,26 +586,26 @@ MyStackViewPage {
 
         Connections {
             target: ChaperoneTabController
-            onBoundsVisibilityChanged: {
+            function onBoundsVisibilityChanged() {
                 if (Math.abs(chaperoneVisibilitySlider.value - ChaperoneTabController.boundsVisibility) > 0.008) {
                     chaperoneVisibilitySlider.value = ChaperoneTabController.boundsVisibility
                 }
             }
-            onFadeDistanceChanged: {
+            function onFadeDistanceChanged() {
                 var d = ChaperoneTabController.fadeDistance.toFixed(1)
                 if (d <= chaperoneFadeDistanceSlider.to && Math.abs(chaperoneFadeDistanceSlider.value - d) > 0.008) {
                     chaperoneFadeDistanceSlider.value = d
                 }
                 chaperoneFadeDistanceText.text = d
             }
-            onHeightChanged: {
+            function onHeightChanged() {
                 var h = ChaperoneTabController.height.toFixed(2)
                 if (h <= chaperoneHeightSlider.to && Math.abs(chaperoneHeightSlider.value - h) > 0.008) {
                     chaperoneHeightSlider.value = h
                 }
                 chaperoneHeightText.text = h
             }
-            onChaperoneDimHeightChanged: {
+            function onChaperoneDimHeightChanged() {
                 var dim = ChaperoneTabController.chaperoneDimHeight
                 if(dim > 0.0){
                     chaperoneDisableChaperone.enabled = false;
@@ -625,16 +625,16 @@ MyStackViewPage {
                     chaperoneFadeDistanceText.enabled = true;
                 }
             }
-            onCenterMarkerNewChanged: {
+            function onCenterMarkerNewChanged() {
                 chaperoneCenterMarkerToggle.checked = ChaperoneTabController.centerMarkerNew
             }
-            onPlaySpaceMarkerChanged: {
+            function onPlaySpaceMarkerChanged() {
                 chaperonePlaySpaceToggle.checked = ChaperoneTabController.playSpaceMarker
             }
-            onForceBoundsChanged: {
+            function onForceBoundsChanged() {
                 chaperoneForceBoundsToggle.checked = ChaperoneTabController.forceBounds
             }
-            onChaperoneProfilesUpdated: {
+            function onChaperoneProfilesUpdated() {
                 reloadChaperoneProfiles()
             }
         }

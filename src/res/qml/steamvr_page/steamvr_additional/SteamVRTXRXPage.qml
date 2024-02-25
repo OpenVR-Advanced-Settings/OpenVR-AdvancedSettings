@@ -185,11 +185,11 @@ MyStackViewPage {
     }
     Connections{
         target: SteamVRTabController
-            onPairStatusChanged: {
+            function onPairStatusChanged() {
                 statusText.text = value;
                 getRXTX()
             }
-            onUpdateRXTX:{
+            function onUpdateRXTX(){
                 getRXTX()
             }
 

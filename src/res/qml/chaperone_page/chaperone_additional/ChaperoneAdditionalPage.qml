@@ -113,7 +113,7 @@ MyStackViewPage {
 
         Connections {
             target: ChaperoneTabController
-            onChaperoneDimHeightChanged: {
+            function onChaperoneDimHeightChanged() {
                 var d = ChaperoneTabController.chaperoneDimHeight.toFixed(2)
                 if (d <= dimHeightSlider.to && Math.abs(dimHeightSlider.value - d) > 0.0008) {
                     dimHeightSlider.value = d

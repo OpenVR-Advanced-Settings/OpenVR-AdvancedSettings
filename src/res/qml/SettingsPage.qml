@@ -338,66 +338,66 @@ MyStackViewPage {
 
         Connections {
             target: SettingsTabController
-            onAutoStartEnabledChanged: {
+            function onAutoStartEnabledChanged() {
                 settingsAutoStartToggle.checked = SettingsTabController.autoStartEnabled
             }
-            onNativeChaperoneToggleChanged:{
+            function onNativeChaperoneToggleChanged(){
                 nativeChaperoneToggleButton.checked = SettingsTabController.nativeChaperoneToggle
             }
-            onOculusSdkToggleChanged:{
+            function onOculusSdkToggleChanged(){
                 oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
             }
         }
 
         Connections {
             target: MoveCenterTabController
-            onUniverseCenteredRotationChanged: {
+            function onUniverseCenteredRotationChanged() {
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
             }
         }
 
         Connections {
             target: OverlayController
-            onVsyncDisabledChanged: {
+            function onVsyncDisabledChanged() {
                 vsyncDisabledToggle.checked = OverlayController.vsyncDisabled
                 customTickRateText.visible = vsyncDisabledToggle.checked
                 customTickRateLabel.visible = vsyncDisabledToggle.checked
                 customTickRateMsLabel.visible = vsyncDisabledToggle.checked
             }
-            onCrashRecoveryDisabledChanged: {
+            function onCrashRecoveryDisabledChanged() {
                 disableCrashRecoveryToggle.checked = !OverlayController.crashRecoveryDisabled
             }
 
-            onCustomTickRateMsChanged: {
+            function onCustomTickRateMsChanged() {
                 customTickRateText.text = OverlayController.customTickRateMs
             }
 
-            onEnableDebugChanged: {
+            function onEnableDebugChanged() {
                 debugStateRow.visible = OverlayController.enableDebug
             }
 
-            onDebugStateChanged: {
+            function onDebugStateChanged() {
                 debugStateText.text = OverlayController.debugState
             }
-            onDisableVersionCheckChanged: {
+            function onDisableVersionCheckChanged() {
                 disableVersionCheckToggle.checked = OverlayController.disableVersionCheck
             }
-            onExclusiveInputEnabledChanged:{
+            function onExclusiveInputEnabledChanged(){
                 exclusiveInputToggleButton.checked = OverlayController.exclusiveInputEnabled
             }
-            onAutoApplyChaperoneEnabledChanged: {
+            function onAutoApplyChaperoneEnabledChanged() {
                autoApplyChaperoneToggleButton.checked = OverlayController.autoApplyChaperoneEnabled
             }
-            onSoundVolumeChanged:{
+            function onSoundVolumeChanged(){
                 volumeSlider.value = OverlayController.soundVolume
             }
-            onDesktopModeToggleChanged:{
+            function onDesktopModeToggleChanged(){
                 desktopModeToggleButton.checked = OverlayController.desktopModeToggle
             }
         }
         Connections{
             target: ChaperoneTabController
-            onChaperoneProfilesUpdated: {
+            function onChaperoneProfilesUpdated() {
                 reloadChaperoneProfiles()
             }
         }
