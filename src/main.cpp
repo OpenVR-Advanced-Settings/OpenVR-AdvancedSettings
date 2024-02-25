@@ -54,18 +54,8 @@ int main( int argc, char* argv[] )
                                                    commandLineArgs.forceNoSound,
                                                    qmlEngine );
 
-        constexpr auto widgetPath = "res/qml/common/mainwidget.qml";
-        const auto path = paths::binaryDirectoryFindFile( widgetPath );
-
-        if ( !path.has_value() )
-        {
-            qCritical() << "Unable to find file '" << widgetPath << "'.";
-            throw std::runtime_error(
-                "Unable to find critical file. See log for more information." );
-        }
-
         const auto url
-            = QUrl::fromLocalFile( QString::fromStdString( ( *path ) ) );
+            = QUrl("qrc:/qt/qml/AdvancedSettings/common/mainwidget.qml");
 
         QQmlComponent component( &qmlEngine, url );
         auto errors = component.errors();

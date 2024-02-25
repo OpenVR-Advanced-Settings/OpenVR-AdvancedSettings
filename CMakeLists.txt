@@ -7,12 +7,19 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets QuickControls2 QuickDialogs2 Svg)
 find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS DBus)
 
 qt_standard_project_setup()
 
-qt_add_executable(AdvancedSettings WIN32 MACOSX_BUNDLE
+if(QT_KNOWN_POLICY_QTP0001)
+    qt_policy(SET QTP0001 NEW)
+endif()
+
+# ability to just put .qrc files into the source list
+set(CMAKE_AUTORCC ON)
+
+set(SRCS
     src/alarm_clock/vr_alarm.cpp
     src/keyboard_input/input_parser.cpp
     src/keyboard_input/keyboard_input.cpp
@@ -43,11 +50,94 @@ qt_add_executable(AdvancedSettings WIN32 MACOSX_BUNDLE
     src/utils/setup.cpp
     src/utils/update_rate.cpp
 )
-qt_add_qml_module(AdvancedSettings
-    URI AdvancedSettings
-    VERSION ${PROJECT_VERSION}
+
+set(QML_FILES
+    src/res/qml/utilities_page/keyboard_utils/KeyboardGroupBox.qml
+    src/res/qml/utilities_page/media_keys/MediaControllerKeys.qml
+    src/res/qml/utilities_page/media_keys/MediaButton.qml
+    src/res/qml/utilities_page/misc/MiscBox.qml
+    src/res/qml/utilities_page/alarm_clock/AlarmGroupBox.qml
+    src/res/qml/utilities_page/UtilitiesPage.qml
+    src/res/qml/motion_page/space_drag/SpaceDragGroupBox.qml
+    src/res/qml/motion_page/height_toggle/HeightToggleGroupBox.qml
+    src/res/qml/motion_page/gravity/GravityGroupBox.qml
+    src/res/qml/motion_page/MotionPage.qml
+    src/res/qml/PlayspacePage.qml
+    src/res/qml/SettingsPage.qml
+    src/res/qml/ChaperoneWarningsPage.qml
+    src/res/qml/chaperone_page/ChaperonePage.qml
+    src/res/qml/chaperone_page/change_orientation/ChangeOrientationGroupBox.qml
+    src/res/qml/chaperone_page/chaperone_additional/ChaperoneAdditionalPage.qml
+    src/res/qml/chaperone_page/chaperone_additional/chaperonemisc/ChaperoneMiscGroupBox.qml
+    src/res/qml/chaperone_page/chaperone_additional/chaperonetype/ChaperoneTypeGroupBox.qml
+    src/res/qml/chaperone_page/chaperone_additional/chaperoneboundscolor/ChaperoneBoundsColorGroupBox.qml
+    src/res/qml/RootPage.qml
+    src/res/qml/steamvr_page/steamvrmisc/SteamVRMiscGroupBox.qml
+    src/res/qml/steamvr_page/SteamVRPage.qml
+    src/res/qml/steamvr_page/camera/CameraGroupBox.qml
+    src/res/qml/steamvr_page/steamvr_additional/SteamVRTXRXPage.qml
+    src/res/qml/steamvr_page/steamvrbind/SteamVRBindGroupBox.qml
+    src/res/qml/audio_page/device_selector/MicDeviceSelector.qml
+    src/res/qml/audio_page/device_selector/AudioDeviceSelector.qml
+    src/res/qml/audio_page/device_selector/MirrorDeviceSelector.qml
+    src/res/qml/audio_page/device_selector/MirrorVolumeSlider.qml
+    src/res/qml/audio_page/device_selector/MicVolumeSlider.qml
+    src/res/qml/audio_page/dialog_boxes/AudioDeleteProfileDialog.qml
+    src/res/qml/audio_page/dialog_boxes/AudioNewProfileDialog.qml
+    src/res/qml/audio_page/dialog_boxes/AudioMessageDialog.qml
+    src/res/qml/audio_page/proximity/ProximityToggle.qml
+    src/res/qml/audio_page/profiles/ProfileButtons.qml
+    src/res/qml/audio_page/AudioPage.qml
+    src/res/qml/audio_page/push_to_talk/PttButtons.qml
+    src/res/qml/FixFloorPage.qml
+    src/res/qml/common/MySlider.qml
+    src/res/qml/common/MyResources.qml
+    src/res/qml/common/MyPushButton.qml
+    src/res/qml/common/HourComboBox.qml
+    src/res/qml/common/MyText.qml
+    src/res/qml/common/MyToggleButton.qml
+    src/res/qml/common/MinuteSecondComboBox.qml
+    src/res/qml/common/MyComboBox.qml
+    src/res/qml/common/MyTextField.qml
+    src/res/qml/common/TimeAssembly.qml
+    src/res/qml/common/MyDialogOkPopup.qml
+    src/res/qml/common/mainwidget.qml
+    src/res/qml/common/LineSeparator.qml
+    src/res/qml/common/MyPushButton2.qml
+    src/res/qml/common/MyStackViewPage.qml
+    src/res/qml/common/MyRadioButton.qml
+    src/res/qml/common/FullWidthSliderBox.qml
+    src/res/qml/common/MyDialogOkCancelPopup.qml
+    src/res/qml/rotation_page/view_ratchet/ViewRatchetGroupBox.qml
+    src/res/qml/rotation_page/redirected/RedirectedGroupBox.qml
+    src/res/qml/rotation_page/redirected/AutoTurnGroupBox.qml
+    src/res/qml/rotation_page/snap_turn/SnapTurnGroupBox.qml
+    src/res/qml/rotation_page/space_turn/SpaceTurnGroupBox.qml
+    src/res/qml/rotation_page/RotationPage.qml
+    src/res/qml/video_page/brightness/BrightnessGroupBox.qml
+    src/res/qml/video_page/profiles/VideoProfileGroupBox.qml
+    src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml
+    src/res/qml/video_page/miscvid/VideoMiscGroupBox.qml
+    src/res/qml/video_page/supersampling/SuperSamplingGroupBox.qml
+    src/res/qml/video_page/color/ColorGroupBox.qml
+    src/res/qml/video_page/VideoPage.qml
+    src/res/qml/video_page/dialogboxes/VideoNewProfileDialog.qml
+    src/res/qml/video_page/dialogboxes/VideoMessageDialog.qml
+    src/res/qml/video_page/dialogboxes/VideoDeleteProfileDialog.qml
+    src/res/qml/StatisticsPage.qml
 )
 
+set(RESOURCES src/res/resources.qrc)
+
+# make alias path relative to src/res/qml
+foreach(qml_file ${QML_FILES})
+    cmake_path(RELATIVE_PATH qml_file BASE_DIRECTORY src/res/qml OUTPUT_VARIABLE qml_alias)
+    set_source_files_properties(${qml_file} PROPERTIES QT_RESOURCE_ALIAS ${qml_alias})
+endforeach()
+
+set_source_files_properties(src/res/qml/common/MyResources.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+
+qt_add_executable(AdvancedSettings WIN32 MACOSX_BUNDLE ${SRCS})
 
 target_include_directories(AdvancedSettings PUBLIC
     src
@@ -83,154 +173,84 @@ target_link_libraries(AdvancedSettings PRIVATE
     Qt::Quick
     Qt::WebSockets
     Qt::Widgets
+    Qt::QuickControls2
+    Qt::QuickDialogs2
+    Qt::Svg
     ${OPENVR_LIBRARIES}
 )
 
-
-# Resources:
-set_source_files_properties("src/res/img/common/backarrow.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "backarrow"
-)
-set_source_files_properties("src/res/img/common/check.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "box_checkmark"
-)
-set(resources_resource_files
-    "src/res/img/common/backarrow.svg"
-    "src/res/img/common/check.svg"
+qt_add_qml_module(AdvancedSettings
+    URI AdvancedSettings
+    VERSION ${PROJECT_VERSION}
+    QML_FILES ${QML_FILES}
+    RESOURCES ${RESOURCES}
 )
 
-qt_add_resources(AdvancedSettings "resources"
-    PREFIX
-        "/common"
-    BASE
-        "src/res"
-    FILES
-        ${resources_resource_files}
-)
-set_source_files_properties("src/res/img/audio/microphone/mic_off.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "off"
-)
-set_source_files_properties("src/res/img/audio/microphone/mic_on.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "on"
-)
-set(resources1_resource_files
-    "src/res/img/audio/microphone/mic_off.svg"
-    "src/res/img/audio/microphone/mic_on.svg"
-)
 
-qt_add_resources(AdvancedSettings "resources1"
-    PREFIX
-        "/microphone"
-    BASE
-        "src/res"
-    FILES
-        ${resources1_resource_files}
-)
-set_source_files_properties("src/res/img/audio/speaker/speaker_off.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "off"
-)
-set_source_files_properties("src/res/img/audio/speaker/speaker_on.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "on"
-)
-set(resources2_resource_files
-    "src/res/img/audio/speaker/speaker_off.svg"
-    "src/res/img/audio/speaker/speaker_on.svg"
-)
+if(GCC)
+    target_compile_options(AdvancedSettings
+        -Wcast-align
+        -Wconversion
+        -Wdouble-promotion
+        -Wduplicated-branches
+        -Wduplicated-cond
+        -Wextra
+        -Wformat=2
+        -Wlogical-op
+        -Wno-sign-conversion
+        -Wnon-virtual-dtor
+        -Wnull-dereference
+        -Wold-style-cast
+        -Woverloaded-virtual
+        -Wpedantic
+        -Wrestrict
+        -Wshadow
+        -Wunused
+        -Wzero-as-null-pointer-constant
+        -flto
+    )
 
-qt_add_resources(AdvancedSettings "resources2"
-    PREFIX
-        "/speaker"
-    BASE
-        "src/res"
-    FILES
-        ${resources2_resource_files}
-)
-set_source_files_properties("src/res/img/audio/media_keys/outline_play_pause_white_24dp.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "play_pause"
-)
-set_source_files_properties("src/res/img/audio/media_keys/outline_skip_next_white_24dp.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "next"
-)
-set_source_files_properties("src/res/img/audio/media_keys/outline_skip_previous_white_24dp.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "previous"
-)
-set_source_files_properties("src/res/img/audio/media_keys/outline_stop_white_24dp.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "stop"
-)
-set(resources3_resource_files
-    "src/res/img/audio/media_keys/outline_play_pause_white_24dp.svg"
-    "src/res/img/audio/media_keys/outline_skip_next_white_24dp.svg"
-    "src/res/img/audio/media_keys/outline_skip_previous_white_24dp.svg"
-    "src/res/img/audio/media_keys/outline_stop_white_24dp.svg"
-)
+    if(warnings_as_errors)
+        target_compile_options(AdvancedSettings
+            -Werror
+        )
+    endif()
+endif()
 
-qt_add_resources(AdvancedSettings "resources3"
-    PREFIX
-        "/media_keys"
-    BASE
-        "src/res"
-    FILES
-        ${resources3_resource_files}
-)
-set_source_files_properties("src/res/img/main_menu_icons/audio_tab_icon.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "audio_tab_icon"
-)
-set_source_files_properties("src/res/img/main_menu_icons/bindings_tab_icon.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "bindings_tab_icon"
-)
-set_source_files_properties("src/res/img/main_menu_icons/chaperone_tab_icon.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "chaperone_tab_icon"
-)
-set_source_files_properties("src/res/img/main_menu_icons/motion_tab_icon.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "motion_tab_icon"
-)
-set_source_files_properties("src/res/img/main_menu_icons/offsets_tab_icon.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "offsets_tab_icon"
-)
-set_source_files_properties("src/res/img/main_menu_icons/rotation_tab_icon.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "rotation_tab_icon"
-)
-set_source_files_properties("src/res/img/main_menu_icons/settings_tab_icon.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "settings_tab_icon"
-)
-set_source_files_properties("src/res/img/main_menu_icons/space_fix_tab_icon.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "space_fix_tab_icon"
-)
-set_source_files_properties("src/res/img/main_menu_icons/statistics_tab_icon.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "statistics_tab_icon"
-)
-set_source_files_properties("src/res/img/main_menu_icons/steamvr_tab_icon.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "steamvr_tab_icon"
-)
-set_source_files_properties("src/res/img/main_menu_icons/utilities_tab_icon.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "utilities_tab_icon"
-)
-set_source_files_properties("src/res/img/main_menu_icons/video_tab_icon.svg"
-    PROPERTIES QT_RESOURCE_ALIAS "video_tab_icon"
-)
-set(resources4_resource_files
-    "src/res/img/main_menu_icons/audio_tab_icon.svg"
-    "src/res/img/main_menu_icons/bindings_tab_icon.svg"
-    "src/res/img/main_menu_icons/chaperone_tab_icon.svg"
-    "src/res/img/main_menu_icons/motion_tab_icon.svg"
-    "src/res/img/main_menu_icons/offsets_tab_icon.svg"
-    "src/res/img/main_menu_icons/rotation_tab_icon.svg"
-    "src/res/img/main_menu_icons/settings_tab_icon.svg"
-    "src/res/img/main_menu_icons/space_fix_tab_icon.svg"
-    "src/res/img/main_menu_icons/statistics_tab_icon.svg"
-    "src/res/img/main_menu_icons/steamvr_tab_icon.svg"
-    "src/res/img/main_menu_icons/utilities_tab_icon.svg"
-    "src/res/img/main_menu_icons/video_tab_icon.svg"
-)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(AdvancedSettings
+        --system-header-prefix=qt
+        --system-header-prefix=third-party
+        -Wcast-align
+        -Wconversion
+        -Wdouble-promotion
+        -Wextra
+        -Wextra-semi
+        -Wformat=2
+        -Wmissing-variable-declarations
+        -Wmost
+        -Wno-sign-conversion
+        -Wnon-virtual-dtor
+        -Wold-style-cast
+        -Woverloaded-virtual
+        -Wpedantic
+        -Wshadow
+        -Wunused
+        -Wzero-as-null-pointer-constant
+        -flto
+    )
+    if(warnings_as_errors)
+        target_compile_options(AdvancedSettings
+            -Werror
+        )
+    endif()
+endif()
 
-qt_add_resources(AdvancedSettings "resources4"
-    PREFIX
-        "/main_menu_icons"
-    BASE
-        "src/res"
-    FILES
-        ${resources4_resource_files}
-)
+if(debugSymbolsAndLogs)
+    target_compile_definitions(AdvancedSettings PRIVATE
+        ENABLE_DEBUG_LOGGING
+    )
+endif()
 
 if(WIN32)
     target_sources(AdvancedSettings PUBLIC
@@ -328,74 +348,8 @@ if(WIN32)
             /we4289
         )
     endif()
-endif()
 
-if(GCC)
-    target_compile_options(AdvancedSettings
-        -Wcast-align
-        -Wconversion
-        -Wdouble-promotion
-        -Wduplicated-branches
-        -Wduplicated-cond
-        -Wextra
-        -Wformat=2
-        -Wlogical-op
-        -Wno-sign-conversion
-        -Wnon-virtual-dtor
-        -Wnull-dereference
-        -Wold-style-cast
-        -Woverloaded-virtual
-        -Wpedantic
-        -Wrestrict
-        -Wshadow
-        -Wunused
-        -Wzero-as-null-pointer-constant
-        -flto
-    )
-
-    if(warnings_as_errors)
-        target_compile_options(AdvancedSettings
-            -Werror
-        )
-    endif()
-endif()
-
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(AdvancedSettings
-        --system-header-prefix=qt
-        --system-header-prefix=third-party
-        -Wcast-align
-        -Wconversion
-        -Wdouble-promotion
-        -Wextra
-        -Wextra-semi
-        -Wformat=2
-        -Wmissing-variable-declarations
-        -Wmost
-        -Wno-sign-conversion
-        -Wnon-virtual-dtor
-        -Wold-style-cast
-        -Woverloaded-virtual
-        -Wpedantic
-        -Wshadow
-        -Wunused
-        -Wzero-as-null-pointer-constant
-        -flto
-    )
-    if(warnings_as_errors)
-        target_compile_options(AdvancedSettings
-            -Werror
-        )
-    endif()
-endif()
-
-if(debugSymbolsAndLogs)
-    target_compile_definitions(AdvancedSettings PRIVATE
-        ENABLE_DEBUG_LOGGING
-    )
-endif()
-
-if(UNIX AND NOT MACOS)
+elseif(UNIX AND NOT MACOS)
     if(noX11)
         target_sources(AdvancedSettings PUBLIC
             src/keyboard_input/input_sender_dummy.cpp
@@ -445,22 +399,3 @@ elseif(MACOS)
         src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
     )
 endif()
-
-# done by Qt
-#if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-#    target_compile_options(AdvancedSettings
-#        -isystem ${Qt${QT_VERSION_MAJOR}Core_PRIVATE_INCLUDE_DIRS}
-#        #-isystem $$[QT_INSTALL_HEADERS]/QtCore
-#        #-isystem $$[QT_INSTALL_HEADERS]/QtGui
-#        -isystem ${CMAKE_CURRENT_SOURCE_DIR}/build_scripts/qt/../../third-party/openvr/headers
-#    )
-#endif()
-
-install(TARGETS AdvancedSettings
-    BUNDLE DESTINATION .
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
-# Consider using qt_generate_deploy_app_script() for app deployment if
-# the project can use Qt 6.3. In that case rerun qmake2cmake with
-# --min-qt-version=6.3.
