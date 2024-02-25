@@ -70,50 +70,14 @@ OverlayController::OverlayController( bool desktopMode,
     qInfo() << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
     const double initVol = soundVolume();
-    constexpr auto clickSoundURL = "res/sounds/click.wav";
-    const auto activationSoundFile
-        = paths::binaryDirectoryFindFile( clickSoundURL );
+    m_activationSoundEffect.setSource( QUrl( "qrc:/sounds/click.wav" ) );
+    m_activationSoundEffect.setVolume( initVol );
 
-    if ( activationSoundFile.has_value() )
-    {
-        m_activationSoundEffect.setSource( QUrl::fromLocalFile(
-            QString::fromStdString( ( *activationSoundFile ) ) ) );
-        m_activationSoundEffect.setVolume( initVol );
-    }
-    else
-    {
-        qCritical() << "Could not find activation sound file " << clickSoundURL;
-    }
-    constexpr auto focusChangedSoundURL = "res/sounds/focus.wav";
-    const auto focusChangedSoundFile
-        = paths::binaryDirectoryFindFile( focusChangedSoundURL );
+    m_focusChangedSoundEffect.setSource( QUrl( "qrc:/sounds/focus.wav" ) );
+    m_focusChangedSoundEffect.setVolume( initVol );
 
-    if ( focusChangedSoundFile.has_value() )
-    {
-        m_focusChangedSoundEffect.setSource( QUrl::fromLocalFile(
-            QString::fromStdString( ( *focusChangedSoundFile ) ) ) );
-        m_focusChangedSoundEffect.setVolume( initVol );
-    }
-    else
-    {
-        qCritical() << "Could not find focus Changed sound file "
-                    << focusChangedSoundURL;
-    }
-
-    constexpr auto alarmFileName = "res/sounds/alarm01.wav";
-    const auto alarm01SoundFile
-        = paths::binaryDirectoryFindFile( alarmFileName );
-
-    if ( alarm01SoundFile.has_value() )
-    {
-        m_alarm01SoundEffect.setSource( QUrl::fromLocalFile(
-            QString::fromStdString( ( *alarm01SoundFile ) ) ) );
-        m_alarm01SoundEffect.setVolume( 1.0 );
-    }
-    else
-    {
-        qCritical() << "Could not find alarm01 sound file " << alarmFileName;
-    }
+    m_alarm01SoundEffect.setSource( QUrl( "qrc:/sounds/alarm01.wav" ) );
+    m_alarm01SoundEffect.setVolume( 1.0 );
 
     // If we have desktop mode flag ignore waht toggle says otherwise we use
     // toggle
