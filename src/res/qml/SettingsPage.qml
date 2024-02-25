@@ -100,13 +100,13 @@ MyStackViewPage {
                 }
             }
 
-            MyToggleButton {
-                id: allowExternalEditsToggle
-                text: "Allow External App Chaperone Edits (Danger)"
-                onCheckedChanged: {
-                    MoveCenterTabController.setAllowExternalEdits(checked, true)
-                }
-            }
+//            MyToggleButton {
+//                id: allowExternalEditsToggle
+//                text: "Allow External App Chaperone Edits (Danger)"
+//                onCheckedChanged: {
+//                    MoveCenterTabController.setAllowExternalEdits(checked, true)
+//                }
+//            }
 
             MyToggleButton {
                 id: universeCenteredRotationToggle
@@ -324,7 +324,7 @@ MyStackViewPage {
             Component.onCompleted: {
                 settingsAutoStartToggle.checked = SettingsTabController.autoStartEnabled
 
-                allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
+                //allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
 
                 disableCrashRecoveryToggle.checked = !OverlayController.crashRecoveryDisabled
@@ -362,9 +362,9 @@ MyStackViewPage {
 
         Connections {
             target: MoveCenterTabController
-            onAllowExternalEditsChanged: {
-                allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
-            }
+//            onAllowExternalEditsChanged: {
+//                allowExternalEditsToggle.checked = MoveCenterTabController.allowExternalEdits
+//            }
             onUniverseCenteredRotationChanged: {
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
             }

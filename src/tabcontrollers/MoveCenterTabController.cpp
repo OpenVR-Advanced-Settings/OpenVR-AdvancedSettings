@@ -821,22 +821,24 @@ void MoveCenterTabController::setShowLogMatricesButton( bool value,
     }
 }
 
-bool MoveCenterTabController::allowExternalEdits() const
-{
-    return settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_allowExternalEdits );
-}
+// bool MoveCenterTabController::allowExternalEdits() const
+//{
+//     return settings::getSetting(
+//         settings::BoolSetting::PLAYSPACE_allowExternalEdits );
+// }
 
-void MoveCenterTabController::setAllowExternalEdits( bool value, bool notify )
-{
-    settings::setSetting( settings::BoolSetting::PLAYSPACE_allowExternalEdits,
-                          value );
+// void MoveCenterTabController::setAllowExternalEdits( bool value, bool notify
+// )
+//{
+//     settings::setSetting(
+//     settings::BoolSetting::PLAYSPACE_allowExternalEdits,
+//                           value );
 
-    if ( notify )
-    {
-        emit allowExternalEditsChanged( value );
-    }
-}
+//    if ( notify )
+//    {
+//        emit allowExternalEditsChanged( value );
+//    }
+//}
 
 bool MoveCenterTabController::universeCenteredRotation() const
 {
@@ -907,18 +909,43 @@ void MoveCenterTabController::incomingSeatedReset()
     // if we didn't send the request from OVRAS, we need to send another
     // ResetSeatedZeroPose(). It seems that only after this is sent from
     // OVRAS does ReloadFromDisk return valid info on WMR.
-    if ( !m_selfRequestedSeatedRecenter )
+    //    if ( !m_selfRequestedSeatedRecenter )
+    //    {
+    //        LOG( INFO ) << "steamvr center?";
+    //        m_selfRequestedSeatedRecenter = true;
+    //        vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
+    //    }
+    //    else
+    //    {
+    //        LOG( INFO ) << "not our receneter";
+    //        updateSeatedResetData();
+    //    }
+
+    // As of 5.8.4
+    //  HONESTLY this is just bullshit magic.
+    //  play area seems a little fubar but everything else is fine.
+    //    zeroOffsets();
+    //    updateSeatedResetData();
+    //    reset();
+    //  vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
+    updateChaperoneResetData();
+    if ( m_offsetY != 0 )
     {
-        LOG( INFO ) << "steamvr center?";
-        m_selfRequestedSeatedRecenter = true;
-        vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
+        m_offsetY = -m_offsetY;
+        updateSpace();
+        updateChaperoneResetData();
     }
-    else
-    {
-        LOG( INFO ) << "not our receneter";
-        updateSeatedResetData();
-    }
-    // vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
+    zeroOffsets();
+    // updateSeatedResetData()
+    //  TODO get correct position
+    //  m_universecenterforreset
+    //  m_seatedCenterForReset
+    //     vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
+    //         &offsetSeatedCenter );
+    //     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
+    //         &offsetSeatedCenter );
+
+    // TODO drop out of working?
 }
 
 void MoveCenterTabController::reset()
@@ -929,12 +956,12 @@ void MoveCenterTabController::reset()
                           "basis is acquired!";
         return;
     }
-    if ( m_pendingSeatedRecenter )
-    {
-        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
-            &m_seatedCenterForReset );
-        m_pendingSeatedRecenter = false;
-    }
+    //    if ( m_pendingSeatedRecenter )
+    //    {
+    //        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+    //            &m_seatedCenterForReset );
+    //        m_pendingSeatedRecenter = false;
+    //    }
     vr::VRChaperoneSetup()->HideWorkingSetPreview();
     m_heightToggle = false;
     emit heightToggleChanged( m_heightToggle );
@@ -1120,7 +1147,7 @@ void MoveCenterTabController::zeroOffsets()
 void MoveCenterTabController::sendSeatedRecenter()
 {
     vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
-    // vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseStanding );
+    vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseStanding );
 }
 
 double MoveCenterTabController::getHmdYawTotal()
@@ -1189,10 +1216,11 @@ void MoveCenterTabController::updateChaperoneResetData()
     updateCollisionBoundsForOffset();
     parent->m_chaperoneTabController.updateHeight( getBoundsBasisMaxY() );
 
-    unsigned checkQuadCount = 0;
-    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
-                                                           &checkQuadCount );
-    if ( checkQuadCount > 0 )
+    //    unsigned checkQuadCount = 0;
+    //    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
+    //                                                           &checkQuadCount
+    //                                                           );
+    if ( currentQuadCount > 0 )
     {
         parent->chaperoneUtils().loadChaperoneData( false );
     }
@@ -2496,17 +2524,20 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         return;
     }
 
+    // TODO ALLOW EXTERNAL EDITS REMOVAL
     // reload from disk if we're at zero offsets and allow external edits
-    if ( allowExternalEdits()
-         && ( abs( m_oldOffsetX ) + abs( m_oldOffsetY ) + abs( m_oldOffsetZ )
-              + abs( static_cast<float>( m_oldRotation ) ) )
-                == 0 )
-    {
-        vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
-        vr::VRChaperoneSetup()->CommitWorkingCopy(
-            vr::EChaperoneConfigFile_Live );
-        updateChaperoneResetData();
-    }
+    //    if ( allowExternalEdits()
+    //         && ( abs( m_oldOffsetX ) + abs( m_oldOffsetY ) + abs(
+    //         m_oldOffsetZ )
+    //              + abs( static_cast<float>( m_oldRotation ) ) )
+    //                == 0 )
+    //    {
+    //        vr::VRChaperoneSetup()->ReloadFromDisk(
+    //        vr::EChaperoneConfigFile_Live );
+    //        vr::VRChaperoneSetup()->CommitWorkingCopy(
+    //            vr::EChaperoneConfigFile_Live );
+    //        updateChaperoneResetData();
+    //    }
 
     // do a late on-demand setting of seated center basis when we need it
     // for motion. This gives the reload from disk a little more time to

@@ -126,8 +126,9 @@ class MoveCenterTabController : public QObject
     Q_PROPERTY(
         bool showLogMatricesButton READ showLogMatricesButton WRITE
             setShowLogMatricesButton NOTIFY showLogMatricesButtonChanged )
-    Q_PROPERTY( bool allowExternalEdits READ allowExternalEdits WRITE
-                    setAllowExternalEdits NOTIFY allowExternalEditsChanged )
+    //    Q_PROPERTY( bool allowExternalEdits READ allowExternalEdits WRITE
+    //                    setAllowExternalEdits NOTIFY allowExternalEditsChanged
+    //                    )
     Q_PROPERTY(
         bool universeCenteredRotation READ universeCenteredRotation WRITE
             setUniverseCenteredRotation NOTIFY universeCenteredRotationChanged )
@@ -266,7 +267,7 @@ public:
     bool lockYToggle() const;
     bool lockZToggle() const;
     bool showLogMatricesButton() const;
-    bool allowExternalEdits() const;
+    // bool allowExternalEdits() const;
     bool universeCenteredRotation() const;
     bool isInitComplete() const;
     double getHmdYawTotal();
@@ -345,7 +346,7 @@ public slots:
     void setLockY( bool value, bool notify = true );
     void setLockZ( bool value, bool notify = true );
     void setShowLogMatricesButton( bool value, bool notify = true );
-    void setAllowExternalEdits( bool value, bool notify = true );
+    // void setAllowExternalEdits( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
 
     void shutdown();
@@ -388,7 +389,7 @@ signals:
     void requireLockYChanged( bool value );
     void requireLockZChanged( bool value );
     void showLogMatricesButtonChanged( bool value );
-    void allowExternalEditsChanged( bool value );
+    // void allowExternalEditsChanged( bool value );
     void universeCenteredRotationChanged( bool value );
     void offsetProfilesUpdated();
 };
