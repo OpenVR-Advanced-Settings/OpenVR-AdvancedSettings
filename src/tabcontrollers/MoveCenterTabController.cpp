@@ -950,6 +950,11 @@ void MoveCenterTabController::incomingSeatedReset()
 
 void MoveCenterTabController::reset()
 {
+    // This is a weird hack for handling the reset properly don't ask me why
+    // reset plays better w/ a non 0 starting point
+    m_offsetY = 0.01f;
+    updateSpace();
+
     if ( !m_chaperoneBasisAcquired )
     {
         LOG( WARNING ) << "WARNING: Attempted reset offsets before chaperone "
@@ -962,7 +967,7 @@ void MoveCenterTabController::reset()
     //            &m_seatedCenterForReset );
     //        m_pendingSeatedRecenter = false;
     //    }
-    vr::VRChaperoneSetup()->HideWorkingSetPreview();
+    // vr::VRChaperoneSetup()->HideWorkingSetPreview();
     m_heightToggle = false;
     emit heightToggleChanged( m_heightToggle );
     m_oldOffsetX = 0.0f;
@@ -978,7 +983,13 @@ void MoveCenterTabController::reset()
     m_lastControllerPosition[2] = 0.0f;
     m_lastMoveHand = vr::TrackedControllerRole_Invalid;
     m_lastRotateHand = vr::TrackedControllerRole_Invalid;
-    applyChaperoneResetData();
+
+    // Option 1: Does not save
+    updateSpace( true );
+    updateChaperoneResetData();
+
+    // Option 2: on reset will recenter play area
+    // applyChaperoneResetData();
 
     // For Center Marker
     // Needs to happen after apply chaperone
@@ -1262,17 +1273,19 @@ void MoveCenterTabController::updateCollisionBoundsForOffset()
 
 void MoveCenterTabController::applyChaperoneResetData()
 {
-    vr::VRChaperoneSetup()->HideWorkingSetPreview();
+    updateSpace( true );
     vr::VRChaperoneSetup()->RevertWorkingCopy();
     if ( m_collisionBoundsCountForReset > 0 )
     {
         vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
             m_collisionBoundsForReset, m_collisionBoundsCountForReset );
     }
-    vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
-        &m_universeCenterForReset );
-    vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
-        &m_seatedCenterForReset );
+    // zeroOffsets();
+    // These commands set play area as centered which is un-desirable
+    //  vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
+    //      &m_universeCenterForReset );
+    //  vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
+    //     &m_seatedCenterForReset );
 
     vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live );
 
@@ -2542,13 +2555,13 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     // do a late on-demand setting of seated center basis when we need it
     // for motion. This gives the reload from disk a little more time to
     // complete before we apply the new seated basis.
-    if ( m_pendingSeatedRecenter )
-    {
-        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
-            &m_seatedCenterForReset );
+    //    if ( m_pendingSeatedRecenter )
+    //    {
+    //        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+    //            &m_seatedCenterForReset );
 
-        m_pendingSeatedRecenter = false;
-    }
+    //        m_pendingSeatedRecenter = false;
+    //    }
 
     vr::HmdMatrix34_t offsetUniverseCenter;
 
