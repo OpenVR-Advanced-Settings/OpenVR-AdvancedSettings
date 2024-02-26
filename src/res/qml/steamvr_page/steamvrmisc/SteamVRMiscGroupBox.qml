@@ -146,10 +146,10 @@ GroupBox {
         function onDNDChanged(){
             steamvrNotificationToggle.checked = SteamVRTabController.dnd
         }
-        onNoHMDChanged:{
+        function onNoHMDChanged(){
             steamvrNoHMDToggle.checked = SteamVRTabController.noHMD
         }
-        onControllerPowerChanged:{
+        function onControllerPowerChanged(){
             steamvrControllerPowerToggle.checked = SteamVRTabController.controllerPower
         }
 
