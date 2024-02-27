@@ -2,7 +2,10 @@
 
 ## Capabilities
  We provide two distinct types of functionality, `Keyboard Shortcut`'s [macros] and `Key Press`'s [individual key press]
- 
+
+### Limitations
+We are not designed to provide a whole bunch of functionality here, if you need a whole bunch of keys instead of 1 or 2 you may want to use another utility such as [OpenVR2Key](https://github.com/BOLL7708/OpenVR2Key) by Boll7708 on Github (no affiliation)
+
 ### Keyboard Shortcuts
  
 - Sends One or Many keys to the OS like a macro.
@@ -55,7 +58,7 @@
 | A to Z | The letter in lowercase. `a`, `b`, `c`, ... |
 | Number Row 0-9 | The number. `0`, `1`, `2`, ... |
 | Function keys F1-F9 | Capital F followed by number. `F1`, `F2`, `F3`, ... |
-| Function keys F10-F12 | Capital G followed by number. `G0` = F10, `G1` = F11, ... |
+| Function keys F10-F19 | Capital G followed by number. `G0` = F10, `G1` = F11, ... |
 | Backspace | `BACKSPACE` |
 | Space | `SPACE` |
 | Tab | `TAB` |
