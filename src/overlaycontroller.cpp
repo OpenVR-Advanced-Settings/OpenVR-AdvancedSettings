@@ -1249,8 +1249,12 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_SeatedZeroPoseReset:
         {
-            m_moveCenterTabController.incomingSeatedReset();
-            LOG( INFO ) << "Game/SteamVR Triggered Seated Zero-Position Reset";
+            m_incomingReset = true;
+        }
+        break;
+        case vr::VREvent_StandingZeroPoseReset:
+        {
+            m_incomingReset = true;
         }
         break;
 
@@ -1298,6 +1302,13 @@ void OverlayController::mainEventLoop()
         default:
             break;
         }
+    }
+
+    if ( m_incomingReset )
+    {
+        m_incomingReset = false;
+        m_moveCenterTabController.incomingSeatedReset();
+        LOG( INFO ) << "Incoming Reset";
     }
 
     vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
@@ -1430,6 +1441,8 @@ void OverlayController::AddOffsetToUniverseCenter(
         {
             vr::VRChaperoneSetup()->CommitWorkingCopy(
                 vr::EChaperoneConfigFile_Live );
+            vr::VRChaperoneSetup()->ReloadFromDisk(
+                vr::EChaperoneConfigFile_Temp );
         }
     }
 }

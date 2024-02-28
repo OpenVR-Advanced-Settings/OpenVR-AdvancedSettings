@@ -821,23 +821,6 @@ void MoveCenterTabController::setShowLogMatricesButton( bool value,
     }
 }
 
-bool MoveCenterTabController::allowExternalEdits() const
-{
-    return settings::getSetting(
-        settings::BoolSetting::PLAYSPACE_allowExternalEdits );
-}
-
-void MoveCenterTabController::setAllowExternalEdits( bool value, bool notify )
-{
-    settings::setSetting( settings::BoolSetting::PLAYSPACE_allowExternalEdits,
-                          value );
-
-    if ( notify )
-    {
-        emit allowExternalEditsChanged( value );
-    }
-}
-
 bool MoveCenterTabController::universeCenteredRotation() const
 {
     return settings::getSetting(
@@ -904,38 +887,31 @@ void MoveCenterTabController::shutdown()
 
 void MoveCenterTabController::incomingSeatedReset()
 {
-    // if we didn't send the request from OVRAS, we need to send another
-    // ResetSeatedZeroPose(). It seems that only after this is sent from
-    // OVRAS does ReloadFromDisk return valid info on WMR.
-    if ( !m_selfRequestedSeatedRecenter )
+    // This really covers standing reset as well
+    updateChaperoneResetData();
+    if ( m_offsetY != 0 )
     {
-        LOG( INFO ) << "steamvr center?";
-        m_selfRequestedSeatedRecenter = true;
-        vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
+        m_offsetY = -m_offsetY;
+        updateSpace();
+        updateChaperoneResetData();
     }
-    else
-    {
-        LOG( INFO ) << "not our receneter";
-        updateSeatedResetData();
-    }
-    // vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
+    zeroOffsets();
 }
 
 void MoveCenterTabController::reset()
 {
+    // This is a weird hack for handling the reset properly don't ask me why
+    // reset plays better w/ a non 0 starting point
+    m_offsetY = 0.01f;
+    updateSpace();
+
     if ( !m_chaperoneBasisAcquired )
     {
         LOG( WARNING ) << "WARNING: Attempted reset offsets before chaperone "
                           "basis is acquired!";
         return;
     }
-    if ( m_pendingSeatedRecenter )
-    {
-        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
-            &m_seatedCenterForReset );
-        m_pendingSeatedRecenter = false;
-    }
-    vr::VRChaperoneSetup()->HideWorkingSetPreview();
+    // vr::VRChaperoneSetup()->HideWorkingSetPreview();
     m_heightToggle = false;
     emit heightToggleChanged( m_heightToggle );
     m_oldOffsetX = 0.0f;
@@ -951,7 +927,13 @@ void MoveCenterTabController::reset()
     m_lastControllerPosition[2] = 0.0f;
     m_lastMoveHand = vr::TrackedControllerRole_Invalid;
     m_lastRotateHand = vr::TrackedControllerRole_Invalid;
-    applyChaperoneResetData();
+
+    // Option 1: Does not save
+    updateSpace( true );
+    updateChaperoneResetData();
+
+    // Option 2: on reset will recenter play area
+    // applyChaperoneResetData();
 
     // For Center Marker
     // Needs to happen after apply chaperone
@@ -1106,6 +1088,7 @@ void MoveCenterTabController::zeroOffsets()
             // down properly.
             parent->setPreviousShutdownSafe( false );
         }
+        m_pendingZeroOffsets = true;
     }
     if ( m_roomSetupModeDetected )
     {
@@ -1119,7 +1102,7 @@ void MoveCenterTabController::zeroOffsets()
 void MoveCenterTabController::sendSeatedRecenter()
 {
     vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseSeated );
-    // vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseStanding );
+    vr::VRChaperone()->ResetZeroPose( vr::TrackingUniverseStanding );
 }
 
 double MoveCenterTabController::getHmdYawTotal()
@@ -1162,10 +1145,6 @@ void MoveCenterTabController::updateSeatedResetData()
     vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
     // done with this recenter, so set self request back to false for next
     // time.
-    m_selfRequestedSeatedRecenter = false;
-    // set pending update here, will be processed on next instance of motion
-    // or running the reset() function.
-    m_pendingSeatedRecenter = true;
 }
 
 void MoveCenterTabController::updateChaperoneResetData()
@@ -1188,10 +1167,11 @@ void MoveCenterTabController::updateChaperoneResetData()
     updateCollisionBoundsForOffset();
     parent->m_chaperoneTabController.updateHeight( getBoundsBasisMaxY() );
 
-    unsigned checkQuadCount = 0;
-    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
-                                                           &checkQuadCount );
-    if ( checkQuadCount > 0 )
+    //    unsigned checkQuadCount = 0;
+    //    vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
+    //                                                           &checkQuadCount
+    //                                                           );
+    if ( currentQuadCount > 0 )
     {
         parent->chaperoneUtils().loadChaperoneData( false );
     }
@@ -1233,17 +1213,19 @@ void MoveCenterTabController::updateCollisionBoundsForOffset()
 
 void MoveCenterTabController::applyChaperoneResetData()
 {
-    vr::VRChaperoneSetup()->HideWorkingSetPreview();
+    updateSpace( true );
     vr::VRChaperoneSetup()->RevertWorkingCopy();
     if ( m_collisionBoundsCountForReset > 0 )
     {
         vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
             m_collisionBoundsForReset, m_collisionBoundsCountForReset );
     }
-    vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
-        &m_universeCenterForReset );
-    vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
-        &m_seatedCenterForReset );
+    // zeroOffsets();
+    // These commands set play area as centered which is un-desirable
+    //  vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
+    //      &m_universeCenterForReset );
+    //  vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
+    //     &m_seatedCenterForReset );
 
     vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live );
 
@@ -2493,29 +2475,6 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
          && m_rotation == m_oldRotation && !forceUpdate )
     {
         return;
-    }
-
-    // reload from disk if we're at zero offsets and allow external edits
-    if ( allowExternalEdits()
-         && ( abs( m_oldOffsetX ) + abs( m_oldOffsetY ) + abs( m_oldOffsetZ )
-              + abs( static_cast<float>( m_oldRotation ) ) )
-                == 0 )
-    {
-        vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
-        vr::VRChaperoneSetup()->CommitWorkingCopy(
-            vr::EChaperoneConfigFile_Live );
-        updateChaperoneResetData();
-    }
-
-    // do a late on-demand setting of seated center basis when we need it
-    // for motion. This gives the reload from disk a little more time to
-    // complete before we apply the new seated basis.
-    if ( m_pendingSeatedRecenter )
-    {
-        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
-            &m_seatedCenterForReset );
-
-        m_pendingSeatedRecenter = false;
     }
 
     vr::HmdMatrix34_t offsetUniverseCenter;

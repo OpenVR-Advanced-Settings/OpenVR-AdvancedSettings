@@ -131,6 +131,7 @@ private:
     QString m_updateMessage = "";
     QString m_optionalMessage = "";
     QString m_versionCheckText = "";
+    bool m_incomingReset = false;
 
     QUrl m_runtimePathUrl;
 

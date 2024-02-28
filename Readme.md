@@ -358,13 +358,14 @@ These version are not stable and this should be considered for advanced users on
   - **Enable Timing Overlay**: Enables a simple Timing overlay, locked to HMD currently.
   - **Allow Multiple Drivers**: Allows multiple Drivers to be loaded allowing multi-device setups (i.e. rift with vive trackers).
   - **Disable Notifications**: Disables Notifications (pop-ups) while in VR.
+  - **Require HMD**: When un-checked disables SteamVR's requirement for an HMD
   - **Enable System Button Binding**: Allows System Button to be bound and used in any app. (you will probably want to change the bindings in "VR Compositor")
+  - **Controller Power Turns on SteamVR** Un-checking this will make it so if you turn on a controller or tracker SteamVR will not start
   - **No Fade to Grid**: When app goes non-responsive, you will not fade to grid.
 - **Camera** (all checkboxes require restart)
   - **Enable Camera**: Enables Camera Features
-  - **Camera for Bounds**: Your camera view will replace your vr view as you near/exit chaperone
-  - **Camera for Dashboard**: You will have a small camera view attached to your controller when you have the dashboard active.
-  - **Camera for Room View**: You will have a Tron/Shadow version of the room when double-clicking system button.
+  - **Show Camera on bounds collision**: Your camera view will replace your vr view as you near/exit chaperone
+  - **Show Camera on controller**: Your camera view will pop up as an overlay on your controller
 - **Binds**
   - **Enable Per-App**: Enables Per App Binding Feature
   - **Application**: Application to set Per app Bindings
@@ -552,6 +553,8 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 
 - **Media Control Keys:** Allows controlling a media player through the media keys. This is the same as having a keyboard with media keys and then pressing them. Should support most common media players.
 
+- **Show Tracker Batteries** Shows an Overlay on Trackers depecting battery percentage
+
 ## - Statistics Page
 
 <img src="docs/screenshots/StatisticsPage.png" width="600" alt="Statistics Page">
@@ -571,8 +574,6 @@ Allows users to temporarily move and rotate the center of the playspace. This al
 <img src="docs/screenshots/SettingsPage.png" width="600" alt="Settings Page">
 
 - **Autostart:** Allows you to enable/disable auto start.
-- **Allow External App Chaperone Edits:** Incorporates changes to the chaperone and universe center made by other applications. These changes could come from anywhere, including apps with unpredictable interactions with Advanced Settings. Therefore, this option opens the potential for chaperone misalignment or corruption. However it also allows other chaperone tweaking tools to function in tandem with Advanced Settings. **This option should only be checked if required for compatibility with other apps.** *Note: Changes will only take effect when offsets and rotation are all zero.*
-- **Old-Style Motion:** Uses the old system of writing the chaperone universe center and bounds to disk every frame. Use this option only if you experience issues with playspace motion such as snapping back to reset position after releasing a space-drag. This old mode is smooth on most systems but is in theory less performant than the normal method.
 - **Universe-Centered Rotation:** Causes Rotation to be applied to Universe Center Rather than HMD (Disables offsets automatically compensating to pivot at the HMD).
 - **Enable Automatic Crash Recovery of Chaperone Config:** This applies the last good autosaved chaperone profile when starting up after not shutting down properly.
 - **Disable Notification of Newer Version Availability**: This turns off the on start-up check for a new version. (You can refresh this to do a manual check.)
