@@ -315,8 +315,7 @@ MyStackViewPage {
         } // end column
             Component.onCompleted: {
                 settingsAutoStartToggle.checked = SettingsTabController.autoStartEnabled
-
-
+                universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
                 disableCrashRecoveryToggle.checked = !OverlayController.crashRecoveryDisabled
                 customTickRateText.text = OverlayController.customTickRateMs
                 vsyncDisabledToggle.checked = OverlayController.vsyncDisabled
