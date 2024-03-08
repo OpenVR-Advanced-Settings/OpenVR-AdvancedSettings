@@ -137,7 +137,7 @@ endforeach()
 
 set_source_files_properties(src/res/qml/common/MyResources.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
-qt_add_executable(AdvancedSettings WIN32 MACOSX_BUNDLE ${SRCS})
+qt_add_executable(AdvancedSettings WIN32 MACOSX_BUNDLE ${SRCS} ${RESOURCES})
 
 target_include_directories(AdvancedSettings PUBLIC
     src
@@ -168,6 +168,8 @@ find_library(OPENVR_LIBRARIES
 target_link_libraries(AdvancedSettings PRIVATE
     Qt::Core
     Qt::Gui
+    # For QRhi
+    Qt::GuiPrivate
     Qt::Multimedia
     Qt::Qml
     Qt::Quick
@@ -183,7 +185,6 @@ qt_add_qml_module(AdvancedSettings
     URI AdvancedSettings
     VERSION ${PROJECT_VERSION}
     QML_FILES ${QML_FILES}
-    RESOURCES ${RESOURCES}
 )
 
 

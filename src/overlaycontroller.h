@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <openvr.h>
 #include <QtCore/QtCore>
 // because of incompatibilities with QtOpenGL and GLEW we need to cherry pick
@@ -24,6 +25,8 @@
 #include <QNetworkRequest>
 #include <QQuickRenderTarget>
 #include <memory>
+#include <optional>
+#include <rhi/qrhi.h>
 
 #include "openvr/openvr_init.h"
 
@@ -108,10 +111,19 @@ private:
 
     QQuickRenderControl m_renderControl;
     QQuickWindow m_window{ &m_renderControl };
+
+    std::optional<vr::ETextureType> m_cached_vr_texture_type;
+    std::unique_ptr<QRhi> m_rhi;
+    std::unique_ptr<QRhiTexture> m_pFBTexture;
+    std::unique_ptr<QRhiTextureRenderTarget> m_render_target;
+    std::unique_ptr<QRhiRenderPassDescriptor> m_render_pass_descriptor;
+
+    /*
     std::unique_ptr<QOpenGLFramebufferObject> m_pFbo;
     QQuickRenderTarget m_pRenderTarget;
     QOpenGLContext m_openGLContext;
     QOffscreenSurface m_offscreenSurface;
+    */
 
     QTimer m_pumpEventsTimer;
     std::unique_ptr<QTimer> m_pRenderTimer;
@@ -180,12 +192,18 @@ private:
     void processRotationBindings();
     void processExclusiveInputBinding();
 
+    vr::ETextureType vrTextureTypeFromRhiBackend();
+    vr::Texture_t vrTextureFromRhiTexture( QRhiTexture& tex );
+
     bool m_exclusiveState = false;
     bool m_keyPressOneState = false;
     bool m_keyPressTwoState = false;
 
 public:
-    OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
+    OverlayController( std::unique_ptr<QRhi> rhi,
+                       bool desktopMode,
+                       bool noSound,
+                       QQmlEngine& qmlEngine );
     virtual ~OverlayController();
 
     void Shutdown();

@@ -180,8 +180,10 @@ template <class T> void deviceCallback( const T* i, const int isLast )
             pulseAudioData.currentDefaultSourceInfo = *i;
         }
 
+        /*
         qDebug() << "Adding device to input: '" << i->name << "', '"
                  << getDeviceName( i->proplist ) << "'.";
+                 */
         pulseAudioData.sourceInputDevices.push_back(
             AudioDevice( i->name, getDeviceName( i->proplist ) ) );
     }
@@ -193,8 +195,10 @@ template <class T> void deviceCallback( const T* i, const int isLast )
             pulseAudioData.currentDefaultSinkInfo = *i;
         }
 
+        /*
         qDebug() << "Adding device to output: '" << i->name << "', '"
                  << getDeviceName( i->proplist ) << "'.";
+                 */
         pulseAudioData.sinkOutputDevices.push_back(
             AudioDevice( i->name, getDeviceName( i->proplist ) ) );
     }
@@ -243,10 +247,12 @@ void getDefaultDevicesCallback( pa_context* c,
 
     loopControl = PulseAudioLoopControl::Stop;
 
+    /*
     qDebug() << "getDefaultDevicesCallback done with sink output device: '"
              << pulseAudioData.defaultSinkOutputDeviceId
              << "' and source input '"
              << pulseAudioData.defaultSourceInputDeviceId << "'.";
+             */
 }
 
 void stateCallbackFunction( pa_context* c, void* userdata )

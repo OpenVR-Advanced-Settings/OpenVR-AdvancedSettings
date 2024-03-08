@@ -23,6 +23,11 @@
 #include "utils/Matrix.h"
 #include "keyboard_input/input_sender.h"
 #include "settings/settings.h"
+#include <qapplication.h>
+#include <qlogging.h>
+#include <rhi/qrhi.h>
+#include <stdexcept>
+#include <unistd.h>
 
 // application namespace
 namespace advsettings
@@ -41,13 +46,14 @@ int verifyCustomTickRate( const int tickRate )
     return tickRate;
 }
 
-OverlayController::OverlayController( bool desktopMode,
+OverlayController::OverlayController( std::unique_ptr<QRhi> rhi,
+                                      bool desktopMode,
                                       bool noSound,
                                       QQmlEngine& qmlEngine )
     : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ),
       m_verifiedCustomTickRateMs( verifyCustomTickRate( settings::getSetting(
           settings::IntSetting::APPLICATION_customTickRateMs ) ) ),
-      m_actions(), m_alarm()
+      m_actions(), m_alarm(), m_rhi( std::move( rhi ) )
 {
     // Arbitrarily chosen Max Length of Directory path, should be sufficient for
     // Any set-up
@@ -85,28 +91,6 @@ OverlayController::OverlayController( bool desktopMode,
     {
         m_desktopMode = desktopModeToggle();
     }
-
-    QSurfaceFormat format;
-    // Qt's QOpenGLPaintDevice is not compatible with OpenGL versions >= 3.0
-    // NVIDIA does not care, but unfortunately AMD does
-    // Are subtle changes to the semantics of OpenGL functions actually covered
-    // by the compatibility profile, and this is an AMD bug?
-    format.setVersion( 2, 1 );
-    // format.setProfile( QSurfaceFormat::CompatibilityProfile );
-    format.setDepthBufferSize( 16 );
-    format.setStencilBufferSize( 8 );
-    format.setSamples( 16 );
-
-    m_openGLContext.setFormat( format );
-    if ( !m_openGLContext.create() )
-    {
-        throw std::runtime_error( "Could not create OpenGL context" );
-    }
-
-    // create an offscreen surface to attach the context and FBO to
-    m_offscreenSurface.setFormat( m_openGLContext.format() );
-    m_offscreenSurface.create();
-    m_openGLContext.makeCurrent( &m_offscreenSurface );
 
     if ( !vr::VROverlay() )
     {
@@ -366,7 +350,9 @@ void OverlayController::Shutdown()
         m_pRenderTimer->stop();
         m_pRenderTimer.reset();
     }
-    m_pFbo.reset();
+    m_render_pass_descriptor.reset();
+    m_render_target.reset();
+    m_pFBTexture.reset();
 }
 
 void OverlayController::SetWidget( QQuickItem* quickItem,
@@ -420,6 +406,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         // assertion gets thrown. Therefore we use an timer to delay render
         // calls
         m_pRenderTimer.reset( new QTimer() );
+        m_pRenderTimer->moveToThread( qApp->thread() );
         m_pRenderTimer->setSingleShot( true );
         m_pRenderTimer->setInterval( 5 );
         connect( m_pRenderTimer.get(),
@@ -427,19 +414,27 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                  this,
                  SLOT( renderOverlay() ) );
 
-        QOpenGLFramebufferObjectFormat fboFormat;
-        fboFormat.setAttachment(
-            QOpenGLFramebufferObject::CombinedDepthStencil );
-        fboFormat.setTextureTarget( GL_TEXTURE_2D );
-        m_pFbo.reset( new QOpenGLFramebufferObject(
-            static_cast<int>( quickItem->width() ),
-            static_cast<int>( quickItem->height() ),
-            fboFormat ) );
+        m_pFBTexture.reset( m_rhi->newTexture(
+            QRhiTexture::RGBA8,
+            quickItem->size().toSize(),
+            1,
+            QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource ) );
+        if ( !m_pFBTexture->create() )
+            throw std::runtime_error( "RhiTexture not created" );
 
-        m_pRenderTarget = QQuickRenderTarget::fromOpenGLTexture(
-            m_pFbo->texture(), m_pFbo->size() );
+        m_render_target.reset(
+            m_rhi->newTextureRenderTarget( { m_pFBTexture.get() } ) );
+        m_render_pass_descriptor.reset(
+            m_render_target->newCompatibleRenderPassDescriptor() );
+        m_render_target->setRenderPassDescriptor(
+            m_render_pass_descriptor.get() );
+        if ( !m_render_target->create() )
+            throw std::runtime_error( "failed to create render target" );
 
-        m_window.setRenderTarget( m_pRenderTarget );
+        auto qqrt
+            = QQuickRenderTarget::fromRhiRenderTarget( m_render_target.get() );
+
+        m_window.setRenderTarget( qqrt );
         quickItem->setParentItem( m_window.contentItem() );
         m_window.setGeometry( 0,
                               0,
@@ -512,6 +507,41 @@ void OverlayController::OnRenderRequest()
     }
 }
 
+vr::ETextureType OverlayController::vrTextureTypeFromRhiBackend()
+{
+    if ( !m_cached_vr_texture_type.has_value() )
+    {
+        switch ( m_rhi->backend() )
+        {
+        case QRhi::Vulkan:
+            m_cached_vr_texture_type = vr::TextureType_Vulkan;
+            break;
+        case QRhi::D3D12:
+            m_cached_vr_texture_type = vr::TextureType_DirectX12;
+            break;
+        case QRhi::D3D11:
+            m_cached_vr_texture_type = vr::TextureType_DirectX;
+            break;
+        case QRhi::OpenGLES2:
+            m_cached_vr_texture_type = vr::TextureType_OpenGL;
+            break;
+        case QRhi::Metal:
+            m_cached_vr_texture_type = vr::TextureType_Metal;
+            break;
+        default:
+            qFatal() << "unknown RHI backend encountered:" << m_rhi->backend();
+            throw std::runtime_error( "unsupported RHI backend encountered" );
+        }
+    }
+    return m_cached_vr_texture_type.value();
+}
+vr::Texture_t OverlayController::vrTextureFromRhiTexture( QRhiTexture& tex )
+{
+    return { reinterpret_cast<void*>( tex.nativeTexture().object ),
+             vrTextureTypeFromRhiBackend(),
+             vr::ColorSpace_Auto };
+}
+
 void OverlayController::renderOverlay()
 {
     if ( !m_desktopMode )
@@ -523,28 +553,24 @@ void OverlayController::renderOverlay()
                       m_ulOverlayThumbnailHandle ) ) )
             return;
         m_renderControl.polishItems();
+        m_renderControl.beginFrame();
         m_renderControl.sync();
         m_renderControl.render();
+        m_renderControl.endFrame();
 
-        GLuint unTexture = m_pFbo->texture();
-        if ( unTexture != 0 )
+        auto tex = vrTextureFromRhiTexture( *m_pFBTexture );
+        if ( tex.handle != nullptr )
         {
-#if defined _WIN64 || defined _LP64
-            // To avoid any compiler warning because of cast to a larger
-            // pointer type (warning C4312 on VC)
-            vr::Texture_t texture = { reinterpret_cast<void*>(
-                                          static_cast<uint64_t>( unTexture ) ),
-                                      vr::TextureType_OpenGL,
-                                      vr::ColorSpace_Auto };
-#else
-            vr::Texture_t texture = { reinterpret_cast<void*>( unTexture ),
-                                      vr::TextureType_OpenGL,
-                                      vr::ColorSpace_Auto };
-#endif
-            vr::VROverlay()->SetOverlayTexture( m_ulOverlayHandle, &texture );
+            qDebug() << "PID"
+                     << vr::VROverlay()->GetOverlayRenderingPid(
+                            m_ulOverlayHandle )
+                     << getpid();
+            vr::VROverlay()->SetOverlayTexture( m_ulOverlayHandle, &tex );
         }
+        /*
         m_openGLContext.functions()->glFlush(); // We need to flush otherwise
-                                                // the texture may be empty.*/
+                                                // the texture may be empty.
+        */
     }
 }
 
@@ -569,7 +595,7 @@ QPointF OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
     float h = static_cast<float>( m_window.height() );
     y = h - y;
 #endif
-    return QPointF( mouse.x, y );
+    return { mouse.x, y };
 }
 
 void OverlayController::processMediaKeyBindings()
