@@ -19,6 +19,8 @@ void RotationTabController::initStage1()
 
 void RotationTabController::initStage2( OverlayController* var_parent )
 {
+    this->parent = var_parent;
+
     const auto autoturnOverlayKey
         = std::string( application_strings::applicationKey )
           + ".autoturnnotification";
@@ -72,8 +74,6 @@ void RotationTabController::initStage2( OverlayController* var_parent )
         &notificationTransform );
 
     emit defaultProfileDisplay();
-
-    this->parent = var_parent;
 }
 
 void RotationTabController::eventLoopTick(
