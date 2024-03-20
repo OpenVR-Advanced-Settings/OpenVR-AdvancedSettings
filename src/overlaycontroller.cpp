@@ -1248,41 +1248,28 @@ void OverlayController::mainEventLoop()
         break;
 
         case vr::VREvent_SeatedZeroPoseReset:
-        {
-            m_incomingReset = true;
-        }
-        break;
         case vr::VREvent_StandingZeroPoseReset:
         {
             m_incomingReset = true;
         }
         break;
 
-        // Multiple ChaperoneUniverseHasChanged are often emitted at the
-        // same time (some with a little bit of delay) There is no sure way
-        // to recognize redundant events, we can only exclude redundant
-        // events during the same call of OnTimeoutPumpEvents() INFO Removed
-        // logging on play space mover for possible crashing issues.
+        // Multiple ChaperoneUniverseHasChanged are often
+        // emitted at the same time (some with a little bit of
+        // delay) There is no sure way to recognize redundant
+        // events, we can only exclude redundant events during
+        // the same call of OnTimeoutPumpEvents() INFO Removed
+        // logging on play space mover for possible crashing
+        // issues.
         case vr::VREvent_ChaperoneUniverseHasChanged:
         {
             uint64_t previousUniverseId
                 = vrEvent.data.chaperone.m_nPreviousUniverse;
             uint64_t currentUniverseId
                 = vrEvent.data.chaperone.m_nCurrentUniverse;
-            LOG( INFO ) << "(VREvent) ChaperoneUniverseHasChanged... Previous:"
-                        << previousUniverseId
-                        << " Current:" << currentUniverseId;
-
-            if ( !chaperoneDataAlreadyUpdated )
-            {
-                m_chaperoneUtils.loadChaperoneData();
-                chaperoneDataAlreadyUpdated = true;
-            }
-        }
-        break;
-
-        case vr::VREvent_ChaperoneDataHasChanged:
-        {
+            LOG( INFO )
+                << "(VREvent) ChaperoneUniverseHasChanged... Previous : "
+                << previousUniverseId << " Current:" << currentUniverseId;
             if ( !chaperoneDataAlreadyUpdated )
             {
                 m_chaperoneUtils.loadChaperoneData();
@@ -1303,12 +1290,11 @@ void OverlayController::mainEventLoop()
             break;
         }
     }
-
     if ( m_incomingReset )
     {
         m_incomingReset = false;
-        m_moveCenterTabController.incomingSeatedReset();
-        LOG( INFO ) << "Incoming Reset";
+        LOG( INFO ) << "Reset zero event recorded";
+        m_moveCenterTabController.incomingZeroReset();
     }
 
     vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
