@@ -57,13 +57,8 @@ GroupBox {
                 stepSize: 0.01
                 value: 1.0
                 Layout.fillWidth: true
-                onPositionChanged: {
-                    var val = (this.value * 100)
-                    brightnessValueText.text = Math.round(val) + "%"
-                }
-                onValueChanged: {
-
-                    VideoTabController.setBrightnessOpacityValue(value.toFixed(2), true)
+                onMoved: {
+                    VideoTabController.setBrightnessOpacityValue(this.value.toFixed(2), true)
                 }
             }
 
@@ -77,13 +72,13 @@ GroupBox {
                 function onInputEvent(input) {
                     var val2 = parseFloat(input)
                     if (!isNaN(val2)) {
-                        if (val2 < 5) {
-                            val2 = 5
+                        if (val2 < 3) {
+                            val2 = 3
                         } else if (val2 > 100.0) {
                             val2 = 100.0
                         }
-                        var v2 = (val2/100).toFixed(2)
-                            brightnessSlider.value = v
+                        var v2 = (val2/100)
+                        VideoTabController.setBrightnessOpacityValue(v2.toFixed(2), true)
                     }
                     text = Math.round(VideoTabController.brightnessOpacityValue * 100) + "%"
                 }
@@ -304,7 +299,9 @@ GroupBox {
         target: VideoTabController
 
         onBrightnessOpacityValueChanged: {
-            brightnessSlider.value = VideoTabController.brightnessOpacityValue
+            var brightvalue = VideoTabController.brightnessOpacityValue
+            brightnessSlider.value = brightvalue
+            brightnessValueText.text = Math.round(brightvalue*100)+ "%"
         }
         onBrightnessEnabledChanged: {
             brightnessToggle.checked = VideoTabController.brightnessEnabled

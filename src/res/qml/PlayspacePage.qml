@@ -488,7 +488,7 @@ MyStackViewPage {
                     id: spaceSeatedRecenter
                     Layout.preferredWidth: 250
                     visible: true
-                    text: "Seated Recenter"
+                    text: "Re-center"
                     onClicked: {
                         MoveCenterTabController.sendSeatedRecenter()
                     }

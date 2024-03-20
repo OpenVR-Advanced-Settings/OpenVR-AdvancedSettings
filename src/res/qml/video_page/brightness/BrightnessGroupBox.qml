@@ -57,9 +57,7 @@ GroupBox {
                 value: 1.0
                 Layout.fillWidth: true
                 onMoved: {
-                    var val = (this.value * 100)
-                    brightnessValueText.text = Math.round(val) + "%"
-                    VideoTabController.setBrightnessOpacityValue(value.toFixed(2), true)
+                    VideoTabController.setBrightnessOpacityValue(this.value.toFixed(2), true)
                 }
             }
 
@@ -73,17 +71,13 @@ GroupBox {
                 function onInputEvent(input) {
                     var val = parseFloat(input)
                     if (!isNaN(val)) {
-                        if (val < 5.0) {
-                            val = 5.0
+                        if (val < 3) {
+                            val = 3
                         } else if (val > 100.0) {
                             val = 100.0
                         }
                         var v = (val/100)
                         VideoTabController.setBrightnessOpacityValue(v.toFixed(2), true)
-                        if(v<.05){
-                        v = .05
-                        }
-                            brightnessSlider.value = v
                     }
                     text = Math.round(VideoTabController.brightnessOpacityValue * 100) + "%"
                 }

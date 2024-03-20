@@ -887,7 +887,11 @@ void MoveCenterTabController::shutdown()
 
 void MoveCenterTabController::incomingZeroReset()
 {
-    // DEBUG
+    // Calibration state is ultimately no longer a safety issue per discussions
+    // with valve (the warnings/error's dont' mean anything for out context)
+    // However It does appear to effect the recenter method (potentially other
+    // aspects) IN mixed tracking environments I get this issue, the check if
+    // there is an error and apply autosaved profile is hopefully a workaround
     auto calState = vr::VRChaperone()->GetCalibrationState();
     LOG( INFO ) << "Calibration State on Zero Reset is: " << calState;
 
@@ -897,6 +901,13 @@ void MoveCenterTabController::incomingZeroReset()
     {
         LOG( INFO ) << "Re-Center Stage 1, reload from disk";
         m_recenterStages++;
+
+        if ( calState > 199 && m_initComplete )
+        {
+            LOG( INFO ) << "Chaperone calibration state is error, attempting "
+                           "to apply autosaved profile to fix issue";
+            parent->m_chaperoneTabController.applyAutosavedProfile();
+        }
 
         // Revert Working copy to "apply" the changes
         vr::VRChaperoneSetup()->RevertWorkingCopy();
@@ -921,7 +932,8 @@ void MoveCenterTabController::incomingZeroReset()
 
 void MoveCenterTabController::reset()
 {
-    // DEBUG
+    // DO NOT attempt to apply autosaved profile on reset, as it is triggered by
+    // the apply chaperone profile Side effects are bad!
     auto calState = vr::VRChaperone()->GetCalibrationState();
     LOG( INFO ) << "Calibration State on Reset is: " << calState;
 
@@ -931,6 +943,7 @@ void MoveCenterTabController::reset()
                           "basis is acquired!";
         return;
     }
+
     m_heightToggle = false;
     emit heightToggleChanged( m_heightToggle );
     m_oldOffsetX = 0.0f;
@@ -1082,6 +1095,9 @@ void MoveCenterTabController::zeroOffsets()
                 // all init complete, safe to autosave chaperone profile
                 parent->m_chaperoneTabController.createNewAutosaveProfile();
                 m_initComplete = true;
+                auto calState = vr::VRChaperone()->GetCalibrationState();
+                LOG( INFO ) << "Calibration State after autosave profile is: "
+                            << calState;
             }
             else
             {
@@ -1830,11 +1846,20 @@ void MoveCenterTabController::heightToggleAction( bool heightToggleJustPressed )
 
 void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
 {
-    auto calState = vr::VRChaperone()->GetCalibrationState();
-    LOG( INFO ) << "Calibration State on Reset Offsets is: " << calState;
-
+    // The fn is ran if bool is true, this function is called every pass because
+    // of keyboard input.
     if ( resetOffsetsJustPressed )
     {
+        auto calState = vr::VRChaperone()->GetCalibrationState();
+        LOG( INFO ) << "Calibration State on Reset Offsets is: " << calState;
+
+        if ( calState > 199 && m_initComplete )
+        {
+            LOG( INFO ) << "Chaperone calibration state is error, attempting "
+                           "to apply autosaved profile to fix issue";
+            parent->m_chaperoneTabController.applyAutosavedProfile();
+        }
+
         m_offsetX = 0.0f;
         m_offsetY = 0.0f;
         m_offsetZ = 0.0f;
