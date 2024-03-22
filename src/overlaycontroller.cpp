@@ -526,22 +526,15 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                 autoApplyChaperoneName() );
         if ( chapindex.first )
         {
+            LOG( INFO ) << "Auto Applying Chaperone";
             m_chaperoneTabController.applyChaperoneProfile( chapindex.second );
-            bool success = vr::VRApplications()->CancelApplicationLaunch(
-                "openvr.tool.steamvr_room_setup" );
-            auto successsstr = success ? "true" : "false";
-
-            LOG( INFO ) << "Attempted to stop roomsetup: " << successsstr;
-            if ( vr::VRApplications()->GetApplicationProcessId(
-                     "openvr.tool.steamvr_room_setup" )
-                 != 0 )
-            {
-                LOG( INFO ) << "room setup running after applying chaperone "
-                               "exiting roomsetup";
-                vr::VRApplications()->LaunchApplication(
-                    "openvr.tool.steamvr_environments" );
-            }
+            // This should be the way to stop room-setup from starting... as it
+            // sends steamvr a signal that it is completed
+            vr::VRChaperoneSetup()->CommitWorkingCopy(
+                vr::EChaperoneConfigFile_Live );
+            return;
         }
+        LOG( WARNING ) << "Profile Not Found for Auto Apply Chaperone!";
     }
 }
 
