@@ -25,6 +25,7 @@
 #include "settings/settings.h"
 #include <qapplication.h>
 #include <qlogging.h>
+#include <qnamespace.h>
 #include <rhi/qrhi.h>
 #include <stdexcept>
 #include <unistd.h>
@@ -46,14 +47,13 @@ int verifyCustomTickRate( const int tickRate )
     return tickRate;
 }
 
-OverlayController::OverlayController( std::unique_ptr<QRhi> rhi,
-                                      bool desktopMode,
+OverlayController::OverlayController( bool desktopMode,
                                       bool noSound,
                                       QQmlEngine& qmlEngine )
     : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ),
       m_verifiedCustomTickRateMs( verifyCustomTickRate( settings::getSetting(
           settings::IntSetting::APPLICATION_customTickRateMs ) ) ),
-      m_actions(), m_alarm(), m_rhi( std::move( rhi ) )
+      m_actions(), m_alarm()
 {
     // Arbitrarily chosen Max Length of Directory path, should be sufficient for
     // Any set-up
@@ -414,7 +414,12 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                  this,
                  SLOT( renderOverlay() ) );
 
-        m_pFBTexture.reset( m_rhi->newTexture(
+        if ( !m_renderControl.initialize() )
+            throw std::runtime_error( "could not initialize m_renderControl" );
+
+        QRhi* rhi = m_renderControl.rhi();
+
+        m_pFBTexture.reset( rhi->newTexture(
             QRhiTexture::RGBA8,
             quickItem->size().toSize(),
             1,
@@ -423,7 +428,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             throw std::runtime_error( "RhiTexture not created" );
 
         m_render_target.reset(
-            m_rhi->newTextureRenderTarget( { m_pFBTexture.get() } ) );
+            rhi->newTextureRenderTarget( { m_pFBTexture.get() } ) );
         m_render_pass_descriptor.reset(
             m_render_target->newCompatibleRenderPassDescriptor() );
         m_render_target->setRenderPassDescriptor(
@@ -511,7 +516,8 @@ vr::ETextureType OverlayController::vrTextureTypeFromRhiBackend()
 {
     if ( !m_cached_vr_texture_type.has_value() )
     {
-        switch ( m_rhi->backend() )
+        QRhi* rhi = m_renderControl.rhi();
+        switch ( rhi->backend() )
         {
         case QRhi::Vulkan:
             m_cached_vr_texture_type = vr::TextureType_Vulkan;
@@ -529,7 +535,7 @@ vr::ETextureType OverlayController::vrTextureTypeFromRhiBackend()
             m_cached_vr_texture_type = vr::TextureType_Metal;
             break;
         default:
-            qFatal() << "unknown RHI backend encountered:" << m_rhi->backend();
+            qFatal() << "unknown RHI backend encountered:" << rhi->backend();
             throw std::runtime_error( "unsupported RHI backend encountered" );
         }
     }
@@ -559,14 +565,8 @@ void OverlayController::renderOverlay()
         m_renderControl.endFrame();
 
         auto tex = vrTextureFromRhiTexture( *m_pFBTexture );
-        if ( tex.handle != nullptr )
-        {
-            qDebug() << "PID"
-                     << vr::VROverlay()->GetOverlayRenderingPid(
-                            m_ulOverlayHandle )
-                     << getpid();
-            vr::VROverlay()->SetOverlayTexture( m_ulOverlayHandle, &tex );
-        }
+        vr::VROverlay()->SetOverlayTexture( m_ulOverlayHandle, &tex );
+
         /*
         m_openGLContext.functions()->glFlush(); // We need to flush otherwise
                                                 // the texture may be empty.

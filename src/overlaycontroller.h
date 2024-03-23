@@ -5,7 +5,6 @@
 #include <QtCore/QtCore>
 // because of incompatibilities with QtOpenGL and GLEW we need to cherry pick
 // includes
-#include <QVector2D>
 #include <QMatrix4x4>
 #include <QVector>
 #include <QVector2D>
@@ -113,7 +112,6 @@ private:
     QQuickWindow m_window{ &m_renderControl };
 
     std::optional<vr::ETextureType> m_cached_vr_texture_type;
-    std::unique_ptr<QRhi> m_rhi;
     std::unique_ptr<QRhiTexture> m_pFBTexture;
     std::unique_ptr<QRhiTextureRenderTarget> m_render_target;
     std::unique_ptr<QRhiRenderPassDescriptor> m_render_pass_descriptor;
@@ -200,10 +198,7 @@ private:
     bool m_keyPressTwoState = false;
 
 public:
-    OverlayController( std::unique_ptr<QRhi> rhi,
-                       bool desktopMode,
-                       bool noSound,
-                       QQmlEngine& qmlEngine );
+    OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
     virtual ~OverlayController();
 
     void Shutdown();
