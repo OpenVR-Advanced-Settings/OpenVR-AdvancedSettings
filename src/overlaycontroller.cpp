@@ -1126,8 +1126,7 @@ void OverlayController::mainEventLoop()
                                         m_window.mapToGlobal( ptNewMouse ),
                                         Qt::NoButton,
                                         m_lastMouseButtons,
-                                        Qt::KeyboardModifiers::fromInt( 0 ),
-                                        nullptr );
+                                        Qt::NoModifier );
                 m_ptLastMouse = ptNewMouse;
                 QCoreApplication::sendEvent( &m_window, &mouseEvent );
                 OnRenderRequest();
@@ -1148,8 +1147,7 @@ void OverlayController::mainEventLoop()
                                     m_window.mapToGlobal( ptNewMouse ),
                                     button,
                                     m_lastMouseButtons,
-                                    Qt::KeyboardModifiers::fromInt( 0 ),
-                                    nullptr );
+                                    Qt::NoModifier );
             QCoreApplication::sendEvent( &m_window, &mouseEvent );
         }
         break;
@@ -1167,8 +1165,7 @@ void OverlayController::mainEventLoop()
                                     m_window.mapToGlobal( ptNewMouse ),
                                     button,
                                     m_lastMouseButtons,
-                                    Qt::KeyboardModifiers::fromInt( 0 ),
-                                    nullptr );
+                                    Qt::NoModifier );
             QCoreApplication::sendEvent( &m_window, &mouseEvent );
         }
         break;
