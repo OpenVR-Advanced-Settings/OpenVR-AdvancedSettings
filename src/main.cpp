@@ -5,7 +5,6 @@
 #include <QtLogging>
 #include <QtDebug>
 #include <memory>
-#include <rhi/qrhi.h>
 
 #ifdef _WIN64
 #    include <windows.h>
@@ -52,41 +51,8 @@ int main( int argc, char* argv[] )
     {
         QQmlEngine qmlEngine;
 
-        // TODO: make it select more dynamically (Vulkan and OpenGL on linux;
-        // D3D11 and D3D12 on windows)
-#if QT_CONFIG( vulkan )
-        QVulkanInstance inst;
-#endif
-        std::unique_ptr<QRhi> rhi;
-#if defined( Q_OS_WIN )
-        QRhiD3D12InitParams params;
-        m_rhi.reset( QRhi::create( QRhi::D3D12, &params ) );
-#elif defined( Q_OS_MACOS ) || defined( Q_OS_IOS )
-        QRhiMetalInitParams params;
-        m_rhi.reset( QRhi::create( QRhi::Metal, &params ) );
-#elif QT_CONFIG( vulkan )
-        inst.setExtensions(
-            QRhiVulkanInitParams::preferredInstanceExtensions() );
-        if ( inst.create() )
-        {
-            QRhiVulkanInitParams params;
-            params.inst = &inst;
-            rhi.reset( QRhi::create( QRhi::Vulkan, &params ) );
-        }
-        else
-        {
-            qFatal( "Failed to create Vulkan instance" );
-            throw std::runtime_error( "Failed to create Vulkan instance" );
-        }
-#endif
-        if ( rhi )
-            qDebug() << rhi->backendName() << rhi->driverInfo();
-        else
-            throw std::runtime_error( "Failed to initialize RHI" );
-
         std::unique_ptr<advsettings::OverlayController> controller(
-            new advsettings::OverlayController( std::move( rhi ),
-                                                commandLineArgs.desktopMode,
+            new advsettings::OverlayController( commandLineArgs.desktopMode,
                                                 commandLineArgs.forceNoSound,
                                                 qmlEngine ) );
 
