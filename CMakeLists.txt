@@ -253,7 +253,7 @@ if(debugSymbolsAndLogs)
     )
 endif()
 
-if(WIN32)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     target_sources(AdvancedSettings PUBLIC
         src/keyboard_input/input_sender_win.cpp
         src/media_keys/media_keys_win.cpp
@@ -261,21 +261,16 @@ if(WIN32)
     )
 
     target_link_libraries(AdvancedSettings PRIVATE
-        # Remove: L"${CMAKE_CURRENT_SOURCE_DIR}/../..//third-party/openvr/lib/win64"
         ole32
         user32
     )
-    if(win32-msvc)
-        target_include_directories(AdvancedSettings PRIVATE
-            third-party/policyconfig
-        )
+    target_include_directories(AdvancedSettings PUBLIC third-party/policyconfig)
 
-        target_compile_definitions(AdvancedSettings PRIVATE
+    target_compile_definitions(AdvancedSettings PRIVATE
             _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
         )
-
-        target_compile_options(AdvancedSettings
-            /GL
+    if(MSVC)
+        target_compile_options(AdvancedSettings PUBLIC
             /Gw
             /W4
             /permissive-
@@ -304,16 +299,8 @@ if(WIN32)
                 /WX
             )
         endif()
-    endif()
-
-    if(win32-clang-msvc)
-        target_compile_definitions(AdvancedSettings PRIVATE
-            _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-        )
-
+    elseif(win32-clang-msvc)
         target_compile_options(AdvancedSettings
-            ${CMAKE_CURRENT_SOURCE_DIR}/../../third-party/openvr/headers
-            ${CMAKE_CURRENT_SOURCE_DIR}/../../third-party/policyconfig
             -Wcast-align
             -Wdouble-promotion
             -Wextra
