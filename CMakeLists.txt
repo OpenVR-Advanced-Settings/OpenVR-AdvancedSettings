@@ -254,6 +254,21 @@ if(debugSymbolsAndLogs)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    cmake_path(GET QT_DIR PARENT_PATH QT_ROOT)
+    cmake_path(GET QT_ROOT PARENT_PATH QT_ROOT)
+    cmake_path(GET QT_ROOT PARENT_PATH QT_ROOT)
+
+    cmake_path(NATIVE_PATH QT_ROOT NORMALIZE NATIVE_QT_ROOT)
+    cmake_path(NATIVE_PATH QT_DIR NORMALIZE NATIVE_QT_DIR)
+    cmake_path(NATIVE_PATH PROJECT_SOURCE_DIR NORMALIZE NATIVE_PROJECT_SOURCE_DIR)
+
+    # Needs to be executed: Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process
+    configure_file(build_scripts/win/env.ps1.in env.ps1)
+    configure_file(build_scripts/win/env.sh.in env.sh @ONLY)
+
+    # Adds default qt plugins path
+    configure_file(build_scripts/win/qt.conf.in qt.conf ESCAPE_QUOTES)
+
     target_sources(AdvancedSettings PUBLIC
         src/keyboard_input/input_sender_win.cpp
         src/media_keys/media_keys_win.cpp
