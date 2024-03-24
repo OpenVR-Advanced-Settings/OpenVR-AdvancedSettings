@@ -28,7 +28,6 @@
 #include <qnamespace.h>
 #include <rhi/qrhi.h>
 #include <stdexcept>
-#include <unistd.h>
 
 // application namespace
 namespace advsettings
