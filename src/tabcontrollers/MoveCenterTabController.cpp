@@ -943,7 +943,7 @@ void MoveCenterTabController::reset()
                           "basis is acquired!";
         return;
     }
-
+    // vr::VRChaperoneSetup()->HideWorkingSetPreview();
     m_heightToggle = false;
     emit heightToggleChanged( m_heightToggle );
     m_oldOffsetX = 0.0f;
@@ -959,7 +959,13 @@ void MoveCenterTabController::reset()
     m_lastControllerPosition[2] = 0.0f;
     m_lastMoveHand = vr::TrackedControllerRole_Invalid;
     m_lastRotateHand = vr::TrackedControllerRole_Invalid;
-    applyChaperoneResetData();
+
+    // Option 1: Does not save
+    updateSpace( true );
+    updateChaperoneResetData();
+
+    // Option 2: on reset will recenter play area
+    // applyChaperoneResetData();
 
     // For Center Marker
     // Needs to happen after apply chaperone
@@ -1196,10 +1202,12 @@ void MoveCenterTabController::applyChaperoneResetData()
         vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
             m_collisionBoundsForReset, m_collisionBoundsCountForReset );
     }
-    vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
-        &m_universeCenterForReset );
-    vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
-        &m_seatedCenterForReset );
+    // zeroOffsets();
+    // These commands set play area as centered which is un-desirable
+    //  vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
+    //      &m_universeCenterForReset );
+    //  vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
+    //     &m_seatedCenterForReset );
 
     vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live );
 
