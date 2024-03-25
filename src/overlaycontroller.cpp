@@ -1290,13 +1290,6 @@ void OverlayController::mainEventLoop()
         m_moveCenterTabController.incomingZeroReset();
     }
 
-    if ( m_incomingReset )
-    {
-        m_incomingReset = false;
-        m_moveCenterTabController.incomingSeatedReset();
-        LOG( INFO ) << "Incoming Reset";
-    }
-
     vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
     vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
         vr::TrackingUniverseStanding,

@@ -943,7 +943,6 @@ void MoveCenterTabController::reset()
                           "basis is acquired!";
         return;
     }
-    // vr::VRChaperoneSetup()->HideWorkingSetPreview();
     m_heightToggle = false;
     emit heightToggleChanged( m_heightToggle );
     m_oldOffsetX = 0.0f;
