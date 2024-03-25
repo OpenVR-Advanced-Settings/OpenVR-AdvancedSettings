@@ -1,4 +1,3 @@
-#include <easylogging++.h>
 #include "AudioManagerPulse.h"
 #include "AudioManagerPulse_internal.h"
 #include "../AudioTabController.h"

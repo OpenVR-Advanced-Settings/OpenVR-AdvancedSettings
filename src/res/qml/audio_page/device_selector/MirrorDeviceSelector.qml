@@ -41,10 +41,10 @@ RowLayout {
     }
     Connections {
         target: AudioTabController
-        onMirrorDeviceIndexChanged: {
+        function onMirrorDeviceIndexChanged() {
             setShownAudioDevice(index)
         }
-        onPlaybackDeviceListChanged: {
+        function onPlaybackDeviceListChanged() {
             audioMirrorNameCombo.devices = getAudioDeviceList()
             setShownAudioDevice(AudioTabController.mirrorDeviceIndex)
         }

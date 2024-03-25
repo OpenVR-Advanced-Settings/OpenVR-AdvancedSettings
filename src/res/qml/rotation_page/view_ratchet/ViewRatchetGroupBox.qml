@@ -76,10 +76,10 @@ GroupBox {
     Connections {
         target: RotationTabController
 
-        onViewRatchettingEnabledChanged:{
+        function onViewRatchettingEnabledChanged(){
             viewRatchetToggleBtn.checked = RotationTabController.viewRatchettingEnabled
         }
-        onViewRatchettingPercentChanged:{
+        function onViewRatchettingPercentChanged(){
             var ratchetPercVal = RotationTabController.viewRatchettingPercent
             viewRatchetSlider.value = ratchetPercVal
             viewRatchetText.text = ratchetPercVal.toFixed(2)

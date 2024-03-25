@@ -8,7 +8,8 @@
 #include <QStandardPaths>
 #include <openvr.h>
 #include <iostream>
-#include <easylogging++.h>
+#include <QtLogging>
+#include <QtDebug>
 #include "../openvr/openvr_init.h"
 
 enum ReturnErrorCode
@@ -55,8 +56,8 @@ public:
         }
         catch ( std::exception& e )
         {
-            LOG( ERROR ) << "Exception thrown from an event handler: "
-                         << e.what();
+            qCritical() << "Exception thrown from an event handler: "
+                        << e.what();
         }
         return false;
     }

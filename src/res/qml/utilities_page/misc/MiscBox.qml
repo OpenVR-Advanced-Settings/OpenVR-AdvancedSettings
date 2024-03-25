@@ -53,7 +53,7 @@ GroupBox {
 
     Connections {
         target: UtilitiesTabController
-        onTrackerOvlEnabledChanged:{
+        function onTrackerOvlEnabledChanged(){
             trackerOvlToggle.checked = UtilitiesTabController.trackerOvlEnabled
         }
 

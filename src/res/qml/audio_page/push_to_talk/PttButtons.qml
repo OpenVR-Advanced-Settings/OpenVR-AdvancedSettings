@@ -39,13 +39,13 @@ ColumnLayout {
     }
     Connections {
         target: AudioTabController
-        onPttEnabledChanged: {
+        function onPttEnabledChanged() {
             audioPttEnabledToggle.checked = AudioTabController.pttEnabled
         }
-        onMicReversePttChanged: {
+        function onMicReversePttChanged() {
             audioPttReverseToggle.checked = AudioTabController.micReversePtt
         }
-        onPttShowNotificationChanged: {
+        function onPttShowNotificationChanged() {
             audioPttShowNotificationToggle.checked = AudioTabController.pttShowNotification
         }
     }

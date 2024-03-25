@@ -312,23 +312,23 @@ GroupBox {
     Connections {
         target: RotationTabController
 
-        onAutoTurnEnabledChanged: {
+        function onAutoTurnEnabledChanged() {
             autoTurn.checked = RotationTabController.autoTurnEnabled
         }
-        onAutoTurnActivationDistanceChanged: {
+        function onAutoTurnActivationDistanceChanged() {
             activationSlider.value = RotationTabController.autoTurnActivationDistance.toFixed(2)
         }
-        onAutoTurnDeactivationDistanceChanged:{
+        function onAutoTurnDeactivationDistanceChanged(){
             deactivationSlider.value = RotationTabController.autoTurnDeactivationDistance.toFixed(2)
         }
-        onAutoTurnUseCornerAngleChanged:{
+        function onAutoTurnUseCornerAngleChanged(){
             cornerAngle.checked = RotationTabController.autoTurnUseCornerAngle
         }
-        onAutoTurnSpeedChanged:{
+        function onAutoTurnSpeedChanged(){
             var val = RotationTabController.autoTurnSpeed
             speedSlider.value = ((val/100).toFixed())
         }
-        onAutoTurnModeChanged:{
+        function onAutoTurnModeChanged(){
             if(RotationTabController.autoTurnMode === 1){
 
                 autoTurnModeToggle.checked = true;
@@ -338,13 +338,13 @@ GroupBox {
                  autoTurnModeToggle.checked = false;
             }
         }
-        onMinCordTangleChanged:{
+        function onMinCordTangleChanged(){
             detangleAngleStartText.text = parseInt(RotationTabController.minCordTangle*(180/Math.PI))+ "°"
         }
-        onCordDetangleAngleChanged:{
+        function onCordDetangleAngleChanged(){
             detangleAngleAssistText.text = parseInt(RotationTabController.cordDetangleAngle*(180/Math.PI))+ "°"
         }
-        onAutoTurnShowNotificationChanged:{
+        function onAutoTurnShowNotificationChanged(){
             autoTurnNotificationToggle.checked = RotationTabController.autoTurnShowNotification
         }
     }

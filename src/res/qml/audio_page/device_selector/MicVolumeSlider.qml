@@ -89,7 +89,7 @@ ColumnLayout {
     }
     Connections {
         target: AudioTabController
-        onMicDeviceIndexChanged: {
+        function onMicDeviceIndexChanged() {
             if (index < 0) {
                 audioMicVolumeMinusButton.enabled = false
                 audioMicVolumeSlider.enabled = false
@@ -102,16 +102,16 @@ ColumnLayout {
                 audioMicMuteToggle.enabled = true
             }
         }
-        onMicVolumeChanged: {
+        function onMicVolumeChanged() {
             audioMicVolumeSlider.value = AudioTabController.micVolume
         }
-        onMicMutedChanged: {
+        function onMicMutedChanged() {
             audioMicMuteToggle.checked = AudioTabController.micMuted
         }
-        onPlaybackDeviceListChanged: {
+        function onPlaybackDeviceListChanged() {
 
         }
-        onRecordingDeviceListChanged: {
+        function onRecordingDeviceListChanged() {
             if (AudioTabController.micDeviceIndex < 0) {
                 audioMicVolumeMinusButton.enabled = false
                 audioMicVolumeSlider.enabled = false
