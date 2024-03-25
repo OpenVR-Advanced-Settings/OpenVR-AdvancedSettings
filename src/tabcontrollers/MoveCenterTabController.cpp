@@ -885,25 +885,57 @@ void MoveCenterTabController::shutdown()
     vr::VRChaperoneSetup()->RevertWorkingCopy();
 }
 
-void MoveCenterTabController::incomingSeatedReset()
+void MoveCenterTabController::incomingZeroReset()
 {
-    // This really covers standing reset as well
-    updateChaperoneResetData();
-    if ( m_offsetY != 0 )
+    // Calibration state is ultimately no longer a safety issue per discussions
+    // with valve (the warnings/error's dont' mean anything for out context)
+    // However It does appear to effect the recenter method (potentially other
+    // aspects) IN mixed tracking environments I get this issue, the check if
+    // there is an error and apply autosaved profile is hopefully a workaround
+    auto calState = vr::VRChaperone()->GetCalibrationState();
+    LOG( INFO ) << "Calibration State on Zero Reset is: " << calState;
+
+    // If we detect a seated Recenter and are not currently in process
+    // we reload chaperone from disk
+    if ( m_recenterStages < 1 )
     {
-        m_offsetY = -m_offsetY;
-        updateSpace();
-        updateChaperoneResetData();
+        LOG( INFO ) << "Re-Center Stage 1, reload from disk";
+        m_recenterStages++;
+
+        if ( calState > 199 && m_initComplete )
+        {
+            LOG( INFO ) << "Chaperone calibration state is error, attempting "
+                           "to apply autosaved profile to fix issue";
+            parent->m_chaperoneTabController.applyAutosavedProfile();
+        }
+
+        // Revert Working copy to "apply" the changes
+        vr::VRChaperoneSetup()->RevertWorkingCopy();
+        // Send a Re-center again so the changes stick on our end.
+        sendSeatedRecenter();
+        return;
     }
-    zeroOffsets();
+    // We finalize the Recenter, by zero-ing offsets and setting new zero pos,
+    // and reseting our stage counter
+    if ( m_recenterStages == 1 )
+    {
+        LOG( INFO ) << "Recenter Stage 2 re-set zero pos, and reset offsets";
+        vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+            &m_universeCenterForReset );
+        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+            &m_seatedCenterForReset );
+        resetOffsets( true );
+        m_recenterStages = 0;
+        return;
+    }
 }
 
 void MoveCenterTabController::reset()
 {
-    // This is a weird hack for handling the reset properly don't ask me why
-    // reset plays better w/ a non 0 starting point
-    m_offsetY = 0.01f;
-    updateSpace();
+    // DO NOT attempt to apply autosaved profile on reset, as it is triggered by
+    // the apply chaperone profile Side effects are bad!
+    auto calState = vr::VRChaperone()->GetCalibrationState();
+    LOG( INFO ) << "Calibration State on Reset is: " << calState;
 
     if ( !m_chaperoneBasisAcquired )
     {
@@ -1069,6 +1101,9 @@ void MoveCenterTabController::zeroOffsets()
                 // all init complete, safe to autosave chaperone profile
                 parent->m_chaperoneTabController.createNewAutosaveProfile();
                 m_initComplete = true;
+                auto calState = vr::VRChaperone()->GetCalibrationState();
+                LOG( INFO ) << "Calibration State after autosave profile is: "
+                            << calState;
             }
             else
             {
@@ -1129,32 +1164,15 @@ void MoveCenterTabController::clampVelocity( double* velocity )
     }
 }
 
-void MoveCenterTabController::updateSeatedResetData()
-{
-    m_heightToggle = false;
-    emit heightToggleChanged( m_heightToggle );
-
-    m_oldOffsetX = m_oldOffsetY = m_oldOffsetZ = 0.0f;
-    m_oldRotation = m_rotation = 0;
-    m_offsetX = m_offsetY = m_offsetZ = 0.0f;
-
-    emit offsetXChanged( m_offsetX );
-    emit offsetYChanged( m_offsetY );
-    emit offsetZChanged( m_offsetZ );
-    emit rotationChanged( m_rotation );
-    vr::VRChaperoneSetup()->ReloadFromDisk( vr::EChaperoneConfigFile_Live );
-    // done with this recenter, so set self request back to false for next
-    // time.
-}
-
 void MoveCenterTabController::updateChaperoneResetData()
 {
-    vr::VRChaperoneSetup()->RevertWorkingCopy();
+    // TODO
+    //  vr::VRChaperoneSetup()->RevertWorkingCopy();
     unsigned currentQuadCount = 0;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
                                                            &currentQuadCount );
     m_collisionBoundsForReset = new vr::HmdQuad_t[currentQuadCount];
-    m_collisionBoundsForOffset = new vr::HmdQuad_t[currentQuadCount];
+    // m_collisionBoundsForOffset = new vr::HmdQuad_t[currentQuadCount];
     m_collisionBoundsCountForReset = currentQuadCount;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
         m_collisionBoundsForReset, &currentQuadCount );
@@ -1164,7 +1182,7 @@ void MoveCenterTabController::updateChaperoneResetData()
     vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
         &m_seatedCenterForReset );
 
-    updateCollisionBoundsForOffset();
+    // updateCollisionBoundsForOffset();
     parent->m_chaperoneTabController.updateHeight( getBoundsBasisMaxY() );
 
     //    unsigned checkQuadCount = 0;
@@ -1177,44 +1195,8 @@ void MoveCenterTabController::updateChaperoneResetData()
     }
 }
 
-void MoveCenterTabController::updateCollisionBoundsForOffset()
-{
-    if ( m_collisionBoundsCountForReset > 0 )
-    {
-        float universeCenterForResetYaw
-            = std::atan2( m_universeCenterForReset.m[0][2],
-                          m_universeCenterForReset.m[2][2] );
-
-        // we want to store m_collisionBoundsForOffset as spacially relative
-        // to m_universeCenterForReset, so:
-
-        // for every quad in the chaperone bounds...
-        for ( unsigned quad = 0; quad < m_collisionBoundsCountForReset; quad++ )
-        {
-            // at every corner in that quad...
-            for ( unsigned corner = 0; corner < 4; corner++ )
-            {
-                // copy from m_collisionBoundsForReset
-                m_collisionBoundsForOffset[quad].vCorners[corner].v[0]
-                    = m_collisionBoundsForReset[quad].vCorners[corner].v[0];
-                m_collisionBoundsForOffset[quad].vCorners[corner].v[1]
-                    = m_collisionBoundsForReset[quad].vCorners[corner].v[1];
-                m_collisionBoundsForOffset[quad].vCorners[corner].v[2]
-                    = m_collisionBoundsForReset[quad].vCorners[corner].v[2];
-
-                // unrotate by universe center's yaw
-                rotateFloatCoordinates(
-                    m_collisionBoundsForOffset[quad].vCorners[corner].v,
-                    -universeCenterForResetYaw );
-            }
-        }
-    }
-}
-
 void MoveCenterTabController::applyChaperoneResetData()
 {
-    updateSpace( true );
-    vr::VRChaperoneSetup()->RevertWorkingCopy();
     if ( m_collisionBoundsCountForReset > 0 )
     {
         vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
@@ -1250,7 +1232,7 @@ void MoveCenterTabController::setBoundsBasisHeight( float newHeight )
             m_collisionBoundsForReset[b].vCorners[3].v[1] = 0.0;
         }
 
-        updateCollisionBoundsForOffset();
+        // updateCollisionBoundsForOffset();
         updateSpace( true );
     }
 }
@@ -1872,9 +1854,30 @@ void MoveCenterTabController::heightToggleAction( bool heightToggleJustPressed )
 
 void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
 {
+    // The fn is ran if bool is true, this function is called every pass because
+    // of keyboard input.
     if ( resetOffsetsJustPressed )
     {
-        reset();
+        auto calState = vr::VRChaperone()->GetCalibrationState();
+        LOG( INFO ) << "Calibration State on Reset Offsets is: " << calState;
+
+        if ( calState > 199 && m_initComplete )
+        {
+            LOG( INFO ) << "Chaperone calibration state is error, attempting "
+                           "to apply autosaved profile to fix issue";
+            parent->m_chaperoneTabController.applyAutosavedProfile();
+        }
+
+        m_offsetX = 0.0f;
+        m_offsetY = 0.0f;
+        m_offsetZ = 0.0f;
+        m_rotation = 0;
+        emit offsetXChanged( m_offsetX );
+        emit offsetYChanged( m_offsetY );
+        emit offsetZChanged( m_offsetZ );
+        emit rotationChanged( m_rotation );
+        updateSpace( true );
+        // reset();
     }
 }
 

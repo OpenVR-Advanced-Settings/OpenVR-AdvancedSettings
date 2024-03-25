@@ -167,6 +167,7 @@ public: // I know it's an ugly hack to make them public to enable external
     UtilitiesTabController m_utilitiesTabController;
     VideoTabController m_videoTabController;
     RotationTabController m_rotationTabController;
+    bool m_incomingReset = false;
 
 private:
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );

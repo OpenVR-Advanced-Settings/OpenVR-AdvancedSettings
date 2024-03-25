@@ -126,9 +126,6 @@ class MoveCenterTabController : public QObject
     Q_PROPERTY(
         bool showLogMatricesButton READ showLogMatricesButton WRITE
             setShowLogMatricesButton NOTIFY showLogMatricesButtonChanged )
-    //    Q_PROPERTY( bool allowExternalEdits READ allowExternalEdits WRITE
-    //                    setAllowExternalEdits NOTIFY allowExternalEditsChanged
-    //                    )
     Q_PROPERTY(
         bool universeCenteredRotation READ universeCenteredRotation WRITE
             setUniverseCenteredRotation NOTIFY universeCenteredRotationChanged )
@@ -198,6 +195,7 @@ private:
     int m_hmdRotationStatsUpdateCounter = 0;
     unsigned m_dragComfortFrameSkipCounter = 0;
     unsigned m_turnComfortFrameSkipCounter = 0;
+    int m_recenterStages = 0;
 
     // Matrix used For Center Marker
     vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
@@ -215,8 +213,8 @@ private:
         = { { { 1.0f, 0.0f, 0.0f, 0.0f },
               { 0.0f, 1.0f, 0.0f, 0.0f },
               { 0.0f, 0.0f, 1.0f, 0.0f } } };
-    vr::HmdQuad_t* m_collisionBoundsForOffset;
-    void updateCollisionBoundsForOffset();
+    // vr::HmdQuad_t* m_collisionBoundsForOffset;
+    // void updateCollisionBoundsForOffset();
 
     void updateHmdRotationCounter( vr::TrackedDevicePose_t hmdPose,
                                    double angle );
@@ -270,7 +268,7 @@ public:
     bool isInitComplete() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
-    void incomingSeatedReset();
+    void incomingZeroReset();
     void setBoundsBasisHeight( float newHeight );
     float getBoundsBasisMaxY();
 
@@ -280,7 +278,6 @@ public:
     void saveOffsetProfiles();
     Q_INVOKABLE unsigned getOffsetProfileCount();
     Q_INVOKABLE QString getOffsetProfileName( unsigned index );
-    // Q_INVOKABLE void setIgnoreChaperoneState();
 
     // actions:
     void leftHandSpaceDrag( bool leftHandDragActive );
@@ -349,7 +346,6 @@ public slots:
 
     void shutdown();
     void reset();
-    void updateSeatedResetData();
     void outputLogPoses();
     void zeroOffsets();
     void sendSeatedRecenter();
@@ -387,7 +383,6 @@ signals:
     void requireLockYChanged( bool value );
     void requireLockZChanged( bool value );
     void showLogMatricesButtonChanged( bool value );
-    // void allowExternalEditsChanged( bool value );
     void universeCenteredRotationChanged( bool value );
     void offsetProfilesUpdated();
 };

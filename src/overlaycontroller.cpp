@@ -526,22 +526,15 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                 autoApplyChaperoneName() );
         if ( chapindex.first )
         {
+            LOG( INFO ) << "Auto Applying Chaperone";
             m_chaperoneTabController.applyChaperoneProfile( chapindex.second );
-            bool success = vr::VRApplications()->CancelApplicationLaunch(
-                "openvr.tool.steamvr_room_setup" );
-            auto successsstr = success ? "true" : "false";
-
-            LOG( INFO ) << "Attempted to stop roomsetup: " << successsstr;
-            if ( vr::VRApplications()->GetApplicationProcessId(
-                     "openvr.tool.steamvr_room_setup" )
-                 != 0 )
-            {
-                LOG( INFO ) << "room setup running after applying chaperone "
-                               "exiting roomsetup";
-                vr::VRApplications()->LaunchApplication(
-                    "openvr.tool.steamvr_environments" );
-            }
+            // This should be the way to stop room-setup from starting... as it
+            // sends steamvr a signal that it is completed
+            vr::VRChaperoneSetup()->CommitWorkingCopy(
+                vr::EChaperoneConfigFile_Live );
+            return;
         }
+        LOG( WARNING ) << "Profile Not Found for Auto Apply Chaperone!";
     }
 }
 
@@ -1248,41 +1241,28 @@ void OverlayController::mainEventLoop()
         break;
 
         case vr::VREvent_SeatedZeroPoseReset:
-        {
-            m_incomingReset = true;
-        }
-        break;
         case vr::VREvent_StandingZeroPoseReset:
         {
             m_incomingReset = true;
         }
         break;
 
-        // Multiple ChaperoneUniverseHasChanged are often emitted at the
-        // same time (some with a little bit of delay) There is no sure way
-        // to recognize redundant events, we can only exclude redundant
-        // events during the same call of OnTimeoutPumpEvents() INFO Removed
-        // logging on play space mover for possible crashing issues.
+        // Multiple ChaperoneUniverseHasChanged are often
+        // emitted at the same time (some with a little bit of
+        // delay) There is no sure way to recognize redundant
+        // events, we can only exclude redundant events during
+        // the same call of OnTimeoutPumpEvents() INFO Removed
+        // logging on play space mover for possible crashing
+        // issues.
         case vr::VREvent_ChaperoneUniverseHasChanged:
         {
             uint64_t previousUniverseId
                 = vrEvent.data.chaperone.m_nPreviousUniverse;
             uint64_t currentUniverseId
                 = vrEvent.data.chaperone.m_nCurrentUniverse;
-            LOG( INFO ) << "(VREvent) ChaperoneUniverseHasChanged... Previous:"
-                        << previousUniverseId
-                        << " Current:" << currentUniverseId;
-
-            if ( !chaperoneDataAlreadyUpdated )
-            {
-                m_chaperoneUtils.loadChaperoneData();
-                chaperoneDataAlreadyUpdated = true;
-            }
-        }
-        break;
-
-        case vr::VREvent_ChaperoneDataHasChanged:
-        {
+            LOG( INFO )
+                << "(VREvent) ChaperoneUniverseHasChanged... Previous : "
+                << previousUniverseId << " Current:" << currentUniverseId;
             if ( !chaperoneDataAlreadyUpdated )
             {
                 m_chaperoneUtils.loadChaperoneData();
@@ -1302,6 +1282,12 @@ void OverlayController::mainEventLoop()
         default:
             break;
         }
+    }
+    if ( m_incomingReset )
+    {
+        m_incomingReset = false;
+        LOG( INFO ) << "Reset zero event recorded";
+        m_moveCenterTabController.incomingZeroReset();
     }
 
     if ( m_incomingReset )
