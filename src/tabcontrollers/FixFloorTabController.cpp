@@ -302,13 +302,13 @@ void FixFloorTabController::fixFloorClicked()
 
 void FixFloorTabController::recenterClicked()
 {
-    parent->m_moveCenterTabController.reset();
-    statusMessage = "Fixing ...";
-    statusMessageTimeout = 1.0;
-    emit statusMessageSignal();
-    emit measureStartSignal();
-    measurementCount = 0;
-    state = 2;
+    parent->m_moveCenterTabController.sendSeatedRecenter();
+    //    statusMessage = "Fixing ...";
+    //    statusMessageTimeout = 1.0;
+    //    emit statusMessageSignal();
+    //    emit measureStartSignal();
+    //    measurementCount = 0;
+    //    state = 2;
 }
 
 void FixFloorTabController::undoFixFloorClicked()
