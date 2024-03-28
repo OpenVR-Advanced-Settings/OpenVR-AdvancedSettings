@@ -1908,12 +1908,13 @@ void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
         auto calState = vr::VRChaperone()->GetCalibrationState();
         LOG( INFO ) << "Calibration State on Reset Offsets is: " << calState;
 
-        if ( calState > 199 && m_initComplete )
-        {
-            LOG( INFO ) << "Chaperone calibration state is error, attempting "
-                           "to apply autosaved profile to fix issue";
-            parent->m_chaperoneTabController.applyAutosavedProfile();
-        }
+        //        if ( calState > 199 && m_initComplete )
+        //        {
+        //            LOG( INFO ) << "Chaperone calibration state is error,
+        //            attempting "
+        //                           "to apply autosaved profile to fix issue";
+        //            parent->m_chaperoneTabController.applyAutosavedProfile();
+        //        }
         // reset();
     }
 }
