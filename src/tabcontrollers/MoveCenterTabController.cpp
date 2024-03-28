@@ -1097,12 +1097,19 @@ void MoveCenterTabController::zeroOffsets()
             setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
             if ( parent->isPreviousShutdownSafe() )
             {
-                // all init complete, safe to autosave chaperone profile
-                parent->m_chaperoneTabController.createNewAutosaveProfile();
-                m_initComplete = true;
                 auto calState = vr::VRChaperone()->GetCalibrationState();
-                LOG( INFO ) << "Calibration State after autosave profile is: "
-                            << calState;
+                if ( calState > 199 )
+                {
+                    LOG( WARNING ) << "Calibration state is in Error on "
+                                      "Creation of Auto-save!: "
+                                   << calState << " Skipping Creation!";
+                }
+                else
+                {
+                    // all init complete, safe to autosave chaperone profile
+                    parent->m_chaperoneTabController.createNewAutosaveProfile();
+                }
+                m_initComplete = true;
             }
             else
             {
@@ -1165,8 +1172,19 @@ void MoveCenterTabController::clampVelocity( double* velocity )
 
 void MoveCenterTabController::updateChaperoneResetData()
 {
-    // TODO
-    //  vr::VRChaperoneSetup()->RevertWorkingCopy();
+    auto cstate = vr::VRChaperone()->GetCalibrationState();
+    if ( cstate > 199 )
+    {
+        LOG( ERROR ) << "Chaperone Calibration State is error: " << cstate
+                     << " While Trying to Update Reset Data";
+        return;
+    }
+    else
+    {
+        vr::VRChaperoneSetup()->CommitWorkingCopy(
+            vr::EChaperoneConfigFile_Live );
+        vr::VRChaperoneSetup()->RevertWorkingCopy();
+    }
     unsigned currentQuadCount = 0;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
                                                            &currentQuadCount );
@@ -2476,8 +2494,15 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
              == 0
          && m_rotation == m_oldRotation && !forceUpdate )
     {
+        if ( !m_chaperoneHasCommit )
+        {
+            m_chaperoneHasCommit = true;
+            updateChaperoneResetData();
+        }
+
         return;
     }
+    m_chaperoneHasCommit = false;
 
     vr::HmdMatrix34_t offsetUniverseCenter;
 
