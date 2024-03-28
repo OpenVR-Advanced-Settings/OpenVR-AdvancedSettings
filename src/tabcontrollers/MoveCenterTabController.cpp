@@ -136,6 +136,14 @@ void MoveCenterTabController::addOffset( float offset[] )
     updateSpace( true );
 }
 
+void MoveCenterTabController::addCurOffsetAsCenter()
+{
+    float off[3] = { -m_offsetX, m_offsetY, -m_offsetZ };
+    // zeroOffsets();
+    resetOffsets( true );
+    addOffset( off );
+}
+
 void MoveCenterTabController::deleteOffsetProfile( unsigned index )
 {
     if ( index < m_offsetProfiles.size() )

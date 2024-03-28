@@ -93,7 +93,7 @@ MyStackViewPage {
             text: "Apply Space Settings Offsets as Center"
             Layout.preferredHeight: 80
             onClicked: {
-                MoveCenterTabController.zeroOffsets()
+                MoveCenterTabController.addCurOffsetAsCenter()
             }
         }
 

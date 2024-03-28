@@ -356,6 +356,7 @@ public slots:
     void addOffsetProfile( QString name );
     void applyOffsetProfile( unsigned index );
     void deleteOffsetProfile( unsigned index );
+    void addCurOffsetAsCenter();
 
 signals:
     void trackingUniverseChanged( int value );

@@ -200,15 +200,15 @@ public:
                     const std::string& name,
                     const std::string& key = "" );
 
-    void AddOffsetToUniverseCenter( vr::ETrackingUniverseOrigin universe,
-                                    unsigned axisId,
-                                    float offset,
-                                    bool adjustBounds = true,
-                                    bool commit = true );
-    void AddOffsetToUniverseCenter( vr::ETrackingUniverseOrigin universe,
-                                    float offset[3],
-                                    bool adjustBounds = true,
-                                    bool commit = true );
+    //    void AddOffsetToUniverseCenter( vr::ETrackingUniverseOrigin universe,
+    //                                    unsigned axisId,
+    //                                    float offset,
+    //                                    bool adjustBounds = true,
+    //                                    bool commit = true );
+    //    void AddOffsetToUniverseCenter( vr::ETrackingUniverseOrigin universe,
+    //                                    float offset[3],
+    //                                    bool adjustBounds = true,
+    //                                    bool commit = true );
     void RotateUniverseCenter( vr::ETrackingUniverseOrigin universe,
                                float yAngle,
                                bool adjustBounds = true,
