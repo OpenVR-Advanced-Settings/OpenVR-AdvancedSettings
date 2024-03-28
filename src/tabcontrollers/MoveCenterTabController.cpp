@@ -2494,13 +2494,17 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
              == 0
          && m_rotation == m_oldRotation && !forceUpdate )
     {
+        return;
+    }
+    if ( ( abs( m_offsetX ) + abs( m_offsetY ) + abs( m_offsetZ )
+           + abs( m_rotation ) )
+         == 0 )
+    {
         if ( !m_chaperoneHasCommit )
         {
             m_chaperoneHasCommit = true;
             updateChaperoneResetData();
         }
-
-        return;
     }
     m_chaperoneHasCommit = false;
 
