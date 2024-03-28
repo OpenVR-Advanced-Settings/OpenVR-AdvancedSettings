@@ -123,6 +123,19 @@ void MoveCenterTabController::applyOffsetProfile( unsigned index )
     }
 }
 
+void MoveCenterTabController::addOffset( float offset[] )
+{
+    m_universeCenterForReset.m[0][3] += offset[0];
+    m_universeCenterForReset.m[1][3] += offset[1];
+    m_universeCenterForReset.m[2][3] += offset[2];
+
+    m_seatedCenterForReset.m[0][3] += offset[0];
+    m_seatedCenterForReset.m[1][3] += offset[1];
+    m_seatedCenterForReset.m[2][3] += offset[2];
+
+    updateSpace( true );
+}
+
 void MoveCenterTabController::deleteOffsetProfile( unsigned index )
 {
     if ( index < m_offsetProfiles.size() )
@@ -1875,16 +1888,6 @@ void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
     // of keyboard input.
     if ( resetOffsetsJustPressed )
     {
-        auto calState = vr::VRChaperone()->GetCalibrationState();
-        LOG( INFO ) << "Calibration State on Reset Offsets is: " << calState;
-
-        if ( calState > 199 && m_initComplete )
-        {
-            LOG( INFO ) << "Chaperone calibration state is error, attempting "
-                           "to apply autosaved profile to fix issue";
-            parent->m_chaperoneTabController.applyAutosavedProfile();
-        }
-
         m_offsetX = 0.0f;
         m_offsetY = 0.0f;
         m_offsetZ = 0.0f;
@@ -1894,6 +1897,15 @@ void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
         emit offsetZChanged( m_offsetZ );
         emit rotationChanged( m_rotation );
         updateSpace( true );
+        auto calState = vr::VRChaperone()->GetCalibrationState();
+        LOG( INFO ) << "Calibration State on Reset Offsets is: " << calState;
+
+        if ( calState > 199 && m_initComplete )
+        {
+            LOG( INFO ) << "Chaperone calibration state is error, attempting "
+                           "to apply autosaved profile to fix issue";
+            parent->m_chaperoneTabController.applyAutosavedProfile();
+        }
         // reset();
     }
 }
@@ -2498,9 +2510,10 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     }
     if ( ( abs( m_offsetX ) + abs( m_offsetY ) + abs( m_offsetZ )
            + abs( m_rotation ) )
-         == 0 )
+             == 0
+         && !forceUpdate )
     {
-        if ( !m_chaperoneHasCommit )
+        if ( m_chaperoneHasCommit )
         {
             m_chaperoneHasCommit = true;
             updateChaperoneResetData();
