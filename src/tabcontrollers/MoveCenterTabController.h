@@ -196,6 +196,7 @@ private:
     unsigned m_dragComfortFrameSkipCounter = 0;
     unsigned m_turnComfortFrameSkipCounter = 0;
     int m_recenterStages = 0;
+    int m_chaperoneHasCommit = false;
 
     // Matrix used For Center Marker
     vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
@@ -279,6 +280,8 @@ public:
     Q_INVOKABLE unsigned getOffsetProfileCount();
     Q_INVOKABLE QString getOffsetProfileName( unsigned index );
 
+    void addOffset( float offset[3] );
+
     // actions:
     void leftHandSpaceDrag( bool leftHandDragActive );
     void rightHandSpaceDrag( bool rightHandDragActive );
@@ -353,6 +356,7 @@ public slots:
     void addOffsetProfile( QString name );
     void applyOffsetProfile( unsigned index );
     void deleteOffsetProfile( unsigned index );
+    void addCurOffsetAsCenter();
 
 signals:
     void trackingUniverseChanged( int value );

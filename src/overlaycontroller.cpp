@@ -861,23 +861,6 @@ void OverlayController::setExclusiveInputEnabled( bool value, bool notify )
         emit exclusiveInputEnabledChanged( value );
     }
 }
-
-/*void OverlayController::setOpenXRFixEnabled( bool value, bool notify )
-{
-    settings::setSetting( settings::BoolSetting::APPLICATION_openXRWorkAround,
-                          value );
-    if ( notify )
-    {
-        emit openXRFixEnabledChanged( value );
-    }
-}
-
-bool OverlayController::openXRFixEnabled() const
-{
-    return settings::getSetting(
-        settings::BoolSetting::APPLICATION_openXRWorkAround );
-}*/
-
 void OverlayController::setAutoApplyChaperoneEnabled( bool value, bool notify )
 {
     settings::setSetting( settings::BoolSetting::APPLICATION_autoApplyChaperone,
@@ -1268,6 +1251,11 @@ void OverlayController::mainEventLoop()
                 m_chaperoneUtils.loadChaperoneData();
                 chaperoneDataAlreadyUpdated = true;
             }
+            if ( previousUniverseId == 0
+                 && !m_moveCenterTabController.isInitComplete() )
+            {
+                m_moveCenterTabController.zeroOffsets();
+            }
         }
         break;
         case vr::VREvent_Input_ActionManifestReloaded:
@@ -1355,73 +1343,6 @@ void OverlayController::mainEventLoop()
             }
             break;
             }
-        }
-    }
-}
-
-void OverlayController::AddOffsetToUniverseCenter(
-    vr::ETrackingUniverseOrigin universe,
-    unsigned axisId,
-    float offset,
-    bool adjustBounds,
-    bool commit )
-{
-    float offsetArray[3] = { 0, 0, 0 };
-    offsetArray[axisId] = offset;
-    AddOffsetToUniverseCenter( universe, offsetArray, adjustBounds, commit );
-}
-
-void OverlayController::AddOffsetToUniverseCenter(
-    vr::ETrackingUniverseOrigin universe,
-    float offset[3],
-    bool adjustBounds,
-    bool commit )
-{
-    if ( offset[0] != 0.0f || offset[1] != 0.0f || offset[2] != 0.0f )
-    {
-        if ( commit )
-        {
-            vr::VRChaperoneSetup()->HideWorkingSetPreview();
-            vr::VRChaperoneSetup()->RevertWorkingCopy();
-        }
-        vr::HmdMatrix34_t curPos;
-        if ( universe == vr::TrackingUniverseStanding )
-        {
-            vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-                &curPos );
-        }
-        else
-        {
-            vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
-                &curPos );
-        }
-        for ( int i = 0; i < 3; i++ )
-        {
-            curPos.m[0][3] += curPos.m[0][i] * offset[i];
-            curPos.m[1][3] += curPos.m[1][i] * offset[i];
-            curPos.m[2][3] += curPos.m[2][i] * offset[i];
-        }
-        if ( universe == vr::TrackingUniverseStanding )
-        {
-            vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
-                &curPos );
-        }
-        else
-        {
-            vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
-                &curPos );
-        }
-        if ( adjustBounds && universe == vr::TrackingUniverseStanding )
-        {
-            float collisionOffset[] = { -offset[0], -offset[1], -offset[2] };
-            AddOffsetToCollisionBounds( collisionOffset, false );
-        }
-        if ( commit )
-        {
-            vr::VRChaperoneSetup()->CommitWorkingCopy(
-                vr::EChaperoneConfigFile_Live );
-            vr::VRChaperoneSetup()->ReloadFromDisk(
-                vr::EChaperoneConfigFile_Temp );
         }
     }
 }
