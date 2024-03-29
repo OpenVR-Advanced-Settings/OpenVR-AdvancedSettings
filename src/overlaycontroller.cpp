@@ -1268,6 +1268,11 @@ void OverlayController::mainEventLoop()
                 m_chaperoneUtils.loadChaperoneData();
                 chaperoneDataAlreadyUpdated = true;
             }
+            if ( previousUniverseId == 0
+                 && !m_moveCenterTabController.isInitComplete() )
+            {
+                m_moveCenterTabController.zeroOffsets();
+            }
         }
         break;
         case vr::VREvent_Input_ActionManifestReloaded:

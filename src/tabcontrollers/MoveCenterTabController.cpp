@@ -1125,15 +1125,18 @@ void MoveCenterTabController::zeroOffsets()
                                       "Creation of Auto-save!: "
                                    << calState;
                 }
-                // all init complete, safe to autosave chaperone profile
-                parent->m_chaperoneTabController.createNewAutosaveProfile();
-                m_initComplete = true;
+                else
+                {
+                    // all init complete, safe to autosave chaperone profile
+                    parent->m_chaperoneTabController.createNewAutosaveProfile();
+                    m_initComplete = true;
+                }
             }
             else
             {
                 // shutdown was unsafe last session!
                 LOG( WARNING ) << "DETECTED UNSAFE SHUTDOWN FROM LAST SESSION";
-                m_initComplete = true;
+                m_initComplete = false;
                 if ( !parent->crashRecoveryDisabled() )
                 {
                     parent->m_chaperoneTabController.applyAutosavedProfile();
