@@ -302,25 +302,12 @@ void FixFloorTabController::fixFloorClicked()
 void FixFloorTabController::recenterClicked()
 {
     parent->m_moveCenterTabController.sendSeatedRecenter();
-    //    statusMessage = "Fixing ...";
-    //    statusMessageTimeout = 1.0;
-    //    emit statusMessageSignal();
-    //    emit measureStartSignal();
-    //    measurementCount = 0;
-    //    state = 2;
 }
 
 void FixFloorTabController::undoFixFloorClicked()
 {
-    // parent->m_moveCenterTabController.reset();
     float off[3] = { -floorOffsetX, -floorOffsetY, -floorOffsetZ };
     parent->m_moveCenterTabController.addOffset( off );
-    //    parent->AddOffsetToUniverseCenter(
-    //        vr::TrackingUniverseStanding, 0, -floorOffsetX, false );
-    //    parent->AddOffsetToUniverseCenter(
-    //        vr::TrackingUniverseStanding, 1, -floorOffsetY, false );
-    //    parent->AddOffsetToUniverseCenter(
-    //        vr::TrackingUniverseStanding, 2, -floorOffsetZ, false );
     LOG( INFO ) << "Fix Floor: Undo Floor Offset = [" << -floorOffsetX << ", "
                 << -floorOffsetY << ", " << -floorOffsetZ << "]";
     floorOffsetY = 0.0f;
