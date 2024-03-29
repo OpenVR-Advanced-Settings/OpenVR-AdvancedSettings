@@ -1119,11 +1119,11 @@ void MoveCenterTabController::zeroOffsets()
             if ( parent->isPreviousShutdownSafe() )
             {
                 auto calState = vr::VRChaperone()->GetCalibrationState();
-                if ( calState > 199 )
+                if ( calState == 200 )
                 {
-                    LOG( WARNING ) << "Calibration state is in Error on "
-                                      "Creation of Auto-save!: "
-                                   << calState;
+                    LOG( WARNING )
+                        << "Chaperone State Does Not Exist Yet, will wait for "
+                           "universe change to finish initialization";
                 }
                 else
                 {
