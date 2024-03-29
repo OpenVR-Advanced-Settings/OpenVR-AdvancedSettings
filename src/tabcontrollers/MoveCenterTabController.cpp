@@ -2517,7 +2517,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         return;
     }
     if ( ( abs( m_offsetX ) + abs( m_offsetY ) + abs( m_offsetZ )
-           + abs( m_rotation ) )
+           + abs( static_cast<float>( m_rotation ) ) )
              == 0
          && !forceUpdate )
     {
