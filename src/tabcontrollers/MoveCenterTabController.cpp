@@ -1123,13 +1123,10 @@ void MoveCenterTabController::zeroOffsets()
                 {
                     LOG( WARNING ) << "Calibration state is in Error on "
                                       "Creation of Auto-save!: "
-                                   << calState << " Skipping Creation!";
+                                   << calState;
                 }
-                else
-                {
-                    // all init complete, safe to autosave chaperone profile
-                    parent->m_chaperoneTabController.createNewAutosaveProfile();
-                }
+                // all init complete, safe to autosave chaperone profile
+                parent->m_chaperoneTabController.createNewAutosaveProfile();
                 m_initComplete = true;
             }
             else
@@ -1196,9 +1193,8 @@ void MoveCenterTabController::updateChaperoneResetData()
     auto cstate = vr::VRChaperone()->GetCalibrationState();
     if ( cstate > 199 )
     {
-        LOG( ERROR ) << "Chaperone Calibration State is error: " << cstate
-                     << " While Trying to Update Reset Data";
-        return;
+        LOG( WARNING ) << "Chaperone Calibration State is error: " << cstate
+                       << " While Trying to Update Reset Data";
     }
     else
     {
