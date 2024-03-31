@@ -1,2 +1,2 @@
 [Paths]
-Plugins=@QT_DIR@\\plugins
+Plugins=@QT_ROOT@\\plugins
