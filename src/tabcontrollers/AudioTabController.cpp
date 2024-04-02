@@ -65,8 +65,9 @@ void AudioTabController::initStage1()
     eventLoopTick();
 }
 
-void AudioTabController::initStage2()
+void AudioTabController::initStage2( OverlayController* var_parent )
 {
+    this->parent = var_parent;
     const auto pushToTalkOverlayKey
         = std::string( application_strings::applicationKey )
           + ".pptnotification";
@@ -86,34 +87,31 @@ void AudioTabController::initStage2()
         return;
     }
 
-    constexpr auto pushToTalkIconFilepath
-        = "/res/img/audio/microphone/ptt_notification.png";
-    constexpr auto pushToMuteIconFilepath
-        = "/res/img/audio/microphone/ptm_notification.png";
+    QImage pushToTalkIcon;
+    Q_ASSERT( pushToTalkIcon.load(
+        QString( "qrc:/res/img/audio/microphone/ptt_notification.png" ) ) );
+    QImage pushToMuteIcon;
+    Q_ASSERT( pushToMuteIcon.load(
+        QString( "qrc:/res/img/audio/microphone/ptt_notification.png" ) ) );
 
-    const auto pushToTalkIconFilePath
-        = paths::verifyIconFilePath( pushToTalkIconFilepath );
-    const auto pushToMuteIconFilePath
-        = paths::verifyIconFilePath( pushToMuteIconFilepath );
+    emit defaultProfileDisplay();
+    return;
 
-    if ( !pushToTalkIconFilePath.has_value()
-         || !pushToMuteIconFilePath.has_value() )
-    {
-        emit defaultProfileDisplay();
-        return;
-    }
+    auto* rhi = parent->rhi();
+    m_pushToTalkValues.pushToTalkTex.reset(
+        rhi->newTexture( QRhiTexture::RGBA8, pushToTalkIcon.size(), 1 ) );
+    m_pushToTalkValues.pushToMuteTex.reset(
+        rhi->newTexture( QRhiTexture::RGBA8, pushToTalkIcon.size(), 1 ) );
 
-    m_pushToTalkValues.pushToTalkPath = *pushToTalkIconFilePath;
-    m_pushToTalkValues.pushToMutePath = *pushToMuteIconFilePath;
-
-    auto pushToPath = m_pushToTalkValues.pushToTalkPath.c_str();
+    auto* pushToTex = m_pushToTalkValues.pushToTalkTex.get();
     if ( settings::getSetting( settings::BoolSetting::AUDIO_micReversePtt ) )
     {
-        pushToPath = m_pushToTalkValues.pushToMutePath.c_str();
+        pushToTex = m_pushToTalkValues.pushToMuteTex.get();
     }
 
-    vr::VROverlay()->SetOverlayFromFile( m_pushToTalkValues.overlayHandle,
-                                         pushToPath );
+    auto tex = parent->vrTextureFromRhiTexture( *pushToTex );
+    vr::VROverlay()->SetOverlayTexture( m_pushToTalkValues.overlayHandle,
+                                        &tex );
     vr::VROverlay()->SetOverlayWidthInMeters( m_pushToTalkValues.overlayHandle,
                                               0.02f );
     vr::HmdMatrix34_t notificationTransform
@@ -360,15 +358,11 @@ void AudioTabController::setMicReversePtt( bool value, bool notify )
 
     if ( value )
     {
-        vr::VROverlay()->SetOverlayFromFile(
-            m_pushToTalkValues.overlayHandle,
-            m_pushToTalkValues.pushToMutePath.c_str() );
+        // vr::VROverlay()->SetOverlayFromFile(m_ptt_overlayHandle,/*pt_mute*/);
     }
     else
     {
-        vr::VROverlay()->SetOverlayFromFile(
-            m_pushToTalkValues.overlayHandle,
-            m_pushToTalkValues.pushToTalkPath.c_str() );
+        // vr::VROverlay()->SetOverlayFromFile(m_ptt_overlayHandle,/*pt_talk*/);
     }
 
     if ( pttEnabled() )
