@@ -5,6 +5,7 @@
 
 #include "audiomanager/AudioManager.h"
 #include <memory>
+#include <rhi/qrhi.h>
 #include "../utils/FrameRateUtils.h"
 #include "../settings/settings_object.h"
 
@@ -111,11 +112,12 @@ class AudioTabController : public QObject
                     setPttShowNotification NOTIFY pttShowNotificationChanged )
 
 private:
+    OverlayController* parent;
     struct
     {
         vr::VROverlayHandle_t overlayHandle = vr::k_ulOverlayHandleInvalid;
-        std::string pushToTalkPath;
-        std::string pushToMutePath;
+        std::unique_ptr<QRhiTexture> pushToTalkTex;
+        std::unique_ptr<QRhiTexture> pushToMuteTex;
     } m_pushToTalkValues;
 
     int m_playbackDeviceIndex = -1;
@@ -178,7 +180,7 @@ private:
 
 public:
     void initStage1();
-    void initStage2();
+    void initStage2( OverlayController* var_parent );
 
     void reloadAudioSettings();
 

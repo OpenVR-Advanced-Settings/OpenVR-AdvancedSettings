@@ -1,6 +1,7 @@
 #pragma once
 #include <openvr.h>
-#include <easylogging++.h>
+#include <QtLogging>
+#include <QtDebug>
 #include "../utils/paths.h"
 
 namespace input
@@ -19,8 +20,8 @@ public:
 
         if ( !actionManifestPath.has_value() )
         {
-            LOG( ERROR ) << "Could not find action manifest. Action manifests "
-                            "not initialized.";
+            qCritical() << "Could not find action manifest. Action manifests "
+                           "not initialized.";
             return;
         }
 
@@ -29,8 +30,8 @@ public:
         auto error = vr::VRInput()->SetActionManifestPath( validManifestPath );
         if ( error != vr::EVRInputError::VRInputError_None )
         {
-            LOG( ERROR ) << "Error setting action manifest path: "
-                         << validManifestPath << ". OpenVR Error: " << error;
+            qCritical() << "Error setting action manifest path: "
+                        << validManifestPath << ". OpenVR Error: " << error;
         }
     }
 

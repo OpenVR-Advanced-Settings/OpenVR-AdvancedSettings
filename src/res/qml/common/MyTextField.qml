@@ -39,7 +39,7 @@ TextField {
 	}
     Connections {
         target: OverlayController
-        onKeyBoardInputSignal: {
+        function onKeyBoardInputSignal() {
             if (userValue == keyBoardUID) {
                 if (myTextField.text !== input) {
                     myTextField.onInputEvent(input)

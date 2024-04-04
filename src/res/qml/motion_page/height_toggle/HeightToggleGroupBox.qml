@@ -88,10 +88,10 @@ GroupBox {
     Connections {
         target: MoveCenterTabController
 
-        onHeightToggleChanged: {
+        function onHeightToggleChanged() {
             heightToggleButton.checked = MoveCenterTabController.heightToggle
         }
-        onHeightToggleOffsetChanged: {
+        function onHeightToggleOffsetChanged() {
             heightToggleOffsetText.text = MoveCenterTabController.heightToggleOffset.toFixed(2)
         }
     }

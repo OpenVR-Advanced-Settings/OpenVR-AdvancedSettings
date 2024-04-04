@@ -21,7 +21,7 @@ MyToggleButton {
     }
     Connections {
         target: AudioTabController
-        onMicProximitySensorCanMuteChanged: {
+        function onMicProximitySensorCanMuteChanged() {
             audioMuteProximitySensorToggle.checked = AudioTabController.micProximitySensorCanMute
         }
     }

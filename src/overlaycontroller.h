@@ -1,10 +1,10 @@
 #pragma once
 
+#include <algorithm>
 #include <openvr.h>
 #include <QtCore/QtCore>
 // because of incompatibilities with QtOpenGL and GLEW we need to cherry pick
 // includes
-#include <QVector2D>
 #include <QMatrix4x4>
 #include <QVector>
 #include <QVector2D>
@@ -22,8 +22,10 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QQuickRenderTarget>
 #include <memory>
-#include <easylogging++.h>
+#include <optional>
+#include <rhi/qrhi.h>
 
 #include "openvr/openvr_init.h"
 
@@ -106,18 +108,24 @@ private:
     vr::VROverlayHandle_t m_ulOverlayThumbnailHandle
         = vr::k_ulOverlayHandleInvalid;
 
-    QQuickRenderControl m_renderControl;
-    QQuickWindow m_window{ &m_renderControl };
+    std::optional<vr::ETextureType> m_cached_vr_texture_type;
+    std::unique_ptr<QRhiTexture> m_pFBTexture;
+    std::unique_ptr<QRhiTextureRenderTarget> m_render_target;
+    std::unique_ptr<QRhiRenderPassDescriptor> m_render_pass_descriptor;
+
+    /*
     std::unique_ptr<QOpenGLFramebufferObject> m_pFbo;
+    QQuickRenderTarget m_pRenderTarget;
     QOpenGLContext m_openGLContext;
     QOffscreenSurface m_offscreenSurface;
+    */
 
     QTimer m_pumpEventsTimer;
     std::unique_ptr<QTimer> m_pRenderTimer;
     bool m_dashboardVisible = false;
 
-    QPoint m_ptLastMouse;
-    Qt::MouseButtons m_lastMouseButtons = nullptr;
+    QPointF m_ptLastMouse;
+    Qt::MouseButtons m_lastMouseButtons;
 
     bool m_desktopMode;
     bool m_noSound;
@@ -154,7 +162,11 @@ private:
     QJsonDocument m_remoteVersionJsonDocument = QJsonDocument();
     QJsonObject m_remoteVersionJsonObject;
 
-public: // I know it's an ugly hack to make them public to enable external
+public:
+    
+    QQuickRenderControl m_renderControl;
+    QQuickWindow m_window{ &m_renderControl };
+    // I know it's an ugly hack to make them public to enable external
         // access, but I am too lazy to implement getters.
     SteamVRTabController m_steamVRTabController;
     ChaperoneTabController m_chaperoneTabController;
@@ -169,7 +181,7 @@ public: // I know it's an ugly hack to make them public to enable external
     bool m_incomingReset = false;
 
 private:
-    QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
+    QPointF getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
     void processInputBindings();
     void processMediaKeyBindings();
     void processMotionBindings();
@@ -184,6 +196,8 @@ private:
     bool m_keyPressTwoState = false;
 
 public:
+    vr::ETextureType vrTextureTypeFromRhiBackend();
+    vr::Texture_t vrTextureFromRhiTexture( QRhiTexture& tex );
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
     virtual ~OverlayController();
 

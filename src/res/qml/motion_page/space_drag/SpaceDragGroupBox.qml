@@ -156,19 +156,19 @@ GroupBox {
     Connections {
         target: MoveCenterTabController
 
-        onMoveShortcutLeftChanged: {
+        function onMoveShortcutLeftChanged() {
             moveShortcutLeft.checked = MoveCenterTabController.moveShortcutLeft
         }
-        onMoveShortcutRightChanged: {
+        function onMoveShortcutRightChanged() {
             moveShortcutRight.checked = MoveCenterTabController.moveShortcutRight
         }
-        onDragComfortFactorChanged: {
+        function onDragComfortFactorChanged() {
             dragComfortSlider.value = MoveCenterTabController.dragComfortFactor
         }
-        onDragBoundsChanged: {
+        function onDragBoundsChanged() {
             dragBounds.checked = MoveCenterTabController.dragBounds
         }
-        onDragMultChanged: {
+        function onDragMultChanged() {
             dragMultText.text = MoveCenterTabController.dragMult.toFixed(2)
         }
     }

@@ -1,6 +1,8 @@
 #include "AudioTabController.h"
 #include <QQuickWindow>
 #include <QApplication>
+#include <QtLogging>
+#include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../settings/settings.h"
 #include "../settings/settings_object.h"
@@ -39,11 +41,11 @@ void AudioTabController::initStage1()
                                  &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_audio_PlaybackMirrorDevice_String
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
+        qWarning() << "Could not read \""
+                   << vr::k_pch_audio_PlaybackMirrorDevice_String
+                   << "\" setting: "
+                   << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                          vrSettingsError );
     }
     else
     {
@@ -63,8 +65,9 @@ void AudioTabController::initStage1()
     eventLoopTick();
 }
 
-void AudioTabController::initStage2()
+void AudioTabController::initStage2( OverlayController* var_parent )
 {
+    this->parent = var_parent;
     const auto pushToTalkOverlayKey
         = std::string( application_strings::applicationKey )
           + ".pptnotification";
@@ -75,43 +78,40 @@ void AudioTabController::initStage2()
                                           &m_pushToTalkValues.overlayHandle );
     if ( overlayError != vr::VROverlayError_None )
     {
-        LOG( ERROR ) << "Could not create ptt notification overlay: "
-                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                            overlayError );
+        qCritical() << "Could not create ptt notification overlay: "
+                    << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                           overlayError );
 
         emit defaultProfileDisplay();
 
         return;
     }
 
-    constexpr auto pushToTalkIconFilepath
-        = "/res/img/audio/microphone/ptt_notification.png";
-    constexpr auto pushToMuteIconFilepath
-        = "/res/img/audio/microphone/ptm_notification.png";
+    QImage pushToTalkIcon;
+    Q_ASSERT( pushToTalkIcon.load(
+        QString( "qrc:/res/img/audio/microphone/ptt_notification.png" ) ) );
+    QImage pushToMuteIcon;
+    Q_ASSERT( pushToMuteIcon.load(
+        QString( "qrc:/res/img/audio/microphone/ptt_notification.png" ) ) );
 
-    const auto pushToTalkIconFilePath
-        = paths::verifyIconFilePath( pushToTalkIconFilepath );
-    const auto pushToMuteIconFilePath
-        = paths::verifyIconFilePath( pushToMuteIconFilepath );
+    emit defaultProfileDisplay();
+    return;
 
-    if ( !pushToTalkIconFilePath.has_value()
-         || !pushToMuteIconFilePath.has_value() )
-    {
-        emit defaultProfileDisplay();
-        return;
-    }
+    auto* rhi = parent->m_renderControl.rhi();
+    m_pushToTalkValues.pushToTalkTex.reset(
+        rhi->newTexture( QRhiTexture::RGBA8, pushToTalkIcon.size(), 1 ) );
+    m_pushToTalkValues.pushToMuteTex.reset(
+        rhi->newTexture( QRhiTexture::RGBA8, pushToTalkIcon.size(), 1 ) );
 
-    m_pushToTalkValues.pushToTalkPath = *pushToTalkIconFilePath;
-    m_pushToTalkValues.pushToMutePath = *pushToMuteIconFilePath;
-
-    auto pushToPath = m_pushToTalkValues.pushToTalkPath.c_str();
+    auto* pushToTex = m_pushToTalkValues.pushToTalkTex.get();
     if ( settings::getSetting( settings::BoolSetting::AUDIO_micReversePtt ) )
     {
-        pushToPath = m_pushToTalkValues.pushToMutePath.c_str();
+        pushToTex = m_pushToTalkValues.pushToMuteTex.get();
     }
 
-    vr::VROverlay()->SetOverlayFromFile( m_pushToTalkValues.overlayHandle,
-                                         pushToPath );
+    auto tex = parent->vrTextureFromRhiTexture( *pushToTex );
+    vr::VROverlay()->SetOverlayTexture( m_pushToTalkValues.overlayHandle,
+                                        &tex );
     vr::VROverlay()->SetOverlayWidthInMeters( m_pushToTalkValues.overlayHandle,
                                               0.02f );
     vr::HmdMatrix34_t notificationTransform
@@ -196,11 +196,11 @@ void AudioTabController::eventLoopTick()
                                  &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_audio_PlaybackMirrorDevice_String
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
+        qWarning() << "Could not read \""
+                   << vr::k_pch_audio_PlaybackMirrorDevice_String
+                   << "\" setting: "
+                   << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                          vrSettingsError );
     }
     if ( lastMirrorDevId.compare( mirrorDeviceId ) != 0 )
     {
@@ -358,15 +358,11 @@ void AudioTabController::setMicReversePtt( bool value, bool notify )
 
     if ( value )
     {
-        vr::VROverlay()->SetOverlayFromFile(
-            m_pushToTalkValues.overlayHandle,
-            m_pushToTalkValues.pushToMutePath.c_str() );
+        // vr::VROverlay()->SetOverlayFromFile(m_ptt_overlayHandle,/*pt_mute*/);
     }
     else
     {
-        vr::VROverlay()->SetOverlayFromFile(
-            m_pushToTalkValues.overlayHandle,
-            m_pushToTalkValues.pushToTalkPath.c_str() );
+        // vr::VROverlay()->SetOverlayFromFile(m_ptt_overlayHandle,/*pt_talk*/);
     }
 
     if ( pttEnabled() )
@@ -447,17 +443,17 @@ bool indexIsValid( const int index,
 {
     if ( index < 0 )
     {
-        LOG( ERROR ) << functionName
-                     << " called with index below zero: " << index;
+        qCritical() << functionName
+                    << " called with index below zero: " << index;
         return false;
     }
 
     if ( static_cast<size_t>( index ) >= devices.size() )
     {
-        LOG( ERROR ) << functionName
-                     << " called with index greater than size of "
-                        "devices '"
-                     << devices.size() << "', index '" << index << "'.";
+        qCritical() << functionName
+                    << " called with index greater than size of "
+                       "devices '"
+                    << devices.size() << "', index '" << index << "'.";
         return false;
     }
 
@@ -571,12 +567,11 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
                 &vrSettingsError );
             if ( vrSettingsError != vr::VRSettingsError_None )
             {
-                LOG( WARNING )
-                    << "Could not remove \""
-                    << vr::k_pch_audio_PlaybackMirrorDevice_String
-                    << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
+                qWarning() << "Could not remove \""
+                           << vr::k_pch_audio_PlaybackMirrorDevice_String
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
             }
             else
             {
@@ -596,12 +591,11 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
                 &vrSettingsError );
             if ( vrSettingsError != vr::VRSettingsError_None )
             {
-                LOG( WARNING )
-                    << "Could not write \""
-                    << vr::k_pch_audio_PlaybackMirrorDevice_String
-                    << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
+                qWarning() << "Could not write \""
+                           << vr::k_pch_audio_PlaybackMirrorDevice_String
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
             }
             else
             {
@@ -883,12 +877,11 @@ void AudioTabController::deleteAudioProfile( unsigned index )
                 &vrSettingsError );
             if ( vrSettingsError != vr::VRSettingsError_None )
             {
-                LOG( WARNING )
-                    << "Could not remove \""
-                    << vr::k_pch_audio_PlaybackDeviceOverrideName_String
-                    << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
+                qWarning() << "Could not remove \""
+                           << vr::k_pch_audio_PlaybackDeviceOverrideName_String
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
             }
 
             vr::VRSettings()->RemoveKeyInSection(
@@ -897,12 +890,11 @@ void AudioTabController::deleteAudioProfile( unsigned index )
                 &vrSettingsError );
             if ( vrSettingsError != vr::VRSettingsError_None )
             {
-                LOG( WARNING )
-                    << "Could not remove \""
-                    << vr::k_pch_audio_RecordingDeviceOverrideName_String
-                    << "\" setting: "
-                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                           vrSettingsError );
+                qWarning() << "Could not remove \""
+                           << vr::k_pch_audio_RecordingDeviceOverrideName_String
+                           << "\" setting: "
+                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                                  vrSettingsError );
             }
         }
         audioProfiles.erase( pos );
@@ -936,9 +928,9 @@ void AudioTabController::setPlaybackOverride( bool value, bool notify )
             &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
-            LOG( ERROR ) << "Could not set playback override setting: "
-                         << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                vrSettingsError );
+            qCritical() << "Could not set playback override setting: "
+                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                               vrSettingsError );
         }
         if ( notify )
         {
@@ -959,9 +951,9 @@ void AudioTabController::setRecordingOverride( bool value, bool notify )
             &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
-            LOG( ERROR ) << "Could not set recording override setting: "
-                         << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                vrSettingsError );
+            qCritical() << "Could not set recording override setting: "
+                        << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                               vrSettingsError );
         }
         if ( notify )
         {
@@ -979,10 +971,10 @@ void AudioTabController::initOverride()
         &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
-        LOG( ERROR ) << "Could not get recording override setting: "
-                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                            vrSettingsError );
-        LOG( INFO ) << "Setting recording override to false";
+        qCritical() << "Could not get recording override setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
+        qInfo() << "Setting recording override to false";
         setRecordingOverride( false );
     }
     else
@@ -995,10 +987,10 @@ void AudioTabController::initOverride()
         &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
-        LOG( ERROR ) << "Could not get playback override setting: "
-                     << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                            vrSettingsError );
-        LOG( INFO ) << "Setting playback override to false";
+        qCritical() << "Could not get playback override setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                           vrSettingsError );
+        qInfo() << "Setting playback override to false";
         setPlaybackOverride( false );
     }
     else
@@ -1091,11 +1083,11 @@ void AudioTabController::setDefaultPlayback( int index, bool notify )
         &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
-        LOG( WARNING ) << "Could not write \""
-                       << vr::k_pch_audio_PlaybackDeviceOverrideName_String
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
+        qWarning() << "Could not write \""
+                   << vr::k_pch_audio_PlaybackDeviceOverrideName_String
+                   << "\" setting: "
+                   << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                          vrSettingsError );
     }
     else
     {
@@ -1114,11 +1106,11 @@ void AudioTabController::setDefaultMic( int index, bool notify )
         &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
-        LOG( WARNING ) << "Could not write \""
-                       << vr::k_pch_audio_RecordingDeviceOverrideName_String
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
+        qWarning() << "Could not write \""
+                   << vr::k_pch_audio_RecordingDeviceOverrideName_String
+                   << "\" setting: "
+                   << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                          vrSettingsError );
     }
     else
     {
@@ -1138,11 +1130,11 @@ void AudioTabController::setDefaultMirror( int index, bool notify )
             &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
-            LOG( WARNING ) << "Could not remove \""
-                           << vr::k_pch_audio_PlaybackMirrorDevice_String
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
+            qWarning() << "Could not remove \""
+                       << vr::k_pch_audio_PlaybackMirrorDevice_String
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
         }
         else
         {
@@ -1159,11 +1151,11 @@ void AudioTabController::setDefaultMirror( int index, bool notify )
             &vrSettingsError );
         if ( vrSettingsError != vr::VRSettingsError_None )
         {
-            LOG( WARNING ) << "Could not write \""
-                           << vr::k_pch_audio_PlaybackMirrorDevice_String
-                           << "\" setting: "
-                           << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                                  vrSettingsError );
+            qWarning() << "Could not write \""
+                       << vr::k_pch_audio_PlaybackMirrorDevice_String
+                       << "\" setting: "
+                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                              vrSettingsError );
         }
         else
         {
@@ -1258,7 +1250,7 @@ void AudioTabController::shutdown()
     {
         setMirrorDeviceIndex( -1 );
     }
-    LOG( INFO ) << "Audio Tab Controller Has Shut Down";
+    qInfo() << "Audio Tab Controller Has Shut Down";
 }
 
 bool AudioTabController::pttEnabled() const
