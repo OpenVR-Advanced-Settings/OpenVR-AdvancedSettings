@@ -108,6 +108,9 @@ private:
     vr::VROverlayHandle_t m_ulOverlayThumbnailHandle
         = vr::k_ulOverlayHandleInvalid;
 
+    QQuickRenderControl m_renderControl;
+    QQuickWindow m_window{ &m_renderControl };
+
     std::optional<vr::ETextureType> m_cached_vr_texture_type;
     std::unique_ptr<QRhiTexture> m_pFBTexture;
     std::unique_ptr<QRhiTextureRenderTarget> m_render_target;
@@ -163,11 +166,8 @@ private:
     QJsonObject m_remoteVersionJsonObject;
 
 public:
-    
-    QQuickRenderControl m_renderControl;
-    QQuickWindow m_window{ &m_renderControl };
     // I know it's an ugly hack to make them public to enable external
-        // access, but I am too lazy to implement getters.
+    // access, but I am too lazy to implement getters.
     SteamVRTabController m_steamVRTabController;
     ChaperoneTabController m_chaperoneTabController;
     MoveCenterTabController m_moveCenterTabController;
@@ -196,6 +196,7 @@ private:
     bool m_keyPressTwoState = false;
 
 public:
+    QRhi* rhi();
     vr::ETextureType vrTextureTypeFromRhiBackend();
     vr::Texture_t vrTextureFromRhiTexture( QRhiTexture& tex );
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );

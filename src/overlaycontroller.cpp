@@ -511,6 +511,11 @@ void OverlayController::OnRenderRequest()
     }
 }
 
+QRhi* OverlayController::rhi()
+{
+    return m_renderControl.rhi();
+}
+
 vr::ETextureType OverlayController::vrTextureTypeFromRhiBackend()
 {
     if ( !m_cached_vr_texture_type.has_value() )
