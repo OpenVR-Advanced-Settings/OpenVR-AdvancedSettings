@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QImage>
 #include <memory>
 #include <chrono>
 #include <thread>
@@ -99,8 +100,8 @@ private:
     struct
     {
         vr::VROverlayHandle_t overlayHandle = vr::k_ulOverlayHandleInvalid;
-        std::string autoturnPath;
-        std::string noautoturnPath;
+        std::unique_ptr<QImage> autoturnImg;
+        std::unique_ptr<QImage> noautoturnImg;
     } m_autoturnValues;
 
     virtual vr::VROverlayHandle_t getNotificationOverlayHandle()

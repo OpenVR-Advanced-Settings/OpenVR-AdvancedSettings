@@ -7,6 +7,7 @@
 #include "../settings/settings.h"
 #include "../settings/settings_object.h"
 #include "../utils/update_rate.h"
+#include "openvr/ovr_overlay_wrapper.h"
 #ifdef _WIN32
 #    include "audiomanager/AudioManagerWindows.h"
 #elif __linux__
@@ -87,32 +88,19 @@ void AudioTabController::initStage2( OverlayController* var_parent )
         return;
     }
 
-    QImage pushToTalkIcon;
-    Q_ASSERT( pushToTalkIcon.load(
-        QString( "qrc:/res/img/audio/microphone/ptt_notification.png" ) ) );
-    QImage pushToMuteIcon;
-    Q_ASSERT( pushToMuteIcon.load(
-        QString( "qrc:/res/img/audio/microphone/ptt_notification.png" ) ) );
+    m_pushToTalkValues.pushToTalkImg.reset(
+        new QImage( QString( ":/microphone/ptt_notification.png" ) ) );
+    m_pushToTalkValues.pushToMuteImg.reset(
+        new QImage( QString( ":/microphone/ptm_notification.png" ) ) );
 
-    emit defaultProfileDisplay();
-    return;
-
-    auto* rhi = parent->rhi();
-
-    m_pushToTalkValues.pushToTalkTex.reset(
-        rhi->newTexture( QRhiTexture::RGBA8, pushToTalkIcon.size(), 1 ) );
-    m_pushToTalkValues.pushToMuteTex.reset(
-        rhi->newTexture( QRhiTexture::RGBA8, pushToTalkIcon.size(), 1 ) );
-
-    auto* pushToTex = m_pushToTalkValues.pushToTalkTex.get();
+    auto* pushToImg = m_pushToTalkValues.pushToTalkImg.get();
     if ( settings::getSetting( settings::BoolSetting::AUDIO_micReversePtt ) )
     {
-        pushToTex = m_pushToTalkValues.pushToMuteTex.get();
+        pushToImg = m_pushToTalkValues.pushToMuteImg.get();
     }
 
-    auto tex = parent->vrTextureFromRhiTexture( *pushToTex );
-    vr::VROverlay()->SetOverlayTexture( m_pushToTalkValues.overlayHandle,
-                                        &tex );
+    ovr_overlay_wrapper::setOverlayFromQImage( m_pushToTalkValues.overlayHandle,
+                                               *pushToImg );
     vr::VROverlay()->SetOverlayWidthInMeters( m_pushToTalkValues.overlayHandle,
                                               0.02f );
     vr::HmdMatrix34_t notificationTransform

@@ -20,6 +20,7 @@
 #include <iostream>
 #include <cmath>
 #include <openvr.h>
+#include "openvr/ovr_overlay_wrapper.h"
 #include "utils/Matrix.h"
 #include "keyboard_input/input_sender.h"
 #include "settings/settings.h"
@@ -387,18 +388,10 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             vr::VROverlayFlags_SendVRSmoothScrollEvents,
             true );
 
-        constexpr auto thumbiconFilename = "res/img/icons/thumbicon.png";
-        const auto thumbIconPath
-            = paths::binaryDirectoryFindFile( thumbiconFilename );
-        if ( thumbIconPath.has_value() )
         {
-            vr::VROverlay()->SetOverlayFromFile( m_ulOverlayThumbnailHandle,
-                                                 thumbIconPath->c_str() );
-        }
-        else
-        {
-            qCritical() << "Could not find thumbnail icon \""
-                        << thumbiconFilename << "\"";
+            QImage thumbiconImg( QString( ":/icons/thumbicon.png" ) );
+            ovr_overlay_wrapper::setOverlayFromQImage(
+                m_ulOverlayThumbnailHandle, thumbiconImg );
         }
 
         // Too many render calls in too short time overwhelm Qt and an
@@ -416,7 +409,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         if ( !m_renderControl.initialize() )
             throw std::runtime_error( "could not initialize m_renderControl" );
 
-        QRhi* rhi = m_renderControl.rhi();
+        QRhi* rhi = this->rhi();
 
         m_pFBTexture.reset( rhi->newTexture(
             QRhiTexture::RGBA8,
@@ -511,16 +504,11 @@ void OverlayController::OnRenderRequest()
     }
 }
 
-QRhi* OverlayController::rhi()
-{
-    return m_renderControl.rhi();
-}
-
 vr::ETextureType OverlayController::vrTextureTypeFromRhiBackend()
 {
     if ( !m_cached_vr_texture_type.has_value() )
     {
-        QRhi* rhi = m_renderControl.rhi();
+        QRhi* rhi = this->rhi();
         switch ( rhi->backend() )
         {
         case QRhi::Vulkan:

@@ -6,6 +6,7 @@
 
 #include <QtLogging>
 #include <QtDebug>
+#include <QImage>
 
 namespace alarm_clock
 {
@@ -23,8 +24,10 @@ VrAlarm::VrAlarm()
 
     ovr_overlay_wrapper::hideOverlay( m_alarmOverlayHandle );
 
-    const auto filename = "/res/img/alarm/alarm_activated.png";
-    ovr_overlay_wrapper::setOverlayFromFile( m_alarmOverlayHandle, filename );
+    // Only need to set it once, no need to keep it in memory
+    QImage alarmIcon( QString( ":/alarm/alarm_activated.png" ) );
+    ovr_overlay_wrapper::setOverlayFromQImage( m_alarmOverlayHandle,
+                                               alarmIcon );
 
     ovr_overlay_wrapper::setOverlayWidthInMeters( m_alarmOverlayHandle, 0.3f );
 

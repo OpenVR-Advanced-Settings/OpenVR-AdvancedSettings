@@ -191,13 +191,16 @@ private:
     void processRotationBindings();
     void processExclusiveInputBinding();
 
+    inline QRhi* rhi()
+    {
+        return m_renderControl.rhi();
+    }
+
     bool m_exclusiveState = false;
     bool m_keyPressOneState = false;
     bool m_keyPressTwoState = false;
 
 public:
-    QRhi* rhi();
-
     vr::ETextureType vrTextureTypeFromRhiBackend();
     vr::Texture_t vrTextureFromRhiTexture( QRhiTexture& tex );
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
