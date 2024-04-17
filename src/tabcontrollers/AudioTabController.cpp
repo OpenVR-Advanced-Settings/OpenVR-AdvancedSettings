@@ -345,6 +345,8 @@ void AudioTabController::setMicReversePtt( bool value, bool notify )
 
     settings::setSetting( settings::BoolSetting::AUDIO_micReversePtt, value );
 
+    // TODO: if reenabled use `ovr_overlay_wrapper::setOverlayFromQImage`
+    // instead
     if ( value )
     {
         // vr::VROverlay()->SetOverlayFromFile(m_ptt_overlayHandle,/*pt_mute*/);
