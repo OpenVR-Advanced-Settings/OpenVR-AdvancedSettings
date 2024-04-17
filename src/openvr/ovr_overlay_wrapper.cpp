@@ -110,8 +110,7 @@ OverlayError setOverlayFromQImage( vr::VROverlayHandle_t overlayHandle,
         overlayHandle, image.bits(), image.width(), image.height(), 4 );
     if ( oError != vr::VROverlayError_None )
     {
-        qCritical() << "Error setting Overlay from QImage (w:" << image.width()
-                    << "h:" << image.height() << "b:" << image.bits() << ") For"
+        qCritical() << "Error setting Overlay from" << image << "For"
                     << getOverlayKey( overlayHandle ) << "with error:"
                     << vr::VROverlay()->GetOverlayErrorNameFromEnum( oError )
                     << customErrorMsg;
