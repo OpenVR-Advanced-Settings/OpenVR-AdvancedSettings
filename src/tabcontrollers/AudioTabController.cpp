@@ -98,6 +98,7 @@ void AudioTabController::initStage2( OverlayController* var_parent )
     return;
 
     auto* rhi = parent->rhi();
+
     m_pushToTalkValues.pushToTalkTex.reset(
         rhi->newTexture( QRhiTexture::RGBA8, pushToTalkIcon.size(), 1 ) );
     m_pushToTalkValues.pushToMuteTex.reset(

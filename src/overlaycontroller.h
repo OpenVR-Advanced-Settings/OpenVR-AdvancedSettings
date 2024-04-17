@@ -197,6 +197,7 @@ private:
 
 public:
     QRhi* rhi();
+
     vr::ETextureType vrTextureTypeFromRhiBackend();
     vr::Texture_t vrTextureFromRhiTexture( QRhiTexture& tex );
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
