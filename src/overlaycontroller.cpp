@@ -11,6 +11,7 @@
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsEllipseItem>
+#include <QQuickGraphicsConfiguration>
 #include <QOpenGLExtraFunctions>
 #include <QCursor>
 #include <QProcess>
@@ -406,10 +407,25 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                  this,
                  SLOT( renderOverlay() ) );
 
+#if QT_CONFIG( vulkan )
+        if ( m_window.graphicsApi() == QSGRendererInterface::Vulkan )
+        {
+            m_vulkanInstance.reset( new QVulkanInstance );
+            m_vulkanInstance->setExtensions(
+                QQuickGraphicsConfiguration::preferredInstanceExtensions() );
+            if ( !m_vulkanInstance->create() )
+                throw std::runtime_error( "Cannot create vulkan instance" );
+
+            m_window.setVulkanInstance( m_vulkanInstance.get() );
+        }
+#endif
+
         if ( !m_renderControl.initialize() )
             throw std::runtime_error( "could not initialize m_renderControl" );
 
         QRhi* rhi = this->rhi();
+
+        qInfo() << "Started with" << rhi->backendName();
 
         m_pFBTexture.reset( rhi->newTexture(
             QRhiTexture::RGBA8,
@@ -437,7 +453,6 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                               0,
                               static_cast<int>( quickItem->width() ),
                               static_cast<int>( quickItem->height() ) );
-        m_renderControl.initialize();
 
         vr::HmdVector2_t vecWindowSize
             = { static_cast<float>( quickItem->width() ),
@@ -504,40 +519,49 @@ void OverlayController::OnRenderRequest()
     }
 }
 
-vr::ETextureType OverlayController::vrTextureTypeFromRhiBackend()
+void OverlayController::SetOverlayFromQRhiTexture( QRhiTexture& tex )
 {
-    if ( !m_cached_vr_texture_type.has_value() )
+    vr::Texture_t vrTex = {};
+    QRhi* rhi = this->rhi();
+
+    switch ( rhi->backend() )
     {
-        QRhi* rhi = this->rhi();
-        switch ( rhi->backend() )
-        {
-        case QRhi::Vulkan:
-            m_cached_vr_texture_type = vr::TextureType_Vulkan;
-            break;
-        case QRhi::D3D12:
-            m_cached_vr_texture_type = vr::TextureType_DirectX12;
-            break;
-        case QRhi::D3D11:
-            m_cached_vr_texture_type = vr::TextureType_DirectX;
-            break;
-        case QRhi::OpenGLES2:
-            m_cached_vr_texture_type = vr::TextureType_OpenGL;
-            break;
-        case QRhi::Metal:
-            m_cached_vr_texture_type = vr::TextureType_Metal;
-            break;
-        default:
-            qFatal() << "unknown RHI backend encountered:" << rhi->backend();
-            throw std::runtime_error( "unsupported RHI backend encountered" );
-        }
+    case QRhi::OpenGLES2:
+    {
+        vrTex.handle = reinterpret_cast<void*>( tex.nativeTexture().object );
+        vrTex.eType = vr::TextureType_OpenGL;
+        vrTex.eColorSpace = vr::ColorSpace_Auto;
     }
-    return m_cached_vr_texture_type.value();
-}
-vr::Texture_t OverlayController::vrTextureFromRhiTexture( QRhiTexture& tex )
-{
-    return { reinterpret_cast<void*>( tex.nativeTexture().object ),
-             vrTextureTypeFromRhiBackend(),
-             vr::ColorSpace_Auto };
+    break;
+#if QT_CONFIG( vulkan )
+    case QRhi::Vulkan:
+    {
+        const QRhiVulkanNativeHandles* vulkan_handles
+            = reinterpret_cast<const QRhiVulkanNativeHandles*>(
+                rhi->nativeHandles() );
+        vr::VRVulkanTextureData_t vulkan = {
+            .m_nImage = tex.nativeTexture().object,
+            .m_pDevice = vulkan_handles->dev,
+            .m_pPhysicalDevice = vulkan_handles->physDev,
+            .m_pInstance = vulkan_handles->inst->vkInstance(),
+            .m_pQueue = vulkan_handles->gfxQueue,
+            .m_nQueueFamilyIndex = vulkan_handles->gfxQueueIdx,
+            .m_nWidth = static_cast<uint32_t>( tex.pixelSize().width() ),
+            .m_nHeight = static_cast<uint32_t>( tex.pixelSize().height() ),
+            .m_nFormat = tex.format(),
+            .m_nSampleCount = static_cast<uint32_t>( tex.sampleCount() ),
+        };
+        vrTex.handle = &vulkan;
+        vrTex.eType = vr::TextureType_Vulkan;
+        vrTex.eColorSpace = vr::ColorSpace_Auto;
+    }
+    break;
+#endif
+    default:
+        qFatal() << "unimplemented backend:" << rhi->backend();
+        throw std::runtime_error( "unimplemented backend" );
+    }
+    vr::VROverlay()->SetOverlayTexture( m_ulOverlayHandle, &vrTex );
 }
 
 void OverlayController::renderOverlay()
@@ -556,13 +580,7 @@ void OverlayController::renderOverlay()
         m_renderControl.render();
         m_renderControl.endFrame();
 
-        auto tex = vrTextureFromRhiTexture( *m_pFBTexture );
-        vr::VROverlay()->SetOverlayTexture( m_ulOverlayHandle, &tex );
-
-        /*
-        m_openGLContext.functions()->glFlush(); // We need to flush otherwise
-                                                // the texture may be empty.
-        */
+        SetOverlayFromQRhiTexture( *m_pFBTexture );
     }
 }
 

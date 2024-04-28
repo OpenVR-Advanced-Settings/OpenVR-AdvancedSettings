@@ -108,6 +108,9 @@ private:
     vr::VROverlayHandle_t m_ulOverlayThumbnailHandle
         = vr::k_ulOverlayHandleInvalid;
 
+#if QT_CONFIG( vulkan )
+    std::unique_ptr<QVulkanInstance> m_vulkanInstance = nullptr;
+#endif
     QQuickRenderControl m_renderControl;
     QQuickWindow m_window{ &m_renderControl };
 
@@ -201,8 +204,7 @@ private:
     bool m_keyPressTwoState = false;
 
 public:
-    vr::ETextureType vrTextureTypeFromRhiBackend();
-    vr::Texture_t vrTextureFromRhiTexture( QRhiTexture& tex );
+    void SetOverlayFromQRhiTexture( QRhiTexture& tex );
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
     virtual ~OverlayController();
 
