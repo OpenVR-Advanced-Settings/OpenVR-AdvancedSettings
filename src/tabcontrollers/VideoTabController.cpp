@@ -52,30 +52,21 @@ void VideoTabController::initBrightnessOverlay()
         notifKey.c_str(), notifKey.c_str(), &m_brightnessOverlayHandle );
     if ( overlayError == vr::VROverlayError_None )
     {
-        const auto notifIconPath = paths::binaryDirectoryFindFile(
-            video_keys::k_brightnessOverlayFilename );
-        if ( notifIconPath.has_value() )
-        {
-            vr::VROverlay()->SetOverlayFromFile( m_brightnessOverlayHandle,
-                                                 notifIconPath->c_str() );
-            vr::VROverlay()->SetOverlayWidthInMeters( m_brightnessOverlayHandle,
-                                                      k_overlayWidth );
-            vr::HmdMatrix34_t notificationTransform
-                = { { { 1.0f, 0.0f, 0.0f, 0.00f },
-                      { 0.0f, 1.0f, 0.0f, 0.00f },
-                      { 0.0f, 0.0f, 1.0f, k_hmdDistance } } };
-            vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
-                m_brightnessOverlayHandle,
-                vr::k_unTrackedDeviceIndex_Hmd,
-                &notificationTransform );
-            vr::VROverlay()->SetOverlaySortOrder( m_brightnessOverlayHandle,
-                                                  sortMax );
-        }
-        else
-        {
-            qCritical() << "Could not find brightness overlay \""
-                        << video_keys::k_brightnessOverlayFilename << "\"";
-        }
+        QImage notifIcon( QString( ":/video/dimmer.png" ) );
+        ovr_overlay_wrapper::setOverlayFromQImage( m_brightnessOverlayHandle,
+                                                   notifIcon );
+        vr::VROverlay()->SetOverlayWidthInMeters( m_brightnessOverlayHandle,
+                                                  k_overlayWidth );
+        vr::HmdMatrix34_t notificationTransform
+            = { { { 1.0f, 0.0f, 0.0f, 0.00f },
+                  { 0.0f, 1.0f, 0.0f, 0.00f },
+                  { 0.0f, 0.0f, 1.0f, k_hmdDistance } } };
+        vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
+            m_brightnessOverlayHandle,
+            vr::k_unTrackedDeviceIndex_Hmd,
+            &notificationTransform );
+        vr::VROverlay()->SetOverlaySortOrder( m_brightnessOverlayHandle,
+                                              sortMax );
     }
     else
     {
@@ -95,32 +86,23 @@ void VideoTabController::initColorOverlay()
         notifKey.c_str(), notifKey.c_str(), &m_colorOverlayHandle );
     if ( overlayError == vr::VROverlayError_None )
     {
-        const auto notifIconPath = paths::binaryDirectoryFindFile(
-            video_keys::k_colorOverlayFilename );
-        if ( notifIconPath.has_value() )
-        {
-            vr::VROverlay()->SetOverlayFromFile( m_colorOverlayHandle,
-                                                 notifIconPath->c_str() );
-            vr::VROverlay()->SetOverlayWidthInMeters( m_colorOverlayHandle,
-                                                      k_overlayWidth );
-            // position it just slightly further out so we don't have to worry
-            // about render order.
-            vr::HmdMatrix34_t notificationTransform
-                = { { { 1.0f, 0.0f, 0.0f, 0.00f },
-                      { 0.0f, 1.0f, 0.0f, 0.00f },
-                      { 0.0f, 0.0f, 1.0f, ( k_hmdDistance - 0.01f ) } } };
-            vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
-                m_colorOverlayHandle,
-                vr::k_unTrackedDeviceIndex_Hmd,
-                &notificationTransform );
-            vr::VROverlay()->SetOverlaySortOrder( m_brightnessOverlayHandle,
-                                                  sortMax );
-        }
-        else
-        {
-            qCritical() << "Could not find Base color overlay: \""
-                        << video_keys::k_colorOverlayFilename << "\"";
-        }
+        QImage notifIcon( QString( ":/video/color.png" ) );
+        ovr_overlay_wrapper::setOverlayFromQImage( m_colorOverlayHandle,
+                                                   notifIcon );
+        vr::VROverlay()->SetOverlayWidthInMeters( m_colorOverlayHandle,
+                                                  k_overlayWidth );
+        // position it just slightly further out so we don't have to worry
+        // about render order.
+        vr::HmdMatrix34_t notificationTransform
+            = { { { 1.0f, 0.0f, 0.0f, 0.00f },
+                  { 0.0f, 1.0f, 0.0f, 0.00f },
+                  { 0.0f, 0.0f, 1.0f, ( k_hmdDistance - 0.01f ) } } };
+        vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
+            m_colorOverlayHandle,
+            vr::k_unTrackedDeviceIndex_Hmd,
+            &notificationTransform );
+        vr::VROverlay()->SetOverlaySortOrder( m_brightnessOverlayHandle,
+                                              sortMax );
     }
     else
     {

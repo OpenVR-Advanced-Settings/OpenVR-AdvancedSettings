@@ -39,29 +39,14 @@ void RotationTabController::initStage2( OverlayController* var_parent )
 
         return;
     }
+    m_autoturnValues.autoturnImg.reset(
+        new QImage( QString( ":/rotation/autoturn.png" ) ) );
+    m_autoturnValues.noautoturnImg.reset(
+        new QImage( QString( ":/rotation/noautoturn.png" ) ) );
 
-    constexpr auto autoturnIconFilepath = "/res/img/rotation/autoturn.png";
-    constexpr auto noautoturnIconFilepath = "/res/img/rotation/noautoturn.png";
+    ovr_overlay_wrapper::setOverlayFromQImage( m_autoturnValues.overlayHandle,
+                                               *m_autoturnValues.autoturnImg );
 
-    const auto autoturnIconFilePath
-        = paths::verifyIconFilePath( autoturnIconFilepath );
-    const auto noautoturnIconFilePath
-        = paths::verifyIconFilePath( noautoturnIconFilepath );
-
-    if ( !autoturnIconFilePath.has_value()
-         || !noautoturnIconFilePath.has_value() )
-    {
-        emit defaultProfileDisplay();
-        return;
-    }
-
-    m_autoturnValues.autoturnPath = *autoturnIconFilePath;
-    m_autoturnValues.noautoturnPath = *noautoturnIconFilePath;
-
-    auto pushToPath = m_autoturnValues.autoturnPath.c_str();
-
-    vr::VROverlay()->SetOverlayFromFile( m_autoturnValues.overlayHandle,
-                                         pushToPath );
     vr::VROverlay()->SetOverlayWidthInMeters( m_autoturnValues.overlayHandle,
                                               0.02f );
     vr::HmdMatrix34_t notificationTransform
@@ -677,22 +662,21 @@ void RotationTabController::setAutoTurnEnabled( bool value, bool notify )
         emit autoTurnEnabledChanged( value );
     }
 
-    if ( !value )
-    {
-        vr::VROverlay()->SetOverlayFromFile(
-            m_autoturnValues.overlayHandle,
-            m_autoturnValues.noautoturnPath.c_str() );
-    }
-    else
-    {
-        vr::VROverlay()->SetOverlayFromFile(
-            m_autoturnValues.overlayHandle,
-            m_autoturnValues.autoturnPath.c_str() );
-    }
-
     if ( autoTurnShowNotification()
          && getNotificationOverlayHandle() != vr::k_ulOverlayHandleInvalid )
     {
+        if ( !value )
+        {
+            ovr_overlay_wrapper::setOverlayFromQImage(
+                m_autoturnValues.overlayHandle,
+                *m_autoturnValues.noautoturnImg );
+        }
+        else
+        {
+            ovr_overlay_wrapper::setOverlayFromQImage(
+                m_autoturnValues.overlayHandle, *m_autoturnValues.autoturnImg );
+        }
+
         vr::VROverlay()->SetOverlayAlpha( getNotificationOverlayHandle(),
                                           1.0f );
         vr::VROverlay()->ShowOverlay( getNotificationOverlayHandle() );

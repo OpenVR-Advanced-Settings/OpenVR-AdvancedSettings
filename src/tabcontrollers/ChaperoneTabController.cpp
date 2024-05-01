@@ -1619,8 +1619,22 @@ void ChaperoneTabController::initCenterMarkerOverlay()
                                               "" );
     if ( overlayError == ovr_overlay_wrapper::OverlayError::NoError )
     {
-        ovr_overlay_wrapper::setOverlayFromFile(
-            m_chaperoneFloorOverlayHandle, m_floorMarkerFN, "" );
+        m_floorMarkers[-3] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermarkl3.png" ) ) );
+        m_floorMarkers[-2] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermarkl2.png" ) ) );
+        m_floorMarkers[-1] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermarkl1.png" ) ) );
+        m_floorMarkers[0] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermark.png" ) ) );
+        m_floorMarkers[1] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermarkr1.png" ) ) );
+        m_floorMarkers[2] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermarkr2.png" ) ) );
+        m_floorMarkers[3] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermarkr3.png" ) ) );
+        ovr_overlay_wrapper::setOverlayFromQImage(
+            m_chaperoneFloorOverlayHandle, *m_floorMarkers[0], "" );
         ovr_overlay_wrapper::setOverlayWidthInMeters(
             m_chaperoneFloorOverlayHandle, 0.5f );
         updateCenterMarkerOverlayColor();
@@ -1662,57 +1676,25 @@ void ChaperoneTabController::checkCenterMarkerOverlayRotationCount()
         if ( rotation > 0 )
         {
             rotation = rotation + 0.5f;
-            int fullRotation = static_cast<int>( rotation );
-            switch ( fullRotation )
-            {
-            case 0:
-                m_floorMarkerFN = "/res/img/chaperone/centermark.png";
-                rotationNext = 0;
-                break;
-            case 1:
-                m_floorMarkerFN = "/res/img/chaperone/centermarkr1.png";
-                rotationNext = 1;
-                break;
-            case 2:
-                m_floorMarkerFN = "/res/img/chaperone/centermarkr2.png";
-                rotationNext = 2;
-                break;
-
-            default:
-
-                m_floorMarkerFN = "/res/img/chaperone/centermarkr3.png";
+            rotationNext = static_cast<int>( rotation );
+            if ( rotationNext > 3 )
                 rotationNext = 3;
-            }
         }
         else
         {
             rotation = rotation + 0.5f;
-            int fullRotation = static_cast<int>( std::floor( rotation ) );
-            switch ( fullRotation )
-            {
-            case 0:
-                m_floorMarkerFN = "/res/img/chaperone/centermark.png";
-                rotationNext = 0;
-                break;
-            case -1:
-                m_floorMarkerFN = "/res/img/chaperone/centermarkl1.png";
-                rotationNext = -1;
-                break;
-            case -2:
-                m_floorMarkerFN = "/res/img/chaperone/centermarkl2.png";
-                rotationNext = -2;
-                break;
-            default:
-                m_floorMarkerFN = "/res/img/chaperone/centermarkl3.png";
+            rotationNext = static_cast<int>( std::floor( rotation ) );
+            if ( rotationNext < -3 )
                 rotationNext = -3;
-            }
         }
 
         if ( rotationNext != m_rotationCurrent && m_centerMarkerOverlayIsInit )
         {
             m_rotationCurrent = rotationNext;
-            ovr_overlay_wrapper::setOverlayFromFile(
-                m_chaperoneFloorOverlayHandle, m_floorMarkerFN, "" );
+            ovr_overlay_wrapper::setOverlayFromQImage(
+                m_chaperoneFloorOverlayHandle,
+                *m_floorMarkers[rotationNext],
+                "" );
         }
     }
     else

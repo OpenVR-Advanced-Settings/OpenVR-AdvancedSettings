@@ -1,6 +1,7 @@
 #include "ovr_overlay_wrapper.h"
 #include <QtLogging>
 #include <QtDebug>
+#include <QImage>
 
 namespace ovr_overlay_wrapper
 {
@@ -98,6 +99,24 @@ OverlayError setOverlayFromFile( vr::VROverlayHandle_t overlayHandle,
         }
         return OverlayError::NoError;
     }
+}
+
+OverlayError setOverlayFromQImage( vr::VROverlayHandle_t overlayHandle,
+                                   QImage& image,
+                                   std::string customErrorMsg )
+{
+    image.convertTo( QImage::Format_RGBA8888 );
+    vr::VROverlayError oError = vr::VROverlay()->SetOverlayRaw(
+        overlayHandle, image.bits(), image.width(), image.height(), 4 );
+    if ( oError != vr::VROverlayError_None )
+    {
+        qCritical() << "Error setting Overlay from" << image << "For"
+                    << getOverlayKey( overlayHandle ) << "with error:"
+                    << vr::VROverlay()->GetOverlayErrorNameFromEnum( oError )
+                    << customErrorMsg;
+        return OverlayError::UndefinedError;
+    }
+    return OverlayError::NoError;
 }
 
 OverlayError showOverlay( vr::VROverlayHandle_t overlayHandle,

@@ -5,7 +5,7 @@
 
 #include "audiomanager/AudioManager.h"
 #include <memory>
-#include <rhi/qrhi.h>
+#include <QImage>
 #include "../utils/FrameRateUtils.h"
 #include "../settings/settings_object.h"
 
@@ -116,8 +116,8 @@ private:
     struct
     {
         vr::VROverlayHandle_t overlayHandle = vr::k_ulOverlayHandleInvalid;
-        std::unique_ptr<QRhiTexture> pushToTalkTex;
-        std::unique_ptr<QRhiTexture> pushToMuteTex;
+        std::unique_ptr<QImage> pushToTalkImg;
+        std::unique_ptr<QImage> pushToMuteImg;
     } m_pushToTalkValues;
 
     int m_playbackDeviceIndex = -1;

@@ -3,6 +3,9 @@
         <file alias="backarrow">img/common/backarrow.svg</file>
         <file alias="box_checkmark">img/common/check.svg</file>
     </qresource>
+    <qresource prefix="/icons">
+        <file alias="thumbicon.png">img/icons/thumbicon.png</file>
+    </qresource>
     <qresource prefix="/microphone">
         <file alias="on">img/audio/microphone/mic_on.svg</file>
         <file alias="off">img/audio/microphone/mic_off.svg</file>
@@ -64,5 +67,8 @@
         <file alias="autoturn.png">img/rotation/autoturn.png</file>
         <file alias="noautoturn.png">img/rotation/noautoturn.png</file>
         <file alias="noautoturn.svg">img/rotation/noautoturn.svg</file>
+    </qresource>
+    <qresource prefix="/alarm">
+        <file alias="alarm_activated.png">img/alarm/alarm_activated.png</file>
     </qresource>
 </RCC>
