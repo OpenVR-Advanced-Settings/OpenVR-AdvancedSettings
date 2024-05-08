@@ -1,5 +1,7 @@
 #include "ChaperoneTabController.h"
 #include <QQuickWindow>
+#include <QtLogging>
+#include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../settings/settings.h"
 #include "../utils/Matrix.h"
@@ -182,7 +184,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     // Alarm Sound
     if ( isChaperoneAlarmSoundEnabled() )
     {
-        // LOG(WARNING) << "In alarm";
+        qWarning() << "In alarm";
         float activationDistance = chaperoneAlarmSoundDistance();
 
         if ( distance <= activationDistance && proxSensorOverrideState )
@@ -763,12 +765,12 @@ void ChaperoneTabController::setChaperoneColorR( int value, bool notify )
         if ( value > 255 )
         {
             value = 255;
-            LOG( WARNING ) << "Red Channel larger than 255, setting to 255";
+            qWarning() << "Red Channel larger than 255, setting to 255";
         }
         else if ( value < 0 )
         {
             value = 0;
-            LOG( WARNING ) << "Red Channel smaller than 0, setting to 0";
+            qWarning() << "Red Channel smaller than 0, setting to 0";
         }
         m_chaperoneColorR = value;
         ovr_settings_wrapper::setInt32(
@@ -791,12 +793,12 @@ void ChaperoneTabController::setChaperoneColorG( int value, bool notify )
         if ( value > 255 )
         {
             value = 255;
-            LOG( WARNING ) << "Green Channel larger than 255, setting to 255";
+            qWarning() << "Green Channel larger than 255, setting to 255";
         }
         else if ( value < 0 )
         {
             value = 0;
-            LOG( WARNING ) << "Green Channel smaller than 0, setting to 0";
+            qWarning() << "Green Channel smaller than 0, setting to 0";
         }
         m_chaperoneColorG = value;
         ovr_settings_wrapper::setInt32(
@@ -819,12 +821,12 @@ void ChaperoneTabController::setChaperoneColorB( int value, bool notify )
         if ( value > 255 )
         {
             value = 255;
-            LOG( WARNING ) << "Blue Channel larger than 255, setting to 255";
+            qWarning() << "Blue Channel larger than 255, setting to 255";
         }
         else if ( value < 0 )
         {
             value = 0;
-            LOG( WARNING ) << "Blue Channel smaller than 0, setting to 0";
+            qWarning() << "Blue Channel smaller than 0, setting to 0";
         }
         m_chaperoneColorB = value;
         ovr_settings_wrapper::setInt32(
@@ -855,12 +857,12 @@ void ChaperoneTabController::setChaperoneColorA( int value, bool notify )
         if ( value > 255 )
         {
             value = 255;
-            LOG( WARNING ) << "Alpha Channel larger than 255, setting to 255";
+            qWarning() << "Alpha Channel larger than 255, setting to 255";
         }
         else if ( value < 0 )
         {
             value = 0;
-            LOG( WARNING ) << "Alpha Channel smaller than 0, setting to 0";
+            qWarning() << "Alpha Channel smaller than 0, setting to 0";
         }
         m_chaperoneColorA = value;
         ovr_settings_wrapper::setInt32(
@@ -926,14 +928,13 @@ void ChaperoneTabController::setCollisionBoundStyle( int value,
         if ( vr::COLLISION_BOUNDS_STYLE_COUNT < value )
         {
             value = 0;
-            LOG( WARNING )
+            qWarning()
                 << "Invalid Collision Bound Value (>count), set to beginner";
         }
         else if ( value < 0 )
         {
             value = 0;
-            LOG( WARNING )
-                << "Invalid Collision Bound Value (<0), set to beginner";
+            qWarning() << "Invalid Collision Bound Value (<0), set to beginner";
         }
         if ( !isTemp )
         {
@@ -1468,7 +1469,7 @@ void ChaperoneTabController::createNewAutosaveProfile()
     }
     else
     {
-        LOG( INFO )
+        qInfo()
             << "[Chaperone Autosave] «Autosaved Profile (previous)» not found";
     }
 
@@ -1484,7 +1485,7 @@ void ChaperoneTabController::createNewAutosaveProfile()
     }
     else
     {
-        LOG( INFO ) << "[Chaperone Autosave] «Autosaved Profile» not found";
+        qInfo() << "[Chaperone Autosave] «Autosaved Profile» not found";
     }
 
     // create a new autosave from current chaperone (all options set true)
@@ -1515,8 +1516,8 @@ void ChaperoneTabController::applyAutosavedProfile()
     }
     else
     {
-        LOG( WARNING ) << "Failed to apply chaperone Autosaved Profile "
-                          "(autosave doesn't exist)";
+        qWarning() << "Failed to apply chaperone Autosaved Profile "
+                      "(autosave doesn't exist)";
     }
 }
 
@@ -1618,8 +1619,22 @@ void ChaperoneTabController::initCenterMarkerOverlay()
                                               "" );
     if ( overlayError == ovr_overlay_wrapper::OverlayError::NoError )
     {
-        ovr_overlay_wrapper::setOverlayFromFile(
-            m_chaperoneFloorOverlayHandle, m_floorMarkerFN, "" );
+        m_floorMarkers[-3] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermarkl3.png" ) ) );
+        m_floorMarkers[-2] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermarkl2.png" ) ) );
+        m_floorMarkers[-1] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermarkl1.png" ) ) );
+        m_floorMarkers[0] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermark.png" ) ) );
+        m_floorMarkers[1] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermarkr1.png" ) ) );
+        m_floorMarkers[2] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermarkr2.png" ) ) );
+        m_floorMarkers[3] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/chaperone/centermarkr3.png" ) ) );
+        ovr_overlay_wrapper::setOverlayFromQImage(
+            m_chaperoneFloorOverlayHandle, *m_floorMarkers[0], "" );
         ovr_overlay_wrapper::setOverlayWidthInMeters(
             m_chaperoneFloorOverlayHandle, 0.5f );
         updateCenterMarkerOverlayColor();
@@ -1629,7 +1644,7 @@ void ChaperoneTabController::initCenterMarkerOverlay()
     }
     else
     {
-        LOG( ERROR ) << "overlay Not initialized";
+        qCritical() << "overlay Not initialized";
         // TODO Set Failure variable.
     }
 }
@@ -1661,57 +1676,25 @@ void ChaperoneTabController::checkCenterMarkerOverlayRotationCount()
         if ( rotation > 0 )
         {
             rotation = rotation + 0.5f;
-            int fullRotation = static_cast<int>( rotation );
-            switch ( fullRotation )
-            {
-            case 0:
-                m_floorMarkerFN = "/res/img/chaperone/centermark.png";
-                rotationNext = 0;
-                break;
-            case 1:
-                m_floorMarkerFN = "/res/img/chaperone/centermarkr1.png";
-                rotationNext = 1;
-                break;
-            case 2:
-                m_floorMarkerFN = "/res/img/chaperone/centermarkr2.png";
-                rotationNext = 2;
-                break;
-
-            default:
-
-                m_floorMarkerFN = "/res/img/chaperone/centermarkr3.png";
+            rotationNext = static_cast<int>( rotation );
+            if ( rotationNext > 3 )
                 rotationNext = 3;
-            }
         }
         else
         {
             rotation = rotation + 0.5f;
-            int fullRotation = static_cast<int>( std::floor( rotation ) );
-            switch ( fullRotation )
-            {
-            case 0:
-                m_floorMarkerFN = "/res/img/chaperone/centermark.png";
-                rotationNext = 0;
-                break;
-            case -1:
-                m_floorMarkerFN = "/res/img/chaperone/centermarkl1.png";
-                rotationNext = -1;
-                break;
-            case -2:
-                m_floorMarkerFN = "/res/img/chaperone/centermarkl2.png";
-                rotationNext = -2;
-                break;
-            default:
-                m_floorMarkerFN = "/res/img/chaperone/centermarkl3.png";
+            rotationNext = static_cast<int>( std::floor( rotation ) );
+            if ( rotationNext < -3 )
                 rotationNext = -3;
-            }
         }
 
         if ( rotationNext != m_rotationCurrent && m_centerMarkerOverlayIsInit )
         {
             m_rotationCurrent = rotationNext;
-            ovr_overlay_wrapper::setOverlayFromFile(
-                m_chaperoneFloorOverlayHandle, m_floorMarkerFN, "" );
+            ovr_overlay_wrapper::setOverlayFromQImage(
+                m_chaperoneFloorOverlayHandle,
+                *m_floorMarkers[rotationNext],
+                "" );
         }
     }
     else

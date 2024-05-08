@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTime>
+#include <QImage>
 #include <openvr.h>
 #include <memory>
 #include "src/keyboard_input/keyboard_input.h"
@@ -29,6 +30,7 @@ private:
 
     unsigned settingsUpdateCounter = 0;
 
+    std::array<std::unique_ptr<QImage>, 6> m_batteryImgs;
     vr::VROverlayHandle_t m_batteryOverlayHandles[vr::k_unMaxTrackedDeviceCount]
         = { 0 };
     int m_batteryState[vr::k_unMaxTrackedDeviceCount];

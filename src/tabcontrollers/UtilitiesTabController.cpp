@@ -1,11 +1,15 @@
 #include "UtilitiesTabController.h"
 #include <QQuickWindow>
 #include <QApplication>
+#include <QtLogging>
+#include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../keyboard_input/input_sender.h"
 #include "../settings/settings.h"
 #include "../utils/update_rate.h"
+#include "openvr/ovr_overlay_wrapper.h"
 #include <chrono>
+#include <qimage.h>
 #include <thread>
 
 // application namespace
@@ -236,8 +240,8 @@ QString getBatteryIconPath( int batteryState )
 
     if ( !batteryPath.has_value() )
     {
-        LOG( ERROR ) << "Unable to find battery image number '" << batteryState
-                     << "'.";
+        qCritical() << "Unable to find battery image number '" << batteryState
+                    << "'.";
         return "";
     }
 
@@ -255,40 +259,42 @@ vr::VROverlayHandle_t UtilitiesTabController::createBatteryOverlay(
         batteryKey.c_str(), batteryKey.c_str(), &handle );
     if ( overlayError == vr::VROverlayError_None )
     {
-        QString batteryIconPath = getBatteryIconPath( 0 );
-        if ( QFile::exists( batteryIconPath ) )
+        m_batteryImgs[0] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/battery/battery_0.png" ) ) );
+        m_batteryImgs[1] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/battery/battery_1.png" ) ) );
+        m_batteryImgs[2] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/battery/battery_2.png" ) ) );
+        m_batteryImgs[3] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/battery/battery_3.png" ) ) );
+        m_batteryImgs[4] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/battery/battery_4.png" ) ) );
+        m_batteryImgs[5] = std::unique_ptr<QImage>(
+            new QImage( QString( ":/battery/battery_5.png" ) ) );
+        ovr_overlay_wrapper::setOverlayFromQImage( handle, *m_batteryImgs[0] );
+        vr::VROverlay()->SetOverlayWidthInMeters( handle, 0.045f );
+        vr::HmdMatrix34_t notificationTransform;
+        if ( style == 1 )
         {
-            vr::VROverlay()->SetOverlayFromFile(
-                handle, batteryIconPath.toStdString().c_str() );
-            vr::VROverlay()->SetOverlayWidthInMeters( handle, 0.045f );
-            vr::HmdMatrix34_t notificationTransform;
-            if ( style == 1 )
-            {
-                notificationTransform = { { { 1.0f, 0.0f, 0.0f, 0.00f },
-                                            { 0.0f, -1.0f, 0.0f, 0.0081f },
-                                            { 0.0f, 0.0f, -1.0f, -0.028f } } };
-            }
-            else
-            {
-                notificationTransform = { { { 1.0f, 0.0f, 0.0f, 0.00f },
-                                            { 0.0f, -1.0f, 0.0f, 0.0081f },
-                                            { 0.0f, 0.0f, -1.0f, -0.0178f } } };
-            }
-            vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
-                handle, index, &notificationTransform );
-            LOG( INFO ) << "Created battery overlay for device " << index;
+            notificationTransform = { { { 1.0f, 0.0f, 0.0f, 0.00f },
+                                        { 0.0f, -1.0f, 0.0f, 0.0081f },
+                                        { 0.0f, 0.0f, -1.0f, -0.028f } } };
         }
         else
         {
-            LOG( ERROR ) << "Could not find battery icon \"" << batteryIconPath
-                         << "\"";
+            notificationTransform = { { { 1.0f, 0.0f, 0.0f, 0.00f },
+                                        { 0.0f, -1.0f, 0.0f, 0.0081f },
+                                        { 0.0f, 0.0f, -1.0f, -0.0178f } } };
         }
+        vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
+            handle, index, &notificationTransform );
+        qInfo() << "Created battery overlay for device " << index;
     }
     else
     {
-        LOG( ERROR ) << "Could not create ptt notification overlay: "
-                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                            overlayError );
+        qCritical() << "Could not create ptt notification overlay: "
+                    << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                           overlayError );
     }
 
     return handle;
@@ -306,8 +312,8 @@ void UtilitiesTabController::destroyBatteryOverlays()
         el = 0;
         if ( err != vr::VROverlayError_None )
         {
-            LOG( ERROR ) << "Could not Delete Battery Overlay: "
-                         << vr::VROverlay()->GetOverlayErrorNameFromEnum( err );
+            qCritical() << "Could not Delete Battery Overlay: "
+                        << vr::VROverlay()->GetOverlayErrorNameFromEnum( err );
         }
     }
 }
@@ -337,7 +343,7 @@ void UtilitiesTabController::handleTrackerBatOvl()
                     }
                 }
 
-                LOG( INFO ) << "Creating battery overlay for device " << i;
+                qInfo() << "Creating battery overlay for device " << i;
                 m_batteryOverlayHandles[i] = createBatteryOverlay( i, style );
                 m_batteryVisible[i] = true;
             }
@@ -373,23 +379,12 @@ void UtilitiesTabController::handleTrackerBatOvl()
 
                 if ( batteryState != m_batteryState[i] )
                 {
-                    LOG( INFO )
-                        << "Updating battery overlay for device " << i << " to "
-                        << batteryState << "(" << battery << ")"
-                        << QString::number( m_batteryOverlayHandles[i] );
-                    QString batteryIconPath
-                        = getBatteryIconPath( batteryState );
-                    if ( QFile::exists( batteryIconPath ) )
-                    {
-                        vr::VROverlay()->SetOverlayFromFile(
-                            m_batteryOverlayHandles[i],
-                            batteryIconPath.toStdString().c_str() );
-                    }
-                    else
-                    {
-                        LOG( ERROR ) << "Could not find battery icon \""
-                                     << batteryIconPath << "\"";
-                    }
+                    qInfo() << "Updating battery overlay for device " << i
+                            << " to " << batteryState << "(" << battery << ")"
+                            << QString::number( m_batteryOverlayHandles[i] );
+                    ovr_overlay_wrapper::setOverlayFromQImage(
+                        m_batteryOverlayHandles[i],
+                        *m_batteryImgs[batteryState] );
                     m_batteryState[i] = batteryState;
                 }
             }

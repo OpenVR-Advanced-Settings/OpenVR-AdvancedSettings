@@ -1,5 +1,8 @@
 #include "input_parser.h"
 
+#include <QtLogging>
+#include <QtDebug>
+
 std::optional<Token> getModifier( const char& character ) noexcept
 {
     switch ( character )
@@ -50,7 +53,7 @@ std::optional<Token> getFunctionNumber( const char& character ) noexcept
         return Token::KEY_F9;
 
     default:
-        LOG( INFO ) << "Unknown function key number: " << character;
+        qInfo() << "Unknown function key number: " << character;
         return std::nullopt;
     }
 }
@@ -80,7 +83,7 @@ std::optional<Token> getFunctionNumberExtended( const char& character ) noexcept
     case '9':
         return Token::KEY_F19;
     default:
-        LOG( INFO ) << "Unknown function key number: " << character;
+        qInfo() << "Unknown function key number: " << character;
         return std::nullopt;
     }
 }
@@ -210,7 +213,7 @@ std::vector<Token>
 
         if ( !isupper( *ch ) || isspace( *ch ) )
         {
-            LOG( INFO ) << "Unknown character found in sequence: " << *ch;
+            qInfo() << "Unknown character found in sequence: " << *ch;
             continue;
         }
         // Everything below is upper case

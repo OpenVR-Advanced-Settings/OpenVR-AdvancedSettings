@@ -1,5 +1,7 @@
 #include "RotationTabController.h"
 #include <QQuickWindow>
+#include <QtLogging>
+#include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../settings/settings.h"
 #include "../utils/Matrix.h"
@@ -17,6 +19,8 @@ void RotationTabController::initStage1()
 
 void RotationTabController::initStage2( OverlayController* var_parent )
 {
+    this->parent = var_parent;
+
     const auto autoturnOverlayKey
         = std::string( application_strings::applicationKey )
           + ".autoturnnotification";
@@ -27,37 +31,22 @@ void RotationTabController::initStage2( OverlayController* var_parent )
                                           &m_autoturnValues.overlayHandle );
     if ( overlayError != vr::VROverlayError_None )
     {
-        LOG( ERROR ) << "Could not create autoturn notification overlay: "
-                     << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                            overlayError );
+        qCritical() << "Could not create autoturn notification overlay: "
+                    << vr::VROverlay()->GetOverlayErrorNameFromEnum(
+                           overlayError );
 
         emit defaultProfileDisplay();
 
         return;
     }
+    m_autoturnValues.autoturnImg.reset(
+        new QImage( QString( ":/rotation/autoturn.png" ) ) );
+    m_autoturnValues.noautoturnImg.reset(
+        new QImage( QString( ":/rotation/noautoturn.png" ) ) );
 
-    constexpr auto autoturnIconFilepath = "/res/img/rotation/autoturn.png";
-    constexpr auto noautoturnIconFilepath = "/res/img/rotation/noautoturn.png";
+    ovr_overlay_wrapper::setOverlayFromQImage( m_autoturnValues.overlayHandle,
+                                               *m_autoturnValues.autoturnImg );
 
-    const auto autoturnIconFilePath
-        = paths::verifyIconFilePath( autoturnIconFilepath );
-    const auto noautoturnIconFilePath
-        = paths::verifyIconFilePath( noautoturnIconFilepath );
-
-    if ( !autoturnIconFilePath.has_value()
-         || !noautoturnIconFilePath.has_value() )
-    {
-        emit defaultProfileDisplay();
-        return;
-    }
-
-    m_autoturnValues.autoturnPath = *autoturnIconFilePath;
-    m_autoturnValues.noautoturnPath = *noautoturnIconFilePath;
-
-    auto pushToPath = m_autoturnValues.autoturnPath.c_str();
-
-    vr::VROverlay()->SetOverlayFromFile( m_autoturnValues.overlayHandle,
-                                         pushToPath );
     vr::VROverlay()->SetOverlayWidthInMeters( m_autoturnValues.overlayHandle,
                                               0.02f );
     vr::HmdMatrix34_t notificationTransform
@@ -70,8 +59,6 @@ void RotationTabController::initStage2( OverlayController* var_parent )
         &notificationTransform );
 
     emit defaultProfileDisplay();
-
-    this->parent = var_parent;
 }
 
 void RotationTabController::eventLoopTick(
@@ -401,9 +388,9 @@ void RotationTabController::doAutoTurn(
                     // Ignore if the wall we encountered is behind us
                     if ( std::abs( hmdToWallYaw ) >= M_PI / 2 )
                     {
-                        LOG( DEBUG ) << "Ignoring turn in opposite "
-                                        "direction (angle "
-                                     << std::abs( hmdToWallYaw ) << ")";
+                        qDebug() << "Ignoring turn in opposite "
+                                    "direction (angle "
+                                 << std::abs( hmdToWallYaw ) << ")";
                         break;
                     }
 
@@ -426,7 +413,7 @@ void RotationTabController::doAutoTurn(
                         // previous wall than the left.
                         turnLeft = m_autoTurnWallActive[circularIndex(
                             i, false, chaperoneDistances.size() )];
-                        LOG( DEBUG ) << "turning away from shared corner";
+                        qDebug() << "turning away from shared corner";
                     }
                     // If within m_cordDetanglingAngle degrees of
                     // 'straight at a wall', start in whatever direction
@@ -440,19 +427,19 @@ void RotationTabController::doAutoTurn(
                         turnLeft = ( parent->m_moveCenterTabController
                                          .getHmdYawTotal()
                                      < 0.0 );
-                        LOG( DEBUG ) << "turning to detangle cord";
+                        qDebug() << "turning to detangle cord";
                     }
                     // Turn the closest angle to the wall
                     else
                     {
                         turnLeft = hmdToWallYaw > 0.0;
-                        LOG( DEBUG ) << "turning closest angle to wall";
+                        qDebug() << "turning closest angle to wall";
                     }
 
-                    LOG( DEBUG ) << "hmd yaw " << hmdYaw
-                                 << ", hmd position to wall angle "
-                                 << hmdPositionToWallYaw;
-                    LOG( DEBUG ) << "hmd to wall angle " << hmdToWallYaw;
+                    qDebug() << "hmd yaw " << hmdYaw
+                             << ", hmd position to wall angle "
+                             << hmdPositionToWallYaw;
+                    qDebug() << "hmd to wall angle " << hmdToWallYaw;
                     // Positive hmd-to-wall is facing left, negative is
                     // facing right (relative to the wall)
                     double delta_degrees
@@ -488,17 +475,17 @@ void RotationTabController::doAutoTurn(
                             = static_cast<double>( std::atan2(
                                 middleCorner.v[0] - touchingWallCorner.v[0],
                                 middleCorner.v[2] - touchingWallCorner.v[2] ) );
-                        LOG( DEBUG ) << "twa: " << touchingWallAngle
-                                     << ", nwa: " << newWallAngle << ", diff: "
-                                     << ( newWallAngle - touchingWallAngle );
+                        qDebug() << "twa: " << touchingWallAngle
+                                 << ", nwa: " << newWallAngle << ", diff: "
+                                 << ( newWallAngle - touchingWallAngle );
                         delta_degrees = ( newWallAngle - touchingWallAngle
                                           + ( turnLeft ? M_PI : -M_PI ) )
                                         * k_radiansToCentidegrees;
                         delta_degrees
                             = reduceAngle<>( delta_degrees, -18000.0, 18000.0 );
                     }
-                    LOG( DEBUG ) << "rotating space " << ( delta_degrees / 100 )
-                                 << " degrees";
+                    qDebug() << "rotating space " << ( delta_degrees / 100 )
+                             << " degrees";
                     switch ( RotationTabController::autoTurnModeType() )
                     {
                     case AutoTurnModes::SNAP:
@@ -675,22 +662,21 @@ void RotationTabController::setAutoTurnEnabled( bool value, bool notify )
         emit autoTurnEnabledChanged( value );
     }
 
-    if ( !value )
-    {
-        vr::VROverlay()->SetOverlayFromFile(
-            m_autoturnValues.overlayHandle,
-            m_autoturnValues.noautoturnPath.c_str() );
-    }
-    else
-    {
-        vr::VROverlay()->SetOverlayFromFile(
-            m_autoturnValues.overlayHandle,
-            m_autoturnValues.autoturnPath.c_str() );
-    }
-
     if ( autoTurnShowNotification()
          && getNotificationOverlayHandle() != vr::k_ulOverlayHandleInvalid )
     {
+        if ( !value )
+        {
+            ovr_overlay_wrapper::setOverlayFromQImage(
+                m_autoturnValues.overlayHandle,
+                *m_autoturnValues.noautoturnImg );
+        }
+        else
+        {
+            ovr_overlay_wrapper::setOverlayFromQImage(
+                m_autoturnValues.overlayHandle, *m_autoturnValues.autoturnImg );
+        }
+
         vr::VROverlay()->SetOverlayAlpha( getNotificationOverlayHandle(),
                                           1.0f );
         vr::VROverlay()->ShowOverlay( getNotificationOverlayHandle() );
