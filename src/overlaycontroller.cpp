@@ -548,7 +548,7 @@ void OverlayController::SetOverlayFromQRhiTexture( QRhiTexture& tex )
             .m_nQueueFamilyIndex = vulkan_handles->gfxQueueIdx,
             .m_nWidth = static_cast<uint32_t>( tex.pixelSize().width() ),
             .m_nHeight = static_cast<uint32_t>( tex.pixelSize().height() ),
-            .m_nFormat = tex.format(),
+            .m_nFormat = static_cast<uint32_t>(tex.format()),
             .m_nSampleCount = static_cast<uint32_t>( tex.sampleCount() ),
         };
         vrTex.handle = &vulkan;

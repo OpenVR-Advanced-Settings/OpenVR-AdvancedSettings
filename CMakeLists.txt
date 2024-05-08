@@ -3,7 +3,7 @@ project(AdvancedSettings VERSION 5.7.4 LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core)
@@ -50,6 +50,50 @@ set(SRCS
     src/utils/setup.cpp
     src/utils/update_rate.cpp
 )
+
+set(HEADERS
+    src/alarm_clock/vr_alarm.h
+    src/keyboard_input/input_parser.h
+    src/keyboard_input/keyboard_input.h
+    #TODO, check if we need this
+    #src/keyboard_input/keyboard_sender.h
+    src/openvr/ivrinput.h
+    src/openvr/ivrinput_action.h
+    src/openvr/ivrinput_input_source.h
+    src/openvr/ivrinput_manifest.h
+    src/openvr/lh_console_util.h
+    src/openvr/openvr_init.h
+    src/openvr/ovr_application_wrapper.h
+    src/openvr/ovr_overlay_wrapper.h
+    src/openvr/ovr_settings_wrapper.h
+    src/openvr/ovr_system_wrapper.h
+    src/overlaycontroller.h
+    src/settings/settings.h
+    src/settings/settings_object.h
+    src/settings/internal/bool_setting_value.h
+    src/settings/internal/double_setting_value.h
+    src/settings/internal/setting_value.h
+    src/settings/internal/settings_controller.h
+    src/settings/internal/settings_object_data.h
+    src/settings/internal/specific_setting_value.h
+    src/tabcontrollers/AudioTabController.h
+    src/tabcontrollers/ChaperoneTabController.h
+    src/tabcontrollers/FixFloorTabController.h
+    src/tabcontrollers/MoveCenterTabController.h
+    src/tabcontrollers/RotationTabController.h
+    src/tabcontrollers/SettingsTabController.h
+    src/tabcontrollers/StatisticsTabController.h
+    src/tabcontrollers/SteamVRTabController.h
+    src/tabcontrollers/UtilitiesTabController.h
+    src/tabcontrollers/VideoTabController.h
+    src/utils/ChaperoneUtils.h
+    src/utils/FrameRateUtils.h
+    src/utils/paths.h
+    src/utils/setup.h
+    src/utils/update_rate.h
+    src/utils/Matrix.h
+    src/quaternion/quaternion.h
+    )
 
 set(QML_FILES
     src/res/qml/utilities_page/keyboard_utils/KeyboardGroupBox.qml
@@ -137,7 +181,7 @@ endforeach()
 
 set_source_files_properties(src/res/qml/common/MyResources.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
-qt_add_executable(AdvancedSettings WIN32 MACOSX_BUNDLE ${SRCS} ${RESOURCES})
+qt_add_executable(AdvancedSettings WIN32 MACOSX_BUNDLE ${SRCS} ${RESOURCES} ${HEADERS})
 
 target_include_directories(AdvancedSettings PUBLIC
     src
