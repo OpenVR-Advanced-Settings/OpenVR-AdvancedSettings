@@ -61,8 +61,8 @@ public:
     virtual HRESULT STDMETHODCALLTYPE SetPropertyValue(
         PCWSTR, int, const PROPERTYKEY&, const PROPVARIANT* );
 
-    virtual HRESULT STDMETHODCALLTYPE SetDefaultEndpoint(
-        __in PCWSTR wszDeviceId, __in ERole eRole );
+    virtual HRESULT STDMETHODCALLTYPE SetDefaultEndpoint( PCWSTR wszDeviceId,
+                                                          ERole eRole );
 
     virtual HRESULT STDMETHODCALLTYPE SetEndpointVisibility( PCWSTR, INT );
 };
@@ -124,8 +124,8 @@ public:
     virtual HRESULT STDMETHODCALLTYPE SetPropertyValue(
         PCWSTR, int, const PROPERTYKEY&, const PROPVARIANT* );
 
-    virtual HRESULT STDMETHODCALLTYPE SetDefaultEndpoint(
-        __in PCWSTR wszDeviceId, __in ERole eRole );
+    virtual HRESULT STDMETHODCALLTYPE SetDefaultEndpoint( PCWSTR wszDeviceId,
+                                                          ERole eRole );
 
     virtual HRESULT STDMETHODCALLTYPE SetEndpointVisibility(
         PCWSTR,
