@@ -44,7 +44,7 @@ void AudioManagerWindows::init( AudioTabController* var_controller )
     audioDeviceEnumerator = getAudioDeviceEnumerator();
     if ( !audioDeviceEnumerator )
     {
-        throw std::exception( "Could not create audio device enumerator" );
+        throw std::runtime_error( "Could not create audio device enumerator" );
     }
     playbackAudioDevice = getDefaultPlaybackDevice( audioDeviceEnumerator );
     if ( !playbackAudioDevice )
