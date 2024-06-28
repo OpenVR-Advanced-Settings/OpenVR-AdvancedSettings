@@ -7,6 +7,11 @@
 
 #pragma once
 
+// CI fails without it
+#ifndef __in
+#    define __in
+#endif
+
 // ca286fc3-91fd-42c3-8e9b-caafa66242e3
 static const GUID IID_IPolicyConfig2
     = { 0xCA286FC3,
