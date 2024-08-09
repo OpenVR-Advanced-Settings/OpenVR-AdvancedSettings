@@ -1,6 +1,6 @@
 #pragma once
 #include <QSettings>
-#include "settings.h"
+#include "../settings.h"
 #include "settings_internal.h"
 #include "setting_value.h"
 
@@ -16,11 +16,11 @@ public:
         : SettingValue( category, qtInfo ), m_setting( setting ),
           m_value( defaultValue )
     {
-        const auto v = getQtSetting( SettingValue::category(),
-                                     SettingValue::qtInfo().settingName );
-        if ( isValidQVariant( v, QMetaType::Double ) )
+        const auto val = getQtSetting( SettingValue::category(),
+                                       SettingValue::qtInfo().settingName );
+        if ( isValidQVariant<double>( val ) )
         {
-            m_value = v.toDouble();
+            m_value = val.toDouble();
         }
     }
 
@@ -29,22 +29,22 @@ public:
         m_value = value;
     }
 
-    double value() const noexcept
+    [[nodiscard]] double value() const noexcept
     {
         return m_value;
     }
 
-    DoubleSetting setting() const noexcept
+    [[nodiscard]] DoubleSetting setting() const noexcept
     {
         return m_setting;
     }
 
-    SettingCategory category() const noexcept
+    [[nodiscard]] SettingCategory category() const noexcept
     {
         return SettingValue::category();
     }
 
-    QtInfo qtInfo() const noexcept
+    [[nodiscard]] QtInfo qtInfo() const noexcept
     {
         return SettingValue::qtInfo();
     }

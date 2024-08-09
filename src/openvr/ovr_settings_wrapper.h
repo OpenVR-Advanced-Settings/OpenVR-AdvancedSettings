@@ -1,7 +1,6 @@
 #pragma once
 
 #include <openvr.h>
-#include <iostream>
 #include <string>
 #include <utility>
 

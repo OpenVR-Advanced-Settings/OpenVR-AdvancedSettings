@@ -4,7 +4,14 @@
 #include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../utils/update_rate.h"
+#include "openvr.h"
+#include "openvr/ovr_application_wrapper.h"
+#include "openvr/ovr_settings_wrapper.h"
+#include "openvr/ovr_system_wrapper.h"
+#include "settings/settings.h"
 #include <QDesktopServices>
+#include <regex>
+#include <set>
 
 QT_USE_NAMESPACE
 
@@ -49,12 +56,12 @@ void SteamVRTabController::synchSteamVR()
 
 bool SteamVRTabController::performanceGraph() const
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_Perf_Section, vr::k_pch_Perf_PerfGraphInHMD_Bool );
 
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_performanceGraphToggle;
 }
@@ -77,12 +84,12 @@ void SteamVRTabController::setPerformanceGraph( const bool value,
 
 bool SteamVRTabController::noHMD() const
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_RequireHmd_String );
 
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_noHMD;
 }
@@ -104,13 +111,13 @@ void SteamVRTabController::setNoHMD( const bool value, const bool notify )
 
 bool SteamVRTabController::multipleDriver() const
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_SteamVR_Section,
         vr::k_pch_SteamVR_ActivateMultipleDrivers_Bool );
 
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_multipleDriverToggle;
 }
@@ -134,12 +141,12 @@ void SteamVRTabController::setMultipleDriver( const bool value,
 
 bool SteamVRTabController::noFadeToGrid() const
 {
-    auto p = ovr_settings_wrapper::getBool( vr::k_pch_SteamVR_Section,
-                                            vr::k_pch_SteamVR_DoNotFadeToGrid );
+    auto pair = ovr_settings_wrapper::getBool(
+        vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_DoNotFadeToGrid );
 
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_noFadeToGridToggle;
 }
@@ -162,12 +169,12 @@ void SteamVRTabController::setNoFadeToGrid( const bool value,
 
 bool SteamVRTabController::controllerPower() const
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_Power_Section,
         vr::k_pch_Power_AutoLaunchSteamVROnButtonPress );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_controllerPower;
 }
@@ -191,13 +198,13 @@ void SteamVRTabController::setControllerPower( const bool value,
 
 bool SteamVRTabController::systemButton() const
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_SteamVR_Section,
         vr::k_pch_SteamVR_SendSystemButtonToAllApps_Bool );
 
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_systemButtonToggle;
 }
@@ -221,13 +228,13 @@ void SteamVRTabController::setSystemButton( const bool value,
 
 bool SteamVRTabController::dnd() const
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_Notifications_Section,
         vr::k_pch_Notifications_DoNotDisturb_Bool );
 
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_dnd;
 }
@@ -253,12 +260,12 @@ void SteamVRTabController::setDND( const bool value, const bool notify )
 
 bool SteamVRTabController::cameraActive() const
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_Camera_Section, vr::k_pch_Camera_EnableCamera_Bool );
 
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_cameraActive;
 }
@@ -281,13 +288,13 @@ void SteamVRTabController::setCameraActive( const bool value,
 
 bool SteamVRTabController::cameraBounds() const
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_Camera_Section,
         vr::k_pch_Camera_EnableCameraForCollisionBounds_Bool );
 
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_cameraBounds;
 }
@@ -311,12 +318,12 @@ void SteamVRTabController::setCameraBounds( const bool value,
 
 bool SteamVRTabController::cameraCont() const
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_Camera_Section, vr::k_pch_Camera_ShowOnController_Bool );
 
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_cameraCont;
 }
@@ -355,7 +362,7 @@ void SteamVRTabController::searchRXTX()
             hmdIndex = device;
             continue;
         }
-        m_deviceList.push_back( DeviceInfo{ device } );
+        m_deviceList.emplace_back();
         GatherDeviceInfo( m_deviceList.back() );
     }
 
@@ -371,9 +378,9 @@ void SteamVRTabController::searchRXTX()
         {
             count++;
         }
-        for ( auto c : dongleList )
+        for ( auto cha : dongleList )
         {
-            if ( c == ';' )
+            if ( cha == ';' )
             {
                 count++;
             }
@@ -397,13 +404,12 @@ void SteamVRTabController::searchRXTX()
                 {
                     continue;
                 }
-                m_deviceList.push_back( DeviceInfo{} );
+                m_deviceList.emplace_back();
                 AddUnPairedDevice( m_deviceList.back(), dSN.toStdString() );
                 // TODO create
             }
         }
     }
-    return;
 }
 
 void SteamVRTabController::AddUnPairedDevice( DeviceInfo& device,
@@ -432,24 +438,25 @@ void SteamVRTabController::AddUnPairedDevice( DeviceInfo& device,
 
 void SteamVRTabController::GatherDeviceInfo( DeviceInfo& device )
 {
-    std::string cd = ovr_system_wrapper::getStringTrackedProperty(
-                         device.index, vr::Prop_ConnectedWirelessDongle_String )
-                         .second;
-    if ( cd.empty() || cd == " " )
+    std::string condev
+        = ovr_system_wrapper::getStringTrackedProperty(
+              device.index, vr::Prop_ConnectedWirelessDongle_String )
+              .second;
+    if ( condev.empty() || condev == " " )
     {
-        cd = "n/a";
+        condev = "n/a";
         device.dongleType = "n/a";
     }
     else
     {
         m_dongleCountCur++;
-        if ( cd.find( "-RYB" ) != std::string::npos
-             || cd.find( "-LYM" ) != std::string::npos )
+        if ( condev.find( "-RYB" ) != std::string::npos
+             || condev.find( "-LYM" ) != std::string::npos )
         {
             device.dongleType = "Headset";
         }
         // TODO 1yx SN
-        else if ( std::regex_match( cd, std::regex( "(.*)(-[0-9]YX)" ) ) )
+        else if ( std::regex_match( condev, std::regex( "(.*)(-[0-9]YX)" ) ) )
         {
             device.dongleType = "Tundra Dongle";
         }
@@ -458,18 +465,19 @@ void SteamVRTabController::GatherDeviceInfo( DeviceInfo& device )
             device.dongleType = "Standard Dongle";
         }
     }
-    device.conDongle = cd;
+    device.conDongle = condev;
 
-    std::string dd = ovr_system_wrapper::getStringTrackedProperty(
-                         device.index, vr::Prop_SerialNumber_String )
-                         .second;
-    if ( dd.empty() || dd == " " )
+    std::string devicenumber = ovr_system_wrapper::getStringTrackedProperty(
+                                   device.index, vr::Prop_SerialNumber_String )
+                                   .second;
+    if ( devicenumber.empty() || devicenumber == " " )
     {
-        dd = "n/a";
+        devicenumber = "n/a";
     }
-    device.txName = dd;
+    device.txName = devicenumber;
 
-    auto devClass = ovr_system_wrapper::getDeviceClass( device.index );
+    vr::TrackedDeviceClass const devClass
+        = ovr_system_wrapper::getDeviceClass( device.index );
     if ( devClass == vr::TrackedDeviceClass_HMD
          || devClass == vr::TrackedDeviceClass_Controller
          || devClass == vr::TrackedDeviceClass_GenericTracker )
@@ -484,9 +492,9 @@ void SteamVRTabController::GatherDeviceInfo( DeviceInfo& device )
             device.deviceName = "Lighthouse";
         }
     }
-    int role = ovr_system_wrapper::getInt32TrackedProperty(
-                   device.index, vr::Prop_ControllerRoleHint_Int32 )
-                   .second;
+    int const role = ovr_system_wrapper::getInt32TrackedProperty(
+                         device.index, vr::Prop_ControllerRoleHint_Int32 )
+                         .second;
     if ( role == 1 )
     {
         device.deviceName += " (L)";
@@ -499,7 +507,7 @@ void SteamVRTabController::GatherDeviceInfo( DeviceInfo& device )
 
 void SteamVRTabController::launchBindingUI()
 {
-    vr::VRActionSetHandle_t actionHandle = 0;
+    vr::VRActionSetHandle_t const actionHandle = 0;
     vr::VRInputValueHandle_t inputHandle = 0;
 
     auto error2 = vr::VRInput()->GetInputSourceHandle( "/user/hand/right",
@@ -524,9 +532,9 @@ void SteamVRTabController::launchBindingUI()
 }
 void SteamVRTabController::restartSteamVR()
 {
-    QString cmd = QString( "cmd.exe /C restartvrserver.bat \"" )
-                  + parent->getVRRuntimePathUrl().toLocalFile()
-                  + QString( "\"" );
+    QString const cmd = QString( "cmd.exe /C restartvrserver.bat \"" )
+                        + parent->getVRRuntimePathUrl().toLocalFile()
+                        + QString( "\"" );
     qInfo() << "SteamVR Restart Command: " << cmd;
     QProcess::startDetached( cmd );
 }
@@ -536,38 +544,38 @@ Q_INVOKABLE unsigned SteamVRTabController::getRXTXCount()
     return static_cast<unsigned>( m_deviceList.size() );
 }
 
-Q_INVOKABLE QString SteamVRTabController::getTXList( int i )
+Q_INVOKABLE QString SteamVRTabController::getTXList( int index )
 {
-    return QString::fromStdString( m_deviceList[i].txName );
+    return QString::fromStdString( m_deviceList[index].txName );
 }
 
-Q_INVOKABLE QString SteamVRTabController::getDeviceName( int i )
+Q_INVOKABLE QString SteamVRTabController::getDeviceName( int index )
 {
-    return QString::fromStdString( m_deviceList[i].deviceName );
+    return QString::fromStdString( m_deviceList[index].deviceName );
 }
 
-Q_INVOKABLE QString SteamVRTabController::getRXList( int i )
+Q_INVOKABLE QString SteamVRTabController::getRXList( int index )
 {
-    return QString::fromStdString( m_deviceList[i].conDongle );
+    return QString::fromStdString( m_deviceList[index].conDongle );
 }
-Q_INVOKABLE QString SteamVRTabController::getDongleType( int i )
+Q_INVOKABLE QString SteamVRTabController::getDongleType( int index )
 {
-    return QString::fromStdString( m_deviceList[i].dongleType );
+    return QString::fromStdString( m_deviceList[index].dongleType );
 }
 Q_INVOKABLE QString SteamVRTabController::getDongleUsage()
 {
     return QString::fromStdString( std::to_string( m_dongleCountCur ) + "/"
                                    + std::to_string( m_dongleCountMax ) );
 }
-Q_INVOKABLE void SteamVRTabController::pairDevice( QString sn )
+Q_INVOKABLE void SteamVRTabController::pairDevice( QString serialNumber )
 {
-    if ( !isSteamVRTracked( sn ) )
+    if ( !isSteamVRTracked( serialNumber ) )
     {
-        qWarning() << sn.toStdString()
+        qWarning() << serialNumber.toStdString()
                    << " Is Not a SteamVR Dongle, skipping Pair";
         return;
     }
-    m_last_pair_sn = sn;
+    m_last_pair_sn = serialNumber;
     auto req = QNetworkRequest();
     req.setUrl( QUrl( "ws://127.0.0.1:27062" ) );
     req.setRawHeader(
@@ -587,11 +595,10 @@ Q_INVOKABLE void SteamVRTabController::pairDevice( QString sn )
              &QWebSocket::textMessageReceived,
              this,
              &SteamVRTabController::onMsgRec );
-    return;
 }
-bool SteamVRTabController::isSteamVRTracked( QString sn )
+bool SteamVRTabController::isSteamVRTracked( QString serialNumber )
 {
-    return m_unparsedDongleString.contains( sn );
+    return m_unparsedDongleString.contains( serialNumber );
 }
 void SteamVRTabController::onConnected()
 {
@@ -601,7 +608,7 @@ void SteamVRTabController::onConnected()
                          "\"returnAddress\":\"OVRAS_pair\", "
                          "\"serial\":\"";
     messageout.append( m_last_pair_sn );
-    messageout.append( QString::fromStdString( "\", \"timeoutSeconds\":15}" ) );
+    messageout.append( QString::fromStdString( R"(", "timeoutSeconds":15})" ) );
     emit pairStatusChanged( QString( "Pairing..." ) );
     if ( m_last_pair_sn == "" )
     {
@@ -633,8 +640,10 @@ std::vector<QString>
     SteamVRTabController::getDongleSerialList( std::string deviceString )
 {
     std::vector<QString> dongleList;
+    // NOLINTNEXTLINE(altera-id-dependent-backward-branch)
     size_t pos = 0;
 
+    // NOLINTNEXTLINE(altera-id-dependent-backward-branch)
     while ( ( pos = deviceString.find( ',' ) ) != std::string::npos )
     {
         dongleList.push_back(
@@ -645,17 +654,16 @@ std::vector<QString>
             deviceString.erase( 0, pos + 1 );
             continue;
         }
-        else
+
+        pos = deviceString.find( ',' );
+        if ( pos == std::string::npos )
         {
-            pos = deviceString.find( ',' );
-            if ( pos == std::string::npos )
-            {
-                break;
-            }
-            dongleList.push_back(
-                QString::fromStdString( deviceString.substr( 0, pos ) ) );
             break;
         }
+        dongleList.push_back(
+            QString::fromStdString( deviceString.substr( 0, pos ) ) );
+        break;
+
         break;
     }
     return dongleList;
@@ -665,9 +673,9 @@ std::vector<QString>
 void SteamVRTabController::getBindingUrlReq( std::string appID )
 {
     m_lastAppID = appID;
-    std::string urls
+    std::string const urls
         = "http://localhost:27062/input/getactions.json?app_key=" + appID;
-    QUrl url = QUrl( urls.c_str() );
+    QUrl const url = QUrl( urls.c_str() );
     QNetworkRequest request;
     request.setUrl( url );
     // This is Important as otherwise Valve's VRWebServerWillIgnore the Request
@@ -681,42 +689,40 @@ void SteamVRTabController::getBindingUrlReq( std::string appID )
              this,
              SLOT( onGetBindingUrlResponse( QNetworkReply* ) ) );
     m_networkManagerUrl.get( request );
-    return;
 }
 void SteamVRTabController::onGetBindingUrlResponse( QNetworkReply* reply )
 {
-    QString data = QString::fromUtf8( reply->readAll() );
+    QString const data = QString::fromUtf8( reply->readAll() );
     if ( data.size() < 2 )
     {
         return;
     }
-    std::string controllerName = ovr_system_wrapper::getControllerName();
-    if ( controllerName == "" )
+    std::string const controllerName = ovr_system_wrapper::getControllerName();
+    if ( controllerName.empty() )
     {
         qWarning() << "No Controller Detected Skipping Bindings";
         return;
     }
-    json jsonfull = json::parse( data.toStdString() );
+    nlohmann::json jsonfull = nlohmann::json::parse( data.toStdString() );
     //     qInfo () << "URL RESPOSNE XXXXXXX";
     //     qInfo () << jsonfull.dump().c_str();
-    std::string filepath
+    std::string const filepath
         = jsonfull["current_binding_url"][controllerName].get<std::string>();
     qInfo() << "binding url at " << filepath;
     // TODO perhaps some form of error checking if packet wrong?
     reply->close();
     getBindingDataReq( filepath, m_lastAppID, controllerName );
-    return;
 }
 
 void SteamVRTabController::getBindingDataReq( std::string steamURL,
                                               std::string appID,
                                               std::string ctrlType )
 {
-    std::string urls = "http://localhost:27062/input/"
-                       "loadbindingfromurl.json?binding_url="
-                       + steamURL + "&controller_type=" + ctrlType
-                       + "&app_key=" + appID;
-    QUrl url = QUrl( urls.c_str() );
+    std::string const urls = "http://localhost:27062/input/"
+                             "loadbindingfromurl.json?binding_url="
+                             + steamURL + "&controller_type=" + ctrlType
+                             + "&app_key=" + appID;
+    QUrl const url = QUrl( urls.c_str() );
     QNetworkRequest request;
     request.setUrl( url );
     // This is Important as otherwise Valve's VRWebServerWillIgnore the Request
@@ -730,19 +736,18 @@ void SteamVRTabController::getBindingDataReq( std::string steamURL,
              this,
              SLOT( onGetBindingDataResponse( QNetworkReply* ) ) );
     m_networkManagerBind.get( request );
-    return;
 }
 void SteamVRTabController::onGetBindingDataResponse( QNetworkReply* reply )
 {
-    json output = "";
-    QString data = QString::fromUtf8( reply->readAll() );
+    nlohmann::json output = "";
+    QString const data = QString::fromUtf8( reply->readAll() );
     if ( data.size() < 2 )
     {
         return;
     }
     //     qWarning () << "DATA RESPONSE";
     //     qWarning () << data.toStdString();
-    json jsonfull = json::parse( data.toStdString() );
+    nlohmann::json jsonfull = nlohmann::json::parse( data.toStdString() );
     if ( !jsonfull.contains( "success" ) )
     {
         qCritical() << "Binding Data Packet Mal-Formed?";
@@ -754,44 +759,43 @@ void SteamVRTabController::onGetBindingDataResponse( QNetworkReply* reply )
     }
     reply->close();
     output = jsonfull["binding_config"];
-    std::string sceneAppID = ovr_application_wrapper::getSceneAppID();
+    std::string const sceneAppID = ovr_application_wrapper::getSceneAppID();
     if ( sceneAppID == "error" )
     {
         qCritical() << "aborting bind save, could not find scene app ID";
         return;
     }
-    std::string ctrl = ovr_system_wrapper::getControllerName();
+    std::string const ctrl = ovr_system_wrapper::getControllerName();
     saveBind( m_lastAppID, sceneAppID, ctrl, output, m_setDefault );
-    return;
 }
 
 bool SteamVRTabController::saveBind( std::string appID,
                                      std::string sceneAppID,
                                      std::string ctrlType,
-                                     json binds,
+                                     nlohmann::json binds,
                                      bool def )
 {
     m_setDefault = false;
-    QFileInfo fi(
+    QFileInfo const fileInfo(
         QString::fromStdString( settings::initializeAndGetSettingsPath() ) );
-    QDir directory = fi.absolutePath();
-    QString Fn;
+    QDir const directory = fileInfo.absolutePath();
+    QString fileName;
     if ( def )
     {
-        Fn = QString::fromStdString( "defovl" + appID + "ctrl" + ctrlType
-                                     + ".json" );
+        fileName = QString::fromStdString( "defovl" + appID + "ctrl" + ctrlType
+                                           + ".json" );
     }
     else
     {
-        Fn = QString::fromStdString( "ovl" + appID + "scene" + sceneAppID
-                                     + "ctrl" + ctrlType + ".json" );
+        fileName = QString::fromStdString( "ovl" + appID + "scene" + sceneAppID
+                                           + "ctrl" + ctrlType + ".json" );
     }
-    QString absPath = directory.absolutePath() + "/" + Fn;
+    QString const absPath = directory.absolutePath() + "/" + fileName;
 
     QFile bindFile( absPath );
     bindFile.open( QIODevice::ReadWrite | QIODevice::Truncate
                    | QIODevice::Text );
-    QByteArray qba = binds.dump().c_str();
+    QByteArray const qba = binds.dump().c_str();
     bindFile.write( qba );
     bindFile.flush();
     bindFile.close();
@@ -800,7 +804,7 @@ bool SteamVRTabController::saveBind( std::string appID,
         qInfo() << ( def ? "Default " : ( sceneAppID + " " ) )
                        + "Binding File saved at:"
                 << absPath.toStdString();
-        std::string jsonstring = binds.dump().c_str();
+        std::string const jsonstring = binds.dump();
         qInfo() << jsonstring;
         return true;
     }
@@ -811,72 +815,66 @@ bool SteamVRTabController::customBindExists( std::string appID,
                                              std::string sceneAppID,
                                              std::string ctrl )
 {
-    if ( appID == "" )
+    if ( appID.empty() )
     {
         appID = m_lastAppID;
     }
-    if ( sceneAppID == "" )
+    if ( sceneAppID.empty() )
     {
         sceneAppID = ovr_application_wrapper::getSceneAppID();
     }
-    if ( ctrl == "" )
+    if ( ctrl.empty() )
     {
         ctrl = ovr_system_wrapper::getControllerName();
     }
-    QFileInfo fi( QString::fromStdString(
+    QFileInfo const fileInfo( QString::fromStdString(
         settings::initializeAndGetSettingsPath() + "ovl" + appID + "scene"
         + sceneAppID + "ctrl" + ctrl + ".json" ) );
-    if ( fi.exists() )
-    {
-        return true;
-    }
-    return false;
+    return fileInfo.exists();
 }
 
 bool SteamVRTabController::defBindExists( std::string appID, std::string ctrl )
 {
-    if ( appID == "" )
+    if ( appID.empty() )
     {
         appID = m_lastAppID;
     }
-    if ( ctrl == "" )
+    if ( ctrl.empty() )
     {
         ctrl = ovr_system_wrapper::getControllerName();
     }
-    QFileInfo fi( QString::fromStdString(
+    QFileInfo const fileInfo( QString::fromStdString(
         settings::initializeAndGetSettingsPath() + "defovl" + appID + "ctrl"
         + ctrl + ".json" ) );
-    if ( fi.exists() )
-    {
-        return true;
-    }
-    return false;
+    return fileInfo.exists();
 }
 
 void SteamVRTabController::applyBindingReq( std::string appID )
 {
-    std::string ctrlType = ovr_system_wrapper::getControllerName();
-    QFileInfo fi(
+    std::string const ctrlType = ovr_system_wrapper::getControllerName();
+    QFileInfo const fileInfo(
         QString::fromStdString( settings::initializeAndGetSettingsPath() ) );
-    QDir directory = fi.absolutePath();
-    QString Fn;
-    std::string sceneAppID = ovr_application_wrapper::getSceneAppID();
-    if ( sceneAppID == "" )
+    QDir const directory = fileInfo.absolutePath();
+    QString fileName;
+    std::string const sceneAppID = ovr_application_wrapper::getSceneAppID();
+    if ( sceneAppID.empty() )
     {
         qCritical() << "NO Scene App Detected unable to apply bindings";
         return;
     }
 
     // TODO check forward slash compatibility with linux
-    Fn = QString::fromStdString( "ovl" + appID + "scene" + sceneAppID + "ctrl"
-                                 + ctrlType + ".json" );
-    if ( !QFileInfo::exists( fi.absolutePath() + QString( "/" ) + Fn ) )
+    fileName = QString::fromStdString( "ovl" + appID + "scene" + sceneAppID
+                                       + "ctrl" + ctrlType + ".json" );
+    if ( !QFileInfo::exists( fileInfo.absolutePath() + QString( "/" )
+                             + fileName ) )
     {
         qInfo() << "No Specific Binding Detected for: " + appID
                        + "for Scene: " + sceneAppID + " Checking Default";
-        Fn = QString::fromStdString( "defovl" + appID + "ctrl" + ctrlType
-                                     + ".json" );
-        if ( !QFileInfo::exists( fi.absolutePath() + QString( "/" ) + Fn ) )
+        fileName = QString::fromStdString( "defovl" + appID + "ctrl" + ctrlType
+                                           + ".json" );
+        if ( !QFileInfo::exists( fileInfo.absolutePath() + QString( "/" )
+                                 + fileName ) )
         {
             qInfo() << "No Def Binding Detected for: " + appID
                            + " Not Adjusting Bindings";
@@ -884,12 +882,12 @@ void SteamVRTabController::applyBindingReq( std::string appID )
         }
     }
     // TODO possible linux compatibility issue
-    QString absPath = directory.absolutePath() + "/" + Fn;
-    QUrl urlized = QUrl::fromLocalFile( absPath );
+    QString const absPath = directory.absolutePath() + "/" + fileName;
+    QUrl const urlized = QUrl::fromLocalFile( absPath );
     // std::string filePath = "file:///" + absPath.toStdString();
-    std::string url = "http://localhost:27062/input/selectconfig.action";
+    std::string const url = "http://localhost:27062/input/selectconfig.action";
     //  qInfo () << urlized.toEncoded().toStdString();
-    QUrl urls = QUrl( url.c_str() );
+    QUrl const urls = QUrl( url.c_str() );
     QNetworkRequest request;
     request.setUrl( urls );
     qInfo() << "Attempting to Apply Binding at: "
@@ -903,9 +901,9 @@ void SteamVRTabController::applyBindingReq( std::string appID )
         QByteArray( "Referer" ),
         QByteArray(
             "http://localhost:27062/dashboard/controllerbinding.html" ) );
-    QByteArray data
-        = ( "{\"app_key\":\"" + appID + "\",\"controller_type\":\"" + ctrlType
-            + "\",\"url\":\""
+    QByteArray const data
+        = ( R"({"app_key":")" + appID + R"(","controller_type":")" + ctrlType
+            + R"(","url":")"
             + urlized.toEncoded( QUrl::EncodeSpaces | QUrl::EncodeReserved )
                   .toStdString()
             + "\"}" )
@@ -921,8 +919,8 @@ void SteamVRTabController::applyBindingReq( std::string appID )
 
 void SteamVRTabController::onApplyBindingResponse( QNetworkReply* reply )
 {
-    json output = "";
-    QString data = QString::fromUtf8( reply->readAll() );
+    nlohmann::json const output = "";
+    QString const data = QString::fromUtf8( reply->readAll() );
     if ( data.size() < 2 )
     {
         return;
@@ -930,7 +928,7 @@ void SteamVRTabController::onApplyBindingResponse( QNetworkReply* reply )
     //     qInfo () << "APPLY RESPONSE";
     //     qInfo () << data.toStdString();
     reply->close();
-    json jsonfull = json::parse( data.toStdString() );
+    nlohmann::json jsonfull = nlohmann::json::parse( data.toStdString() );
     if ( !jsonfull.contains( "success" ) )
     {
         qCritical() << "Apply Binding Packet Mal-Formed?";
@@ -942,13 +940,12 @@ void SteamVRTabController::onApplyBindingResponse( QNetworkReply* reply )
         qCritical() << "Binding Failed To Apply";
     }
     qInfo() << "New Binding Applied";
-    return;
 }
 
 void SteamVRTabController::setBindingQMLWrapper( QString appID, bool def )
 {
     m_setDefault = def;
-    std::string aID = appID.toStdString();
+    std::string const aID = appID.toStdString();
     getBindingUrlReq( aID );
 }
 
@@ -970,38 +967,38 @@ void SteamVRTabController::setPerAppBindEnabled( bool value, bool notify )
 
 void SteamVRTabController::applyAllCustomBindings()
 {
-    QFileInfo fi(
+    QFileInfo const fileInfo(
         QString::fromStdString( settings::initializeAndGetSettingsPath() ) );
-    QDir directory = fi.absolutePath();
-    QStringList bindings = directory.entryList( QStringList() << "*.json"
-                                                              << "*.JSON",
-                                                QDir::Files );
+    QDir const directory = fileInfo.absolutePath();
+    QStringList const bindings = directory.entryList( QStringList() << "*.json"
+                                                                    << "*.JSON",
+                                                      QDir::Files );
     std::set<std::string> appIDs;
-    std::regex r1( "ovl(.*)scene" );
-    std::regex r2( "defovl(.*)ctrl" );
-    foreach ( QString filename, bindings )
+    std::regex const reg1( "ovl(.*)scene" );
+    std::regex const reg2( "defovl(.*)ctrl" );
+    foreach ( QString const filename, bindings )
     {
-        std::smatch m;
-        std::string s = filename.toStdString();
+        std::smatch mat;
+        std::string const sfilename = filename.toStdString();
 
-        if ( regex_search( s, m, r1 ) )
+        if ( regex_search( sfilename, mat, reg1 ) )
         {
-            if ( m.size() == 2 )
+            if ( mat.size() == 2 )
             {
-                appIDs.insert( m[1].str() );
+                appIDs.insert( mat[1].str() );
                 continue;
             }
         }
-        if ( regex_search( s, m, r2 ) )
+        if ( regex_search( sfilename, mat, reg2 ) )
         {
-            if ( m.size() == 2 )
+            if ( mat.size() == 2 )
             {
-                appIDs.insert( m[1].str() );
+                appIDs.insert( mat[1].str() );
                 continue;
             }
         }
     }
-    foreach ( std::string appID, appIDs )
+    foreach ( std::string const appID, appIDs )
     {
         applyBindingReq( appID );
     }

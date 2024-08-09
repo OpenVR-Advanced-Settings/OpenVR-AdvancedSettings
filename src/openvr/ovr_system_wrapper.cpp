@@ -1,10 +1,14 @@
 #include "ovr_system_wrapper.h"
-#include <QtLogging>
+
 #include <QtDebug>
+#include <QtLogging>
+#include <utility>
 #include <vector>
 
 namespace ovr_system_wrapper
 {
+using std::string;
+
 SystemError handleTrackedPropertyErrors( vr::TrackedDeviceProperty tdp,
                                          vr::ETrackedPropertyError error,
                                          std::string customErrorMsg )
@@ -25,7 +29,7 @@ SystemError handleTrackedPropertyErrors( vr::TrackedDeviceProperty tdp,
     return SystemError::NoError;
 }
 
-std::string getPropertyFromTrackedEnum( vr::TrackedDeviceProperty )
+std::string getPropertyFromTrackedEnum( vr::TrackedDeviceProperty /*unused*/ )
 {
     return "TODO";
 }
@@ -36,15 +40,14 @@ std::pair<SystemError, bool>
                             std::string customErrorMsg )
 
 {
-    uint32_t unIndex = static_cast<uint32_t>( deviceIndex );
-    vr::ETrackedPropertyError error;
-    bool value;
+    uint32_t const unIndex = static_cast<uint32_t>( deviceIndex );
+    vr::ETrackedPropertyError error = {};
+    bool value = false;
     value = vr::VRSystem()->GetBoolTrackedDeviceProperty(
         unIndex, property, &error );
-    SystemError e
+    SystemError const err
         = handleTrackedPropertyErrors( property, error, customErrorMsg );
-    std::pair<SystemError, bool> p( e, value );
-    return p;
+    return std::make_pair( err, value );
 }
 
 std::pair<SystemError, int>
@@ -53,15 +56,14 @@ std::pair<SystemError, int>
                              std::string customErrorMsg )
 
 {
-    uint32_t unIndex = static_cast<uint32_t>( deviceIndex );
-    int value;
-    vr::ETrackedPropertyError error;
+    uint32_t const unIndex = static_cast<uint32_t>( deviceIndex );
+    int value = 0;
+    vr::ETrackedPropertyError error = {};
     value = static_cast<int>( vr::VRSystem()->GetInt32TrackedDeviceProperty(
         unIndex, property, &error ) );
-    SystemError e
+    SystemError const err
         = handleTrackedPropertyErrors( property, error, customErrorMsg );
-    std::pair<SystemError, int> p( e, value );
-    return p;
+    return std::make_pair( err, value );
 }
 
 std::pair<SystemError, float>
@@ -70,15 +72,13 @@ std::pair<SystemError, float>
                              std::string customErrorMsg )
 
 {
-    uint32_t unIndex = static_cast<uint32_t>( deviceIndex );
-    vr::ETrackedPropertyError error;
-    float value;
-    value = vr::VRSystem()->GetFloatTrackedDeviceProperty(
+    uint32_t const unIndex = static_cast<uint32_t>( deviceIndex );
+    vr::ETrackedPropertyError error = {};
+    float const value = vr::VRSystem()->GetFloatTrackedDeviceProperty(
         unIndex, property, &error );
-    SystemError e
+    SystemError const err
         = handleTrackedPropertyErrors( property, error, customErrorMsg );
-    std::pair<SystemError, float> p( e, value );
-    return p;
+    return std::make_pair( err, value );
 }
 
 std::pair<SystemError, std::string>
@@ -90,32 +90,31 @@ std::pair<SystemError, std::string>
     // This appears to be correct value as set in CVRSettingHelper as of
     // ovr 1.11.11
     const uint32_t bufferMax = 4096;
-    char cStringOut[bufferMax];
-    uint32_t unIndex = static_cast<uint32_t>( deviceIndex );
+    std::array<char, bufferMax> cStringOut;
+    uint32_t const unIndex = static_cast<uint32_t>( deviceIndex );
     vr::VRSystem()->GetStringTrackedDeviceProperty(
-        unIndex, property, cStringOut, bufferMax );
-    std::string value = cStringOut;
-    SystemError e = handleTrackedPropertyErrors(
+        unIndex, property, cStringOut.data(), bufferMax );
+    std::string const value = cStringOut.data();
+    SystemError const err = handleTrackedPropertyErrors(
         property, vr::TrackedProp_Success, customErrorMsg );
-    std::pair<SystemError, std::string> p( e, value );
-    return p;
+    return std::make_pair( err, value );
 }
 
 bool deviceConnected( int index )
 {
-    uint32_t unIndex = static_cast<uint32_t>( index );
+    uint32_t const unIndex = static_cast<uint32_t>( index );
     return vr::VRSystem()->IsTrackedDeviceConnected( unIndex );
 }
 
 vr::ETrackedDeviceClass getDeviceClass( int index )
 {
-    uint32_t unIndex = static_cast<uint32_t>( index );
+    uint32_t const unIndex = static_cast<uint32_t>( index );
     return vr::VRSystem()->GetTrackedDeviceClass( unIndex );
 }
 
 std::string getDeviceName( int index )
 {
-    uint32_t unIndex = static_cast<uint32_t>( index );
+    uint32_t const unIndex = static_cast<uint32_t>( index );
     // checks if connected returns unknown if not
     if ( !vr::VRSystem()->IsTrackedDeviceConnected( unIndex ) )
     {
@@ -128,83 +127,83 @@ std::string getDeviceName( int index )
     {
         return "Error";
     }
-    std::string cn = controllerNamePair.second;
-    if ( strcmp( cn.c_str(), "oculus_touch" ) == 0 )
+    std::string const controller_name = controllerNamePair.second;
+    if ( controller_name == "oculus_touch" )
     {
         return "Touch";
     }
-    if ( strcmp( cn.c_str(), "knuckles" ) == 0 )
+    if ( controller_name == "knuckles" )
     {
         return "Knuckles";
     }
-    if ( strcmp( cn.c_str(), "vive_controller" ) == 0 )
+    if ( controller_name == "vive_controller" )
     {
         return "Wand";
     }
-    if ( strcmp( cn.c_str(), "hpmotioncontroller" ) == 0 )
+    if ( controller_name == "hpmotioncontroller" )
     {
         return "Reverb G2 WMR";
     }
-    if ( strcmp( cn.c_str(), "holographic_controller" ) == 0 )
+    if ( controller_name == "holographic_controller" )
     {
         return "WMR";
     }
-    if ( strcmp( cn.c_str(), "vive_cosmos_controller" ) == 0 )
+    if ( controller_name == "vive_cosmos_controller" )
     {
         return "Cosmos";
     }
-    if ( strcmp( cn.c_str(), "vive_tracker" ) == 0 )
+    if ( controller_name == "vive_tracker" )
     {
         return "Tracker";
     }
-    if ( strcmp( cn.c_str(), "indexhmd" ) == 0 )
+    if ( controller_name == "indexhmd" )
     {
         return "Index Headset";
     }
-    if ( cn.find( "vive_tracker_" ) != std::string::npos )
+    if ( controller_name.find( "vive_tracker_" ) != std::string::npos )
     {
-        std::string side = "";
-        if ( cn.find( "_left" ) != std::string::npos )
+        std::string side;
+        if ( controller_name.find( "_left" ) != std::string::npos )
         {
             side = "left ";
         }
-        else if ( cn.find( "_right" ) != std::string::npos )
+        else if ( controller_name.find( "_right" ) != std::string::npos )
         {
             side = "right ";
         }
-        std::string part = "";
-        if ( cn.find( "handed" ) != std::string::npos )
+        std::string part;
+        if ( controller_name.find( "handed" ) != std::string::npos )
         {
             part = " hand";
         }
-        else if ( cn.find( "shoulder" ) != std::string::npos )
+        else if ( controller_name.find( "shoulder" ) != std::string::npos )
         {
             part = "shoulder";
         }
-        else if ( cn.find( "knee" ) != std::string::npos )
+        else if ( controller_name.find( "knee" ) != std::string::npos )
         {
             part = "knee";
         }
-        else if ( cn.find( "elbow" ) != std::string::npos )
+        else if ( controller_name.find( "elbow" ) != std::string::npos )
         {
             part = "elbow";
         }
-        else if ( cn.find( "foot" ) != std::string::npos )
+        else if ( controller_name.find( "foot" ) != std::string::npos )
         {
             part = "foot";
         }
-        else if ( cn.find( "camera" ) != std::string::npos )
+        else if ( controller_name.find( "camera" ) != std::string::npos )
         {
             part = "camera";
         }
-        else if ( cn.find( "waist" ) != std::string::npos )
+        else if ( controller_name.find( "waist" ) != std::string::npos )
         {
             part = "waist";
         }
         return "Tracker " + side + part;
     }
     // TODO add HMD's
-    return std::string( controllerNamePair.second );
+    return { controllerNamePair.second };
 }
 
 std::vector<int> getAllConnectedDevices( bool onlyWearable )
@@ -252,9 +251,10 @@ std::string getControllerName()
         }
         if ( trackedDeviceClass == vr::TrackedDeviceClass_Controller )
         {
-            auto handRole = getInt32TrackedProperty(
-                                i, vr::Prop_ControllerRoleHint_Int32 )
-                                .second;
+            auto handRole
+                = getInt32TrackedProperty( static_cast<int>( i ),
+                                           vr::Prop_ControllerRoleHint_Int32 )
+                      .second;
             switch ( handRole )
             {
             case vr::TrackedControllerRole_LeftHand:
@@ -274,14 +274,16 @@ std::string getControllerName()
             break;
         }
     }
-    bool isRightCon = false, isLeftCon = false;
-    std::string right, left;
+    bool isRightCon = false;
+    bool isLeftCon = false;
+    std::string right;
+    std::string left;
     if ( found == 0b110 || found == 0b100 )
     {
         isLeftCon = vr::VRSystem()->IsTrackedDeviceConnected( lftIdx );
         if ( isLeftCon )
         {
-            left = getStringTrackedProperty( lftIdx,
+            left = getStringTrackedProperty( static_cast<int>( lftIdx ),
                                              vr::Prop_ControllerType_String )
                        .second;
         }
@@ -291,7 +293,7 @@ std::string getControllerName()
         isRightCon = vr::VRSystem()->IsTrackedDeviceConnected( rightIdx );
         if ( isRightCon )
         {
-            right = getStringTrackedProperty( rightIdx,
+            right = getStringTrackedProperty( static_cast<int>( rightIdx ),
                                               vr::Prop_ControllerType_String )
                         .second;
         }
@@ -300,7 +302,8 @@ std::string getControllerName()
     {
         qWarning() << "WARNING: No Controllers assuming based on HMD";
         auto hmdName
-            = getStringTrackedProperty( hmdIdx, vr::Prop_ControllerType_String )
+            = getStringTrackedProperty( static_cast<int>( hmdIdx ),
+                                        vr::Prop_ControllerType_String )
                   .second;
         if ( hmdName == "indexhmd" )
         {

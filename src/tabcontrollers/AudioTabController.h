@@ -6,8 +6,8 @@
 #include "audiomanager/AudioManager.h"
 #include <memory>
 #include <QImage>
-#include "../utils/FrameRateUtils.h"
 #include "../settings/settings_object.h"
+#include "openvr.h"
 
 class QQuickWindow;
 // application namespace
@@ -15,9 +15,9 @@ namespace advsettings
 {
 // forward declaration
 class OverlayController;
-
 struct AudioProfile : settings::ISettingsObject
 {
+    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     std::string profileName;
     std::string playbackName;
     std::string mirrorName;
@@ -30,30 +30,31 @@ struct AudioProfile : settings::ISettingsObject
     bool micMute = false;
     bool mirrorMute = false;
     bool defaultProfile = false;
+    // NOLINTEND(misc-non-private-member-variables-in-classes)
 
-    virtual settings::SettingsObjectData saveSettings() const
+    [[nodiscard]] settings::SettingsObjectData saveSettings() const override
     {
-        settings::SettingsObjectData o;
+        settings::SettingsObjectData sod;
 
-        o.addValue( profileName );
-        o.addValue( playbackName );
-        o.addValue( mirrorName );
-        o.addValue( micName );
-        o.addValue( recordingID );
-        o.addValue( playbackID );
-        o.addValue( mirrorID );
+        sod.addValue( profileName );
+        sod.addValue( playbackName );
+        sod.addValue( mirrorName );
+        sod.addValue( micName );
+        sod.addValue( recordingID );
+        sod.addValue( playbackID );
+        sod.addValue( mirrorID );
 
-        o.addValue( static_cast<double>( mirrorVol ) );
-        o.addValue( static_cast<double>( micVol ) );
+        sod.addValue( static_cast<double>( mirrorVol ) );
+        sod.addValue( static_cast<double>( micVol ) );
 
-        o.addValue( micMute );
-        o.addValue( mirrorMute );
-        o.addValue( defaultProfile );
+        sod.addValue( micMute );
+        sod.addValue( mirrorMute );
+        sod.addValue( defaultProfile );
 
-        return o;
+        return sod;
     }
 
-    virtual void loadSettings( settings::SettingsObjectData& obj )
+    void loadSettings( settings::SettingsObjectData& obj ) override
     {
         profileName = obj.getNextValueOrDefault( "" );
         playbackName = obj.getNextValueOrDefault( "" );
@@ -70,7 +71,7 @@ struct AudioProfile : settings::ISettingsObject
         defaultProfile = obj.getNextValueOrDefault( false );
     }
 
-    virtual std::string settingsName() const
+    [[nodiscard]] std::string settingsName() const override
     {
         return "AudioTabController::AudioProfile";
     }
@@ -156,9 +157,9 @@ private:
         return m_pushToTalkValues.overlayHandle;
     }
 
-    void findPlaybackDeviceIndex( std::string id, bool notify = true );
-    void findMirrorDeviceIndex( std::string id, bool notify = true );
-    void findMicDeviceIndex( std::string id, bool notify = true );
+    void findPlaybackDeviceIndex( std::string dev_id, bool notify = true );
+    void findMirrorDeviceIndex( std::string dev_id, bool notify = true );
+    void findMicDeviceIndex( std::string dev_id, bool notify = true );
 
     int getPlaybackIndex( std::string str );
     int getRecordingIndex( std::string str );
@@ -188,20 +189,20 @@ public:
 
     bool pttChangeValid();
 
-    int playbackDeviceIndex() const;
+    [[nodiscard]] int playbackDeviceIndex() const;
 
-    int mirrorDeviceIndex() const;
-    float mirrorVolume() const;
-    bool mirrorMuted() const;
+    [[nodiscard]] int mirrorDeviceIndex() const;
+    [[nodiscard]] float mirrorVolume() const;
+    [[nodiscard]] bool mirrorMuted() const;
 
-    int micDeviceIndex() const;
-    float micVolume() const;
-    bool micMuted() const;
-    bool micProximitySensorCanMute() const;
-    bool micReversePtt() const;
-    bool audioProfileDefault() const;
-    bool playbackOverride() const;
-    bool recordingOverride() const;
+    [[nodiscard]] int micDeviceIndex() const;
+    [[nodiscard]] float micVolume() const;
+    [[nodiscard]] bool micMuted() const;
+    [[nodiscard]] bool micProximitySensorCanMute() const;
+    [[nodiscard]] bool micReversePtt() const;
+    [[nodiscard]] bool audioProfileDefault() const;
+    [[nodiscard]] bool playbackOverride() const;
+    [[nodiscard]] bool recordingOverride() const;
 
     void reloadAudioProfiles();
     void saveAudioProfiles();
@@ -223,14 +224,13 @@ public:
     void onDeviceStateChanged();
     void shutdown();
 
-    bool pttEnabled() const;
-    bool pttActive() const;
-    bool pttShowNotification() const;
+    [[nodiscard]] bool pttEnabled() const;
+    [[nodiscard]] bool pttActive() const;
+    [[nodiscard]] bool pttShowNotification() const;
 
     void startPtt();
     void stopPtt();
 
-public slots:
     void setMirrorVolume( float value, bool notify = true );
     void setMirrorMuted( bool value, bool notify = true );
 

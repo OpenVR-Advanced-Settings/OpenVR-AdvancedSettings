@@ -25,7 +25,7 @@ void callMethodForAllMediaPlayerAvailableServices( const QString& method )
         qCritical() << names.error().message();
     }
 
-    foreach ( QString name, names.value() )
+    foreach ( QString const name, names.value() )
     {
         if ( name.contains( "org.mpris.MediaPlayer2" ) )
         {

@@ -6,9 +6,6 @@
 #include <QImage>
 #include <openvr.h>
 #include <memory>
-#include "src/keyboard_input/keyboard_input.h"
-#include "src/media_keys/media_keys.h"
-#include "../utils/FrameRateUtils.h"
 
 class QQuickWindow;
 // application namespace
@@ -16,6 +13,12 @@ namespace advsettings
 {
 // forward declaration
 class OverlayController;
+
+typedef enum eBatteryOverlayStyle
+{
+    BatteryOverlayStyle_Default,
+    BatteryOverlayStyle_Tundra
+} BatteryOverlayStyle;
 
 class UtilitiesTabController : public QObject
 {
@@ -31,13 +34,14 @@ private:
     unsigned settingsUpdateCounter = 0;
 
     std::array<std::unique_ptr<QImage>, 6> m_batteryImgs;
-    vr::VROverlayHandle_t m_batteryOverlayHandles[vr::k_unMaxTrackedDeviceCount]
-        = { 0 };
-    int m_batteryState[vr::k_unMaxTrackedDeviceCount];
-    bool m_batteryVisible[vr::k_unMaxTrackedDeviceCount];
+    std::array<vr::VROverlayHandle_t, vr::k_unMaxTrackedDeviceCount>
+        m_batteryOverlayHandles = { 0 };
+    std::array<int, vr::k_unMaxTrackedDeviceCount> m_batteryState;
+    std::array<bool, vr::k_unMaxTrackedDeviceCount> m_batteryVisible;
     void handleTrackerBatOvl();
     vr::VROverlayHandle_t createBatteryOverlay( vr::TrackedDeviceIndex_t index,
-                                                unsigned style = 0 );
+                                                BatteryOverlayStyle style
+                                                = BatteryOverlayStyle_Default );
     void destroyBatteryOverlays();
 
 public:
@@ -45,10 +49,9 @@ public:
 
     void eventLoopTick();
 
-    bool vrcDebug() const;
-    bool trackerOvlEnabled() const;
+    [[nodiscard]] bool vrcDebug() const;
+    [[nodiscard]] bool trackerOvlEnabled() const;
 
-public slots:
     void sendKeyboardInput( QString input );
     void sendKeyboardEnter();
     void sendKeyboardAltTab();

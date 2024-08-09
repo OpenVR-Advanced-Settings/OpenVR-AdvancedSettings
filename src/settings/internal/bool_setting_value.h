@@ -1,6 +1,6 @@
 #pragma once
 #include <QSettings>
-#include "settings.h"
+#include "../settings.h"
 #include "settings_internal.h"
 #include "setting_value.h"
 
@@ -16,11 +16,11 @@ public:
         : SettingValue( category, qtInfo ), m_setting( setting ),
           m_value( defaultValue )
     {
-        const auto v = getQtSetting( SettingValue::category(),
-                                     SettingValue::qtInfo().settingName );
-        if ( isValidQVariant( v, QMetaType::Bool ) )
+        const auto var = getQtSetting( SettingValue::category(),
+                                       SettingValue::qtInfo().settingName );
+        if ( isValidQVariant<bool>( var ) )
         {
-            m_value = v.toBool();
+            m_value = var.toBool();
         }
     }
 
@@ -29,22 +29,22 @@ public:
         m_value = value;
     }
 
-    bool value() const noexcept
+    [[nodiscard]] bool value() const noexcept
     {
         return m_value;
     }
 
-    BoolSetting setting() const noexcept
+    [[nodiscard]] BoolSetting setting() const noexcept
     {
         return m_setting;
     }
 
-    SettingCategory category() const noexcept
+    [[nodiscard]] SettingCategory category() const noexcept
     {
         return SettingValue::category();
     }
 
-    QtInfo qtInfo() const noexcept
+    [[nodiscard]] QtInfo qtInfo() const noexcept
     {
         return SettingValue::qtInfo();
     }

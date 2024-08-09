@@ -1,6 +1,6 @@
 #include "input_sender.h"
 
-void sendTokensAsInput( [[maybe_unused]] const std::vector<Token> tokens )
-{
-    // dummy
-}
+void initOsSystems() {}
+void shutdownOsSystems() {}
+
+void sendKeyPress( const Token /*token*/, const KeyStatus /*status*/ ) {}

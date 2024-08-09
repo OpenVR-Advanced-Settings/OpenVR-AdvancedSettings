@@ -1,27 +1,17 @@
 
 #pragma once
 
+#include "../../third-party/nlhomann/json.hpp"
+#include <QDir>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QObject>
-#include "../utils/FrameRateUtils.h"
-#include "../openvr/ovr_settings_wrapper.h"
-#include "../openvr/ovr_application_wrapper.h"
-#include "../openvr/lh_console_util.h"
 #include <QStringListModel>
 #include <QTableWidget>
-#include "../openvr/lh_console_util.h"
-#include <QDir>
-#include "../openvr/ovr_system_wrapper.h"
-#include <regex>
-#include <QtWebSockets/QWebSocket>
 #include <QUrl>
-#include <QNetworkRequest>
-#include <QNetworkAccessManager>
-#include "../../third-party/nlhomann/json.hpp"
-#include <QNetworkReply>
-#include <set>
-#include <regex>
+#include <QtWebSockets/QWebSocket>
 
-using namespace nlohmann;
 class QQuickWindow;
 // application namespace
 namespace advsettings
@@ -33,12 +23,12 @@ class OverlayController;
 struct DeviceInfo
 {
     int index = -1;
-    std::string conDongle = "";
-    std::string txName = "";
-    std::string deviceName = "";
-    std::string hand = "";
+    std::string conDongle;
+    std::string txName;
+    std::string deviceName;
+    std::string hand;
     std::string dongleType = "n/a";
-    std::string serialNumber = "";
+    std::string serialNumber;
     bool hasName = false;
 };
 
@@ -102,8 +92,11 @@ private:
     void AddUnPairedDevice( DeviceInfo& device, std::string donSN );
     void synchSteamVR();
     std::vector<QString> getDongleSerialList( std::string deviceString );
-    bool isSteamVRTracked( QString sn );
+    bool isSteamVRTracked( QString serialnum );
     void applyBindingReq( std::string appID );
+
+    QNetworkProxy m_proxy;
+    QWebSocket m_webSocket;
 
 public:
     void initStage1();
@@ -112,21 +105,18 @@ public:
     void eventLoopTick();
     void dashboardLoopTick();
 
-    bool performanceGraph() const;
-    bool noFadeToGrid() const;
-    bool multipleDriver() const;
-    bool systemButton() const;
-    bool dnd() const;
-    bool controllerPower() const;
-    bool noHMD() const;
+    [[nodiscard]] bool performanceGraph() const;
+    [[nodiscard]] bool noFadeToGrid() const;
+    [[nodiscard]] bool multipleDriver() const;
+    [[nodiscard]] bool systemButton() const;
+    [[nodiscard]] bool dnd() const;
+    [[nodiscard]] bool controllerPower() const;
+    [[nodiscard]] bool noHMD() const;
 
-    bool cameraActive() const;
-    bool cameraBounds() const;
-    bool cameraCont() const;
-    QNetworkProxy m_proxy;
-    QWebSocket m_webSocket;
+    [[nodiscard]] bool cameraActive() const;
+    [[nodiscard]] bool cameraBounds() const;
+    [[nodiscard]] bool cameraCont() const;
 
-    bool m_adjustBinding = true;
     void getBindingUrlReq( std::string appID );
     void getBindingDataReq( std::string steamURL,
                             std::string appID,
@@ -141,10 +131,10 @@ public:
     bool saveBind( std::string appID,
                    std::string sceneAppID,
                    std::string ctrlType,
-                   json binds,
+                   nlohmann::json binds,
                    bool def = false );
 
-    bool perAppBindEnabled() const;
+    [[nodiscard]] bool perAppBindEnabled() const;
     void applyAllCustomBindings();
 
     Q_INVOKABLE void searchRXTX();
@@ -152,16 +142,15 @@ public:
     Q_INVOKABLE void launchBindingUI();
 
     Q_INVOKABLE unsigned getRXTXCount();
-    Q_INVOKABLE QString getTXList( int i );
-    Q_INVOKABLE QString getRXList( int i );
-    Q_INVOKABLE QString getDeviceName( int i );
-    Q_INVOKABLE QString getDongleType( int i );
+    Q_INVOKABLE QString getTXList( int index );
+    Q_INVOKABLE QString getRXList( int index );
+    Q_INVOKABLE QString getDeviceName( int index );
+    Q_INVOKABLE QString getDongleType( int index );
     Q_INVOKABLE QString getDongleUsage();
-    Q_INVOKABLE void pairDevice( QString sn );
+    Q_INVOKABLE void pairDevice( QString serialnum );
     Q_INVOKABLE void updateRXTXList();
     Q_INVOKABLE void setBindingQMLWrapper( QString appID, bool def = false );
 
-public slots:
     void onConnected();
     void onDisconnect();
     void onMsgRec( QString Msg );

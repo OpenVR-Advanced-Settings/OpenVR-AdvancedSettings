@@ -1,17 +1,11 @@
 #pragma once
-#include "openvr.h"
-#include <vector>
-#include <utility>
-#include <cstdio>
-#include <iostream>
-#include <memory>
-#include <stdexcept>
-#include <string>
-#include <array>
 #include <QProcess>
+#include <QRegularExpression>
 #include <QString>
 #include <QStringList>
-#include <QRegularExpression>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace lh_con_util
 {
@@ -30,13 +24,10 @@ private:
     bool FindAllRX();
     bool FindAllTX();
     bool path_Init = false;
+    std::vector<RXTX_Pair> RXTX_Pairs_;
 
 public:
-    explicit LHCUtil( QString path )
-    {
-        path_ = path;
-    }
-    std::vector<RXTX_Pair> RXTX_Pairs_;
+    explicit LHCUtil( QString path ) : path_( std::move( path ) ) {}
     bool FindAll();
     bool FindConnectedTX( QString RXSerial );
     QString GetLinkedTX( QString RXSerial );

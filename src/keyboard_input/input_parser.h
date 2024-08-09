@@ -1,9 +1,8 @@
 #pragma once
 #include <string>
 #include <vector>
-#include <cctype>
-#include <optional>
 
+// NOLINTBEGIN(misc-confusable-identifiers)
 enum class Token
 {
 
@@ -102,6 +101,7 @@ enum class Token
     KEY_8 = '8',
     KEY_9 = '9',
 };
+// NOLINTEND(misc-confusable-identifiers)
 
 std::vector<Token>
     ParseKeyboardInputsToTokens( const std::string inputs ) noexcept;

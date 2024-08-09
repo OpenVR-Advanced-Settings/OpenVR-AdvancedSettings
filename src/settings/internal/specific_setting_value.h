@@ -23,29 +23,29 @@ public:
         constexpr auto isInt = std::is_same<Value, int>::value;
         static_assert( isBool || isDouble || isString || isInt );
 
-        const auto v = getQtSetting( SettingValue::category(),
-                                     SettingValue::qtInfo().settingName );
+        const auto val = getQtSetting( SettingValue::category(),
+                                       SettingValue::qtInfo().settingName );
 
-        if ( isValidQVariant<Value>( v ) )
+        if ( isValidQVariant<Value>( val ) )
         {
             if constexpr ( std::is_same<Value, bool>::value )
             {
-                m_value = v.toBool();
+                m_value = val.toBool();
             }
 
             else if constexpr ( std::is_same<Value, double>::value )
             {
-                m_value = v.toDouble();
+                m_value = val.toDouble();
             }
 
             else if constexpr ( std::is_same<Value, std::string>::value )
             {
-                m_value = v.toString().toStdString();
+                m_value = val.toString().toStdString();
             }
 
             else if constexpr ( std::is_same<Value, int>::value )
             {
-                m_value = v.toInt();
+                m_value = val.toInt();
             }
         }
 

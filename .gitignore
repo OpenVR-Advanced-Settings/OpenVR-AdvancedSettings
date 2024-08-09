@@ -16,3 +16,4 @@ build_scripts/win/__pycache__
 build_scripts/win/current_build.bat
 AdvancedSettings_resource.rc
 .qtc_clangd/
+.cache/

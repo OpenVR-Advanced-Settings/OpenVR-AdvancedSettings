@@ -1,14 +1,21 @@
 #include "setup.h"
+#include "openvr/openvr_init.h"
+#include "overlaycontroller.h"
 #include <QtLogging>
 #include <QtDebug>
+#include <QCommandLineParser>
+#include <qlogging.h>
 #ifdef ENABLE_DEBUG_LOGGING
 constexpr auto debugLoggingEnabled = true;
 #else
 constexpr auto debugLoggingEnabled = false;
 #endif
 
+namespace
+{
 QtMessageHandler originalMessageHandler = nullptr;
-static FILE* f;
+FILE* logFile;
+} // namespace
 
 // The default Qt message handler prints to stdout on X11 and to the debugger on
 // Windows. That is borderline useless for us, therefore we create our own
@@ -17,9 +24,10 @@ void mainQtMessageHandler( QtMsgType type,
                            const QMessageLogContext& context,
                            const QString& msg )
 {
-    QString message = qFormatLogMessage( type, context, msg );
-    fprintf( f, "%s\n", qPrintable( message ) );
-    fflush( f );
+    if (!debugLoggingEnabled && type == QtDebugMsg) return;
+    QString const message = qFormatLogMessage( type, context, msg );
+    ( void ) fprintf( logFile, "%s\n", qPrintable( message ) );
+    ( void ) fflush( logFile );
     if ( originalMessageHandler )
         ( *originalMessageHandler )( type, context, msg );
 }
@@ -35,27 +43,28 @@ CommandLineOptions returnCommandLineParser( const MyQApplication& application )
     parser.addHelpOption();
     parser.addVersionOption();
 
-    QCommandLineOption desktopMode( k_desktopMode, k_desktopModeDescription );
+    QCommandLineOption const desktopMode( k_desktopMode,
+                                          k_desktopModeDescription );
     parser.addOption( desktopMode );
 
-    QCommandLineOption forceNoSound( k_forceNoSound,
-                                     k_forceNoSoundDescription );
+    QCommandLineOption const forceNoSound( k_forceNoSound,
+                                           k_forceNoSoundDescription );
     parser.addOption( forceNoSound );
 
-    QCommandLineOption forceNoManifest( k_forceNoManifest,
-                                        k_forceNoManifestDescription );
+    QCommandLineOption const forceNoManifest( k_forceNoManifest,
+                                              k_forceNoManifestDescription );
     parser.addOption( forceNoManifest );
 
-    QCommandLineOption forceInstallManifest(
+    QCommandLineOption const forceInstallManifest(
         k_forceInstallManifest, k_forceInstallManifestDescription );
     parser.addOption( forceInstallManifest );
 
-    QCommandLineOption forceRemoveManifest( k_forceRemoveManifest,
-                                            k_forceRemoveManifestDescription );
+    QCommandLineOption const forceRemoveManifest(
+        k_forceRemoveManifest, k_forceRemoveManifestDescription );
     parser.addOption( forceRemoveManifest );
 
-    QCommandLineOption resetSettings( k_resetSettings,
-                                      k_resetSettingsDescription );
+    QCommandLineOption const resetSettings( k_resetSettings,
+                                            k_resetSettingsDescription );
     parser.addOption( resetSettings );
 
     parser.process( application );
@@ -171,12 +180,12 @@ void reinstallApplicationManifest( const std::string manifestPath )
         qInfo() << "Manifest Previously Installed";
         // String size was arbitrarily chosen by original author.
         constexpr auto kStringSize = 1024;
-        char oldApplicationWorkingDir[kStringSize] = { 0 };
+        std::array<char, kStringSize> oldApplicationWorkingDir = { 0 };
         auto app_error = vr::VRApplicationError_None;
         vr::VRApplications()->GetApplicationPropertyString(
             application_strings::applicationKey,
             vr::VRApplicationProperty_WorkingDirectory_String,
-            oldApplicationWorkingDir,
+            oldApplicationWorkingDir.data(),
             kStringSize,
             &app_error );
 
@@ -192,7 +201,7 @@ void reinstallApplicationManifest( const std::string manifestPath )
 
         const auto oldManifestPath
             = QDir::toNativeSeparators(
-                  QDir::cleanPath( QDir( oldApplicationWorkingDir )
+                  QDir::cleanPath( QDir( oldApplicationWorkingDir.data() )
                                        .absoluteFilePath( kVRManifestName ) ) )
                   .toStdString();
         removeApplicationManifest( oldManifestPath );
@@ -208,12 +217,12 @@ void forceRemoveApplicationManifest()
     {
         // String size was arbitrarily chosen by original author.
         constexpr auto kStringSize = 1024;
-        char oldApplicationWorkingDir[kStringSize] = { 0 };
+        std::array<char, kStringSize> oldApplicationWorkingDir = { 0 };
         auto app_error = vr::VRApplicationError_None;
         vr::VRApplications()->GetApplicationPropertyString(
             application_strings::applicationKey,
             vr::VRApplicationProperty_WorkingDirectory_String,
-            oldApplicationWorkingDir,
+            oldApplicationWorkingDir.data(),
             kStringSize,
             &app_error );
 
@@ -229,7 +238,7 @@ void forceRemoveApplicationManifest()
 
         const auto oldManifestPath
             = QDir::toNativeSeparators(
-                  QDir::cleanPath( QDir( oldApplicationWorkingDir )
+                  QDir::cleanPath( QDir( oldApplicationWorkingDir.data() )
                                        .absoluteFilePath( kVRManifestName ) ) )
                   .toStdString();
         removeApplicationManifest( oldManifestPath );
@@ -283,13 +292,16 @@ void forceRemoveApplicationManifest()
     }
 
     vr::VR_Shutdown();
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit( exit_code );
 }
 } // namespace manifest
 
 void setUpLogging()
 {
-    f = fopen( "AdvancedSettings.log", "a" );
-    qSetMessagePattern("[%{if-debug}D%{endif}%{if-info}I%{endif}%{if-warning}W%{endif}%{if-critical}C%{endif}%{if-fatal}F%{endif}] %{time process}: %{message}");
+    logFile = fopen( "AdvancedSettings.log", "ae" );
+    qSetMessagePattern(
+        "[%{if-debug}D%{endif}%{if-info}I%{endif}%{if-warning}W%{endif}%{if-"
+        "critical}C%{endif}%{if-fatal}F%{endif}] %{time process}: %{message}" );
     originalMessageHandler = qInstallMessageHandler( mainQtMessageHandler );
 }

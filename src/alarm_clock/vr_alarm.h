@@ -2,9 +2,6 @@
 #include <QObject>
 #include <QTime>
 #include <openvr.h>
-#include <chrono>
-#include "../settings/settings.h"
-#include "../openvr/ovr_overlay_wrapper.h"
 
 namespace alarm_clock
 {

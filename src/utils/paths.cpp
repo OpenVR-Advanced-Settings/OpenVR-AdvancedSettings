@@ -33,7 +33,7 @@ optional<string> binaryDirectoryFindFile( const string fileName )
 
     const auto filePath = QDir( QString::fromStdString( *path ) + '/'
                                 + QString::fromStdString( fileName ) );
-    QFileInfo file( filePath.path() );
+    QFileInfo const file( filePath.path() );
 
     if ( !file.exists() )
     {
@@ -60,7 +60,7 @@ optional<string> settingsDirectory()
 
 std::optional<std::string> verifyIconFilePath( std::string filename )
 {
-    const auto notifIconPath = paths::binaryDirectoryFindFile( filename );
+    auto notifIconPath = paths::binaryDirectoryFindFile( filename );
     if ( !notifIconPath.has_value() )
     {
         qCritical() << "Could not find icon \"" << filename << "\"";

@@ -4,13 +4,9 @@
 #include <QImage>
 #include <memory>
 #include <chrono>
-#include <thread>
 #include <openvr.h>
-#include <cmath>
 #include <optional>
-#include "../utils/FrameRateUtils.h"
 #include "../utils/ChaperoneUtils.h"
-#include "../settings/settings_object.h"
 #include "MoveCenterTabController.h"
 
 class QQuickWindow;
@@ -97,16 +93,13 @@ class RotationTabController : public QObject
 private:
     OverlayController* parent;
 
-    struct
-    {
-        vr::VROverlayHandle_t overlayHandle = vr::k_ulOverlayHandleInvalid;
-        std::unique_ptr<QImage> autoturnImg;
-        std::unique_ptr<QImage> noautoturnImg;
-    } m_autoturnValues;
+    vr::VROverlayHandle_t m_overlayHandle = vr::k_ulOverlayHandleInvalid;
+    std::unique_ptr<QImage> m_autoturnImg;
+    std::unique_ptr<QImage> m_noautoturnImg;
 
     virtual vr::VROverlayHandle_t getNotificationOverlayHandle()
     {
-        return m_autoturnValues.overlayHandle;
+        return m_overlayHandle;
     }
 
     // Variables
@@ -140,24 +133,23 @@ public:
 
     void eventLoopTick( vr::TrackedDevicePose_t* devicePoses );
 
-    float boundsVisibility() const;
+    [[nodiscard]] float boundsVisibility() const;
 
-    bool autoTurnEnabled() const;
-    float autoTurnActivationDistance() const;
-    float autoTurnDeactivationDistance() const;
-    bool autoTurnUseCornerAngle() const;
-    bool autoTurnShowNotification() const;
-    double cordDetangleAngle() const;
-    double minCordTangle() const;
-    int autoTurnSpeed() const;
-    AutoTurnModes autoTurnModeType() const;
-    int autoTurnMode() const;
-    bool vestibularMotionEnabled() const;
-    double vestibularMotionRadius() const;
-    bool viewRatchettingEnabled() const;
-    double viewRatchettingPercent() const;
+    [[nodiscard]] bool autoTurnEnabled() const;
+    [[nodiscard]] float autoTurnActivationDistance() const;
+    [[nodiscard]] float autoTurnDeactivationDistance() const;
+    [[nodiscard]] bool autoTurnUseCornerAngle() const;
+    [[nodiscard]] bool autoTurnShowNotification() const;
+    [[nodiscard]] double cordDetangleAngle() const;
+    [[nodiscard]] double minCordTangle() const;
+    [[nodiscard]] int autoTurnSpeed() const;
+    [[nodiscard]] AutoTurnModes autoTurnModeType() const;
+    [[nodiscard]] int autoTurnMode() const;
+    [[nodiscard]] bool vestibularMotionEnabled() const;
+    [[nodiscard]] double vestibularMotionRadius() const;
+    [[nodiscard]] bool viewRatchettingEnabled() const;
+    [[nodiscard]] double viewRatchettingPercent() const;
 
-public slots:
     void setAutoTurnEnabled( bool value, bool notify = true );
     void setAutoTurnShowNotification( bool value, bool notify = true );
     void setAutoTurnActivationDistance( float value, bool notify = true );
@@ -192,12 +184,16 @@ signals:
 
 // Would be nice to do <typename T, T min, T max> but the standard doesn't allow
 // for floating point non-types.
+// XXX: clang-tidy on github actions needs this
+// NOLINTNEXTLINE(altera-id-dependent-backward-branch)
 template <typename T> inline T reduceAngle( T angle, T min, T max )
 {
+    // NOLINTNEXTLINE(altera-id-dependent-backward-branch)
     while ( angle >= max )
     {
         angle -= ( max - min );
     }
+    // NOLINTNEXTLINE(altera-id-dependent-backward-branch)
     while ( angle < min )
     {
         angle += ( max - min );

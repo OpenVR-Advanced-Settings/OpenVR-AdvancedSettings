@@ -1,12 +1,13 @@
-#include <utility>
 #include <QtLogging>
 #include <QtDebug>
-#include "../overlaycontroller.h"
 #include "internal/settings_controller.h"
 
 namespace settings
 {
-static SettingsController settingController{};
+namespace
+{
+    SettingsController settingController{};
+} // namespace
 
 void saveChangedSettings()
 {

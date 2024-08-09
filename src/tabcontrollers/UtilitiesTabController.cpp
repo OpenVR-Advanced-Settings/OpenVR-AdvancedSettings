@@ -5,12 +5,14 @@
 #include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../keyboard_input/input_sender.h"
+#include "../keyboard_input/keyboard_input.h"
 #include "../settings/settings.h"
 #include "../utils/update_rate.h"
+#include "../media_keys/media_keys.h"
+#include <openvr.h>
 #include "openvr/ovr_overlay_wrapper.h"
-#include <chrono>
+#include "openvr/ovr_system_wrapper.h"
 #include <qimage.h>
-#include <thread>
 
 // application namespace
 namespace advsettings
@@ -250,12 +252,13 @@ QString getBatteryIconPath( int batteryState )
 
 vr::VROverlayHandle_t UtilitiesTabController::createBatteryOverlay(
     vr::TrackedDeviceIndex_t index,
-    unsigned style )
+    BatteryOverlayStyle style )
 {
     vr::VROverlayHandle_t handle = vr::k_ulOverlayHandleInvalid;
-    std::string batteryKey = std::string( application_strings::applicationKey )
-                             + ".battery." + std::to_string( index );
-    vr::VROverlayError overlayError = vr::VROverlay()->CreateOverlay(
+    std::string const batteryKey
+        = std::string( application_strings::applicationKey ) + ".battery."
+          + std::to_string( index );
+    vr::VROverlayError const overlayError = vr::VROverlay()->CreateOverlay(
         batteryKey.c_str(), batteryKey.c_str(), &handle );
     if ( overlayError == vr::VROverlayError_None )
     {
@@ -274,7 +277,7 @@ vr::VROverlayHandle_t UtilitiesTabController::createBatteryOverlay(
         ovr_overlay_wrapper::setOverlayFromQImage( handle, *m_batteryImgs[0] );
         vr::VROverlay()->SetOverlayWidthInMeters( handle, 0.045f );
         vr::HmdMatrix34_t notificationTransform;
-        if ( style == 1 )
+        if ( style == BatteryOverlayStyle_Tundra )
         {
             notificationTransform = { { { 1.0f, 0.0f, 0.0f, 0.00f },
                                         { 0.0f, -1.0f, 0.0f, 0.0081f },
@@ -302,14 +305,14 @@ vr::VROverlayHandle_t UtilitiesTabController::createBatteryOverlay(
 
 void UtilitiesTabController::destroyBatteryOverlays()
 {
-    for ( auto& el : m_batteryOverlayHandles )
+    for ( auto& boh : m_batteryOverlayHandles )
     {
-        if ( el == 0 )
+        if ( boh == 0 )
         {
             continue;
         }
-        auto err = vr::VROverlay()->DestroyOverlay( el );
-        el = 0;
+        auto err = vr::VROverlay()->DestroyOverlay( boh );
+        boh = 0;
         if ( err != vr::VROverlayError_None )
         {
             qCritical() << "Could not Delete Battery Overlay: "
@@ -322,70 +325,75 @@ void UtilitiesTabController::handleTrackerBatOvl()
 {
     // attach battery overlay to all tracked devices that aren't a
     // controller or hmd
-    for ( vr::TrackedDeviceIndex_t i = 0; i < vr::k_unMaxTrackedDeviceCount;
-          i++ )
+    // NOLINTNEXTLINE(altera-id-dependent-backward-branch)
+    int const max = vr::k_unMaxTrackedDeviceCount;
+    // NOLINTNEXTLINE(altera-id-dependent-backward-branch)
+    for ( int index = 0; index < max; index++ )
     {
-        vr::ETrackedDeviceClass deviceClass
-            = vr::VRSystem()->GetTrackedDeviceClass( i );
+        vr::ETrackedDeviceClass const deviceClass
+            = vr::VRSystem()->GetTrackedDeviceClass( index );
         if ( deviceClass
              == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker )
         {
-            if ( m_batteryOverlayHandles[i] == 0 )
+            if ( m_batteryOverlayHandles[index] == 0 )
             {
                 auto type = ovr_system_wrapper::getStringTrackedProperty(
-                    i, vr::Prop_RenderModelName_String );
-                unsigned style = 0;
-                if ( type.first == ovr_system_wrapper::SystemError::NoError )
-                {
-                    if ( type.second.find( "tundra" ) != std::string::npos )
-                    {
-                        style = 1;
-                    }
-                }
+                    index, vr::Prop_RenderModelName_String );
+                auto style
+                    = type.first == ovr_system_wrapper::SystemError::NoError
+                              && type.second.find( "tundra" )
+                                     != std::string::npos
+                          ? BatteryOverlayStyle_Tundra
+                          : BatteryOverlayStyle_Default;
 
-                qInfo() << "Creating battery overlay for device " << i;
-                m_batteryOverlayHandles[i] = createBatteryOverlay( i, style );
-                m_batteryVisible[i] = true;
+                qInfo() << "Creating battery overlay for device " << index;
+                m_batteryOverlayHandles[index]
+                    = createBatteryOverlay( index, style );
+                m_batteryVisible[index] = true;
             }
 
-            bool shouldShow = vr::VROverlay()->IsDashboardVisible();
+            bool const shouldShow = vr::VROverlay()->IsDashboardVisible();
 
-            if ( shouldShow != m_batteryVisible[i] )
+            if ( shouldShow != m_batteryVisible[index] )
             {
                 if ( shouldShow )
                 {
-                    vr::VROverlay()->ShowOverlay( m_batteryOverlayHandles[i] );
+                    vr::VROverlay()->ShowOverlay(
+                        m_batteryOverlayHandles[index] );
                 }
                 else
                 {
-                    vr::VROverlay()->HideOverlay( m_batteryOverlayHandles[i] );
+                    vr::VROverlay()->HideOverlay(
+                        m_batteryOverlayHandles[index] );
                 }
-                m_batteryVisible[i] = shouldShow;
+                m_batteryVisible[index] = shouldShow;
             }
 
-            bool hasBatteryStatus
+            bool const hasBatteryStatus
                 = vr::VRSystem()->GetBoolTrackedDeviceProperty(
-                    i,
+                    index,
                     vr::ETrackedDeviceProperty::
                         Prop_DeviceProvidesBatteryStatus_Bool );
             if ( hasBatteryStatus )
             {
-                float battery = vr::VRSystem()->GetFloatTrackedDeviceProperty(
-                    i,
-                    vr::ETrackedDeviceProperty::
-                        Prop_DeviceBatteryPercentage_Float );
-                int batteryState = static_cast<int>(
+                float const battery
+                    = vr::VRSystem()->GetFloatTrackedDeviceProperty(
+                        index,
+                        vr::ETrackedDeviceProperty::
+                            Prop_DeviceBatteryPercentage_Float );
+                int const batteryState = static_cast<int>(
                     ceil( static_cast<double>( battery * 5 ) ) );
 
-                if ( batteryState != m_batteryState[i] )
+                if ( batteryState != m_batteryState[index] )
                 {
-                    qInfo() << "Updating battery overlay for device " << i
-                            << " to " << batteryState << "(" << battery << ")"
-                            << QString::number( m_batteryOverlayHandles[i] );
+                    qInfo()
+                        << "Updating battery overlay for device " << index
+                        << " to " << batteryState << "(" << battery << ")"
+                        << QString::number( m_batteryOverlayHandles[index] );
                     ovr_overlay_wrapper::setOverlayFromQImage(
-                        m_batteryOverlayHandles[i],
+                        m_batteryOverlayHandles[index],
                         *m_batteryImgs[batteryState] );
-                    m_batteryState[i] = batteryState;
+                    m_batteryState[index] = batteryState;
                 }
             }
         }

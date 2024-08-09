@@ -4,6 +4,7 @@
 #include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../utils/update_rate.h"
+#include "openvr/ovr_settings_wrapper.h"
 
 // application namespace
 namespace advsettings
@@ -40,26 +41,26 @@ bool SettingsTabController::autoStartEnabled() const
 
 bool SettingsTabController::nativeChaperoneToggle()
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_CollisionBounds_Section,
         vr::k_pch_CollisionBounds_EnableDriverImport,
         "" );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return !( p.second );
+        return !( pair.second );
     }
     return false;
 }
 
 bool SettingsTabController::oculusSdkToggle()
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_SteamVR_Section,
         vr::k_pch_SteamVR_BlockOculusSDKOnAllLaunches_Bool,
         "" );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return ( p.second );
+        return ( pair.second );
     }
     return false;
 }

@@ -5,7 +5,6 @@
 #include "openvr_init.h"
 #include <QtLogging>
 #include <QtDebug>
-#include "../openvr/ivrinput_manifest.h"
 
 namespace openvr_init
 {
@@ -54,10 +53,8 @@ bool initializeProperly( const OpenVrInitializationType initType )
     return true;
 }
 
-void initializeOpenVR( const OpenVrInitializationType initType, int count )
+void initializeOpenVR( const OpenVrInitializationType initType )
 {
-    bool success = initializeProperly( initType );
-
     // The function call and error message was the same for all version checks.
     // Specific error messages are unlikely to be necessary since both the type
     // and version are in the string and will be output.
@@ -72,68 +69,73 @@ void initializeOpenVR( const OpenVrInitializationType initType, int count )
                    << std::to_string( trynumber );
     };
 
-    // Check whether OpenVR is too outdated
+    const int max_retries = 3;
+    for ( int count = 0; count < max_retries; count++ )
+    {
+        bool success = initializeProperly( initType );
+        // Check whether OpenVR is too outdated
 
-    // Sleep duration is an attempt to hopefully alleviate a possible race
-    // condition in steamvr
-    if ( !vr::VR_IsInterfaceVersionValid( vr::IVRSystem_Version ) )
-    {
-        reportVersionError( vr::IVRSystem_Version, count );
-        success = false;
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRSettings_Version ) )
-    {
-        reportVersionError( vr::IVRSettings_Version, count );
-        success = false;
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVROverlay_Version ) )
-    {
-        reportVersionError( vr::IVROverlay_Version, count );
-        success = false;
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRApplications_Version ) )
-    {
-        reportVersionError( vr::IVRApplications_Version, count );
-        success = false;
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRChaperone_Version ) )
-    {
-        reportVersionError( vr::IVRChaperone_Version, count );
-        success = false;
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRChaperoneSetup_Version ) )
-    {
-        reportVersionError( vr::IVRChaperoneSetup_Version, count );
-        success = false;
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRCompositor_Version ) )
-    {
-        reportVersionError( vr::IVRCompositor_Version, count );
-        success = false;
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRNotifications_Version ) )
-    {
-        reportVersionError( vr::IVRNotifications_Version, count );
-        success = false;
-    }
-    else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRInput_Version ) )
-    {
-        reportVersionError( vr::IVRInput_Version, count );
-        success = false;
-    }
-    if ( !success && count < 3 )
-    {
+        // Sleep duration is an attempt to hopefully alleviate a possible race
+        // condition in steamvr
+        if ( !vr::VR_IsInterfaceVersionValid( vr::IVRSystem_Version ) )
+        {
+            reportVersionError( vr::IVRSystem_Version, count );
+            success = false;
+        }
+        else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRSettings_Version ) )
+        {
+            reportVersionError( vr::IVRSettings_Version, count );
+            success = false;
+        }
+        else if ( !vr::VR_IsInterfaceVersionValid( vr::IVROverlay_Version ) )
+        {
+            reportVersionError( vr::IVROverlay_Version, count );
+            success = false;
+        }
+        else if ( !vr::VR_IsInterfaceVersionValid(
+                      vr::IVRApplications_Version ) )
+        {
+            reportVersionError( vr::IVRApplications_Version, count );
+            success = false;
+        }
+        else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRChaperone_Version ) )
+        {
+            reportVersionError( vr::IVRChaperone_Version, count );
+            success = false;
+        }
+        else if ( !vr::VR_IsInterfaceVersionValid(
+                      vr::IVRChaperoneSetup_Version ) )
+        {
+            reportVersionError( vr::IVRChaperoneSetup_Version, count );
+            success = false;
+        }
+        else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRCompositor_Version ) )
+        {
+            reportVersionError( vr::IVRCompositor_Version, count );
+            success = false;
+        }
+        else if ( !vr::VR_IsInterfaceVersionValid(
+                      vr::IVRNotifications_Version ) )
+        {
+            reportVersionError( vr::IVRNotifications_Version, count );
+            success = false;
+        }
+        else if ( !vr::VR_IsInterfaceVersionValid( vr::IVRInput_Version ) )
+        {
+            reportVersionError( vr::IVRInput_Version, count );
+            success = false;
+        }
+        if ( success )
+            return;
+
         qWarning() << "An error occured on initialization of "
                       "openvr/steamvr attempting again "
-                   << std::to_string( count + 1 ) << " of 3 Attempts";
+                   << std::to_string( count + 1 ) << " of " << max_retries
+                   << " Attempts";
         std::this_thread::sleep_for( std::chrono::seconds( 5 ) );
         // 5.8.1 Unknown if VR shutdown needs to be callled if vr init fails
-        initializeOpenVR( initType, ( count + 1 ) );
     }
-    if ( count >= 3 )
-    {
-        qCritical() << "initialization errors persist proceeding anyways";
-    }
+    qCritical() << "initialization errors persist proceeding anyways";
 }
 
 } // namespace openvr_init

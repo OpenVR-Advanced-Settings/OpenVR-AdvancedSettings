@@ -33,7 +33,7 @@ private:
     int64_t rotationCounter = 0;
     float lastYaw = -1.0f;
     unsigned lastPosTimer = 0;
-    float lastHmdPos[3];
+    std::array<float, 3> lastHmdPos;
     bool lastHmdPosValid = false;
 
     float m_hmdRotation = 0.0f;
@@ -57,18 +57,17 @@ public:
                         float leftSpeed,
                         float rightSpeed );
 
-    float hmdDistanceMoved() const;
-    float hmdRotations() const;
-    float rightControllerMaxSpeed() const;
-    float leftControllerMaxSpeed() const;
+    [[nodiscard]] float hmdDistanceMoved() const;
+    [[nodiscard]] float hmdRotations() const;
+    [[nodiscard]] float rightControllerMaxSpeed() const;
+    [[nodiscard]] float leftControllerMaxSpeed() const;
 
-    unsigned presentedFrames() const;
-    unsigned droppedFrames() const;
-    unsigned reprojectedFrames() const;
-    unsigned timedOut() const;
-    float totalReprojectedRatio() const;
+    [[nodiscard]] unsigned presentedFrames() const;
+    [[nodiscard]] unsigned droppedFrames() const;
+    [[nodiscard]] unsigned reprojectedFrames() const;
+    [[nodiscard]] unsigned timedOut() const;
+    [[nodiscard]] float totalReprojectedRatio() const;
 
-public slots:
     void statsDistanceResetClicked();
     void statsRotationResetClicked();
     void statsLeftControllerSpeedResetClicked();

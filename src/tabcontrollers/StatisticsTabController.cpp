@@ -12,6 +12,7 @@ void StatisticsTabController::initStage2( OverlayController* var_parent )
 
 void StatisticsTabController::eventLoopTick(
     vr::TrackedDevicePose_t* devicePoses,
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
     float leftSpeed,
     float rightSpeed )
 {
@@ -29,7 +30,7 @@ void StatisticsTabController::eventLoopTick(
     }
     m_cumStats = pStats;
 
-    auto& m = devicePoses->mDeviceToAbsoluteTracking.m;
+    auto& mat = devicePoses->mDeviceToAbsoluteTracking.m;
 
     // Hmd Distance //
     if ( lastPosTimer == 0 )
@@ -44,18 +45,18 @@ void StatisticsTabController::eventLoopTick(
             }
             else
             {
-                float delta = static_cast<float>( std::sqrt(
-                    std::pow( m[0][3] - lastHmdPos[0],
+                float const delta = static_cast<float>( std::sqrt(
+                    std::pow( mat[0][3] - lastHmdPos[0],
                               2 ) /*+ std::pow(m[1][3] - lastHmdPos[1], 2)*/
-                    + std::pow( m[2][3] - lastHmdPos[2], 2 ) ) );
+                    + std::pow( mat[2][3] - lastHmdPos[2], 2 ) ) );
                 if ( delta >= 0.01f )
                 {
                     m_hmdDistanceMoved += static_cast<double>( delta );
                 }
             }
-            lastHmdPos[0] = m[0][3];
-            lastHmdPos[1] = m[1][3];
-            lastHmdPos[2] = m[2][3];
+            lastHmdPos[0] = mat[0][3];
+            lastHmdPos[1] = mat[1][3];
+            lastHmdPos[2] = mat[2][3];
         }
         else
         {
@@ -74,7 +75,7 @@ void StatisticsTabController::eventLoopTick(
     }
 
     // HMD Rotation //
-    double spaceHmdYawTotal
+    double const spaceHmdYawTotal
         = parent->m_moveCenterTabController.getHmdYawTotal();
     m_hmdRotation = static_cast<float>( spaceHmdYawTotal / ( 2.0 * M_PI ) );
 
@@ -130,18 +131,16 @@ unsigned StatisticsTabController::timedOut() const
 
 float StatisticsTabController::totalReprojectedRatio() const
 {
-    float totalFrames = static_cast<float>(
+    float const totalFrames = static_cast<float>(
         ( m_cumStats.m_nNumFramePresents - m_totalRatioPresentedOffset ) );
-    float reprojectedFrames = static_cast<float>( (
+    float const reprojectedFrames = static_cast<float>( (
         m_cumStats.m_nNumReprojectedFrames - m_totalRatioReprojectedOffset ) );
     if ( totalFrames != 0.0f )
     {
         return reprojectedFrames / totalFrames;
     }
-    else
-    {
-        return 0.0;
-    }
+
+    return 0.0;
 }
 
 void StatisticsTabController::statsDistanceResetClicked()

@@ -39,9 +39,9 @@ inline void sendTokensAsInput( const std::vector<Token> tokens )
         }
         if ( token == Token::TOKEN_NEW_SEQUENCE )
         {
-            for ( const auto& h : heldInputs )
+            for ( const auto& held : heldInputs )
             {
-                sendKeyPress( h, KeyStatus::Up );
+                sendKeyPress( held, KeyStatus::Up );
             }
             heldInputs.clear();
             continue;
@@ -50,9 +50,9 @@ inline void sendTokensAsInput( const std::vector<Token> tokens )
 
     if ( !heldInputs.empty() )
     {
-        for ( const auto& h : heldInputs )
+        for ( const auto& held : heldInputs )
         {
-            sendKeyPress( h, KeyStatus::Up );
+            sendKeyPress( held, KeyStatus::Up );
         }
     }
 

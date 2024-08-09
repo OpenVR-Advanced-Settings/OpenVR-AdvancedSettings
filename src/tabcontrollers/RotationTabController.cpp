@@ -4,8 +4,8 @@
 #include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../settings/settings.h"
-#include "../utils/Matrix.h"
 #include "../quaternion/quaternion.h"
+#include "openvr/ovr_overlay_wrapper.h"
 #include <cmath>
 
 // application namespace
@@ -28,7 +28,7 @@ void RotationTabController::initStage2( OverlayController* var_parent )
     const auto overlayError
         = vr::VROverlay()->CreateOverlay( autoturnOverlayKey.c_str(),
                                           autoturnOverlayKey.c_str(),
-                                          &m_autoturnValues.overlayHandle );
+                                          &m_overlayHandle );
     if ( overlayError != vr::VROverlayError_None )
     {
         qCritical() << "Could not create autoturn notification overlay: "
@@ -39,22 +39,20 @@ void RotationTabController::initStage2( OverlayController* var_parent )
 
         return;
     }
-    m_autoturnValues.autoturnImg.reset(
-        new QImage( QString( ":/rotation/autoturn.png" ) ) );
-    m_autoturnValues.noautoturnImg.reset(
+    m_autoturnImg.reset( new QImage( QString( ":/rotation/autoturn.png" ) ) );
+    m_noautoturnImg.reset(
         new QImage( QString( ":/rotation/noautoturn.png" ) ) );
 
-    ovr_overlay_wrapper::setOverlayFromQImage( m_autoturnValues.overlayHandle,
-                                               *m_autoturnValues.autoturnImg );
+    ovr_overlay_wrapper::setOverlayFromQImage( m_overlayHandle,
+                                               *m_autoturnImg );
 
-    vr::VROverlay()->SetOverlayWidthInMeters( m_autoturnValues.overlayHandle,
-                                              0.02f );
-    vr::HmdMatrix34_t notificationTransform
+    vr::VROverlay()->SetOverlayWidthInMeters( m_overlayHandle, 0.02f );
+    vr::HmdMatrix34_t const notificationTransform
         = { { { 1.0f, 0.0f, 0.0f, 0.12f },
               { 0.0f, 1.0f, 0.0f, 0.08f },
               { 0.0f, 0.0f, 1.0f, -0.3f } } };
     vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
-        m_autoturnValues.overlayHandle,
+        m_overlayHandle,
         vr::k_unTrackedDeviceIndex_Hmd,
         &notificationTransform );
 
@@ -67,7 +65,7 @@ void RotationTabController::eventLoopTick(
     if ( devicePoses )
     {
         m_isHMDActive = false;
-        std::lock_guard<std::recursive_mutex> lock(
+        std::lock_guard<std::recursive_mutex> const lock(
             parent->chaperoneUtils().mutex() );
         auto& poseHmd = devicePoses[vr::k_unTrackedDeviceIndex_Hmd];
 
@@ -128,7 +126,7 @@ void RotationTabController::eventLoopTick(
         }
         else
         {
-            float pct
+            float const pct
                 = std::min( 1.0f, 3.0f - static_cast<float>( count ) / 500.0f );
             vr::VROverlay()->SetOverlayAlpha( getNotificationOverlayHandle(),
                                               pct );
@@ -168,18 +166,18 @@ void RotationTabController::doViewRatchetting(
             = quaternion::fromHmdMatrix34( poseHmd.mDeviceToAbsoluteTracking );
 
         // Get HMD raw yaw
-        double hmdYaw = quaternion::getYaw( hmdQuaternion );
+        double const hmdYaw = quaternion::getYaw( hmdQuaternion );
 
         // Get angle between HMD position and nearest point on
         // wall
-        double hmdPositionToWallYaw = static_cast<double>(
+        double const hmdPositionToWallYaw = static_cast<double>(
             std::atan2( nearestWall.nearestPoint.v[0]
                             - poseHmd.mDeviceToAbsoluteTracking.m[0][3],
                         nearestWall.nearestPoint.v[2]
                             - poseHmd.mDeviceToAbsoluteTracking.m[2][3] ) );
 
         // Get angle between HMD and wall
-        double hmdToWallYaw
+        double const hmdToWallYaw
             = reduceAngle<>( hmdYaw - hmdPositionToWallYaw, -M_PI, M_PI );
 
         do
@@ -200,7 +198,7 @@ void RotationTabController::doViewRatchetting(
                 break;
             }
             // Magnify that change
-            double delta_degrees
+            double const delta_degrees
                 = reduceAngle<>(
                       hmdToWallYaw - m_ratchettingLastHmdRotation, -M_PI, M_PI )
                   * viewRatchettingPercent();
@@ -249,23 +247,23 @@ void RotationTabController::doVestibularMotion(
                 poseHmd.mDeviceToAbsoluteTracking );
 
             // Get HMD raw yaw
-            double hmdYaw = quaternion::getYaw( hmdQuaternion );
+            double const hmdYaw = quaternion::getYaw( hmdQuaternion );
 
             // Get angle between HMD position and nearest point on
             // wall
-            double hmdPositionToWallYaw = static_cast<double>(
+            double const hmdPositionToWallYaw = static_cast<double>(
                 std::atan2( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
                                 - nearestWall->nearestPoint.v[0],
                             poseHmd.mDeviceToAbsoluteTracking.m[2][3]
                                 - nearestWall->nearestPoint.v[2] ) );
 
             // Get angle between HMD and wall
-            double hmdToWallYaw
+            double const hmdToWallYaw
                 = reduceAngle<>( hmdYaw - hmdPositionToWallYaw, -M_PI, M_PI );
-            bool turnLeft = hmdToWallYaw > 0.0;
+            bool const turnLeft = hmdToWallYaw > 0.0;
 
             // Only turn if moving forward
-            double hmdMovementDirection = static_cast<double>(
+            double const hmdMovementDirection = static_cast<double>(
                 std::atan2( m_autoTurnLastHmdUpdate.m[0][3]
                                 - poseHmd.mDeviceToAbsoluteTracking.m[0][3],
                             m_autoTurnLastHmdUpdate.m[2][3]
@@ -279,7 +277,7 @@ void RotationTabController::doVestibularMotion(
 
             // Get the distance between previous and current
             // position
-            double distanceChange = static_cast<double>(
+            double const distanceChange = static_cast<double>(
                 std::hypot( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
                                 - m_autoTurnLastHmdUpdate.m[0][3],
                             poseHmd.mDeviceToAbsoluteTracking.m[2][3]
@@ -287,16 +285,16 @@ void RotationTabController::doVestibularMotion(
 
             // Get the arc length between the previous point and current point
             // 2 sin-1( (d/2)/r ) (in radians)
-            double arcLength = 2
-                               * std::asin( ( distanceChange / 2 )
-                                            / vestibularMotionRadius() );
+            double const arcLength = 2
+                                     * std::asin( ( distanceChange / 2 )
+                                                  / vestibularMotionRadius() );
             if ( std::isnan( arcLength ) )
             {
                 break;
             }
 
-            double rotationAmount = arcLength * ( turnLeft ? 1 : -1 );
-            int newRotationAngle = reduceAngle<>(
+            double const rotationAmount = arcLength * ( turnLeft ? 1 : -1 );
+            int const newRotationAngle = reduceAngle<>(
                 parent->m_moveCenterTabController.rotation()
                     + static_cast<int>( rotationAmount
                                         * k_radiansToCentidegrees ),
@@ -335,7 +333,7 @@ void RotationTabController::doAutoTurn(
                  == AutoTurnModes::LINEAR_SMOOTH_TURN
              && m_autoTurnLinearSmoothTurnRemaining != 0 )
         {
-            double deltaSeconds
+            double const deltaSeconds
                 = FrameRates::toDoubleSeconds( m_estimatedFrameRate );
             auto miniDeltaAngle = static_cast<int>(
                 std::abs(
@@ -346,11 +344,10 @@ void RotationTabController::doAutoTurn(
             {
                 miniDeltaAngle = m_autoTurnLinearSmoothTurnRemaining;
             }
-            int newRotationAngleDeg
-                = reduceAngle<>( parent->m_moveCenterTabController.rotation()
-                                     + static_cast<int>( miniDeltaAngle ),
-                                 0,
-                                 36000 );
+            int const newRotationAngleDeg = reduceAngle<>(
+                parent->m_moveCenterTabController.rotation() + miniDeltaAngle,
+                0,
+                36000 );
 
             parent->m_moveCenterTabController.setRotation(
                 newRotationAngleDeg );
@@ -369,18 +366,18 @@ void RotationTabController::doAutoTurn(
                     poseHmd.mDeviceToAbsoluteTracking );
 
                 // Get HMD raw yaw
-                double hmdYaw = quaternion::getYaw( hmdQuaternion );
+                double const hmdYaw = quaternion::getYaw( hmdQuaternion );
 
                 // Get angle between HMD position and nearest point on
                 // wall
-                double hmdPositionToWallYaw = static_cast<double>(
+                double const hmdPositionToWallYaw = static_cast<double>(
                     std::atan2( poseHmd.mDeviceToAbsoluteTracking.m[0][3]
                                     - chaperoneQuad.nearestPoint.v[0],
                                 poseHmd.mDeviceToAbsoluteTracking.m[2][3]
                                     - chaperoneQuad.nearestPoint.v[2] ) );
 
                 // Get angle between HMD and wall
-                double hmdToWallYaw = reduceAngle<>(
+                double const hmdToWallYaw = reduceAngle<>(
                     hmdYaw - hmdPositionToWallYaw, -M_PI, M_PI );
 
                 do
@@ -396,7 +393,7 @@ void RotationTabController::doAutoTurn(
 
                     // If the closest corner shares a wall with the last
                     // wall we turned at, turn relative to that corner
-                    bool cornerShared
+                    bool const cornerShared
                         = m_autoTurnWallActive[circularIndex(
                               i, true, chaperoneDistances.size() )]
                           || m_autoTurnWallActive[circularIndex(
@@ -468,10 +465,11 @@ void RotationTabController::doAutoTurn(
                             = parent->chaperoneUtils().getCorner( circularIndex(
                                 middleCornerIdx, !turnLeft, cornerCnt ) );
 
-                        double newWallAngle = static_cast<double>( std::atan2(
-                            middleCorner.v[0] - newWallCorner.v[0],
-                            middleCorner.v[2] - newWallCorner.v[2] ) );
-                        double touchingWallAngle
+                        double const newWallAngle
+                            = static_cast<double>( std::atan2(
+                                middleCorner.v[0] - newWallCorner.v[0],
+                                middleCorner.v[2] - newWallCorner.v[2] ) );
+                        double const touchingWallAngle
                             = static_cast<double>( std::atan2(
                                 middleCorner.v[0] - touchingWallCorner.v[0],
                                 middleCorner.v[2] - touchingWallCorner.v[2] ) );
@@ -667,14 +665,13 @@ void RotationTabController::setAutoTurnEnabled( bool value, bool notify )
     {
         if ( !value )
         {
-            ovr_overlay_wrapper::setOverlayFromQImage(
-                m_autoturnValues.overlayHandle,
-                *m_autoturnValues.noautoturnImg );
+            ovr_overlay_wrapper::setOverlayFromQImage( m_overlayHandle,
+                                                       *m_noautoturnImg );
         }
         else
         {
-            ovr_overlay_wrapper::setOverlayFromQImage(
-                m_autoturnValues.overlayHandle, *m_autoturnValues.autoturnImg );
+            ovr_overlay_wrapper::setOverlayFromQImage( m_overlayHandle,
+                                                       *m_autoturnImg );
         }
 
         vr::VROverlay()->SetOverlayAlpha( getNotificationOverlayHandle(),

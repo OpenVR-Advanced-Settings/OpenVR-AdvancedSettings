@@ -190,91 +190,90 @@ std::optional<Token> checkIfLegalCapitalLiteral( std::string input ) noexcept
 std::vector<Token>
     ParseKeyboardInputsToTokens( const std::string inputs ) noexcept
 {
-    std::vector<Token> tokens{};
+    std::vector<Token> tokens;
 
-    for ( auto ch = inputs.begin(), end = inputs.end(); ch != end; ++ch )
+    // NOLINTNEXTLINE(altera-id-dependent-backward-branch)
+    for ( auto cha = inputs.begin(), end = inputs.end(); cha != end; ++cha )
     {
-        if ( const auto c = getNumberOrLetter( *ch ); c.has_value() )
+        if ( const auto numOLet = getNumberOrLetter( *cha );
+             numOLet.has_value() )
         {
-            tokens.push_back( *c );
+            tokens.push_back( *numOLet );
             continue;
         }
-        if ( const auto c = getModifier( *ch ); c.has_value() )
+        if ( const auto mod = getModifier( *cha ); mod.has_value() )
         {
             tokens.push_back( Token::TOKEN_NO_KEYUP_NEXT );
-            tokens.push_back( *c );
+            tokens.push_back( *mod );
             continue;
         }
 
-        if ( isspace( *ch ) )
+        if ( isspace( *cha ) )
         {
             tokens.push_back( Token::TOKEN_NEW_SEQUENCE );
         }
 
-        if ( !isupper( *ch ) || isspace( *ch ) )
+        if ( !isupper( *cha ) || isspace( *cha ) )
         {
-            qInfo() << "Unknown character found in sequence: " << *ch;
+            qInfo() << "Unknown character found in sequence: " << *cha;
             continue;
         }
         // Everything below is upper case
 
-        if ( *ch == 'F' )
+        if ( *cha == 'F' )
         {
-            ++ch;
-            if ( ch == end )
+            ++cha;
+            if ( cha == end )
             {
                 break;
             }
-            const auto token = getFunctionNumber( *ch );
+            const auto token = getFunctionNumber( *cha );
             if ( token.has_value() )
             {
                 tokens.push_back( *token );
                 continue;
             }
-            else
-            {
-                // Spec says to abort on errors and submit correct values before
-                // error.
-                break;
-            }
+
+            // Spec says to abort on errors and submit correct values before
+            // error.
+            break;
         }
-        else if ( *ch == 'G' )
+        if ( *cha == 'G' )
         {
-            ++ch;
-            if ( ch == end )
+            ++cha;
+            if ( cha == end )
             {
                 break;
             }
-            const auto token = getFunctionNumberExtended( *ch );
+            const auto token = getFunctionNumberExtended( *cha );
             if ( token.has_value() )
             {
                 tokens.push_back( *token );
                 continue;
             }
-            else
-            {
-                // Spec says to abort on errors and submit correct values before
-                // error.
-                break;
-            }
+
+            // Spec says to abort on errors and submit correct values before
+            // error.
+            break;
         }
 
         std::string characters;
-        characters.push_back( *ch );
-        while ( ch + 1 != end )
+        characters.push_back( *cha );
+        // NOLINTNEXTLINE(altera-id-dependent-backward-branch)
+        while ( cha + 1 != end )
         {
-            ++ch;
-            characters.push_back( *ch );
-            if ( auto c = checkIfLegalCapitalLiteral( characters );
-                 c.has_value() )
+            ++cha;
+            characters.push_back( *cha );
+            if ( auto cap = checkIfLegalCapitalLiteral( characters );
+                 cap.has_value() )
             {
-                tokens.push_back( *c );
+                tokens.push_back( *cap );
                 characters.clear();
                 // break out of the while
                 break;
             }
         }
-        if ( ch == end )
+        if ( cha == end )
         {
             break;
         }
@@ -343,14 +342,14 @@ std::vector<Token>
 std::vector<Token>
     removeIncorrectTokens( const std::vector<Token>& tokens ) noexcept
 {
-    const auto spacesRemoved = removeDuplicateNewSequences( tokens );
-    const auto ctrlRemoved
+    auto spacesRemoved = removeDuplicateNewSequences( tokens );
+    auto ctrlRemoved
         = removeTokenInSameSequence( spacesRemoved, Token::MODIFIER_CTRL );
-    const auto altRemoved
+    auto altRemoved
         = removeTokenInSameSequence( ctrlRemoved, Token::MODIFIER_ALT );
-    const auto shiftRemoved
+    auto shiftRemoved
         = removeTokenInSameSequence( altRemoved, Token::MODIFIER_SHIFT );
-    const auto superRemoved
+    auto superRemoved
         = removeTokenInSameSequence( shiftRemoved, Token::MODIFIER_SUPER );
 
     return superRemoved;

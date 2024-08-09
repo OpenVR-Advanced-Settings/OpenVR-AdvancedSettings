@@ -25,14 +25,14 @@ public:
     /*!
     An API internal handle that identifies an input handle.
     */
-    vr::VRInputValueHandle_t handle() const noexcept
+    [[nodiscard]] vr::VRInputValueHandle_t handle() const noexcept
     {
         return m_handle;
     }
     /*!
     The actions manfiest name of the action. Used for error reporting.
     */
-    std::string name() const noexcept
+    [[nodiscard]] std::string name() const noexcept
     {
         return m_name;
     }

@@ -1,6 +1,19 @@
 ---
-Checks:          '*,
+# TODO: Contemplate: -bugprone-branch-clone,-cppcoreguidelines-avoid-non-const-global-variables,-cppcoreguidelines-avoid-magic-numbers,
+# -hicpp-uppercase-literal-suffix,-misc-include-cleaner,-modernize-use-trailing-return-type,-readability-function-cognitive-complexity,
+# -readability-uppercase-literal-suffix, -cppcoreguidelines-avoid-do-while, -altera-unroll-loops, -misc-no-recursion,
+# -altera-struct-pack-align
+Checks: |
+    *,
+    -abseil-string-find-str-contains,
+    -altera-unroll-loops,
+    -altera-struct-pack-align,
+    -bugprone-branch-clone,
     -cert-err58-cpp,
+    -cppcoreguidelines-avoid-const-or-ref-data-members,
+    -cppcoreguidelines-avoid-do-while,
+    -cppcoreguidelines-avoid-non-const-global-variables,
+    -cppcoreguidelines-avoid-magic-numbers,
     -cppcoreguidelines-owning-memory,
     -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
     -cppcoreguidelines-pro-bounds-constant-array-index,
@@ -12,6 +25,7 @@ Checks:          '*,
     -fuchsia-default-arguments,
     -fuchsia-default-arguments-calls,
     -fuchsia-statically-constructed-objects,
+    -fuchsia-default-arguments-declarations,
     -google-default-arguments,
     -google-explicit-constructor,
     -google-readability-braces-around-statements,
@@ -24,6 +38,7 @@ Checks:          '*,
     -hicpp-no-array-decay,
     -hicpp-signed-bitwise,
     -hicpp-special-member-functions,
+    -hicpp-uppercase-literal-suffix,
     -hicpp-use-auto,
     -hicpp-use-equals-default,
     -hicpp-use-override,
@@ -31,6 +46,8 @@ Checks:          '*,
     -llvm-header-guard,
     -llvm-include-order,
     -llvmlibc-*,
+    -misc-include-cleaner,
+    -misc-no-recursion
     -misc-string-compare,
     -misc-unused-using-decls,
     -modernize-loop-convert,
@@ -38,20 +55,27 @@ Checks:          '*,
     -modernize-use-auto,
     -modernize-use-equals-default,
     -modernize-use-override,
+    -modernize-use-trailing-return-type,
     -modernize-use-using,
     -performance-for-range-copy,
     -performance-unnecessary-value-param,
     -readability-avoid-const-params-in-decls,
     -readability-braces-around-statements,
     -readability-else-after-return,
+    -readability-function-cognitive-complexity,
     -readability-implicit-bool-conversion,
     -readability-inconsistent-declaration-parameter-name,
     -readability-non-const-parameter,
     -readability-string-compare,
     -readability-redundant-declaration,
     -readability-redundant-member-init,
-    -readability-static-accessed-through-instance'
-WarningsAsErrors:           '*,
+    -readability-static-accessed-through-instance,
+    -readability-uppercase-literal-suffix,
+    -readability-magic-numbers,
+    -readability-convert-member-functions-to-static,
+    -readability-make-member-function-const
+WarningsAsErrors: |
+    *,
     -cert-err58-cpp,
     -cppcoreguidelines-owning-memory,
     -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
@@ -98,10 +122,10 @@ WarningsAsErrors:           '*,
     -readability-non-const-parameter,
     -readability-redundant-declaration,
     -readability-redundant-member-init,
-    -readability-static-accessed-through-instance'
+    -readability-static-accessed-through-instance
 HeaderFilterRegex: '^((?!qt).)*h$'
-AnalyzeTemporaryDtors: false
-FormatStyle:     none
+#AnalyzeTemporaryDtors: false
+FormatStyle: llvm
 CheckOptions:
   - key:             bugprone-argument-comment.StrictMode
     value:           '0'
@@ -258,7 +282,7 @@ CheckOptions:
   - key:             modernize-make-shared.IgnoreMacros
     value:           '1'
   - key:             modernize-make-shared.IncludeStyle
-    value:           '0'
+    value:           llvm
   - key:             modernize-make-shared.MakeSmartPtrFunction
     value:           'std::make_shared'
   - key:             modernize-make-shared.MakeSmartPtrFunctionHeader

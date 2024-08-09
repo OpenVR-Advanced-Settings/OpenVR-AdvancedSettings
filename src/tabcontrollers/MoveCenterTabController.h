@@ -6,7 +6,6 @@
 #include <chrono>
 #include <qmath.h>
 #include "../utils/Matrix.h"
-#include "../utils/FrameRateUtils.h"
 #include "../settings/settings_object.h"
 
 class QQuickWindow;
@@ -32,32 +31,34 @@ class OverlayController;
 
 struct OffsetProfile : settings::ISettingsObject
 {
+    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     std::string profileName;
     float offsetX = 0.0f;
     float offsetY = 0.0f;
     float offsetZ = 0.0f;
     int rotation = 0;
+    // NOLINTEND(misc-non-private-member-variables-in-classes)
 
-    virtual std::string settingsName() const override
+    [[nodiscard]] std::string settingsName() const override
     {
         return "MoveCenterTabController::OffsetProfile";
     }
 
-    virtual settings::SettingsObjectData saveSettings() const override
+    [[nodiscard]] settings::SettingsObjectData saveSettings() const override
     {
-        settings::SettingsObjectData o;
+        settings::SettingsObjectData sod;
 
-        o.addValue( profileName );
-        o.addValue( static_cast<double>( offsetX ) );
-        o.addValue( static_cast<double>( offsetY ) );
-        o.addValue( static_cast<double>( offsetZ ) );
+        sod.addValue( profileName );
+        sod.addValue( static_cast<double>( offsetX ) );
+        sod.addValue( static_cast<double>( offsetY ) );
+        sod.addValue( static_cast<double>( offsetZ ) );
 
-        o.addValue( rotation );
+        sod.addValue( rotation );
 
-        return o;
+        return sod;
     }
 
-    virtual void loadSettings( settings::SettingsObjectData& obj ) override
+    void loadSettings( settings::SettingsObjectData& obj ) override
     {
         profileName = ( obj.getNextValueOrDefault( "" ) );
         offsetX = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
@@ -150,7 +151,7 @@ private:
     bool m_moveShortcutRightPressed = false;
     bool m_moveShortcutLeftPressed = false;
     vr::TrackedDeviceIndex_t m_activeMoveController;
-    float m_lastControllerPosition[3];
+    std::array<float, 3> m_lastControllerPosition;
     bool m_heightToggle = false;
     float m_gravityFloor = 0.0f;
     bool m_ignoreChaperoneState = false;
@@ -201,11 +202,10 @@ private:
     // Matrix used For Center Marker
     vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
 
-    double m_velocity[3] = { 0.0, 0.0, 0.0 };
+    std::array<double, 3> m_velocity = { 0.0, 0.0, 0.0 };
     std::chrono::steady_clock::time_point m_lastGravityUpdateTimePoint;
     std::chrono::steady_clock::time_point m_lastDragUpdateTimePoint;
-    vr::HmdQuad_t* m_collisionBoundsForReset;
-    uint32_t m_collisionBoundsCountForReset = 0;
+    std::vector<vr::HmdQuad_t> m_collisionBoundsForReset;
     vr::HmdMatrix34_t m_universeCenterForReset
         = { { { 1.0f, 0.0f, 0.0f, 0.0f },
               { 0.0f, 1.0f, 0.0f, 0.0f },
@@ -223,7 +223,7 @@ private:
     void updateHandTurn( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateGravity();
     void updateSpace( bool forceUpdate = false );
-    void clampVelocity( double* velocity );
+    void clampVelocity( std::array<double, 3> velocity );
     void applyChaperoneResetData();
     // void saveUncommittedChaperone();
     void outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix );
@@ -237,36 +237,36 @@ public:
     void eventLoopTick( vr::ETrackingUniverseOrigin universe,
                         vr::TrackedDevicePose_t* devicePoses );
 
-    float offsetX() const;
-    float offsetY() const;
-    float offsetZ() const;
-    int rotation() const;
-    int tempRotation() const;
-    int snapTurnAngle() const;
-    int smoothTurnRate() const;
-    int frictionPercent() const;
-    bool moveShortcutRight() const;
-    bool moveShortcutLeft() const;
-    bool turnBindRight() const;
-    bool turnBindLeft() const;
-    bool dragBounds() const;
-    bool turnBounds() const;
-    int dragComfortFactor() const;
-    int turnComfortFactor() const;
-    bool heightToggle() const;
-    float heightToggleOffset() const;
-    float gravityStrength() const;
-    float flingStrength() const;
-    float dragMult() const;
-    bool gravityActive() const;
-    bool momentumSave() const;
-    bool lockXToggle() const;
-    bool lockYToggle() const;
-    bool lockZToggle() const;
-    bool showLogMatricesButton() const;
+    [[nodiscard]] float offsetX() const;
+    [[nodiscard]] float offsetY() const;
+    [[nodiscard]] float offsetZ() const;
+    [[nodiscard]] int rotation() const;
+    [[nodiscard]] int tempRotation() const;
+    [[nodiscard]] int snapTurnAngle() const;
+    [[nodiscard]] int smoothTurnRate() const;
+    [[nodiscard]] int frictionPercent() const;
+    [[nodiscard]] bool moveShortcutRight() const;
+    [[nodiscard]] bool moveShortcutLeft() const;
+    [[nodiscard]] bool turnBindRight() const;
+    [[nodiscard]] bool turnBindLeft() const;
+    [[nodiscard]] bool dragBounds() const;
+    [[nodiscard]] bool turnBounds() const;
+    [[nodiscard]] int dragComfortFactor() const;
+    [[nodiscard]] int turnComfortFactor() const;
+    [[nodiscard]] bool heightToggle() const;
+    [[nodiscard]] float heightToggleOffset() const;
+    [[nodiscard]] float gravityStrength() const;
+    [[nodiscard]] float flingStrength() const;
+    [[nodiscard]] float dragMult() const;
+    [[nodiscard]] bool gravityActive() const;
+    [[nodiscard]] bool momentumSave() const;
+    [[nodiscard]] bool lockXToggle() const;
+    [[nodiscard]] bool lockYToggle() const;
+    [[nodiscard]] bool lockZToggle() const;
+    [[nodiscard]] bool showLogMatricesButton() const;
     // bool allowExternalEdits() const;
-    bool universeCenteredRotation() const;
-    bool isInitComplete() const;
+    [[nodiscard]] bool universeCenteredRotation() const;
+    [[nodiscard]] bool isInitComplete() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
     void incomingZeroReset();
@@ -280,7 +280,7 @@ public:
     Q_INVOKABLE unsigned getOffsetProfileCount();
     Q_INVOKABLE QString getOffsetProfileName( unsigned index );
 
-    void addOffset( float offset[3] );
+    void addOffset( std::array<float, 3> offset );
 
     // actions:
     void leftHandSpaceDrag( bool leftHandDragActive );
@@ -306,8 +306,7 @@ public:
     void yAxisLockToggle( bool yAxisLockToggleJustPressed );
     void zAxisLockToggle( bool zAxisLockToggleJustPressed );
 
-public slots:
-    int trackingUniverse() const;
+    [[nodiscard]] int trackingUniverse() const;
     void setTrackingUniverse( int value, bool notify = true );
 
     void setOffsetX( float value, bool notify = true );

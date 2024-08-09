@@ -1,20 +1,14 @@
-
 #pragma once
 
 #include <QObject>
+#include <array>
 #include <map>
 #include <memory>
 #include <chrono>
 #include <thread>
 #include <openvr.h>
-#include <cmath>
-#include "../utils/FrameRateUtils.h"
-#include "../utils/ChaperoneUtils.h"
 #include "../settings/settings_object.h"
 #include "MoveCenterTabController.h"
-#include "../openvr/ovr_overlay_wrapper.h"
-#include "../openvr/ovr_settings_wrapper.h"
-#include <utility>
 
 class QQuickWindow;
 // application namespace
@@ -26,6 +20,7 @@ class OverlayController;
 
 struct ChaperoneProfile : settings::ISettingsObject
 {
+    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     std::string profileName;
 
     bool includesChaperoneGeometry = false;
@@ -50,7 +45,7 @@ struct ChaperoneProfile : settings::ISettingsObject
     bool floorBoundsMarker = false;
 
     bool includesBoundsColor = false;
-    int boundsColor[3] = { 0, 0, 0 };
+    std::array<int, 3> boundsColor = { 0, 0, 0 };
 
     bool includesChaperoneStyle = false;
     int chaperoneStyle = 0;
@@ -71,28 +66,29 @@ struct ChaperoneProfile : settings::ISettingsObject
     float chaperoneShowDashboardDistance = 0.0f;
     bool centerMarkerNew = false;
     float chaperoneDimHeight = 0.0f;
+    // NOLINTEND(misc-non-private-member-variables-in-classes)
 
-    virtual settings::SettingsObjectData saveSettings() const override
+    [[nodiscard]] settings::SettingsObjectData saveSettings() const override
     {
-        settings::SettingsObjectData o;
+        settings::SettingsObjectData sod;
 
-        o.addValue( profileName );
+        sod.addValue( profileName );
 
-        o.addValue( includesChaperoneGeometry );
-        o.addValue( static_cast<int>( chaperoneGeometryQuadCount ) );
+        sod.addValue( includesChaperoneGeometry );
+        sod.addValue( static_cast<int>( chaperoneGeometryQuadCount ) );
 
         const auto chaperoneGeometryQuadsValid = chaperoneGeometryQuadCount > 0;
-        o.addValue( chaperoneGeometryQuadsValid );
+        sod.addValue( chaperoneGeometryQuadsValid );
 
         if ( chaperoneGeometryQuadsValid )
         {
-            for ( auto& arrayMember : chaperoneGeometryQuads )
+            for ( const auto& arrayMember : chaperoneGeometryQuads )
             {
-                for ( auto& corner : arrayMember.vCorners )
+                for ( const auto& corner : arrayMember.vCorners )
                 {
-                    for ( auto& vector : corner.v )
+                    for ( const auto& vector : corner.v )
                     {
-                        o.addValue( static_cast<double>( vector ) );
+                        sod.addValue( static_cast<double>( vector ) );
                     }
                 }
             }
@@ -102,59 +98,60 @@ struct ChaperoneProfile : settings::ISettingsObject
         {
             for ( int j = 0; j < 4; ++j )
             {
-                o.addValue( static_cast<double>( standingCenter.m[i][j] ) );
+                sod.addValue( static_cast<double>( standingCenter.m[i][j] ) );
             }
         }
 
-        o.addValue( static_cast<double>( playSpaceAreaX ) );
-        o.addValue( static_cast<double>( playSpaceAreaZ ) );
+        sod.addValue( static_cast<double>( playSpaceAreaX ) );
+        sod.addValue( static_cast<double>( playSpaceAreaZ ) );
 
-        o.addValue( includesVisibility );
-        o.addValue( static_cast<double>( visibility ) );
+        sod.addValue( includesVisibility );
+        sod.addValue( static_cast<double>( visibility ) );
 
-        o.addValue( includesFadeDistance );
-        o.addValue( static_cast<double>( fadeDistance ) );
+        sod.addValue( includesFadeDistance );
+        sod.addValue( static_cast<double>( fadeDistance ) );
 
-        o.addValue( includesCenterMarker );
-        o.addValue( centerMarker );
+        sod.addValue( includesCenterMarker );
+        sod.addValue( centerMarker );
 
-        o.addValue( includesPlaySpaceMarker );
-        o.addValue( playSpaceMarker );
+        sod.addValue( includesPlaySpaceMarker );
+        sod.addValue( playSpaceMarker );
 
-        o.addValue( includesFloorBoundsMarker );
-        o.addValue( floorBoundsMarker );
+        sod.addValue( includesFloorBoundsMarker );
+        sod.addValue( floorBoundsMarker );
 
-        o.addValue( includesBoundsColor );
+        sod.addValue( includesBoundsColor );
 
-        for ( const auto& c : boundsColor )
+        for ( const auto& color : boundsColor )
         {
-            o.addValue( c );
+            sod.addValue( color );
         }
 
-        o.addValue( includesChaperoneStyle );
-        o.addValue( chaperoneStyle );
+        sod.addValue( includesChaperoneStyle );
+        sod.addValue( chaperoneStyle );
 
-        o.addValue( includesForceBounds );
-        o.addValue( forceBounds );
+        sod.addValue( includesForceBounds );
+        sod.addValue( forceBounds );
 
-        o.addValue( includesProximityWarningSettings );
-        o.addValue( enableChaperoneSwitchToBeginner );
-        o.addValue( static_cast<double>( chaperoneSwitchToBeginnerDistance ) );
-        o.addValue( enableChaperoneHapticFeedback );
-        o.addValue( static_cast<double>( chaperoneHapticFeedbackDistance ) );
-        o.addValue( enableChaperoneAlarmSound );
-        o.addValue( chaperoneAlarmSoundLooping );
-        o.addValue( chaperoneAlarmSoundAdjustVolume );
-        o.addValue( static_cast<double>( chaperoneAlarmSoundDistance ) );
-        o.addValue( enableChaperoneShowDashboard );
-        o.addValue( static_cast<double>( chaperoneShowDashboardDistance ) );
-        o.addValue( centerMarkerNew );
-        o.addValue( static_cast<double>( chaperoneDimHeight ) );
+        sod.addValue( includesProximityWarningSettings );
+        sod.addValue( enableChaperoneSwitchToBeginner );
+        sod.addValue(
+            static_cast<double>( chaperoneSwitchToBeginnerDistance ) );
+        sod.addValue( enableChaperoneHapticFeedback );
+        sod.addValue( static_cast<double>( chaperoneHapticFeedbackDistance ) );
+        sod.addValue( enableChaperoneAlarmSound );
+        sod.addValue( chaperoneAlarmSoundLooping );
+        sod.addValue( chaperoneAlarmSoundAdjustVolume );
+        sod.addValue( static_cast<double>( chaperoneAlarmSoundDistance ) );
+        sod.addValue( enableChaperoneShowDashboard );
+        sod.addValue( static_cast<double>( chaperoneShowDashboardDistance ) );
+        sod.addValue( centerMarkerNew );
+        sod.addValue( static_cast<double>( chaperoneDimHeight ) );
 
-        return o;
+        return sod;
     }
 
-    virtual void loadSettings( settings::SettingsObjectData& obj ) override
+    void loadSettings( settings::SettingsObjectData& obj ) override
     {
         profileName = obj.getNextValueOrDefault( "" );
 
@@ -166,11 +163,7 @@ struct ChaperoneProfile : settings::ISettingsObject
             = obj.getNextValueOrDefault( false );
         if ( chaperoneGeometryQuadsValid )
         {
-            for ( int i = 0; i < static_cast<int>( chaperoneGeometryQuadCount );
-                  ++i )
-            {
-                chaperoneGeometryQuads.emplace_back();
-            }
+            chaperoneGeometryQuads.assign( chaperoneGeometryQuadCount, {} );
 
             for ( auto& arrayMember : chaperoneGeometryQuads )
             {
@@ -214,9 +207,9 @@ struct ChaperoneProfile : settings::ISettingsObject
 
         includesBoundsColor = obj.getNextValueOrDefault( false );
 
-        for ( auto& c : boundsColor )
+        for ( auto& color : boundsColor )
         {
-            c = obj.getNextValueOrDefault( 0 );
+            color = obj.getNextValueOrDefault( 0 );
         }
 
         includesChaperoneStyle = obj.getNextValueOrDefault( false );
@@ -245,7 +238,7 @@ struct ChaperoneProfile : settings::ISettingsObject
             = static_cast<float>( obj.getNextValueOrDefault( 0.0 ) );
     }
 
-    virtual std::string settingsName() const override
+    [[nodiscard]] std::string settingsName() const override
     {
         return "ChaperoneTabController::ChaperoneProfile";
     }
@@ -394,9 +387,10 @@ private:
 
     vr::ETrackingUniverseOrigin m_trackingUniverse
         = vr::TrackingUniverseRawAndUncalibrated;
+    bool m_centerMarkerOverlayNeedsUpdate = false;
 
 public:
-    ~ChaperoneTabController();
+    ~ChaperoneTabController() override;
 
     void initStage1();
     void initStage2( OverlayController* parent );
@@ -412,8 +406,8 @@ public:
     float height();
     bool centerMarker();
     bool playSpaceMarker();
-    bool forceBounds() const;
-    bool disableChaperone() const;
+    [[nodiscard]] bool forceBounds() const;
+    [[nodiscard]] bool disableChaperone() const;
 
     int chaperoneColorR();
     int chaperoneColorG();
@@ -423,13 +417,16 @@ public:
     int getChaperoneProfileIndex();
 
     bool centerMarkerNew();
-    bool m_centerMarkerOverlayNeedsUpdate = false;
+    inline bool centerMarkerOverlayNeedsUpdate()
+    {
+        return m_centerMarkerOverlayNeedsUpdate;
+    }
 
     bool chaperoneFloorToggle();
 
     int collisionBoundStyle();
 
-    float chaperoneDimHeight() const;
+    [[nodiscard]] float chaperoneDimHeight() const;
 
     void setRightHapticActionHandle( vr::VRActionHandle_t handle );
     void setLeftHapticActionHandle( vr::VRActionHandle_t handle );
@@ -438,19 +435,19 @@ public:
 
     void setProxState( bool value );
 
-    bool isChaperoneSwitchToBeginnerEnabled() const;
-    float chaperoneSwitchToBeginnerDistance() const;
+    [[nodiscard]] bool isChaperoneSwitchToBeginnerEnabled() const;
+    [[nodiscard]] float chaperoneSwitchToBeginnerDistance() const;
 
-    bool isChaperoneHapticFeedbackEnabled() const;
-    float chaperoneHapticFeedbackDistance() const;
+    [[nodiscard]] bool isChaperoneHapticFeedbackEnabled() const;
+    [[nodiscard]] float chaperoneHapticFeedbackDistance() const;
 
-    bool isChaperoneAlarmSoundEnabled() const;
-    bool isChaperoneAlarmSoundLooping() const;
-    bool isChaperoneAlarmSoundAdjustVolume() const;
-    float chaperoneAlarmSoundDistance() const;
+    [[nodiscard]] bool isChaperoneAlarmSoundEnabled() const;
+    [[nodiscard]] bool isChaperoneAlarmSoundLooping() const;
+    [[nodiscard]] bool isChaperoneAlarmSoundAdjustVolume() const;
+    [[nodiscard]] float chaperoneAlarmSoundDistance() const;
 
-    bool isChaperoneShowDashboardEnabled() const;
-    float chaperoneShowDashboardDistance() const;
+    [[nodiscard]] bool isChaperoneShowDashboardEnabled() const;
+    [[nodiscard]] float chaperoneShowDashboardDistance() const;
 
     void reloadChaperoneProfiles();
     void saveChaperoneProfiles();
@@ -466,7 +463,6 @@ public:
     void addLeftHapticClick( bool leftHapticClickPressed );
     void addRightHapticClick( bool rightHapticClickPressed );
 
-public slots:
     void setBoundsVisibility( float value, bool notify = true );
     void setFadeDistance( float value, bool notify = true );
     void setHeight( float value, bool notify = true );

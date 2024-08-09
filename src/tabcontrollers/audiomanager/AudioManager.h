@@ -11,8 +11,9 @@ class AudioTabController;
 class AudioDevice
 {
 public:
-    AudioDevice( const std::string id, const std::string name )
-        : m_id( id ), m_name( name )
+    // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+    AudioDevice( const std::string dev_id, const std::string name )
+        : m_id( dev_id ), m_name( name )
     {
     }
 
@@ -38,12 +39,14 @@ public:
 
     virtual void init( AudioTabController* controller ) = 0;
 
-    virtual void setPlaybackDevice( const std::string& id, bool notify = true )
+    virtual void setPlaybackDevice( const std::string& dev_id,
+                                    bool notify = true )
         = 0;
     virtual std::string getPlaybackDevName() = 0;
     virtual std::string getPlaybackDevId() = 0;
 
-    virtual void setMirrorDevice( const std::string& id, bool notify = true )
+    virtual void setMirrorDevice( const std::string& dev_id,
+                                  bool notify = true )
         = 0;
     virtual bool isMirrorValid() = 0;
     virtual std::string getMirrorDevName() = 0;
@@ -53,7 +56,8 @@ public:
     virtual bool getMirrorMuted() = 0;
     virtual bool setMirrorMuted( bool value ) = 0;
 
-    virtual void setMicDevice( const std::string& id, bool notify = true ) = 0;
+    virtual void setMicDevice( const std::string& dev_id, bool notify = true )
+        = 0;
     virtual bool isMicValid() = 0;
     virtual std::string getMicDevName() = 0;
     virtual std::string getMicDevId() = 0;

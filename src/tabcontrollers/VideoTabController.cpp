@@ -6,7 +6,10 @@
 #include "../settings/settings.h"
 #include "../overlaycontroller.h"
 #include "../utils/update_rate.h"
+#include "openvr/ovr_overlay_wrapper.h"
+#include "openvr/ovr_settings_wrapper.h"
 #include <cmath>
+#include <qcolor.h>
 
 namespace advsettings
 {
@@ -45,10 +48,11 @@ void VideoTabController::synchSteamVR()
 
 void VideoTabController::initBrightnessOverlay()
 {
-    std::string notifKey = std::string( application_strings::applicationKey )
-                           + ".brightnessoverlay";
+    std::string const notifKey
+        = std::string( application_strings::applicationKey )
+          + ".brightnessoverlay";
 
-    vr::VROverlayError overlayError = vr::VROverlay()->CreateOverlay(
+    vr::VROverlayError const overlayError = vr::VROverlay()->CreateOverlay(
         notifKey.c_str(), notifKey.c_str(), &m_brightnessOverlayHandle );
     if ( overlayError == vr::VROverlayError_None )
     {
@@ -57,7 +61,7 @@ void VideoTabController::initBrightnessOverlay()
                                                    notifIcon );
         vr::VROverlay()->SetOverlayWidthInMeters( m_brightnessOverlayHandle,
                                                   k_overlayWidth );
-        vr::HmdMatrix34_t notificationTransform
+        vr::HmdMatrix34_t const notificationTransform
             = { { { 1.0f, 0.0f, 0.0f, 0.00f },
                   { 0.0f, 1.0f, 0.0f, 0.00f },
                   { 0.0f, 0.0f, 1.0f, k_hmdDistance } } };
@@ -79,10 +83,10 @@ void VideoTabController::initBrightnessOverlay()
 
 void VideoTabController::initColorOverlay()
 {
-    std::string notifKey
+    std::string const notifKey
         = std::string( application_strings::applicationKey ) + ".coloroverlay";
 
-    vr::VROverlayError overlayError = vr::VROverlay()->CreateOverlay(
+    vr::VROverlayError const overlayError = vr::VROverlay()->CreateOverlay(
         notifKey.c_str(), notifKey.c_str(), &m_colorOverlayHandle );
     if ( overlayError == vr::VROverlayError_None )
     {
@@ -93,7 +97,7 @@ void VideoTabController::initColorOverlay()
                                                   k_overlayWidth );
         // position it just slightly further out so we don't have to worry
         // about render order.
-        vr::HmdMatrix34_t notificationTransform
+        vr::HmdMatrix34_t const notificationTransform
             = { { { 1.0f, 0.0f, 0.0f, 0.00f },
                   { 0.0f, 1.0f, 0.0f, 0.00f },
                   { 0.0f, 0.0f, 1.0f, ( k_hmdDistance - 0.01f ) } } };
@@ -373,7 +377,7 @@ void VideoTabController::setColorOverlayOpacity( float value, bool notify )
 
 void VideoTabController::synchGain( bool setValue )
 {
-    vr::EVRSettingsError vrSettingsError;
+    vr::EVRSettingsError vrSettingsError = {};
 
     auto red = vr::VRSettings()->GetFloat(
         vr::k_pch_SteamVR_Section,
@@ -453,8 +457,11 @@ void VideoTabController::setColorRed( float value, bool notify, bool keepValue )
 
         if ( isOverlayMethodActive() )
         {
-            vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayColor(
-                m_colorOverlayHandle, colorRed(), colorGreen(), colorBlue() );
+            vr::VROverlayError const overlayError
+                = vr::VROverlay()->SetOverlayColor( m_colorOverlayHandle,
+                                                    colorRed(),
+                                                    colorGreen(),
+                                                    colorBlue() );
             if ( overlayError != vr::VROverlayError_None )
             {
                 qCritical() << "Could not set Red for color overlay: "
@@ -464,7 +471,7 @@ void VideoTabController::setColorRed( float value, bool notify, bool keepValue )
         }
         else
         {
-            vr::EVRSettingsError vrSettingsError;
+            vr::EVRSettingsError vrSettingsError = {};
             vr::VRSettings()->SetFloat(
                 vr::k_pch_SteamVR_Section,
                 vr::k_pch_SteamVR_HmdDisplayColorGainR_Float,
@@ -503,8 +510,11 @@ void VideoTabController::setColorGreen( float value,
 
         if ( isOverlayMethodActive() )
         {
-            vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayColor(
-                m_colorOverlayHandle, colorRed(), colorGreen(), colorBlue() );
+            vr::VROverlayError const overlayError
+                = vr::VROverlay()->SetOverlayColor( m_colorOverlayHandle,
+                                                    colorRed(),
+                                                    colorGreen(),
+                                                    colorBlue() );
             if ( overlayError != vr::VROverlayError_None )
             {
                 qCritical() << "Could not set Green for color overlay: "
@@ -514,7 +524,7 @@ void VideoTabController::setColorGreen( float value,
         }
         else
         {
-            vr::EVRSettingsError vrSettingsError;
+            vr::EVRSettingsError vrSettingsError = {};
             vr::VRSettings()->SetFloat(
                 vr::k_pch_SteamVR_Section,
                 vr::k_pch_SteamVR_HmdDisplayColorGainG_Float,
@@ -552,8 +562,11 @@ void VideoTabController::setColorBlue( float value,
         }
         if ( isOverlayMethodActive() )
         {
-            vr::VROverlayError overlayError = vr::VROverlay()->SetOverlayColor(
-                m_colorOverlayHandle, colorRed(), colorGreen(), colorBlue() );
+            vr::VROverlayError const overlayError
+                = vr::VROverlay()->SetOverlayColor( m_colorOverlayHandle,
+                                                    colorRed(),
+                                                    colorGreen(),
+                                                    colorBlue() );
             if ( overlayError != vr::VROverlayError_None )
             {
                 qCritical() << "Could not set Blue for color overlay: "
@@ -563,7 +576,7 @@ void VideoTabController::setColorBlue( float value,
         }
         else
         {
-            vr::EVRSettingsError vrSettingsError;
+            vr::EVRSettingsError vrSettingsError = {};
             vr::VRSettings()->SetFloat(
                 vr::k_pch_SteamVR_Section,
                 vr::k_pch_SteamVR_HmdDisplayColorGainB_Float,
@@ -589,7 +602,7 @@ void VideoTabController::setColorBlue( float value,
 
 void VideoTabController::resetGain()
 {
-    vr::EVRSettingsError vrSettingsError;
+    vr::EVRSettingsError vrSettingsError = {};
     vr::VRSettings()->SetFloat( vr::k_pch_SteamVR_Section,
                                 vr::k_pch_SteamVR_HmdDisplayColorGainR_Float,
                                 1.0f,
@@ -626,15 +639,16 @@ void VideoTabController::resetGain()
     }
 }
 
-void VideoTabController::setColor( float R,
-                                   float G,
-                                   float B,
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+void VideoTabController::setColor( float Red,
+                                   float Green,
+                                   float Blue,
                                    bool notify,
                                    bool keepValue )
 {
-    setColorRed( R, notify, keepValue );
-    setColorGreen( G, notify, keepValue );
-    setColorBlue( B, notify, keepValue );
+    setColorRed( Red, notify, keepValue );
+    setColorGreen( Green, notify, keepValue );
+    setColorBlue( Blue, notify, keepValue );
 }
 
 /*
@@ -647,23 +661,23 @@ void VideoTabController::setColor( float R,
 
 float VideoTabController::superSampling() const
 {
-    auto p = ovr_settings_wrapper::getFloat(
+    auto pair = ovr_settings_wrapper::getFloat(
         vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_SupersampleScale_Float );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_superSampling;
 }
 
 bool VideoTabController::allowSupersampleOverride() const
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_SteamVR_Section,
         vr::k_pch_SteamVR_SupersampleManualOverride_Bool );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_allowSupersampleOverride;
 }
@@ -718,11 +732,11 @@ void VideoTabController::setAllowSupersampleOverride( const bool value,
 
 bool VideoTabController::motionSmoothing() const
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_MotionSmoothing_Bool );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_motionSmoothing;
 }
@@ -745,12 +759,12 @@ void VideoTabController::setMotionSmoothing( const bool value,
 
 bool VideoTabController::allowSupersampleFiltering() const
 {
-    auto p = ovr_settings_wrapper::getBool(
+    auto pair = ovr_settings_wrapper::getBool(
         vr::k_pch_SteamVR_Section,
         vr::k_pch_SteamVR_AllowSupersampleFiltering_Bool );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_allowSupersampleFiltering;
 }
@@ -780,19 +794,19 @@ void VideoTabController::setAllowSupersampleFiltering( const bool value,
 void VideoTabController::addVideoProfile( const QString name )
 {
     VideoProfile* profile = nullptr;
-    for ( auto& p : videoProfiles )
+    for ( auto& pro : videoProfiles )
     {
-        if ( p.profileName.compare( name.toStdString() ) == 0 )
+        if ( pro.profileName.compare( name.toStdString() ) == 0 )
         {
-            profile = &p;
+            profile = &pro;
             break;
         }
     }
     if ( !profile )
     {
-        auto i = videoProfiles.size();
+        auto index = videoProfiles.size();
         videoProfiles.emplace_back();
-        profile = &videoProfiles[i];
+        profile = &videoProfiles[index];
     }
     profile->profileName = name.toStdString();
 
@@ -863,12 +877,10 @@ QString VideoTabController::getVideoProfileName( const unsigned index )
 {
     if ( index >= videoProfiles.size() )
     {
-        return QString();
+        return {};
     }
-    else
-    {
-        return QString::fromStdString( videoProfiles[index].profileName );
-    }
+
+    return QString::fromStdString( videoProfiles[index].profileName );
 }
 
 /*------------------------------------------*/

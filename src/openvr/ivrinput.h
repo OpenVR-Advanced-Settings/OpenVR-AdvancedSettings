@@ -175,6 +175,7 @@ public:
     void actionSetPriorityToggle( bool value );
 
     // false is all Sets, True IS System + haptics
+    // NOLINTNEXTLINE(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
     std::atomic<bool> m_exclusiveInputSetToggle = false;
 
     vr::VRActionHandle_t leftHapticActionHandle();

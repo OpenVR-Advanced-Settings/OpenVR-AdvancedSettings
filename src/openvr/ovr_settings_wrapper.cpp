@@ -1,6 +1,9 @@
 #include "ovr_settings_wrapper.h"
-#include <QtLogging>
+
 #include <QtDebug>
+#include <QtLogging>
+#include <cmath>
+#include <utility>
 
 namespace ovr_settings_wrapper
 {
@@ -40,13 +43,13 @@ std::pair<SettingsError, bool> getBool( std::string section,
                                         std::string customErrorMsg )
 
 {
-    bool value;
-    vr::EVRSettingsError error;
+    bool value = false;
+    vr::EVRSettingsError error = {};
     value = vr::VRSettings()->GetBool(
         section.c_str(), settingsKey.c_str(), &error );
-    SettingsError e = handleErrors( settingsKey, error, customErrorMsg );
-    std::pair<SettingsError, bool> p( e, value );
-    return p;
+    SettingsError const err
+        = handleErrors( settingsKey, error, customErrorMsg );
+    return std::make_pair( err, value );
 }
 
 std::pair<SettingsError, int> getInt32( std::string section,
@@ -54,13 +57,13 @@ std::pair<SettingsError, int> getInt32( std::string section,
                                         std::string customErrorMsg )
 
 {
-    int value;
-    vr::EVRSettingsError error;
+    int value = 0;
+    vr::EVRSettingsError error = {};
     value = static_cast<int>( vr::VRSettings()->GetInt32(
         section.c_str(), settingsKey.c_str(), &error ) );
-    SettingsError e = handleErrors( settingsKey, error, customErrorMsg );
-    std::pair<SettingsError, int> p( e, value );
-    return p;
+    SettingsError const err
+        = handleErrors( settingsKey, error, customErrorMsg );
+    return std::make_pair( err, value );
 }
 
 std::pair<SettingsError, float> getFloat( std::string section,
@@ -68,14 +71,14 @@ std::pair<SettingsError, float> getFloat( std::string section,
                                           std::string customErrorMsg )
 
 {
-    float value;
-    vr::EVRSettingsError error;
+    float value = NAN;
+    vr::EVRSettingsError error = {};
     value = vr::VRSettings()->GetFloat(
         section.c_str(), settingsKey.c_str(), &error );
     handleErrors( settingsKey, error, customErrorMsg );
-    SettingsError e = handleErrors( settingsKey, error, customErrorMsg );
-    std::pair<SettingsError, float> p( e, value );
-    return p;
+    SettingsError const err
+        = handleErrors( settingsKey, error, customErrorMsg );
+    return std::make_pair( err, value );
 }
 
 std::pair<SettingsError, std::string> getString( std::string section,
@@ -83,19 +86,22 @@ std::pair<SettingsError, std::string> getString( std::string section,
                                                  std::string customErrorMsg )
 
 {
-    vr::EVRSettingsError error;
+    vr::EVRSettingsError error = {};
     // This appears to be correct value as set in CVRSettingHelper as of
     // ovr 1.11.11
     const uint32_t bufferMax = 4096;
-    char cStringOut[bufferMax];
+    std::array<char, bufferMax> cStringOut;
 
-    vr::VRSettings()->GetString(
-        section.c_str(), settingsKey.c_str(), cStringOut, bufferMax, &error );
+    vr::VRSettings()->GetString( section.c_str(),
+                                 settingsKey.c_str(),
+                                 cStringOut.data(),
+                                 bufferMax,
+                                 &error );
     handleErrors( settingsKey, error, customErrorMsg );
-    std::string value = cStringOut;
-    SettingsError e = handleErrors( settingsKey, error, customErrorMsg );
-    std::pair<SettingsError, std::string> p( e, value );
-    return p;
+    std::string const value = cStringOut.data();
+    SettingsError const err
+        = handleErrors( settingsKey, error, customErrorMsg );
+    return std::make_pair( err, value );
 }
 
 // Setters
@@ -105,7 +111,7 @@ SettingsError setBool( std::string section,
                        bool value,
                        std::string customErrorMsg )
 {
-    vr::EVRSettingsError error;
+    vr::EVRSettingsError error = {};
     vr::VRSettings()->SetBool(
         section.c_str(), settingsKey.c_str(), value, &error );
     return handleErrors( settingsKey, error, customErrorMsg );
@@ -116,7 +122,7 @@ SettingsError setInt32( std::string section,
                         int value,
                         std::string customErrorMsg )
 {
-    vr::EVRSettingsError error;
+    vr::EVRSettingsError error = {};
     vr::VRSettings()->SetInt32( section.c_str(),
                                 settingsKey.c_str(),
                                 static_cast<int32_t>( value ),
@@ -129,7 +135,7 @@ SettingsError setFloat( std::string section,
                         float value,
                         std::string customErrorMsg )
 {
-    vr::EVRSettingsError error;
+    vr::EVRSettingsError error = {};
     vr::VRSettings()->SetFloat(
         section.c_str(), settingsKey.c_str(), value, &error );
     return handleErrors( settingsKey, error, customErrorMsg );
@@ -140,15 +146,16 @@ SettingsError setString( std::string section,
                          char* value,
                          std::string customErrorMsg )
 {
-    vr::EVRSettingsError error;
+    vr::EVRSettingsError error = {};
     vr::VRSettings()->SetString(
         section.c_str(), settingsKey.c_str(), value, &error );
     return handleErrors( settingsKey, error, customErrorMsg );
 }
 
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 SettingsError removeSection( std::string section, std::string customErrorMsg )
 {
-    vr::EVRSettingsError error;
+    vr::EVRSettingsError error = {};
     vr::VRSettings()->RemoveSection( section.c_str(), &error );
     return handleErrors( "section", error, customErrorMsg );
 }
@@ -157,7 +164,7 @@ SettingsError removeKeyInSection( std::string section,
                                   std::string settingsKey,
                                   std::string customErrorMsg )
 {
-    vr::EVRSettingsError error;
+    vr::EVRSettingsError error = {};
     vr::VRSettings()->RemoveKeyInSection(
         section.c_str(), settingsKey.c_str(), &error );
     return handleErrors( settingsKey, error, customErrorMsg );

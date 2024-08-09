@@ -2,8 +2,6 @@
 #pragma once
 
 #include <QObject>
-#include "../utils/FrameRateUtils.h"
-#include "../openvr/ovr_settings_wrapper.h"
 
 class QQuickWindow;
 // application namespace
@@ -34,11 +32,10 @@ public:
 
     void dashboardLoopTick();
 
-    bool autoStartEnabled() const;
+    [[nodiscard]] bool autoStartEnabled() const;
     bool nativeChaperoneToggle();
     bool oculusSdkToggle();
 
-public slots:
     void setAutoStartEnabled( bool value, bool notify = true );
     void setNativeChaperoneToggle( bool value, bool notify = true );
     void setOculusSdkToggle( bool value, bool notify = true );

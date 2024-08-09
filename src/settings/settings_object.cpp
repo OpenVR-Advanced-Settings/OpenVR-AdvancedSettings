@@ -1,4 +1,5 @@
 #include <QSettings>
+#include <type_traits>
 #include "settings_object.h"
 
 namespace settings
@@ -35,38 +36,37 @@ void saveListToDisk( std::list<Value> values,
                      const std::string structName,
                      const std::string typeName )
 {
-    auto& s = settings::getQSettings();
+    auto& qset = settings::getQSettings();
 
-    s.beginGroup( structName.c_str() );
-    s.beginWriteArray( typeName.c_str() );
+    qset.beginGroup( structName.c_str() );
+    qset.beginWriteArray( typeName.c_str() );
 
     for ( int i = 0; !values.empty(); ++i )
     {
-        s.setArrayIndex( i );
-        if constexpr ( std::is_same<std::string, Value>::value )
+        qset.setArrayIndex( i );
+        if constexpr ( std::is_same_v<std::string, Value> )
         {
-            s.setValue( typeName.c_str(), values.front().c_str() );
+            qset.setValue( typeName.c_str(), values.front().c_str() );
         }
         else
         {
-            s.setValue( typeName.c_str(), values.front() );
+            qset.setValue( typeName.c_str(), values.front() );
         }
         values.pop_front();
     }
 
-    s.endArray();
-    s.endGroup();
+    qset.endArray();
+    qset.endGroup();
 }
 template <typename Value>
 std::list<Value> loadListFromDisk( const std::string structName,
                                    const std::string typeName )
 {
-    using std::is_same;
-    const auto isBool = is_same<bool, Value>::value;
-    const auto isInt = is_same<int, Value>::value;
-    const auto isDouble = is_same<double, Value>::value;
-    const auto isFloat = is_same<float, Value>::value;
-    const auto isString = is_same<std::string, Value>::value;
+    const auto isBool = std::is_same_v<bool, Value>;
+    const auto isInt = std::is_same_v<int, Value>;
+    const auto isDouble = std::is_same_v<double, Value>;
+    const auto isFloat = std::is_same_v<float, Value>;
+    const auto isString = std::is_same_v<std::string, Value>;
 
     static_assert( !isFloat,
                    "'float' is not supported. Use 'double' instead." );
@@ -74,72 +74,74 @@ std::list<Value> loadListFromDisk( const std::string structName,
     static_assert( isBool || isInt || isDouble || isString,
                    "Type is not supported for the settings object." );
 
-    auto& s = settings::getQSettings();
+    auto& qset = settings::getQSettings();
 
-    s.beginGroup( structName.c_str() );
-    auto size = s.beginReadArray( typeName.c_str() );
+    qset.beginGroup( structName.c_str() );
+    auto size = qset.beginReadArray( typeName.c_str() );
 
     std::list<Value> list;
-    for ( int i = 0; i < size; ++i )
+    // NOLINTNEXTLINE(altera-id-dependent-backward-branch)
+    for ( int index = 0; index < size; index++ )
     {
-        s.setArrayIndex( i );
-        auto v = s.value( typeName.c_str() );
+        qset.setArrayIndex( index );
+        auto val = qset.value( typeName.c_str() );
 
         if constexpr ( isBool )
         {
-            list.push_back( v.toBool() );
+            list.push_back( val.toBool() );
         }
         else if constexpr ( isInt )
         {
-            list.push_back( v.toInt() );
+            list.push_back( val.toInt() );
         }
         else if constexpr ( isDouble )
         {
-            list.push_back( v.toDouble() );
+            list.push_back( val.toDouble() );
         }
         else if constexpr ( isString )
         {
-            list.push_back( v.toString().toStdString() );
+            list.push_back( val.toString().toStdString() );
         }
     }
 
-    s.endArray();
-    s.endGroup();
+    qset.endArray();
+    qset.endGroup();
 
     return list;
 }
 
 settings::SettingsObjectData loadSettingsObject( std::string objName )
 {
-    settings::SettingsObjectData s;
+    settings::SettingsObjectData sod;
 
     auto boolValues = loadListFromDisk<bool>( objName, "bools" );
-    addListToObject( boolValues, s );
+    addListToObject( boolValues, sod );
 
     auto intValues = loadListFromDisk<int>( objName, "ints" );
-    addListToObject( intValues, s );
+    addListToObject( intValues, sod );
 
     auto doubleValues = loadListFromDisk<double>( objName, "doubles" );
-    addListToObject( doubleValues, s );
+    addListToObject( doubleValues, sod );
 
     auto stringValues = loadListFromDisk<std::string>( objName, "strings" );
-    addListToObject( stringValues, s );
+    addListToObject( stringValues, sod );
 
-    return s;
+    return sod;
 }
 
-void saveSettingsObject( settings::SettingsObjectData& s, std::string objName )
+void saveSettingsObject( settings::SettingsObjectData& sod,
+                         std::string objName )
 {
-    auto boolValues = createListFromObject<bool>( s );
+    auto boolValues = createListFromObject<bool>( sod );
     saveListToDisk( boolValues, objName, "bools" );
 
-    auto intValues = createListFromObject<int>( s );
+    auto intValues = createListFromObject<int>( sod );
     saveListToDisk( intValues, objName, "ints" );
 
-    auto doubleValues = createListFromObject<double>( s );
+    auto doubleValues = createListFromObject<double>( sod );
     saveListToDisk( doubleValues, objName, "doubles" );
 
-    auto stringValues = createListFromObject<std::string>( s );
+    auto stringValues = createListFromObject<std::string>( sod );
     saveListToDisk( stringValues, objName, "strings" );
 }
 
@@ -155,36 +157,36 @@ namespace settings
 {
 void saveObject( const ISettingsObject& obj )
 {
-    auto s = obj.saveSettings();
-    saveSettingsObject( s, obj.settingsName() );
+    auto sod = obj.saveSettings();
+    saveSettingsObject( sod, obj.settingsName() );
 }
 
 void loadObject( ISettingsObject& obj )
 
 {
-    auto s = loadSettingsObject( obj.settingsName() );
-    obj.loadSettings( s );
+    auto sod = loadSettingsObject( obj.settingsName() );
+    obj.loadSettings( sod );
 }
 
 void saveNumberedObject( const ISettingsObject& obj, const int slot )
 {
-    auto s = obj.saveSettings();
+    auto sod = obj.saveSettings();
     saveSettingsObject(
-        s, appendSlotNumberToSettingsName( obj.settingsName(), slot ) );
+        sod, appendSlotNumberToSettingsName( obj.settingsName(), slot ) );
 }
 
 void loadNumberedObject( ISettingsObject& obj, const int slot )
 {
-    auto s = loadSettingsObject(
+    auto sod = loadSettingsObject(
         appendSlotNumberToSettingsName( obj.settingsName(), slot ) );
-    obj.loadSettings( s );
+    obj.loadSettings( sod );
 }
 
 int getAmountOfSavedObjects( ISettingsObject& obj )
 {
-    auto& s = getQSettings();
+    auto& sod = getQSettings();
 
-    auto groups = s.childGroups();
+    auto groups = sod.childGroups();
 
     for ( int i = 1;; ++i )
     {

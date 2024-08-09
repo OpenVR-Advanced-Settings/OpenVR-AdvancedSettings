@@ -1,6 +1,8 @@
 #include "FrameRateUtils.h"
-#include <QtLogging>
+
 #include <QtDebug>
+#include <QtLogging>
+#include <cmath>
 
 namespace utils
 {
@@ -10,8 +12,8 @@ namespace utils
  * */
 unsigned int adjustUpdateRate( const unsigned int baseRefreshKey )
 {
-    double updateRate;
-    vr::EVRSettingsError vrSettingsError;
+    double updateRate = NAN;
+    vr::EVRSettingsError vrSettingsError = {};
     updateRate = static_cast<double>(
         vr::VRSettings()->GetInt32( vr::k_pch_SteamVR_Section,
                                     vr::k_pch_SteamVR_PreferredRefreshRate,
@@ -27,8 +29,8 @@ unsigned int adjustUpdateRate( const unsigned int baseRefreshKey )
     }
 
     // Assume Base 90 hz Refresh
-    double multiplier = updateRate / 90.0;
-    unsigned int adjustedRefreshKey = static_cast<unsigned int>(
+    double const multiplier = updateRate / 90.0;
+    unsigned int const adjustedRefreshKey = static_cast<unsigned int>(
         static_cast<double>( baseRefreshKey ) * multiplier );
     if ( adjustedRefreshKey < 45 )
     {

@@ -57,9 +57,9 @@ void FixFloorTabController::dashboardLoopTick(
                 state = 0;
                 return;
             }
-            else if ( !rightPose->bPoseIsValid || !rightPose->bDeviceIsConnected
-                      || rightPose->eTrackingResult
-                             != vr::TrackingResult_Running_OK )
+            if ( !rightPose->bPoseIsValid || !rightPose->bDeviceIsConnected
+                 || rightPose->eTrackingResult
+                        != vr::TrackingResult_Running_OK )
             {
                 statusMessage = "Right controller tracking problems.";
                 statusMessageTimeout = 2.0;
@@ -68,50 +68,48 @@ void FixFloorTabController::dashboardLoopTick(
                 state = 0;
                 return;
             }
+
+            // The controller with the lowest y-pos is the floor fix
+            // reference
+
+            if ( leftPose->mDeviceToAbsoluteTracking.m[1][3]
+                 < rightPose->mDeviceToAbsoluteTracking.m[1][3] )
+            {
+                referenceController = leftId;
+            }
             else
             {
-                // The controller with the lowest y-pos is the floor fix
-                // reference
-
-                if ( leftPose->mDeviceToAbsoluteTracking.m[1][3]
-                     < rightPose->mDeviceToAbsoluteTracking.m[1][3] )
-                {
-                    referenceController = leftId;
-                }
-                else
-                {
-                    referenceController = rightId;
-                }
-
-                auto& m = devicePoses[referenceController]
-                              .mDeviceToAbsoluteTracking.m;
-                tempOffsetX = static_cast<double>( m[0][3] );
-                tempOffsetY = static_cast<double>( m[1][3] );
-                tempOffsetZ = static_cast<double>( m[2][3] );
-
-                /*
-                | Intrinsic y-x'-z" rotation matrix:
-                | cr*cy+sp*sr*sy | cr*sp*sy-cy*sr | cp*sy |
-                | cp*sr          | cp*cr          |-sp    |
-                | cy*sp*sr-cr*sy | cr*cy*sp+sr*sy | cp*cy |
-
-                yaw = atan2(cp*sy, cp*cy) [pi, -pi], CCW
-                pitch = -asin(-sp) [pi/2, -pi/2]
-                roll = atan2(cp*sr, cp*cr) [pi, -pi], CW
-                */
-                tempRoll = std::atan2( static_cast<double>( m[1][0] ),
-                                       static_cast<double>( m[1][1] ) );
-                measurementCount = 1;
+                referenceController = rightId;
             }
+
+            auto& mat
+                = devicePoses[referenceController].mDeviceToAbsoluteTracking.m;
+            tempOffsetX = static_cast<double>( mat[0][3] );
+            tempOffsetY = static_cast<double>( mat[1][3] );
+            tempOffsetZ = static_cast<double>( mat[2][3] );
+
+            /*
+            | Intrinsic y-x'-z" rotation matrix:
+            | cr*cy+sp*sr*sy | cr*sp*sy-cy*sr | cp*sy |
+            | cp*sr          | cp*cr          |-sp    |
+            | cy*sp*sr-cr*sy | cr*cy*sp+sr*sy | cp*cy |
+
+            yaw = atan2(cp*sy, cp*cy) [pi, -pi], CCW
+            pitch = -asin(-sp) [pi/2, -pi/2]
+            roll = atan2(cp*sr, cp*cr) [pi, -pi], CW
+            */
+            tempRoll = std::atan2( static_cast<double>( mat[1][0] ),
+                                   static_cast<double>( mat[1][1] ) );
+            measurementCount = 1;
         }
         else
         {
             measurementCount++;
-            auto& m
+            auto& mat
                 = devicePoses[referenceController].mDeviceToAbsoluteTracking.m;
 
-            double rollDiff = std::atan2( static_cast<double>( m[1][0] ),
-                                          static_cast<double>( m[1][1] ) )
+            double rollDiff = std::atan2( static_cast<double>( mat[1][0] ),
+                                          static_cast<double>( mat[1][1] ) )
                               - tempRoll;
             if ( rollDiff > M_PI )
             {
@@ -201,7 +199,7 @@ void FixFloorTabController::dashboardLoopTick(
                 qInfo() << "Fix Floor and adjust space center: Floor Offset = ["
                         << floorOffsetX << ", " << floorOffsetY << ", "
                         << floorOffsetZ << "]";
-                float offset[3] = { 0, 0, 0 };
+                std::array<float, 3> offset = { 0, 0, 0 };
                 offset[1] = floorOffsetY;
                 if ( state == 2 )
                 {
@@ -234,14 +232,15 @@ int FixFloorTabController::getControllerType(
     big. We are just going to set 64 as an arbitrary size, and print error to
     log if too small
     */
-    char controllerTypeString[maxLength];
-    vr::ETrackedPropertyError error;
+    std::array<char, maxLength> controllerTypeStringData;
+    vr::ETrackedPropertyError error = {};
     auto stringLength = vr::VRSystem()->GetStringTrackedDeviceProperty(
         controllerRole,
         vr::Prop_ControllerType_String,
-        controllerTypeString,
+        controllerTypeStringData.data(),
         maxLength,
         &error );
+    std::string const controllerTypeString = controllerTypeStringData.data();
     if ( error != vr::TrackedProp_Success )
     {
         qCritical() << "Error With Controller Type: "
@@ -251,11 +250,11 @@ int FixFloorTabController::getControllerType(
     {
         qCritical() << "Device Index not valid";
     }
-    else if ( strcmp( controllerTypeString, "knuckles" ) == 0 )
+    else if ( controllerTypeString == "knuckles" )
     {
         return Controller_Knuckles;
     }
-    else if ( strcmp( controllerTypeString, "vive_controller" ) == 0 )
+    else if ( controllerTypeString == "vive_controller" )
     {
         return Controller_Wand;
     }
@@ -307,16 +306,17 @@ void FixFloorTabController::recenterClicked()
 
 void FixFloorTabController::undoFixFloorClicked()
 {
-    float off[3] = { -floorOffsetX, -floorOffsetY, -floorOffsetZ };
-    parent->m_moveCenterTabController.addOffset( off );
-    qInfo() << "Fix Floor: Undo Floor Offset = [" << -floorOffsetX << ", "
-            << -floorOffsetY << ", " << -floorOffsetZ << "]";
-    floorOffsetY = 0.0f;
-    statusMessage = "Undo ... OK";
-    statusMessageTimeout = 1.0;
-    emit statusMessageSignal();
-    setCanUndo( false );
-    parent->m_moveCenterTabController.zeroOffsets();
+  std::array<float, 3> const off = {-floorOffsetX, -floorOffsetY,
+                                    -floorOffsetZ};
+  parent->m_moveCenterTabController.addOffset(off);
+  qInfo() << "Fix Floor: Undo Floor Offset = [" << -floorOffsetX << ", "
+          << -floorOffsetY << ", " << -floorOffsetZ << "]";
+  floorOffsetY = 0.0f;
+  statusMessage = "Undo ... OK";
+  statusMessageTimeout = 1.0;
+  emit statusMessageSignal();
+  setCanUndo(false);
+  parent->m_moveCenterTabController.zeroOffsets();
 }
 
 } // namespace advsettings

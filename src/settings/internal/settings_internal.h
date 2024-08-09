@@ -25,17 +25,18 @@ struct QtInfo
     const std::string settingName;
 };
 
-[[nodiscard]] QSettings& getQSettings()
+[[nodiscard]] inline QSettings& getQSettings()
 {
-    static QSettings s( QSettings::IniFormat,
-                        QSettings::UserScope,
-                        application_strings::applicationOrganizationName,
-                        application_strings::applicationName );
+    static QSettings settings( QSettings::IniFormat,
+                               QSettings::UserScope,
+                               application_strings::applicationOrganizationName,
+                               application_strings::applicationName );
 
-    return s;
+    return settings;
 }
 
-[[nodiscard]] std::string getQtCategoryName( const SettingCategory category )
+[[nodiscard]] inline std::string
+    getQtCategoryName( const SettingCategory category )
 {
     switch ( category )
     {
@@ -63,46 +64,43 @@ struct QtInfo
     return "no-value";
 }
 
-[[nodiscard]] QVariant getQtSetting( const SettingCategory category,
-                                     const std::string qtSettingName )
+[[nodiscard]] inline QVariant getQtSetting( const SettingCategory category,
+                                            const std::string qtSettingName )
 {
     getQSettings().beginGroup( getQtCategoryName( category ).c_str() );
 
-    const auto v = getQSettings().value( qtSettingName.c_str() );
+    auto val = getQSettings().value( qtSettingName.c_str() );
 
     getQSettings().endGroup();
 
-    return v;
+    return val;
 }
 
-void saveQtSetting( const SettingCategory category,
-                    const std::string qtSettingName,
-                    const QVariant value )
+inline void saveQtSetting( const SettingCategory category,
+                           const std::string qtSettingName,
+                           const QVariant value )
 {
     getQSettings().beginGroup( getQtCategoryName( category ).c_str() );
     getQSettings().setValue( qtSettingName.c_str(), value );
     getQSettings().endGroup();
 }
 
-template <typename Value> [[nodiscard]] bool isValidQVariant( const QVariant v )
+template <typename Value>
+[[nodiscard]] bool isValidQVariant( const QVariant var )
 {
-    auto savedSettingIsValid = v.isValid() && !v.isNull();
+    auto savedSettingIsValid = var.isValid() && !var.isNull();
 
-    if constexpr ( std::is_same<Value, std::string>::value )
+    if constexpr ( std::is_same_v<Value, std::string> )
     {
         // Special case for std::string because Qt refuses to recognize it
-        savedSettingIsValid = savedSettingIsValid && v.canConvert<QString>();
+        savedSettingIsValid = savedSettingIsValid && var.canConvert<QString>();
     }
     else
     {
-        savedSettingIsValid = savedSettingIsValid && v.canConvert<Value>();
+        savedSettingIsValid = savedSettingIsValid && var.canConvert<Value>();
     }
 
-    if ( savedSettingIsValid )
-    {
-        return true;
-    }
-    return false;
+    return savedSettingIsValid;
 }
 
 } // namespace settings

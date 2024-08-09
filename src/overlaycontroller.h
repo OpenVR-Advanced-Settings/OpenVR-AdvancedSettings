@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <openvr.h>
 #include <QtCore/QtCore>
 // because of incompatibilities with QtOpenGL and GLEW we need to cherry pick
@@ -27,8 +26,6 @@
 #include <optional>
 #include <rhi/qrhi.h>
 
-#include "openvr/openvr_init.h"
-
 #include "utils/ChaperoneUtils.h"
 
 #include "tabcontrollers/SteamVRTabController.h"
@@ -45,8 +42,6 @@
 #include "openvr/ivrinput.h"
 
 #include "alarm_clock/vr_alarm.h"
-
-#include "utils/update_rate.h"
 
 namespace application_strings
 {
@@ -169,6 +164,8 @@ private:
     QJsonObject m_remoteVersionJsonObject;
 
 public:
+    // NOLINTBEGIN(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
+
     // I know it's an ugly hack to make them public to enable external
     // access, but I am too lazy to implement getters.
     SteamVRTabController m_steamVRTabController;
@@ -182,6 +179,7 @@ public:
     VideoTabController m_videoTabController;
     RotationTabController m_rotationTabController;
     bool m_incomingReset = false;
+    // NOLINTEND(cppcoreguidelines-non-private-member-variables-in-classes,misc-non-private-member-variables-in-classes)
 
 private:
     QPointF getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
@@ -206,7 +204,7 @@ private:
 public:
     void SetOverlayFromQRhiTexture( QRhiTexture& tex );
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
-    virtual ~OverlayController();
+    ~OverlayController() override;
 
     void Shutdown();
     Q_INVOKABLE void exitApp();
@@ -228,7 +226,8 @@ public:
     void AddOffsetToCollisionBounds( unsigned axisId,
                                      float offset,
                                      bool commit = true );
-    void AddOffsetToCollisionBounds( float offset[3], bool commit = true );
+    void AddOffsetToCollisionBounds( std::array<float, 3> offset,
+                                     bool commit = true );
     void RotateCollisionBounds( float angle,
                                 bool commit = true ); // around y axis
 
@@ -257,21 +256,22 @@ public:
                         vr::VREvent_t* pEvent );
     void mainEventLoop();
 
-    bool crashRecoveryDisabled() const;
-    bool exclusiveInputEnabled() const;
-    bool autoApplyChaperoneEnabled() const;
-    bool enableDebug() const;
-    bool disableVersionCheck() const;
-    bool newVersionDetected() const;
-    bool vsyncDisabled() const;
-    QString versionCheckText() const;
-    int customTickRateMs() const;
-    int debugState() const;
+    [[nodiscard]] bool crashRecoveryDisabled() const;
+    [[nodiscard]] bool exclusiveInputEnabled() const;
+    [[nodiscard]] bool autoApplyChaperoneEnabled() const;
+    [[nodiscard]] bool enableDebug() const;
+    [[nodiscard]] bool disableVersionCheck() const;
+    [[nodiscard]] bool newVersionDetected() const;
+    [[nodiscard]] bool vsyncDisabled() const;
+    [[nodiscard]] QString versionCheckText() const;
+    [[nodiscard]] int customTickRateMs() const;
+    [[nodiscard]] int debugState() const;
     std::string autoApplyChaperoneName();
 
-    double soundVolume() const;
-    bool desktopModeToggle() const;
+    [[nodiscard]] double soundVolume() const;
+    [[nodiscard]] bool desktopModeToggle() const;
 
+    // NOLINTNEXTLINE(readability-redundant-access-specifiers)
 public slots:
     void renderOverlay();
     void OnRenderRequest();

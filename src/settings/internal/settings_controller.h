@@ -1,5 +1,4 @@
 #pragma once
-#include <assert.h>
 #include <array>
 #include <vector>
 #include <QtLogging>
@@ -14,17 +13,16 @@ namespace settings
 {
 template <typename Value> std::string valueToString( Value value )
 {
-    using std::is_same;
-    if constexpr ( is_same<bool, Value>::value )
+    if constexpr ( std::is_same_v<bool, Value> )
     {
         return value ? "true" : "false";
     }
-    else if constexpr ( is_same<double, Value>::value
-                        || is_same<int, Value>::value )
+    else if constexpr ( std::is_same_v<double, Value>
+                        || std::is_same_v<int, Value> )
     {
         return std::to_string( value );
     }
-    if constexpr ( is_same<std::string, Value>::value )
+    if constexpr ( std::is_same_v<std::string, Value> )
     {
         return value;
     }
@@ -32,20 +30,20 @@ template <typename Value> std::string valueToString( Value value )
 
 template <int ArraySize, typename Value>
 [[nodiscard]] std::string
-    returnSettingsAndValues( std::array<Value, ArraySize> v )
+    returnSettingsAndValues( std::array<Value, ArraySize> vals )
 {
-    std::string s = "default";
+    std::string str = "default";
 
-    for ( const auto& setting : v )
+    for ( const auto& setting : vals )
     {
-        s += setting.qtInfo().settingName + ": '"
-             + valueToString( setting.value() ) + "' | ";
+        str += setting.qtInfo().settingName + ": '"
+               + valueToString( setting.value() ) + "' | ";
     }
 
-    return s;
+    return str;
 }
 template <typename Enum, int ArraySize, typename Value>
-void verifySettings( std::array<Value, ArraySize> v ) noexcept
+void verifySettings( std::array<Value, ArraySize> vals ) noexcept
 {
     for ( int settingIndex = 0; settingIndex < ( ArraySize - 1 );
           ++settingIndex )
@@ -55,13 +53,13 @@ void verifySettings( std::array<Value, ArraySize> v ) noexcept
         // Also ensures that there are no mising values
 
         const auto currentSetting
-            = v[static_cast<std::size_t>( settingIndex )].setting();
+            = vals[static_cast<std::size_t>( settingIndex )].setting();
 
         const auto settingCorrectlyLocated
             = currentSetting == static_cast<Enum>( settingIndex );
         if ( !settingCorrectlyLocated )
         {
-            const auto enumName = typeid( Enum ).name();
+            const auto* const enumName = typeid( Enum ).name();
 
             const auto enumSettingNumber = static_cast<int>( currentSetting );
 
@@ -71,6 +69,7 @@ void verifySettings( std::array<Value, ArraySize> v ) noexcept
                         << "'. Exiting "
                            "with error code "
                         << ReturnErrorCode::SETTING_INCORRECT_INDEX << ".";
+            // NOLINTNEXTLINE(concurrency-mt-unsafe)
             exit( ReturnErrorCode::SETTING_INCORRECT_INDEX );
         }
     }
@@ -90,21 +89,21 @@ public:
         verifySettings<IntSetting, intSettingsSize>( m_intSettings );
     }
 
-    std::string getSettingsAndValues() const noexcept
+    [[nodiscard]] std::string getSettingsAndValues() const noexcept
     {
-        std::string s;
-        s += returnSettingsAndValues<boolSettingSize>( m_boolSettings );
+        std::string str;
+        str += returnSettingsAndValues<boolSettingSize>( m_boolSettings );
 
-        s += returnSettingsAndValues<doubleSettingSize>( m_doubleSettings );
+        str += returnSettingsAndValues<doubleSettingSize>( m_doubleSettings );
 
-        s += returnSettingsAndValues<stringSettingsSize>( m_stringSettings );
+        str += returnSettingsAndValues<stringSettingsSize>( m_stringSettings );
 
-        s += returnSettingsAndValues<intSettingsSize>( m_intSettings );
+        str += returnSettingsAndValues<intSettingsSize>( m_intSettings );
 
-        return s;
+        return str;
     }
 
-    std::string getSettingsFileName() const noexcept
+    [[nodiscard]] std::string getSettingsFileName() const noexcept
     {
         return getQSettings().fileName().toStdString();
     }
@@ -116,7 +115,7 @@ public:
             return;
         }
 
-        for ( const auto setting : m_changedSettings )
+        for ( auto* const setting : m_changedSettings )
         {
             setting->saveValue();
         }
@@ -174,31 +173,31 @@ public:
 
         if constexpr ( std::is_same<Setting, BoolSetting>::value )
         {
-            auto& s = m_boolSettings[index];
-            s.setValue( value );
+            auto& sett = m_boolSettings[index];
+            sett.setValue( value );
 
-            m_changedSettings.push_back( &s );
+            m_changedSettings.push_back( &sett );
         }
         else if constexpr ( std::is_same<Setting, DoubleSetting>::value )
         {
-            auto& s = m_doubleSettings[index];
-            s.setValue( value );
+            auto& sett = m_doubleSettings[index];
+            sett.setValue( value );
 
-            m_changedSettings.push_back( &s );
+            m_changedSettings.push_back( &sett );
         }
         else if constexpr ( std::is_same<Setting, IntSetting>::value )
         {
-            auto& s = m_intSettings[index];
-            s.setValue( value );
+            auto& sett = m_intSettings[index];
+            sett.setValue( value );
 
-            m_changedSettings.push_back( &s );
+            m_changedSettings.push_back( &sett );
         }
         else if constexpr ( std::is_same<Setting, StringSetting>::value )
         {
-            auto& s = m_stringSettings[index];
-            s.setValue( value );
+            auto& sett = m_stringSettings[index];
+            sett.setValue( value );
 
-            m_changedSettings.push_back( &s );
+            m_changedSettings.push_back( &sett );
         }
     }
 

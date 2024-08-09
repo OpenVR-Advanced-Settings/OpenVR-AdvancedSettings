@@ -1,10 +1,7 @@
 #pragma once
 
 #include <openvr.h>
-#include <iostream>
 #include <string>
-#include <utility>
-#include <map>
 
 /* Wrapper For OpenVR's IVR application class, allows us to do our error logging
  * while also minimizing code

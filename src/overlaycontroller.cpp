@@ -18,13 +18,14 @@
 #include <QMessageBox>
 #include <QtLogging>
 #include <QtDebug>
-#include <iostream>
 #include <cmath>
 #include <openvr.h>
 #include "openvr/ovr_overlay_wrapper.h"
+#include "openvr/ovr_settings_wrapper.h"
 #include "utils/Matrix.h"
 #include "keyboard_input/input_sender.h"
 #include "settings/settings.h"
+#include "utils/update_rate.h"
 #include <qapplication.h>
 #include <qlogging.h>
 #include <qnamespace.h>
@@ -40,7 +41,7 @@ int verifyCustomTickRate( const int tickRate )
     {
         return 1;
     }
-    else if ( tickRate > k_maxCustomTickRate )
+    if ( tickRate > k_maxCustomTickRate )
     {
         return k_maxCustomTickRate;
     }
@@ -59,24 +60,24 @@ OverlayController::OverlayController( bool desktopMode,
     // Arbitrarily chosen Max Length of Directory path, should be sufficient for
     // Any set-up
     const uint32_t maxLength = 16192;
-    uint32_t requiredLength;
+    uint32_t requiredLength = 0;
 
-    char tempRuntimePath[maxLength];
-    bool pathIsGood
-        = vr::VR_GetRuntimePath( tempRuntimePath, maxLength, &requiredLength );
+    std::array<char, maxLength> tempRuntimePath;
+    bool const pathIsGood = vr::VR_GetRuntimePath(
+        tempRuntimePath.data(), maxLength, &requiredLength );
 
     // Throw Error If over 16k characters in path string
     if ( !pathIsGood )
     {
         qCritical() << "Error Finding VR Runtime Path, Attempting Recovery: ";
-        uint32_t maxLengthRe = requiredLength;
+        uint32_t const maxLengthRe = requiredLength;
         qInfo() << "Open VR reporting Required path length of: " << maxLengthRe;
     }
 
-    m_runtimePathUrl = QUrl::fromLocalFile( tempRuntimePath );
+    m_runtimePathUrl = QUrl::fromLocalFile( tempRuntimePath.data() );
     qInfo() << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
-    const double initVol = soundVolume();
+    const float initVol = static_cast<float>( soundVolume() );
     m_activationSoundEffect.setSource( QUrl( "qrc:/sounds/click.wav" ) );
     m_activationSoundEffect.setVolume( initVol );
 
@@ -322,6 +323,7 @@ void OverlayController::exitApp()
     QApplication::exit();
 
     qInfo() << "All systems exited.";
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     exit( EXIT_SUCCESS );
     // Does not fallthrough
 }
@@ -362,7 +364,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
 {
     if ( !m_desktopMode )
     {
-        vr::VROverlayError overlayError
+        vr::VROverlayError const overlayError
             = vr::VROverlay()->CreateDashboardOverlay(
                 key.c_str(),
                 name.c_str(),
@@ -454,7 +456,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                               static_cast<int>( quickItem->width() ),
                               static_cast<int>( quickItem->height() ) );
 
-        vr::HmdVector2_t vecWindowSize
+        vr::HmdVector2_t const vecWindowSize
             = { static_cast<float>( quickItem->width() ),
                 static_cast<float>( quickItem->height() ) };
         vr::VROverlay()->SetOverlayMouseScale( m_ulOverlayHandle,
@@ -528,6 +530,7 @@ void OverlayController::SetOverlayFromQRhiTexture( QRhiTexture& tex )
     {
     case QRhi::OpenGLES2:
     {
+        // NOLINTNEXTLINE(performance-no-int-to-ptr)
         vrTex.handle = reinterpret_cast<void*>( tex.nativeTexture().object );
         vrTex.eType = vr::TextureType_OpenGL;
         vrTex.eColorSpace = vr::ColorSpace_Auto;
@@ -548,7 +551,7 @@ void OverlayController::SetOverlayFromQRhiTexture( QRhiTexture& tex )
             .m_nQueueFamilyIndex = vulkan_handles->gfxQueueIdx,
             .m_nWidth = static_cast<uint32_t>( tex.pixelSize().width() ),
             .m_nHeight = static_cast<uint32_t>( tex.pixelSize().height() ),
-            .m_nFormat = static_cast<uint32_t>(tex.format()),
+            .m_nFormat = static_cast<uint32_t>( tex.format() ),
             .m_nSampleCount = static_cast<uint32_t>( tex.sampleCount() ),
         };
         vrTex.handle = &vulkan;
@@ -591,21 +594,19 @@ bool OverlayController::pollNextEvent( vr::VROverlayHandle_t ulOverlayHandle,
     {
         return vr::VRSystem()->PollNextEvent( pEvent, sizeof( vr::VREvent_t ) );
     }
-    else
-    {
-        return vr::VROverlay()->PollNextOverlayEvent(
-            ulOverlayHandle, pEvent, sizeof( vr::VREvent_t ) );
-    }
+
+    return vr::VROverlay()->PollNextOverlayEvent(
+        ulOverlayHandle, pEvent, sizeof( vr::VREvent_t ) );
 }
 
 QPointF OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
 {
-    float y = mouse.y;
+    float mouse_y = mouse.y;
 #ifdef __linux__
-    float h = static_cast<float>( m_window.height() );
-    y = h - y;
+    float const height = static_cast<float>( m_window.height() );
+    mouse_y = height - mouse_y;
 #endif
-    return { mouse.x, y };
+    return { static_cast<double>(mouse.x), static_cast<double>(mouse_y) };
 }
 
 void OverlayController::processMediaKeyBindings()
@@ -702,7 +703,7 @@ void OverlayController::processPushToTalkBindings()
         }
         // strictly speaking this is not the most elegant solution, but
         // should work well enough.
-        else if ( !pushToTalkEnabled )
+        if ( !pushToTalkEnabled )
         {
             m_audioTabController.setMicMuted( false );
         }
@@ -881,7 +882,7 @@ std::string OverlayController::autoApplyChaperoneName()
 
 Q_INVOKABLE void OverlayController::setAutoChapProfileName( int index )
 {
-    std::string value
+    std::string const value
         = m_chaperoneTabController.getChaperoneProfileName( index )
               .toStdString();
     settings::setSetting(
@@ -1111,7 +1112,8 @@ void OverlayController::mainEventLoop()
         {
         case vr::VREvent_MouseMove:
         {
-            QPointF ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
+            QPointF const ptNewMouse
+                = getMousePositionForEvent( vrEvent.data.mouse );
             if ( ptNewMouse != m_ptLastMouse )
             {
                 QMouseEvent mouseEvent( QEvent::MouseMove,
@@ -1129,8 +1131,9 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_MouseButtonDown:
         {
-            QPointF ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
-            Qt::MouseButton button
+            QPointF const ptNewMouse
+                = getMousePositionForEvent( vrEvent.data.mouse );
+            Qt::MouseButton const button
                 = vrEvent.data.mouse.button == vr::VRMouseButton_Right
                       ? Qt::RightButton
                       : Qt::LeftButton;
@@ -1147,8 +1150,9 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_MouseButtonUp:
         {
-            QPointF ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
-            Qt::MouseButton button
+            QPointF const ptNewMouse
+                = getMousePositionForEvent( vrEvent.data.mouse );
+            Qt::MouseButton const button
                 = vrEvent.data.mouse.button == vr::VRMouseButton_Right
                       ? Qt::RightButton
                       : Qt::LeftButton;
@@ -1197,6 +1201,7 @@ void OverlayController::mainEventLoop()
             exitApp();
             // Won't fallthrough, but also exitApp() wont, but QT won't
             // acknowledge
+            // NOLINTNEXTLINE(concurrency-mt-unsafe)
             exit( EXIT_SUCCESS );
         }
 
@@ -1217,9 +1222,9 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_KeyboardDone:
         {
-            char keyboardBuffer[1024];
-            vr::VROverlay()->GetKeyboardText( keyboardBuffer, 1024 );
-            emit keyBoardInputSignal( QString( keyboardBuffer ),
+            std::array<char, 1024> keyboardBuffer;
+            vr::VROverlay()->GetKeyboardText( keyboardBuffer.data(), 1024 );
+            emit keyBoardInputSignal( QString( keyboardBuffer.data() ),
                                       static_cast<unsigned long>(
                                           vrEvent.data.keyboard.uUserValue ) );
         }
@@ -1241,9 +1246,9 @@ void OverlayController::mainEventLoop()
         // issues.
         case vr::VREvent_ChaperoneUniverseHasChanged:
         {
-            uint64_t previousUniverseId
+            uint64_t const previousUniverseId
                 = vrEvent.data.chaperone.m_nPreviousUniverse;
-            uint64_t currentUniverseId
+            uint64_t const currentUniverseId
                 = vrEvent.data.chaperone.m_nCurrentUniverse;
             qInfo() << "(VREvent) ChaperoneUniverseHasChanged... Previous : "
                     << previousUniverseId << " Current:" << currentUniverseId;
@@ -1279,11 +1284,12 @@ void OverlayController::mainEventLoop()
         m_moveCenterTabController.incomingZeroReset();
     }
 
-    vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];
+    std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount>
+        devicePoses;
     vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
         vr::TrackingUniverseStanding,
         0.0f,
-        devicePoses,
+        devicePoses.data(),
         vr::k_unMaxTrackedDeviceCount );
 
     // HMD/Controller Velocities
@@ -1312,13 +1318,13 @@ void OverlayController::mainEventLoop()
             = std::sqrt( vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2] );
     }
     auto universe = vr::VRCompositor()->GetTrackingSpace();
-    m_moveCenterTabController.eventLoopTick( universe, devicePoses );
+    m_moveCenterTabController.eventLoopTick( universe, devicePoses.data() );
     m_utilitiesTabController.eventLoopTick();
     m_statisticsTabController.eventLoopTick(
-        devicePoses, leftSpeed, rightSpeed );
-    m_chaperoneTabController.eventLoopTick( universe, devicePoses );
+        devicePoses.data(), leftSpeed, rightSpeed );
+    m_chaperoneTabController.eventLoopTick( universe, devicePoses.data() );
     m_audioTabController.eventLoopTick();
-    m_rotationTabController.eventLoopTick( devicePoses );
+    m_rotationTabController.eventLoopTick( devicePoses.data() );
 
     m_alarm.eventLoopTick();
 
@@ -1326,7 +1332,7 @@ void OverlayController::mainEventLoop()
     {
         m_settingsTabController.dashboardLoopTick();
         m_steamVRTabController.dashboardLoopTick();
-        m_fixFloorTabController.dashboardLoopTick( devicePoses );
+        m_fixFloorTabController.dashboardLoopTick( devicePoses.data() );
         m_videoTabController.dashboardLoopTick();
         m_chaperoneTabController.dashboardLoopTick();
     }
@@ -1342,7 +1348,8 @@ void OverlayController::mainEventLoop()
             {
                 m_window.update();
             }
-            break;
+            default:
+                break;
             }
         }
     }
@@ -1375,7 +1382,7 @@ void OverlayController::RotateUniverseCenter(
 
         vr::HmdMatrix34_t rotMat;
         vr::HmdMatrix34_t newPos;
-        utils::initRotationMatrix( rotMat, 1, yAngle );
+        utils::initRotationMatrix( rotMat, utils::MatrixAxis_Y, yAngle );
         utils::matMul33( newPos, rotMat, curPos );
         newPos.m[0][3] = curPos.m[0][3];
         newPos.m[1][3] = curPos.m[1][3];
@@ -1406,12 +1413,12 @@ void OverlayController::AddOffsetToCollisionBounds( unsigned axisId,
                                                     float offset,
                                                     bool commit )
 {
-    float offsetArray[3] = { 0, 0, 0 };
+    std::array<float, 3> offsetArray = { 0, 0, 0 };
     offsetArray[axisId] = offset;
     AddOffsetToCollisionBounds( offsetArray, commit );
 }
 
-void OverlayController::AddOffsetToCollisionBounds( float offset[3],
+void OverlayController::AddOffsetToCollisionBounds( std::array<float, 3> offset,
                                                     bool commit )
 {
     // Apparently Valve sanity-checks the y-coordinates of the collision
@@ -1430,30 +1437,29 @@ void OverlayController::AddOffsetToCollisionBounds( float offset[3],
         nullptr, &collisionBoundsCount );
     if ( collisionBoundsCount > 0 )
     {
-        vr::HmdQuad_t* collisionBounds
-            = new vr::HmdQuad_t[collisionBoundsCount];
+        std::vector<vr::HmdQuad_t> collisionBounds;
+        collisionBounds.resize( collisionBoundsCount );
         vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
-            collisionBounds, &collisionBoundsCount );
-        for ( unsigned b = 0; b < collisionBoundsCount; b++ )
+            collisionBounds.data(), &collisionBoundsCount );
+        for ( auto& bounds : collisionBounds )
         {
-            for ( unsigned c = 0; c < 4; c++ )
+            for ( unsigned cIndex = 0; cIndex < 4; cIndex++ )
             {
-                collisionBounds[b].vCorners[c].v[0] += offset[0];
+                bounds.vCorners[cIndex].v[0] += offset[0];
 
                 // keep the lower corners on the ground so it doesn't reset
                 // all y cooridinates. this causes the caperone to "grow" up
                 // instead of not moving up at all. note that Valve still
                 // forces a minimum height so we can't go into the ground
-                if ( collisionBounds[b].vCorners[c].v[1] != 0 )
+                if ( bounds.vCorners[cIndex].v[1] != 0 )
                 {
-                    collisionBounds[b].vCorners[c].v[1] += offset[1];
+                    bounds.vCorners[cIndex].v[1] += offset[1];
                 }
-                collisionBounds[b].vCorners[c].v[2] += offset[2];
+                bounds.vCorners[cIndex].v[2] += offset[2];
             }
         }
         vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
-            collisionBounds, collisionBoundsCount );
-        delete[] collisionBounds;
+            collisionBounds.data(), collisionBoundsCount );
     }
     if ( commit && collisionBoundsCount > 0 )
     {
@@ -1474,26 +1480,25 @@ void OverlayController::RotateCollisionBounds( float angle, bool commit )
         nullptr, &collisionBoundsCount );
     if ( collisionBoundsCount > 0 )
     {
-        vr::HmdQuad_t* collisionBounds
-            = new vr::HmdQuad_t[collisionBoundsCount];
+        std::vector<vr::HmdQuad_t> collisionBounds;
+        collisionBounds.resize( collisionBoundsCount );
         vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
-            collisionBounds, &collisionBoundsCount );
+            collisionBounds.data(), &collisionBoundsCount );
 
         vr::HmdMatrix34_t rotMat;
-        utils::initRotationMatrix( rotMat, 1, angle );
-        for ( unsigned b = 0; b < collisionBoundsCount; b++ )
+        utils::initRotationMatrix( rotMat, utils::MatrixAxis_Y, angle );
+        for ( auto& bounds : collisionBounds )
         {
-            for ( unsigned c = 0; c < 4; c++ )
+            for ( unsigned cIndex = 0; cIndex < 4; cIndex++ )
             {
-                auto& corner = collisionBounds[b].vCorners[c];
+                auto& corner = bounds.vCorners[cIndex];
                 vr::HmdVector3_t newVal;
                 utils::matMul33( newVal, rotMat, corner );
                 corner = newVal;
             }
         }
         vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
-            collisionBounds, collisionBoundsCount );
-        delete[] collisionBounds;
+            collisionBounds.data(), collisionBoundsCount );
     }
     if ( commit && collisionBoundsCount > 0 )
     {
@@ -1510,7 +1515,7 @@ bool OverlayController::isPreviousShutdownSafe()
 
 QString OverlayController::getVersionString()
 {
-    return QString( application_strings::applicationVersionString );
+    return { application_strings::applicationVersionString };
 }
 
 QUrl OverlayController::getVRRuntimePathUrl()
@@ -1559,17 +1564,18 @@ void OverlayController::setKeyboardPos()
     vr::VROverlay()->SetKeyboardPositionForOverlay( m_ulOverlayHandle, empty );
 }
 
-void OverlayController::setSoundVolume( double value, bool notify )
+void OverlayController::setSoundVolume( double dvalue, bool notify )
 {
+    auto value = static_cast<float>( dvalue );
     m_activationSoundEffect.setVolume( value );
     m_focusChangedSoundEffect.setVolume( value );
     // leaving alarm sound alone for now as chaperone warning setting effects it
     // m_alarm01SoundEffect.setVolume( value);
     settings::setSetting( settings::DoubleSetting::APPLICATION_appVolume,
-                          value );
+                          dvalue );
     if ( notify )
     {
-        emit soundVolumeChanged( value );
+        emit soundVolumeChanged( dvalue );
     }
 }
 
@@ -1629,7 +1635,7 @@ void OverlayController::playAlarm01Sound( bool loop )
 
 void OverlayController::setAlarm01SoundVolume( float vol )
 {
-    m_alarm01SoundEffect.setVolume( static_cast<double>( vol ) );
+    m_alarm01SoundEffect.setVolume( vol );
 }
 
 void OverlayController::cancelAlarm01Sound()
@@ -1641,7 +1647,7 @@ void OverlayController::OnNetworkReply( QNetworkReply* reply )
 {
     if ( reply->error() == QNetworkReply::NoError )
     {
-        QByteArray replyByteData = reply->readAll();
+        QByteArray const replyByteData = reply->readAll();
         qInfo() << "Version Check: Recieved Data: " << replyByteData;
         QJsonParseError parseError;
         m_remoteVersionJsonDocument

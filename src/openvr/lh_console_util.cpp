@@ -23,12 +23,12 @@ bool LHCUtil::FindAll()
 bool LHCUtil::FindAllRX()
 {
     QProcess* lhProcess = new QProcess();
-    QString program = "lighthouse_console.exe";
+    QString const program = "lighthouse_console.exe";
     lhProcess->start( path_, QStringList() << "" );
     lhProcess->waitForFinished();
 
-    QString output = QString( lhProcess->readAllStandardOutput() );
-    QStringList outputLines
+    QString const output = QString( lhProcess->readAllStandardOutput() );
+    QStringList const outputLines
         = output.split( QRegularExpression( "[\r\n]" ), Qt::SkipEmptyParts );
     bool RecieverStart = false;
 
@@ -61,8 +61,8 @@ bool LHCUtil::FindConnectedTX( QString RXSerial )
     lhProcess->start( path_, QStringList() << "/serial" << RXSerial << "exit" );
     lhProcess->waitForFinished();
 
-    QString output = QString( lhProcess->readAllStandardOutput() );
-    QStringList outputLines
+    QString const output = QString( lhProcess->readAllStandardOutput() );
+    QStringList const outputLines
         = output.split( QRegularExpression( "[\r\n]" ), Qt::SkipEmptyParts );
     // std::vector<std::string> OutputLines
     //   = exec( ( "\"" + path_ + "\" /serial " + RXSerial + " exit" ).c_str()
@@ -74,7 +74,7 @@ bool LHCUtil::FindConnectedTX( QString RXSerial )
         if ( outputLine.contains( "Connected to receiver" ) )
         {
             auto splitList = outputLine.split( ":" );
-            QString TXSerial = splitList[0];
+            QString const TXSerial = splitList[0];
             if ( TXSerial == "lighthouse_console" )
             {
                 lhConFound = true;

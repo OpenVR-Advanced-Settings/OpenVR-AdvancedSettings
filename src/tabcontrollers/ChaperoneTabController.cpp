@@ -4,9 +4,10 @@
 #include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../settings/settings.h"
-#include "../utils/Matrix.h"
-#include "../quaternion/quaternion.h"
 #include "../utils/update_rate.h"
+#include "openvr/ovr_overlay_wrapper.h"
+#include "openvr/ovr_settings_wrapper.h"
+#include <openvr.h>
 #include <cmath>
 
 // application namespace
@@ -89,7 +90,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     // Switch to Beginner Mode
     if ( isChaperoneSwitchToBeginnerEnabled() )
     {
-        float activationDistance = chaperoneSwitchToBeginnerDistance();
+        float const activationDistance = chaperoneSwitchToBeginnerDistance();
 
         if ( distance <= activationDistance && m_isHMDActive
              && !m_chaperoneSwitchToBeginnerActive )
@@ -117,7 +118,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
 
     if ( isChaperoneHapticFeedbackEnabled() )
     {
-        float activationDistance = chaperoneHapticFeedbackDistance();
+        float const activationDistance = chaperoneHapticFeedbackDistance();
 
         if ( distance <= activationDistance && proxSensorOverrideState )
         {
@@ -185,7 +186,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     if ( isChaperoneAlarmSoundEnabled() )
     {
         qWarning() << "In alarm";
-        float activationDistance = chaperoneAlarmSoundDistance();
+        float const activationDistance = chaperoneAlarmSoundDistance();
 
         if ( distance <= activationDistance && proxSensorOverrideState )
         {
@@ -220,7 +221,7 @@ void ChaperoneTabController::handleChaperoneWarnings( float distance )
     // Show Dashboard
     if ( isChaperoneShowDashboardEnabled() )
     {
-        float activationDistance = chaperoneShowDashboardDistance();
+        float const activationDistance = chaperoneShowDashboardDistance();
         if ( distance <= activationDistance && !m_chaperoneShowDashboardActive )
         {
             if ( !vr::VROverlay()->IsDashboardVisible() )
@@ -264,7 +265,7 @@ void ChaperoneTabController::eventLoopTick(
         }
         else
         {
-            float pct = std::min(
+            float const pct = std::min(
                 1.0f, 2.0f - static_cast<float>( count ) / 5000.0f );
             // Originally this used opacity, but steam will override that it
             // seems
@@ -275,7 +276,7 @@ void ChaperoneTabController::eventLoopTick(
     if ( devicePoses )
     {
         m_isHMDActive = false;
-        std::lock_guard<std::recursive_mutex> lock(
+        std::lock_guard<std::recursive_mutex> const lock(
             parent->chaperoneUtils().mutex() );
         auto minDistance = NAN;
         auto& poseHmd = devicePoses[vr::k_unTrackedDeviceIndex_Hmd];
@@ -398,20 +399,19 @@ void ChaperoneTabController::updateChaperoneSettings()
 
 void ChaperoneTabController::setBoundsVisibility( float value, bool notify )
 {
-    setChaperoneColorA(
-        static_cast<int>( static_cast<float>( value ) * 255.0f ), notify );
+    setChaperoneColorA( static_cast<int>( value * 255.0f ), notify );
 }
 
 float ChaperoneTabController::fadeDistance()
 {
-    std::pair<ovr_settings_wrapper::SettingsError, float> p
+    std::pair<ovr_settings_wrapper::SettingsError, float> const pair
         = ovr_settings_wrapper::getFloat(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_FadeDistance_Float,
             "" );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_fadeDistance;
 }
@@ -436,15 +436,15 @@ void ChaperoneTabController::setFadeDistance( float value, bool notify )
 
 float ChaperoneTabController::height()
 {
-    std::pair<ovr_settings_wrapper::SettingsError, float> p
+    std::pair<ovr_settings_wrapper::SettingsError, float> const pair
         = ovr_settings_wrapper::getFloat(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_WallHeight_Float,
             "" );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        m_height = p.second;
-        return p.second;
+        m_height = pair.second;
+        return pair.second;
     }
 
     return m_height;
@@ -482,14 +482,14 @@ void ChaperoneTabController::updateHeight( float value, bool notify )
 
 bool ChaperoneTabController::centerMarker()
 {
-    std::pair<ovr_settings_wrapper::SettingsError, bool> p
+    std::pair<ovr_settings_wrapper::SettingsError, bool> const pair
         = ovr_settings_wrapper::getBool(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_CenterMarkerOn_Bool,
             "" );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
 
     return m_centerMarker;
@@ -514,14 +514,14 @@ void ChaperoneTabController::setCenterMarker( bool value, bool notify )
 
 bool ChaperoneTabController::playSpaceMarker()
 {
-    std::pair<ovr_settings_wrapper::SettingsError, bool> p
+    std::pair<ovr_settings_wrapper::SettingsError, bool> const pair
         = ovr_settings_wrapper::getBool(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_PlaySpaceOn_Bool,
             "" );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
 
     return m_playSpaceMarker;
@@ -626,103 +626,102 @@ float ChaperoneTabController::chaperoneShowDashboardDistance() const
 
 int ChaperoneTabController::chaperoneColorR()
 {
-    std::pair<ovr_settings_wrapper::SettingsError, int> p
+    std::pair<ovr_settings_wrapper::SettingsError, int> const pair
         = ovr_settings_wrapper::getInt32(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_ColorGammaR_Int32,
             "" );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_chaperoneColorR;
 }
 int ChaperoneTabController::chaperoneColorG()
 {
-    std::pair<ovr_settings_wrapper::SettingsError, int> p
+    std::pair<ovr_settings_wrapper::SettingsError, int> const pair
         = ovr_settings_wrapper::getInt32(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_ColorGammaG_Int32,
             "" );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_chaperoneColorG;
 }
 int ChaperoneTabController::chaperoneColorB()
 {
-    std::pair<ovr_settings_wrapper::SettingsError, int> p
+    std::pair<ovr_settings_wrapper::SettingsError, int> const pair
         = ovr_settings_wrapper::getInt32(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_ColorGammaB_Int32,
             "" );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_chaperoneColorB;
 }
 // aka transparancy
 int ChaperoneTabController::chaperoneColorA()
 {
-    std::pair<ovr_settings_wrapper::SettingsError, int> p
+    std::pair<ovr_settings_wrapper::SettingsError, int> const pair
         = ovr_settings_wrapper::getInt32(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_ColorGammaA_Int32,
             "" );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
         return m_chaperoneColorA;
     }
-    return p.second;
+    return pair.second;
 }
 
 float ChaperoneTabController::boundsVisibility()
 {
-    std::pair<ovr_settings_wrapper::SettingsError, int> p
+    std::pair<ovr_settings_wrapper::SettingsError, int> const pair
         = ovr_settings_wrapper::getInt32(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_ColorGammaA_Int32,
             "" );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return static_cast<float>( static_cast<float>( m_chaperoneColorA )
-                                   / 255.0f );
+        return static_cast<float>( m_chaperoneColorA ) / 255.0f;
     }
-    return static_cast<float>( static_cast<float>( p.second ) / 255.0f );
+    return static_cast<float>( pair.second ) / 255.0f;
 }
 
 bool ChaperoneTabController::chaperoneFloorToggle()
 {
-    std::pair<ovr_settings_wrapper::SettingsError, int> p
+    std::pair<ovr_settings_wrapper::SettingsError, int> const pair
         = ovr_settings_wrapper::getBool(
             vr::k_pch_CollisionBounds_Section,
             vr::k_pch_CollisionBounds_GroundPerimeterOn_Bool,
             "" );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_chaperoneFloorToggle;
 }
 
 int ChaperoneTabController::collisionBoundStyle()
 {
-    std::pair<ovr_settings_wrapper::SettingsError, int> p
+    std::pair<ovr_settings_wrapper::SettingsError, int> const pair
         = ovr_settings_wrapper::getInt32( vr::k_pch_CollisionBounds_Section,
                                           vr::k_pch_CollisionBounds_Style_Int32,
                                           "" );
-    if ( p.first == ovr_settings_wrapper::SettingsError::NoError )
+    if ( pair.first == ovr_settings_wrapper::SettingsError::NoError )
     {
-        return p.second;
+        return pair.second;
     }
     return m_collisionBoundStyle;
 }
 
 bool ChaperoneTabController::centerMarkerNew()
 {
-    bool temp = settings::getSetting(
+    bool const temp = settings::getSetting(
         settings::BoolSetting::CHAPERONE_centerMarkerNew );
     return temp;
 }
@@ -737,12 +736,10 @@ Q_INVOKABLE QString
 {
     if ( index >= chaperoneProfiles.size() )
     {
-        return QString();
+        return {};
     }
-    else
-    {
-        return QString::fromStdString( chaperoneProfiles[index].profileName );
-    }
+
+    return QString::fromStdString( chaperoneProfiles[index].profileName );
 }
 
 void ChaperoneTabController::setForceBounds( bool value, bool notify )
@@ -843,9 +840,9 @@ void ChaperoneTabController::setChaperoneColorB( int value, bool notify )
 }
 void ChaperoneTabController::updateCenterMarkerOverlayColor()
 {
-    float chapColorR = static_cast<float>( m_chaperoneColorR ) / 255.0f;
-    float chapColorG = static_cast<float>( m_chaperoneColorG ) / 255.0f;
-    float chapColorB = static_cast<float>( m_chaperoneColorB ) / 255.0f;
+    float const chapColorR = static_cast<float>( m_chaperoneColorR ) / 255.0f;
+    float const chapColorG = static_cast<float>( m_chaperoneColorG ) / 255.0f;
+    float const chapColorB = static_cast<float>( m_chaperoneColorB ) / 255.0f;
     ovr_overlay_wrapper::setOverlayColor(
         m_chaperoneFloorOverlayHandle, chapColorR, chapColorG, chapColorB, "" );
 }
@@ -1236,19 +1233,19 @@ void ChaperoneTabController::addChaperoneProfile(
     bool includesProximityWarningSettings )
 {
     ChaperoneProfile* profile = nullptr;
-    for ( auto& p : chaperoneProfiles )
+    for ( auto& pro : chaperoneProfiles )
     {
-        if ( p.profileName.compare( name.toStdString() ) == 0 )
+        if ( pro.profileName.compare( name.toStdString() ) == 0 )
         {
-            profile = &p;
+            profile = &pro;
             break;
         }
     }
     if ( !profile )
     {
-        auto i = chaperoneProfiles.size();
+        auto index = chaperoneProfiles.size();
         chaperoneProfiles.emplace_back();
-        profile = &chaperoneProfiles[i];
+        profile = &chaperoneProfiles[index];
     }
     profile->profileName = name.toStdString();
     profile->includesChaperoneGeometry = includeGeometry;
@@ -1260,10 +1257,7 @@ void ChaperoneTabController::addChaperoneProfile(
         vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo( nullptr,
                                                             &quadCount );
         profile->chaperoneGeometryQuadCount = quadCount;
-        for ( int i = 0; i < static_cast<int>( quadCount ); ++i )
-        {
-            profile->chaperoneGeometryQuads.emplace_back();
-        }
+        profile->chaperoneGeometryQuads.assign( quadCount, {} );
 
         vr::VRChaperoneSetup()->GetLiveCollisionBoundsInfo(
             profile->chaperoneGeometryQuads.data(), &quadCount );
@@ -1442,9 +1436,9 @@ std::pair<bool, unsigned>
 {
     std::pair<bool, unsigned> result = { false, 0 };
     unsigned profileIndex = 0;
-    for ( auto& p : chaperoneProfiles )
+    for ( auto& pro : chaperoneProfiles )
     {
-        if ( name == p.profileName )
+        if ( name == pro.profileName )
         {
             result.first = true;
             result.second = profileIndex;
@@ -1461,7 +1455,7 @@ void ChaperoneTabController::createNewAutosaveProfile()
     updateChaperoneSettings();
 
     // lookup the index for old autosave and delete it
-    std::pair<bool, unsigned> previousAutosaveIndexLookup
+    std::pair<bool, unsigned> const previousAutosaveIndexLookup
         = getChaperoneProfileIndexFromName( "«Autosaved Profile (previous)»" );
     if ( previousAutosaveIndexLookup.first )
     {
@@ -1474,7 +1468,7 @@ void ChaperoneTabController::createNewAutosaveProfile()
     }
 
     // lookup the index for current autosave and rename to old
-    std::pair<bool, unsigned> currentAutosaveIndexLookup
+    std::pair<bool, unsigned> const currentAutosaveIndexLookup
         = getChaperoneProfileIndexFromName( "«Autosaved Profile»" );
     if ( currentAutosaveIndexLookup.first )
     {
@@ -1505,7 +1499,7 @@ void ChaperoneTabController::createNewAutosaveProfile()
 void ChaperoneTabController::applyAutosavedProfile()
 {
     // lookup index of autosave
-    std::pair<bool, unsigned> autosaveIndexLookup
+    std::pair<bool, unsigned> const autosaveIndexLookup
         = getChaperoneProfileIndexFromName( "«Autosaved Profile»" );
 
     // check if it exists
@@ -1610,9 +1604,9 @@ void ChaperoneTabController::addRightHapticClick( bool rightHapticClickPressed )
 
 void ChaperoneTabController::initCenterMarkerOverlay()
 {
-    std::string overlayFloorMarkerKey
+    std::string const overlayFloorMarkerKey
         = std::string( application_strings::applicationKey ) + ".floormarker";
-    ovr_overlay_wrapper::OverlayError overlayError
+    ovr_overlay_wrapper::OverlayError const overlayError
         = ovr_overlay_wrapper::createOverlay( overlayFloorMarkerKey,
                                               overlayFloorMarkerKey,
                                               &m_chaperoneFloorOverlayHandle,
@@ -1672,7 +1666,7 @@ void ChaperoneTabController::checkCenterMarkerOverlayRotationCount()
     {
         m_rotationUpdateCounter = 0;
         float rotation = parent->m_statisticsTabController.hmdRotations();
-        int rotationNext;
+        int rotationNext = 0;
         if ( rotation > 0 )
         {
             rotation = rotation + 0.5f;

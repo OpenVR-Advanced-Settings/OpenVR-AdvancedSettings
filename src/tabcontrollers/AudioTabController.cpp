@@ -21,7 +21,7 @@ namespace advsettings
 {
 void AudioTabController::initStage1()
 {
-    vr::EVRSettingsError vrSettingsError;
+    vr::EVRSettingsError vrSettingsError = {};
 #ifdef _WIN32
     audioManager.reset( new AudioManagerWindows() );
 #elif __linux__
@@ -34,10 +34,10 @@ void AudioTabController::initStage1()
     m_playbackDevices = audioManager->getPlaybackDevices();
     m_recordingDevices = audioManager->getRecordingDevices();
     findPlaybackDeviceIndex( audioManager->getPlaybackDevId(), false );
-    char deviceId[1024];
+    std::array<char, 1024> deviceId;
     vr::VRSettings()->GetString( vr::k_pch_audio_Section,
                                  vr::k_pch_audio_PlaybackMirrorDevice_String,
-                                 deviceId,
+                                 deviceId.data(),
                                  1024,
                                  &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
@@ -50,9 +50,9 @@ void AudioTabController::initStage1()
     }
     else
     {
-        audioManager->setMirrorDevice( deviceId );
+        audioManager->setMirrorDevice( deviceId.data() );
         findMirrorDeviceIndex( audioManager->getMirrorDevId(), false );
-        lastMirrorDevId = deviceId;
+        lastMirrorDevId = deviceId.data();
         m_mirrorVolume = audioManager->getMirrorVolume();
         m_mirrorMuted = audioManager->getMirrorMuted();
     }
@@ -103,7 +103,7 @@ void AudioTabController::initStage2( OverlayController* var_parent )
                                                *pushToImg );
     vr::VROverlay()->SetOverlayWidthInMeters( m_pushToTalkValues.overlayHandle,
                                               0.02f );
-    vr::HmdMatrix34_t notificationTransform
+    vr::HmdMatrix34_t const notificationTransform
         = { { { 1.0f, 0.0f, 0.0f, 0.12f },
               { 0.0f, 1.0f, 0.0f, 0.08f },
               { 0.0f, 0.0f, 1.0f, -0.3f } } };
@@ -117,7 +117,7 @@ void AudioTabController::initStage2( OverlayController* var_parent )
 
 void AudioTabController::reloadAudioSettings()
 {
-    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    std::lock_guard<std::recursive_mutex> const lock( eventLoopMutex );
 
     setMicProximitySensorCanMute(
         settings::getSetting(
@@ -176,11 +176,11 @@ void AudioTabController::eventLoopTick()
         return;
     }
 
-    vr::EVRSettingsError vrSettingsError;
-    char mirrorDeviceId[1024];
+    vr::EVRSettingsError vrSettingsError = {};
+    std::array<char, 1024> mirrorDeviceId;
     vr::VRSettings()->GetString( vr::k_pch_audio_Section,
                                  vr::k_pch_audio_PlaybackMirrorDevice_String,
-                                 mirrorDeviceId,
+                                 mirrorDeviceId.data(),
                                  1024,
                                  &vrSettingsError );
     if ( vrSettingsError != vr::VRSettingsError_None )
@@ -191,11 +191,11 @@ void AudioTabController::eventLoopTick()
                    << vr::VRSettings()->GetSettingsErrorNameFromEnum(
                           vrSettingsError );
     }
-    if ( lastMirrorDevId.compare( mirrorDeviceId ) != 0 )
+    if ( lastMirrorDevId.compare( mirrorDeviceId.data() ) != 0 )
     {
-        audioManager->setMirrorDevice( mirrorDeviceId );
+        audioManager->setMirrorDevice( mirrorDeviceId.data() );
         findMirrorDeviceIndex( audioManager->getMirrorDevId() );
-        lastMirrorDevId = mirrorDeviceId;
+        lastMirrorDevId = mirrorDeviceId.data();
     }
     if ( m_mirrorDeviceIndex >= 0 )
     {
@@ -259,7 +259,7 @@ void AudioTabController::onPttDisabled()
 
 void AudioTabController::setMirrorVolume( float value, bool notify )
 {
-    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    std::lock_guard<std::recursive_mutex> const lock( eventLoopMutex );
     if ( value != m_mirrorVolume )
     {
         m_mirrorVolume = value;
@@ -276,7 +276,7 @@ void AudioTabController::setMirrorVolume( float value, bool notify )
 
 void AudioTabController::setMirrorMuted( bool value, bool notify )
 {
-    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    std::lock_guard<std::recursive_mutex> const lock( eventLoopMutex );
     if ( value != m_mirrorMuted )
     {
         m_mirrorMuted = value;
@@ -293,7 +293,7 @@ void AudioTabController::setMirrorMuted( bool value, bool notify )
 
 void AudioTabController::setMicVolume( float value, bool notify )
 {
-    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    std::lock_guard<std::recursive_mutex> const lock( eventLoopMutex );
     if ( value != m_micVolume )
     {
         m_micVolume = value;
@@ -310,7 +310,7 @@ void AudioTabController::setMicVolume( float value, bool notify )
 
 void AudioTabController::setMicMuted( bool value, bool notify )
 {
-    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    std::lock_guard<std::recursive_mutex> const lock( eventLoopMutex );
 
     if ( value != m_micMuted )
     {
@@ -328,7 +328,7 @@ void AudioTabController::setMicMuted( bool value, bool notify )
 
 void AudioTabController::setMicProximitySensorCanMute( bool value, bool notify )
 {
-    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    std::lock_guard<std::recursive_mutex> const lock( eventLoopMutex );
 
     settings::setSetting(
         settings::BoolSetting::AUDIO_micProximitySensorCanMute, value );
@@ -341,7 +341,7 @@ void AudioTabController::setMicProximitySensorCanMute( bool value, bool notify )
 
 void AudioTabController::setMicReversePtt( bool value, bool notify )
 {
-    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    std::lock_guard<std::recursive_mutex> const lock( eventLoopMutex );
 
     settings::setSetting( settings::BoolSetting::AUDIO_micReversePtt, value );
 
@@ -375,7 +375,7 @@ void AudioTabController::setMicReversePtt( bool value, bool notify )
 
 void AudioTabController::setAudioProfileDefault( bool value, bool notify )
 {
-    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    std::lock_guard<std::recursive_mutex> const lock( eventLoopMutex );
     if ( value != m_isDefaultAudioProfile )
     {
         m_isDefaultAudioProfile = value;
@@ -458,10 +458,8 @@ QString AudioTabController::getPlaybackDeviceName( int index )
         return QString::fromStdString(
             m_playbackDevices.at( static_cast<size_t>( index ) ).name() );
     }
-    else
-    {
-        return "<PBN:ERROR>";
-    }
+
+    return "<PBN:ERROR>";
 }
 
 std::string AudioTabController::getPlaybackDeviceID( int index )
@@ -470,10 +468,8 @@ std::string AudioTabController::getPlaybackDeviceID( int index )
     {
         return m_playbackDevices.at( static_cast<size_t>( index ) ).id();
     }
-    else
-    {
-        return "<PBI:ERROR>";
-    }
+
+    return "<PBI:ERROR>";
 }
 
 std::string AudioTabController::getMirrorDeviceID( int index )
@@ -492,10 +488,8 @@ std::string AudioTabController::getRecordingDeviceID( int index )
     {
         return m_recordingDevices.at( static_cast<size_t>( index ) ).id();
     }
-    else
-    {
-        return "<RCI:ERROR>";
-    }
+
+    return "<RCI:ERROR>";
 }
 
 QString AudioTabController::getRecordingDeviceName( int index )
@@ -505,10 +499,8 @@ QString AudioTabController::getRecordingDeviceName( int index )
         return QString::fromStdString(
             m_recordingDevices.at( static_cast<size_t>( index ) ).name() );
     }
-    else
-    {
-        return "<RCN:ERROR>";
-    }
+
+    return "<RCN:ERROR>";
 }
 
 int AudioTabController::playbackDeviceIndex() const
@@ -547,11 +539,11 @@ void AudioTabController::setPlaybackDeviceIndex( int index, bool notify )
 
 void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
 {
+    vr::EVRSettingsError vrSettingsError = {};
     if ( index != m_mirrorDeviceIndex )
     {
         if ( index == -1 )
         {
-            vr::EVRSettingsError vrSettingsError;
             vr::VRSettings()->RemoveKeyInSection(
                 vr::k_pch_audio_Section,
                 vr::k_pch_audio_PlaybackMirrorDevice_String,
@@ -574,7 +566,6 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
                   && index != m_playbackDeviceIndex
                   && index != m_mirrorDeviceIndex )
         {
-            vr::EVRSettingsError vrSettingsError;
             vr::VRSettings()->SetString(
                 vr::k_pch_audio_Section,
                 vr::k_pch_audio_PlaybackMirrorDevice_String,
@@ -604,7 +595,7 @@ void AudioTabController::setMirrorDeviceIndex( int index, bool notify )
 
 void AudioTabController::setMicDeviceIndex( int index, bool notify )
 {
-    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    std::lock_guard<std::recursive_mutex> const lock( eventLoopMutex );
     if ( index != m_recordingDeviceIndex )
     {
         if ( index >= 0
@@ -635,80 +626,76 @@ void AudioTabController::setMicDeviceIndex( int index, bool notify )
     }
 }
 
-void AudioTabController::findPlaybackDeviceIndex( std::string id, bool notify )
+void AudioTabController::findPlaybackDeviceIndex( std::string dev_id,
+                                                  bool notify )
 {
-    int i = 0;
+    int index = 0;
     bool deviceFound = false;
-    for ( auto d : m_playbackDevices )
+    for ( auto dev : m_playbackDevices )
     {
-        if ( d.id().compare( id ) == 0 )
+        if ( dev.id().compare( dev_id ) == 0 )
         {
             deviceFound = true;
             break;
         }
-        else
-        {
-            ++i;
-        }
+
+        ++index;
     }
     if ( deviceFound )
     {
-        m_playbackDeviceIndex = i;
+        m_playbackDeviceIndex = index;
         if ( notify )
         {
-            emit playbackDeviceIndexChanged( i );
+            emit playbackDeviceIndexChanged( index );
         }
     }
 }
 
-void AudioTabController::findMirrorDeviceIndex( std::string id, bool notify )
+void AudioTabController::findMirrorDeviceIndex( std::string dev_id,
+                                                bool notify )
 {
-    int i = 0;
+    int index = 0;
     bool deviceFound = false;
-    for ( auto d : m_playbackDevices )
+    for ( auto dev : m_playbackDevices )
     {
-        if ( d.id().compare( id ) == 0 )
+        if ( dev.id().compare( dev_id ) == 0 )
         {
             deviceFound = true;
             break;
         }
-        else
-        {
-            ++i;
-        }
+
+        ++index;
     }
-    if ( deviceFound && m_mirrorDeviceIndex != i )
+    if ( deviceFound && m_mirrorDeviceIndex != index )
     {
-        m_mirrorDeviceIndex = i;
+        m_mirrorDeviceIndex = index;
         if ( notify )
         {
-            emit mirrorDeviceIndexChanged( i );
+            emit mirrorDeviceIndexChanged( index );
         }
     }
 }
 
-void AudioTabController::findMicDeviceIndex( std::string id, bool notify )
+void AudioTabController::findMicDeviceIndex( std::string dev_id, bool notify )
 {
-    int i = 0;
+    int index = 0;
     bool deviceFound = false;
-    for ( auto d : m_recordingDevices )
+    for ( auto dev : m_recordingDevices )
     {
-        if ( d.id().compare( id ) == 0 )
+        if ( dev.id().compare( dev_id ) == 0 )
         {
             deviceFound = true;
             break;
         }
-        else
-        {
-            ++i;
-        }
+
+        ++index;
     }
     if ( deviceFound )
     {
-        m_recordingDeviceIndex = i;
+        m_recordingDeviceIndex = index;
         if ( notify )
         {
-            emit micDeviceIndexChanged( i );
+            emit micDeviceIndexChanged( index );
         }
     }
 }
@@ -741,19 +728,19 @@ audioProfiles[]
 void AudioTabController::addAudioProfile( QString name )
 {
     AudioProfile* profile = nullptr;
-    for ( auto& p : audioProfiles )
+    for ( auto& pro : audioProfiles )
     {
-        if ( p.profileName.compare( name.toStdString() ) == 0 )
+        if ( pro.profileName.compare( name.toStdString() ) == 0 )
         {
-            profile = &p;
+            profile = &pro;
             break;
         }
     }
     if ( !profile )
     {
-        auto i = audioProfiles.size();
+        auto index = audioProfiles.size();
         audioProfiles.emplace_back();
-        profile = &audioProfiles[i];
+        profile = &audioProfiles[index];
     }
     profile->profileName = name.toStdString();
     profile->playbackName
@@ -802,12 +789,12 @@ Description: Applies the required logic to activate the audio profile.
 
 void AudioTabController::applyAudioProfile( unsigned index )
 {
-    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    std::lock_guard<std::recursive_mutex> const lock( eventLoopMutex );
     if ( index < audioProfiles.size() )
     {
         auto& profile = audioProfiles[index];
-        int mInd = getMirrorIndex( profile.mirrorID );
-        int pInd = getPlaybackIndex( profile.playbackID );
+        int const mInd = getMirrorIndex( profile.mirrorID );
+        int const pInd = getPlaybackIndex( profile.playbackID );
 
         // Needed to keep remembering when swtiching from mirror/main etc.
         // TODO OPTI can possibly clean up logic to reduce overhead in future.
@@ -861,7 +848,7 @@ void AudioTabController::deleteAudioProfile( unsigned index )
         // via native windows api.
         if ( audioProfiles.at( index ).defaultProfile )
         {
-            vr::EVRSettingsError vrSettingsError;
+            vr::EVRSettingsError vrSettingsError = {};
             vr::VRSettings()->RemoveKeyInSection(
                 vr::k_pch_audio_Section,
                 vr::k_pch_audio_PlaybackDeviceOverrideName_String,
@@ -911,7 +898,7 @@ void AudioTabController::setPlaybackOverride( bool value, bool notify )
     if ( value != m_isPlaybackOverride )
     {
         m_isPlaybackOverride = value;
-        vr::EVRSettingsError vrSettingsError;
+        vr::EVRSettingsError vrSettingsError = {};
         vr::VRSettings()->SetBool(
             vr::k_pch_audio_Section,
             vr::k_pch_audio_EnablePlaybackDeviceOverride_Bool,
@@ -934,7 +921,7 @@ void AudioTabController::setRecordingOverride( bool value, bool notify )
     if ( value != m_isRecordingOverride )
     {
         m_isRecordingOverride = value;
-        vr::EVRSettingsError vrSettingsError;
+        vr::EVRSettingsError vrSettingsError = {};
         vr::VRSettings()->SetBool(
             vr::k_pch_audio_Section,
             vr::k_pch_audio_EnableRecordingDeviceOverride_Bool,
@@ -955,7 +942,7 @@ void AudioTabController::setRecordingOverride( bool value, bool notify )
 
 void AudioTabController::initOverride()
 {
-    vr::EVRSettingsError vrSettingsError;
+    vr::EVRSettingsError vrSettingsError = {};
     auto temp = vr::VRSettings()->GetBool(
         vr::k_pch_audio_Section,
         vr::k_pch_audio_EnableRecordingDeviceOverride_Bool,
@@ -1066,7 +1053,7 @@ int AudioTabController::getMirrorIndex( std::string str )
 
 void AudioTabController::setDefaultPlayback( int index, bool notify )
 {
-    vr::EVRSettingsError vrSettingsError;
+    vr::EVRSettingsError vrSettingsError = {};
     vr::VRSettings()->SetString(
         vr::k_pch_audio_Section,
         vr::k_pch_audio_PlaybackDeviceOverrideName_String,
@@ -1089,7 +1076,7 @@ void AudioTabController::setDefaultPlayback( int index, bool notify )
 
 void AudioTabController::setDefaultMic( int index, bool notify )
 {
-    vr::EVRSettingsError vrSettingsError;
+    vr::EVRSettingsError vrSettingsError = {};
     vr::VRSettings()->SetString(
         vr::k_pch_audio_Section,
         vr::k_pch_audio_RecordingDeviceOverrideName_String,
@@ -1114,7 +1101,7 @@ void AudioTabController::setDefaultMirror( int index, bool notify )
 {
     if ( index == -1 )
     {
-        vr::EVRSettingsError vrSettingsError;
+        vr::EVRSettingsError vrSettingsError = {};
         vr::VRSettings()->RemoveKeyInSection(
             vr::k_pch_audio_Section,
             vr::k_pch_audio_PlaybackMirrorDevice_String,
@@ -1134,7 +1121,7 @@ void AudioTabController::setDefaultMirror( int index, bool notify )
     }
     else
     {
-        vr::EVRSettingsError vrSettingsError;
+        vr::EVRSettingsError vrSettingsError = {};
         vr::VRSettings()->SetString(
             vr::k_pch_audio_Section,
             vr::k_pch_audio_PlaybackMirrorDevice_String,
@@ -1167,11 +1154,11 @@ description: checks all profiles and removes any OTHERS that are set as default.
 void AudioTabController::removeOtherDefaultProfiles( QString name )
 {
     AudioProfile* profile = nullptr;
-    for ( auto& p : audioProfiles )
+    for ( auto& pro : audioProfiles )
     {
-        if ( p.profileName.compare( name.toStdString() ) != 0 )
+        if ( pro.profileName.compare( name.toStdString() ) != 0 )
         {
-            profile = &p;
+            profile = &pro;
             profile->defaultProfile = false;
         }
     }
@@ -1286,7 +1273,7 @@ void AudioTabController::stopPtt()
 
 void AudioTabController::setPttEnabled( bool value, bool notify )
 {
-    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    std::lock_guard<std::recursive_mutex> const lock( eventLoopMutex );
 
     settings::setSetting( settings::BoolSetting::AUDIO_pttEnabled, value );
 
@@ -1307,7 +1294,7 @@ void AudioTabController::setPttEnabled( bool value, bool notify )
 
 void AudioTabController::setPttShowNotification( bool value, bool notify )
 {
-    std::lock_guard<std::recursive_mutex> lock( eventLoopMutex );
+    std::lock_guard<std::recursive_mutex> const lock( eventLoopMutex );
 
     settings::setSetting( settings::BoolSetting::AUDIO_pttShowNotification,
                           value );

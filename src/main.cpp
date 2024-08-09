@@ -1,10 +1,11 @@
+#include "openvr/openvr_init.h"
+#include "overlaycontroller.h"
 #include "utils/setup.h"
 #include "settings/settings.h"
 #include "openvr/ovr_settings_wrapper.h"
 
 #include <QtLogging>
 #include <QtDebug>
-#include <memory>
 
 #ifdef _WIN64
 #    include <windows.h>
@@ -23,7 +24,7 @@ int main( int argc, char* argv[] )
 
     QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
     QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
-    MyQApplication mainEventLoop( argc, argv );
+    MyQApplication const mainEventLoop( argc, argv );
     mainEventLoop.setOrganizationName(
         application_strings::applicationOrganizationName );
     mainEventLoop.setApplicationName( application_strings::applicationName );
@@ -61,12 +62,12 @@ int main( int argc, char* argv[] )
 
         QQmlComponent component( &qmlEngine, url );
         auto errors = component.errors();
-        for ( auto& e : errors )
+        for ( auto& err : errors )
         {
             qCritical() << "QML Error: "
-                        << e.toString().toStdString(); //<< std::endl;
+                        << err.toString().toStdString(); //<< std::endl;
         }
-        auto quickObj = component.create();
+        auto* quickObj = component.create();
         controller->SetWidget( qobject_cast<QQuickItem*>( quickObj ),
                                application_strings::applicationDisplayName,
                                application_strings::applicationKey );
@@ -83,10 +84,8 @@ int main( int argc, char* argv[] )
                     throw std::runtime_error(
                         "Could not find applications manifest." );
                 }
-                else
-                {
-                    manifest::installApplicationManifest( *manifestPath );
-                }
+
+                manifest::installApplicationManifest( *manifestPath );
             }
             catch ( std::exception& e )
             {
@@ -98,7 +97,7 @@ int main( int argc, char* argv[] )
              || settings::getSetting(
                  settings::BoolSetting::APPLICATION_desktopModeToggle ) )
         {
-            auto m_pWindow = new QQuickWindow();
+            auto* m_pWindow = new QQuickWindow();
             qobject_cast<QQuickItem*>( quickObj )
                 ->setParentItem( m_pWindow->contentItem() );
             m_pWindow->setGeometry(

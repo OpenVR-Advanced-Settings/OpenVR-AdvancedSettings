@@ -1,0 +1,58 @@
+name: Test
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.platform.os }}
+    strategy:
+      matrix:
+        platform:
+          - { os: ubuntu-latest, workflow: build-linux, qt-arch: linux_gcc_64 }
+          - { os: windows-latest, workflow: build-windows, qt-arch: win64_msvc2019_64 }
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: lukka/get-cmake@latest
+
+      - uses: humbletim/setup-vulkan-sdk@v1.2.0
+        with:
+          vulkan-query-version: "1.3.283.0"
+          vulkan-components: Vulkan-Headers
+          vulkan-use-cache: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.x'
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.7.2'
+          arch: ${{ matrix.platform.qt-arch }}
+          dir: lib/qt
+          setup-python: false
+          cache: true
+          modules: qtmultimedia qtwebsockets
+
+      - name: Install required packages
+        if: startsWith(matrix.platform.os, 'ubuntu')
+        run: |
+          sudo apt-get install -y libxtst-dev gcc-12 g++-12 clang-tidy
+          clang-tidy --version
+          echo "CC=gcc" >> $GITHUB_ENV
+          echo "CXX=g++" >> $GITHUB_ENV
+          sudo update-alternatives --install \
+            /usr/bin/gcc gcc /usr/bin/gcc-12 110 \
+            --slave /usr/bin/g++ g++ /usr/bin/g++-12
+
+      - uses: lukka/run-cmake@v10
+        with:
+          workflowPreset: ${{ matrix.platform.workflow }}
+
+      # FIXME: replace with cmake integration, when this when this issue is resolved: https://bugreports.qt.io/browse/QTBUG-127578
+      - name: Run clang-tidy
+        if: startsWith(matrix.platform.os, 'ubuntu')
+        run: |
+          clang-tidy $(find src \( -name '*.cpp' -or -name '*.h' \) -and \( -not \( -name '*win*' -or -name '*Windows*' \) \))
+

@@ -1,12 +1,8 @@
 #pragma once
 
-#include <openvr.h>
-#include <iostream>
-#include <string>
-#include <utility>
-#include <string>
 #include <QImage>
-#include "../utils/paths.h"
+#include <openvr.h>
+#include <string>
 
 /* Wrapper For OpenVR's IVR settings class, allows us to do our error logging
  * while also minimizing code

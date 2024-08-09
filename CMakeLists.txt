@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.27)
 project(AdvancedSettings VERSION 5.7.4 LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -184,7 +184,8 @@ set_source_files_properties(src/res/qml/common/MyResources.qml PROPERTIES QT_QML
 qt_add_executable(AdvancedSettings WIN32 MACOSX_BUNDLE ${SRCS} ${RESOURCES} ${HEADERS})
 
 target_include_directories(AdvancedSettings PUBLIC
-    src
+    src)
+target_include_directories(AdvancedSettings SYSTEM PUBLIC
     third-party/nlohmann
     third-party/openvr/headers)
 
@@ -232,25 +233,23 @@ qt_add_qml_module(AdvancedSettings
 )
 
 
-if(GCC)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU") # GCC
     target_compile_options(AdvancedSettings
+        PUBLIC
+        -Wall
+        -Wpedantic
+        -Wextra
+        -pedantic-errors
         -Wcast-align
         -Wconversion
         -Wdouble-promotion
-        -Wduplicated-branches
-        -Wduplicated-cond
-        -Wextra
         -Wformat=2
-        -Wlogical-op
         -Wno-sign-conversion
         -Wnon-virtual-dtor
         -Wnull-dereference
         -Wold-style-cast
         -Woverloaded-virtual
-        -Wpedantic
-        -Wrestrict
         -Wshadow
-        -Wunused
         -Wzero-as-null-pointer-constant
         -flto
     )
@@ -264,6 +263,7 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(AdvancedSettings
+	PUBLIC
         --system-header-prefix=qt
         --system-header-prefix=third-party
         -Wcast-align
@@ -292,9 +292,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 endif()
 
 if(debugSymbolsAndLogs)
-    target_compile_definitions(AdvancedSettings PRIVATE
-        ENABLE_DEBUG_LOGGING
-    )
+  target_compile_definitions(AdvancedSettings PRIVATE ENABLE_DEBUG_LOGGING)
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
@@ -446,3 +444,60 @@ elseif(MACOS)
         src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
     )
 endif()
+
+# XXX: This is a hack, bcs SKIP_LINTING in qt is not working, but this doesn't work on
+# github actions because the files are not generated before this glob is used
+# fix this when this issue is resolved: https://bugreports.qt.io/browse/QTBUG-127578
+file(GLOB_RECURSE skip "${CMAKE_CURRENT_BINARY_DIR}/.rcc/qmlcache/**/*.cpp" "${CMAKE_CURRENT_BINARY_DIR}/.rcc/qmlcache/*.cpp")
+message("${CMAKE_BINARY_DIR}: ${skip}")
+set_property(SOURCE ${skip} PROPERTY SKIP_LINTING ON)
+
+# Get all propreties that cmake supports
+execute_process(COMMAND cmake --help-property-list OUTPUT_VARIABLE CMAKE_PROPERTY_LIST)
+
+# Convert command output into a CMake list
+STRING(REGEX REPLACE ";" "\\\\;" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
+STRING(REGEX REPLACE "\n" ";" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
+# Fix https://stackoverflow.com/questions/32197663/how-can-i-remove-the-the-location-property-may-not-be-read-from-target-error-i
+list(FILTER CMAKE_PROPERTY_LIST EXCLUDE REGEX "^LOCATION$|^LOCATION_|_LOCATION$")
+# For some reason, "TYPE" shows up twice - others might too?
+list(REMOVE_DUPLICATES CMAKE_PROPERTY_LIST)
+
+# build whitelist by filtering down from CMAKE_PROPERTY_LIST in case cmake is
+# a different version, and one of our hardcoded whitelisted properties
+# doesn't exist!
+unset(CMAKE_WHITELISTED_PROPERTY_LIST)
+foreach(prop ${CMAKE_PROPERTY_LIST})
+    if(prop MATCHES "^(INTERFACE|[_a-z]|IMPORTED_LIBNAME_|MAP_IMPORTED_CONFIG_)|^(COMPATIBLE_INTERFACE_(BOOL|NUMBER_MAX|NUMBER_MIN|STRING)|EXPORT_NAME|IMPORTED(_GLOBAL|_CONFIGURATIONS|_LIBNAME)?|NAME|TYPE|NO_SYSTEM_FROM_IMPORTED)$")
+        list(APPEND CMAKE_WHITELISTED_PROPERTY_LIST ${prop})
+    endif()
+endforeach(prop)
+
+function(print_properties)
+    message ("CMAKE_PROPERTY_LIST = ${CMAKE_PROPERTY_LIST}")
+endfunction(print_properties)
+
+function(print_whitelisted_properties)
+    message ("CMAKE_WHITELISTED_PROPERTY_LIST = ${CMAKE_WHITELISTED_PROPERTY_LIST}")
+endfunction(print_whitelisted_properties)
+
+function(print_target_properties tgt)
+
+    get_source_file_property(target_type ${tgt} TYPE)
+    if(target_type STREQUAL "INTERFACE_LIBRARY")
+        set(PROP_LIST ${CMAKE_WHITELISTED_PROPERTY_LIST})
+    else()
+        set(PROP_LIST ${CMAKE_PROPERTY_LIST})
+    endif()
+
+    foreach (prop ${PROP_LIST})
+        string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" prop ${prop})
+        # message ("Checking ${prop}")
+	get_property(propval SOURCE ${tgt} PROPERTY ${prop} SET)
+        if (propval)
+            get_source_file_property(propval ${tgt} ${prop})
+            message ("${tgt} ${prop} = ${propval}")
+        endif()
+    endforeach(prop)
+endfunction(print_target_properties)
+print_target_properties("${CMAKE_CURRENT_BINARY_DIR}/.rcc/qmlcache/AdvancedSettings_src/res/qml/utilities_page/media_keys/MediaButton_qml.cpp")

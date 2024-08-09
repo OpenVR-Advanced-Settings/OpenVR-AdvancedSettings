@@ -1,5 +1,7 @@
 #pragma once
 #include "internal/settings_object_data.h"
+#include <string>
+#include <vector>
 
 namespace settings
 {
@@ -47,7 +49,7 @@ public:
 
       See \c ISettingsObject class for an example.
      */
-    virtual SettingsObjectData saveSettings() const = 0;
+    [[nodiscard]] virtual SettingsObjectData saveSettings() const = 0;
 
     /*!
        \brief Function to convert from \c SettingsObjectData to parent object.
@@ -62,7 +64,7 @@ public:
        globally.
        \return Internal identifier for saving/loading.
      */
-    virtual std::string settingsName() const = 0;
+    [[nodiscard]] virtual std::string settingsName() const = 0;
 };
 
 /*!
@@ -100,14 +102,14 @@ void saveNumberedObject( const ISettingsObject& obj, const int slot );
 template <class T> void saveAllObjects( const std::vector<T> vec )
 {
     static_assert(
-        std::is_base_of<ISettingsObject, T>::value,
+        std::is_base_of_v<ISettingsObject, T>,
         "Only objects that inherit from ISettingsObject can be saved." );
 
-    auto i = 1;
-    for ( auto& p : vec )
+    auto index = 1;
+    for ( auto& obj : vec )
     {
-        saveNumberedObject( p, i );
-        ++i;
+        saveNumberedObject( obj, index );
+        ++index;
     }
 }
 
@@ -120,15 +122,17 @@ template <class T> void saveAllObjects( const std::vector<T> vec )
 template <class T> void loadAllObjects( std::vector<T>& vec )
 {
     static_assert(
-        std::is_base_of<ISettingsObject, T>::value,
+        std::is_base_of_v<ISettingsObject, T>,
         "Only objects that inherit from ISettingsObject can be loaded." );
 
     vec.clear();
 
     // We'll need to know which name the object is saved under.
     // We could check vec.at(0), but it's not guaranteed to exist.
-    auto o = T{};
-    auto profileCount = getAmountOfSavedObjects( o );
+    auto obj = T{};
+    // NOLINTNEXTLINE(altera-id-dependent-backward-branch)
+    auto profileCount = getAmountOfSavedObjects( obj );
+    // NOLINTNEXTLINE(altera-id-dependent-backward-branch)
     for ( int profileNumber = 1; profileNumber <= profileCount;
           ++profileNumber )
     {

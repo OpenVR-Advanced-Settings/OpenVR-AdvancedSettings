@@ -1,7 +1,6 @@
 #include "ivrinput.h"
 #include "ivrinput_action.h"
 #include <openvr.h>
-#include <iostream>
 #include <array>
 #include <QtLogging>
 #include <QtDebug>
@@ -439,7 +438,7 @@ update state.
 */
 void SteamIVRInput::UpdateStates()
 {
-    vr::EVRInputError error;
+    vr::EVRInputError error = {};
     if ( !m_exclusiveInputSetToggle )
     {
         error = vr::VRInput()->UpdateActionState(

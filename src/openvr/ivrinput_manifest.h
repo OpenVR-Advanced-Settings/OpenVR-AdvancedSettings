@@ -25,7 +25,7 @@ public:
             return;
         }
 
-        const auto validManifestPath = actionManifestPath->c_str();
+        const auto* const validManifestPath = actionManifestPath->c_str();
 
         auto error = vr::VRInput()->SetActionManifestPath( validManifestPath );
         if ( error != vr::EVRInputError::VRInputError_None )

@@ -4,9 +4,6 @@
 #include <QString>
 #include <QVariant>
 #include <openvr.h>
-#include "../openvr/ovr_settings_wrapper.h"
-#include "../openvr/ovr_overlay_wrapper.h"
-#include "../utils/FrameRateUtils.h"
 #include "../settings/settings_object.h"
 
 class QQuickWindow;
@@ -25,6 +22,7 @@ class OverlayController;
 
 struct VideoProfile : settings::ISettingsObject
 {
+    // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     std::string profileName;
 
     float supersampling = 1.0f;
@@ -38,35 +36,36 @@ struct VideoProfile : settings::ISettingsObject
     float brightnessOpacityValue = 1.0f;
     bool overlayMethodState = false;
     float opacity = 0.0f; // TODO check
+    // NOLINTEND(misc-non-private-member-variables-in-classes)
 
-    virtual settings::SettingsObjectData saveSettings() const override
+    [[nodiscard]] settings::SettingsObjectData saveSettings() const override
     {
-        settings::SettingsObjectData o;
+        settings::SettingsObjectData sod;
 
-        o.addValue( profileName );
-        o.addValue( static_cast<double>( supersampling ) );
+        sod.addValue( profileName );
+        sod.addValue( static_cast<double>( supersampling ) );
 
-        o.addValue( anisotropicFiltering );
-        o.addValue( motionSmooth );
-        o.addValue( supersampleOverride );
+        sod.addValue( anisotropicFiltering );
+        sod.addValue( motionSmooth );
+        sod.addValue( supersampleOverride );
 
-        o.addValue( static_cast<double>( colorRed ) );
-        o.addValue( static_cast<double>( colorGreen ) );
-        o.addValue( static_cast<double>( colorBlue ) );
+        sod.addValue( static_cast<double>( colorRed ) );
+        sod.addValue( static_cast<double>( colorGreen ) );
+        sod.addValue( static_cast<double>( colorBlue ) );
 
-        o.addValue( brightnessToggle );
+        sod.addValue( brightnessToggle );
 
-        o.addValue( static_cast<double>( brightnessOpacityValue ) );
+        sod.addValue( static_cast<double>( brightnessOpacityValue ) );
 
-        o.addValue( overlayMethodState );
+        sod.addValue( overlayMethodState );
 
         // TODO add opacity Toggle?
-        o.addValue( static_cast<double>( opacity ) );
+        sod.addValue( static_cast<double>( opacity ) );
 
-        return o;
+        return sod;
     }
 
-    virtual void loadSettings( settings::SettingsObjectData& obj ) override
+    void loadSettings( settings::SettingsObjectData& obj ) override
     {
         profileName = obj.getNextValueOrDefault( "" );
         supersampling = static_cast<float>( obj.getNextValueOrDefault( 1.0 ) );
@@ -89,7 +88,7 @@ struct VideoProfile : settings::ISettingsObject
         opacity = static_cast<float>( obj.getNextValueOrDefault( 1.0 ) );
     }
 
-    virtual std::string settingsName() const override
+    [[nodiscard]] std::string settingsName() const override
     {
         return "VideoTabController::VideoProfile";
     }
@@ -152,9 +151,9 @@ private:
 
     unsigned int m_videoDashboardUpdateCounter = 47;
 
-    void setColor( float R,
-                   float G,
-                   float B,
+    void setColor( float Red,
+                   float Green,
+                   float Blue,
                    bool notify = true,
                    bool keepValue = false );
     void resetGain();
@@ -187,22 +186,22 @@ private:
     }
 
 public:
-    float brightnessOpacityValue() const;
-    bool brightnessEnabled() const;
+    [[nodiscard]] float brightnessOpacityValue() const;
+    [[nodiscard]] bool brightnessEnabled() const;
 
     // Color overlay Getters
-    bool colorOverlayEnabled() const;
-    float colorRed() const;
-    float colorGreen() const;
-    float colorBlue() const;
+    [[nodiscard]] bool colorOverlayEnabled() const;
+    [[nodiscard]] float colorRed() const;
+    [[nodiscard]] float colorGreen() const;
+    [[nodiscard]] float colorBlue() const;
 
-    float colorOverlayOpacity() const;
+    [[nodiscard]] float colorOverlayOpacity() const;
 
-    bool allowSupersampleOverride() const;
-    float superSampling() const;
-    bool motionSmoothing() const;
-    bool allowSupersampleFiltering() const;
-    bool isOverlayMethodActive() const;
+    [[nodiscard]] bool allowSupersampleOverride() const;
+    [[nodiscard]] float superSampling() const;
+    [[nodiscard]] bool motionSmoothing() const;
+    [[nodiscard]] bool allowSupersampleFiltering() const;
+    [[nodiscard]] bool isOverlayMethodActive() const;
 
     void initStage1();
     void initStage2();
@@ -215,7 +214,6 @@ public:
     Q_INVOKABLE int getVideoProfileCount();
     Q_INVOKABLE QString getVideoProfileName( unsigned index );
 
-public slots:
     void setBrightnessEnabled( bool value,
                                bool notify = true,
                                bool keepValue = false );

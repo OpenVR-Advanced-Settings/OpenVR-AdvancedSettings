@@ -1,7 +1,7 @@
-#include "../tabcontrollers/UtilitiesTabController.h"
 #include "vr_alarm.h"
 #include "../openvr/ovr_overlay_wrapper.h"
 #include "../utils/update_rate.h"
+#include "settings/settings.h"
 #include <thread>
 
 #include <QtLogging>
@@ -31,9 +31,10 @@ VrAlarm::VrAlarm()
 
     ovr_overlay_wrapper::setOverlayWidthInMeters( m_alarmOverlayHandle, 0.3f );
 
-    vr::HmdMatrix34_t overlayTransform = { { { 1.0f, 0.0f, 0.0f, 0.12f },
-                                             { 0.0f, 1.0f, 0.0f, 0.08f },
-                                             { 0.0f, 0.0f, 1.0f, -0.3f } } };
+    vr::HmdMatrix34_t const overlayTransform
+        = { { { 1.0f, 0.0f, 0.0f, 0.12f },
+              { 0.0f, 1.0f, 0.0f, 0.08f },
+              { 0.0f, 0.0f, 1.0f, -0.3f } } };
 
     vr::VROverlay()->SetOverlayTransformTrackedDeviceRelative(
         m_alarmOverlayHandle,
@@ -87,7 +88,7 @@ void VrAlarm::checkAlarmStatus()
         showAlarmNotification();
         setAlarmEnabled( false );
 
-        std::thread t(
+        std::thread alarm_thread(
             []( vr::VROverlayHandle_t overlayHandle )
             {
                 // This will freeze the overlay for 3 seconds
@@ -95,7 +96,7 @@ void VrAlarm::checkAlarmStatus()
                 ovr_overlay_wrapper::hideOverlay( overlayHandle );
             },
             m_alarmOverlayHandle );
-        t.detach();
+        alarm_thread.detach();
     }
 }
 

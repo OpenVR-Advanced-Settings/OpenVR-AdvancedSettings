@@ -1,5 +1,4 @@
 #pragma once
-#include "../overlaycontroller.h"
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQuickView>
@@ -7,10 +6,8 @@
 #include <QQmlComponent>
 #include <QStandardPaths>
 #include <openvr.h>
-#include <iostream>
 #include <QtLogging>
 #include <QtDebug>
-#include "../openvr/openvr_init.h"
 
 enum ReturnErrorCode
 {
@@ -48,7 +45,7 @@ public:
     // Should look into replacements for this function if Qt 6 ever rolls
     // around. There are multiple suggestions for other solutions in the
     // provided link.
-    virtual bool notify( QObject* receiver, QEvent* event ) override
+    bool notify( QObject* receiver, QEvent* event ) override
     {
         try
         {

@@ -35,7 +35,7 @@ void sendKeyboardInputRaw( std::vector<INPUT> inputs )
 
     if ( ( inputs.size() > 0 ) && !success )
     {
-        char* err;
+        char* err = nullptr;
         auto errCode = GetLastError();
         if ( !FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER
                                  | FORMAT_MESSAGE_FROM_SYSTEM,

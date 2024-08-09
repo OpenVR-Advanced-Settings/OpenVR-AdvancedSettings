@@ -1,0 +1,92 @@
+{
+	"$schema": "https://cmake.org/cmake/help/latest/_downloads/3e2d73bff478d88a7de0de736ba5e361/schema.json",
+	"version": 8,
+	"configurePresets": [
+		{
+			"name": "default",
+			"description": "Default build using Ninja Multi-Config generator",
+			"generator": "Ninja",
+			"binaryDir": "${sourceDir}/build",
+			"errors": {
+				"dev": true,
+				"deprecated": true
+			}
+		},
+		{
+			"name": "build-linux",
+			"inherits": "default"
+		},
+		{
+			"name": "build-linux-lint",
+			"inherits": "default",
+			"cacheVariables": {
+				"CMAKE_CXX_CLANG_TIDY": "clang-tidy"
+			}
+		},
+		{
+			"name": "build-windows",
+			"inherits": "default",
+			"generator": "Visual Studio 17 2022",
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
+			}
+		}
+	],
+	"buildPresets": [
+		{
+			"name": "build-linux",
+			"configurePreset": "build-linux"
+		},
+		{
+			"name": "build-linux-lint",
+			"configurePreset": "build-linux-lint"
+		},
+		{
+			"name": "build-windows",
+			"configurePreset": "build-windows"
+		}
+	],
+	"workflowPresets": [
+		{
+			"name": "build-linux",
+			"steps": [
+				{
+					"type": "configure",
+					"name": "build-linux"
+				},
+				{
+					"type": "build",
+					"name": "build-linux"
+				}
+			]
+		},
+		{
+			"name": "build-linux-lint",
+			"steps": [
+				{
+					"type": "configure",
+					"name": "build-linux-lint"
+				},
+				{
+					"type": "build",
+					"name": "build-linux-lint"
+				}
+			]
+		},
+		{
+			"name": "build-windows",
+			"steps": [
+				{
+					"type": "configure",
+					"name": "build-windows"
+				},
+				{
+					"type": "build",
+					"name": "build-windows"
+				}
+			]
+		}
+	]
+}

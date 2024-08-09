@@ -6,31 +6,33 @@
 #include "../quaternion/quaternion.h"
 #include "../settings/settings.h"
 
-void rotateCoordinates( double coordinates[3], double angle )
+void rotateCoordinates( std::array<double, 3> coordinates, double angle )
 {
     if ( angle == 0 )
     {
         return;
     }
-    double s = sin( angle );
-    double c = cos( angle );
-    double newX = coordinates[0] * c - coordinates[2] * s;
-    double newZ = coordinates[0] * s + coordinates[2] * c;
+    double const sangle = sin( angle );
+    double const cangle = cos( angle );
+    double const newX = coordinates[0] * cangle - coordinates[2] * sangle;
+    double const newZ = coordinates[0] * sangle + coordinates[2] * cangle;
     coordinates[0] = newX;
     coordinates[2] = newZ;
 }
 
-void rotateFloatCoordinates( float coordinates[3], float angle )
+void rotateFloatCoordinates( std::array<float, 3> coordinates, float angle )
 {
     if ( angle == 0 )
     {
         return;
     }
     // crazy casts for compiler warnings
-    float s = static_cast<float>( sin( static_cast<double>( angle ) ) );
-    float c = static_cast<float>( cos( static_cast<double>( angle ) ) );
-    float newX = coordinates[0] * c - coordinates[2] * s;
-    float newZ = coordinates[0] * s + coordinates[2] * c;
+    float const sangle
+        = static_cast<float>( sin( static_cast<double>( angle ) ) );
+    float const cangle
+        = static_cast<float>( cos( static_cast<double>( angle ) ) );
+    float const newX = coordinates[0] * cangle - coordinates[2] * sangle;
+    float const newZ = coordinates[0] * sangle + coordinates[2] * cangle;
     coordinates[0] = newX;
     coordinates[2] = newZ;
 }
@@ -71,30 +73,28 @@ Q_INVOKABLE QString
 {
     if ( index >= m_offsetProfiles.size() )
     {
-        return QString();
+        return {};
     }
-    else
-    {
-        return QString::fromStdString( m_offsetProfiles[index].profileName );
-    }
+
+    return QString::fromStdString( m_offsetProfiles[index].profileName );
 }
 
 void MoveCenterTabController::addOffsetProfile( QString name )
 {
     OffsetProfile* profile = nullptr;
-    for ( auto& p : m_offsetProfiles )
+    for ( auto& pro : m_offsetProfiles )
     {
-        if ( p.profileName.compare( name.toStdString() ) == 0 )
+        if ( pro.profileName.compare( name.toStdString() ) == 0 )
         {
-            profile = &p;
+            profile = &pro;
             break;
         }
     }
     if ( !profile )
     {
-        auto i = m_offsetProfiles.size();
+        auto index = m_offsetProfiles.size();
         m_offsetProfiles.emplace_back();
-        profile = &m_offsetProfiles[i];
+        profile = &m_offsetProfiles[index];
     }
     profile->profileName = name.toStdString();
     profile->offsetX = m_offsetX;
@@ -125,7 +125,7 @@ void MoveCenterTabController::applyOffsetProfile( unsigned index )
     }
 }
 
-void MoveCenterTabController::addOffset( float offset[] )
+void MoveCenterTabController::addOffset( std::array<float, 3> offset )
 {
     m_universeCenterForReset.m[0][3] += offset[0];
     m_universeCenterForReset.m[1][3] += offset[1];
@@ -140,7 +140,7 @@ void MoveCenterTabController::addOffset( float offset[] )
 
 void MoveCenterTabController::addCurOffsetAsCenter()
 {
-    float off[3] = { -m_offsetX, m_offsetY, -m_offsetZ };
+    std::array<float, 3> const off = { -m_offsetX, m_offsetY, -m_offsetZ };
     // zeroOffsets();
     resetOffsets( true );
     addOffset( off );
@@ -159,15 +159,16 @@ void MoveCenterTabController::deleteOffsetProfile( unsigned index )
 
 void MoveCenterTabController::outputLogPoses()
 {
-    vr::TrackedDevicePose_t devicePosesStanding[vr::k_unMaxTrackedDeviceCount];
+    std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount>
+        devicePosesStanding;
 
     vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
         vr::TrackingUniverseStanding,
         0.0f,
-        devicePosesStanding,
+        devicePosesStanding.data(),
         vr::k_unMaxTrackedDeviceCount );
 
-    vr::HmdMatrix34_t hmdStanding
+    vr::HmdMatrix34_t const hmdStanding
         = devicePosesStanding[0].mDeviceToAbsoluteTracking;
 
     qInfo() << "";
@@ -176,15 +177,16 @@ void MoveCenterTabController::outputLogPoses()
     qInfo() << "HMD POSE (standing universe)";
     outputLogHmdMatrix( hmdStanding );
 
-    vr::TrackedDevicePose_t devicePosesSeated[vr::k_unMaxTrackedDeviceCount];
+    std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount>
+        devicePosesSeated;
 
     vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
         vr::TrackingUniverseSeated,
         0.0f,
-        devicePosesSeated,
+        devicePosesSeated.data(),
         vr::k_unMaxTrackedDeviceCount );
 
-    vr::HmdMatrix34_t hmdSeated
+    vr::HmdMatrix34_t const hmdSeated
         = devicePosesSeated[0].mDeviceToAbsoluteTracking;
 
     qInfo() << "HMD POSE (seated universe)";
@@ -195,9 +197,9 @@ void MoveCenterTabController::outputLogPoses()
     auto rightHand = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
         vr::TrackedControllerRole_RightHand );
 
-    vr::HmdMatrix34_t leftHandMatrix
+    vr::HmdMatrix34_t const leftHandMatrix
         = devicePosesStanding[leftHand].mDeviceToAbsoluteTracking;
-    vr::HmdMatrix34_t rightHandMatrix
+    vr::HmdMatrix34_t const rightHandMatrix
         = devicePosesStanding[rightHand].mDeviceToAbsoluteTracking;
 
     qInfo() << "LEFT Hand Controller Pose (standing universe)";
@@ -224,7 +226,7 @@ void MoveCenterTabController::outputLogPoses()
     qInfo() << "GetLiveSeatedZeroPoseToRawTrackingPose";
     outputLogHmdMatrix( seatedZeroLive );
 
-    vr::HmdMatrix34_t seatedToStandingAbsolute
+    vr::HmdMatrix34_t const seatedToStandingAbsolute
         = vr::VRSystem()->GetSeatedZeroPoseToStandingAbsoluteTrackingPose();
     qInfo() << "GetSeatedZeroPoseToStandingAbsoluteTrackingPose";
     outputLogHmdMatrix( seatedToStandingAbsolute );
@@ -248,14 +250,15 @@ void MoveCenterTabController::outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix )
     qInfo() << hmdMatrix.m[2][0] << "\t\t\t" << hmdMatrix.m[2][1] << "\t\t\t"
             << hmdMatrix.m[2][2] << "\t\t\t" << hmdMatrix.m[2][3];
 
-    float atan2Yaw = std::atan2( hmdMatrix.m[0][2], hmdMatrix.m[2][2] );
+    float const atan2Yaw = std::atan2( hmdMatrix.m[0][2], hmdMatrix.m[2][2] );
     qInfo() << "atan2 Yaw Calculation:  " << atan2Yaw << "radians  "
             << ( ( static_cast<double>( atan2Yaw ) * k_radiansToCentidegrees )
                  / 100 )
             << "degrees";
 
-    vr::HmdQuaternion_t hmdQuat = quaternion::fromHmdMatrix34( hmdMatrix );
-    double hmdQuatYaw = quaternion::getYaw( hmdQuat );
+    vr::HmdQuaternion_t const hmdQuat
+        = quaternion::fromHmdMatrix34( hmdMatrix );
+    double const hmdQuatYaw = quaternion::getYaw( hmdQuat );
     qInfo() << "Quaternion Yaw Calculation:  " << hmdQuatYaw << "radians  "
             << ( ( hmdQuatYaw * k_radiansToCentidegrees ) / 100 ) << "degrees";
     qInfo() << "";
@@ -348,11 +351,11 @@ void MoveCenterTabController::setRotation( int value, bool notify )
             return;
         }
 
-        double angle = ( value - m_rotation ) * k_centidegreesToRadians;
+        double const angle = ( value - m_rotation ) * k_centidegreesToRadians;
 
         // Get hmd pose matrix.
-        vr::TrackedDevicePose_t
-            devicePosesForRot[vr::k_unMaxTrackedDeviceCount];
+        std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount>
+            devicePosesForRot;
 
         // source must be current universe
         if ( m_trackingUniverse == vr::TrackingUniverseSeated )
@@ -360,7 +363,7 @@ void MoveCenterTabController::setRotation( int value, bool notify )
             vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
                 vr::TrackingUniverseSeated,
                 0.0f,
-                devicePosesForRot,
+                devicePosesForRot.data(),
                 vr::k_unMaxTrackedDeviceCount );
         }
         else
@@ -368,23 +371,25 @@ void MoveCenterTabController::setRotation( int value, bool notify )
             vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
                 vr::TrackingUniverseStanding,
                 0.0f,
-                devicePosesForRot,
+                devicePosesForRot.data(),
                 vr::k_unMaxTrackedDeviceCount );
         }
 
-        vr::HmdMatrix34_t oldHmdPos
+        vr::HmdMatrix34_t const oldHmdPos
             = devicePosesForRot[0].mDeviceToAbsoluteTracking;
 
         // Set up xyz coordinate values from pose matrix.
-        double oldHmdXyz[3] = { static_cast<double>( oldHmdPos.m[0][3] ),
-                                static_cast<double>( oldHmdPos.m[1][3] ),
-                                static_cast<double>( oldHmdPos.m[2][3] ) };
-        double newHmdXyz[3] = { static_cast<double>( oldHmdPos.m[0][3] ),
-                                static_cast<double>( oldHmdPos.m[1][3] ),
-                                static_cast<double>( oldHmdPos.m[2][3] ) };
+        std::array<double, 3> oldHmdXyz
+            = { static_cast<double>( oldHmdPos.m[0][3] ),
+                static_cast<double>( oldHmdPos.m[1][3] ),
+                static_cast<double>( oldHmdPos.m[2][3] ) };
+        std::array<double, 3> newHmdXyz
+            = { static_cast<double>( oldHmdPos.m[0][3] ),
+                static_cast<double>( oldHmdPos.m[1][3] ),
+                static_cast<double>( oldHmdPos.m[2][3] ) };
 
         // Convert oldHmdXyz into un-rotated coordinates.
-        double oldAngle = -m_rotation * k_centidegreesToRadians;
+        double const oldAngle = -m_rotation * k_centidegreesToRadians;
         rotateCoordinates( oldHmdXyz, oldAngle );
 
         // Set newHmdXyz to have additional rotation from incoming angle change.
@@ -392,7 +397,7 @@ void MoveCenterTabController::setRotation( int value, bool notify )
 
         // find difference in x,z offset due to incoming angle change
         // (coordinates are in un-rotated axis).
-        double hmdRotDiff[3]
+        std::array<double, 3> const hmdRotDiff
             = { oldHmdXyz[0] - newHmdXyz[0], 0, oldHmdXyz[2] - newHmdXyz[2] };
 
         m_rotation = value;
@@ -720,7 +725,7 @@ void MoveCenterTabController::setDragMult( float value, bool notify )
         valuesubmit = 20.0;
     }
     settings::setSetting( settings::DoubleSetting::PLAYSPACE_dragMult,
-                          static_cast<double>( valuesubmit ) );
+                          valuesubmit );
 
     if ( notify )
     {
@@ -948,6 +953,8 @@ void MoveCenterTabController::incomingZeroReset()
     }
 }
 
+// TODO: remove when fixed
+// NOLINTNEXTLINE(misc-no-recursion)
 void MoveCenterTabController::reset()
 {
     // DO NOT attempt to apply autosaved profile on reset, as it is triggered by
@@ -986,7 +993,7 @@ void MoveCenterTabController::reset()
 
     // For Center Marker
     // Needs to happen after apply chaperone
-    if ( parent->m_chaperoneTabController.m_centerMarkerOverlayNeedsUpdate )
+    if ( parent->m_chaperoneTabController.centerMarkerOverlayNeedsUpdate() )
     {
         m_offsetmatrix = utils::k_forwardUpMatrix;
         if ( m_trackingUniverse == vr::TrackingUniverseSeated )
@@ -1020,9 +1027,9 @@ void MoveCenterTabController::zeroOffsets()
     vr::HmdMatrix34_t currentCenter;
     vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
         &currentCenter );
-    double currentCenterYaw = static_cast<double>(
+    double const currentCenterYaw = static_cast<double>(
         std::atan2( currentCenter.m[0][2], currentCenter.m[2][2] ) );
-    double currentCenterXyz[3]
+    std::array<double, 3> currentCenterXyz
         = { static_cast<double>( currentCenter.m[0][3] ),
             static_cast<double>( currentCenter.m[1][3] ),
             static_cast<double>( currentCenter.m[2][3] ) };
@@ -1173,7 +1180,7 @@ void MoveCenterTabController::resetHmdYawTotal()
     m_hmdYawTurnCount = 0;
 }
 
-void MoveCenterTabController::clampVelocity( double* velocity )
+void MoveCenterTabController::clampVelocity( std::array<double, 3> velocity )
 {
     for ( int i = 0; i < 3; i++ )
     {
@@ -1202,11 +1209,11 @@ void MoveCenterTabController::updateChaperoneResetData()
     unsigned currentQuadCount = 0;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
                                                            &currentQuadCount );
-    m_collisionBoundsForReset = new vr::HmdQuad_t[currentQuadCount];
+    m_collisionBoundsForReset.clear();
+    m_collisionBoundsForReset.resize( currentQuadCount );
     // m_collisionBoundsForOffset = new vr::HmdQuad_t[currentQuadCount];
-    m_collisionBoundsCountForReset = currentQuadCount;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
-        m_collisionBoundsForReset, &currentQuadCount );
+        m_collisionBoundsForReset.data(), &currentQuadCount );
 
     vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
         &m_universeCenterForReset );
@@ -1228,10 +1235,11 @@ void MoveCenterTabController::updateChaperoneResetData()
 
 void MoveCenterTabController::applyChaperoneResetData()
 {
-    if ( m_collisionBoundsCountForReset > 0 )
+    if ( !m_collisionBoundsForReset.empty() )
     {
         vr::VRChaperoneSetup()->SetWorkingCollisionBoundsInfo(
-            m_collisionBoundsForReset, m_collisionBoundsCountForReset );
+            m_collisionBoundsForReset.data(),
+            static_cast<uint32_t>( m_collisionBoundsForReset.size() ) );
     }
     // zeroOffsets();
     // These commands set play area as centered which is un-desirable
@@ -1253,14 +1261,14 @@ void MoveCenterTabController::applyChaperoneResetData()
 
 void MoveCenterTabController::setBoundsBasisHeight( float newHeight )
 {
-    if ( m_collisionBoundsCountForReset > 0 )
+    if ( !m_collisionBoundsForReset.empty() )
     {
-        for ( unsigned b = 0; b < m_collisionBoundsCountForReset; b++ )
+        for ( auto& bounds : m_collisionBoundsForReset )
         {
-            m_collisionBoundsForReset[b].vCorners[0].v[1] = 0.0;
-            m_collisionBoundsForReset[b].vCorners[1].v[1] = newHeight;
-            m_collisionBoundsForReset[b].vCorners[2].v[1] = newHeight;
-            m_collisionBoundsForReset[b].vCorners[3].v[1] = 0.0;
+            bounds.vCorners[0].v[1] = 0.0;
+            bounds.vCorners[1].v[1] = newHeight;
+            bounds.vCorners[2].v[1] = newHeight;
+            bounds.vCorners[3].v[1] = 0.0;
         }
 
         // updateCollisionBoundsForOffset();
@@ -1271,24 +1279,15 @@ void MoveCenterTabController::setBoundsBasisHeight( float newHeight )
 float MoveCenterTabController::getBoundsBasisMaxY()
 {
     float result = FP_NAN;
-    if ( m_collisionBoundsCountForReset > 0 )
+    if ( !m_collisionBoundsForReset.empty() )
     {
-        for ( unsigned b = 0; b < m_collisionBoundsCountForReset; b++ )
+        for ( auto& bounds : m_collisionBoundsForReset )
         {
-            int ci;
-            if ( m_collisionBoundsForReset[b].vCorners[1].v[1]
-                 >= m_collisionBoundsForReset[b].vCorners[2].v[1] )
+            int const cindex
+                = bounds.vCorners[1].v[1] >= bounds.vCorners[2].v[1] ? 1 : 2;
+            if ( std::isnan( result ) || result < bounds.vCorners[cindex].v[1] )
             {
-                ci = 1;
-            }
-            else
-            {
-                ci = 2;
-            }
-            if ( std::isnan( result )
-                 || result < m_collisionBoundsForReset[b].vCorners[ci].v[1] )
-            {
-                result = m_collisionBoundsForReset[b].vCorners[ci].v[1];
+                result = bounds.vCorners[cindex].v[1];
             }
         }
     }
@@ -2078,13 +2077,13 @@ void MoveCenterTabController::updateHmdRotationCounter(
     }
 
     // Get hmd pose matrix (in rotated coordinates)
-    vr::HmdMatrix34_t hmdMatrix = hmdPose.mDeviceToAbsoluteTracking;
+    vr::HmdMatrix34_t const hmdMatrix = hmdPose.mDeviceToAbsoluteTracking;
 
     // Set up (un)rotation matrix
     vr::HmdMatrix34_t hmdMatrixRotMat;
     vr::HmdMatrix34_t hmdMatrixAbsolute;
     utils::initRotationMatrix(
-        hmdMatrixRotMat, 1, static_cast<float>( angle ) );
+        hmdMatrixRotMat, utils::MatrixAxis_Y, static_cast<float>( angle ) );
 
     // Get hmdMatrixAbsolute in un-rotated coordinates.
     utils::matMul33( hmdMatrixAbsolute, hmdMatrixRotMat, hmdMatrix );
@@ -2101,7 +2100,7 @@ void MoveCenterTabController::updateHmdRotationCounter(
         return;
     }
 
-    double hmdYawCurrent = quaternion::getYaw( m_hmdQuaternion );
+    double const hmdYawCurrent = quaternion::getYaw( m_hmdQuaternion );
     // double hmdPitchCurrent = quaternion::getPitch( m_hmdQuaternion );
     // double hmdRollCurrent = quaternion::getRoll( m_hmdQuaternion );
 
@@ -2119,7 +2118,7 @@ void MoveCenterTabController::updateHmdRotationCounter(
     if ( std::abs( m_hmdYawOld - hmdYawCurrent ) > M_PI )
     {
         // Checks if the HMD is inverted, and skips if it is
-        bool isInverted = ( hmdMatrixAbsolute.m[1][1] < 0 );
+        bool const isInverted = ( hmdMatrixAbsolute.m[1][1] < 0 );
         if ( !isInverted )
         {
             if ( m_hmdYawOld >= 0 )
@@ -2177,18 +2176,18 @@ void MoveCenterTabController::updateHandDrag(
         return;
     }
 
-    vr::TrackedDevicePose_t* movePose;
+    vr::TrackedDevicePose_t* movePose = nullptr;
     movePose = devicePoses + moveHandId;
     if ( m_seatedModeDetected )
     {
-        vr::TrackedDevicePose_t
-            seatedDevicePoses[vr::k_unMaxTrackedDeviceCount];
+        std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount>
+            seatedDevicePoses;
         vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
             vr::TrackingUniverseSeated,
             0.0f,
-            seatedDevicePoses,
+            seatedDevicePoses.data(),
             vr::k_unMaxTrackedDeviceCount );
-        movePose = seatedDevicePoses + moveHandId;
+        movePose = &seatedDevicePoses[moveHandId];
     }
 
     if ( !movePose->bPoseIsValid || !movePose->bDeviceIsConnected
@@ -2198,14 +2197,14 @@ void MoveCenterTabController::updateHandDrag(
         return;
     }
 
-    double relativeControllerPosition[] = {
+    std::array<double, 3> relativeControllerPosition = {
         static_cast<double>( movePose->mDeviceToAbsoluteTracking.m[0][3] ),
         static_cast<double>( movePose->mDeviceToAbsoluteTracking.m[1][3] ),
         static_cast<double>( movePose->mDeviceToAbsoluteTracking.m[2][3] )
     };
 
     rotateCoordinates( relativeControllerPosition, -angle );
-    float absoluteControllerPosition[] = {
+    std::array<float, 3> const absoluteControllerPosition = {
         static_cast<float>( relativeControllerPosition[0] ) + m_offsetX,
         static_cast<float>( relativeControllerPosition[1] ) + m_offsetY,
         static_cast<float>( relativeControllerPosition[2] ) + m_offsetZ,
@@ -2213,7 +2212,7 @@ void MoveCenterTabController::updateHandDrag(
 
     if ( m_lastMoveHand == m_activeDragHand )
     {
-        double diff[3] = {
+        std::array<double, 3> diff = {
             static_cast<double>( absoluteControllerPosition[0]
                                  - m_lastControllerPosition[0] ),
             static_cast<double>( absoluteControllerPosition[1]
@@ -2251,7 +2250,7 @@ void MoveCenterTabController::updateHandDrag(
             m_offsetZ += static_cast<float>( diff[2] );
         }
 
-        double secondsSinceLastDragUpdate
+        double const secondsSinceLastDragUpdate
             = std::chrono::duration<double>( std::chrono::steady_clock::now()
                                              - m_lastDragUpdateTimePoint )
                   .count();
@@ -2296,7 +2295,7 @@ void MoveCenterTabController::updateHandTurn(
     }
     // Get hand's rotation.
     // handMatrix is in rotated coordinates.
-    vr::HmdMatrix34_t handMatrix = rotatePose->mDeviceToAbsoluteTracking;
+    vr::HmdMatrix34_t const handMatrix = rotatePose->mDeviceToAbsoluteTracking;
 
     // We need un-rotated coordinates for valid comparison between
     // handQuaternion and lastHandQuaternion. Set up (un)rotation
@@ -2304,7 +2303,7 @@ void MoveCenterTabController::updateHandTurn(
     vr::HmdMatrix34_t handMatrixRotMat;
     vr::HmdMatrix34_t handMatrixAbsolute;
     utils::initRotationMatrix(
-        handMatrixRotMat, 1, static_cast<float>( angle ) );
+        handMatrixRotMat, utils::MatrixAxis_Y, static_cast<float>( angle ) );
 
     // Get handMatrixAbsolute in un-rotated coordinates.
     utils::matMul33( handMatrixAbsolute, handMatrixRotMat, handMatrix );
@@ -2326,12 +2325,12 @@ void MoveCenterTabController::updateHandTurn(
         {
             // Construct a quaternion representing difference
             // between old hand and new hand.
-            vr::HmdQuaternion_t handDiffQuaternion = quaternion::multiply(
+            vr::HmdQuaternion_t const handDiffQuaternion = quaternion::multiply(
                 m_handQuaternion,
                 quaternion::conjugate( m_lastHandQuaternion ) );
 
             // Calculate yaw from quaternion.
-            double handYawDiff = quaternion::getYaw( handDiffQuaternion );
+            double const handYawDiff = quaternion::getYaw( handDiffQuaternion );
 
             int newRotationAngleDeg = static_cast<int>(
                 round( handYawDiff * k_radiansToCentidegrees ) + m_rotation );
@@ -2360,7 +2359,7 @@ void MoveCenterTabController::updateGravity()
     {
         currentGravity *= -1.0f;
     }
-    double secondsSinceLastGravityUpdate
+    double const secondsSinceLastGravityUpdate
         = std::chrono::duration<double>( std::chrono::steady_clock::now()
                                          - m_lastGravityUpdateTimePoint )
               .count();
@@ -2445,7 +2444,7 @@ void MoveCenterTabController::updateGravity()
         {
             // get ratio of how much from y velocity applied to overcome y
             // offset and get down to ground.
-            double ratioVelocityScaledByTouchdown
+            double const ratioVelocityScaledByTouchdown
                 = 1
                   - ( ( static_cast<double>( m_offsetY - m_gravityFloor )
                         + ( m_velocity[1] * secondsSinceLastGravityUpdate ) )
@@ -2500,6 +2499,8 @@ void MoveCenterTabController::updateGravity()
     m_velocity[2] = 0.0;
 }
 
+// TODO: remove when fixed
+// NOLINTNEXTLINE(misc-no-recursion)
 void MoveCenterTabController::updateSpace( bool forceUpdate )
 {
     // Do nothing if all offsets and rotation are still the same...
@@ -2529,7 +2530,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     vr::HmdMatrix34_t rotationMatrix;
     utils::initRotationMatrix(
         rotationMatrix,
-        1,
+        utils::MatrixAxis_Y,
         static_cast<float>( m_rotation * k_centidegreesToRadians ) );
     utils::matMul33(
         offsetUniverseCenter, rotationMatrix, m_universeCenterForReset );
@@ -2562,10 +2563,10 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
 
     // check if we just pushed offsetUniverseCenter out of bounds (40km)
     // (we reuse offsetUniverseCenterYaw to rotate the chaperone also)
-    double offsetUniverseCenterYaw = static_cast<double>( std::atan2(
+    double const offsetUniverseCenterYaw = static_cast<double>( std::atan2(
         offsetUniverseCenter.m[0][2], offsetUniverseCenter.m[2][2] ) );
 
-    double offsetUniverseCenterXyz[3]
+    std::array<double, 3> offsetUniverseCenterXyz
         = { static_cast<double>( offsetUniverseCenter.m[0][3] ),
             static_cast<double>( offsetUniverseCenter.m[1][3] ),
             static_cast<double>( offsetUniverseCenter.m[2][3] ) };
@@ -2667,10 +2668,11 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     }
 
     // Center Marker for playspace.
-    if ( parent->m_chaperoneTabController.m_centerMarkerOverlayNeedsUpdate )
+    if ( parent->m_chaperoneTabController.centerMarkerOverlayNeedsUpdate() )
     {
         // Set Unrotated Coordinates
-        float universePlayCenterTempCoords[3] = { 0.0f, 0.0f, 0.0f };
+        std::array<float, 3> universePlayCenterTempCoords
+            = { 0.0f, 0.0f, 0.0f };
         universePlayCenterTempCoords[0]
             -= offsetUniverseCenter.m[0][3] - m_universeCenterForReset.m[0][3];
         universePlayCenterTempCoords[1]
@@ -2686,7 +2688,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         vr::HmdMatrix34_t rotMatrix;
         utils::initRotationMatrix(
             rotMatrix,
-            1,
+            utils::MatrixAxis_Y,
             static_cast<float>( -( ( m_rotation * k_centidegreesToRadians )
                                    + offsetUniverseCenterYaw ) ) );
 
@@ -2715,7 +2717,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
 
     vr::VRChaperoneSetup()->ShowWorkingSetPreview();
 
-    if ( m_collisionBoundsCountForReset > 0 )
+    if ( !m_collisionBoundsForReset.empty() )
     {
         parent->chaperoneUtils().loadChaperoneData( false );
     }
@@ -2750,7 +2752,7 @@ void MoveCenterTabController::eventLoopTick(
             reset();
             vr::VRChaperoneSetup()->RevertWorkingCopy();
         }
-        setTrackingUniverse( int( universe ) );
+        setTrackingUniverse( static_cast<int>( universe ) );
         // TODO set to allow.
         return;
     }
@@ -2786,10 +2788,10 @@ void MoveCenterTabController::eventLoopTick(
     }
     else
     {
-        setTrackingUniverse( int( universe ) );
+        setTrackingUniverse( static_cast<int>( universe ) );
 
         // get current space rotation in radians
-        double angle = m_rotation * k_centidegreesToRadians;
+        double const angle = m_rotation * k_centidegreesToRadians;
 
         // hmd rotations stats counting doesn't need to be smooth, so we
         // skip some frames for performance

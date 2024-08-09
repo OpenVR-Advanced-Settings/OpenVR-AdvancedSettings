@@ -61,9 +61,8 @@ public:
     Q_INVOKABLE QString currentStatusMessage();
     Q_INVOKABLE float currentStatusMessageTimeout();
 
-    bool canUndo() const;
+    [[nodiscard]] bool canUndo() const;
 
-public slots:
     void fixFloorClicked();
     void recenterClicked();
     void undoFixFloorClicked();
