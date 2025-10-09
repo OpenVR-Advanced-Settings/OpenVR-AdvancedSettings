@@ -1,7 +1,7 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.3
-import ovras.advsettings 1.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import ovras.advsettings
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 import "common"
 import "utilities_page"
@@ -33,7 +33,7 @@ MyStackViewPage {
                        text: "   SteamVR"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(steamVRPage)
                        }
                    }
@@ -45,7 +45,7 @@ MyStackViewPage {
                        text: "   Chaperone"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(chaperonePage)
                        }
                    }
@@ -57,7 +57,7 @@ MyStackViewPage {
                        text: "   Offsets"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(playspacePage)
                        }
                    }
@@ -69,7 +69,7 @@ MyStackViewPage {
                        text: "   Motion"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(motionPage)
                        }
                    }
@@ -80,7 +80,7 @@ MyStackViewPage {
                        text: "   Rotation"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(rotationPage)
                        }
                    }
@@ -92,7 +92,7 @@ MyStackViewPage {
                        text: "   Space Fix"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(fixFloorPage)
                        }
                    }
@@ -104,7 +104,7 @@ MyStackViewPage {
                        text: "   Audio"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(audioPage)
                        }
                    }
@@ -116,7 +116,7 @@ MyStackViewPage {
                        text: "   Video"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(videoPage)
                        }
                    }
@@ -128,7 +128,7 @@ MyStackViewPage {
                        text: "   Utilities"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(utilitiesPage)
                        }
                    }
@@ -141,7 +141,7 @@ MyStackViewPage {
                        text: "   Statistics"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(statisticsPage)
                        }
                    }
@@ -169,7 +169,7 @@ MyStackViewPage {
                        text: "   Settings"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(settingsPage)
                        }
                    }
@@ -470,9 +470,8 @@ MyStackViewPage {
        summaryMicMuteToggle.checked = AudioTabController.micMuted
        summaryPttToggle.checked = AudioTabController.pttEnabled
    }
-
    Connections {
-       target: OverlayController
+       target: OverlayController 
        function onNewVersionDetectedChanged() {
            if (OverlayController.newVersionDetected)
            {

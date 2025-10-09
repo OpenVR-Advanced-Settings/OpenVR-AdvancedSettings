@@ -1,7 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
-// Needed for MyResources in the default folder.
+// Needed for OverlayControllers in the default folder.
 import ".."
 
 CheckBox {
@@ -60,6 +60,9 @@ CheckBox {
     }
 
     onClicked: {
-        MyResources.playActivationSound()
+        OverlayController.playActivationSound()
+    }
+    Connections {
+    target: OverlayController 
     }
 }

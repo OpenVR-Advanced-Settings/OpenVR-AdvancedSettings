@@ -7,7 +7,7 @@
 #include "../settings/settings.h"
 #include "../settings/settings_object.h"
 #include "../utils/update_rate.h"
-#include "openvr/ovr_overlay_wrapper.h"
+#include "../openvr/ovr_overlay_wrapper.h"
 #ifdef _WIN32
 #    include "audiomanager/AudioManagerWindows.h"
 #elif __linux__
@@ -89,9 +89,9 @@ void AudioTabController::initStage2( OverlayController* var_parent )
     }
 
     m_pushToTalkValues.pushToTalkImg.reset(
-        new QImage( QString( ":/microphone/ptt_notification.png" ) ) );
+        new QImage( ":qt/qml/AdvancedSettings/src/res/img/microphone/ptt_notification.png" ) );
     m_pushToTalkValues.pushToMuteImg.reset(
-        new QImage( QString( ":/microphone/ptm_notification.png" ) ) );
+        new QImage( ":qt/qml/AdvancedSettings/src/res/img/microphone/ptm_notification.png" ) );
 
     auto* pushToImg = m_pushToTalkValues.pushToTalkImg.get();
     if ( settings::getSetting( settings::BoolSetting::AUDIO_micReversePtt ) )

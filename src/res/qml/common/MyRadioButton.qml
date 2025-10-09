@@ -19,6 +19,9 @@ RadioButton {
     }
 
     onClicked: {
-		MyResources.playActivationSound()
+		OverlayController.playActivationSound()
+    }
+    Connections {
+    target: OverlayController 
     }
 }

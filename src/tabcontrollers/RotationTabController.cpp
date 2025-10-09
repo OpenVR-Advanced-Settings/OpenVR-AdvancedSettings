@@ -40,9 +40,9 @@ void RotationTabController::initStage2( OverlayController* var_parent )
         return;
     }
     m_autoturnValues.autoturnImg.reset(
-        new QImage( QString( ":/rotation/autoturn.png" ) ) );
+        new QImage( ":qt/qml/AdvancedSettings/src/res/img/rotation/autoturn.png" ) );
     m_autoturnValues.noautoturnImg.reset(
-        new QImage( QString( ":/rotation/noautoturn.png" ) ) );
+        new QImage( ":qt/qml/AdvancedSettings/src/res/img/rotation/noautoturn.png" ) );
 
     ovr_overlay_wrapper::setOverlayFromQImage( m_autoturnValues.overlayHandle,
                                                *m_autoturnValues.autoturnImg );

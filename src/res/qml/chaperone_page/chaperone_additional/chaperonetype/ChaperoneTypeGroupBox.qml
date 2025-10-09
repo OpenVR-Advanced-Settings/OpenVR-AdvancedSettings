@@ -40,7 +40,7 @@ GroupBox {
                     Layout.preferredWidth: 200
                     onCheckedChanged: {
                         if(checked){
-                            MyResources.playActivationSound()
+                            OverlayController.playActivationSound()
                             ChaperoneTabController.setCollisionBoundStyle(0)
                         }
                     }
@@ -52,7 +52,7 @@ GroupBox {
                     Layout.preferredWidth: 200
                     onCheckedChanged: {
                         if(checked){
-                            MyResources.playActivationSound()
+                            OverlayController.playActivationSound()
                             ChaperoneTabController.setCollisionBoundStyle(1)
                         }
                     }
@@ -64,7 +64,7 @@ GroupBox {
                     Layout.preferredWidth: 200
                     onCheckedChanged: {
                         if(checked){
-                            MyResources.playActivationSound()
+                            OverlayController.playActivationSound()
                             ChaperoneTabController.setCollisionBoundStyle(2)
                         }
                     }
@@ -76,7 +76,7 @@ GroupBox {
                     Layout.preferredWidth: 200
                     onCheckedChanged: {
                         if(checked){
-                            MyResources.playActivationSound()
+                            OverlayController.playActivationSound()
                             ChaperoneTabController.setCollisionBoundStyle(3)
                         }
                     }
@@ -88,7 +88,7 @@ GroupBox {
                     Layout.preferredWidth: 200
                     onCheckedChanged: {
                         if(checked){
-                            MyResources.playActivationSound()
+                            OverlayController.playActivationSound()
                             ChaperoneTabController.setCollisionBoundStyle(4)
                         }
                     }
@@ -123,5 +123,8 @@ GroupBox {
             }
         }
 
+    }
+    Connections {
+    target: OverlayController 
     }
 }

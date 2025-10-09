@@ -4,20 +4,35 @@ project(AdvancedSettings VERSION 5.7.4 LANGUAGES CXX)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1)
 
-find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets QuickControls2 QuickDialogs2 Svg)
-find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS DBus)
 
-qt_standard_project_setup()
 
-if(QT_KNOWN_POLICY_QTP0001)
-    qt_policy(SET QTP0001 NEW)
-endif()
+#find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core)
+#find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets QuickControls2 QuickDialogs2 Svg)
+#find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS DBus)
+find_package(Qt6 REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets QuickControls2 QuickDialogs2 Svg Qml Core5Compat)
+find_package(Vulkan REQUIRED)
+
+qt_standard_project_setup(REQUIRES 6.8)
+
+#qt_standard_project_setup should cover these
+#include(GNUInstallDirs)
+#set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTOUIC ON)
+
+qt6_policy(SET QTP0001 NEW)
+qt6_policy(SET QTP0004 NEW)
+
+
+list(APPEND QML_IMPORT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/res/qml")
+message(STATUS "QML_IMPORT_PATH ${QML_IMPORT_PATH}")
+
 
 # ability to just put .qrc files into the source list
-set(CMAKE_AUTORCC ON)
+#set(CMAKE_AUTORCC ON)
+
 
 set(SRCS
     src/alarm_clock/vr_alarm.cpp
@@ -95,7 +110,7 @@ set(HEADERS
     src/quaternion/quaternion.h
     )
 
-set(QML_FILES
+set(QML_FILERC
     src/res/qml/utilities_page/keyboard_utils/KeyboardGroupBox.qml
     src/res/qml/utilities_page/media_keys/MediaControllerKeys.qml
     src/res/qml/utilities_page/media_keys/MediaButton.qml
@@ -171,22 +186,80 @@ set(QML_FILES
     src/res/qml/StatisticsPage.qml
 )
 
-set(RESOURCES src/res/resources.qrc)
+set(ResourcesRC
+    src/res/img/alarm/alarm_activated.png
+    src/res/img/audio/media_keys/outline_play_pause_white_24dp.svg
+    src/res/img/audio/media_keys/outline_skip_next_white_24dp.svg
+    src/res/img/audio/media_keys/outline_skip_previous_white_24dp.svg
+    src/res/img/audio/media_keys/outline_stop_white_24dp.svg
+    src/res/img/audio/microphone/mic_off.svg
+    src/res/img/audio/microphone/mic_on.svg
+    src/res/img/audio/microphone/ptm_notification.png
+    src/res/img/audio/microphone/ptt_notification.png
+    src/res/img/audio/microphone/ptt_notification.svg
+    src/res/img/audio/speaker/speaker_off.svg
+    src/res/img/audio/speaker/speaker_on.svg
+    src/res/img/battery/battery_0.png
+    src/res/img/battery/battery_1.png
+    src/res/img/battery/battery_2.png
+    src/res/img/battery/battery_3.png
+    src/res/img/battery/battery_4.png
+    src/res/img/battery/battery_5.png
+    src/res/img/chaperone/centermark.png
+    src/res/img/chaperone/centermarkl1.png
+    src/res/img/chaperone/centermarkl2.png
+    src/res/img/chaperone/centermarkl3.png
+    src/res/img/chaperone/centermarkr1.png
+    src/res/img/chaperone/centermarkr2.png
+    src/res/img/chaperone/centermarkr3.png
+    src/res/img/common/backarrow.svg
+    src/res/img/common/check.svg
+    src/res/img/icons/advicon256px.ico
+    src/res/img/icons/thumbicon.png
+    src/res/img/main_menu_icons/audio_tab_icon.svg
+    src/res/img/main_menu_icons/bindings_tab_icon.svg
+    src/res/img/main_menu_icons/chaperone_tab_icon.svg
+    src/res/img/main_menu_icons/motion_tab_icon.svg
+    src/res/img/main_menu_icons/offsets_tab_icon.svg
+    src/res/img/main_menu_icons/rotation_tab_icon.svg
+    src/res/img/main_menu_icons/settings_tab_icon.svg
+    src/res/img/main_menu_icons/space_fix_tab_icon.svg
+    src/res/img/main_menu_icons/statistics_tab_icon.svg
+    src/res/img/main_menu_icons/steamvr_tab_icon.svg
+    src/res/img/main_menu_icons/utilities_tab_icon.svg
+    src/res/img/main_menu_icons/video_tab_icon.svg
+    src/res/img/rotation/autoturn.png
+    src/res/img/rotation/noautoturn.png
+    src/res/img/rotation/noautoturn.svg
+    src/res/img/video/color.png
+    src/res/img/video/dimmer.png
+    src/res/sounds/alarm01.wav
+    src/res/sounds/click.wav
+    src/res/sounds/focus.wav
+)
 
-# make alias path relative to src/res/qml
-foreach(qml_file ${QML_FILES})
-    cmake_path(RELATIVE_PATH qml_file BASE_DIRECTORY src/res/qml OUTPUT_VARIABLE qml_alias)
-    set_source_files_properties(${qml_file} PROPERTIES QT_RESOURCE_ALIAS ${qml_alias})
-endforeach()
+#set_source_files_properties(src/res/qml/common/MyResources.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+#qt_add_executable(AdvancedSettings WIN32 MACOSX_BUNDLE ${SRCS} ${HEADERS})
+qt_add_executable(AdvancedSettings
+    ${SRCS}
+    ${HEADERS}
+)
+#src/res/resources.qrc
 
-set_source_files_properties(src/res/qml/common/MyResources.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
-
-qt_add_executable(AdvancedSettings WIN32 MACOSX_BUNDLE ${SRCS} ${RESOURCES} ${HEADERS})
+qt_add_qml_module(AdvancedSettings
+        URI AdvancedSettings
+        QML_FILES
+            ${QML_FILERC}
+        RESOURCES
+            ${ResourcesRC}
+        VERSION ${PROJECT_VERSION}
+)
 
 target_include_directories(AdvancedSettings PUBLIC
-    src
     third-party/nlohmann
-    third-party/openvr/headers)
+    third-party/openvr/headers
+    ${Vulkan_INCLUDE_DIR}
+)
 
 # Avoid collision between executable name and QML module directory (QTBUG-98568).
 if(NOT WIN32 AND NOT APPLE)
@@ -197,21 +270,27 @@ target_compile_definitions(AdvancedSettings PRIVATE
     APPLICATION_VERSION=\"${PROJECT_VERSION}\"
 )
 
-find_library(OPENVR_LIBRARIES
-    NAMES
-      openvr_api
-    PATHS
-      ${CMAKE_CURRENT_SOURCE_DIR}/third-party/openvr/bin
-      ${CMAKE_CURRENT_SOURCE_DIR}/third-party/openvr/lib
-    PATH_SUFFIXES
-      linux64
-      win64
-    NO_DEFAULT_PATH
-    NO_CMAKE_FIND_ROOT_PATH)
+#find_library(OPENVR_LIBRARIES
+#    NAMES
+#      openvr_api
+#    PATHS
+#      ${CMAKE_CURRENT_SOURCE_DIR}/third-party/openvr/bin
+#      ${CMAKE_CURRENT_SOURCE_DIR}/third-party/openvr/lib
+#    PATH_SUFFIXES
+#      linux64
+#      win64
+#    NO_DEFAULT_PATH
+#    NO_CMAKE_FIND_ROOT_PATH)
+
+if (WIN32)
+    target_link_directories(AdvancedSettings PRIVATE
+            ${CMAKE_SOURCE_DIR}/third-party/openvr/lib/win64
+    )
+endif ()
 
 target_link_libraries(AdvancedSettings PRIVATE
-    Qt::Core
     Qt::Gui
+    Qt6::Core5Compat
     # For QRhi
     Qt::GuiPrivate
     Qt::Multimedia
@@ -222,227 +301,243 @@ target_link_libraries(AdvancedSettings PRIVATE
     Qt::QuickControls2
     Qt::QuickDialogs2
     Qt::Svg
-    ${OPENVR_LIBRARIES}
+    Qt::Qml
+    openvr_api
+    
+)
+#${OPENVR_LIBRARIES}
+
+#qt6_add_resources(RESOURCES src/res/resources.qrc)
+#target_sources(AdvancedSettings PRIVATE ${RESOURCES})
+
+#qt_add_qml_module(AdvancedSettings
+#    URI AdvancedSettings
+#    VERSION ${PROJECT_VERSION}
+#    QML_FILES ${QML_FILES}
+#)
+
+set(COPY_DEST_DIR "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>")
+set_target_properties(AdvancedSettings PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${COPY_DEST_DIR}"
 )
 
-qt_add_qml_module(AdvancedSettings
-    URI AdvancedSettings
-    VERSION ${PROJECT_VERSION}
-    QML_FILES ${QML_FILES}
+# resCopy
+add_custom_command(TARGET AdvancedSettings POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/src/res" "${COPY_DEST_DIR}/res"
 )
 
+# readmeCopy
+add_custom_command(TARGET AdvancedSettings POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${CMAKE_SOURCE_DIR}/Readme.md" "${COPY_DEST_DIR}/Readme.md"
+)
 
-if(GCC)
-    target_compile_options(AdvancedSettings
-        -Wcast-align
-        -Wconversion
-        -Wdouble-promotion
-        -Wduplicated-branches
-        -Wduplicated-cond
-        -Wextra
-        -Wformat=2
-        -Wlogical-op
-        -Wno-sign-conversion
-        -Wnon-virtual-dtor
-        -Wnull-dereference
-        -Wold-style-cast
-        -Woverloaded-virtual
-        -Wpedantic
-        -Wrestrict
-        -Wshadow
-        -Wunused
-        -Wzero-as-null-pointer-constant
-        -flto
+# licenseCopy
+add_custom_command(TARGET AdvancedSettings POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/LICENSE" "${COPY_DEST_DIR}/LICENSE"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/third-party/openvr/LICENSE-VALVE" "${COPY_DEST_DIR}/LICENSE-VALVE"
+        #COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        #"${CMAKE_SOURCE_DIR}/third-party/magic_enum/LICENSE" "${COPY_DEST_DIR}/LICENSE-MAGIC-ENUM"
+)
+
+# packageFoldersCopy
+add_custom_command(TARGET AdvancedSettings POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/src/package_files/default_action_manifests"
+        "${COPY_DEST_DIR}/default_action_manifests"
+)
+
+# packageFilesCopy
+add_custom_command(TARGET AdvancedSettings POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/src/package_files/action_manifest.json" "${COPY_DEST_DIR}/action_manifest.json"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/src/package_files/manifest.vrmanifest" "${COPY_DEST_DIR}/manifest.vrmanifest"
+)
+if (WIN32)
+    add_custom_command(TARGET AdvancedSettings POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/src/package_files/qt.conf" "${COPY_DEST_DIR}/qt.conf"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/src/package_files/restartvrserver.bat" "${COPY_DEST_DIR}/restartvrserver.bat"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/src/package_files/startdesktopmode.bat" "${COPY_DEST_DIR}/startdesktopmode.bat"
     )
+endif ()
 
-    if(warnings_as_errors)
-        target_compile_options(AdvancedSettings
-            -Werror
-        )
-    endif()
-endif()
-
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(AdvancedSettings
-        --system-header-prefix=qt
-        --system-header-prefix=third-party
-        -Wcast-align
-        -Wconversion
-        -Wdouble-promotion
-        -Wextra
-        -Wextra-semi
-        -Wformat=2
-        -Wmissing-variable-declarations
-        -Wmost
-        -Wno-sign-conversion
-        -Wnon-virtual-dtor
-        -Wold-style-cast
-        -Woverloaded-virtual
-        -Wpedantic
-        -Wshadow
-        -Wunused
-        -Wzero-as-null-pointer-constant
-        -flto
+# openvrApiCopy
+if (WIN32)
+    add_custom_command(TARGET AdvancedSettings POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/third-party/openvr/bin/win64/openvr_api.dll" "${COPY_DEST_DIR}/openvr_api.dll"
     )
-    if(warnings_as_errors)
-        target_compile_options(AdvancedSettings
-            -Werror
-        )
-    endif()
-endif()
-
-if(debugSymbolsAndLogs)
-    target_compile_definitions(AdvancedSettings PRIVATE
-        ENABLE_DEBUG_LOGGING
+else ()
+    add_custom_command(TARGET AdvancedSettings POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/third-party/openvr/lib/linux64/libopenvr_api.so" "${COPY_DEST_DIR}/libopenvr_api.so"
     )
-endif()
+endif ()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    cmake_path(GET QT_DIR PARENT_PATH QT_ROOT)
-    cmake_path(GET QT_ROOT PARENT_PATH QT_ROOT)
-    cmake_path(GET QT_ROOT PARENT_PATH QT_ROOT)
+# opensslCopy
+if (WIN32)
+    add_custom_command(TARGET AdvancedSettings POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/third-party/openssl/libcrypto-1_1-x64.dll" "${COPY_DEST_DIR}/libcrypto-1_1-x64.dll"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/third-party/openssl/libssl-1_1-x64.dll" "${COPY_DEST_DIR}/libssl-1_1-x64.dll"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/third-party/openssl/LICENSE-OPENSSL" "${COPY_DEST_DIR}/LICENSE-OPENSSL"
+    )
+endif ()
 
-    cmake_path(NATIVE_PATH QT_ROOT NORMALIZE NATIVE_QT_ROOT)
-    cmake_path(NATIVE_PATH QT_DIR NORMALIZE NATIVE_QT_DIR)
-    cmake_path(NATIVE_PATH PROJECT_SOURCE_DIR NORMALIZE NATIVE_PROJECT_SOURCE_DIR)
+target_include_directories(AdvancedSettings PRIVATE
+        third-party/openvr/headers
+        third-party/policyconfig
+)
 
-    # Needs to be executed: Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process
-    configure_file(build_scripts/win/env.ps1.in env.ps1)
-    configure_file(build_scripts/win/env.sh.in env.sh @ONLY)
-
-    # Adds default qt plugins path
-    configure_file(build_scripts/win/qt.conf.in qt.conf ESCAPE_QUOTES)
-
-    target_sources(AdvancedSettings PUBLIC
-        src/keyboard_input/input_sender_win.cpp
-        src/media_keys/media_keys_win.cpp
-        src/tabcontrollers/audiomanager/AudioManagerWindows.cpp
+if (WIN32)
+    target_sources(AdvancedSettings PRIVATE
+            src/keyboard_input/input_sender_win.cpp
+            src/media_keys/media_keys_win.cpp
+            src/tabcontrollers/audiomanager/AudioManagerWindows.cpp
+            src/tabcontrollers/audiomanager/AudioManagerWindows.h
     )
 
     target_link_libraries(AdvancedSettings PRIVATE
-        ole32
-        user32
+            ole32
+            user32
     )
-    target_include_directories(AdvancedSettings PUBLIC third-party/policyconfig)
 
-    target_compile_definitions(AdvancedSettings PRIVATE
-            _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+    if (MSVC)
+        target_compile_definitions(AdvancedSettings PRIVATE
+                _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
         )
-    if(MSVC)
-        target_compile_options(AdvancedSettings PUBLIC
-            /Gw
-            /W4
-            /permissive-
-            /w14254
-            /w14263
-            /w14265
-            /w14287
-            /w14296
-            /w14311
-            /w14545
-            /w14546
-            /w14547
-            /w14549
-            /w14555
-            /w14640
-            /w14826
-            /w14905
-            /w14906
-            /w14928
-            /wd4127
-            /we4289
+        target_compile_options(AdvancedSettings PRIVATE
+                /GL /Gw /W4 /permissive- /w14254 /w14263 /w14265 /w14287 /w14296 /w14311
+                /w14545 /w14546 /w14547 /w14549 /w14555 /w14640 /w14826 /w14905 /w14906
+                /w14928 /wd4127 /we4289 /Zc:__cplusplus
         )
+        if (warnings_as_errors)
+            target_compile_options(AdvancedSettings PRIVATE /WX)
+        endif ()
+    endif ()
+elseif (UNIX)
+    if (NOT APPLE AND NOT noX11)
+        target_sources(AdvancedSettings PRIVATE
+                src/keyboard_input/input_sender_X11.cpp
+        )
+        find_package(X11 REQUIRED)
+        target_link_libraries(AdvancedSettings PRIVATE ${X11_LIBRARIES})
+    elseif (NOT APPLE AND noX11)
+        target_sources(AdvancedSettings PRIVATE
+                src/keyboard_input/input_sender_dummy.cpp
+        )
+    endif ()
 
-        if(warnings_as_errors)
-            target_compile_options(AdvancedSettings
-                /WX
-            )
-        endif()
-    elseif(win32-clang-msvc)
-        target_compile_options(AdvancedSettings
-            -Wcast-align
-            -Wdouble-promotion
-            -Wextra
-            -Wformat=2
-            -Wmissing-variable-declarations
-            -Wmost
-            -Wnon-virtual-dtor
-            -Wold-style-cast
-            -Woverloaded-virtual
-            -Wshadow
-            -Wunused
-            -flto
-            /Gw
-            /W4
-            /imsvc /imsvc /imsvc
-            /w14254
-            /w14263
-            /w14265
-            /w14287
-            /w14296
-            /w14311
-            /w14545
-            /w14546
-            /w14547
-            /w14549
-            /w14555
-            /w14640
-            /w14826
-            /w14905
-            /w14906
-            /w14928
-            /wd4127
-            /we4289
+    if (NOT APPLE AND NOT noDBUS)
+        target_sources(AdvancedSettings PRIVATE
+                src/media_keys/media_keys_dbus.cpp
         )
-    endif()
+        find_package(Qt6 OPTIONAL_COMPONENTS DBus)
+        target_link_libraries(AdvancedSettings PRIVATE Qt6::DBus)
+    elseif (NOT APPLE AND noDBUS)
+        target_sources(AdvancedSettings PRIVATE
+                src/media_keys/media_keys_dummy.cpp
+        )
+    endif ()
 
-elseif(UNIX AND NOT MACOS)
-    if(noX11)
-        target_sources(AdvancedSettings PUBLIC
-            src/keyboard_input/input_sender_dummy.cpp
+    if (NOT APPLE AND NOT noPulse)
+        target_sources(AdvancedSettings PRIVATE
+                src/tabcontrollers/audiomanager/AudioManagerPulse.cpp
+                src/tabcontrollers/audiomanager/AudioManagerPulse.h
+                src/tabcontrollers/audiomanager/AudioManagerPulse_internal.h
         )
-    else()
-        target_sources(AdvancedSettings PUBLIC
-            src/keyboard_input/input_sender_X11.cpp
+        target_link_libraries(AdvancedSettings PRIVATE pulse)
+    elseif (NOT APPLE AND noPulse)
+        target_sources(AdvancedSettings PRIVATE
+                src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
+                src/tabcontrollers/audiomanager/AudioManagerDummy.h
         )
+    endif ()
 
-        target_link_libraries(AdvancedSettings PRIVATE
-            Xtst
-            X11
+    if (APPLE)
+        target_sources(AdvancedSettings PRIVATE
+                src/keyboard_input/input_sender_dummy.cpp
+                src/media_keys/media_keys_dummy.cpp
+                src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
+                src/tabcontrollers/audiomanager/AudioManagerDummy.h
         )
-    endif()
+    endif ()
 
-    if(noDBUS)
-        target_sources(AdvancedSettings PUBLIC
-            src/media_keys/media_keys_dummy.cpp
+    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        target_compile_options(AdvancedSettings PRIVATE
+                -Wcast-align
+                -Wconversion
+                -Wdouble-promotion
+                -Wduplicated-branches
+                -Wduplicated-cond
+                -Wextra
+                -Wformat=2
+                -Wlogical-op
+                -Wno-sign-conversion
+                -Wnon-virtual-dtor
+                -Wnull-dereference
+                -Wold-style-cast
+                -Woverloaded-virtual
+                -Wpedantic
+                -Wrestrict
+                -Wshadow
+                -Wunused
+                -Wzero-as-null-pointer-constant
+                #-flto
         )
-    else()
-        target_sources(AdvancedSettings PUBLIC
-            src/media_keys/media_keys_dbus.cpp
-        )
+        if (warnings_as_errors)
+            target_compile_options(AdvancedSettings PRIVATE -Werror)
+        endif ()
+    endif ()
+endif ()
 
-        target_link_libraries(AdvancedSettings PRIVATE
-            Qt::DBus
-        )
-    endif()
+if (debugSymbolsAndLogs)
+    target_compile_definitions(AdvancedSettings PRIVATE ENABLE_DEBUG_LOGGING)
+endif ()
 
-    if(noPulse)
-        target_sources(AdvancedSettings PUBLIC
-            src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
-        )
-    else()
-        target_sources(AdvancedSettings PUBLIC
-            src/tabcontrollers/audiomanager/AudioManagerPulse.cpp
-        )
+install(TARGETS AdvancedSettings
+        BUNDLE DESTINATION .
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 
-        target_link_libraries(AdvancedSettings PRIVATE
-            pulse
-        )
-    endif()
-elseif(MACOS)
-    target_sources(AdvancedSettings PUBLIC
-        src/keyboard_input/input_sender_dummy.cpp
-        src/media_keys/media_keys_dummy.cpp
-        src/tabcontrollers/audiomanager/AudioManagerDummy.cpp
-    )
-endif()
+#qt_generate_deploy_qml_app_script(
+#    TARGET AdvancedSettings
+#    OUTPUT_SCRIPT deploy_script
+#)
+#install(SCRIPT ${deploy_script})
+if (WIN32)
+qt_generate_deploy_qml_app_script(
+    TARGET AdvancedSettings
+    OUTPUT_SCRIPT deploy_script
+    MACOS_BUNDLE_POST_BUILD
+    NO_UNSUPPORTED_PLATFORM_ERROR
+    DEPLOY_USER_QML_MODULES_ON_UNSUPPORTED_PLATFORM
+)
+install(SCRIPT ${deploy_script})
+message(STATUS "Deploy Script ${deploy_script}")
+install(SCRIPT ${deploy_script})
+
+# message(STATUS "Path to qml: ${CMAKE_SOURCE_DIR}/src/res/qml")
+#This should be re-dundant but for some reason Visual Studio really wants this
+    #set(WINDEPLOYQT_BUILD_TARGET "$<$<CONFIG:Debug>:--debug>$<$<NOT:$<CONFIG:Debug>>:--release>")
+    #add_custom_command(TARGET AdvancedSettings POST_BUILD
+    #        COMMAND "${Qt6_DIR}/../../../bin/windeployqt6.exe"
+    #        --dir "${COPY_DEST_DIR}/qtdata"
+    #        --libdir "${COPY_DEST_DIR}"
+    #        --plugindir "${COPY_DEST_DIR}/qtdata/plugins"
+    #        --no-system-d3d-compiler
+    #        --no-opengl-sw
+    #        ${WINDEPLOYQT_BUILD_TARGET}
+    #        --qmldir "${CMAKE_SOURCE_DIR}/src/res/qml"
+    #        "${COPY_DEST_DIR}/AdvancedSettings.exe"
+    #)
+endif ()

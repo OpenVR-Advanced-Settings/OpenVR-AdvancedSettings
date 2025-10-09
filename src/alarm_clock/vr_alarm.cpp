@@ -25,7 +25,7 @@ VrAlarm::VrAlarm()
     ovr_overlay_wrapper::hideOverlay( m_alarmOverlayHandle );
 
     // Only need to set it once, no need to keep it in memory
-    QImage alarmIcon( QString( ":/alarm/alarm_activated.png" ) );
+    QImage alarmIcon( ":qt/qml/AdvancedSettings/src/res/img/alarm/alarm_activated.png" );
     ovr_overlay_wrapper::setOverlayFromQImage( m_alarmOverlayHandle,
                                                alarmIcon );
 

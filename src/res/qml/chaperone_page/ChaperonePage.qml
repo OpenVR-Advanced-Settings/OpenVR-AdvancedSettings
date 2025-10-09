@@ -494,7 +494,7 @@ MyStackViewPage {
                 text: "Proximity Warning Settings"
                 Layout.preferredWidth: 350
                 onClicked: {
-                    MyResources.playFocusChangedSound()
+                    OverlayController.playFocusChangedSound()
                     mainView.push(chaperoneWarningsPage)
                 }
             }
@@ -506,7 +506,7 @@ MyStackViewPage {
                 Layout.preferredWidth: 400
 
                 onClicked: {
-                    MyResources.playFocusChangedSound()
+                    OverlayController.playFocusChangedSound()
                     mainView.push(chaperoneAdditionalPage)
                 }
             }

@@ -77,13 +77,13 @@ OverlayController::OverlayController( bool desktopMode,
     qInfo() << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
     const double initVol = soundVolume();
-    m_activationSoundEffect.setSource( QUrl( "qrc:/sounds/click.wav" ) );
+    m_activationSoundEffect.setSource( QUrl( ":/qt/qml/AdvancedSettings/src/res/sounds/click.wav" ) );
     m_activationSoundEffect.setVolume( initVol );
 
-    m_focusChangedSoundEffect.setSource( QUrl( "qrc:/sounds/focus.wav" ) );
+    m_focusChangedSoundEffect.setSource( QUrl( ":/qt/qml/AdvancedSettings/src/res/sounds/focus.wav" ) );
     m_focusChangedSoundEffect.setVolume( initVol );
 
-    m_alarm01SoundEffect.setSource( QUrl( "qrc:/sounds/alarm01.wav" ) );
+    m_alarm01SoundEffect.setSource( QUrl( ":/qt/qml/AdvancedSettings/src/res/sounds/alarm01.wav" ) );
     m_alarm01SoundEffect.setVolume( 1.0 );
 
     // If we have desktop mode flag ignore waht toggle says otherwise we use
@@ -362,6 +362,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
 {
     if ( !m_desktopMode )
     {
+        qDebug() << "not desktop mode";
         vr::VROverlayError overlayError
             = vr::VROverlay()->CreateDashboardOverlay(
                 key.c_str(),
@@ -390,7 +391,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             true );
 
         {
-            QImage thumbiconImg( QString( ":/icons/thumbicon.png" ) );
+            QImage thumbiconImg( ":qt/qml/AdvancedSettings/src/res/img/icons/thumbicon.png");
             ovr_overlay_wrapper::setOverlayFromQImage(
                 m_ulOverlayThumbnailHandle, thumbiconImg );
         }
@@ -422,7 +423,6 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
 
         if ( !m_renderControl.initialize() )
             throw std::runtime_error( "could not initialize m_renderControl" );
-
         QRhi* rhi = this->rhi();
 
         qInfo() << "Started with" << rhi->backendName();
@@ -531,6 +531,15 @@ void OverlayController::SetOverlayFromQRhiTexture( QRhiTexture& tex )
         vrTex.handle = reinterpret_cast<void*>( tex.nativeTexture().object );
         vrTex.eType = vr::TextureType_OpenGL;
         vrTex.eColorSpace = vr::ColorSpace_Auto;
+    }
+    break;
+    case QRhi::D3D11:
+    {
+        qInfo() << "YEPPPERS HERE WE GO!";
+        vrTex.handle = reinterpret_cast<void*>( tex.nativeTexture().object );
+        vrTex.eType = vr::TextureType_DirectX;
+        vrTex.eColorSpace = vr::ColorSpace_Auto;
+    
     }
     break;
 #if QT_CONFIG( vulkan )

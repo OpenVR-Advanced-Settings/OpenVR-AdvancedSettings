@@ -35,7 +35,10 @@ Button {
 
     onClicked: {
         if (activationSoundEnabled) {
-			MyResources.playActivationSound()
+			OverlayController.playActivationSound()
         }
+    }
+    Connections {
+    target: OverlayController 
     }
 }

@@ -63,11 +63,14 @@ ComboBox {
 
     onActivated: {
 		if (activeFocus) {
-			MyResources.playActivationSound()
+			OverlayController.playActivationSound()
 		}
     }
 
     Component.onCompleted: {
         popup.background.color = "#2a2e35"
+    }
+    Connections {
+    target: OverlayController 
     }
 }

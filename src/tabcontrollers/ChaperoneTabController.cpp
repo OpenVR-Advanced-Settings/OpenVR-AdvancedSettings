@@ -1620,19 +1620,19 @@ void ChaperoneTabController::initCenterMarkerOverlay()
     if ( overlayError == ovr_overlay_wrapper::OverlayError::NoError )
     {
         m_floorMarkers[-3] = std::unique_ptr<QImage>(
-            new QImage( QString( ":/chaperone/centermarkl3.png" ) ) );
+            new QImage( ":qt/qml/AdvancedSettings/src/res/img/chaperone/centermarkl3.png" ) );
         m_floorMarkers[-2] = std::unique_ptr<QImage>(
-            new QImage( QString( ":/chaperone/centermarkl2.png" ) ) );
+            new QImage( ":qt/qml/AdvancedSettings/src/res/img/chaperone/centermarkl2.png" ) );
         m_floorMarkers[-1] = std::unique_ptr<QImage>(
-            new QImage( QString( ":/chaperone/centermarkl1.png" ) ) );
+            new QImage( ":qt/qml/AdvancedSettings/src/res/img/chaperone/centermarkl1.png" ) );
         m_floorMarkers[0] = std::unique_ptr<QImage>(
-            new QImage( QString( ":/chaperone/centermark.png" ) ) );
+            new QImage( ":qt/qml/AdvancedSettings/src/res/img/chaperone/centermark.png" ) );
         m_floorMarkers[1] = std::unique_ptr<QImage>(
-            new QImage( QString( ":/chaperone/centermarkr1.png" ) ) );
+            new QImage( ":qt/qml/AdvancedSettings/src/res/img/chaperone/centermarkr1.png" ) );
         m_floorMarkers[2] = std::unique_ptr<QImage>(
-            new QImage( QString( ":/chaperone/centermarkr2.png" ) ) );
+            new QImage( ":qt/qml/AdvancedSettings/src/res/img/chaperone/centermarkr2.png" ) );
         m_floorMarkers[3] = std::unique_ptr<QImage>(
-            new QImage( QString( ":/chaperone/centermarkr3.png" ) ) );
+            new QImage( ":qt/qml/AdvancedSettings/src/res/img/chaperone/centermarkr3.png" ) );
         ovr_overlay_wrapper::setOverlayFromQImage(
             m_chaperoneFloorOverlayHandle, *m_floorMarkers[0], "" );
         ovr_overlay_wrapper::setOverlayWidthInMeters(

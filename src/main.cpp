@@ -46,20 +46,25 @@ int main( int argc, char* argv[] )
 
     openvr_init::initializeOpenVR(
         openvr_init::OpenVrInitializationType::Overlay );
-
     try
     {
         QQmlEngine qmlEngine;
+
+        // Just error checking to ensure QRC works properly
+        //qDebug() << "list of qmldirs";
+        //QDirIterator it( ":", QDirIterator::Subdirectories );
+        //while ( it.hasNext() )
+        //{
+        //   qDebug() << it.next();
+        //}
 
         std::unique_ptr<advsettings::OverlayController> controller(
             new advsettings::OverlayController( commandLineArgs.desktopMode,
                                                 commandLineArgs.forceNoSound,
                                                 qmlEngine ) );
-
-        const auto url
-            = QUrl( "qrc:/qt/qml/AdvancedSettings/common/mainwidget.qml" );
-
-        QQmlComponent component( &qmlEngine, url );
+        //const auto url
+        //    = QUrl( ":/qt/qml/AdvancedSettings/src/res/qml/common/mainwidget.qml" );
+        QQmlComponent component( &qmlEngine, ":/qt/qml/AdvancedSettings/src/res/qml/common/mainwidget.qml" );
         auto errors = component.errors();
         for ( auto& e : errors )
         {
@@ -98,6 +103,7 @@ int main( int argc, char* argv[] )
              || settings::getSetting(
                  settings::BoolSetting::APPLICATION_desktopModeToggle ) )
         {
+            qDebug() << "Desktop MODE!"; 
             auto m_pWindow = new QQuickWindow();
             qobject_cast<QQuickItem*>( quickObj )
                 ->setParentItem( m_pWindow->contentItem() );
