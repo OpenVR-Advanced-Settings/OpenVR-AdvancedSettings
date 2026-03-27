@@ -51,12 +51,12 @@ int main( int argc, char* argv[] )
         QQmlEngine qmlEngine;
 
         // Just error checking to ensure QRC works properly
-        //qDebug() << "list of qmldirs";
-        //QDirIterator it( ":", QDirIterator::Subdirectories );
-        //while ( it.hasNext() )
-        //{
-        //   qDebug() << it.next();
-        //}
+        qDebug() << "list of qmldirs";
+        QDirIterator it( ":", QDirIterator::Subdirectories );
+        while ( it.hasNext() )
+        {
+           qDebug() << it.next();
+        }
 
         std::unique_ptr<advsettings::OverlayController> controller(
             new advsettings::OverlayController( commandLineArgs.desktopMode,
@@ -103,23 +103,26 @@ int main( int argc, char* argv[] )
              || settings::getSetting(
                  settings::BoolSetting::APPLICATION_desktopModeToggle ) )
         {
-            qDebug() << "Desktop MODE!"; 
-            auto m_pWindow = new QQuickWindow();
-            qobject_cast<QQuickItem*>( quickObj )
-                ->setParentItem( m_pWindow->contentItem() );
-            m_pWindow->setGeometry(
-                0,
-                0,
-                static_cast<int>(
-                    qobject_cast<QQuickItem*>( quickObj )->width() ),
-                static_cast<int>(
-                    qobject_cast<QQuickItem*>( quickObj )->height() ) );
-            m_pWindow->show();
+            //TODO TEMP
+            //qDebug() << "Desktop MODE!"; 
+            //auto m_pWindow = new QQuickWindow();
+            //qobject_cast<QQuickItem*>( quickObj )
+            //    ->setParentItem( m_pWindow->contentItem() );
+            //m_pWindow->setGeometry(
+            //    0,
+            //    0,
+            //    static_cast<int>(
+            //        qobject_cast<QQuickItem*>( quickObj )->width() ),
+            //    static_cast<int>(
+            //        qobject_cast<QQuickItem*>( quickObj )->height() ) );
+            //m_pWindow->show();
         }
         if ( commandLineArgs.resetSettings )
         {
+            qInfo() << "WEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
             // resets all settings if called
-            ovr_settings_wrapper::resetAllSettings();
+            //TODO  TEMP
+            //ovr_settings_wrapper::resetAllSettings();
         }
 
         return mainEventLoop.exec();

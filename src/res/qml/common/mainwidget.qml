@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls.Material
 import QtQuick.Layouts
 import ".."
 import "../utilities_page"
@@ -11,6 +11,7 @@ import "../steamvr_page"
 import "../rotation_page"
 import "../chaperone_page/chaperone_additional"
 import "../steamvr_page/steamvr_additional"
+import ovras.advsettings
 
 Rectangle {
     id: root

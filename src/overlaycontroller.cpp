@@ -30,6 +30,7 @@
 #include <qnamespace.h>
 #include <rhi/qrhi.h>
 #include <stdexcept>
+#include <d3d11.h>
 
 // application namespace
 namespace advsettings
@@ -92,6 +93,7 @@ OverlayController::OverlayController( bool desktopMode,
     {
         m_desktopMode = desktopModeToggle();
     }
+    m_desktopMode = false;
 
     if ( !vr::VROverlay() )
     {
@@ -535,8 +537,7 @@ void OverlayController::SetOverlayFromQRhiTexture( QRhiTexture& tex )
     break;
     case QRhi::D3D11:
     {
-        qInfo() << "YEPPPERS HERE WE GO!";
-        vrTex.handle = reinterpret_cast<void*>( tex.nativeTexture().object );
+        vrTex.handle = reinterpret_cast<ID3D11Texture2D *>( tex.nativeTexture().object );
         vrTex.eType = vr::TextureType_DirectX;
         vrTex.eColorSpace = vr::ColorSpace_Auto;
     
@@ -609,7 +610,8 @@ bool OverlayController::pollNextEvent( vr::VROverlayHandle_t ulOverlayHandle,
 
 QPointF OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
 {
-    float y = mouse.y;
+    //TODO temp mouse is negative??
+    float y = m_window.height() - mouse.y;
 #ifdef __linux__
     float h = static_cast<float>( m_window.height() );
     y = h - y;

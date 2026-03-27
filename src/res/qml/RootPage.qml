@@ -28,7 +28,7 @@ MyStackViewPage {
                    spacing: 10
                    MyPushButton {
                        id: steamVRButton
-                       iconPath: "qrc:/main_menu_icons/steamvr_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/steamvr_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   SteamVR"
                        Layout.fillWidth: true
@@ -40,7 +40,7 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: chaperoneButton
-                       iconPath: "qrc:/main_menu_icons/chaperone_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/chaperone_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Chaperone"
                        Layout.fillWidth: true
@@ -52,7 +52,7 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: playSpaceButton
-                       iconPath: "qrc:/main_menu_icons/offsets_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/offsets_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Offsets"
                        Layout.fillWidth: true
@@ -64,7 +64,7 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: motionButton
-                       iconPath: "qrc:/main_menu_icons/motion_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/motion_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Motion"
                        Layout.fillWidth: true
@@ -75,7 +75,7 @@ MyStackViewPage {
                    }
                    MyPushButton {
                        id: rotationButton
-                       iconPath: "qrc:/main_menu_icons/rotation_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/rotation_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Rotation"
                        Layout.fillWidth: true
@@ -87,7 +87,7 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: fixFloorButton
-                       iconPath: "qrc:/main_menu_icons/space_fix_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/space_fix_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Space Fix"
                        Layout.fillWidth: true
@@ -99,7 +99,7 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: audioButton
-                       iconPath: "qrc:/main_menu_icons/audio_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/audio_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Audio"
                        Layout.fillWidth: true
@@ -111,7 +111,7 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: videoButton
-                       iconPath: "qrc:/main_menu_icons/video_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/video_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Video"
                        Layout.fillWidth: true
@@ -123,7 +123,7 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: utilitiesButton
-                       iconPath: "qrc:/main_menu_icons/utilities_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/utilities_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Utilities"
                        Layout.fillWidth: true
@@ -136,7 +136,7 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: statisticsButton
-                       iconPath: "qrc:/main_menu_icons/statistics_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/statistics_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Statistics"
                        Layout.fillWidth: true
@@ -153,7 +153,7 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: bindingsButton
-                       iconPath: "qrc:/main_menu_icons/bindings_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/bindings_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Bindings"
                        Layout.fillWidth: true
@@ -164,7 +164,7 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: settingsButton
-                       iconPath: "qrc:/main_menu_icons/settings_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/settings_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Settings"
                        Layout.fillWidth: true
@@ -379,7 +379,7 @@ MyStackViewPage {
                            Layout.leftMargin: 12
                            checkable: true
                            contentItem: Image {
-                               source: parent.checked ? "qrc:/microphone/off" : "qrc:/microphone/on"
+                               source: parent.checked ? "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/microphone/mic_off.svg" : "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/microphone/mic_on.svg"
                                sourceSize.width: 32
                                sourceSize.height: 32
                                anchors.fill: parent

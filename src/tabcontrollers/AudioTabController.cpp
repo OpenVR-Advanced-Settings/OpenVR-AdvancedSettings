@@ -89,9 +89,9 @@ void AudioTabController::initStage2( OverlayController* var_parent )
     }
 
     m_pushToTalkValues.pushToTalkImg.reset(
-        new QImage( ":qt/qml/AdvancedSettings/src/res/img/microphone/ptt_notification.png" ) );
+        new QImage( ":/qt/qml/AdvancedSettings/src/res/img/audio/microphone/ptt_notification.png" ) );
     m_pushToTalkValues.pushToMuteImg.reset(
-        new QImage( ":qt/qml/AdvancedSettings/src/res/img/microphone/ptm_notification.png" ) );
+        new QImage( ":/qt/qml/AdvancedSettings/src/res/img/audio/microphone/ptm_notification.png" ) );
 
     auto* pushToImg = m_pushToTalkValues.pushToTalkImg.get();
     if ( settings::getSetting( settings::BoolSetting::AUDIO_micReversePtt ) )
