@@ -27,7 +27,7 @@ Rectangle {
                 enabled: headerShowBackButton
                 opacity: headerShowBackButton ? 1.0 : 0.0
                 contentItem: Image {
-                    source: "qrc:/qt/qml/AdvancedSettings/src/res/img/common/check.svg"
+                    source: "qrc:/qt/qml/AdvancedSettings/src/res/img/common/backarrow.svg"
                     sourceSize.width: 50
                     sourceSize.height: 50
                     anchors.fill: parent

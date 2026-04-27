@@ -119,10 +119,8 @@ int main( int argc, char* argv[] )
         }
         if ( commandLineArgs.resetSettings )
         {
-            qInfo() << "WEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
             // resets all settings if called
-            //TODO  TEMP
-            //ovr_settings_wrapper::resetAllSettings();
+            ovr_settings_wrapper::resetAllSettings();
         }
 
         return mainEventLoop.exec();
