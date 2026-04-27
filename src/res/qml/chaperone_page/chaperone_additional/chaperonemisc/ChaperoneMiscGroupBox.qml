@@ -70,10 +70,10 @@ GroupBox {
 
     Connections {
         target: ChaperoneTabController
-        onChaperoneFloorToggleChanged:{
+        function onChaperoneFloorToggleChanged(){
             chaperoneFloorToggleBtn.checked = ChaperoneTabController.chaperoneFloorToggle
         }
-        onCenterMarkerChanged:{
+        function onCenterMarkerChanged(){
             legacyCenterMarkerbtn.checked = ChaperoneTabController.centerMarker
         }
     }

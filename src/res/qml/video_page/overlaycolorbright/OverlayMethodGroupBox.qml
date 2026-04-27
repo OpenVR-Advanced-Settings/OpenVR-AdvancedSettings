@@ -298,32 +298,33 @@ GroupBox {
     Connections {
         target: VideoTabController
 
-        onBrightnessOpacityValueChanged: {
+        function onBrightnessOpacityValueChanged() {
             var brightvalue = VideoTabController.brightnessOpacityValue
             brightnessSlider.value = brightvalue
             brightnessValueText.text = Math.round(brightvalue*100)+ "%"
+            brightnessSlider.value = VideoTabController.brightnessOpacityValue
         }
-        onBrightnessEnabledChanged: {
+        function onBrightnessEnabledChanged() {
             brightnessToggle.checked = VideoTabController.brightnessEnabled
         }
-        onColorOverlayOpacityChanged:{
+        function onColorOverlayOpacityChanged(){
             opacitySlider.value = VideoTabController.colorOverlayOpacity
         }
-        onColorOverlayEnabledChanged:{
+        function onColorOverlayEnabledChanged(){
             colorToggle.checked = VideoTabController.colorOverlayEnabled
         }
 
-        onColorRedChanged:{
+        function onColorRedChanged(){
             var redValue = VideoTabController.colorRed
             colorRedText.text = Math.round(redValue * 100) + "%"
             colorRedSlider.value = redValue
         }
-        onColorGreenChanged:{
+        function onColorGreenChanged(){
             var greenValue = VideoTabController.colorGreen
             colorGreenText.text = Math.round(greenValue * 100) + "%"
             colorGreenSlider.value = greenValue
         }
-        onColorBlueChanged:{
+        function onColorBlueChanged(){
             var blueValue = VideoTabController.colorBlue
             colorBlueText.text = Math.round(blueValue * 100) + "%"
             colorBlueSlider.value = blueValue

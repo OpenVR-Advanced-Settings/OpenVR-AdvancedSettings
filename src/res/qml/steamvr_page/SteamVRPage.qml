@@ -32,7 +32,7 @@ MyStackViewPage {
                 Layout.preferredWidth: 350
 
                 onClicked: {
-                    MyResources.playFocusChangedSound()
+                    OverlayController.playFocusChangedSound()
                     mainView.push(steamVRTXRXPage)
                     SteamVRTabController.updateRXTXList()
                 }
@@ -49,5 +49,8 @@ MyStackViewPage {
                 }
             }
         }
+    }
+    Connections {
+    target: OverlayController 
     }
 }

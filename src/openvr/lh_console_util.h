@@ -12,7 +12,6 @@
 #include <QString>
 #include <QStringList>
 #include <QRegularExpression>
-#include <easylogging++.h>
 
 namespace lh_con_util
 {

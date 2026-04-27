@@ -98,13 +98,13 @@ ColumnLayout {
     }
     Connections {
         target: AudioTabController
-        onAudioProfilesUpdated: {
+        function onAudioProfilesUpdated() {
             reloadAudioProfiles()
         }
-        onAudioProfileAdded: {
+        function onAudioProfileAdded() {
             audioProfileComboBox.currentIndex = AudioTabController.getAudioProfileCount()
         }
-        onDefaultProfileDisplay: {
+        function onDefaultProfileDisplay() {
             audioProfileComboBox.currentIndex = AudioTabController.getDefaultAudioProfileIndex(
                         ) + 1
         }

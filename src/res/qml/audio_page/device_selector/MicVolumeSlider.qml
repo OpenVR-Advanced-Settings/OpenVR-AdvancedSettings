@@ -61,7 +61,7 @@ ColumnLayout {
             Layout.leftMargin: 12
             checkable: true
             contentItem: Image {
-                source: parent.checked ? "qrc:/microphone/off" : "qrc:/microphone/on"
+                source: parent.checked ? "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/microphone/mic_on.svg" : "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/microphone/mic_off.svg"
                 sourceSize.width: 32
                 sourceSize.height: 32
                 anchors.fill: parent
@@ -89,7 +89,7 @@ ColumnLayout {
     }
     Connections {
         target: AudioTabController
-        onMicDeviceIndexChanged: {
+        function onMicDeviceIndexChanged() {
             if (index < 0) {
                 audioMicVolumeMinusButton.enabled = false
                 audioMicVolumeSlider.enabled = false
@@ -102,16 +102,16 @@ ColumnLayout {
                 audioMicMuteToggle.enabled = true
             }
         }
-        onMicVolumeChanged: {
+        function onMicVolumeChanged() {
             audioMicVolumeSlider.value = AudioTabController.micVolume
         }
-        onMicMutedChanged: {
+        function onMicMutedChanged() {
             audioMicMuteToggle.checked = AudioTabController.micMuted
         }
-        onPlaybackDeviceListChanged: {
+        function onPlaybackDeviceListChanged() {
 
         }
-        onRecordingDeviceListChanged: {
+        function onRecordingDeviceListChanged() {
             if (AudioTabController.micDeviceIndex < 0) {
                 audioMicVolumeMinusButton.enabled = false
                 audioMicVolumeSlider.enabled = false

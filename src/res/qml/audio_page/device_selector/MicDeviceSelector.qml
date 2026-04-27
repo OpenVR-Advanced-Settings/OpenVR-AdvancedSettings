@@ -63,14 +63,14 @@ RowLayout {
     }
     Connections {
         target: AudioTabController
-        onMicDeviceIndexChanged: {
+        function onMicDeviceIndexChanged() {
             setShownAudioDevice(index)
         }
-        onRecordingDeviceListChanged: {
+        function onRecordingDeviceListChanged() {
             devices = getAudioDeviceList()
             setShownAudioDevice(AudioTabController.micDeviceIndex)
         }
-        onRecordingOverrideChanged: {
+        function onRecordingOverrideChanged() {
             recordingOverrideToggle.value = AudioTabController.recordingOverride
         }
     }

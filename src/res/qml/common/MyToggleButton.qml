@@ -1,7 +1,8 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
+import ovras.advsettings
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
-// Needed for MyResources in the default folder.
+// Needed for OverlayControllers in the default folder.
 import ".."
 
 CheckBox {
@@ -31,7 +32,7 @@ CheckBox {
             height: 28
 			x: (parent.width - width) / 2
 			y: (parent.height - height) / 2
-            source: "qrc:/common/box_checkmark"
+            source: "qrc:/qt/qml/AdvancedSettings/src/res/img/common/check.svg"
 			sourceSize.width: width
 			sourceSize.height: height
 			visible: parent.parent.checked
@@ -60,6 +61,9 @@ CheckBox {
     }
 
     onClicked: {
-        MyResources.playActivationSound()
+        OverlayController.playActivationSound()
+    }
+    Connections {
+    target: OverlayController 
     }
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <openvr.h>
-#include <easylogging++.h>
+#include <QtLogging>
+#include <QtDebug>
 
 namespace input
 {
@@ -16,8 +17,8 @@ public:
         auto error = vr::VRInput()->GetActionSetHandle( setName, &handle );
         if ( error != vr::EVRInputError::VRInputError_None )
         {
-            LOG( ERROR ) << "Error getting handle for '" << setName
-                         << "'. OpenVR Error: " << error;
+            qCritical() << "Error getting handle for '" << setName
+                        << "'. OpenVR Error: " << error;
         }
 
         m_activeActionSet.ulActionSet = handle;

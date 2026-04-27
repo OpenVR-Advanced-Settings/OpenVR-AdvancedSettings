@@ -1,5 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
+import ovras.advsettings
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 
 Button {
@@ -35,7 +36,10 @@ Button {
 
     onClicked: {
         if (activationSoundEnabled) {
-			MyResources.playActivationSound()
+			OverlayController.playActivationSound()
         }
+    }
+    Connections {
+    target: OverlayController 
     }
 }

@@ -1,7 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
-import QtQuick.Dialogs 1.2
+import QtQuick.Dialogs
 import ovras.advsettings 1.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 import "common"
@@ -415,43 +415,43 @@ MyStackViewPage {
 
         Connections {
             target: ChaperoneTabController
-            onChaperoneSwitchToBeginnerEnabledChanged: {
+            function onChaperoneSwitchToBeginnerEnabledChanged() {
                 switchBeginnerToggle.checked = ChaperoneTabController.chaperoneSwitchToBeginnerEnabled
             }
-            onChaperoneSwitchToBeginnerDistanceChanged: {
+            function onChaperoneSwitchToBeginnerDistanceChanged() {
                 var d = ChaperoneTabController.chaperoneSwitchToBeginnerDistance.toFixed(2)
                 if (d <= switchBeginnerDistanceSlider.to && Math.abs(switchBeginnerDistanceSlider.value - d) > 0.0008) {
                     switchBeginnerDistanceSlider.value = d
                 }
                 switchBeginnerDistanceText.text = d
             }
-            onChaperoneHapticFeedbackEnabledChanged: {
+            function onChaperoneHapticFeedbackEnabledChanged() {
                 hapticFeedbackToggle.checked = ChaperoneTabController.chaperoneHapticFeedbackEnabled
             }
-            onChaperoneHapticFeedbackDistanceChanged: {
+            function onChaperoneHapticFeedbackDistanceChanged() {
                 var d = ChaperoneTabController.chaperoneHapticFeedbackDistance.toFixed(2)
                 if (d <= hapticFeedbackDistanceSlider.to && Math.abs(hapticFeedbackDistanceSlider.value - d) > 0.0008) {
                     hapticFeedbackDistanceSlider.value = d
                 }
                 hapticFeedbackDistanceText.text = d
             }
-            onChaperoneAlarmSoundEnabledChanged: {
+            function onChaperoneAlarmSoundEnabledChanged() {
                 audioWarningToggle.checked = ChaperoneTabController.chaperoneAlarmSoundEnabled
             }
-            onChaperoneAlarmSoundLoopingChanged: {
+            function onChaperoneAlarmSoundLoopingChanged() {
                 audioWarningLoopingToggle.checked = ChaperoneTabController.chaperoneAlarmSoundLooping
             }
-            onChaperoneAlarmSoundDistanceChanged: {
+            function onChaperoneAlarmSoundDistanceChanged() {
                 var d = ChaperoneTabController.chaperoneAlarmSoundDistance.toFixed(2)
                 if (d <= audioWarningDistanceSlider.to && Math.abs(audioWarningDistanceSlider.value - d) > 0.0008) {
                     audioWarningDistanceSlider.value = d
                 }
                 audioWarningDistanceText.text = d
             }
-            onChaperoneShowDashboardEnabledChanged: {
+            function onChaperoneShowDashboardEnabledChanged() {
                 openDashboardToggle.checked = ChaperoneTabController.chaperoneShowDashboardEnabled
             }
-            onChaperoneShowDashboardDistanceChanged: {
+            function onChaperoneShowDashboardDistanceChanged() {
                 var d = ChaperoneTabController.chaperoneShowDashboardDistance.toFixed(2)
                 if (d <= openDashboardDistanceSlider.to && Math.abs(openDashboardDistanceSlider.value - d) > 0.0008) {
                     openDashboardDistanceSlider.value = d

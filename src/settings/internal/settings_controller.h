@@ -2,7 +2,8 @@
 #include <assert.h>
 #include <array>
 #include <vector>
-#include <easylogging++.h>
+#include <QtLogging>
+#include <QtDebug>
 #include "../settings.h"
 #include "setting_value.h"
 #include "../../utils/setup.h"
@@ -64,12 +65,12 @@ void verifySettings( std::array<Value, ArraySize> v ) noexcept
 
             const auto enumSettingNumber = static_cast<int>( currentSetting );
 
-            LOG( ERROR ) << enumName << ": at index '" << settingIndex
-                         << "' is incorrect. Current value: '"
-                         << enumSettingNumber
-                         << "'. Exiting "
-                            "with error code "
-                         << ReturnErrorCode::SETTING_INCORRECT_INDEX << ".";
+            qCritical() << enumName << ": at index '" << settingIndex
+                        << "' is incorrect. Current value: '"
+                        << enumSettingNumber
+                        << "'. Exiting "
+                           "with error code "
+                        << ReturnErrorCode::SETTING_INCORRECT_INDEX << ".";
             exit( ReturnErrorCode::SETTING_INCORRECT_INDEX );
         }
     }

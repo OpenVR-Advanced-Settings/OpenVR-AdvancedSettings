@@ -1,5 +1,6 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
+import ovras.advsettings
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 
 
@@ -63,11 +64,14 @@ ComboBox {
 
     onActivated: {
 		if (activeFocus) {
-			MyResources.playActivationSound()
+			OverlayController.playActivationSound()
 		}
     }
 
     Component.onCompleted: {
         popup.background.color = "#2a2e35"
+    }
+    Connections {
+    target: OverlayController 
     }
 }

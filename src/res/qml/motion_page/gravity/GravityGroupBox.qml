@@ -218,19 +218,19 @@ GroupBox {
     Connections {
         target: MoveCenterTabController
 
-        onGravityActiveChanged: {
+        function onGravityActiveChanged() {
             gravityToggleButton.checked = MoveCenterTabController.gravityActive
         }
-        onGravityStrengthChanged: {
+        function onGravityStrengthChanged() {
             gravityStrengthText.text = MoveCenterTabController.gravityStrength.toFixed(2)
         }
-        onMomentumSaveChanged: {
+        function onMomentumSaveChanged() {
             momentumToggleButton.checked = MoveCenterTabController.momentumSave
         }
-        onFlingStrengthChanged: {
+        function onFlingStrengthChanged() {
             flingStrengthText.text = MoveCenterTabController.flingStrength.toFixed(2)
         }
-        onFrictionPercentChanged: {
+        function onFrictionPercentChanged() {
             frictionPercentText.text = MoveCenterTabController.frictionPercent + "%"
         }
     }

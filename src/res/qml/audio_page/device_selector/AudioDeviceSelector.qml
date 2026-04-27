@@ -44,14 +44,14 @@ RowLayout {
 
     Connections {
         target: AudioTabController
-        onPlaybackDeviceIndexChanged: {
+        function onPlaybackDeviceIndexChanged() {
             setShownAudioDevice(index)
         }
-        onPlaybackDeviceListChanged: {
+        function onPlaybackDeviceListChanged() {
             audioPlaybackNameCombo.devices = getAudioDeviceList()
             setShownAudioDevice(AudioTabController.playbackDeviceIndex)
         }
-        onPlaybackOverrideChanged: {
+        function onPlaybackOverrideChanged() {
             playbackOverrideToggle.value = AudioTabController.playbackOverride
         }
     }

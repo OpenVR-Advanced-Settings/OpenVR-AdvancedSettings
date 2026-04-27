@@ -45,7 +45,7 @@ GroupBox {
                 }
                 Connections {
                     target: OverlayController
-                    onKeyBoardInputSignal: {
+                    function onKeyBoardInputSignal() {
                         if (userValue == 601) {
                             UtilitiesTabController.sendKeyboardInput(input)
                         }
@@ -581,7 +581,7 @@ GroupBox {
     }
     Connections {
         target: UtilitiesTabController
-        onVrcDebugChanged: {
+        function onVrcDebugChanged() {
             vrcDebugRow.visible = UtilitiesTabController.vrcDebug
         }
     }

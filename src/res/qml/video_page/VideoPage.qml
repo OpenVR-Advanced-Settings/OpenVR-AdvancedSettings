@@ -47,7 +47,7 @@ MyStackViewPage {
 
     Connections {
         target: VideoTabController
-            onIsOverlayMethodActiveChanged:{
+            function onIsOverlayMethodActiveChanged(){
                 overlayMethodGroupBox.visible = VideoTabController.isOverlayMethodActive
                 brightnessGroupBox.visible = !(VideoTabController.isOverlayMethodActive);
                 colorGroupBox.visible = !(VideoTabController.isOverlayMethodActive);
