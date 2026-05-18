@@ -918,37 +918,51 @@ void MoveCenterTabController::incomingZeroReset()
 
     // If we detect a seated Recenter and are not currently in process
     // we reload chaperone from disk
-    if ( m_recenterStages < 1 )
-    {
-        LOG( INFO ) << "Re-Center Stage 1, reload from disk";
-        m_recenterStages++;
+    //  if ( m_recenterStages < 1 )
+    //  {
+    //      LOG( INFO ) << "Re-Center Stage 1, reload from disk";
+    //      m_recenterStages++;
 
-        if ( calState > 199 && m_initComplete )
-        {
-            LOG( INFO ) << "Chaperone calibration state is error, attempting "
-                           "to apply autosaved profile to fix issue";
-            parent->m_chaperoneTabController.applyAutosavedProfile();
-        }
+     if ( calState > 199 && m_initComplete )
+     {
+         LOG( INFO ) << "Chaperone calibration state is error, attempting "
+                        "to apply autosaved profile to fix issue";
+         parent->m_chaperoneTabController.applyAutosavedProfile();
+     }
 
-        // Revert Working copy to "apply" the changes
-        vr::VRChaperoneSetup()->RevertWorkingCopy();
-        // Send a Re-center again so the changes stick on our end.
-        sendSeatedRecenter();
-        return;
-    }
-    // We finalize the Recenter, by zero-ing offsets and setting new zero pos,
-    // and reseting our stage counter
-    if ( m_recenterStages == 1 )
-    {
-        LOG( INFO ) << "Recenter Stage 2 re-set zero pos, and reset offsets";
-        vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-            &m_universeCenterForReset );
-        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
-            &m_seatedCenterForReset );
-        resetOffsets( true );
-        m_recenterStages = 0;
-        return;
-    }
+    //      // Revert Working copy to "apply" the changes
+    //      vr::VRChaperoneSetup()->RevertWorkingCopy();
+    //      // Send a Re-center again so the changes stick on our end.
+    //      sendSeatedRecenter();
+    //      return;
+    // }
+    // // We finalize the Recenter, by zero-ing offsets and setting new zero pos,
+    // // and reseting our stage counter
+    // if ( m_recenterStages == 1 )
+
+    //LOG( INFO ) << "Zero Res";
+
+    //reset();
+    //vr::VRChaperoneSetup()->RevertWorkingCopy();
+    //zeroOffsets()
+    //vr::HmdMatrix34_t sitingCenter;
+    //vr::VRChaperoneSetup()->GetLiveSeatedZeroPoseToRawTrackingPose(&sitingCenter);
+    //vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(&sitingCenter);
+    float offset[3] = { 0, 0, 0 };
+    offset[1] = -m_offsetY;
+    vr::VRChaperoneSetup()->RevertWorkingCopy();
+    vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+        &m_universeCenterForReset );
+    vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+        &m_seatedCenterForReset );
+
+    LOG(INFO) << "y offset is " << offset[1];
+    addOffset(offset);
+    reset();
+    //zeroOffsets();
+    //resetOffsets( true );
+    //m_recenterStages = 0;
+    return;
 }
 
 void MoveCenterTabController::reset()
