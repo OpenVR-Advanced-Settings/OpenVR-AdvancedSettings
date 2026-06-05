@@ -1358,21 +1358,30 @@ void OverlayController::RotateUniverseCenter(
 {
     if ( yAngle != 0.0f )
     {
-        if ( commit )
-        {
-            vr::VRChaperoneSetup()->HideWorkingSetPreview();
-            vr::VRChaperoneSetup()->RevertWorkingCopy();
-        }
+        // if ( commit )
+        // {
+        //     vr::VRChaperoneSetup()->HideWorkingSetPreview();
+        //     vr::VRChaperoneSetup()->RevertWorkingCopy();
+        // }
         vr::HmdMatrix34_t curPos;
+        auto calState = vr::VRChaperone()->GetCalibrationState();
+        LOG( INFO ) << "Calibration State on Rotate is: " << calState;
         if ( universe == vr::TrackingUniverseStanding )
         {
+            LOG( INFO ) << "rorate is stand";
             vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+                &curPos );
+        }
+        else if(universe == vr::TrackingUniverseSeated)
+        {
+            LOG( INFO ) << "rorate is seated";
+            vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
                 &curPos );
         }
         else
         {
-            vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
-                &curPos );
+            LOG( INFO ) << "rorate is undef";
+            vr::VRChaperoneSetup()->GetLiveSeatedZeroPoseToRawTrackingPose(&curPos);
         }
 
         vr::HmdMatrix34_t rotMat;

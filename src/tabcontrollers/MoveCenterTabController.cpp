@@ -922,13 +922,13 @@ void MoveCenterTabController::incomingZeroReset()
     //  {
     //      LOG( INFO ) << "Re-Center Stage 1, reload from disk";
     //      m_recenterStages++;
-
-     if ( calState > 199 && m_initComplete )
-     {
-         LOG( INFO ) << "Chaperone calibration state is error, attempting "
-                        "to apply autosaved profile to fix issue";
-         parent->m_chaperoneTabController.applyAutosavedProfile();
-     }
+    //TODO check
+     // if ( calState > 199 && m_initComplete )
+     // {
+     //     LOG( INFO ) << "Chaperone calibration state is error, attempting "
+     //                    "to apply autosaved profile to fix issue";
+     //     parent->m_chaperoneTabController.applyAutosavedProfile();
+     // }
 
     //      // Revert Working copy to "apply" the changes
     //      vr::VRChaperoneSetup()->RevertWorkingCopy();
@@ -1127,43 +1127,46 @@ void MoveCenterTabController::zeroOffsets()
     if ( !m_chaperoneBasisAcquired )
     {
         m_chaperoneBasisAcquired = true;
-        if ( !m_initComplete )
-        {
-            setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
-            if ( parent->isPreviousShutdownSafe() )
-            {
-                auto calState = vr::VRChaperone()->GetCalibrationState();
-                if ( calState == 200 )
-                {
-                    LOG( WARNING )
-                        << "Chaperone State Does Not Exist Yet, will wait for "
-                           "universe change to finish initialization";
-                }
-                else
-                {
-                    // all init complete, safe to autosave chaperone profile
-                    parent->m_chaperoneTabController.createNewAutosaveProfile();
-                    m_initComplete = true;
-                }
-            }
-            else
-            {
-                // shutdown was unsafe last session!
-                LOG( WARNING ) << "DETECTED UNSAFE SHUTDOWN FROM LAST SESSION";
-                m_initComplete = false;
-                if ( !parent->crashRecoveryDisabled() )
-                {
-                    parent->m_chaperoneTabController.applyAutosavedProfile();
-                    LOG( INFO ) << "Applying last good chaperone "
-                                   "profile autosave";
-                }
-            }
-            // Now mark previous shutdown as unsafe in case we crash
-            // some time during this session. Previous shutdown will be
-            // marked as being safe once more just before our app shuts
-            // down properly.
-            parent->setPreviousShutdownSafe( false );
-        }
+        //TODO figure this out.
+        m_initComplete = true;
+        parent->m_chaperoneTabController.createNewAutosaveProfile();
+        // if ( !m_initComplete )
+        // {
+        //     setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
+        //     if ( parent->isPreviousShutdownSafe() )
+        //     {
+        //         auto calState = vr::VRChaperone()->GetCalibrationState();
+        //         if ( calState == 200 )
+        //         {
+        //             LOG( WARNING )
+        //                 << "Chaperone State Does Not Exist Yet, will wait for "
+        //                    "universe change to finish initialization";
+        //         }
+        //         else
+        //         {
+        //             // all init complete, safe to autosave chaperone profile
+        //             parent->m_chaperoneTabController.createNewAutosaveProfile();
+        //             m_initComplete = true;
+        //         }
+        //     }
+        //     else
+        //     {
+        //         // shutdown was unsafe last session!
+        //         LOG( WARNING ) << "DETECTED UNSAFE SHUTDOWN FROM LAST SESSION";
+        //         m_initComplete = false;
+        //         if ( !parent->crashRecoveryDisabled() )
+        //         {
+        //             parent->m_chaperoneTabController.applyAutosavedProfile();
+        //             LOG( INFO ) << "Applying last good chaperone "
+        //                            "profile autosave";
+        //         }
+        //     }
+        //     // Now mark previous shutdown as unsafe in case we crash
+        //     // some time during this session. Previous shutdown will be
+        //     // marked as being safe once more just before our app shuts
+        //     // down properly.
+        //     parent->setPreviousShutdownSafe( false );
+        // }
         m_pendingZeroOffsets = true;
     }
     if ( m_roomSetupModeDetected )
@@ -1208,7 +1211,8 @@ void MoveCenterTabController::clampVelocity( double* velocity )
 void MoveCenterTabController::updateChaperoneResetData()
 {
     auto cstate = vr::VRChaperone()->GetCalibrationState();
-    if ( cstate > 199 )
+    //TODO
+    if ( false)//cstate > 199 )
     {
         LOG( WARNING ) << "Chaperone Calibration State is error: " << cstate
                        << " While Trying to Update Reset Data";
@@ -2793,6 +2797,7 @@ void MoveCenterTabController::eventLoopTick(
     // If we're trying to redifine the origin point, but can't becaues of
     // bad chaperone calibration, we keep trying and hold off on motion
     // features until we get ChaperoneCalibrationState_OK
+    //TODO above comment
 
     // if we were in room setup, but got this far in the loop, universe is
     // no longer raw mode and we detect room setup exit and zeroOffsets() to
