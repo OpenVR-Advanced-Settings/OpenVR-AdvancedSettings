@@ -913,14 +913,15 @@ void MoveCenterTabController::incomingZeroReset()
     // However It does appear to effect the recenter method (potentially other
     // aspects) IN mixed tracking environments I get this issue, the check if
     // there is an error and apply autosaved profile is hopefully a workaround
-    auto calState = vr::VRChaperone()->GetCalibrationState();
-    LOG( INFO ) << "Calibration State on Zero Reset is: " << calState;
     //TODO if self-called handle??? for openxr
     if(m_trackingUniverse==vr::TrackingUniverseRawAndUncalibrated){
         //vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
         //vr::VRChaperoneSetup()->RevertWorkingCopy();
         return;
     }
+
+    auto calState = vr::VRChaperone()->GetCalibrationState();
+    LOG( INFO ) << "Calibration State on Recenter is: " << calState;
     //Any Logging should be handled after openXR check to avoid spam;
 
     // If we detect a seated Recenter and are not currently in process

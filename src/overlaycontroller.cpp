@@ -1277,7 +1277,7 @@ void OverlayController::mainEventLoop()
     if ( m_incomingReset )
     {
         m_incomingReset = false;
-        LOG( INFO ) << "Reset zero event recorded";
+        //LOG( INFO ) << "Reset zero event recorded";
         m_moveCenterTabController.incomingZeroReset();
     }
 
