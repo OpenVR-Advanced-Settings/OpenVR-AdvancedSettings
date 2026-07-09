@@ -1218,7 +1218,7 @@ void MoveCenterTabController::clampVelocity( double* velocity )
 
 void MoveCenterTabController::updateChaperoneResetData()
 {
-    auto cstate = vr::VRChaperone()->GetCalibrationState();
+    //auto cstate = vr::VRChaperone()->GetCalibrationState();
     //TODO
     // if ( false)//cstate > 199 )
     // {
