@@ -1368,19 +1368,18 @@ void OverlayController::RotateUniverseCenter(
         LOG( INFO ) << "Calibration State on Rotate is: " << calState;
         if ( universe == vr::TrackingUniverseStanding )
         {
-            LOG( INFO ) << "rorate is stand";
             vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
                 &curPos );
         }
         else if(universe == vr::TrackingUniverseSeated)
         {
-            LOG( INFO ) << "rorate is seated";
             vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
                 &curPos );
         }
         else
         {
-            LOG( INFO ) << "rorate is undef";
+            //TODO is this smart?
+            LOG(INFO) << "rotating on undefined tracking universe probably openxr";
             vr::VRChaperoneSetup()->GetLiveSeatedZeroPoseToRawTrackingPose(&curPos);
         }
 

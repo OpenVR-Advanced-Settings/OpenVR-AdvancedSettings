@@ -166,14 +166,14 @@ MyStackViewPage {
         Connections {
             target: MoveCenterTabController
             onTrackingUniverseChanged: {
-                if (MoveCenterTabController.trackingUniverse === 0) {
-                    fixButton.enabled = false
-                    recenterButton.enabled = false
-                    zeroSpaceButton.enabled = false
-                    revertButton.enabled = false
-                    undoFixButton.enabled = false
-                    seatedWarningText.visible = true
-                } else if (MoveCenterTabController.trackingUniverse === 1) {
+                // if (MoveCenterTabController.trackingUniverse === 0) {
+                //     fixButton.enabled = false
+                //     recenterButton.enabled = false
+                //     zeroSpaceButton.enabled = false
+                //     revertButton.enabled = false
+                //     undoFixButton.enabled = false
+                //     seatedWarningText.visible = true
+                // } else if (MoveCenterTabController.trackingUniverse === 1) {
                     fixButton.enabled = true
                     recenterButton.enabled = true
                     zeroSpaceButton.enabled = true
@@ -181,14 +181,14 @@ MyStackViewPage {
                     // undoFixButton.enabled = true
                     // TODO Fix Undo Feature -^
                     seatedWarningText.visible = false
-                } else {
-                    fixButton.enabled = false
-                    recenterButton.enabled = false
-                    zeroSpaceButton.enabled = false
-                    revertButton.enabled = false
-                    undoFixButton.enabled = false
-                    seatedWarningText.visible = false
-                }
+                // } else {
+                //     fixButton.enabled = false
+                //     recenterButton.enabled = false
+                //     zeroSpaceButton.enabled = false
+                //     revertButton.enabled = false
+                //     undoFixButton.enabled = false
+                //     seatedWarningText.visible = false
+                // }
             }
         }
 

@@ -915,6 +915,13 @@ void MoveCenterTabController::incomingZeroReset()
     // there is an error and apply autosaved profile is hopefully a workaround
     auto calState = vr::VRChaperone()->GetCalibrationState();
     LOG( INFO ) << "Calibration State on Zero Reset is: " << calState;
+    //TODO if self-called handle??? for openxr
+    if(m_trackingUniverse==vr::TrackingUniverseRawAndUncalibrated){
+        //vr::VRChaperoneSetup()->CommitWorkingCopy(vr::EChaperoneConfigFile_Live);
+        //vr::VRChaperoneSetup()->RevertWorkingCopy();
+        return;
+    }
+    //Any Logging should be handled after openXR check to avoid spam;
 
     // If we detect a seated Recenter and are not currently in process
     // we reload chaperone from disk
@@ -1126,47 +1133,47 @@ void MoveCenterTabController::zeroOffsets()
     m_pendingZeroOffsets = false;
     if ( !m_chaperoneBasisAcquired )
     {
-        m_chaperoneBasisAcquired = true;
         //TODO figure this out.
-        m_initComplete = true;
-        parent->m_chaperoneTabController.createNewAutosaveProfile();
-        // if ( !m_initComplete )
-        // {
-        //     setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
-        //     if ( parent->isPreviousShutdownSafe() )
-        //     {
-        //         auto calState = vr::VRChaperone()->GetCalibrationState();
-        //         if ( calState == 200 )
-        //         {
-        //             LOG( WARNING )
-        //                 << "Chaperone State Does Not Exist Yet, will wait for "
-        //                    "universe change to finish initialization";
-        //         }
-        //         else
-        //         {
-        //             // all init complete, safe to autosave chaperone profile
-        //             parent->m_chaperoneTabController.createNewAutosaveProfile();
-        //             m_initComplete = true;
-        //         }
-        //     }
-        //     else
-        //     {
-        //         // shutdown was unsafe last session!
-        //         LOG( WARNING ) << "DETECTED UNSAFE SHUTDOWN FROM LAST SESSION";
-        //         m_initComplete = false;
-        //         if ( !parent->crashRecoveryDisabled() )
-        //         {
-        //             parent->m_chaperoneTabController.applyAutosavedProfile();
-        //             LOG( INFO ) << "Applying last good chaperone "
-        //                            "profile autosave";
-        //         }
-        //     }
-        //     // Now mark previous shutdown as unsafe in case we crash
-        //     // some time during this session. Previous shutdown will be
-        //     // marked as being safe once more just before our app shuts
-        //     // down properly.
-        //     parent->setPreviousShutdownSafe( false );
-        // }
+        //m_initComplete = true;
+        //parent->m_chaperoneTabController.createNewAutosaveProfile();
+        if ( !m_initComplete )
+        {
+            setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
+            //if ( parent->isPreviousShutdownSafe() )
+            //{
+                auto calState = vr::VRChaperone()->GetCalibrationState();
+                if ( calState == 200 )
+                {
+                    LOG( WARNING )
+                        << "Chaperone State Does Not Exist Yet, will wait for "
+                           "universe change to finish initialization";
+                }
+                else
+                {
+                    // all init complete, safe to autosave chaperone profile
+                    parent->m_chaperoneTabController.createNewAutosaveProfile();
+                    m_initComplete = true;
+                    m_chaperoneBasisAcquired = true;
+                }
+            //}
+            // else
+            // {
+            //     // shutdown was unsafe last session!
+            //     LOG( WARNING ) << "DETECTED UNSAFE SHUTDOWN FROM LAST SESSION";
+            //     m_initComplete = false;
+            //     if ( !parent->crashRecoveryDisabled() )
+            //     {
+            //         parent->m_chaperoneTabController.applyAutosavedProfile();
+            //         LOG( INFO ) << "Applying last good chaperone "
+            //                        "profile autosave";
+            //     }
+            // }
+            // // Now mark previous shutdown as unsafe in case we crash
+            // // some time during this session. Previous shutdown will be
+            // // marked as being safe once more just before our app shuts
+            // // down properly.
+            // parent->setPreviousShutdownSafe( false );
+        }
         m_pendingZeroOffsets = true;
     }
     if ( m_roomSetupModeDetected )
@@ -1212,17 +1219,17 @@ void MoveCenterTabController::updateChaperoneResetData()
 {
     auto cstate = vr::VRChaperone()->GetCalibrationState();
     //TODO
-    if ( false)//cstate > 199 )
-    {
-        LOG( WARNING ) << "Chaperone Calibration State is error: " << cstate
-                       << " While Trying to Update Reset Data";
-    }
-    else
-    {
+    // if ( false)//cstate > 199 )
+    // {
+    //     LOG( WARNING ) << "Chaperone Calibration State is error: " << cstate
+    //                    << " While Trying to Update Reset Data";
+    // }
+    // else
+    //{
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
         vr::VRChaperoneSetup()->RevertWorkingCopy();
-    }
+    //}
     unsigned currentQuadCount = 0;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
                                                            &currentQuadCount );
@@ -2737,6 +2744,14 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &offsetUniverseCenter );
 
+    //openxr
+    //TODO this seems to be too many calls, and is borderline unstable need to throttle
+    if(m_trackingUniverse==vr::TrackingUniverseRawAndUncalibrated){
+        vr::VRChaperoneSetup()->CommitWorkingCopy(
+            vr::EChaperoneConfigFile_Live );
+            //LOG( INFO ) << "in openxr!~ ";
+        }
+    //This is what actually throws you into the "working set" instead of live.
     vr::VRChaperoneSetup()->ShowWorkingSetPreview();
 
     if ( m_collisionBoundsCountForReset > 0 )
