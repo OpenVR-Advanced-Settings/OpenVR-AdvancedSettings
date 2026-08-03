@@ -536,6 +536,31 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         }
         LOG( WARNING ) << "Profile Not Found for Auto Apply Chaperone!";
     }
+    auto indexList = ovr_system_wrapper::getAllConnectedDevices();
+
+    //Logging for troubleshooting what HMD Type
+    for (auto device : indexList)
+    {
+        if ( vr::TrackedDeviceClass_HMD
+             == ovr_system_wrapper::getDeviceClass( device ) )
+        {
+            LOG(INFO) << "HMD is: " << ovr_system_wrapper::getDeviceName(device);
+            continue;
+        }
+        if ( vr::TrackedControllerRole_LeftHand
+             == ovr_system_wrapper::getDeviceClass( device ) )
+        {
+            LOG(INFO) << "Controller (L) is: " << ovr_system_wrapper::getDeviceName(device);
+            continue;
+        }
+        if ( vr::TrackedControllerRole_RightHand
+             == ovr_system_wrapper::getDeviceClass( device ) )
+        {
+            LOG(INFO) << "Controller (R) is: " << ovr_system_wrapper::getDeviceName(device);
+            continue;
+        }
+    }
+    LOG(INFO)<< "Initilizaion is complete--------------------------------------------------";
 }
 
 void OverlayController::OnRenderRequest()
