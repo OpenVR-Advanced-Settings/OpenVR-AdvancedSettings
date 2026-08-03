@@ -1251,19 +1251,19 @@ void OverlayController::mainEventLoop()
                 m_chaperoneUtils.loadChaperoneData();
                 chaperoneDataAlreadyUpdated = true;
             }
-            //TODO FIX?
+            //TODO 8/3/2026 With newer steamvr Updates, this is not same reliable behavior.
+            //Valve thought they saw issue, but Moving away from a potentially un-reliable metric is preffered
+            //Additionally, some of the related effects are marked as deprected via openvr
+            //It appears, as vavle would prefer to deprecate the whole stack or already has.
             // if ( previousUniverseId == 0
             //      && !m_moveCenterTabController.isInitComplete() )
             // {
-            //     LOG( INFO )
-            //     << "why are we here";
             //     m_moveCenterTabController.zeroOffsets();
             // }
         }
         break;
         case vr::VREvent_Input_ActionManifestReloaded:
         {
-            // LOG( WARNING ) << "Action Manifest Reloaded";
             if ( m_steamVRTabController.perAppBindEnabled() )
             {
                 m_steamVRTabController.applyAllCustomBindings();
@@ -1277,7 +1277,6 @@ void OverlayController::mainEventLoop()
     if ( m_incomingReset )
     {
         m_incomingReset = false;
-        //LOG( INFO ) << "Reset zero event recorded";
         m_moveCenterTabController.incomingZeroReset();
     }
 
@@ -1378,7 +1377,8 @@ void OverlayController::RotateUniverseCenter(
         }
         else
         {
-            //TODO is this smart?
+            //TODO 8/3/26, will see if this causes issues
+            //should exclusively happen with openxr
             LOG(INFO) << "rotating on undefined tracking universe probably openxr";
             vr::VRChaperoneSetup()->GetLiveSeatedZeroPoseToRawTrackingPose(&curPos);
         }
