@@ -541,20 +541,20 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     //Logging for troubleshooting
     for (auto device : indexList)
     {
-        if ( vr::TrackedDeviceClass_HMD
-             == vr::VRSystem()->GetTrackedDeviceClass(device) )
+        auto info = ovr_system_wrapper::getInt32TrackedProperty(device, vr::Prop_ControllerRoleHint_Int32);
+        auto error = info.first;
+        auto ctrlRole = info.second;
+        if ( vr::TrackedDeviceClass_HMD == ctrlRole )
         {
             LOG(INFO) << "HMD is: " << ovr_system_wrapper::getDeviceName(device);
             continue;
         }
-        if ( vr::TrackedControllerRole_LeftHand
-             == vr::VRSystem()->GetTrackedDeviceClass(device) )
+        if ( vr::TrackedControllerRole_LeftHand == ctrlRole )
         {
             LOG(INFO) << "Controller (L) is: " << ovr_system_wrapper::getDeviceName(device);
             continue;
         }
-        if ( vr::TrackedControllerRole_RightHand
-             == vr::VRSystem()->GetTrackedDeviceClass(device) )
+        if ( vr::TrackedControllerRole_RightHand == ctrlRole )
         {
             LOG(INFO) << "Controller (R) is: " << ovr_system_wrapper::getDeviceName(device);
             continue;
