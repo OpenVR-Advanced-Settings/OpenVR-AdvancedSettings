@@ -538,7 +538,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     }
     auto indexList = ovr_system_wrapper::getAllConnectedDevices();
 
-    //Logging for troubleshooting what HMD Type
+    //Logging for troubleshooting
     for (auto device : indexList)
     {
         if ( vr::TrackedDeviceClass_HMD
