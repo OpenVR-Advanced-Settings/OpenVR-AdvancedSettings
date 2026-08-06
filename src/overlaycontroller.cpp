@@ -542,7 +542,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     for (auto device : indexList)
     {
         auto info = ovr_system_wrapper::getInt32TrackedProperty(device, vr::Prop_ControllerRoleHint_Int32);
-        auto error = info.first;
+        //auto error = info.first;
         auto ctrlRole = info.second;
         if ( vr::TrackedDeviceClass_HMD == ctrlRole )
         {
@@ -1127,7 +1127,7 @@ void OverlayController::mainEventLoop()
     processInputBindings();
 
     vr::VREvent_t vrEvent;
-    bool chaperoneDataAlreadyUpdated = false;
+    //bool chaperoneDataAlreadyUpdated = false;
     while ( pollNextEvent( m_ulOverlayHandle, &vrEvent ) )
     {
         switch ( vrEvent.eventType )
