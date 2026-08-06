@@ -2717,7 +2717,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     //We may have to re-visit or make user adjustable
     if(m_trackingUniverse==vr::TrackingUniverseRawAndUncalibrated){
         m_openXRSkip++;
-            if(m_openXRSkip % 3==0){
+            if(m_openXRSkip % 5==0){
                 vr::VRChaperoneSetup()->CommitWorkingCopy(
                     vr::EChaperoneConfigFile_Live );
                 m_openXRSkip = 0;
