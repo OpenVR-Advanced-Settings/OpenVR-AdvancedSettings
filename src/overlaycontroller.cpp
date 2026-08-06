@@ -1255,6 +1255,7 @@ void OverlayController::mainEventLoop()
         }
         break;
 
+        //TODO 8/6/2025, I don't this is necessary anymore, but marking until further testing
         // Multiple ChaperoneUniverseHasChanged are often
         // emitted at the same time (some with a little bit of
         // delay) There is no sure way to recognize redundant
@@ -1262,30 +1263,30 @@ void OverlayController::mainEventLoop()
         // the same call of OnTimeoutPumpEvents() INFO Removed
         // logging on play space mover for possible crashing
         // issues.
-        case vr::VREvent_ChaperoneUniverseHasChanged:
-        {
-            uint64_t previousUniverseId
-                = vrEvent.data.chaperone.m_nPreviousUniverse;
-            uint64_t currentUniverseId
-                = vrEvent.data.chaperone.m_nCurrentUniverse;
-            LOG( INFO )
-                << "(VREvent) ChaperoneUniverseHasChanged... Previous : "
-                << previousUniverseId << " Current:" << currentUniverseId;
-            if ( !chaperoneDataAlreadyUpdated )
-            {
-                m_chaperoneUtils.loadChaperoneData();
-                chaperoneDataAlreadyUpdated = true;
-            }
-            //TODO 8/3/2026 With newer steamvr Updates, this is not same reliable behavior.
-            //Valve thought they saw issue, but Moving away from a potentially un-reliable metric is preffered
-            //Additionally, some of the related effects are marked as deprected via openvr
-            //It appears, as vavle would prefer to deprecate the whole stack or already has.
-            // if ( previousUniverseId == 0
-            //      && !m_moveCenterTabController.isInitComplete() )
-            // {
-            //     m_moveCenterTabController.zeroOffsets();
-            // }
-        }
+        // case vr::VREvent_ChaperoneUniverseHasChanged:
+        // {
+        //     uint64_t previousUniverseId
+        //         = vrEvent.data.chaperone.m_nPreviousUniverse;
+        //     uint64_t currentUniverseId
+        //         = vrEvent.data.chaperone.m_nCurrentUniverse;
+        //     LOG( INFO )
+        //         << "(VREvent) ChaperoneUniverseHasChanged... Previous : "
+        //         << previousUniverseId << " Current:" << currentUniverseId;
+        //     if ( !chaperoneDataAlreadyUpdated )
+        //     {
+        //         m_chaperoneUtils.loadChaperoneData();
+        //         chaperoneDataAlreadyUpdated = true;
+        //     }
+        //     //TODO 8/3/2026 With newer steamvr Updates, this is not same reliable behavior.
+        //     //Valve thought they saw issue, but Moving away from a potentially un-reliable metric is preffered
+        //     //Additionally, some of the related effects are marked as deprected via openvr
+        //     //It appears, as vavle would prefer to deprecate the whole stack or already has.
+        //     // if ( previousUniverseId == 0
+        //     //      && !m_moveCenterTabController.isInitComplete() )
+        //     // {
+        //     //     m_moveCenterTabController.zeroOffsets();
+        //     // }
+        // }
         break;
         case vr::VREvent_Input_ActionManifestReloaded:
         {
