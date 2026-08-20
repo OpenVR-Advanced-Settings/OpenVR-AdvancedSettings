@@ -934,7 +934,8 @@ void MoveCenterTabController::incomingZeroReset()
     vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
         &m_seatedCenterForReset );
     addOffset(offset);
-    reset();
+    resetOffsets(true);
+    //reset();
     return;
 }
 
@@ -1003,6 +1004,7 @@ void MoveCenterTabController::reset()
     emit rotationChanged( m_rotation );
 }
 
+//TODO This needs to be renamed, it's mainly for initilization reasons
 void MoveCenterTabController::zeroOffsets()
 {
     // first we'll check if we're outside the max commit distance
@@ -1109,18 +1111,13 @@ void MoveCenterTabController::zeroOffsets()
             //if ( parent->isPreviousShutdownSafe() )
             //{
                 auto calState = vr::VRChaperone()->GetCalibrationState();
-                if ( calState == 200 )
-                {
-                    LOG( WARNING )
-                        << "Chaperone State Does Not Exist Yet, will wait for "
-                           "universe change to finish initialization";
-                }
-                else
+                if ( calState != 200 )
                 {
                     // all init complete, safe to autosave chaperone profile
                     parent->m_chaperoneTabController.createNewAutosaveProfile();
                     m_initComplete = true;
                     m_chaperoneBasisAcquired = true;
+                    LOG( INFO ) << "Chpaerone Initilization Complete";
                 }
             //}
             // else
@@ -2783,7 +2780,6 @@ void MoveCenterTabController::eventLoopTick(
     // If we're trying to redifine the origin point, but can't becaues of
     // bad chaperone calibration, we keep trying and hold off on motion
     // features until we get ChaperoneCalibrationState_OK
-    //TODO above comment
 
     // if we were in room setup, but got this far in the loop, universe is
     // no longer raw mode and we detect room setup exit and zeroOffsets() to
@@ -2794,102 +2790,100 @@ void MoveCenterTabController::eventLoopTick(
         zeroOffsets();
         // m_roomSetupModeDetected is set to false in zeroOffsets() if it's
         // successful.
+        return;
+    }
+    setTrackingUniverse( int( universe ) );
+
+    // get current space rotation in radians
+    double angle = m_rotation * k_centidegreesToRadians;
+
+    // hmd rotations stats counting doesn't need to be smooth, so we
+    // skip some frames for performance
+    if ( m_hmdRotationStatsUpdateCounter >= k_hmdRotationCounterUpdateRate )
+    {
+        // device pose index 0 is always the hmd
+        updateHmdRotationCounter( devicePoses[0], angle );
+        m_hmdRotationStatsUpdateCounter = 0;
     }
     else
     {
-        setTrackingUniverse( int( universe ) );
-
-        // get current space rotation in radians
-        double angle = m_rotation * k_centidegreesToRadians;
-
-        // hmd rotations stats counting doesn't need to be smooth, so we
-        // skip some frames for performance
-        if ( m_hmdRotationStatsUpdateCounter >= k_hmdRotationCounterUpdateRate )
-        {
-            // device pose index 0 is always the hmd
-            updateHmdRotationCounter( devicePoses[0], angle );
-            m_hmdRotationStatsUpdateCounter = 0;
-        }
-        else
-        {
-            m_hmdRotationStatsUpdateCounter++;
-        }
-
-        // only update dynamic motion if the dash is closed
-        if ( !parent->isDashboardVisible() )
-        {
-            // detect new dash closed
-            if ( m_dashWasOpenPreviousFrame )
-            {
-                // reset velocity time points on dash closed so we don't
-                // factor in the time motion was paused during the open dash
-                m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
-                m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
-            }
-
-            // force chaperone bounds visible if turn or drag settings
-            // require
-            if ( dragBounds()
-                 && m_activeDragHand != vr::TrackedControllerRole_Invalid )
-            {
-                vr::VRChaperone()->ForceBoundsVisible( true );
-            }
-            else if ( turnBounds()
-                      && m_activeTurnHand != vr::TrackedControllerRole_Invalid )
-            {
-                vr::VRChaperone()->ForceBoundsVisible( true );
-            }
-            // only set back to default every frame if setting is enabled
-            else if ( turnBounds() || dragBounds() )
-            {
-                vr::VRChaperone()->ForceBoundsVisible(
-                    parent->m_chaperoneTabController.forceBounds() );
-            }
-
-            // Smooth turn motion can cause sim-sickness so we check if the
-            // user wants to skip frames to reduce vection. We use the
-            // factor squared because of logarithmic human perception.
-            if ( m_turnComfortFrameSkipCounter >= static_cast<unsigned>(
-                     ( turnComfortFactor() * turnComfortFactor() ) ) )
-            {
-                updateHandTurn( devicePoses, angle );
-                m_turnComfortFrameSkipCounter = 0;
-            }
-            else
-            {
-                m_turnComfortFrameSkipCounter++;
-            }
-
-            // Smooth drag motion can cause sim-sickness so we check if the
-            // user wants to skip frames to reduce vection. We use the
-            // factor squared because of logarithmic human perception.
-            if ( m_dragComfortFrameSkipCounter >= static_cast<unsigned>(
-                     ( dragComfortFactor() * dragComfortFactor() ) ) )
-            {
-                updateHandDrag( devicePoses, angle );
-                m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
-                m_dragComfortFrameSkipCounter = 0;
-            }
-            else
-            {
-                m_dragComfortFrameSkipCounter++;
-            }
-
-            if ( m_gravityActive
-                 && m_activeDragHand == vr::TrackedControllerRole_Invalid )
-            {
-                updateGravity();
-                m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
-            }
-            m_dashWasOpenPreviousFrame = false;
-        }
-        else
-        {
-            // dash is open this frame
-            m_dashWasOpenPreviousFrame = true;
-        }
-        updateSpace();
+        m_hmdRotationStatsUpdateCounter++;
     }
+
+    // only update dynamic motion if the dash is closed
+    if ( !parent->isDashboardVisible() )
+    {
+        // detect new dash closed
+        if ( m_dashWasOpenPreviousFrame )
+        {
+            // reset velocity time points on dash closed so we don't
+            // factor in the time motion was paused during the open dash
+            m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
+            m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
+        }
+
+        // force chaperone bounds visible if turn or drag settings
+        // require
+        if ( dragBounds()
+             && m_activeDragHand != vr::TrackedControllerRole_Invalid )
+        {
+            vr::VRChaperone()->ForceBoundsVisible( true );
+        }
+        else if ( turnBounds()
+                  && m_activeTurnHand != vr::TrackedControllerRole_Invalid )
+        {
+            vr::VRChaperone()->ForceBoundsVisible( true );
+        }
+        // only set back to default every frame if setting is enabled
+        else if ( turnBounds() || dragBounds() )
+        {
+            vr::VRChaperone()->ForceBoundsVisible(
+                parent->m_chaperoneTabController.forceBounds() );
+        }
+
+        // Smooth turn motion can cause sim-sickness so we check if the
+        // user wants to skip frames to reduce vection. We use the
+        // factor squared because of logarithmic human perception.
+        if ( m_turnComfortFrameSkipCounter >= static_cast<unsigned>(
+                 ( turnComfortFactor() * turnComfortFactor() ) ) )
+        {
+            updateHandTurn( devicePoses, angle );
+            m_turnComfortFrameSkipCounter = 0;
+        }
+        else
+        {
+            m_turnComfortFrameSkipCounter++;
+        }
+
+        // Smooth drag motion can cause sim-sickness so we check if the
+        // user wants to skip frames to reduce vection. We use the
+        // factor squared because of logarithmic human perception.
+        if ( m_dragComfortFrameSkipCounter >= static_cast<unsigned>(
+                 ( dragComfortFactor() * dragComfortFactor() ) ) )
+        {
+            updateHandDrag( devicePoses, angle );
+            m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
+            m_dragComfortFrameSkipCounter = 0;
+        }
+        else
+        {
+            m_dragComfortFrameSkipCounter++;
+        }
+
+        if ( m_gravityActive
+             && m_activeDragHand == vr::TrackedControllerRole_Invalid )
+        {
+            updateGravity();
+            m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
+        }
+        m_dashWasOpenPreviousFrame = false;
+    }
+    else
+    {
+        // dash is open this frame
+        m_dashWasOpenPreviousFrame = true;
+    }
+    updateSpace();
 }
 
 } // namespace advsettings
