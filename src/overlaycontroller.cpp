@@ -536,6 +536,31 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         }
         LOG( WARNING ) << "Profile Not Found for Auto Apply Chaperone!";
     }
+    auto indexList = ovr_system_wrapper::getAllConnectedDevices();
+
+    //Logging for troubleshooting
+    for (auto device : indexList)
+    {
+        auto info = ovr_system_wrapper::getInt32TrackedProperty(device, vr::Prop_ControllerRoleHint_Int32);
+        //auto error = info.first;
+        auto ctrlRole = info.second;
+        if ( vr::TrackedDeviceClass_HMD == ctrlRole )
+        {
+            LOG(INFO) << "HMD is: " << ovr_system_wrapper::getDeviceName(device);
+            continue;
+        }
+        if ( vr::TrackedControllerRole_LeftHand == ctrlRole )
+        {
+            LOG(INFO) << "Controller (L) is: " << ovr_system_wrapper::getDeviceName(device);
+            continue;
+        }
+        if ( vr::TrackedControllerRole_RightHand == ctrlRole )
+        {
+            LOG(INFO) << "Controller (R) is: " << ovr_system_wrapper::getDeviceName(device);
+            continue;
+        }
+    }
+    LOG(INFO)<< "Initilizaion is complete--------------------------------------------------";
 }
 
 void OverlayController::OnRenderRequest()
@@ -1102,7 +1127,7 @@ void OverlayController::mainEventLoop()
     processInputBindings();
 
     vr::VREvent_t vrEvent;
-    bool chaperoneDataAlreadyUpdated = false;
+    //bool chaperoneDataAlreadyUpdated = false;
     while ( pollNextEvent( m_ulOverlayHandle, &vrEvent ) )
     {
         switch ( vrEvent.eventType )
@@ -1230,6 +1255,7 @@ void OverlayController::mainEventLoop()
         }
         break;
 
+        //TODO 8/6/2025, I don't this is necessary anymore, but marking until further testing
         // Multiple ChaperoneUniverseHasChanged are often
         // emitted at the same time (some with a little bit of
         // delay) There is no sure way to recognize redundant
@@ -1237,30 +1263,33 @@ void OverlayController::mainEventLoop()
         // the same call of OnTimeoutPumpEvents() INFO Removed
         // logging on play space mover for possible crashing
         // issues.
-        case vr::VREvent_ChaperoneUniverseHasChanged:
-        {
-            uint64_t previousUniverseId
-                = vrEvent.data.chaperone.m_nPreviousUniverse;
-            uint64_t currentUniverseId
-                = vrEvent.data.chaperone.m_nCurrentUniverse;
-            LOG( INFO )
-                << "(VREvent) ChaperoneUniverseHasChanged... Previous : "
-                << previousUniverseId << " Current:" << currentUniverseId;
-            if ( !chaperoneDataAlreadyUpdated )
-            {
-                m_chaperoneUtils.loadChaperoneData();
-                chaperoneDataAlreadyUpdated = true;
-            }
-            if ( previousUniverseId == 0
-                 && !m_moveCenterTabController.isInitComplete() )
-            {
-                m_moveCenterTabController.zeroOffsets();
-            }
-        }
+        // case vr::VREvent_ChaperoneUniverseHasChanged:
+        // {
+        //     uint64_t previousUniverseId
+        //         = vrEvent.data.chaperone.m_nPreviousUniverse;
+        //     uint64_t currentUniverseId
+        //         = vrEvent.data.chaperone.m_nCurrentUniverse;
+        //     LOG( INFO )
+        //         << "(VREvent) ChaperoneUniverseHasChanged... Previous : "
+        //         << previousUniverseId << " Current:" << currentUniverseId;
+        //     if ( !chaperoneDataAlreadyUpdated )
+        //     {
+        //         m_chaperoneUtils.loadChaperoneData();
+        //         chaperoneDataAlreadyUpdated = true;
+        //     }
+        //     //TODO 8/3/2026 With newer steamvr Updates, this is not same reliable behavior.
+        //     //Valve thought they saw issue, but Moving away from a potentially un-reliable metric is preffered
+        //     //Additionally, some of the related effects are marked as deprected via openvr
+        //     //It appears, as vavle would prefer to deprecate the whole stack or already has.
+        //     // if ( previousUniverseId == 0
+        //     //      && !m_moveCenterTabController.isInitComplete() )
+        //     // {
+        //     //     m_moveCenterTabController.zeroOffsets();
+        //     // }
+        // }
         break;
         case vr::VREvent_Input_ActionManifestReloaded:
         {
-            // LOG( WARNING ) << "Action Manifest Reloaded";
             if ( m_steamVRTabController.perAppBindEnabled() )
             {
                 m_steamVRTabController.applyAllCustomBindings();
@@ -1274,7 +1303,6 @@ void OverlayController::mainEventLoop()
     if ( m_incomingReset )
     {
         m_incomingReset = false;
-        LOG( INFO ) << "Reset zero event recorded";
         m_moveCenterTabController.incomingZeroReset();
     }
 
@@ -1355,21 +1383,30 @@ void OverlayController::RotateUniverseCenter(
 {
     if ( yAngle != 0.0f )
     {
-        if ( commit )
-        {
-            vr::VRChaperoneSetup()->HideWorkingSetPreview();
-            vr::VRChaperoneSetup()->RevertWorkingCopy();
-        }
+        // if ( commit )
+        // {
+        //     vr::VRChaperoneSetup()->HideWorkingSetPreview();
+        //     vr::VRChaperoneSetup()->RevertWorkingCopy();
+        // }
         vr::HmdMatrix34_t curPos;
+        auto calState = vr::VRChaperone()->GetCalibrationState();
+        LOG( INFO ) << "Calibration State on Rotate is: " << calState;
         if ( universe == vr::TrackingUniverseStanding )
         {
             vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
                 &curPos );
         }
-        else
+        else if(universe == vr::TrackingUniverseSeated)
         {
             vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
                 &curPos );
+        }
+        else
+        {
+            //TODO 8/3/26, will see if this causes issues
+            //should exclusively happen with openxr
+            LOG(INFO) << "rotating on undefined tracking universe probably openxr";
+            vr::VRChaperoneSetup()->GetLiveSeatedZeroPoseToRawTrackingPose(&curPos);
         }
 
         vr::HmdMatrix34_t rotMat;

@@ -23,6 +23,10 @@
    {
       "controller_type": "generic_hmd",
       "binding_url": "default_action_manifests/ovras-team.advancedsettings_default_hmd.json"
+   },
+   {
+      "controller_type": "frame_controller",
+      "binding_url": "default_action_manifests/ovras-team.advancedsettings_default_frame.json"
    }
 
   ], 

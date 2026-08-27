@@ -913,42 +913,30 @@ void MoveCenterTabController::incomingZeroReset()
     // However It does appear to effect the recenter method (potentially other
     // aspects) IN mixed tracking environments I get this issue, the check if
     // there is an error and apply autosaved profile is hopefully a workaround
+
+    //This should catch OpenXR games, and helps prevent a loop on zero resets.
+    if(m_trackingUniverse==vr::TrackingUniverseRawAndUncalibrated){
+        return;
+    }
+
     auto calState = vr::VRChaperone()->GetCalibrationState();
-    LOG( INFO ) << "Calibration State on Zero Reset is: " << calState;
+    LOG( INFO ) << "Calibration State on Recenter is: " << calState;
+    //Any Logging should be handled after openXR check to avoid spam;
 
-    // If we detect a seated Recenter and are not currently in process
-    // we reload chaperone from disk
-    if ( m_recenterStages < 1 )
-    {
-        LOG( INFO ) << "Re-Center Stage 1, reload from disk";
-        m_recenterStages++;
-
-        if ( calState > 199 && m_initComplete )
-        {
-            LOG( INFO ) << "Chaperone calibration state is error, attempting "
-                           "to apply autosaved profile to fix issue";
-            parent->m_chaperoneTabController.applyAutosavedProfile();
-        }
-
-        // Revert Working copy to "apply" the changes
-        vr::VRChaperoneSetup()->RevertWorkingCopy();
-        // Send a Re-center again so the changes stick on our end.
-        sendSeatedRecenter();
-        return;
-    }
-    // We finalize the Recenter, by zero-ing offsets and setting new zero pos,
-    // and reseting our stage counter
-    if ( m_recenterStages == 1 )
-    {
-        LOG( INFO ) << "Recenter Stage 2 re-set zero pos, and reset offsets";
-        vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-            &m_universeCenterForReset );
-        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
-            &m_seatedCenterForReset );
-        resetOffsets( true );
-        m_recenterStages = 0;
-        return;
-    }
+    //TODO 8/3/2026 SteamFrame May Need special handling, will discuss With Valve currently
+    //reset zero pose seems to move floor level as well as our changes, requiring 2 resets to set at correct level
+    //or we could potentially not apply our offset during this process
+    float offset[3] = { 0, 0, 0 };
+    offset[1] = -m_offsetY;
+    vr::VRChaperoneSetup()->RevertWorkingCopy();
+    vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+        &m_universeCenterForReset );
+    vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
+        &m_seatedCenterForReset );
+    addOffset(offset);
+    resetOffsets(true);
+    //reset();
+    return;
 }
 
 void MoveCenterTabController::reset()
@@ -1016,6 +1004,7 @@ void MoveCenterTabController::reset()
     emit rotationChanged( m_rotation );
 }
 
+//TODO This needs to be renamed, it's mainly for initilization reasons
 void MoveCenterTabController::zeroOffsets()
 {
     // first we'll check if we're outside the max commit distance
@@ -1112,43 +1101,42 @@ void MoveCenterTabController::zeroOffsets()
     m_pendingZeroOffsets = false;
     if ( !m_chaperoneBasisAcquired )
     {
-        m_chaperoneBasisAcquired = true;
+        //TODO 8/3/2026, leaving this as is currently, Due to unreliable chaperone state information in current SteamVR versions
+        //this initilization can cause issues.
+        //m_initComplete = true;
+        //parent->m_chaperoneTabController.createNewAutosaveProfile();
         if ( !m_initComplete )
         {
             setTrackingUniverse( vr::VRCompositor()->GetTrackingSpace() );
-            if ( parent->isPreviousShutdownSafe() )
-            {
+            //if ( parent->isPreviousShutdownSafe() )
+            //{
                 auto calState = vr::VRChaperone()->GetCalibrationState();
-                if ( calState == 200 )
-                {
-                    LOG( WARNING )
-                        << "Chaperone State Does Not Exist Yet, will wait for "
-                           "universe change to finish initialization";
-                }
-                else
+                if ( calState != 200 )
                 {
                     // all init complete, safe to autosave chaperone profile
                     parent->m_chaperoneTabController.createNewAutosaveProfile();
                     m_initComplete = true;
+                    m_chaperoneBasisAcquired = true;
+                    LOG( INFO ) << "Chaperone Initilization Complete, Space Drag Now Enabled";
                 }
-            }
-            else
-            {
-                // shutdown was unsafe last session!
-                LOG( WARNING ) << "DETECTED UNSAFE SHUTDOWN FROM LAST SESSION";
-                m_initComplete = false;
-                if ( !parent->crashRecoveryDisabled() )
-                {
-                    parent->m_chaperoneTabController.applyAutosavedProfile();
-                    LOG( INFO ) << "Applying last good chaperone "
-                                   "profile autosave";
-                }
-            }
-            // Now mark previous shutdown as unsafe in case we crash
-            // some time during this session. Previous shutdown will be
-            // marked as being safe once more just before our app shuts
-            // down properly.
-            parent->setPreviousShutdownSafe( false );
+            //}
+            // else
+            // {
+            //     // shutdown was unsafe last session!
+            //     LOG( WARNING ) << "DETECTED UNSAFE SHUTDOWN FROM LAST SESSION";
+            //     m_initComplete = false;
+            //     if ( !parent->crashRecoveryDisabled() )
+            //     {
+            //         parent->m_chaperoneTabController.applyAutosavedProfile();
+            //         LOG( INFO ) << "Applying last good chaperone "
+            //                        "profile autosave";
+            //     }
+            // }
+            // // Now mark previous shutdown as unsafe in case we crash
+            // // some time during this session. Previous shutdown will be
+            // // marked as being safe once more just before our app shuts
+            // // down properly.
+            // parent->setPreviousShutdownSafe( false );
         }
         m_pendingZeroOffsets = true;
     }
@@ -1193,18 +1181,19 @@ void MoveCenterTabController::clampVelocity( double* velocity )
 
 void MoveCenterTabController::updateChaperoneResetData()
 {
-    auto cstate = vr::VRChaperone()->GetCalibrationState();
-    if ( cstate > 199 )
-    {
-        LOG( WARNING ) << "Chaperone Calibration State is error: " << cstate
-                       << " While Trying to Update Reset Data";
-    }
-    else
-    {
+    //auto cstate = vr::VRChaperone()->GetCalibrationState();
+    //TODO 8/3/26 calibration state is unreliable at best.
+    // if ( false)//cstate > 199 )
+    // {
+    //     LOG( WARNING ) << "Chaperone Calibration State is error: " << cstate
+    //                    << " While Trying to Update Reset Data";
+    // }
+    // else
+    //{
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
         vr::VRChaperoneSetup()->RevertWorkingCopy();
-    }
+    //}
     unsigned currentQuadCount = 0;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,
                                                            &currentQuadCount );
@@ -2719,6 +2708,19 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &offsetUniverseCenter );
 
+    //openxr
+    //In OpenXR titles commitworkingcopy essentially causes zero resets, this is too much work, and causes lag
+    //As such we will update every third frame for OpenXR titles, this should be reasonably responsive.
+    //We may have to re-visit or make user adjustable
+    if(m_trackingUniverse==vr::TrackingUniverseRawAndUncalibrated){
+        m_openXRSkip++;
+            if(m_openXRSkip % 5==0){
+                vr::VRChaperoneSetup()->CommitWorkingCopy(
+                    vr::EChaperoneConfigFile_Live );
+                m_openXRSkip = 0;
+            }
+        }
+    //This is what actually throws you into the "working set" instead of live.
     vr::VRChaperoneSetup()->ShowWorkingSetPreview();
 
     if ( m_collisionBoundsCountForReset > 0 )
@@ -2757,7 +2759,6 @@ void MoveCenterTabController::eventLoopTick(
             vr::VRChaperoneSetup()->RevertWorkingCopy();
         }
         setTrackingUniverse( int( universe ) );
-        // TODO set to allow.
         return;
     }
 
@@ -2789,102 +2790,100 @@ void MoveCenterTabController::eventLoopTick(
         zeroOffsets();
         // m_roomSetupModeDetected is set to false in zeroOffsets() if it's
         // successful.
+        return;
+    }
+    setTrackingUniverse( int( universe ) );
+
+    // get current space rotation in radians
+    double angle = m_rotation * k_centidegreesToRadians;
+
+    // hmd rotations stats counting doesn't need to be smooth, so we
+    // skip some frames for performance
+    if ( m_hmdRotationStatsUpdateCounter >= k_hmdRotationCounterUpdateRate )
+    {
+        // device pose index 0 is always the hmd
+        updateHmdRotationCounter( devicePoses[0], angle );
+        m_hmdRotationStatsUpdateCounter = 0;
     }
     else
     {
-        setTrackingUniverse( int( universe ) );
-
-        // get current space rotation in radians
-        double angle = m_rotation * k_centidegreesToRadians;
-
-        // hmd rotations stats counting doesn't need to be smooth, so we
-        // skip some frames for performance
-        if ( m_hmdRotationStatsUpdateCounter >= k_hmdRotationCounterUpdateRate )
-        {
-            // device pose index 0 is always the hmd
-            updateHmdRotationCounter( devicePoses[0], angle );
-            m_hmdRotationStatsUpdateCounter = 0;
-        }
-        else
-        {
-            m_hmdRotationStatsUpdateCounter++;
-        }
-
-        // only update dynamic motion if the dash is closed
-        if ( !parent->isDashboardVisible() )
-        {
-            // detect new dash closed
-            if ( m_dashWasOpenPreviousFrame )
-            {
-                // reset velocity time points on dash closed so we don't
-                // factor in the time motion was paused during the open dash
-                m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
-                m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
-            }
-
-            // force chaperone bounds visible if turn or drag settings
-            // require
-            if ( dragBounds()
-                 && m_activeDragHand != vr::TrackedControllerRole_Invalid )
-            {
-                vr::VRChaperone()->ForceBoundsVisible( true );
-            }
-            else if ( turnBounds()
-                      && m_activeTurnHand != vr::TrackedControllerRole_Invalid )
-            {
-                vr::VRChaperone()->ForceBoundsVisible( true );
-            }
-            // only set back to default every frame if setting is enabled
-            else if ( turnBounds() || dragBounds() )
-            {
-                vr::VRChaperone()->ForceBoundsVisible(
-                    parent->m_chaperoneTabController.forceBounds() );
-            }
-
-            // Smooth turn motion can cause sim-sickness so we check if the
-            // user wants to skip frames to reduce vection. We use the
-            // factor squared because of logarithmic human perception.
-            if ( m_turnComfortFrameSkipCounter >= static_cast<unsigned>(
-                     ( turnComfortFactor() * turnComfortFactor() ) ) )
-            {
-                updateHandTurn( devicePoses, angle );
-                m_turnComfortFrameSkipCounter = 0;
-            }
-            else
-            {
-                m_turnComfortFrameSkipCounter++;
-            }
-
-            // Smooth drag motion can cause sim-sickness so we check if the
-            // user wants to skip frames to reduce vection. We use the
-            // factor squared because of logarithmic human perception.
-            if ( m_dragComfortFrameSkipCounter >= static_cast<unsigned>(
-                     ( dragComfortFactor() * dragComfortFactor() ) ) )
-            {
-                updateHandDrag( devicePoses, angle );
-                m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
-                m_dragComfortFrameSkipCounter = 0;
-            }
-            else
-            {
-                m_dragComfortFrameSkipCounter++;
-            }
-
-            if ( m_gravityActive
-                 && m_activeDragHand == vr::TrackedControllerRole_Invalid )
-            {
-                updateGravity();
-                m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
-            }
-            m_dashWasOpenPreviousFrame = false;
-        }
-        else
-        {
-            // dash is open this frame
-            m_dashWasOpenPreviousFrame = true;
-        }
-        updateSpace();
+        m_hmdRotationStatsUpdateCounter++;
     }
+
+    // only update dynamic motion if the dash is closed
+    if ( !parent->isDashboardVisible() )
+    {
+        // detect new dash closed
+        if ( m_dashWasOpenPreviousFrame )
+        {
+            // reset velocity time points on dash closed so we don't
+            // factor in the time motion was paused during the open dash
+            m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
+            m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
+        }
+
+        // force chaperone bounds visible if turn or drag settings
+        // require
+        if ( dragBounds()
+             && m_activeDragHand != vr::TrackedControllerRole_Invalid )
+        {
+            vr::VRChaperone()->ForceBoundsVisible( true );
+        }
+        else if ( turnBounds()
+                  && m_activeTurnHand != vr::TrackedControllerRole_Invalid )
+        {
+            vr::VRChaperone()->ForceBoundsVisible( true );
+        }
+        // only set back to default every frame if setting is enabled
+        else if ( turnBounds() || dragBounds() )
+        {
+            vr::VRChaperone()->ForceBoundsVisible(
+                parent->m_chaperoneTabController.forceBounds() );
+        }
+
+        // Smooth turn motion can cause sim-sickness so we check if the
+        // user wants to skip frames to reduce vection. We use the
+        // factor squared because of logarithmic human perception.
+        if ( m_turnComfortFrameSkipCounter >= static_cast<unsigned>(
+                 ( turnComfortFactor() * turnComfortFactor() ) ) )
+        {
+            updateHandTurn( devicePoses, angle );
+            m_turnComfortFrameSkipCounter = 0;
+        }
+        else
+        {
+            m_turnComfortFrameSkipCounter++;
+        }
+
+        // Smooth drag motion can cause sim-sickness so we check if the
+        // user wants to skip frames to reduce vection. We use the
+        // factor squared because of logarithmic human perception.
+        if ( m_dragComfortFrameSkipCounter >= static_cast<unsigned>(
+                 ( dragComfortFactor() * dragComfortFactor() ) ) )
+        {
+            updateHandDrag( devicePoses, angle );
+            m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
+            m_dragComfortFrameSkipCounter = 0;
+        }
+        else
+        {
+            m_dragComfortFrameSkipCounter++;
+        }
+
+        if ( m_gravityActive
+             && m_activeDragHand == vr::TrackedControllerRole_Invalid )
+        {
+            updateGravity();
+            m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
+        }
+        m_dashWasOpenPreviousFrame = false;
+    }
+    else
+    {
+        // dash is open this frame
+        m_dashWasOpenPreviousFrame = true;
+    }
+    updateSpace();
 }
 
 } // namespace advsettings

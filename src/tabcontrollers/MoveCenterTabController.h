@@ -197,6 +197,7 @@ private:
     unsigned m_turnComfortFrameSkipCounter = 0;
     int m_recenterStages = 0;
     int m_chaperoneHasCommit = false;
+    int m_openXRSkip = 0;
 
     // Matrix used For Center Marker
     vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
