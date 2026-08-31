@@ -914,13 +914,6 @@ void MoveCenterTabController::incomingZeroReset()
     // aspects) IN mixed tracking environments I get this issue, the check if
     // there is an error and apply autosaved profile is hopefully a workaround
 
-    //This should catch OpenXR games, and helps prevent a loop on zero resets.
-
-    //8/31/26 Loop should be resolved in update Space so I don't think we need.
-    //if(m_trackingUniverse==vr::TrackingUniverseRawAndUncalibrated){
-    //    return;
-    //}
-
     auto calState = vr::VRChaperone()->GetCalibrationState();
     LOG( INFO ) << "Calibration State on Recenter is: " << calState;
     //Any Logging should be handled after openXR check to avoid spam;
@@ -2711,19 +2704,10 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         &offsetUniverseCenter );
 
     //openxr
-    //In OpenXR titles commitworkingcopy essentially causes zero resets, this is too much work, and causes lag
-    //As such we will update every third frame for OpenXR titles, this should be reasonably responsive.
-    //We may have to re-visit or make user adjustable
     //8/31/26 Appears as though OpenXR has a "Seated" and a "Standing" mode, (at least for our purposes)
     //though it won't report as such via SteamVR, so if our playspace is in "raw" we just apply seated as well to fix issues
     if(m_trackingUniverse==vr::TrackingUniverseRawAndUncalibrated){
         vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(&offsetUniverseCenter);
-        // m_openXRSkip++;
-        //     if(m_openXRSkip % 5==0){
-        //         vr::VRChaperoneSetup()->CommitWorkingCopy(
-        //             vr::EChaperoneConfigFile_Live );
-        //         m_openXRSkip = 0;
-        //     }
         }
     //This is what actually throws you into the "working set" instead of live.
     vr::VRChaperoneSetup()->ShowWorkingSetPreview();
