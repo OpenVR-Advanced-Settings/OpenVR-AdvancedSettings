@@ -128,6 +128,7 @@ We are not designed to provide a whole bunch of functionality here, if you need 
 
 ### Focus Issues
 - we deliver the keypress to the OS, depending on your set-up and program you may have to have the window "in-focus"
+- SteamVR controller bindings [don't work](https://github.com/OpenVR-Advanced-Settings/OpenVR-AdvancedSettings/issues/202#issuecomment-493734533) while the UI is showing (e.g. Desktop). You have to dismiss the UI, press the controller button which has a keybinding assigned to it, and then re-open the Desktop UI to see what happened.
 
 ### Multiple Key Events
 - you must separate multiple events with a space (` `)
