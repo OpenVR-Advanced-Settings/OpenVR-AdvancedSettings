@@ -2618,7 +2618,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     }
 
     // keep the seated origin synced with offsets if in seated mode
-    if ( m_trackingUniverse == vr::TrackingUniverseSeated )
+    if ( m_trackingUniverse == vr::TrackingUniverseSeated || m_trackingUniverse == vr::TrackingUniverseRawAndUncalibrated )
     {
         vr::HmdMatrix34_t offsetSeatedCenter;
 
@@ -2703,13 +2703,6 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &offsetUniverseCenter );
 
-    //openxr
-    //8/31/26 Appears as though OpenXR has a "Seated" and a "Standing" mode, (at least for our purposes)
-    //though it won't report as such via SteamVR, so if our playspace is in "raw" we just apply seated as well to fix issues
-    if(m_trackingUniverse==vr::TrackingUniverseRawAndUncalibrated){
-        vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(&offsetUniverseCenter);
-        }
-    //This is what actually throws you into the "working set" instead of live.
     vr::VRChaperoneSetup()->ShowWorkingSetPreview();
 
     if ( m_collisionBoundsCountForReset > 0 )
