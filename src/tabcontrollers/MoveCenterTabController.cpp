@@ -274,10 +274,11 @@ void MoveCenterTabController::setTrackingUniverse( int value, bool notify )
     if ( m_trackingUniverse != value )
     {
         vr::VRChaperoneSetup()->HideWorkingSetPreview();
-        if ( !m_roomSetupModeDetected && value == vr::TrackingUniverseStanding )
-        {
-            reset();
-        }
+        //TODO verify
+        // if ( !m_roomSetupModeDetected && value == vr::TrackingUniverseStanding )
+        // {
+        //     reset();
+        // }
 
         m_trackingUniverse = value;
         if ( notify )
@@ -923,6 +924,7 @@ void MoveCenterTabController::incomingZeroReset()
     //or we could potentially not apply our offset during this process
     float offset[3] = { 0, 0, 0 };
     offset[1] = -m_offsetY;
+    //TODO set universe center and seated recenter as 0 for this part
     vr::VRChaperoneSetup()->RevertWorkingCopy();
     vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
         &m_universeCenterForReset );
@@ -934,12 +936,14 @@ void MoveCenterTabController::incomingZeroReset()
     return;
 }
 
+//TODO 9/4/26 This needs to be looked at This moves the chaperone, and seems to do same thing as
+//zerooffsets....
 void MoveCenterTabController::reset()
 {
     // DO NOT attempt to apply autosaved profile on reset, as it is triggered by
     // the apply chaperone profile Side effects are bad!
-    auto calState = vr::VRChaperone()->GetCalibrationState();
-    LOG( INFO ) << "Calibration State on Reset is: " << calState;
+    //auto calState = vr::VRChaperone()->GetCalibrationState();
+    //LOG( INFO ) << "Calibration State on Reset is: " << calState;
 
     if ( !m_chaperoneBasisAcquired )
     {
@@ -1141,7 +1145,7 @@ void MoveCenterTabController::zeroOffsets()
         m_roomSetupModeDetected = false;
     }
 
-    LOG( INFO ) << "SUCCESS: Chaperone Data Updated and Offsets zeroed out";
+    //LOG( INFO ) << "SUCCESS: Chaperone Data Updated and Offsets zeroed out";
 }
 
 void MoveCenterTabController::sendSeatedRecenter()
