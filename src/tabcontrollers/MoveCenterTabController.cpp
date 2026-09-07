@@ -915,9 +915,8 @@ void MoveCenterTabController::incomingZeroReset()
     // aspects) IN mixed tracking environments I get this issue, the check if
     // there is an error and apply autosaved profile is hopefully a workaround
 
-    auto calState = vr::VRChaperone()->GetCalibrationState();
-    LOG( INFO ) << "Calibration State on Recenter is: " << calState;
-    //Any Logging should be handled after openXR check to avoid spam;
+    //auto calState = vr::VRChaperone()->GetCalibrationState();
+    //LOG( INFO ) << "Calibration State on Recenter is: " << calState;
 
     //TODO 8/3/2026 SteamFrame May Need special handling, will discuss With Valve currently
     //reset zero pose seems to move floor level as well as our changes, requiring 2 resets to set at correct level
@@ -1892,8 +1891,9 @@ void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
         emit offsetZChanged( m_offsetZ );
         emit rotationChanged( m_rotation );
         updateSpace( true );
-        auto calState = vr::VRChaperone()->GetCalibrationState();
-        LOG( INFO ) << "Calibration State on Reset Offsets is: " << calState;
+
+        //auto calState = vr::VRChaperone()->GetCalibrationState();
+        //LOG( INFO ) << "Calibration State on Reset Offsets is: " << calState;
 
         //        if ( calState > 199 && m_initComplete )
         //        {

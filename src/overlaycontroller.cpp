@@ -1238,6 +1238,10 @@ void OverlayController::mainEventLoop()
         }
         break;
 
+        case vr::VREvent_KeyboardCharInput:
+        {
+            //TODO
+        }
         case vr::VREvent_KeyboardDone:
         {
             char keyboardBuffer[1024];
