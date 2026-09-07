@@ -1240,16 +1240,20 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_KeyboardCharInput:
         {
-            //TODO
-        }
-        case vr::VREvent_KeyboardDone:
-        {
-            char keyboardBuffer[1024];
-            vr::VROverlay()->GetKeyboardText( keyboardBuffer, 1024 );
+            char keyboardBuffer[64];
+            vr::VROverlay()->GetKeyboardText( keyboardBuffer, 64 );
             emit keyBoardInputSignal( QString( keyboardBuffer ),
                                       static_cast<unsigned long>(
                                           vrEvent.data.keyboard.uUserValue ) );
         }
+        // case vr::VREvent_KeyboardDone:
+        // {
+        //     char keyboardBuffer[1024];
+        //     vr::VROverlay()->GetKeyboardText( keyboardBuffer, 1024 );
+        //     emit keyBoardInputSignal( QString( keyboardBuffer ),
+        //                               static_cast<unsigned long>(
+        //                                   vrEvent.data.keyboard.uUserValue ) );
+        // }
         break;
 
         case vr::VREvent_SeatedZeroPoseReset:
@@ -1576,11 +1580,20 @@ const vr::VROverlayHandle_t& OverlayController::overlayThumbnailHandle()
 void OverlayController::showKeyboard( QString existingText,
                                       unsigned long userValue )
 {
+    // vr::VROverlay()->ShowKeyboardForOverlay(
+    //     m_ulOverlayHandle,
+    //     vr::k_EGamepadTextInputModeNormal,
+    //     vr::k_EGamepadTextInputLineModeSingleLine,
+    //     0,
+    //     "Advanced Settings Overlay",
+    //     1024,
+    //     existingText.toStdString().c_str(),
+    //     userValue );
     vr::VROverlay()->ShowKeyboardForOverlay(
         m_ulOverlayHandle,
         vr::k_EGamepadTextInputModeNormal,
         vr::k_EGamepadTextInputLineModeSingleLine,
-        0,
+        vr::KeyboardFlag_Modal+vr::KeyboardFlag_Minimal+vr::KeyboardFlag_HideDoneKey,
         "Advanced Settings Overlay",
         1024,
         existingText.toStdString().c_str(),

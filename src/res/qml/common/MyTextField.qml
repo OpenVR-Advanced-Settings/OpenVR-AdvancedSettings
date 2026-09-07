@@ -24,13 +24,16 @@ TextField {
         if (activeFocus) {
             if (!OverlayController.desktopMode) {
                 OverlayController.showKeyboard(text, keyBoardUID)
-            } else {
-                savedText = text
             }
+            //savedText = text
+        }
+        //When box loses focus apply changes
+        else{
+            myTextField.onInputEvent(text)
         }
     }
     onEditingFinished: {
-        if (OverlayController.desktopMode && savedText !== text) {
+        if(OverlayController.desktopMode){
             myTextField.onInputEvent(text)
         }
     }
@@ -41,9 +44,31 @@ TextField {
         target: OverlayController
         onKeyBoardInputSignal: {
             if (userValue == keyBoardUID) {
-                if (myTextField.text !== input) {
-                    myTextField.onInputEvent(input)
+                if(input == '\b'){
+                    myTextField.text = text.slice(0,-1)
+                    return
                 }
+                else if(input == '\e'){
+                    myTextField.text = text.slice(0,cursorPosition)+text.slice(cursorposition+1)
+                    return;
+                }
+                //Execute input
+                else if(input == '\n'){
+                    if(!OverlayController.desktopMode){
+                        //myTextField.onInputEvent(input)
+                        myTextField.focus = false;
+                    }
+                    return;
+                }
+                else if(input=='\r'){
+                    return;
+                }
+                else{
+                    myTextField.text = text + input;
+                }
+                //if (myTextField.text !== input) {
+                //    myTextField.onInputEvent(input)
+                //}
             }
         }
     }
