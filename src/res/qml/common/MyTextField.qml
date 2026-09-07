@@ -5,6 +5,7 @@ import ovras.advsettings 1.0
 TextField {
 	property int keyBoardUID: 0
     property string savedText: ""
+    property bool active: false
     id: myTextField
     color: "#d9dbe0"
     text: ""
@@ -18,10 +19,12 @@ TextField {
         }
         onClicked: {
             myTextField.forceActiveFocus()
+            active = true;
         }
     }
     onActiveFocusChanged: {
         if (activeFocus) {
+            active = true;
             if (!OverlayController.desktopMode) {
                 OverlayController.showKeyboard(text, keyBoardUID)
             }
@@ -30,6 +33,7 @@ TextField {
         //When box loses focus apply changes
         else{
             myTextField.onInputEvent(text)
+            active = false;
         }
     }
     onEditingFinished: {
@@ -42,6 +46,20 @@ TextField {
 	}
     Connections {
         target: OverlayController
+
+        onSubmitLastTextField:{
+            //value here is UID
+            if(value == 0){
+                active = false;
+                return;
+            }
+
+            if(value == keyBoardUID && active == true){
+                myTextField.onInputEvent(text)
+                active = false;
+            }
+        }
+
         onKeyBoardInputSignal: {
             if (userValue == keyBoardUID) {
                 if(input == '\b'){

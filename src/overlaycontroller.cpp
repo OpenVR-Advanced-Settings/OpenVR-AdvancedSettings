@@ -1235,6 +1235,19 @@ void OverlayController::mainEventLoop()
             LOG( DEBUG ) << "Dashboard deactivated";
             m_dashboardVisible = false;
             settings::saveChangedSettings();
+            if(0UL != m_lastTextUID){
+                submitLastTextField(m_lastTextUID);
+                m_lastTextUID = 0;
+            }
+        }
+        break;
+
+        case vr::VREvent_HideKeyboard:
+        {
+            if(0UL != m_lastTextUID){
+                submitLastTextField(m_lastTextUID);
+                m_lastTextUID = 0;
+            }
         }
         break;
 
@@ -1245,6 +1258,7 @@ void OverlayController::mainEventLoop()
             emit keyBoardInputSignal( QString( keyboardBuffer ),
                                       static_cast<unsigned long>(
                                           vrEvent.data.keyboard.uUserValue ) );
+            m_lastTextUID = static_cast<unsigned long>(vrEvent.data.keyboard.uUserValue);
         }
         // case vr::VREvent_KeyboardDone:
         // {
