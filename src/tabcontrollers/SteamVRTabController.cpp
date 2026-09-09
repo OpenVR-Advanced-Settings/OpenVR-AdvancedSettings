@@ -507,14 +507,13 @@ void SteamVRTabController::launchBindingUI()
         LOG( ERROR )
             << "failed to get input handle? is your right controller on?";
     }
+    bool desktopShow = false;
     if ( parent->isDesktopMode() )
     {
-        QDesktopServices::openUrl(
-            QUrl( "http://127.0.0.1:27062/dashboard/controllerbinding.html" ) );
-        return;
+        desktopShow = true;
     }
     auto error = vr::VRInput()->OpenBindingUI(
-        application_strings::applicationKey, actionHandle, inputHandle, false );
+        application_strings::applicationKey, actionHandle, inputHandle, desktopShow );
     if ( error != vr::VRInputError_None )
     {
         LOG( ERROR ) << "Input Error: " << error;

@@ -274,10 +274,11 @@ void MoveCenterTabController::setTrackingUniverse( int value, bool notify )
     if ( m_trackingUniverse != value )
     {
         vr::VRChaperoneSetup()->HideWorkingSetPreview();
-        if ( !m_roomSetupModeDetected && value == vr::TrackingUniverseStanding )
-        {
-            reset();
-        }
+        //TODO verify
+        // if ( !m_roomSetupModeDetected && value == vr::TrackingUniverseStanding )
+        // {
+        //     reset();
+        // }
 
         m_trackingUniverse = value;
         if ( notify )
@@ -914,20 +915,15 @@ void MoveCenterTabController::incomingZeroReset()
     // aspects) IN mixed tracking environments I get this issue, the check if
     // there is an error and apply autosaved profile is hopefully a workaround
 
-    //This should catch OpenXR games, and helps prevent a loop on zero resets.
-    if(m_trackingUniverse==vr::TrackingUniverseRawAndUncalibrated){
-        return;
-    }
-
-    auto calState = vr::VRChaperone()->GetCalibrationState();
-    LOG( INFO ) << "Calibration State on Recenter is: " << calState;
-    //Any Logging should be handled after openXR check to avoid spam;
+    //auto calState = vr::VRChaperone()->GetCalibrationState();
+    //LOG( INFO ) << "Calibration State on Recenter is: " << calState;
 
     //TODO 8/3/2026 SteamFrame May Need special handling, will discuss With Valve currently
     //reset zero pose seems to move floor level as well as our changes, requiring 2 resets to set at correct level
     //or we could potentially not apply our offset during this process
     float offset[3] = { 0, 0, 0 };
     offset[1] = -m_offsetY;
+    //TODO set universe center and seated recenter as 0 for this part
     vr::VRChaperoneSetup()->RevertWorkingCopy();
     vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
         &m_universeCenterForReset );
@@ -939,12 +935,14 @@ void MoveCenterTabController::incomingZeroReset()
     return;
 }
 
+//TODO 9/4/26 This needs to be looked at This moves the chaperone, and seems to do same thing as
+//zerooffsets....
 void MoveCenterTabController::reset()
 {
     // DO NOT attempt to apply autosaved profile on reset, as it is triggered by
     // the apply chaperone profile Side effects are bad!
-    auto calState = vr::VRChaperone()->GetCalibrationState();
-    LOG( INFO ) << "Calibration State on Reset is: " << calState;
+    //auto calState = vr::VRChaperone()->GetCalibrationState();
+    //LOG( INFO ) << "Calibration State on Reset is: " << calState;
 
     if ( !m_chaperoneBasisAcquired )
     {
@@ -1146,7 +1144,7 @@ void MoveCenterTabController::zeroOffsets()
         m_roomSetupModeDetected = false;
     }
 
-    LOG( INFO ) << "SUCCESS: Chaperone Data Updated and Offsets zeroed out";
+    //LOG( INFO ) << "SUCCESS: Chaperone Data Updated and Offsets zeroed out";
 }
 
 void MoveCenterTabController::sendSeatedRecenter()
@@ -1893,8 +1891,9 @@ void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
         emit offsetZChanged( m_offsetZ );
         emit rotationChanged( m_rotation );
         updateSpace( true );
-        auto calState = vr::VRChaperone()->GetCalibrationState();
-        LOG( INFO ) << "Calibration State on Reset Offsets is: " << calState;
+
+        //auto calState = vr::VRChaperone()->GetCalibrationState();
+        //LOG( INFO ) << "Calibration State on Reset Offsets is: " << calState;
 
         //        if ( calState > 199 && m_initComplete )
         //        {
@@ -2623,7 +2622,7 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     }
 
     // keep the seated origin synced with offsets if in seated mode
-    if ( m_trackingUniverse == vr::TrackingUniverseSeated )
+    if ( m_trackingUniverse == vr::TrackingUniverseSeated || m_trackingUniverse == vr::TrackingUniverseRawAndUncalibrated )
     {
         vr::HmdMatrix34_t offsetSeatedCenter;
 
@@ -2708,19 +2707,6 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
         &offsetUniverseCenter );
 
-    //openxr
-    //In OpenXR titles commitworkingcopy essentially causes zero resets, this is too much work, and causes lag
-    //As such we will update every third frame for OpenXR titles, this should be reasonably responsive.
-    //We may have to re-visit or make user adjustable
-    if(m_trackingUniverse==vr::TrackingUniverseRawAndUncalibrated){
-        m_openXRSkip++;
-            if(m_openXRSkip % 5==0){
-                vr::VRChaperoneSetup()->CommitWorkingCopy(
-                    vr::EChaperoneConfigFile_Live );
-                m_openXRSkip = 0;
-            }
-        }
-    //This is what actually throws you into the "working set" instead of live.
     vr::VRChaperoneSetup()->ShowWorkingSetPreview();
 
     if ( m_collisionBoundsCountForReset > 0 )

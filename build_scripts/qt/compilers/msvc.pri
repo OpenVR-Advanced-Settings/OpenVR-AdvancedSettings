@@ -9,4 +9,4 @@ warnings_as_errors {
 QMAKE_CXXFLAGS += /GL
 
 # Force standards-conformance
-QMAKE_CXXFLAGS += /permissive-
+# QMAKE_CXXFLAGS += /permissive-
