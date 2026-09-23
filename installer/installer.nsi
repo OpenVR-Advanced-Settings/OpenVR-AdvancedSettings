@@ -82,7 +82,7 @@ Function .onInit
 	MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
 		"OpenVR Advanced Settings is already installed. $\n$\nClick `OK` to upgrade the \
 		existing installation or `Cancel` to cancel this upgrade." \
-		IDOK upgrade
+		/SD IDOK IDOK upgrade
 	Abort
  
 	upgrade:
