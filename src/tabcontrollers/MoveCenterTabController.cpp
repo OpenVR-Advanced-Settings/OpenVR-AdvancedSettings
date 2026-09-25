@@ -1109,7 +1109,7 @@ void MoveCenterTabController::zeroOffsets()
                     parent->m_chaperoneTabController.createNewAutosaveProfile();
                     m_initComplete = true;
                     m_chaperoneBasisAcquired = true;
-                    LOG( INFO ) << "Chaperone Initilization Complete, Space Drag Now Enabled";
+                    qInfo() << "Chaperone Initilization Complete, Space Drag Now Enabled";
                 }
             //}
             // else

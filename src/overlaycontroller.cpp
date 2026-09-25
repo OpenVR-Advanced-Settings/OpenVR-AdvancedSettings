@@ -521,21 +521,22 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         auto ctrlRole = info.second;
         if ( vr::TrackedDeviceClass_HMD == ctrlRole )
         {
-            LOG(INFO) << "HMD is: " << ovr_system_wrapper::getDeviceName(device);
+            qInfo() << "HMD is: "
+                    << ovr_system_wrapper::getDeviceName( device );
             continue;
         }
         if ( vr::TrackedControllerRole_LeftHand == ctrlRole )
         {
-            LOG(INFO) << "Controller (L) is: " << ovr_system_wrapper::getDeviceName(device);
+           qInfo() << "Controller (L) is: " << ovr_system_wrapper::getDeviceName(device);
             continue;
         }
         if ( vr::TrackedControllerRole_RightHand == ctrlRole )
         {
-            LOG(INFO) << "Controller (R) is: " << ovr_system_wrapper::getDeviceName(device);
+            qInfo() << "Controller (R) is: " << ovr_system_wrapper::getDeviceName(device);
             continue;
         }
     }
-    LOG(INFO)<< "Initilizaion is complete--------------------------------------------------";
+    qInfo() << "Initilizaion is complete--------------------------------------------------";
 }
 
 void OverlayController::OnRenderRequest()
@@ -1425,7 +1426,7 @@ void OverlayController::RotateUniverseCenter(
         // }
         vr::HmdMatrix34_t curPos;
         auto calState = vr::VRChaperone()->GetCalibrationState();
-        LOG( INFO ) << "Calibration State on Rotate is: " << calState;
+        qInfo() << "Calibration State on Rotate is: " << calState;
         if ( universe == vr::TrackingUniverseStanding )
         {
             vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
@@ -1440,7 +1441,7 @@ void OverlayController::RotateUniverseCenter(
         {
             //TODO 8/3/26, will see if this causes issues
             //should exclusively happen with openxr
-            LOG(INFO) << "rotating on undefined tracking universe probably openxr";
+            qInfo() << "rotating on undefined tracking universe probably openxr";
             vr::VRChaperoneSetup()->GetLiveSeatedZeroPoseToRawTrackingPose(&curPos);
         }
 
