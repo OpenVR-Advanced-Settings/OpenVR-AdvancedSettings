@@ -1500,7 +1500,7 @@ void ChaperoneTabController::createNewAutosaveProfile()
                          true,
                          true,
                          true );
-    LOG(INFO) <<"Chaperone Automatic Chaperone Profile Saved";
+    qInfo() <<"Chaperone Automatic Chaperone Profile Saved";
 }
 
 void ChaperoneTabController::applyAutosavedProfile()
