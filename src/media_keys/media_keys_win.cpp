@@ -1,6 +1,8 @@
 #include "media_keys.h"
 #include "src/keyboard_input/input_sender.h"
 #include <Windows.h>
+#include <QtLogging>
+#include <QtDebug>
 
 namespace keyboardinput
 {
@@ -45,13 +47,13 @@ void sendKeyboardInputRaw( std::vector<INPUT> inputs )
                              0,
                              nullptr ) )
         {
-            LOG( ERROR )
+            qCritical()
                 << "Error calling SendInput(): Could not get error message ("
                 << errCode << ")";
         }
         else
         {
-            LOG( ERROR ) << "Error calling SendInput(): " << err;
+            qCritical() << "Error calling SendInput(): " << err;
         }
     }
 }

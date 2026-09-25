@@ -1,34 +1,149 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource prefix="/common">
-    <file alias="backarrow">img/common/backarrow.svg</file>
-    <file alias="box_checkmark">img/common/check.svg</file>
-</qresource>
-<qresource prefix="/microphone">
-    <file alias="on">img/audio/microphone/mic_on.svg</file>
-    <file alias="off">img/audio/microphone/mic_off.svg</file>
-</qresource>
-<qresource prefix="/speaker">
-    <file alias="on">img/audio/speaker/speaker_on.svg</file>
-    <file alias="off">img/audio/speaker/speaker_off.svg</file>
-</qresource>
-<qresource prefix="/media_keys">
-    <file alias="play_pause">img/audio/media_keys/outline_play_pause_white_24dp.svg</file>
-    <file alias="next">img/audio/media_keys/outline_skip_next_white_24dp.svg</file>
-    <file alias="previous">img/audio/media_keys/outline_skip_previous_white_24dp.svg</file>
-    <file alias="stop">img/audio/media_keys/outline_stop_white_24dp.svg</file>
-</qresource>
-<qresource prefix="/main_menu_icons">
-    <file alias="audio_tab_icon">img/main_menu_icons/audio_tab_icon.svg</file>
-    <file alias="bindings_tab_icon">img/main_menu_icons/bindings_tab_icon.svg</file>
-    <file alias="chaperone_tab_icon">img/main_menu_icons/chaperone_tab_icon.svg</file>
-    <file alias="motion_tab_icon">img/main_menu_icons/motion_tab_icon.svg</file>
-    <file alias="offsets_tab_icon">img/main_menu_icons/offsets_tab_icon.svg</file>
-    <file alias="settings_tab_icon">img/main_menu_icons/settings_tab_icon.svg</file>
-    <file alias="space_fix_tab_icon">img/main_menu_icons/space_fix_tab_icon.svg</file>
-    <file alias="statistics_tab_icon">img/main_menu_icons/statistics_tab_icon.svg</file>
-    <file alias="steamvr_tab_icon">img/main_menu_icons/steamvr_tab_icon.svg</file>
-    <file alias="utilities_tab_icon">img/main_menu_icons/utilities_tab_icon.svg</file>
-    <file alias="video_tab_icon">img/main_menu_icons/video_tab_icon.svg</file>
-	<file alias="rotation_tab_icon">img/main_menu_icons/rotation_tab_icon.svg</file>
-</qresource>
+<RCC>
+	<qresource prefix="/qt">
+		<file>qml/ChaperoneWarningsPage.qml</file>
+		<file>qml/FixFloorPage.qml</file>
+		<file>qml/PlayspacePage.qml</file>
+		<file>qml/RootPage.qml</file>
+		<file>qml/SettingsPage.qml</file>
+		<file>qml/StatisticsPage.qml</file>
+		<file>qml/audio_page/AudioPage.qml</file>
+		<file>qml/audio_page/device_selector/AudioDeviceSelector.qml</file>
+		<file>qml/audio_page/device_selector/MicDeviceSelector.qml</file>
+		<file>qml/audio_page/device_selector/MicVolumeSlider.qml</file>
+		<file>qml/audio_page/device_selector/MirrorDeviceSelector.qml</file>
+		<file>qml/audio_page/device_selector/MirrorVolumeSlider.qml</file>
+		<file>qml/audio_page/dialog_boxes/AudioDeleteProfileDialog.qml</file>
+		<file>qml/audio_page/dialog_boxes/AudioMessageDialog.qml</file>
+		<file>qml/audio_page/dialog_boxes/AudioNewProfileDialog.qml</file>
+		<file>qml/audio_page/profiles/ProfileButtons.qml</file>
+		<file>qml/audio_page/proximity/ProximityToggle.qml</file>
+		<file>qml/audio_page/push_to_talk/PttButtons.qml</file>
+		<file>qml/chaperone_page/ChaperonePage.qml</file>
+		<file>qml/chaperone_page/change_orientation/ChangeOrientationGroupBox.qml</file>
+		<file>qml/chaperone_page/chaperone_additional/ChaperoneAdditionalPage.qml</file>
+		<file>qml/chaperone_page/chaperone_additional/chaperoneboundscolor/ChaperoneBoundsColorGroupBox.qml</file>
+		<file>qml/chaperone_page/chaperone_additional/chaperonemisc/ChaperoneMiscGroupBox.qml</file>
+		<file>qml/chaperone_page/chaperone_additional/chaperonetype/ChaperoneTypeGroupBox.qml</file>
+		<file>qml/common/FullWidthSliderBox.qml</file>
+		<file>qml/common/HourComboBox.qml</file>
+		<file>qml/common/LineSeparator.qml</file>
+		<file>qml/common/mainwidget.qml</file>
+		<file>qml/common/MinuteSecondComboBox.qml</file>
+		<file>qml/common/MyComboBox.qml</file>
+		<file>qml/common/MyDialogOkCancelPopup.qml</file>
+		<file>qml/common/MyDialogOkPopup.qml</file>
+		<file>qml/common/MyPushButton.qml</file>
+		<file>qml/common/MyPushButton2.qml</file>
+		<file>qml/common/MyRadioButton.qml</file>
+		<file>qml/common/MyResources.qml</file>
+		<file>qml/common/MySlider.qml</file>
+		<file>qml/common/MyStackViewPage.qml</file>
+		<file>qml/common/MyText.qml</file>
+		<file>qml/common/MyTextField.qml</file>
+		<file>qml/common/MyToggleButton.qml</file>
+		<file>qml/common/TimeAssembly.qml</file>
+		<file>qml/motion_page/MotionPage.qml</file>
+		<file>qml/motion_page/gravity/GravityGroupBox.qml</file>
+		<file>qml/motion_page/height_toggle/HeightToggleGroupBox.qml</file>
+		<file>qml/motion_page/space_drag/SpaceDragGroupBox.qml</file>
+		<file>qml/rotation_page/RotationPage.qml</file>
+		<file>qml/rotation_page/redirected/AutoTurnGroupBox.qml</file>
+		<file>qml/rotation_page/redirected/RedirectedGroupBox.qml</file>
+		<file>qml/rotation_page/snap_turn/SnapTurnGroupBox.qml</file>
+		<file>qml/rotation_page/space_turn/SpaceTurnGroupBox.qml</file>
+		<file>qml/rotation_page/view_ratchet/ViewRatchetGroupBox.qml</file>
+		<file>qml/steamvr_page/SteamVRPage.qml</file>
+		<file>qml/steamvr_page/camera/CameraGroupBox.qml</file>
+		<file>qml/steamvr_page/steamvrbind/SteamVRBindGroupBox.qml</file>
+		<file>qml/steamvr_page/steamvrmisc/SteamVRMiscGroupBox.qml</file>
+		<file>qml/steamvr_page/steamvr_additional/SteamVRTXRXPage.qml</file>
+		<file>qml/utilities_page/UtilitiesPage.qml</file>
+		<file>qml/utilities_page/alarm_clock/AlarmGroupBox.qml</file>
+		<file>qml/utilities_page/keyboard_utils/KeyboardGroupBox.qml</file>
+		<file>qml/utilities_page/media_keys/MediaButton.qml</file>
+		<file>qml/utilities_page/media_keys/MediaControllerKeys.qml</file>
+		<file>qml/utilities_page/misc/MiscBox.qml</file>
+		<file>qml/video_page/VideoPage.qml</file>
+		<file>qml/video_page/brightness/BrightnessGroupBox.qml</file>
+		<file>qml/video_page/color/ColorGroupBox.qml</file>
+		<file>qml/video_page/dialogboxes/VideoDeleteProfileDialog.qml</file>
+		<file>qml/video_page/dialogboxes/VideoMessageDialog.qml</file>
+		<file>qml/video_page/dialogboxes/VideoNewProfileDialog.qml</file>
+		<file>qml/video_page/miscvid/VideoMiscGroupBox.qml</file>
+		<file>qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml</file>
+		<file>qml/video_page/profiles/VideoProfileGroupBox.qml</file>
+		<file>qml/video_page/supersampling/SuperSamplingGroupBox.qml</file>
+	</qresource>
+    <qresource prefix="/common">
+        <file alias="backarrow">img/common/backarrow.svg</file>
+        <file alias="box_checkmark">img/common/check.svg</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file alias="thumbicon.png">img/icons/thumbicon.png</file>
+    </qresource>
+    <qresource prefix="/microphone">
+        <file alias="on">img/audio/microphone/mic_on.svg</file>
+        <file alias="off">img/audio/microphone/mic_off.svg</file>
+        <file alias="ptt_notification.png">img/audio/microphone/ptt_notification.png</file>
+        <file alias="ptm_notification.png">img/audio/microphone/ptm_notification.png</file>
+        <file alias="ptt_notification.svg">img/audio/microphone/ptt_notification.svg</file>
+    </qresource>
+    <qresource prefix="/speaker">
+        <file alias="on">img/audio/speaker/speaker_on.svg</file>
+        <file alias="off">img/audio/speaker/speaker_off.svg</file>
+    </qresource>
+    <qresource prefix="/media_keys">
+        <file alias="play_pause">img/audio/media_keys/outline_play_pause_white_24dp.svg</file>
+        <file alias="next">img/audio/media_keys/outline_skip_next_white_24dp.svg</file>
+        <file alias="previous">img/audio/media_keys/outline_skip_previous_white_24dp.svg</file>
+        <file alias="stop">img/audio/media_keys/outline_stop_white_24dp.svg</file>
+    </qresource>
+    <qresource prefix="/main_menu_icons">
+        <file alias="audio_tab_icon">img/main_menu_icons/audio_tab_icon.svg</file>
+        <file alias="bindings_tab_icon">img/main_menu_icons/bindings_tab_icon.svg</file>
+        <file alias="chaperone_tab_icon">img/main_menu_icons/chaperone_tab_icon.svg</file>
+        <file alias="motion_tab_icon">img/main_menu_icons/motion_tab_icon.svg</file>
+        <file alias="offsets_tab_icon">img/main_menu_icons/offsets_tab_icon.svg</file>
+        <file alias="settings_tab_icon">img/main_menu_icons/settings_tab_icon.svg</file>
+        <file alias="space_fix_tab_icon">img/main_menu_icons/space_fix_tab_icon.svg</file>
+        <file alias="statistics_tab_icon">img/main_menu_icons/statistics_tab_icon.svg</file>
+        <file alias="steamvr_tab_icon">img/main_menu_icons/steamvr_tab_icon.svg</file>
+        <file alias="utilities_tab_icon">img/main_menu_icons/utilities_tab_icon.svg</file>
+        <file alias="video_tab_icon">img/main_menu_icons/video_tab_icon.svg</file>
+        <file alias="rotation_tab_icon">img/main_menu_icons/rotation_tab_icon.svg</file>
+    </qresource>
+    <qresource prefix="/sounds">
+        <file alias="alarm01.wav">sounds/alarm01.wav</file>
+        <file alias="click.wav">sounds/click.wav</file>
+        <file alias="focus.wav">sounds/focus.wav</file>
+    </qresource>
+    <qresource prefix="/battery">
+        <file alias="battery_0.png">img/battery/battery_0.png</file>
+        <file alias="battery_1.png">img/battery/battery_1.png</file>
+        <file alias="battery_2.png">img/battery/battery_2.png</file>
+        <file alias="battery_3.png">img/battery/battery_3.png</file>
+        <file alias="battery_4.png">img/battery/battery_4.png</file>
+        <file alias="battery_5.png">img/battery/battery_5.png</file>
+    </qresource>
+    <qresource prefix="/chaperone">
+        <file alias="centermark.png">img/chaperone/centermark.png</file>
+        <file alias="centermarkl1.png">img/chaperone/centermarkl1.png</file>
+        <file alias="centermarkl2.png">img/chaperone/centermarkl2.png</file>
+        <file alias="centermarkl3.png">img/chaperone/centermarkl3.png</file>
+        <file alias="centermarkr1.png">img/chaperone/centermarkr1.png</file>
+        <file alias="centermarkr2.png">img/chaperone/centermarkr2.png</file>
+        <file alias="centermarkr3.png">img/chaperone/centermarkr3.png</file>
+    </qresource>
+    <qresource prefix="/video">
+        <file alias="color.png">img/video/color.png</file>
+        <file alias="dimmer.png">img/video/dimmer.png</file>
+    </qresource>
+    <qresource prefix="/rotation">
+        <file alias="autoturn.png">img/rotation/autoturn.png</file>
+        <file alias="noautoturn.png">img/rotation/noautoturn.png</file>
+        <file alias="noautoturn.svg">img/rotation/noautoturn.svg</file>
+    </qresource>
+    <qresource prefix="/alarm">
+        <file alias="alarm_activated.png">img/alarm/alarm_activated.png</file>
+    </qresource>
 </RCC>

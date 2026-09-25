@@ -1,7 +1,7 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.3
-import ovras.advsettings 1.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import ovras.advsettings
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 import "common"
 import "utilities_page"
@@ -28,107 +28,107 @@ MyStackViewPage {
                    spacing: 10
                    MyPushButton {
                        id: steamVRButton
-                       iconPath: "qrc:/main_menu_icons/steamvr_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/steamvr_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   SteamVR"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(steamVRPage)
                        }
                    }
 
                    MyPushButton {
                        id: chaperoneButton
-                       iconPath: "qrc:/main_menu_icons/chaperone_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/chaperone_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Chaperone"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(chaperonePage)
                        }
                    }
 
                    MyPushButton {
                        id: playSpaceButton
-                       iconPath: "qrc:/main_menu_icons/offsets_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/offsets_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Offsets"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(playspacePage)
                        }
                    }
 
                    MyPushButton {
                        id: motionButton
-                       iconPath: "qrc:/main_menu_icons/motion_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/motion_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Motion"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(motionPage)
                        }
                    }
                    MyPushButton {
                        id: rotationButton
-                       iconPath: "qrc:/main_menu_icons/rotation_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/rotation_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Rotation"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(rotationPage)
                        }
                    }
 
                    MyPushButton {
                        id: fixFloorButton
-                       iconPath: "qrc:/main_menu_icons/space_fix_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/space_fix_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Space Fix"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(fixFloorPage)
                        }
                    }
 
                    MyPushButton {
                        id: audioButton
-                       iconPath: "qrc:/main_menu_icons/audio_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/audio_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Audio"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(audioPage)
                        }
                    }
 
                    MyPushButton {
                        id: videoButton
-                       iconPath: "qrc:/main_menu_icons/video_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/video_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Video"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(videoPage)
                        }
                    }
 
                    MyPushButton {
                        id: utilitiesButton
-                       iconPath: "qrc:/main_menu_icons/utilities_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/utilities_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Utilities"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(utilitiesPage)
                        }
                    }
@@ -136,12 +136,12 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: statisticsButton
-                       iconPath: "qrc:/main_menu_icons/statistics_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/statistics_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Statistics"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(statisticsPage)
                        }
                    }
@@ -153,7 +153,7 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: bindingsButton
-                       iconPath: "qrc:/main_menu_icons/bindings_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/bindings_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Bindings"
                        Layout.fillWidth: true
@@ -164,12 +164,12 @@ MyStackViewPage {
 
                    MyPushButton {
                        id: settingsButton
-                       iconPath: "qrc:/main_menu_icons/settings_tab_icon"
+                       iconPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/settings_tab_icon.svg"
                        activationSoundEnabled: false
                        text: "   Settings"
                        Layout.fillWidth: true
                        onClicked: {
-                           MyResources.playFocusChangedSound()
+                           OverlayController.playFocusChangedSound()
                            mainView.push(settingsPage)
                        }
                    }
@@ -379,7 +379,7 @@ MyStackViewPage {
                            Layout.leftMargin: 12
                            checkable: true
                            contentItem: Image {
-                               source: parent.checked ? "qrc:/microphone/off" : "qrc:/microphone/on"
+                               source: parent.checked ? "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/microphone/mic_off.svg" : "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/microphone/mic_on.svg"
                                sourceSize.width: 32
                                sourceSize.height: 32
                                anchors.fill: parent
@@ -470,10 +470,9 @@ MyStackViewPage {
        summaryMicMuteToggle.checked = AudioTabController.micMuted
        summaryPttToggle.checked = AudioTabController.pttEnabled
    }
-
    Connections {
-       target: OverlayController
-       onNewVersionDetectedChanged: {
+       target: OverlayController 
+       function onNewVersionDetectedChanged() {
            if (OverlayController.newVersionDetected)
            {
                summaryVersionCheckTextRect.color = "#ff0000"
@@ -481,10 +480,10 @@ MyStackViewPage {
                summaryVersionCheckTextRect.color = "#2a2e35"
            }
        }
-       onVersionCheckTextChanged: {
+       function onVersionCheckTextChanged() {
            summaryVersionCheckText.text = OverlayController.versionCheckText
        }
-       onDisableVersionCheckChanged: {
+       function onDisableVersionCheckChanged() {
            if (OverlayController.disableVersionCheck)
            {
                summaryVersionCheckText.visible = false
@@ -503,34 +502,34 @@ MyStackViewPage {
 
    Connections {
        target: ChaperoneTabController
-       onChaperoneProfilesUpdated: {
+       function onChaperoneProfilesUpdated() {
            reloadChaperoneProfiles()
        }
    }
 
    Connections {
        target: VideoTabController
-       onVideoProfilesUpdated: {
+       function onVideoProfilesUpdated() {
            reloadVideoProfiles()
        }
    }
 
    Connections {
        target: AudioTabController
-       onMicVolumeChanged: {
+       function onMicVolumeChanged() {
            summaryMicVolumeSlider.value = AudioTabController.micVolume
        }
-       onMicMutedChanged: {
+       function onMicMutedChanged() {
            summaryMicMuteToggle.checked = AudioTabController.micMuted
        }
-       onPttEnabledChanged: {
+       function onPttEnabledChanged() {
            summaryPttToggle.checked = AudioTabController.pttEnabled
        }
    }
 
    Connections {
        target: MoveCenterTabController
-       onTrackingUniverseChanged: {
+       function onTrackingUniverseChanged() {
            if (MoveCenterTabController.trackingUniverse === 0) {
                summaryPlaySpaceModeText.text = "Sitting"
            } else if (MoveCenterTabController.trackingUniverse === 1) {

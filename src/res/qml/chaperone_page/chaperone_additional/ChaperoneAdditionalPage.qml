@@ -1,7 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
-import QtQuick.Dialogs 1.2
+import QtQuick.Dialogs
 import ovras.advsettings 1.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 import "../../common"
@@ -113,7 +113,7 @@ MyStackViewPage {
 
         Connections {
             target: ChaperoneTabController
-            onChaperoneDimHeightChanged: {
+            function onChaperoneDimHeightChanged() {
                 var d = ChaperoneTabController.chaperoneDimHeight.toFixed(2)
                 if (d <= dimHeightSlider.to && Math.abs(dimHeightSlider.value - d) > 0.0008) {
                     dimHeightSlider.value = d

@@ -115,10 +115,10 @@ GroupBox {
     Connections {
         target: RotationTabController
 
-        onVestibularMotionEnabledChanged:{
+        function onVestibularMotionEnabledChanged(){
          redirectedModeToggle.checked = RotationTabController.vestibularMotionEnabled
         }
-        onVestibularMotionRadiusChanged:{
+        function onVestibularMotionRadiusChanged(){
             redirectedWalkingRadiusText.text =  ((RotationTabController.vestibularMotionRadius).toFixed(2))
         }
     }

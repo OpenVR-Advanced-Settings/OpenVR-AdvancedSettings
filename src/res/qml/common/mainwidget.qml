@@ -1,6 +1,6 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.0
+import QtQuick
+import QtQuick.Controls.Material
+import QtQuick.Layouts
 import ".."
 import "../utilities_page"
 import "../audio_page"
@@ -11,6 +11,7 @@ import "../steamvr_page"
 import "../rotation_page"
 import "../chaperone_page/chaperone_additional"
 import "../steamvr_page/steamvr_additional"
+import ovras.advsettings
 
 Rectangle {
     id: root

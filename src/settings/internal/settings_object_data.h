@@ -1,6 +1,5 @@
 #pragma once
 #include <list>
-#include <easylogging++.h>
 
 namespace settings
 {

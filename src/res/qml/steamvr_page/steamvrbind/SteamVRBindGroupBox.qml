@@ -130,7 +130,7 @@ GroupBox {
 
     Connections {
         target: SteamVRTabController
-        onPerformanceGraphChanged:{
+        function onPerformanceGraphChanged() {
             steamvrBindingToggle.checked = SteamVRTabController.perAppBindEnabled
         }
 

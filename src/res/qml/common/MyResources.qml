@@ -10,4 +10,7 @@ QtObject {
 	function playFocusChangedSound() {
         OverlayController.playFocusChangedSound()
     }
+	Connections {
+    target: OverlayController 
+    }
 }

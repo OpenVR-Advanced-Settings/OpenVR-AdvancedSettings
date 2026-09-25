@@ -1,6 +1,5 @@
 #pragma once
 #include "input_parser.h"
-#include <easylogging++.h>
 
 enum class KeyStatus
 {

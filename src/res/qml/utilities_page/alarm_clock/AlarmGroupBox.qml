@@ -103,10 +103,10 @@ GroupBox {
     }
     Connections {
         target: VrAlarm
-        onAlarmEnabledChanged: {
+        function onAlarmEnabledChanged() {
             alarmClockToggle.checked = VrAlarm.alarmEnabled
         }
-        onAlarmTimeChanged: {
+        function onAlarmTimeChanged() {
             alarmClockTimeAssembly.changeTimer(VrAlarm.getAlarmHour(),
                                                VrAlarm.getAlarmMinute(),
                                                VrAlarm.getAlarmSecond())

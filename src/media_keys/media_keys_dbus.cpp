@@ -3,6 +3,8 @@
 #include <QtCore/QDebug>
 #include <QtCore/QStringList>
 #include <QtDBus/QtDBus>
+#include <QtLogging>
+#include <QtDebug>
 
 namespace keyboardinput
 {
@@ -10,7 +12,7 @@ void callMethodForAllMediaPlayerAvailableServices( const QString& method )
 {
     if ( !QDBusConnection::sessionBus().isConnected() )
     {
-        LOG( ERROR ) << "Media Keys: Unable to connect to DBUS session bus.";
+        qCritical() << "Media Keys: Unable to connect to DBUS session bus.";
         return;
     }
 
@@ -18,9 +20,9 @@ void callMethodForAllMediaPlayerAvailableServices( const QString& method )
         = QDBusConnection::sessionBus().interface()->registeredServiceNames();
     if ( !names.isValid() )
     {
-        LOG( ERROR )
+        qCritical()
             << "Media Keys: Error getting DBUS registered service names:";
-        LOG( ERROR ) << names.error().message();
+        qCritical() << names.error().message();
     }
 
     foreach ( QString name, names.value() )

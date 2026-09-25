@@ -1,5 +1,4 @@
 #pragma once
-#include <easylogging++.h>
 #include <vector>
 #include <QString>
 

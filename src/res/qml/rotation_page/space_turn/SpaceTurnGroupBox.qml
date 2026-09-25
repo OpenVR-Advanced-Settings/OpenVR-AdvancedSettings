@@ -100,16 +100,16 @@ GroupBox {
     Connections {
         target: MoveCenterTabController
 
-        onTurnBindLeftChanged: {
+        function onTurnBindLeftChanged() {
             turnBindLeft.checked = MoveCenterTabController.turnBindLeft
         }
-        onTurnBindRightChanged: {
+        function onTurnBindRightChanged() {
             turnBindRight.checked = MoveCenterTabController.turnBindRight
         }
-        onTurnComfortFactorChanged: {
+        function onTurnComfortFactorChanged() {
             turnComfortSlider.value = MoveCenterTabController.turnComfortFactor
         }
-        onTurnBoundsChanged: {
+        function onTurnBoundsChanged() {
             turnBounds.checked = MoveCenterTabController.turnBounds
         }
     }

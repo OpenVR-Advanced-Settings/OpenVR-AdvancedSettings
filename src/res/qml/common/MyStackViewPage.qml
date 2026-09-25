@@ -1,8 +1,9 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.2
+import ovras.advsettings
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
-// Needed for MyResources in the default folder.
+// Needed for OverlayController in the default folder.
 import ".."
 
 Rectangle {
@@ -26,7 +27,7 @@ Rectangle {
                 enabled: headerShowBackButton
                 opacity: headerShowBackButton ? 1.0 : 0.0
                 contentItem: Image {
-                    source: "qrc:/common/backarrow"
+                    source: "qrc:/qt/qml/AdvancedSettings/src/res/img/common/backarrow.svg"
                     sourceSize.width: 50
                     sourceSize.height: 50
                     anchors.fill: parent
@@ -45,7 +46,7 @@ Rectangle {
                     }
                 }
                 onClicked: {
-					MyResources.playFocusChangedSound()
+					OverlayController.playFocusChangedSound()
                     stackView.pop()
                 }
             }
@@ -89,5 +90,8 @@ Rectangle {
         content.Layout.leftMargin = 40
         content.Layout.rightMargin = 40
         content.Layout.bottomMargin = 40
+    }
+    Connections {
+    target: OverlayController 
     }
 }

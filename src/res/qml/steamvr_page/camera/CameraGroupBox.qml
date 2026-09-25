@@ -92,13 +92,13 @@ GroupBox {
 
     Connections {
         target: SteamVRTabController
-        onCameraActiveChanged: {
+        function onCameraActiveChanged() {
             steamvrCameraActiveToggle.checked = SteamVRTabController.cameraActive
         }
-        onCameraContChanged: {
+        function onCameraContChanged() {
             steamvrCameraContToggle.checked = SteamVRTabController.cameraCont
         }
-        onCameraBoundsChanged: {
+        function onCameraBoundsChanged() {
             steamvrCameraBoundsToggle.checked = SteamVRTabController.cameraBounds
         }
 

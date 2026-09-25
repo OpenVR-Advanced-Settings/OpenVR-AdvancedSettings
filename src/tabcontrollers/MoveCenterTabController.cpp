@@ -1,5 +1,7 @@
 #include "MoveCenterTabController.h"
 #include <QQuickWindow>
+#include <QtLogging>
+#include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../quaternion/quaternion.h"
 #include "../settings/settings.h"
@@ -116,10 +118,10 @@ void MoveCenterTabController::applyOffsetProfile( unsigned index )
         emit offsetXChanged( m_offsetX );
         emit offsetYChanged( m_offsetY );
         emit offsetZChanged( m_offsetZ );
-        LOG( INFO ) << "Applying Offset Profile:" << profile.profileName
-                    << " X:" << m_offsetX << " Y:" << m_offsetY
-                    << " Z:" << m_offsetZ << " Rotation:"
-                    << ( static_cast<float>( m_rotation ) / 100 );
+        qInfo() << "Applying Offset Profile:" << profile.profileName
+                << " X:" << m_offsetX << " Y:" << m_offsetY
+                << " Z:" << m_offsetZ
+                << " Rotation:" << ( static_cast<float>( m_rotation ) / 100 );
     }
 }
 
@@ -168,10 +170,10 @@ void MoveCenterTabController::outputLogPoses()
     vr::HmdMatrix34_t hmdStanding
         = devicePosesStanding[0].mDeviceToAbsoluteTracking;
 
-    LOG( INFO ) << "";
-    LOG( INFO ) << " ____Begin Matrices Log Ouput__________";
-    LOG( INFO ) << "|";
-    LOG( INFO ) << "HMD POSE (standing universe)";
+    qInfo() << "";
+    qInfo() << " ____Begin Matrices Log Ouput__________";
+    qInfo() << "|";
+    qInfo() << "HMD POSE (standing universe)";
     outputLogHmdMatrix( hmdStanding );
 
     vr::TrackedDevicePose_t devicePosesSeated[vr::k_unMaxTrackedDeviceCount];
@@ -185,7 +187,7 @@ void MoveCenterTabController::outputLogPoses()
     vr::HmdMatrix34_t hmdSeated
         = devicePosesSeated[0].mDeviceToAbsoluteTracking;
 
-    LOG( INFO ) << "HMD POSE (seated universe)";
+    qInfo() << "HMD POSE (seated universe)";
     outputLogHmdMatrix( hmdSeated );
 
     auto leftHand = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
@@ -198,70 +200,65 @@ void MoveCenterTabController::outputLogPoses()
     vr::HmdMatrix34_t rightHandMatrix
         = devicePosesStanding[rightHand].mDeviceToAbsoluteTracking;
 
-    LOG( INFO ) << "LEFT Hand Controller Pose (standing universe)";
+    qInfo() << "LEFT Hand Controller Pose (standing universe)";
     outputLogHmdMatrix( leftHandMatrix );
 
-    LOG( INFO ) << "RIGHT Hand Controller Pose (standing universe)";
+    qInfo() << "RIGHT Hand Controller Pose (standing universe)";
     outputLogHmdMatrix( rightHandMatrix );
 
     vr::HmdMatrix34_t standingZero;
     vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
         &standingZero );
-    LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+    qInfo() << "GetWorkingStandingZeroPoseToRawTrackingPose";
     outputLogHmdMatrix( standingZero );
 
     vr::HmdMatrix34_t seatedZero;
     vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
         &seatedZero );
-    LOG( INFO ) << "GetWorkingSeatedZeroPoseToRawTrackingPose";
+    qInfo() << "GetWorkingSeatedZeroPoseToRawTrackingPose";
     outputLogHmdMatrix( seatedZero );
 
     vr::HmdMatrix34_t seatedZeroLive;
     vr::VRChaperoneSetup()->GetLiveSeatedZeroPoseToRawTrackingPose(
         &seatedZeroLive );
-    LOG( INFO ) << "GetLiveSeatedZeroPoseToRawTrackingPose";
+    qInfo() << "GetLiveSeatedZeroPoseToRawTrackingPose";
     outputLogHmdMatrix( seatedZeroLive );
 
     vr::HmdMatrix34_t seatedToStandingAbsolute
         = vr::VRSystem()->GetSeatedZeroPoseToStandingAbsoluteTrackingPose();
-    LOG( INFO ) << "GetSeatedZeroPoseToStandingAbsoluteTrackingPose";
+    qInfo() << "GetSeatedZeroPoseToStandingAbsoluteTrackingPose";
     outputLogHmdMatrix( seatedToStandingAbsolute );
 
-    LOG( INFO ) << "m_universeCenterForReset";
+    qInfo() << "m_universeCenterForReset";
     outputLogHmdMatrix( m_universeCenterForReset );
 
-    LOG( INFO ) << "m_seatedCenterForReset";
+    qInfo() << "m_seatedCenterForReset";
     outputLogHmdMatrix( m_seatedCenterForReset );
 
-    LOG( INFO ) << "|____End Matrices Log Ouput____________";
-    LOG( INFO ) << "";
+    qInfo() << "|____End Matrices Log Ouput____________";
+    qInfo() << "";
 }
 
 void MoveCenterTabController::outputLogHmdMatrix( vr::HmdMatrix34_t hmdMatrix )
 {
-    LOG( INFO ) << hmdMatrix.m[0][0] << "\t\t\t" << hmdMatrix.m[0][1]
-                << "\t\t\t" << hmdMatrix.m[0][2] << "\t\t\t"
-                << hmdMatrix.m[0][3];
-    LOG( INFO ) << hmdMatrix.m[1][0] << "\t\t\t" << hmdMatrix.m[1][1]
-                << "\t\t\t" << hmdMatrix.m[1][2] << "\t\t\t"
-                << hmdMatrix.m[1][3];
-    LOG( INFO ) << hmdMatrix.m[2][0] << "\t\t\t" << hmdMatrix.m[2][1]
-                << "\t\t\t" << hmdMatrix.m[2][2] << "\t\t\t"
-                << hmdMatrix.m[2][3];
+    qInfo() << hmdMatrix.m[0][0] << "\t\t\t" << hmdMatrix.m[0][1] << "\t\t\t"
+            << hmdMatrix.m[0][2] << "\t\t\t" << hmdMatrix.m[0][3];
+    qInfo() << hmdMatrix.m[1][0] << "\t\t\t" << hmdMatrix.m[1][1] << "\t\t\t"
+            << hmdMatrix.m[1][2] << "\t\t\t" << hmdMatrix.m[1][3];
+    qInfo() << hmdMatrix.m[2][0] << "\t\t\t" << hmdMatrix.m[2][1] << "\t\t\t"
+            << hmdMatrix.m[2][2] << "\t\t\t" << hmdMatrix.m[2][3];
 
     float atan2Yaw = std::atan2( hmdMatrix.m[0][2], hmdMatrix.m[2][2] );
-    LOG( INFO ) << "atan2 Yaw Calculation:  " << atan2Yaw << "radians  "
-                << ( ( static_cast<double>( atan2Yaw )
-                       * k_radiansToCentidegrees )
-                     / 100 )
-                << "degrees";
+    qInfo() << "atan2 Yaw Calculation:  " << atan2Yaw << "radians  "
+            << ( ( static_cast<double>( atan2Yaw ) * k_radiansToCentidegrees )
+                 / 100 )
+            << "degrees";
 
     vr::HmdQuaternion_t hmdQuat = quaternion::fromHmdMatrix34( hmdMatrix );
     double hmdQuatYaw = quaternion::getYaw( hmdQuat );
-    LOG( INFO ) << "Quaternion Yaw Calculation:  " << hmdQuatYaw << "radians  "
-                << ( ( hmdQuatYaw * k_radiansToCentidegrees ) / 100 )
-                << "degrees";
-    LOG( INFO ) << "";
+    qInfo() << "Quaternion Yaw Calculation:  " << hmdQuatYaw << "radians  "
+            << ( ( hmdQuatYaw * k_radiansToCentidegrees ) / 100 ) << "degrees";
+    qInfo() << "";
 }
 
 int MoveCenterTabController::trackingUniverse() const
@@ -284,7 +281,7 @@ void MoveCenterTabController::setTrackingUniverse( int value, bool notify )
         if ( notify )
         {
             emit trackingUniverseChanged( m_trackingUniverse );
-            LOG( INFO ) << "Tracking Universe: " << m_trackingUniverse;
+            qInfo() << "Tracking Universe: " << m_trackingUniverse;
         }
     }
 }
@@ -946,8 +943,8 @@ void MoveCenterTabController::reset()
 
     if ( !m_chaperoneBasisAcquired )
     {
-        LOG( WARNING ) << "WARNING: Attempted reset offsets before chaperone "
-                          "basis is acquired!";
+        qWarning() << "WARNING: Attempted reset offsets before chaperone "
+                      "basis is acquired!";
         return;
     }
     m_heightToggle = false;
@@ -1022,65 +1019,62 @@ void MoveCenterTabController::zeroOffsets()
                            - ( m_rotation * k_centidegreesToRadians ) );
     if ( abs( currentCenterXyz[0] ) > k_maxOpenvrCommitOffset )
     {
-        LOG( INFO ) << "Attempted Zero Offsets out of commit bounds ( X: "
-                    << currentCenterXyz[0] << " )";
-        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        qInfo() << "Attempted Zero Offsets out of commit bounds ( X: "
+                << currentCenterXyz[0] << " )";
+        qInfo() << "GetWorkingStandingZeroPoseToRawTrackingPose";
         outputLogHmdMatrix( currentCenter );
         // if reset happens before init is complete we set the universe
         // center to the raw tracking zero point
         reset();
         if ( !m_chaperoneBasisAcquired )
         {
-            LOG( WARNING )
-                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS "
-                   "ACQUIRED<[!]><[!]> "
-                   "Setting universe center to raw tracking zero point.";
+            qWarning() << "<[!]><[!]>EXECUTED RESET BEFORE BASIS "
+                          "ACQUIRED<[!]><[!]> "
+                          "Setting universe center to raw tracking zero point.";
         }
         else
         {
-            LOG( INFO ) << "-Resetting offsets-";
+            qInfo() << "-Resetting offsets-";
         }
     }
     else if ( abs( currentCenterXyz[1] ) > k_maxOpenvrCommitOffset )
     {
-        LOG( INFO ) << "Attempted Zero Offsets out of commit bounds ( Y: "
-                    << currentCenterXyz[1] << " )";
-        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        qInfo() << "Attempted Zero Offsets out of commit bounds ( Y: "
+                << currentCenterXyz[1] << " )";
+        qInfo() << "GetWorkingStandingZeroPoseToRawTrackingPose";
         outputLogHmdMatrix( currentCenter );
         // if reset happens before init is complete we set the universe
         // center to the raw tracking zero point
         reset();
         if ( !m_chaperoneBasisAcquired )
         {
-            LOG( WARNING )
-                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS "
-                   "ACQUIRED<[!]><[!]> "
-                   "Setting universe center to raw tracking zero point.";
+            qWarning() << "<[!]><[!]>EXECUTED RESET BEFORE BASIS "
+                          "ACQUIRED<[!]><[!]> "
+                          "Setting universe center to raw tracking zero point.";
         }
         else
         {
-            LOG( INFO ) << "-Resetting offsets-";
+            qInfo() << "-Resetting offsets-";
         }
     }
     else if ( abs( currentCenterXyz[2] ) > k_maxOpenvrCommitOffset )
     {
-        LOG( INFO ) << "Attempted Zero Offsets out of commit bounds ( Z: "
-                    << currentCenterXyz[2] << " )";
-        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        qInfo() << "Attempted Zero Offsets out of commit bounds ( Z: "
+                << currentCenterXyz[2] << " )";
+        qInfo() << "GetWorkingStandingZeroPoseToRawTrackingPose";
         outputLogHmdMatrix( currentCenter );
         // if reset happens before init is complete we set the universe
         // center to the raw tracking zero point
         reset();
         if ( !m_chaperoneBasisAcquired )
         {
-            LOG( WARNING )
-                << "<[!]><[!]>EXECUTED RESET BEFORE BASIS "
-                   "ACQUIRED<[!]><[!]> "
-                   "Setting universe center to raw tracking zero point.";
+            qWarning() << "<[!]><[!]>EXECUTED RESET BEFORE BASIS "
+                          "ACQUIRED<[!]><[!]> "
+                          "Setting universe center to raw tracking zero point.";
         }
         else
         {
-            LOG( INFO ) << "-Resetting offsets-";
+            qInfo() << "-Resetting offsets-";
         }
     }
     m_oldOffsetX = 0.0f;
@@ -1140,7 +1134,7 @@ void MoveCenterTabController::zeroOffsets()
     }
     if ( m_roomSetupModeDetected )
     {
-        LOG( INFO ) << "room setup EXIT detected";
+        qInfo() << "room setup EXIT detected";
         m_roomSetupModeDetected = false;
     }
 
@@ -1897,7 +1891,7 @@ void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
 
         //        if ( calState > 199 && m_initComplete )
         //        {
-        //            LOG( INFO ) << "Chaperone calibration state is error,
+        //            qInfo() << "Chaperone calibration state is error,
         //            attempting "
         //                           "to apply autosaved profile to fix issue";
         //            parent->m_chaperoneTabController.applyAutosavedProfile();
@@ -2127,8 +2121,8 @@ void MoveCenterTabController::updateHmdRotationCounter(
         }
         else
         {
-            LOG( WARNING ) << "HMD Was Inverted during a Turn Count, Turn "
-                              "counter may be in-accurate";
+            qWarning() << "HMD Was Inverted during a Turn Count, Turn "
+                          "counter may be in-accurate";
         }
     }
 
@@ -2574,16 +2568,16 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
                   > k_maxOvrasUniverseCenteredTurningOffset
               && universeCenteredRotation() ) )
     {
-        LOG( INFO ) << "Raw universe center out of bounds ( X: "
-                    << offsetUniverseCenterXyz[0] << " )";
+        qInfo() << "Raw universe center out of bounds ( X: "
+                << offsetUniverseCenterXyz[0] << " )";
         vr::HmdMatrix34_t standingZero;
         vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
             &standingZero );
-        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        qInfo() << "GetWorkingStandingZeroPoseToRawTrackingPose";
         outputLogHmdMatrix( standingZero );
         reset();
         parent->m_chaperoneTabController.applyAutosavedProfile();
-        LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
+        qInfo() << "-Resetting to autosaved chaperone profile-";
         return;
     }
     if ( abs( offsetUniverseCenterXyz[1] ) > k_maxOpenvrWorkingSetOffest
@@ -2591,16 +2585,16 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
                   > k_maxOvrasUniverseCenteredTurningOffset
               && universeCenteredRotation() ) )
     {
-        LOG( INFO ) << "Raw universe center out of bounds ( Y: "
-                    << offsetUniverseCenterXyz[1] << " )";
+        qInfo() << "Raw universe center out of bounds ( Y: "
+                << offsetUniverseCenterXyz[1] << " )";
         vr::HmdMatrix34_t standingZero;
         vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
             &standingZero );
-        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        qInfo() << "GetWorkingStandingZeroPoseToRawTrackingPose";
         outputLogHmdMatrix( standingZero );
         reset();
         parent->m_chaperoneTabController.applyAutosavedProfile();
-        LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
+        qInfo() << "-Resetting to autosaved chaperone profile-";
         return;
     }
     if ( abs( offsetUniverseCenterXyz[2] ) > k_maxOpenvrWorkingSetOffest
@@ -2608,16 +2602,16 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
                   > k_maxOvrasUniverseCenteredTurningOffset
               && universeCenteredRotation() ) )
     {
-        LOG( INFO ) << "Raw universe center out of bounds ( Z: "
-                    << offsetUniverseCenterXyz[2] << " )";
+        qInfo() << "Raw universe center out of bounds ( Z: "
+                << offsetUniverseCenterXyz[2] << " )";
         vr::HmdMatrix34_t standingZero;
         vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
             &standingZero );
-        LOG( INFO ) << "GetWorkingStandingZeroPoseToRawTrackingPose";
+        qInfo() << "GetWorkingStandingZeroPoseToRawTrackingPose";
         outputLogHmdMatrix( standingZero );
         reset();
         parent->m_chaperoneTabController.applyAutosavedProfile();
-        LOG( INFO ) << "-Resetting to autosaved chaperone profile-";
+        qInfo() << "-Resetting to autosaved chaperone profile-";
         return;
     }
 
@@ -2739,7 +2733,7 @@ void MoveCenterTabController::eventLoopTick(
             // the middle of room setup.
             m_pendingZeroOffsets = false;
 
-            LOG( INFO ) << "room setup ENTRY detected";
+            qInfo() << "room setup ENTRY detected";
             vr::VRChaperoneSetup()->HideWorkingSetPreview();
             reset();
             vr::VRChaperoneSetup()->RevertWorkingCopy();
@@ -2752,7 +2746,7 @@ void MoveCenterTabController::eventLoopTick(
     if ( universe == vr::TrackingUniverseSeated && !m_seatedModeDetected )
     {
         m_seatedModeDetected = true;
-        LOG( INFO ) << "seated mode ENTRY detected";
+        qInfo() << "seated mode ENTRY detected";
     }
 
     // detect exiting seated mode
@@ -2760,7 +2754,7 @@ void MoveCenterTabController::eventLoopTick(
     {
         m_seatedModeDetected = false;
         reset();
-        LOG( INFO ) << "seated mode EXIT detected";
+        qInfo() << "seated mode EXIT detected";
     }
 
     // If we're trying to redifine the origin point, but can't becaues of

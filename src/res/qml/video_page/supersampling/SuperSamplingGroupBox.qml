@@ -133,12 +133,12 @@ GroupBox {
     Connections {
         target: VideoTabController
 
-        onSuperSamplingChanged: {
+        function onSuperSamplingChanged() {
             var s1 = VideoTabController.superSampling
             videoSupersamplingSlider.value = s1
             videoSupersamplingText.text = s1.toFixed(2)
         }
-        onAllowSupersampleOverrideChanged: {
+        function onAllowSupersampleOverrideChanged() {
             videoAllowSupersampleOverrideToggle.checked = VideoTabController.allowSupersampleOverride
             var s1 = VideoTabController.superSampling
             videoSupersamplingSlider.value = s1

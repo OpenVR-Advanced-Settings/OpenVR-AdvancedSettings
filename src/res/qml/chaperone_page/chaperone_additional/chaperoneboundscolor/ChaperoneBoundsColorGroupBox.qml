@@ -180,17 +180,17 @@ GroupBox {
 
     Connections {
         target: ChaperoneTabController
-        onChaperoneColorRChanged:{
+        function onChaperoneColorRChanged(){
             var redValue = ChaperoneTabController.chaperoneColorR
             colorRedText.text = redValue
             chaperoneColorRedSlider.value = redValue
         }
-        onChaperoneColorGChanged:{
+        function onChaperoneColorGChanged(){
             var greenValue = ChaperoneTabController.chaperoneColorG
             colorGreenText.text = greenValue
             chaperoneColorGreenSlider.value = greenValue
         }
-        onChaperoneColorBChanged:{
+        function onChaperoneColorBChanged(){
             var blueValue = ChaperoneTabController.chaperoneColorB
             colorBlueText.text = blueValue
             chaperoneColorBlueSlider.value = blueValue

@@ -3,7 +3,8 @@
 #include <openvr.h>
 #include <iostream>
 #include <array>
-#include <easylogging++.h>
+#include <QtLogging>
+#include <QtDebug>
 
 namespace input
 {
@@ -30,8 +31,8 @@ vr::InputDigitalActionData_t getDigitalActionData( DigitalAction& action )
 
     if ( error != vr::EVRInputError::VRInputError_None )
     {
-        LOG( ERROR ) << "Error getting IVRInput Digital Action Data for handle "
-                     << action.name() << ". SteamVR Error: " << error;
+        qCritical() << "Error getting IVRInput Digital Action Data for handle "
+                    << action.name() << ". SteamVR Error: " << error;
     }
 
     return handleData;
@@ -60,8 +61,8 @@ vr::InputAnalogActionData_t getAnalogActionData( AnalogAction& action )
 
     if ( error != vr::EVRInputError::VRInputError_None )
     {
-        LOG( ERROR ) << "Error getting IVRInput Digital Action Data for handle "
-                     << action.name() << ". SteamVR Error: " << error;
+        qCritical() << "Error getting IVRInput Digital Action Data for handle "
+                    << action.name() << ". SteamVR Error: " << error;
     }
 
     return handleData;
@@ -454,7 +455,7 @@ void SteamIVRInput::UpdateStates()
 
     if ( error != vr::EVRInputError::VRInputError_None )
     {
-        LOG( ERROR )
+        qCritical()
             << "Error during IVRInput action state update. OpenVR Error: "
             << error;
     }

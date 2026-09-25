@@ -524,33 +524,33 @@ MyStackViewPage {
 
         Connections {
             target: MoveCenterTabController
-            onOffsetXChanged: {
+            function onOffsetXChanged() {
                 spaceMoveXText.text = MoveCenterTabController.offsetX.toFixed(2)
             }
-            onOffsetYChanged: {
+            function onOffsetYChanged() {
                 spaceMoveYText.text = MoveCenterTabController.offsetY.toFixed(2)
             }
-            onOffsetZChanged: {
+            function onOffsetZChanged() {
                 spaceMoveZText.text = MoveCenterTabController.offsetZ.toFixed(2)
             }
-            onRotationChanged: {
+            function onRotationChanged() {
                 spaceRotationSlider.value = ( MoveCenterTabController.rotation / 100 )
             }
-            onTempRotationChanged: {
+            function onTempRotationChanged() {
                 var intTempRotation = MoveCenterTabController.tempRotation
                 spaceRotationSlider.value = ( intTempRotation / 100 )
                 spaceRotationText.text = ( intTempRotation / 100 ) + "°"
             }
-			onLockXToggleChanged: {
+            function onLockXToggleChanged() {
 				lockXToggle.checked = MoveCenterTabController.lockXToggle
 			}
-			onLockYToggleChanged: {
+            function onLockYToggleChanged() {
 				lockYToggle.checked = MoveCenterTabController.lockYToggle
 			}
-			onLockZToggleChanged: {
+            function onLockZToggleChanged() {
 				lockZToggle.checked = MoveCenterTabController.lockZToggle
 			}
-            onTrackingUniverseChanged: {
+            function onTrackingUniverseChanged() {
                 if (MoveCenterTabController.trackingUniverse === 0) {
                     spaceModeText.text = "Sitting"
                     spaceSeatedRecenter.visible = true
@@ -560,7 +560,7 @@ MyStackViewPage {
                     spaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
                 }
             }
-            onOffsetProfilesUpdated: {
+            function onOffsetProfilesUpdated() {
                 reloadOffsetProfiles()
             }
         }
