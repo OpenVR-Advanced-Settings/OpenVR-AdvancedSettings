@@ -145,6 +145,7 @@ private:
     QString m_updateMessage = "";
     QString m_optionalMessage = "";
     QString m_versionCheckText = "";
+    unsigned long m_lastTextUID = 0;
 
     QUrl m_runtimePathUrl;
 
@@ -314,6 +315,7 @@ signals:
     void autoApplyChaperoneEnabledChanged( bool value );
     void soundVolumeChanged( double value );
     void desktopModeToggleChanged( bool value );
+    void submitLastTextField(unsigned long value = 0);
 };
 
 } // namespace advsettings

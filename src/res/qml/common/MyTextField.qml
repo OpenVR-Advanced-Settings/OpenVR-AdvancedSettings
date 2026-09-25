@@ -5,6 +5,7 @@ import ovras.advsettings 1.0
 TextField {
 	property int keyBoardUID: 0
     property string savedText: ""
+    property bool active: false
     id: myTextField
     color: "#d9dbe0"
     text: ""
@@ -18,19 +19,25 @@ TextField {
         }
         onClicked: {
             myTextField.forceActiveFocus()
+            active = true;
         }
     }
     onActiveFocusChanged: {
         if (activeFocus) {
+            active = true;
             if (!OverlayController.desktopMode) {
                 OverlayController.showKeyboard(text, keyBoardUID)
-            } else {
-                savedText = text
             }
+            //savedText = text
+        }
+        //When box loses focus apply changes
+        else{
+            myTextField.onInputEvent(text)
+            active = false;
         }
     }
     onEditingFinished: {
-        if (OverlayController.desktopMode && savedText !== text) {
+        if(OverlayController.desktopMode){
             myTextField.onInputEvent(text)
         }
     }
@@ -39,11 +46,51 @@ TextField {
 	}
     Connections {
         target: OverlayController
+<<<<<<< HEAD
         function onKeyBoardInputSignal() {
+=======
+
+        onSubmitLastTextField:{
+            //value here is UID
+            if(value == 0){
+                active = false;
+                return;
+            }
+
+            if(value == keyBoardUID && active == true){
+                myTextField.onInputEvent(text)
+                active = false;
+            }
+        }
+
+        onKeyBoardInputSignal: {
+>>>>>>> origin/master
             if (userValue == keyBoardUID) {
-                if (myTextField.text !== input) {
-                    myTextField.onInputEvent(input)
+                if(input == '\b'){
+                    myTextField.text = text.slice(0,-1)
+                    return
                 }
+                else if(input == '\e'){
+                    myTextField.text = text.slice(0,cursorPosition)+text.slice(cursorposition+1)
+                    return;
+                }
+                //Execute input
+                else if(input == '\n'){
+                    if(!OverlayController.desktopMode){
+                        //myTextField.onInputEvent(input)
+                        myTextField.focus = false;
+                    }
+                    return;
+                }
+                else if(input=='\r'){
+                    return;
+                }
+                else{
+                    myTextField.text = text + input;
+                }
+                //if (myTextField.text !== input) {
+                //    myTextField.onInputEvent(input)
+                //}
             }
         }
     }

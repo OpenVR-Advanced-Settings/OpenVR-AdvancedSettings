@@ -1,0 +1,158 @@
+{
+   "action_manifest_version" : 0,
+   "alias_info" : {},
+   "app_key" : "steam.overlay.1009850",
+   "bindings" : {
+      "/actions/haptic" : {
+         "haptics" : [
+            {
+               "output" : "/actions/haptic/out/hapticsleft",
+               "path" : "/user/hand/left/output/haptic"
+            },
+            {
+               "output" : "/actions/haptic/out/hapticsright",
+               "path" : "/user/hand/right/output/haptic"
+            }
+         ],
+         "poses" : [],
+         "skeleton" : [],
+         "sources" : [
+            {
+               "inputs" : {},
+               "mode" : "none",
+               "parameters" : {},
+               "path" : "/user/hand/left/input/dpad_left"
+            },
+            {
+               "inputs" : {},
+               "mode" : "none",
+               "parameters" : {},
+               "path" : "/user/hand/left/input/dpad_right"
+            },
+            {
+               "inputs" : {},
+               "mode" : "none",
+               "parameters" : {},
+               "path" : "/user/hand/left/input/dpad_up"
+            },
+            {
+               "inputs" : {},
+               "mode" : "none",
+               "parameters" : {},
+               "path" : "/user/hand/right/input/b"
+            },
+            {
+               "inputs" : {},
+               "mode" : "none",
+               "parameters" : {},
+               "path" : "/user/hand/right/input/x"
+            },
+            {
+               "inputs" : {},
+               "mode" : "none",
+               "parameters" : {},
+               "path" : "/user/hand/right/input/y"
+            }
+         ]
+      },
+      "/actions/motion" : {
+         "chords" : [
+            {
+               "inputs" : [
+                  [ "/user/hand/left/input/dpad_down", "single" ],
+                  [ "/user/hand/right/input/x", "touch" ],
+                  [ "/user/hand/right/input/a", "touch" ]
+               ],
+               "output" : "/actions/motion/in/resetoffsets"
+            }
+         ],
+         "poses" : [],
+         "skeleton" : [],
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/lefthandspaceturn"
+                  }
+               },
+               "mode" : "button",
+               "parameters" : {},
+               "path" : "/user/hand/left/input/dpad_up"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/optionaloverridelefthandspacedrag"
+                  }
+               },
+               "mode" : "button",
+               "parameters" : {},
+               "path" : "/user/hand/left/input/dpad_up"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/swapspacedragtolefthandoverride"
+                  }
+               },
+               "mode" : "button",
+               "parameters" : {},
+               "path" : "/user/hand/left/input/dpad_up"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/righthandspaceturn"
+                  }
+               },
+               "mode" : "button",
+               "parameters" : {},
+               "path" : "/user/hand/right/input/y"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/optionaloverriderighthandspacedrag"
+                  }
+               },
+               "mode" : "button",
+               "parameters" : {},
+               "path" : "/user/hand/right/input/y"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/motion/in/swapspacedragtorighthandoverride"
+                  }
+               },
+               "mode" : "button",
+               "parameters" : {},
+               "path" : "/user/hand/right/input/y"
+            }
+         ]
+      },
+      "/actions/system" : {
+         "poses" : [],
+         "skeleton" : [],
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/system/in/pushtotalk"
+                  }
+               },
+               "mode" : "button",
+               "parameters" : {},
+               "path" : "/user/hand/left/input/bumper"
+            }
+         ]
+      }
+   },
+   "category" : "steamvr_input",
+   "controller_type" : "frame_controller",
+   "description" : "",
+   "interaction_profile" : "",
+   "name" : "OVRAS Frame Default",
+   "options" : {},
+   "simulated_actions" : []
+}
