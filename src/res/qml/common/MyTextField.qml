@@ -46,9 +46,6 @@ TextField {
 	}
     Connections {
         target: OverlayController
-<<<<<<< HEAD
-        function onKeyBoardInputSignal() {
-=======
 
         onSubmitLastTextField:{
             //value here is UID
@@ -64,7 +61,6 @@ TextField {
         }
 
         onKeyBoardInputSignal: {
->>>>>>> origin/master
             if (userValue == keyBoardUID) {
                 if(input == '\b'){
                     myTextField.text = text.slice(0,-1)

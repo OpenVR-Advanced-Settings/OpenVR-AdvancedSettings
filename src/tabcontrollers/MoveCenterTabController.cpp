@@ -911,44 +911,6 @@ void MoveCenterTabController::incomingZeroReset()
     // However It does appear to effect the recenter method (potentially other
     // aspects) IN mixed tracking environments I get this issue, the check if
     // there is an error and apply autosaved profile is hopefully a workaround
-<<<<<<< HEAD
-    auto calState = vr::VRChaperone()->GetCalibrationState();
-    qInfo() << "Calibration State on Zero Reset is: " << calState;
-
-    // If we detect a seated Recenter and are not currently in process
-    // we reload chaperone from disk
-    if ( m_recenterStages < 1 )
-    {
-        qInfo() << "Re-Center Stage 1, reload from disk";
-        m_recenterStages++;
-
-        if ( calState > 199 && m_initComplete )
-        {
-            qInfo() << "Chaperone calibration state is error, attempting "
-                       "to apply autosaved profile to fix issue";
-            parent->m_chaperoneTabController.applyAutosavedProfile();
-        }
-
-        // Revert Working copy to "apply" the changes
-        vr::VRChaperoneSetup()->RevertWorkingCopy();
-        // Send a Re-center again so the changes stick on our end.
-        sendSeatedRecenter();
-        return;
-    }
-    // We finalize the Recenter, by zero-ing offsets and setting new zero pos,
-    // and reseting our stage counter
-    if ( m_recenterStages == 1 )
-    {
-        qInfo() << "Recenter Stage 2 re-set zero pos, and reset offsets";
-        vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-            &m_universeCenterForReset );
-        vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
-            &m_seatedCenterForReset );
-        resetOffsets( true );
-        m_recenterStages = 0;
-        return;
-    }
-=======
 
     //auto calState = vr::VRChaperone()->GetCalibrationState();
     //LOG( INFO ) << "Calibration State on Recenter is: " << calState;
@@ -968,7 +930,6 @@ void MoveCenterTabController::incomingZeroReset()
     resetOffsets(true);
     //reset();
     return;
->>>>>>> origin/master
 }
 
 //TODO 9/4/26 This needs to be looked at This moves the chaperone, and seems to do same thing as
@@ -977,13 +938,8 @@ void MoveCenterTabController::reset()
 {
     // DO NOT attempt to apply autosaved profile on reset, as it is triggered by
     // the apply chaperone profile Side effects are bad!
-<<<<<<< HEAD
-    auto calState = vr::VRChaperone()->GetCalibrationState();
-    qInfo() << "Calibration State on Reset is: " << calState;
-=======
     //auto calState = vr::VRChaperone()->GetCalibrationState();
     //LOG( INFO ) << "Calibration State on Reset is: " << calState;
->>>>>>> origin/master
 
     if ( !m_chaperoneBasisAcquired )
     {
@@ -1147,17 +1103,7 @@ void MoveCenterTabController::zeroOffsets()
             //if ( parent->isPreviousShutdownSafe() )
             //{
                 auto calState = vr::VRChaperone()->GetCalibrationState();
-<<<<<<< HEAD
-                if ( calState == 200 )
-                {
-                    qWarning()
-                        << "Chaperone State Does Not Exist Yet, will wait for "
-                           "universe change to finish initialization";
-                }
-                else
-=======
                 if ( calState != 200 )
->>>>>>> origin/master
                 {
                     // all init complete, safe to autosave chaperone profile
                     parent->m_chaperoneTabController.createNewAutosaveProfile();
@@ -1165,26 +1111,6 @@ void MoveCenterTabController::zeroOffsets()
                     m_chaperoneBasisAcquired = true;
                     LOG( INFO ) << "Chaperone Initilization Complete, Space Drag Now Enabled";
                 }
-<<<<<<< HEAD
-            }
-            else
-            {
-                // shutdown was unsafe last session!
-                qWarning() << "DETECTED UNSAFE SHUTDOWN FROM LAST SESSION";
-                m_initComplete = false;
-                if ( !parent->crashRecoveryDisabled() )
-                {
-                    parent->m_chaperoneTabController.applyAutosavedProfile();
-                    qInfo() << "Applying last good chaperone "
-                               "profile autosave";
-                }
-            }
-            // Now mark previous shutdown as unsafe in case we crash
-            // some time during this session. Previous shutdown will be
-            // marked as being safe once more just before our app shuts
-            // down properly.
-            parent->setPreviousShutdownSafe( false );
-=======
             //}
             // else
             // {
@@ -1203,7 +1129,6 @@ void MoveCenterTabController::zeroOffsets()
             // // marked as being safe once more just before our app shuts
             // // down properly.
             // parent->setPreviousShutdownSafe( false );
->>>>>>> origin/master
         }
         m_pendingZeroOffsets = true;
     }
@@ -1213,11 +1138,7 @@ void MoveCenterTabController::zeroOffsets()
         m_roomSetupModeDetected = false;
     }
 
-<<<<<<< HEAD
-    qInfo() << "SUCCESS: Chaperone Data Updated and Offsets zeroed out";
-=======
     //LOG( INFO ) << "SUCCESS: Chaperone Data Updated and Offsets zeroed out";
->>>>>>> origin/master
 }
 
 void MoveCenterTabController::sendSeatedRecenter()
@@ -1252,16 +1173,6 @@ void MoveCenterTabController::clampVelocity( double* velocity )
 
 void MoveCenterTabController::updateChaperoneResetData()
 {
-<<<<<<< HEAD
-    auto cstate = vr::VRChaperone()->GetCalibrationState();
-    if ( cstate > 199 )
-    {
-        qWarning() << "Chaperone Calibration State is error: " << cstate
-                   << " While Trying to Update Reset Data";
-    }
-    else
-    {
-=======
     //auto cstate = vr::VRChaperone()->GetCalibrationState();
     //TODO 8/3/26 calibration state is unreliable at best.
     // if ( false)//cstate > 199 )
@@ -1271,7 +1182,6 @@ void MoveCenterTabController::updateChaperoneResetData()
     // }
     // else
     //{
->>>>>>> origin/master
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
         vr::VRChaperoneSetup()->RevertWorkingCopy();
@@ -1975,14 +1885,9 @@ void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
         emit offsetZChanged( m_offsetZ );
         emit rotationChanged( m_rotation );
         updateSpace( true );
-<<<<<<< HEAD
-        auto calState = vr::VRChaperone()->GetCalibrationState();
-        qInfo() << "Calibration State on Reset Offsets is: " << calState;
-=======
 
         //auto calState = vr::VRChaperone()->GetCalibrationState();
         //LOG( INFO ) << "Calibration State on Reset Offsets is: " << calState;
->>>>>>> origin/master
 
         //        if ( calState > 199 && m_initComplete )
         //        {
