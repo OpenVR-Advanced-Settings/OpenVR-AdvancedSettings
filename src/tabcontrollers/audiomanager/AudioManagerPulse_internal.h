@@ -63,6 +63,22 @@ void customPulseLoop()
     loopControl = PulseAudioLoopControl::Run;
 }
 
+// Every pa_context_* call returns a referenced pa_operation that must be
+// unreferenced by the caller. The context holds its own reference until the
+// operation completes, so callbacks still fire after this.
+void releaseOperation( pa_operation* operation )
+{
+    if ( !operation )
+    {
+        LOG( ERROR ) << "Pulse operation failed: "
+                     << pa_strerror(
+                            pa_context_errno( pulseAudioPointers.context ) );
+        return;
+    }
+
+    pa_operation_unref( operation );
+}
+
 // Error function
 void dumpPulseAudioState()
 {
@@ -130,25 +146,23 @@ PulseAudioIsLastMeaning getIsLastMeaning( const int isLast ) noexcept
     return PulseAudioIsLastMeaning::RealDevice;
 }
 
-std::string getDeviceName( pa_proplist* p )
+template <class T> std::string getDeviceName( const T* i )
 {
-    if ( !p )
-    {
-        LOG( ERROR ) << "proplist not valid.";
-    }
-
     constexpr auto deviceDescription = "device.description";
-    if ( !pa_proplist_contains( p, deviceDescription ) )
+    if ( i->proplist && pa_proplist_contains( i->proplist, deviceDescription ) )
     {
-        LOG( ERROR ) << "proplist does not contain '" << deviceDescription
-                     << "'.";
-        return "ERROR";
+        return pa_proplist_gets( i->proplist, deviceDescription );
     }
 
-    std::string s;
-    s.assign( pa_proplist_gets( p, deviceDescription ) );
+    // PipeWire's pulse server doesn't set 'device.description' on sinks and
+    // sources, only the description field.
+    if ( i->description )
+    {
+        return i->description;
+    }
 
-    return s;
+    LOG( ERROR ) << "Device '" << i->name << "' has no description.";
+    return "ERROR";
 }
 
 template <class T> void deviceCallback( const T* i, const int isLast )
@@ -180,9 +194,9 @@ template <class T> void deviceCallback( const T* i, const int isLast )
         }
 
         LOG( DEBUG ) << "Adding device to input: '" << i->name << "', '"
-                     << getDeviceName( i->proplist ) << "'.";
+                     << getDeviceName( i ) << "'.";
         pulseAudioData.sourceInputDevices.push_back(
-            AudioDevice( i->name, getDeviceName( i->proplist ) ) );
+            AudioDevice( i->name, getDeviceName( i ) ) );
     }
 
     else if constexpr ( std::is_same<pa_sink_info, T>::value )
@@ -193,9 +207,9 @@ template <class T> void deviceCallback( const T* i, const int isLast )
         }
 
         LOG( DEBUG ) << "Adding device to output: '" << i->name << "', '"
-                     << getDeviceName( i->proplist ) << "'.";
+                     << getDeviceName( i ) << "'.";
         pulseAudioData.sinkOutputDevices.push_back(
-            AudioDevice( i->name, getDeviceName( i->proplist ) ) );
+            AudioDevice( i->name, getDeviceName( i ) ) );
     }
 }
 
@@ -286,20 +300,22 @@ void updateAllPulseData()
 {
     constexpr auto noCustomUserdata = nullptr;
 
-    pa_context_get_server_info( pulseAudioPointers.context,
-                                getDefaultDevicesCallback,
-                                noCustomUserdata );
+    releaseOperation( pa_context_get_server_info( pulseAudioPointers.context,
+                                                  getDefaultDevicesCallback,
+                                                  noCustomUserdata ) );
     customPulseLoop();
 
     pulseAudioData.sinkOutputDevices.clear();
-    pa_context_get_sink_info_list( pulseAudioPointers.context,
-                                   setOutputDevicesCallback,
-                                   noCustomUserdata );
+    releaseOperation( pa_context_get_sink_info_list( pulseAudioPointers.context,
+                                                     setOutputDevicesCallback,
+                                                     noCustomUserdata ) );
     customPulseLoop();
 
     pulseAudioData.sourceInputDevices.clear();
-    pa_context_get_source_info_list(
-        pulseAudioPointers.context, setInputDevicesCallback, noCustomUserdata );
+    releaseOperation(
+        pa_context_get_source_info_list( pulseAudioPointers.context,
+                                         setInputDevicesCallback,
+                                         noCustomUserdata ) );
     customPulseLoop();
 
     LOG( DEBUG ) << "updateAllPulseData done.";
@@ -328,8 +344,8 @@ void setPlaybackDeviceInternal( const std::string& id )
     updateAllPulseData();
 
     auto success = false;
-    pa_context_set_default_sink(
-        pulseAudioPointers.context, id.c_str(), successCallback, &success );
+    releaseOperation( pa_context_set_default_sink(
+        pulseAudioPointers.context, id.c_str(), successCallback, &success ) );
 
     customPulseLoop();
 
@@ -464,8 +480,8 @@ void sourceOutputCallback( pa_context* c,
                  << sourceOutputIndex << "' to sourceIndex '" << sourceIndex
                  << "' with source output name " << i->name << ".";
 
-    pa_context_move_source_output_by_index(
-        c, sourceOutputIndex, sourceIndex, successCallback, &success );
+    releaseOperation( pa_context_move_source_output_by_index(
+        c, sourceOutputIndex, sourceIndex, successCallback, &success ) );
 }
 
 void setMicrophoneDevice( const std::string& id )
@@ -475,8 +491,8 @@ void setMicrophoneDevice( const std::string& id )
     updateAllPulseData();
 
     auto success = false;
-    pa_context_set_default_source(
-        pulseAudioPointers.context, id.c_str(), successCallback, &success );
+    releaseOperation( pa_context_set_default_source(
+        pulseAudioPointers.context, id.c_str(), successCallback, &success ) );
 
     customPulseLoop();
 
@@ -487,8 +503,8 @@ void setMicrophoneDevice( const std::string& id )
 
     updateAllPulseData();
 
-    pa_context_get_source_output_info_list(
-        pulseAudioPointers.context, sourceOutputCallback, &success );
+    releaseOperation( pa_context_get_source_output_info_list(
+        pulseAudioPointers.context, sourceOutputCallback, &success ) );
 
     customPulseLoop();
 
@@ -514,12 +530,12 @@ bool setPlaybackVolume( const float volume )
     pa_cvolume_set( &pulseVolume, pulseVolume.channels, vol );
 
     auto success = false;
-    pa_context_set_sink_volume_by_name(
+    releaseOperation( pa_context_set_sink_volume_by_name(
         pulseAudioPointers.context,
         pulseAudioData.defaultSinkOutputDeviceId.c_str(),
         &pulseVolume,
         successCallback,
-        &success );
+        &success ) );
 
     customPulseLoop();
 
@@ -547,12 +563,12 @@ bool setMicrophoneVolume( const float volume )
     pa_cvolume_set( &pulseVolume, pulseVolume.channels, vol );
 
     auto success = false;
-    pa_context_set_source_volume_by_name(
+    releaseOperation( pa_context_set_source_volume_by_name(
         pulseAudioPointers.context,
         pulseAudioData.defaultSourceInputDeviceId.c_str(),
         &pulseVolume,
         successCallback,
-        &success );
+        &success ) );
 
     customPulseLoop();
 
@@ -573,12 +589,12 @@ bool setMicMuteState( const bool muted )
     LOG( DEBUG ) << "setMicMuteState called with 'muted': " << muted;
     bool success = false;
 
-    pa_context_set_source_mute_by_name(
+    releaseOperation( pa_context_set_source_mute_by_name(
         pulseAudioPointers.context,
         pulseAudioData.defaultSourceInputDeviceId.c_str(),
         muted,
         successCallback,
-        &success );
+        &success ) );
 
     customPulseLoop();
 
