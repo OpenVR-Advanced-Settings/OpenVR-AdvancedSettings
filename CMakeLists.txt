@@ -360,8 +360,6 @@ add_custom_command(TARGET AdvancedSettings POST_BUILD
 if (WIN32)
     add_custom_command(TARGET AdvancedSettings POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_SOURCE_DIR}/src/package_files/qt.conf" "${COPY_DEST_DIR}/qt.conf"
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_SOURCE_DIR}/src/package_files/restartvrserver.bat" "${COPY_DEST_DIR}/restartvrserver.bat"
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_SOURCE_DIR}/src/package_files/startdesktopmode.bat" "${COPY_DEST_DIR}/startdesktopmode.bat"
@@ -390,6 +388,19 @@ if (WIN32)
             "${CMAKE_SOURCE_DIR}/third-party/openssl/libssl-1_1-x64.dll" "${COPY_DEST_DIR}/libssl-1_1-x64.dll"
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${CMAKE_SOURCE_DIR}/third-party/openssl/LICENSE-OPENSSL" "${COPY_DEST_DIR}/LICENSE-OPENSSL"
+    )
+endif ()
+
+#Windows step actually puts all files in correct location
+if (WIN32)
+    set(WINDEPLOYQT "${Qt6_DIR}/../../../bin/windeployqt.exe")
+    set(QT_BIN_DIR "${Qt6_DIR}/../../../bin")
+    add_custom_command(TARGET AdvancedSettings POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E env "PATH=${QT_BIN_DIR};$ENV{PATH}"
+            "${WINDEPLOYQT}"
+            --qmldir "${CMAKE_SOURCE_DIR}/src/res/qml"
+            "$<IF:$<CONFIG:Debug>,--debug,--release>"
+            "${COPY_DEST_DIR}/AdvancedSettings.exe"
     )
 endif ()
 

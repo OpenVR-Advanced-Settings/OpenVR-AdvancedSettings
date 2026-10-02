@@ -13,7 +13,7 @@
       "variables": [
         {
           "name": "CMAKE_INSTALL_PREFIX",
-          "value": "D:/Code/ovras/OpenVR-AdvancedSettings/out/build/x64-Debug/Debug",
+          "value": "${projectDir}/out/install/x64-Debug",
           "type": "PATH"
         }
       ]
