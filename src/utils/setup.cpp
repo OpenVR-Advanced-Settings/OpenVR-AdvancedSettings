@@ -289,6 +289,7 @@ void forceRemoveApplicationManifest()
 
 void setUpLogging()
 {
+    //TODO move log to %appdata%/AdvancedSettings-Team and counterpart for linux?
     f = fopen( "AdvancedSettings.log", "a" );
     qSetMessagePattern("[%{if-debug}D%{endif}%{if-info}I%{endif}%{if-warning}W%{endif}%{if-critical}C%{endif}%{if-fatal}F%{endif}] %{time process}: %{message}");
     originalMessageHandler = qInstallMessageHandler( mainQtMessageHandler );

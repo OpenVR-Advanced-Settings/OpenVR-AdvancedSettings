@@ -6,7 +6,6 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 import ".."
 
 CheckBox {
-    checkState: Qt.Checked
     tristate: false
     hoverEnabled: true
     spacing: 12

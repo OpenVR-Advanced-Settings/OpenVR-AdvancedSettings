@@ -1668,7 +1668,7 @@ void OverlayController::setDesktopModeToggle( bool value, bool notify )
     {
         emit desktopModeToggleChanged( value );
     }
-    settings::saveAllSettings();
+    settings::saveChangedSettings();
 }
 bool OverlayController::desktopModeToggle() const
 {
