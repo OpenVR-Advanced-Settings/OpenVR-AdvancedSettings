@@ -1,6 +1,8 @@
 #include "setup.h"
+#include "../settings/internal/settings_internal.h"
 #include <QtLogging>
 #include <QtDebug>
+#include <QDateTime>
 #ifdef ENABLE_DEBUG_LOGGING
 constexpr auto debugLoggingEnabled = true;
 #else
@@ -10,16 +12,39 @@ constexpr auto debugLoggingEnabled = false;
 QtMessageHandler originalMessageHandler = nullptr;
 static FILE* f;
 
+// Maps a QtMsgType to its single-letter tag (D/I/W/C/F) so we can format the
+// leading bracket in mainQtMessageHandler.
+static QString severityTag( QtMsgType type )
+{
+    switch ( type )
+    {
+    case QtDebugMsg:     return "D";
+    case QtInfoMsg:      return "I";
+    case QtWarningMsg:   return "W";
+    case QtCriticalMsg:  return "C";
+    case QtFatalMsg:     return "F";
+    default:             return "?";
+    }
+}
+
 // The default Qt message handler prints to stdout on X11 and to the debugger on
 // Windows. That is borderline useless for us, therefore we create our own
 // message handler.
 void mainQtMessageHandler( QtMsgType type,
-                           const QMessageLogContext& context,
-                           const QString& msg )
+                            const QMessageLogContext& context,
+                            const QString& msg )
 {
-    QString message = qFormatLogMessage( type, context, msg );
-    fprintf( f, "%s\n", qPrintable( message ) );
-    fflush( f );
+    Q_UNUSED( context );
+    const QString timestamp =
+        QDateTime::currentDateTime().toString( "yyyy-MM-dd hh:mm:ss.zzz" );
+    // Format: [Level] yyyy-MM-dd hh:mm:ss.zzz message
+    const QString line
+        = QString( "[%1] %2 %3" ).arg( severityTag( type ), timestamp, msg );
+    if ( f )
+    {
+        fprintf( f, "%s\n", qPrintable( line ) );
+        fflush( f );
+    }
     if ( originalMessageHandler )
         ( *originalMessageHandler )( type, context, msg );
 }
@@ -289,8 +314,9 @@ void forceRemoveApplicationManifest()
 
 void setUpLogging()
 {
-    //TODO move log to %appdata%/AdvancedSettings-Team and counterpart for linux?
-    f = fopen( "AdvancedSettings.log", "a" );
-    qSetMessagePattern("[%{if-debug}D%{endif}%{if-info}I%{endif}%{if-warning}W%{endif}%{if-critical}C%{endif}%{if-fatal}F%{endif}] %{time process}: %{message}");
+    const auto logPath
+        = QFileInfo( settings::getQSettings().fileName() ).absolutePath()
+          + "/AdvancedSettings.log";
+    f = fopen( logPath.toStdString().c_str(), "a" );
     originalMessageHandler = qInstallMessageHandler( mainQtMessageHandler );
 }
