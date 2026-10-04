@@ -22,6 +22,7 @@ int main( int argc, char* argv[] )
     qInfo() << settings::getSettingsAndValues();
 
     QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
+    //TODO check if Needed?
     QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
     MyQApplication mainEventLoop( argc, argv );
     mainEventLoop.setOrganizationName(
