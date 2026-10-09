@@ -921,15 +921,22 @@ void MoveCenterTabController::incomingZeroReset()
     //TODO 8/3/2026 SteamFrame May Need special handling, will discuss With Valve currently
     //reset zero pose seems to move floor level as well as our changes, requiring 2 resets to set at correct level
     //or we could potentially not apply our offset during this process
+
+    //TODO 10/4/26
+    //Frame seems to handle reset zero, and our offset makes it worse, going to ignore this for frame specific build.
     float offset[3] = { 0, 0, 0 };
     offset[1] = -m_offsetY;
+    offset[0] = -m_offsetX;
+    offset[2] = -m_offsetZ;
     //TODO set universe center and seated recenter as 0 for this part
     vr::VRChaperoneSetup()->RevertWorkingCopy();
+    addOffset(offset);
     vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
         &m_universeCenterForReset );
     vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
         &m_seatedCenterForReset );
-    addOffset(offset);
+
+    //addOffset(offset);
     resetOffsets(true);
     //reset();
     return;
@@ -2718,6 +2725,12 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     m_oldOffsetY = m_offsetY;
     m_oldOffsetZ = m_offsetZ;
     m_oldRotation = m_rotation;
+
+
+    //10/4/26 This is a frame workAround, and not desireable, this knocks us out of the "working space"
+    // this should prevent the random resetzero poses from frame
+    vr::VRChaperoneSetup()->CommitWorkingCopy(
+        vr::EChaperoneConfigFile_Live );
 }
 
 void MoveCenterTabController::eventLoopTick(
