@@ -11,21 +11,26 @@ Slider {
     hoverEnabled: true
     to: 1.0
     from: 0.0
+    leftPadding: 12
+    rightPadding: 12
+    topPadding: 12
+    bottomPadding: 12
+
+    property color fillColor: "#1682e0"
 
     background: Rectangle {
         x: parent.leftPadding
         y: parent.topPadding + parent.availableHeight / 2 - height / 2
         width: parent.availableWidth
-        height: parent.availableHeight
+        height: 4
         radius: 2
-        color: parent.activeFocus ? "#484f5b" : "#2a2e35"
+        color: "#2f2f38"
+        clip: true
         Rectangle {
-            y: parent.height / 2 - height / 2
-            implicitHeight: 4
-            width: parent.width
-            height: implicitHeight
+            width: parent.width * (parent.parent.position)
+            height: parent.height
             radius: 2
-            color: "#181a1e"
+            color: parent.parent.fillColor
         }
     }
 
@@ -33,10 +38,10 @@ Slider {
         x: parent.leftPadding + parent.visualPosition * (parent.availableWidth - width)
         y: parent.topPadding + parent.availableHeight / 2 - height / 2
         implicitWidth: 20
-        implicitHeight: 40
-        radius: 4
-        color: parent.pressed ? "#586170" : "#3d4450"
-        border.color: "#181a1e"
+        implicitHeight: 20
+        radius: 10
+        color: "#ffffff"
+        border.width: 0
     }
 
     onHoveredChanged: {
@@ -49,7 +54,7 @@ Slider {
 
     onValueChanged: {
 		if (activeFocus) {
-            //OverlayController.playActivationSound()
+             //OverlayController.playActivationSound()
 		}
     }
 }

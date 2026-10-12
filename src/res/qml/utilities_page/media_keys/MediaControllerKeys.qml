@@ -15,7 +15,7 @@ GroupBox {
     }
     background: Rectangle {
         color: "transparent"
-        border.color: "#d9dbe0"
+        border.width: 0
         radius: 8
     }
     ColumnLayout {

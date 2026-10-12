@@ -9,15 +9,20 @@ Button {
     property string iconPath: ""
 
     property bool activationSoundEnabled: true
-	hoverEnabled: true
-	contentItem: MyText {
+    hoverEnabled: true
+    leftPadding: 14
+    rightPadding: 14
+    topPadding: 8
+    bottomPadding: 8
+    contentItem: MyText {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: parent.text
-        color: parent.enabled ? "#d9dbe0" : "#65676b"
-	}
-	background: Rectangle {
-        color: parent.enabled? (parent.down ? "#181a1e" : (parent.activeFocus ? "#586170" : "#3d4450")): "#181a1e"
+        color: parent.enabled ? "#e4e8f0" : "#65676b"
+    }
+    background: Rectangle {
+        radius: 6
+        color: parent.enabled ? (parent.down ? "#171922" : (parent.activeFocus ? "#2a2f3a" : "#22242e")) : "#171922"
     }
 
     Image {
@@ -40,6 +45,6 @@ Button {
         }
     }
     Connections {
-    target: OverlayController 
+    target: OverlayController
     }
 }

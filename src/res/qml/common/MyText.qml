@@ -3,6 +3,6 @@ import QtQuick.Controls 2.0
 import ovras.advsettings
 
 Text {
-    color: "#d9dbe0"
+    color: "#e4e8f0"
 	font.pointSize: 20
 }

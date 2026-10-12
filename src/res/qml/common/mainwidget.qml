@@ -15,7 +15,7 @@ import ovras.advsettings
 
 Rectangle {
     id: root
-    color: "#2a2e35"
+    color: "#14151c"
     width: 1200
     height: 800
 

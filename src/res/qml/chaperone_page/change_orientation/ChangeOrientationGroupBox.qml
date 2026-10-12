@@ -16,7 +16,7 @@ GroupBox {
     }
     background: Rectangle {
         color: "transparent"
-        border.color: "#d9dbe0"
+        border.width: 0
         radius: 8
     }
 
@@ -24,7 +24,7 @@ GroupBox {
         anchors.fill: parent
 
         Rectangle {
-            color: "#d9dbe0"
+            color: "#2a2f3a"
             height: 1
             Layout.fillWidth: true
             Layout.bottomMargin: 5

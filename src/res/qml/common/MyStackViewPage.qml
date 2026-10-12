@@ -7,7 +7,7 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 import ".."
 
 Rectangle {
-    color: "#2a2e35"
+    color: "#14151c"
     width: 1200
     height: 800
 
@@ -32,12 +32,12 @@ Rectangle {
                     sourceSize.height: 50
                     anchors.fill: parent
                 }
-                background: Rectangle {
-                    opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-                    color: "#2a2e35"
-                    radius: 4
-                    anchors.fill: parent
-                }
+                 background: Rectangle {
+                     opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
+                     color: "#22242e"
+                     radius: 6
+                     anchors.fill: parent
+                 }
                 onHoveredChanged: {
                     if (hovered) {
                         forceActiveFocus()
@@ -59,7 +59,7 @@ Rectangle {
         }
 
         Rectangle {
-            color: "#cccccc"
+            color: "#2a2f3a"
             height: 1
             Layout.topMargin: 10
             Layout.fillWidth: true

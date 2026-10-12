@@ -6,49 +6,49 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 import ".."
 
 CheckBox {
+    id: myToggle
     tristate: false
     hoverEnabled: true
-    spacing: 12
+    spacing: 16
+    leftPadding: 0
+    rightPadding: 0
 
-	indicator: Rectangle {
-		implicitWidth: 28
-		implicitHeight: 28
-		x: parent.leftPadding
-		y: parent.height / 2 - height / 2
-        color: parent.enabled ? (parent.down ? "#181a1e" : "#3d4450") : "#181a1e"
+    property color onColor: "#1682e0"
+
+    indicator: Rectangle {
+        implicitWidth: 48
+        implicitHeight: 26
+        x: myToggle.leftPadding
+        y: myToggle.height / 2 - height / 2
+        radius: implicitHeight / 2
+        color: myToggle.checked ? myToggle.onColor : "#2f2f38"
         border.width: 0
-        Path {
-            startX: 0
-            startY: 0
-            PathLine {
-                x: 40
-                y: 40
+
+        Rectangle {
+            id: thumb
+            width: 20
+            height: 20
+            radius: 10
+            color: "#ffffff"
+            y: (parent.height - height) / 2
+            x: myToggle.checked ? (parent.width - width - 3) : 3
+            Behavior on x {
+                NumberAnimation { duration: 120; easing.type: Easing.InOutQuad }
             }
         }
+    }
 
-		Image {
-            width: 28
-            height: 28
-			x: (parent.width - width) / 2
-			y: (parent.height - height) / 2
-            source: "qrc:/qt/qml/AdvancedSettings/src/res/img/common/check.svg"
-			sourceSize.width: width
-			sourceSize.height: height
-			visible: parent.parent.checked
-		}
-	}
-
-	contentItem: MyText {
-        text: parent.text
+    contentItem: MyText {
+        text: myToggle.text
         horizontalAlignment: Text.AlignLeft
-		verticalAlignment: Text.AlignVCenter
-        leftPadding: parent.indicator.width + parent.spacing
-        color: parent.enabled ? "#d9dbe0" : "#65676b"
-	}
+        verticalAlignment: Text.AlignVCenter
+        leftPadding: myToggle.indicator.width + myToggle.spacing
+        rightPadding: myToggle.rightPadding
+        color: myToggle.enabled ? "#e4e8f0" : "#65676b"
+    }
 
-	background: Rectangle {
-        color: "#2a2e35"
-        opacity: parent.activeFocus ? 1.0 : 0
+    background: Rectangle {
+        color: "transparent"
     }
 
     onHoveredChanged: {
@@ -62,7 +62,8 @@ CheckBox {
     onClicked: {
         OverlayController.playActivationSound()
     }
+
     Connections {
-    target: OverlayController 
+    target: OverlayController
     }
 }

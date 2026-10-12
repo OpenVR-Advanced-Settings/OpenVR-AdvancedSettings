@@ -7,8 +7,15 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 ComboBox {
     id: myComboBox
     hoverEnabled: true
+    leftPadding: 14
+    rightPadding: 30
+    topPadding: 8
+    bottomPadding: 8
     background: Rectangle {
-        color: parent.pressed ? "#181a1e" : (parent.activeFocus ? "#586170" : "#3d4450")
+        radius: 6
+        color: parent.pressed ? "#171922" : (parent.activeFocus ? "#2a2f3a" : "#1e2029")
+        border.width: 1
+        border.color: parent.activeFocus ? "#1682e0" : "#343a46"
     }
 
     contentItem: MyText {
@@ -24,14 +31,17 @@ ComboBox {
         width: myComboBox.width
         text: modelData
         hoverEnabled: true
+        leftPadding: 14
+        rightPadding: 14
         contentItem: MyText {
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             text: parent.text
-            color: parent.enabled ? "#d9dbe0" : "#65676b"
+            color: parent.enabled ? "#e4e8f0" : "#65676b"
         }
         background: Rectangle {
-            color: parent.pressed ? "#181a1e" : (parent.hovered ? "#586170" : "#3d4450")
+            radius: 6
+            color: parent.pressed ? "#171922" : (parent.hovered ? "#2a2f3a" : "#1e2029")
         }
     }
 
@@ -69,7 +79,7 @@ ComboBox {
     }
 
     Component.onCompleted: {
-        popup.background.color = "#2a2e35"
+        popup.background.color = "#1e2029"
     }
     Connections {
     target: OverlayController 

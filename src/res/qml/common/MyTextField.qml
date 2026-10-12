@@ -7,15 +7,20 @@ TextField {
     property string savedText: ""
     property bool active: false
     id: myTextField
-    color: "#d9dbe0"
+    color: "#e4e8f0"
     text: ""
     font.pointSize: 20
+    leftPadding: 8
+    rightPadding: 8
+    topPadding: 4
+    bottomPadding: 4
     background: Button {
         hoverEnabled: true
         background: Rectangle {
-            color: parent.hovered ? "#484f5b" : "#2a2e35"
-            border.color: "#d9dbe0"
-            border.width: 2
+            color: parent.hovered ? "#2a2f3a" : "#1e2029"
+            border.width: 1
+            border.color: parent.activeFocus ? "#1682e0" : "#343a46"
+            radius: 6
         }
         onClicked: {
             myTextField.forceActiveFocus()

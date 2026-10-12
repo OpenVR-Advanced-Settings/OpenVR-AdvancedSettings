@@ -22,7 +22,7 @@ MyDialogOkCancelPopup {
             MyTextField {
                 id: audioNewProfileName
                 keyBoardUID: 590
-                color: "#cccccc"
+                color: "#2a2f3a"
                 text: ""
                 Layout.fillWidth: true
                 font.pointSize: 20

@@ -409,11 +409,11 @@ MyStackViewPage {
                            Rectangle {
                                id: summaryVersionCheckTextRect
                                visible: true
-                               color: "#2a2e35"
+                               color: "#1e2029"
                                MyText {
                                    id: summaryVersionCheckText
                                    text: ""
-                                   color: "#3d4450"
+                                   color: "#22242e"
                                    font.pointSize: 22
                                    minimumPointSize: 11
                                    fontSizeMode: Text.Fit
@@ -451,7 +451,7 @@ MyStackViewPage {
        {
            summaryVersionCheckTextRect.color = "#ff0000"
        } else {
-           summaryVersionCheckTextRect.color = "#2a2e35"
+           summaryVersionCheckTextRect.color = "#1e2029"
        }
 
 
@@ -477,7 +477,7 @@ MyStackViewPage {
            {
                summaryVersionCheckTextRect.color = "#ff0000"
            } else {
-               summaryVersionCheckTextRect.color = "#2a2e35"
+               summaryVersionCheckTextRect.color = "#1e2029"
            }
        }
        function onVersionCheckTextChanged() {
@@ -487,14 +487,14 @@ MyStackViewPage {
            if (OverlayController.disableVersionCheck)
            {
                summaryVersionCheckText.visible = false
-               summaryVersionCheckTextRect.color = "#2a2e35"
+               summaryVersionCheckTextRect.color = "#1e2029"
            } else {
                summaryVersionCheckText.visible = true
                if (OverlayController.newVersionDetected)
                {
                    summaryVersionCheckTextRect.color = "#ff0000"
                } else {
-                   summaryVersionCheckTextRect.color = "#2a2e35"
+                   summaryVersionCheckTextRect.color = "#1e2029"
                }
            }
        }
