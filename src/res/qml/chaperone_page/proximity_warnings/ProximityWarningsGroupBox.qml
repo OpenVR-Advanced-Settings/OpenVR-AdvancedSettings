@@ -73,11 +73,12 @@ SettingsGroupBox {
         MyToggleButton {
             id: audioWarningLoopingToggle
             text: "Loop Audio"
+            enabled: audioWarningToggle.checked
             Layout.fillWidth: true
+            Layout.leftMargin: 32
             Layout.rightMargin: 0
             onCheckedChanged: {
                 ChaperoneTabController.chaperoneAlarmSoundLooping = checked
-                audioWarningAdjustVolumeToggle.enabled = checked
             }
         }
         LineSeparator {
@@ -85,8 +86,9 @@ SettingsGroupBox {
         MyToggleButton {
             id: audioWarningAdjustVolumeToggle
             text: "Volume by Proximity"
-            enabled: false
+            enabled: audioWarningToggle.checked && audioWarningLoopingToggle.checked
             Layout.fillWidth: true
+            Layout.leftMargin: 32
             Layout.rightMargin: 0
             onCheckedChanged: {
                 ChaperoneTabController.chaperoneAlarmSoundAdjustVolume = checked
