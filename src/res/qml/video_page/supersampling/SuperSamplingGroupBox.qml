@@ -4,30 +4,14 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: brightnessGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "SuperSampling: (may require refresh of dashboard or restart of SteamVR)"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.width: 0
-        radius: 8
-    }
+    title: "SuperSampling: (may require refresh of dashboard or restart of SteamVR)"
 
     ColumnLayout {
         anchors.fill: parent
-
-        Rectangle {
-            color: "#2a2f3a"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 5
-        }
 
         RowLayout {
             spacing: 16

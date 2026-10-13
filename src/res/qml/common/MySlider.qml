@@ -16,32 +16,39 @@ Slider {
     topPadding: 12
     bottomPadding: 12
 
-    property color fillColor: "#1682e0"
+    property color fillColor: "#1a9fff"
 
-    background: Rectangle {
+    background: Item {
         x: parent.leftPadding
         y: parent.topPadding + parent.availableHeight / 2 - height / 2
+        implicitWidth: 200
+        implicitHeight: 6
         width: parent.availableWidth
-        height: 4
-        radius: 2
-        color: "#2f2f38"
-        clip: true
+        height: 6
         Rectangle {
-            width: parent.width * (parent.parent.position)
-            height: parent.height
+            anchors.verticalCenter: parent.verticalCenter
+            width: parent.width
+            height: 4
             radius: 2
-            color: parent.parent.fillColor
+            color: "#4a505a"
+        }
+        Rectangle {
+            width: parent.parent.visualPosition * parent.width
+            height: parent.height
+            radius: 3
+            color: parent.parent.enabled ? parent.parent.fillColor : "#5d636b"
         }
     }
 
     handle: Rectangle {
         x: parent.leftPadding + parent.visualPosition * (parent.availableWidth - width)
         y: parent.topPadding + parent.availableHeight / 2 - height / 2
-        implicitWidth: 20
-        implicitHeight: 20
-        radius: 10
-        color: "#ffffff"
-        border.width: 0
+        implicitWidth: 24
+        implicitHeight: 24
+        radius: 12
+        color: parent.pressed ? "#e6e6e6" : "#ffffff"
+        border.width: parent.activeFocus ? 2 : 0
+        border.color: "#1a9fff"
     }
 
     onHoveredChanged: {

@@ -11,182 +11,189 @@ MyStackViewPage {
     content: ColumnLayout {
         spacing: 18
 
-        GridLayout {
-            columns: 3
+        SettingsGroupBox {
+            title: "Movement"
+            GridLayout {
+                anchors.fill: parent
+                columns: 3
 
-            MyText {
-                text: "HMD Distance Moved:"
-            }
-
-            MyText {
-                id: statsHmdMovedText
-                text: "-00.0"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
-            }
-
-            MyPushButton {
-                text: "Reset"
-                onClicked: {
-                    StatisticsTabController.statsDistanceResetClicked()
+                MyText {
+                    text: "HMD Distance Moved:"
                 }
-            }
 
-            MyText {
-                text: "HMD Rotations:"
-            }
-
-            MyText {
-                id: statsHmdRotationText
-                text: "0.0 CCW"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
-            }
-
-            MyPushButton {
-                text: "Reset"
-                onClicked: {
-                    StatisticsTabController.statsRotationResetClicked()
+                MyText {
+                    id: statsHmdMovedText
+                    text: "-00.0"
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
+                    Layout.rightMargin: 10
                 }
-            }
 
-            MyText {
-                text: "Left Controller Max Speed:"
-            }
-
-            MyText {
-                id: statsLeftControllerSpeedText
-                text: "99.9 m/s"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
-            }
-
-            MyPushButton {
-                text: "Reset"
-                onClicked: {
-                    StatisticsTabController.statsLeftControllerSpeedResetClicked()
+                MyPushButton {
+                    text: "Reset"
+                    onClicked: {
+                        StatisticsTabController.statsDistanceResetClicked()
+                    }
                 }
-            }
 
-            MyText {
-                text: "Right Controller Max Speed:"
-            }
+                MyText {
+                    text: "HMD Rotations:"
+                }
 
-            MyText {
-                id: statsRightControllerSpeedText
-                text: "99.9 m/s"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
-            }
+                MyText {
+                    id: statsHmdRotationText
+                    text: "0.0 CCW"
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
+                    Layout.rightMargin: 10
+                }
 
-            MyPushButton {
-                text: "Reset"
-                onClicked: {
-                    StatisticsTabController.statsRightControllerSpeedResetClicked()
+                MyPushButton {
+                    text: "Reset"
+                    onClicked: {
+                        StatisticsTabController.statsRotationResetClicked()
+                    }
+                }
+
+                MyText {
+                    text: "Left Controller Max Speed:"
+                }
+
+                MyText {
+                    id: statsLeftControllerSpeedText
+                    text: "99.9 m/s"
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
+                    Layout.rightMargin: 10
+                }
+
+                MyPushButton {
+                    text: "Reset"
+                    onClicked: {
+                        StatisticsTabController.statsLeftControllerSpeedResetClicked()
+                    }
+                }
+
+                MyText {
+                    text: "Right Controller Max Speed:"
+                }
+
+                MyText {
+                    id: statsRightControllerSpeedText
+                    text: "99.9 m/s"
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
+                    Layout.rightMargin: 10
+                }
+
+                MyPushButton {
+                    text: "Reset"
+                    onClicked: {
+                        StatisticsTabController.statsRightControllerSpeedResetClicked()
+                    }
                 }
             }
         }
 
-        GridLayout {
-            columns: 3
-            Layout.topMargin: 32
+        SettingsGroupBox {
+            title: "Frames"
+            GridLayout {
+                anchors.fill: parent
+                columns: 3
 
-            MyText {
-                text: "Presented Frames:"
-            }
-
-            MyText {
-                id: statsPresentedFramesText
-                text: "000"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
-            }
-
-            MyPushButton {
-                text: "Reset"
-                onClicked: {
-                    StatisticsTabController.presentedFramesResetClicked()
+                MyText {
+                    text: "Presented Frames:"
                 }
-            }
 
-            MyText {
-                text: "Dropped Frames:"
-            }
-
-            MyText {
-                id: statsDroppedFramesText
-                text: "000"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
-            }
-
-            MyPushButton {
-                text: "Reset"
-                onClicked: {
-                    StatisticsTabController.droppedFramesResetClicked()
+                MyText {
+                    id: statsPresentedFramesText
+                    text: "000"
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
+                    Layout.rightMargin: 10
                 }
-            }
 
-            MyText {
-                text: "Reprojected Frames:"
-            }
-
-            MyText {
-                id: statsReprojectionFramesText
-                text: "000"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
-            }
-
-            MyPushButton {
-                text: "Reset"
-                onClicked: {
-                    StatisticsTabController.reprojectedFramesResetClicked()
+                MyPushButton {
+                    text: "Reset"
+                    onClicked: {
+                        StatisticsTabController.presentedFramesResetClicked()
+                    }
                 }
-            }
 
-            MyText {
-                text: "Timed Out:"
-            }
-
-            MyText {
-                id: statsTimedOutText
-                text: "000"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
-            }
-
-            MyPushButton {
-                text: "Reset"
-                onClicked: {
-                    StatisticsTabController.timedOutResetClicked()
+                MyText {
+                    text: "Dropped Frames:"
                 }
-            }
 
-            MyText {
-                text: "Reprojection Ratio:"
-            }
+                MyText {
+                    id: statsDroppedFramesText
+                    text: "000"
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
+                    Layout.rightMargin: 10
+                }
 
-            MyText {
-                id: statstotalRatioText
-                text: "0.0"
-                Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
-            }
+                MyPushButton {
+                    text: "Reset"
+                    onClicked: {
+                        StatisticsTabController.droppedFramesResetClicked()
+                    }
+                }
 
-            MyPushButton {
-                text: "Reset"
-                onClicked: {
-                    StatisticsTabController.totalRatioResetClicked()
+                MyText {
+                    text: "Reprojected Frames:"
+                }
+
+                MyText {
+                    id: statsReprojectionFramesText
+                    text: "000"
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
+                    Layout.rightMargin: 10
+                }
+
+                MyPushButton {
+                    text: "Reset"
+                    onClicked: {
+                        StatisticsTabController.reprojectedFramesResetClicked()
+                    }
+                }
+
+                MyText {
+                    text: "Timed Out:"
+                }
+
+                MyText {
+                    id: statsTimedOutText
+                    text: "000"
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
+                    Layout.rightMargin: 10
+                }
+
+                MyPushButton {
+                    text: "Reset"
+                    onClicked: {
+                        StatisticsTabController.timedOutResetClicked()
+                    }
+                }
+
+                MyText {
+                    text: "Reprojection Ratio:"
+                }
+
+                MyText {
+                    id: statstotalRatioText
+                    text: "0.0"
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
+                    Layout.rightMargin: 10
+                }
+
+                MyPushButton {
+                    text: "Reset"
+                    onClicked: {
+                        StatisticsTabController.totalRatioResetClicked()
+                    }
                 }
             }
         }

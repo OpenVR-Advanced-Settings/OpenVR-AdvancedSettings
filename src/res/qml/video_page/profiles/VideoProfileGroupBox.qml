@@ -5,7 +5,7 @@ import ovras.advsettings 1.0
 import "../../common"
 import "../dialogboxes"
 
-GroupBox {
+SettingsGroupBox {
     id: videoProfileGroupBox
     Layout.fillWidth: true
 
@@ -20,25 +20,10 @@ GroupBox {
         id:videoMessageDialog
     }
 
-    label: MyText {
-        leftPadding: 10
-        text: "Video Profiles:"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.width: 0
-        radius: 8
-    }
+    title: "Video Profiles"
     ColumnLayout {
         anchors.fill: parent
 
-        Rectangle {
-            color: "#2a2f3a"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 5
-        }
         RowLayout {
             spacing: 10
 

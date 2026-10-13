@@ -167,6 +167,7 @@ set(QML_FILERC
     src/res/qml/common/MyRadioButton.qml
     src/res/qml/common/FullWidthSliderBox.qml
     src/res/qml/common/MyDialogOkCancelPopup.qml
+    src/res/qml/common/SettingsGroupBox.qml
     src/res/qml/rotation_page/view_ratchet/ViewRatchetGroupBox.qml
     src/res/qml/rotation_page/redirected/RedirectedGroupBox.qml
     src/res/qml/rotation_page/redirected/AutoTurnGroupBox.qml
@@ -219,6 +220,7 @@ set(ResourcesRC
     src/res/img/main_menu_icons/audio_tab_icon.svg
     src/res/img/main_menu_icons/bindings_tab_icon.svg
     src/res/img/main_menu_icons/chaperone_tab_icon.svg
+    src/res/img/main_menu_icons/home_tab_icon.svg
     src/res/img/main_menu_icons/motion_tab_icon.svg
     src/res/img/main_menu_icons/offsets_tab_icon.svg
     src/res/img/main_menu_icons/rotation_tab_icon.svg

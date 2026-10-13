@@ -11,7 +11,6 @@ import "profiles"
 import "overlaycolorbright"
 
 MyStackViewPage {
-    width: 1200
     headerText: "Video Settings"
     content: ColumnLayout {
         spacing: 10

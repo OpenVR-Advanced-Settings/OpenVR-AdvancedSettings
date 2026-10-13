@@ -384,7 +384,9 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                 + std::string( vr::VROverlay()->GetOverlayErrorNameFromEnum(
                     overlayError ) ) ) );
         }
-        vr::VROverlay()->SetOverlayWidthInMeters( m_ulOverlayHandle, 2.5f );
+        // Root QML item is 1450px wide (250px sidebar + 1200px pages), scaled
+        // from the previous 2.5m at 1200px so content keeps its physical size.
+        vr::VROverlay()->SetOverlayWidthInMeters( m_ulOverlayHandle, 3.0f );
         vr::VROverlay()->SetOverlayInputMethod(
             m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse );
         vr::VROverlay()->SetOverlayFlag(

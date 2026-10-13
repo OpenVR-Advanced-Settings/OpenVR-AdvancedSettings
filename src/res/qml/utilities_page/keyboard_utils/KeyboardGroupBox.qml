@@ -4,29 +4,14 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: keyboardGroupBox
     Layout.fillWidth: true
     
-    label: MyText {
-        leftPadding: 10
-        text: "Keyboard Utilities"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.width: 0
-        radius: 8
-    }
+    title: "Keyboard Utilities"
     ColumnLayout {
         anchors.fill: parent
         
-        Rectangle {
-            color: "#2a2f3a"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 5
-        }
         
         
         MyText {

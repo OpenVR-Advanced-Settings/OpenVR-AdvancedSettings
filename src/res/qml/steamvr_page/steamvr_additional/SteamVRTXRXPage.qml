@@ -68,7 +68,7 @@ MyStackViewPage {
                     }
                }
                 Rectangle {
-                    color: "#ffffff"
+                    color: "#3a4049"
                     height: 1
                     Layout.fillWidth: true
                     Layout.bottomMargin: 5
@@ -84,7 +84,7 @@ MyStackViewPage {
                             Layout.fillWidth:  true
                             clip: true
                             delegate:
-                            GroupBox {
+                            SettingsGroupBox {
                                 id: chaperoneTypeGroupBox
                                 Layout.fillWidth: true
 
@@ -100,16 +100,11 @@ MyStackViewPage {
                                         bottomPadding: -10
                                     }
                                 }
-                                background: Rectangle {
-                                    color: "transparent"
-                                    border.width: 0
-                                    radius: 8
-                                }
                                 ColumnLayout{
                                     anchors.fill: parent
 
                                     Rectangle {
-                                        color: "#2a2f3a"
+                                        color: "#3a4049"
                                         height: 1
                                         Layout.fillWidth: true
                                         Layout.bottomMargin: 5

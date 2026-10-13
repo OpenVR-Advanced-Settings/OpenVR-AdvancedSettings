@@ -3,6 +3,7 @@ release
 assets
 bin
 build
+CLAUDE.MD
 Makefile*
 *.vcxproj*
 *.log

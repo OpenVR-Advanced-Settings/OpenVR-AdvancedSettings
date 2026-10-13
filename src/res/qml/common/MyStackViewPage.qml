@@ -7,35 +7,35 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 import ".."
 
 Rectangle {
-    color: "#14151c"
-    width: 1200
-    height: 800
+    color: "#1d2026"
 
     property StackView stackView
 
     property string headerText: "Header Title"
 
-    property bool headerShowBackButton: true
+    // Top level pages are reached from the sidebar, only sub pages need a back button.
+    property bool headerShowBackButton: stackView ? stackView.depth > 1 : false
 
     property Item header: ColumnLayout {
         RowLayout {
+            spacing: 12
             Button {
                 id: headerBackButton
-                Layout.preferredHeight: 50
-                Layout.preferredWidth: 50
+                Layout.preferredHeight: 40
+                Layout.preferredWidth: 40
                 hoverEnabled: true
                 enabled: headerShowBackButton
-                opacity: headerShowBackButton ? 1.0 : 0.0
+                visible: headerShowBackButton
                 contentItem: Image {
                     source: "qrc:/qt/qml/AdvancedSettings/src/res/img/common/backarrow.svg"
-                    sourceSize.width: 50
-                    sourceSize.height: 50
+                    sourceSize.width: 40
+                    sourceSize.height: 40
                     anchors.fill: parent
                 }
                  background: Rectangle {
                      opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-                     color: "#22242e"
-                     radius: 6
+                     color: "#4b5361"
+                     radius: 20
                      anchors.fill: parent
                  }
                 onHoveredChanged: {
@@ -53,16 +53,10 @@ Rectangle {
             MyText {
                 id: headerTitle
                 text: headerText
-                font.pointSize: 30
-                Layout.leftMargin: 32
+                font.pointSize: 24
+                font.bold: true
+                color: "#ffffff"
             }
-        }
-
-        Rectangle {
-            color: "#2a2f3a"
-            height: 1
-            Layout.topMargin: 10
-            Layout.fillWidth: true
         }
     }
 
@@ -78,18 +72,41 @@ Rectangle {
         anchors.fill: parent
     }
 
+    // Content scrolls vertically when it is taller than the page.
+    Flickable {
+        id: contentFlickable
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+        Layout.topMargin: 4
+        Layout.bottomMargin: 24
+        clip: true
+        contentWidth: width - leftMargin - rightMargin
+        flickableDirection: Flickable.VerticalFlick
+        contentHeight: Math.max(height, content.implicitHeight)
+        interactive: contentHeight > height
+        boundsBehavior: Flickable.StopAtBounds
+        leftMargin: 28
+        rightMargin: 28
+
+        ScrollBar.vertical: ScrollBar {
+            policy: contentFlickable.interactive ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
+            contentItem: Rectangle {
+                implicitWidth: 6
+                radius: 3
+                color: parent.pressed ? "#8b929a" : "#4b5361"
+            }
+        }
+    }
+
     Component.onCompleted: {
         header.parent = mainLayout
-        header.Layout.leftMargin = 40
-        header.Layout.topMargin = 30
-        header.Layout.rightMargin = 40
-        content.parent = mainLayout
-        content.Layout.fillHeight = true
-        content.Layout.fillWidth = true
-        content.Layout.topMargin = 10
-        content.Layout.leftMargin = 40
-        content.Layout.rightMargin = 40
-        content.Layout.bottomMargin = 40
+        header.Layout.leftMargin = 28
+        header.Layout.topMargin = 22
+        header.Layout.rightMargin = 28
+        contentFlickable.parent = mainLayout
+        content.parent = contentFlickable.contentItem
+        content.width = Qt.binding(function() { return contentFlickable.width - contentFlickable.leftMargin - contentFlickable.rightMargin })
+        content.height = Qt.binding(function() { return contentFlickable.contentHeight })
     }
     Connections {
     target: OverlayController 

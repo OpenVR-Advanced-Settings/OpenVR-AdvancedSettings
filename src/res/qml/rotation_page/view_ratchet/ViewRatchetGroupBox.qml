@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: viewRatchetGroupBox
     Layout.fillWidth: true
 

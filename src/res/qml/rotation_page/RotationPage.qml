@@ -10,7 +10,6 @@ import "view_ratchet"
 
 
 MyStackViewPage {
-    width: 1200
     headerText: "Rotation Settings"
     content: ColumnLayout {
         spacing: 8

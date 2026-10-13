@@ -5,20 +5,20 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 
 Button {
     hoverEnabled: true
-    leftPadding: 12
-    rightPadding: 12
-    topPadding: 8
-    bottomPadding: 8
+    leftPadding: 10
+    rightPadding: 10
+    topPadding: 6
+    bottomPadding: 6
     contentItem: MyText {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: parent.text
-        color: parent.enabled ? "#e4e8f0" : "#65676b"
+        color: parent.enabled ? (parent.activeFocus ? "#ffffff" : "#dcdedf") : "#5d636b"
     }
     background: Rectangle {
-        color: parent.down ? "#171922" : (parent.activeFocus ? "#2a2f3a" : "transparent")
+        color: parent.down ? "#1a9fff" : (parent.activeFocus ? "#4b5361" : "transparent")
         border.width: 0
-        radius: 6
+        radius: 3
     }
     onHoveredChanged: {
         if (hovered) {

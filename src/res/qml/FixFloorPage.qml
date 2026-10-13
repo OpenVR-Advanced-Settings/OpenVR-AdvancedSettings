@@ -19,7 +19,7 @@ MyStackViewPage {
         MyText {
             text: "Place one controller on the ground and ensure good visibility to the base stations."
             wrapMode: Text.WordWrap
-            font.pointSize: 28
+            font.pointSize: 20
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             Layout.fillWidth: true
@@ -30,7 +30,7 @@ MyStackViewPage {
             id: seatedWarningText
             visible: false
             wrapMode: Text.WordWrap
-            font.pointSize: 28
+            font.pointSize: 20
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             Layout.fillWidth: true

@@ -47,10 +47,10 @@ MyStackViewPage {
                 MyTextField {
                     id: chaperoneNewProfileName
                     keyBoardUID: 390
-                    color: "#e4e8f0"
+                    color: "#ffffff"
                     text: ""
                     Layout.fillWidth: true
-                    font.pointSize: 20
+                    font.pointSize: 16
                     function onInputEvent(input) {
                         chaperoneNewProfileName.text = input
                     }
@@ -167,324 +167,330 @@ MyStackViewPage {
     content: ColumnLayout {
         spacing: 18
 
-        ColumnLayout {
-            Layout.bottomMargin: 32
-            spacing: 18
-            RowLayout {
+        SettingsGroupBox {
+            title: "Profiles"
+            ColumnLayout {
+                anchors.fill: parent
                 spacing: 18
+                RowLayout {
+                    spacing: 18
 
-                MyText {
-                    text: "Profile:"
-                }
+                    MyText {
+                        text: "Profile:"
+                    }
 
-                MyComboBox {
-                    id: chaperoneProfileComboBox
-                    Layout.maximumWidth: 799
-                    Layout.minimumWidth: 799
-                    Layout.preferredWidth: 799
-                    Layout.fillWidth: true
-                    model: [""]
-                    onCurrentIndexChanged: {
-                        if (currentIndex > 0) {
-                            chaperoneApplyProfileButton.enabled = true
-                            chaperoneDeleteProfileButton.enabled = true
-                        } else {
-                            chaperoneApplyProfileButton.enabled = false
-                            chaperoneDeleteProfileButton.enabled = false
+                    MyComboBox {
+                        id: chaperoneProfileComboBox
+                        Layout.fillWidth: true
+                        model: [""]
+                        onCurrentIndexChanged: {
+                            if (currentIndex > 0) {
+                                chaperoneApplyProfileButton.enabled = true
+                                chaperoneDeleteProfileButton.enabled = true
+                            } else {
+                                chaperoneApplyProfileButton.enabled = false
+                                chaperoneDeleteProfileButton.enabled = false
+                            }
+                        }
+                    }
+
+                    MyPushButton {
+                        id: chaperoneApplyProfileButton
+                        enabled: false
+                        Layout.preferredWidth: 200
+                        text: "Apply"
+                        onClicked: {
+                            if (chaperoneProfileComboBox.currentIndex > 0) {
+                                ChaperoneTabController.applyChaperoneProfile(chaperoneProfileComboBox.currentIndex - 1)
+                                chaperoneProfileComboBox.currentIndex = 0
+                            }
                         }
                     }
                 }
-
-                MyPushButton {
-                    id: chaperoneApplyProfileButton
-                    enabled: false
-                    Layout.preferredWidth: 200
-                    text: "Apply"
-                    onClicked: {
-                        if (chaperoneProfileComboBox.currentIndex > 0) {
-                            ChaperoneTabController.applyChaperoneProfile(chaperoneProfileComboBox.currentIndex - 1)
-                            chaperoneProfileComboBox.currentIndex = 0
+                RowLayout {
+                    spacing: 18
+                    Item {
+                        Layout.fillWidth: true
+                    }
+                    MyPushButton {
+                        id: chaperoneDeleteProfileButton
+                        enabled: false
+                        Layout.preferredWidth: 200
+                        text: "Delete Profile"
+                        onClicked: {
+                            if (chaperoneProfileComboBox.currentIndex > 0) {
+                                chaperoneDeleteProfileDialog.profileIndex = chaperoneProfileComboBox.currentIndex - 1
+                                chaperoneDeleteProfileDialog.open()
+                            }
                         }
                     }
-                }
-            }
-            RowLayout {
-                spacing: 18
-                Item {
-                    Layout.fillWidth: true
-                }
-                MyPushButton {
-                    id: chaperoneDeleteProfileButton
-                    enabled: false
-                    Layout.preferredWidth: 200
-                    text: "Delete Profile"
-                    onClicked: {
-                        if (chaperoneProfileComboBox.currentIndex > 0) {
-                            chaperoneDeleteProfileDialog.profileIndex = chaperoneProfileComboBox.currentIndex - 1
-                            chaperoneDeleteProfileDialog.open()
+                    MyPushButton {
+                        Layout.preferredWidth: 200
+                        text: "New Profile"
+                        onClicked: {
+                            chaperoneNewProfileDialog.openPopup()
                         }
-                    }
-                }
-                MyPushButton {
-                    Layout.preferredWidth: 200
-                    text: "New Profile"
-                    onClicked: {
-                        chaperoneNewProfileDialog.openPopup()
                     }
                 }
             }
         }
 
-        GridLayout {
-            columns: 5
+        SettingsGroupBox {
+            title: "Boundaries"
+            ColumnLayout {
+                anchors.fill: parent
+                GridLayout {
+                    columns: 5
 
-            MyText {
-                text: "Visibility:"
-                Layout.rightMargin: 12
-            }
+                    MyText {
+                        text: "Visibility:"
+                        Layout.rightMargin: 12
+                    }
 
-            MyPushButton2 {
-                id: chaperoneVisibilityMinus
-                text: "-"
-                Layout.preferredWidth: 40
-                onClicked: {
-                    chaperoneVisibilitySlider.value -= 0.05
-                }
-            }
-
-            MySlider {
-                id: chaperoneVisibilitySlider
-                from: 0.3
-                to: 1.0
-                stepSize: 0.01
-                value: 0.6
-                Layout.fillWidth: true
-                onPositionChanged: {
-                    var val = (this.value * 100)
-                    chaperoneVisibilityText.text = Math.round(val) + "%"
-                }
-                onValueChanged: {
-                    ChaperoneTabController.setBoundsVisibility(value.toFixed(2), false)
-                }
-            }
-
-            MyPushButton2 {
-                id: chaperoneVisibilityPlus
-                text: "+"
-                Layout.preferredWidth: 40
-                onClicked: {
-                    chaperoneVisibilitySlider.value += 0.05
-                }
-            }
-
-
-            MyTextField {
-                id: chaperoneVisibilityText
-                text: "60.00"
-                keyBoardUID: 301
-                Layout.preferredWidth: 100
-                Layout.leftMargin: 10
-                horizontalAlignment: Text.AlignHCenter
-                function onInputEvent(input) {
-                    var val = parseFloat(input)
-                    if (!isNaN(val)) {
-                        if (val < 30.0) {
-                            val = 30.0
-                        } else if (val > 100.0) {
-                            val = 100.0
-                        }
-                        if(val>100){
-                            val = 100.0
-                        }
-
-                        var v = (val/100).toFixed(2)
-                        if (v <= chaperoneVisibilitySlider.to) {
-                            chaperoneVisibilitySlider.value = v
-                        } else {
-                            ChaperoneTabController.setBoundsVisibility(v, false)
+                    MyPushButton2 {
+                        id: chaperoneVisibilityMinus
+                        text: "-"
+                        Layout.preferredWidth: 40
+                        onClicked: {
+                            chaperoneVisibilitySlider.value -= 0.05
                         }
                     }
-                    text = Math.round(ChaperoneTabController.boundsVisibility * 100) + "%"
-                }
-            }
 
-            MyText {
-                text: "Fade Distance:"
-                Layout.rightMargin: 12
-            }
-
-            MyPushButton2 {
-                id: chaperoneFadeDistanceMinus
-                text: "-"
-                Layout.preferredWidth: 40
-                onClicked: {
-                    chaperoneFadeDistanceSlider.decrease()
-                }
-            }
-
-            MySlider {
-                id: chaperoneFadeDistanceSlider
-                from: 0.0
-                to: 2.0
-                stepSize: 0.1
-                value: 0.7
-                Layout.fillWidth: true
-                onPositionChanged: {
-                    var val = this.from + ( this.position  * (this.to - this.from))
-                    chaperoneFadeDistanceText.text = val.toFixed(1)
-                }
-                onValueChanged: {
-                    ChaperoneTabController.setFadeDistance(this.value.toFixed(1), false)
-                }
-            }
-
-            MyPushButton2 {
-                id: chaperoneFadeDistancePlus
-                text: "+"
-                Layout.preferredWidth: 40
-                onClicked: {
-                    chaperoneFadeDistanceSlider.increase()
-                }
-            }
-
-            MyTextField {
-                id: chaperoneFadeDistanceText
-                text: "0.00"
-                keyBoardUID: 302
-                Layout.preferredWidth: 100
-                Layout.leftMargin: 10
-                horizontalAlignment: Text.AlignHCenter
-                function onInputEvent(input) {
-                    var val = parseFloat(input)
-                    if (!isNaN(val)) {
-                        if (val < 0.0) {
-                            val = 0.0
+                    MySlider {
+                        id: chaperoneVisibilitySlider
+                        from: 0.3
+                        to: 1.0
+                        stepSize: 0.01
+                        value: 0.6
+                        Layout.fillWidth: true
+                        onPositionChanged: {
+                            var val = (this.value * 100)
+                            chaperoneVisibilityText.text = Math.round(val) + "%"
                         }
-                        var v = val.toFixed(1)
-                        if (v <= chaperoneFadeDistanceSlider.to) {
-                            chaperoneFadeDistanceSlider.value = v
-                        } else {
-                            ChaperoneTabController.setFadeDistance(v, false)
+                        onValueChanged: {
+                            ChaperoneTabController.setBoundsVisibility(value.toFixed(2), false)
                         }
                     }
-                    text = ChaperoneTabController.fadeDistance.toFixed(1)
-                }
-            }
 
-            MyText {
-                text: "Height:"
-                Layout.rightMargin: 12
-            }
-
-            MyPushButton2 {
-                text: "-"
-                Layout.preferredWidth: 40
-                onClicked: {
-                    chaperoneHeightSlider.decrease()
-                }
-            }
-
-            MySlider {
-                id: chaperoneHeightSlider
-                from: 0.01
-                to: 5.0
-                stepSize: 0.01
-                value: 2.0
-                Layout.fillWidth: true
-                onPositionChanged: {
-                    var val = (this.from + ( this.position  * (this.to - this.from))).toFixed(2)
-                    if (activeFocus) {
-                        ChaperoneTabController.setHeight(val, false);
-                    }
-                    chaperoneHeightText.text = val
-                }
-                onValueChanged: {
-                    ChaperoneTabController.setHeight(value.toFixed(2), false)
-                }
-            }
-
-            MyPushButton2 {
-                text: "+"
-                Layout.preferredWidth: 40
-                onClicked: {
-                    chaperoneHeightSlider.increase()
-                }
-            }
-
-            MyTextField {
-                id: chaperoneHeightText
-                text: "0.00"
-                keyBoardUID: 303
-                Layout.preferredWidth: 100
-                Layout.leftMargin: 10
-                horizontalAlignment: Text.AlignHCenter
-                function onInputEvent(input) {
-                    var val = parseFloat(input)
-                    if (!isNaN(val)) {
-                        if (val < 0.01) {
-                            val = 0.01
-                        }
-                        var v = val.toFixed(2)
-                        if (v <= chaperoneHeightSlider.to) {
-                            chaperoneHeightSlider.value = v
-                        } else {
-                            ChaperoneTabController.setHeight(v, false)
+                    MyPushButton2 {
+                        id: chaperoneVisibilityPlus
+                        text: "+"
+                        Layout.preferredWidth: 40
+                        onClicked: {
+                            chaperoneVisibilitySlider.value += 0.05
                         }
                     }
-                    text = ChaperoneTabController.height.toFixed(2)
-                }
-            }
-        }
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 32
 
-            MyToggleButton {
-                id: chaperoneCenterMarkerToggle
-                text: "Center Marker"
-                Layout.fillWidth: false
-                onCheckedChanged: {
-                    ChaperoneTabController.setCenterMarkerNew(this.checked, false)
-                }
-            }
+                    MyTextField {
+                        id: chaperoneVisibilityText
+                        text: "60.00"
+                        keyBoardUID: 301
+                        Layout.preferredWidth: 100
+                        Layout.leftMargin: 10
+                        horizontalAlignment: Text.AlignHCenter
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                if (val < 30.0) {
+                                    val = 30.0
+                                } else if (val > 100.0) {
+                                    val = 100.0
+                                }
+                                if(val>100){
+                                    val = 100.0
+                                }
 
-            MyToggleButton {
-                id: chaperonePlaySpaceToggle
-                text: "Play Space"
-                onCheckedChanged: {
-                    ChaperoneTabController.setPlaySpaceMarker(this.checked, false)
-                }
-            }
+                                var v = (val/100).toFixed(2)
+                                if (v <= chaperoneVisibilitySlider.to) {
+                                    chaperoneVisibilitySlider.value = v
+                                } else {
+                                    ChaperoneTabController.setBoundsVisibility(v, false)
+                                }
+                            }
+                            text = Math.round(ChaperoneTabController.boundsVisibility * 100) + "%"
+                        }
+                    }
 
-            MyToggleButton {
-                id: chaperoneForceBoundsToggle
-                text: "Force Bounds"
-                onCheckedChanged: {
-                    ChaperoneTabController.setForceBounds(this.checked, false)
-                }
-            }
-            MyToggleButton {
-                id: chaperoneDisableChaperone
-                text: "Disable Chaperone"
-                onCheckedChanged: {
-                    ChaperoneTabController.setDisableChaperone(this.checked, false)
-                    if(this.checked){
-                        chaperoneFadeDistanceMinus.enabled = false;
-                        chaperoneFadeDistancePlus.enabled = false;
-                        chaperoneFadeDistanceSlider.enabled = false;
-                        chaperoneFadeDistanceText.enabled = false;
+                    MyText {
+                        text: "Fade Distance:"
+                        Layout.rightMargin: 12
+                    }
 
-                    }else{
-                        chaperoneFadeDistanceMinus.enabled = true;
-                        chaperoneFadeDistancePlus.enabled = true;
-                        chaperoneFadeDistanceSlider.enabled = true;
-                        chaperoneFadeDistanceText.enabled = true;
+                    MyPushButton2 {
+                        id: chaperoneFadeDistanceMinus
+                        text: "-"
+                        Layout.preferredWidth: 40
+                        onClicked: {
+                            chaperoneFadeDistanceSlider.decrease()
+                        }
+                    }
+
+                    MySlider {
+                        id: chaperoneFadeDistanceSlider
+                        from: 0.0
+                        to: 2.0
+                        stepSize: 0.1
+                        value: 0.7
+                        Layout.fillWidth: true
+                        onPositionChanged: {
+                            var val = this.from + ( this.position  * (this.to - this.from))
+                            chaperoneFadeDistanceText.text = val.toFixed(1)
+                        }
+                        onValueChanged: {
+                            ChaperoneTabController.setFadeDistance(this.value.toFixed(1), false)
+                        }
+                    }
+
+                    MyPushButton2 {
+                        id: chaperoneFadeDistancePlus
+                        text: "+"
+                        Layout.preferredWidth: 40
+                        onClicked: {
+                            chaperoneFadeDistanceSlider.increase()
+                        }
+                    }
+
+                    MyTextField {
+                        id: chaperoneFadeDistanceText
+                        text: "0.00"
+                        keyBoardUID: 302
+                        Layout.preferredWidth: 100
+                        Layout.leftMargin: 10
+                        horizontalAlignment: Text.AlignHCenter
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                if (val < 0.0) {
+                                    val = 0.0
+                                }
+                                var v = val.toFixed(1)
+                                if (v <= chaperoneFadeDistanceSlider.to) {
+                                    chaperoneFadeDistanceSlider.value = v
+                                } else {
+                                    ChaperoneTabController.setFadeDistance(v, false)
+                                }
+                            }
+                            text = ChaperoneTabController.fadeDistance.toFixed(1)
+                        }
+                    }
+
+                    MyText {
+                        text: "Height:"
+                        Layout.rightMargin: 12
+                    }
+
+                    MyPushButton2 {
+                        text: "-"
+                        Layout.preferredWidth: 40
+                        onClicked: {
+                            chaperoneHeightSlider.decrease()
+                        }
+                    }
+
+                    MySlider {
+                        id: chaperoneHeightSlider
+                        from: 0.01
+                        to: 5.0
+                        stepSize: 0.01
+                        value: 2.0
+                        Layout.fillWidth: true
+                        onPositionChanged: {
+                            var val = (this.from + ( this.position  * (this.to - this.from))).toFixed(2)
+                            if (activeFocus) {
+                                ChaperoneTabController.setHeight(val, false);
+                            }
+                            chaperoneHeightText.text = val
+                        }
+                        onValueChanged: {
+                            ChaperoneTabController.setHeight(value.toFixed(2), false)
+                        }
+                    }
+
+                    MyPushButton2 {
+                        text: "+"
+                        Layout.preferredWidth: 40
+                        onClicked: {
+                            chaperoneHeightSlider.increase()
+                        }
+                    }
+
+                    MyTextField {
+                        id: chaperoneHeightText
+                        text: "0.00"
+                        keyBoardUID: 303
+                        Layout.preferredWidth: 100
+                        Layout.leftMargin: 10
+                        horizontalAlignment: Text.AlignHCenter
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                if (val < 0.01) {
+                                    val = 0.01
+                                }
+                                var v = val.toFixed(2)
+                                if (v <= chaperoneHeightSlider.to) {
+                                    chaperoneHeightSlider.value = v
+                                } else {
+                                    ChaperoneTabController.setHeight(v, false)
+                                }
+                            }
+                            text = ChaperoneTabController.height.toFixed(2)
+                        }
                     }
                 }
-            }
 
-            Item { Layout.fillWidth: true }
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 32
+
+                    MyToggleButton {
+                        id: chaperoneCenterMarkerToggle
+                        text: "Center Marker"
+                        Layout.fillWidth: false
+                        onCheckedChanged: {
+                            ChaperoneTabController.setCenterMarkerNew(this.checked, false)
+                        }
+                    }
+
+                    MyToggleButton {
+                        id: chaperonePlaySpaceToggle
+                        text: "Play Space"
+                        onCheckedChanged: {
+                            ChaperoneTabController.setPlaySpaceMarker(this.checked, false)
+                        }
+                    }
+
+                    MyToggleButton {
+                        id: chaperoneForceBoundsToggle
+                        text: "Force Bounds"
+                        onCheckedChanged: {
+                            ChaperoneTabController.setForceBounds(this.checked, false)
+                        }
+                    }
+                    MyToggleButton {
+                        id: chaperoneDisableChaperone
+                        text: "Disable Chaperone"
+                        onCheckedChanged: {
+                            ChaperoneTabController.setDisableChaperone(this.checked, false)
+                            if(this.checked){
+                                chaperoneFadeDistanceMinus.enabled = false;
+                                chaperoneFadeDistancePlus.enabled = false;
+                                chaperoneFadeDistanceSlider.enabled = false;
+                                chaperoneFadeDistanceText.enabled = false;
+
+                            }else{
+                                chaperoneFadeDistanceMinus.enabled = true;
+                                chaperoneFadeDistancePlus.enabled = true;
+                                chaperoneFadeDistanceSlider.enabled = true;
+                                chaperoneFadeDistanceText.enabled = true;
+                            }
+                        }
+                    }
+
+                    Item { Layout.fillWidth: true }
+                }
+            }
         }
 
         RowLayout {

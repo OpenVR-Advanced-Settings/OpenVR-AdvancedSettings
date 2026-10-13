@@ -4,30 +4,14 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: overlayMethodGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "Brightness and Color (via overlay)"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.width: 0
-        radius: 8
-    }
+    title: "Brightness and Color (via overlay)"
 
     ColumnLayout {
         anchors.fill: parent
-
-        Rectangle {
-            color: "#2a2f3a"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 5
-        }
 
         RowLayout {
             Layout.fillWidth: true

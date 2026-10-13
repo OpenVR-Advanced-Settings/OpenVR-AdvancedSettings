@@ -9,26 +9,56 @@ import "push_to_talk"
 import "profiles"
 
 MyStackViewPage {
-    width: 1200
     headerText: "Audio Settings"
 
     content: ColumnLayout {
-        spacing: 24
-        AudioDeviceSelector {
+        spacing: 18
+
+        SettingsGroupBox {
+            title: "Output"
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
+                AudioDeviceSelector {
+                    Layout.fillWidth: true
+                }
+                LineSeparator {
+                }
+                MirrorVolumeSlider {
+                    Layout.fillWidth: true
+                }
+            }
         }
 
-        MirrorVolumeSlider {
+        SettingsGroupBox {
+            title: "Voice"
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
+                MicVolumeSlider {
+                    Layout.fillWidth: true
+                }
+                LineSeparator {
+                }
+                ProximityToggle {
+                    Layout.fillWidth: true
+                }
+            }
         }
 
-        MicVolumeSlider {
-        }
-        ColumnLayout {
-            spacing: 18
-            ProximityToggle {
-            }
-            PttButtons {
-            }
-            ProfileButtons {
+        SettingsGroupBox {
+            title: "Push-to-Talk"
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
+                PttButtons {
+                    Layout.fillWidth: true
+                }
+                LineSeparator {
+                }
+                ProfileButtons {
+                    Layout.fillWidth: true
+                }
             }
         }
     }

@@ -3,10 +3,10 @@ import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 
-GroupBox {
+SettingsGroupBox {
     // Public properties
     // Overload
-    property alias headerMessage: headerText.text
+    property alias headerMessage: sliderBox.title
     property alias sliderText: steamDesktopForwardText.text
     property alias sliderValue: steamDesktopForwardSlider.value
     property alias lowerLimit: steamDesktopForwardSlider.from
@@ -26,26 +26,13 @@ GroupBox {
     // Private properties
     id: sliderBox
     Layout.fillWidth: true
-    label: MyText {
-        id: headerText
-        leftPadding: 10
-        text: "MISSING HEADER TEXT"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.width: 0
-        radius: 8
-    }
+    title: "MISSING HEADER TEXT"
 
     property real sliderStepSize: 0.10
     readonly property real rightLeftLimit: 4.0
 
     ColumnLayout {
         anchors.fill: parent
-
-        LineSeparator {
-        }
 
         ColumnLayout {
             RowLayout {

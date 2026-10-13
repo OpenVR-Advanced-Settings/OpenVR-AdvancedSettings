@@ -5,30 +5,14 @@ import ovras.advsettings 1.0
 import "../../../common"
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 
-GroupBox {
+SettingsGroupBox {
     id: chaperoneTypeGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "Chaperone Style"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.width: 0
-        radius: 8
-    }
+    title: "Chaperone Style"
 
     ColumnLayout {
         anchors.fill: parent
-
-        Rectangle {
-            color: "#2a2f3a"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 5
-        }
 
             RowLayout{
                 ButtonGroup { id: chaperoneTypeExclGroup

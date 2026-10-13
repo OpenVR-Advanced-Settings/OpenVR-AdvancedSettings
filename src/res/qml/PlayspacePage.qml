@@ -45,10 +45,10 @@ MyStackViewPage {
                 MyTextField {
                     id: offsetNewProfileName
                     keyBoardUID: 105
-                    color: "#2a2f3a"
+                    color: "#ffffff"
                     text: ""
                     Layout.fillWidth: true
-                    font.pointSize: 20
+                    font.pointSize: 16
                     function onInputEvent(input) {
                         offsetNewProfileName.text = input
                     }
@@ -74,111 +74,97 @@ MyStackViewPage {
     content: ColumnLayout {
         spacing: 18
 
-        RowLayout {
-            MyText {
-                text: "Tracking Universe:"
-                Layout.preferredWidth: 230
-            }
-            MyText {
-                id: spaceModeText
-                font.bold: true
-                text: "Standing"
+        SettingsGroupBox {
+            title: "Profiles"
+            ColumnLayout {
+                anchors.fill: parent
+                RowLayout {
+                    MyText {
+                        text: "Tracking Universe:"
+                        Layout.preferredWidth: 230
+                    }
+                    MyText {
+                        id: spaceModeText
+                        font.bold: true
+                        text: "Standing"
+                    }
+                }
+
+                ColumnLayout {
+                    id: profileSection
+                    spacing: 18
+                    RowLayout {
+                        spacing: 18
+
+                        MyText {
+                            text: "Profile:"
+                        }
+
+                        MyComboBox {
+                            id: offsetProfileComboBox
+                            Layout.fillWidth: true
+                            model: [""]
+                            onCurrentIndexChanged: {
+                                if (currentIndex > 0) {
+                                    offsetApplyProfileButton.enabled = true
+                                    offsetDeleteProfileButton.enabled = true
+                                } else {
+                                    offsetApplyProfileButton.enabled = false
+                                    offsetDeleteProfileButton.enabled = false
+                                }
+                            }
+                        }
+
+                        MyPushButton {
+                            id: offsetApplyProfileButton
+                            enabled: false
+                            Layout.preferredWidth: 200
+                            text: "Apply"
+                            onClicked: {
+                                if (offsetProfileComboBox.currentIndex > 0) {
+                                    MoveCenterTabController.applyOffsetProfile(offsetProfileComboBox.currentIndex - 1)
+                                    offsetProfileComboBox.currentIndex = 0
+                                }
+                            }
+                        }
+                    }
+                    RowLayout {
+                        spacing: 18
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                        MyPushButton {
+                            id: offsetDeleteProfileButton
+                            enabled: false
+                            Layout.preferredWidth: 200
+                            text: "Delete Profile"
+                            onClicked: {
+                                if (offsetProfileComboBox.currentIndex > 0) {
+                                    offsetDeleteProfileDialog.profileIndex = offsetProfileComboBox.currentIndex - 1
+                                    offsetDeleteProfileDialog.open()
+                                }
+                            }
+                        }
+                        MyPushButton {
+                            Layout.preferredWidth: 200
+                            text: "New Profile"
+                            onClicked: {
+                                offsetNewProfileDialog.openPopup()
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        ColumnLayout {
-            id: profileSection
-            Layout.bottomMargin: 32
-            spacing: 18
-            RowLayout {
-                spacing: 18
-
-                MyText {
-                    text: "Profile:"
-                }
-
-                MyComboBox {
-                    id: offsetProfileComboBox
-                    Layout.maximumWidth: 799
-                    Layout.minimumWidth: 799
-                    Layout.preferredWidth: 799
-                    Layout.fillWidth: true
-                    model: [""]
-                    onCurrentIndexChanged: {
-                        if (currentIndex > 0) {
-                            offsetApplyProfileButton.enabled = true
-                            offsetDeleteProfileButton.enabled = true
-                        } else {
-                            offsetApplyProfileButton.enabled = false
-                            offsetDeleteProfileButton.enabled = false
-                        }
-                    }
-                }
-
-                MyPushButton {
-                    id: offsetApplyProfileButton
-                    enabled: false
-                    Layout.preferredWidth: 200
-                    text: "Apply"
-                    onClicked: {
-                        if (offsetProfileComboBox.currentIndex > 0) {
-                            MoveCenterTabController.applyOffsetProfile(offsetProfileComboBox.currentIndex - 1)
-                            offsetProfileComboBox.currentIndex = 0
-                        }
-                    }
-                }
-            }
-            RowLayout {
-                spacing: 18
-                Item {
-                    Layout.fillWidth: true
-                }
-                MyPushButton {
-                    id: offsetDeleteProfileButton
-                    enabled: false
-                    Layout.preferredWidth: 200
-                    text: "Delete Profile"
-                    onClicked: {
-                        if (offsetProfileComboBox.currentIndex > 0) {
-                            offsetDeleteProfileDialog.profileIndex = offsetProfileComboBox.currentIndex - 1
-                            offsetDeleteProfileDialog.open()
-                        }
-                    }
-                }
-                MyPushButton {
-                    Layout.preferredWidth: 200
-                    text: "New Profile"
-                    onClicked: {
-                        offsetNewProfileDialog.openPopup()
-                    }
-                }
-            }
-        }
-
-        GroupBox {
+        SettingsGroupBox {
             Layout.fillWidth: true
             id: offsetsGroupBox
             visible: true
 
-            label: MyText {
-                leftPadding: 10
-                text: "Move Space"
-                bottomPadding: -10
-            }
-            background: Rectangle {
-                color: "transparent"
-                border.width: 0
-                radius: 8
-            }
+            title: "Move Space"
             ColumnLayout {
                 anchors.fill: parent
-
-                Rectangle {
-                    color: "#2a2f3a"
-                    height: 1
-                    Layout.fillWidth: true
-                    Layout.bottomMargin: 5
-                }
 
                 GridLayout {
                     columns: 6
@@ -352,31 +338,15 @@ MyStackViewPage {
             }
         }
 
-        GroupBox {
+        SettingsGroupBox {
             Layout.fillWidth: true
             id: rotationGroupBox
             visible: true
 
-            label: MyText {
-                leftPadding: 10
-                text: "Rotate Space"
-                bottomPadding: -10
-            }
-            background: Rectangle {
-                color: "transparent"
-                border.width: 0
-                radius: 8
-            }
+            title: "Rotate Space"
 
             ColumnLayout {
                 anchors.fill: parent
-
-                Rectangle {
-                    color: "#2a2f3a"
-                    height: 1
-                    Layout.fillWidth: true
-                    Layout.bottomMargin: 5
-                }
 
                 ColumnLayout {
                     RowLayout {

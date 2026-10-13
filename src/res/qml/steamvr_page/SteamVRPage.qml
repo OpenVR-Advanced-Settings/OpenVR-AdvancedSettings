@@ -8,7 +8,6 @@ import "steamvrmisc"
 import "steamvrbind"
 
 MyStackViewPage {
-    width: 1200
     headerText: "SteamVR"
 
     content: ColumnLayout {

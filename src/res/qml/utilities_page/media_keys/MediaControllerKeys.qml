@@ -4,25 +4,13 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: mediaKeysGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "Media Control Keys"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.width: 0
-        radius: 8
-    }
+    title: "Media Control Keys"
     ColumnLayout {
         anchors.fill: parent
-
-        LineSeparator {
-        }
 
         RowLayout {
             property string playPauseButtonPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/media_keys/outline_play_pause_white_24dp.svg"

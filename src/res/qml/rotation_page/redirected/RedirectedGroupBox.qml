@@ -4,30 +4,14 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: redirectedGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "Vestibular Motion (for continuous redirected walking)"
-        bottomPadding: -12
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.width: 0
-        radius: 8
-    }
+    title: "Vestibular Motion (for continuous redirected walking)"
 
     ColumnLayout {
         anchors.fill: parent
-
-        Rectangle {
-            color: "#2a2f3a"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 3
-        }
 
       RowLayout{
             MyToggleButton {

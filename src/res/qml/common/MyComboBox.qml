@@ -7,21 +7,21 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 ComboBox {
     id: myComboBox
     hoverEnabled: true
-    leftPadding: 14
-    rightPadding: 30
+    leftPadding: 12
+    rightPadding: 36
     topPadding: 8
     bottomPadding: 8
     background: Rectangle {
-        radius: 6
-        color: parent.pressed ? "#171922" : (parent.activeFocus ? "#2a2f3a" : "#1e2029")
-        border.width: 1
-        border.color: parent.activeFocus ? "#1682e0" : "#343a46"
+        radius: 3
+        color: parent.pressed ? "#1a9fff" : (parent.activeFocus ? "#4b5361" : "#3a4049")
+        border.width: 0
     }
 
     contentItem: MyText {
         leftPadding: 0
-        rightPadding: parent.indicator.width + parent.spacing
+        rightPadding: 0
         text: parent.displayText
+        color: parent.enabled ? "#ffffff" : "#5d636b"
         horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
@@ -31,25 +31,26 @@ ComboBox {
         width: myComboBox.width
         text: modelData
         hoverEnabled: true
-        leftPadding: 14
-        rightPadding: 14
+        leftPadding: 16
+        rightPadding: 16
         contentItem: MyText {
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             text: parent.text
-            color: parent.enabled ? "#e4e8f0" : "#65676b"
+            color: parent.enabled ? "#dcdedf" : "#5d636b"
         }
         background: Rectangle {
-            radius: 6
-            color: parent.pressed ? "#171922" : (parent.hovered ? "#2a2f3a" : "#1e2029")
+            radius: 3
+            color: parent.pressed ? "#1a9fff" : (parent.hovered ? "#4b5361" : "#2a2e36")
         }
     }
 
+    // Filled downward triangle, as used by Steam dropdowns.
     indicator: Canvas {
-        x: parent.width - width - parent.rightPadding
+        x: parent.width - width - 12
         y: parent.topPadding + (parent.availableHeight - height) / 2
-        width: 13
-        height: 7
+        width: 14
+        height: 8
         contextType: "2d"
 
         onPaint: {
@@ -57,12 +58,12 @@ ComboBox {
                 getContext("2d")
             }
             context.reset();
-            context.lineWidth = 2
-            context.moveTo(1, 1);
-            context.lineTo(Math.ceil(width / 2), height - 1);
-            context.lineTo(width - 1, 1);
-            context.strokeStyle = "#ffffff"
-            context.stroke()
+            context.moveTo(0, 0);
+            context.lineTo(width, 0);
+            context.lineTo(width / 2, height);
+            context.closePath();
+            context.fillStyle = "#ffffff"
+            context.fill()
         }
     }
 
@@ -79,7 +80,7 @@ ComboBox {
     }
 
     Component.onCompleted: {
-        popup.background.color = "#1e2029"
+        popup.background.color = "#2a2e36"
     }
     Connections {
     target: OverlayController 

@@ -4,28 +4,16 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: alarmGroupBox
     Layout.fillWidth: true
     
-    label: MyText {
-        leftPadding: 10
-        text: "Alarm Clock"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.width: 0
-        radius: 8
-    }
+    title: "Alarm Clock"
     ColumnLayout {
         property int activationButtonWidth: 170;
         property int startStopPauseResetButtonWidth: 220
 
         ColumnLayout {
-
-            LineSeparator {
-            }
 
             RowLayout {
                 MyToggleButton {

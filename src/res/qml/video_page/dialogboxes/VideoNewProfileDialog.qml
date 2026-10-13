@@ -22,10 +22,10 @@ MyDialogOkCancelPopup {
             MyTextField {
                 id: videoNewProfileName
                 keyBoardUID: 990
-                color: "#e4e8f0"
+                color: "#ffffff"
                 text: ""
                 Layout.fillWidth: true
-                font.pointSize: 20
+                font.pointSize: 16
                 function onInputEvent(input) {
                     videoNewProfileName.text = input
                 }

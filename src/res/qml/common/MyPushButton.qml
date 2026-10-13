@@ -10,19 +10,19 @@ Button {
 
     property bool activationSoundEnabled: true
     hoverEnabled: true
-    leftPadding: 14
-    rightPadding: 14
+    leftPadding: 18
+    rightPadding: 18
     topPadding: 8
     bottomPadding: 8
     contentItem: MyText {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         text: parent.text
-        color: parent.enabled ? "#e4e8f0" : "#65676b"
+        color: parent.enabled ? (parent.activeFocus ? "#ffffff" : "#dcdedf") : "#5d636b"
     }
     background: Rectangle {
-        radius: 6
-        color: parent.enabled ? (parent.down ? "#171922" : (parent.activeFocus ? "#2a2f3a" : "#22242e")) : "#171922"
+        radius: 3
+        color: parent.enabled ? (parent.down ? "#1a9fff" : (parent.activeFocus ? "#4b5361" : "#3a4049")) : "#32363e"
     }
 
     Image {

@@ -7,10 +7,13 @@ import ".."
 
 // Insert inside a ColumnLayout containing this and a RowLayout
 // to neatly separate header and buttons.
+// Drawn in the page background color so it reads as a gap between setting rows.
 Rectangle {
-    color: "#2a2f3a"
-    height: 1
+    color: "#1d2026"
+    height: 2
     Layout.fillWidth: true
-    Layout.bottomMargin: 5
+    Layout.leftMargin: -16
+    Layout.rightMargin: -16
+    Layout.bottomMargin: 4
     Layout.topMargin: 4
 }
