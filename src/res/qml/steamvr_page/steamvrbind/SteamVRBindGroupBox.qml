@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: steamVRBindGroupBox
     Layout.fillWidth: true
 
-    title: "Per Application Bindings"
+    title: "Per-Game Bindings"
 
     ColumnLayout {
         anchors.fill: parent
@@ -69,14 +69,14 @@ SettingsGroupBox {
         RowLayout {
             spacing: 16
             MyText {
-                text: "Save Current Binding of Selected App: "
+                text: "Save Current Binding"
                 Layout.preferredWidth: 500
                 horizontalAlignment: Text.AlignLeft
                 Layout.rightMargin: 2
             }
             MyPushButton {
                     id: setBinding
-                    text:"For Current Game"
+                    text:"Game"
                     onClicked: {
                         SteamVRTabController.setBindingQMLWrapper(appSelect.text)
                     }
@@ -87,7 +87,7 @@ SettingsGroupBox {
             }
             MyPushButton {
                     id: setDefaultBtn
-                    text:"As Default"
+                    text:"Default"
                     onClicked: {
                         SteamVRTabController.setBindingQMLWrapper(appSelect.text,true)
                     }
