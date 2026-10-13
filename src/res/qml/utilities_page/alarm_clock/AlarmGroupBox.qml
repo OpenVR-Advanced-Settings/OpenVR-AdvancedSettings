@@ -10,74 +10,82 @@ SettingsGroupBox {
     
     title: "Alarm Clock"
     ColumnLayout {
-        property int activationButtonWidth: 170;
-        property int startStopPauseResetButtonWidth: 220
+        anchors.fill: parent
 
-        ColumnLayout {
+        RowLayout {
+            spacing: 18
+            Layout.fillWidth: true
 
-            RowLayout {
-                MyToggleButton {
-                    id: alarmClockToggle
-                    text: "Alarm"
-
-                    Layout.preferredWidth: parent.parent.parent.activationButtonWidth
-                    onCheckedChanged: {
-                        VrAlarm.alarmEnabled = checked
-                    }
+            MyToggleButton {
+                id: alarmClockToggle
+                text: "On/Off"
+                onCheckedChanged: {
+                    VrAlarm.alarmEnabled = checked
                 }
+            }
 
-                TimeAssembly {
-                    id: alarmClockTimeAssembly
-                    onTimeChanged: {
-                        VrAlarm.setAlarmTime(hour, minute, second)
-                    }
+            TimeAssembly {
+                id: alarmClockTimeAssembly
+                onTimeChanged: {
+                    VrAlarm.setAlarmTime(hour, minute, second)
                 }
+            }
 
-                Item {
-                    Layout.fillWidth: true
+            Item {
+                Layout.fillWidth: true
+            }
+        }
+        LineSeparator {
+        }
+        RowLayout {
+            spacing: 18
+            Layout.fillWidth: true
+
+            MyPushButton {
+                text: "Current Time"
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                onClicked: {
+                    VrAlarm.setAlarmTimeToCurrentTime()
+                    alarmClockTimeAssembly.changeTimer(VrAlarm.getAlarmHour(),
+                                                       VrAlarm.getAlarmMinute(),
+                                                       VrAlarm.getAlarmSecond())
                 }
+            }
 
-                MyPushButton2 {
-                    Layout.preferredWidth: 170
-                    text: "Current Time"
-                    onClicked: {
-                        VrAlarm.setAlarmTimeToCurrentTime()
-                        alarmClockTimeAssembly.changeTimer(VrAlarm.getAlarmHour(),
-                                                           VrAlarm.getAlarmMinute(),
-                                                           VrAlarm.getAlarmSecond())
-                    }
+            MyPushButton {
+                text: "+1 Hour"
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                onClicked: {
+                    VrAlarm.modAlarmTime(1, 0, 0)
                 }
+            }
 
-                MyPushButton2 {
-                    Layout.preferredWidth: 120
-                    text: "+1 Hour"
-                    onClicked: {
-                        VrAlarm.modAlarmTime(1, 0, 0)
-                    }
+            MyPushButton {
+                text: "-1 Hour"
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                onClicked: {
+                    VrAlarm.modAlarmTime(-1, 0, 0)
                 }
+            }
 
-                MyPushButton2 {
-                    Layout.preferredWidth: 120
-                    text: "-1 Hour"
-                    onClicked: {
-                        VrAlarm.modAlarmTime(-1, 0, 0)
-                    }
+            MyPushButton {
+                text: "+5 Min"
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                onClicked: {
+                    VrAlarm.modAlarmTime(0, 5, 0)
                 }
+            }
 
-                MyPushButton2 {
-                    text: "+5 Min"
-                    Layout.preferredWidth: 110
-                    onClicked: {
-                        VrAlarm.modAlarmTime(0, 5, 0)
-                    }
-                }
-
-                MyPushButton2 {
-                    Layout.preferredWidth: 110
-                    text: "-5 Min"
-                    onClicked: {
-                        VrAlarm.modAlarmTime(0, -5, 0)
-                    }
+            MyPushButton {
+                text: "-5 Min"
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                onClicked: {
+                    VrAlarm.modAlarmTime(0, -5, 0)
                 }
             }
         }

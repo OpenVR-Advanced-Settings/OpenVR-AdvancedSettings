@@ -50,7 +50,6 @@ Rectangle {
         { text: "Audio", icon: "audio_tab_icon.svg", page: audioPage, separator: true },
         { text: "Video", icon: "video_tab_icon.svg", page: videoPage },
         { text: "Utilities", icon: "utilities_tab_icon.svg", page: utilitiesPage, separator: true },
-        { text: "Space Fix", icon: "space_fix_tab_icon.svg", page: fixFloorPage },
         { text: "Statistics", icon: "statistics_tab_icon.svg", page: statisticsPage, separator: true },
         { text: "Settings", icon: "settings_tab_icon.svg", page: settingsPage },
         { text: "Bindings", icon: "bindings_tab_icon.svg", action: function() { SteamVRTabController.launchBindingUI() }, separator: true }
@@ -383,11 +382,6 @@ Rectangle {
     }
 
     property RotationPage  rotationPage: RotationPage {
-        stackView: mainView
-        visible: false
-    }
-
-    property FixFloorPage fixFloorPage: FixFloorPage {
         stackView: mainView
         visible: false
     }

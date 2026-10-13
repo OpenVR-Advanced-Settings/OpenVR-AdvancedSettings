@@ -12,19 +12,17 @@ SettingsGroupBox {
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: 0
 
-        RowLayout {
-            spacing: 16
-
-            MyToggleButton {
-                id: trackerOvlToggle
-                text: "Show Tracker Batteries"
-                onCheckedChanged: {
-                    UtilitiesTabController.setTrackerOvlEnabled(this.checked, false)
-                }
+        MyToggleButton {
+            id: trackerOvlToggle
+            text: "Show Tracker Batteries"
+            Layout.fillWidth: true
+            Layout.rightMargin: 0
+            onCheckedChanged: {
+                UtilitiesTabController.setTrackerOvlEnabled(this.checked, false)
             }
         }
-
     }
 
     Component.onCompleted: {

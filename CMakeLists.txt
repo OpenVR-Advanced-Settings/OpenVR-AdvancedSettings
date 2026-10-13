@@ -146,7 +146,7 @@ set(QML_FILERC
     src/res/qml/audio_page/profiles/ProfileButtons.qml
     src/res/qml/audio_page/AudioPage.qml
     src/res/qml/audio_page/push_to_talk/PttButtons.qml
-    src/res/qml/FixFloorPage.qml
+    src/res/qml/utilities_page/space_fix/SpaceFixGroupBox.qml
     src/res/qml/common/MySlider.qml
     src/res/qml/common/MyResources.qml
     src/res/qml/common/MyPushButton.qml

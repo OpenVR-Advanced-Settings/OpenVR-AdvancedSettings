@@ -25,6 +25,7 @@ SettingsGroupBox {
             MyPushButton {
                 text: "Keyboard Input"
                 Layout.fillWidth: true
+                Layout.preferredWidth: 1
                 onClicked: {
                     OverlayController.showKeyboard("", 601)
                 }
@@ -41,6 +42,7 @@ SettingsGroupBox {
             MyPushButton {
                 text: "Enter"
                 Layout.fillWidth: true
+                Layout.preferredWidth: 1
                 onClicked: {
                     UtilitiesTabController.sendKeyboardEnter()
                 }
@@ -49,14 +51,22 @@ SettingsGroupBox {
             MyPushButton {
                 text: "Alt-Tab"
                 Layout.fillWidth: true
+                Layout.preferredWidth: 1
                 onClicked: {
                     UtilitiesTabController.sendKeyboardAltTab()
                 }
             }
-            
+        }
+        LineSeparator {
+        }
+        RowLayout {
+            spacing: 18
+            Layout.fillWidth: true
+
             MyPushButton {
                 text: "Backspace"
                 Layout.fillWidth: true
+                Layout.preferredWidth: 1
                 onClicked: {
                     UtilitiesTabController.sendKeyboardBackspace(1)
                 }
@@ -65,6 +75,7 @@ SettingsGroupBox {
             MyPushButton {
                 text: "10x Backspace"
                 Layout.fillWidth: true
+                Layout.preferredWidth: 1
                 onClicked: {
                     UtilitiesTabController.sendKeyboardBackspace(10)
                 }
@@ -73,55 +84,83 @@ SettingsGroupBox {
             MyPushButton {
                 text: "Alt-Enter"
                 Layout.fillWidth: true
+                Layout.preferredWidth: 1
                 onClicked: {
                     UtilitiesTabController.sendKeyboardAltEnter()
                 }
             }
+        }
+        LineSeparator {
         }
         RowLayout {
             spacing: 18
             Layout.fillWidth: true
 
             MyPushButton {
-                text: "Ctrl-C"
-                Layout.preferredWidth: 150
+                text: "Copy"
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
                 onClicked: {
                     UtilitiesTabController.sendKeyboardCtrlC()
                 }
             }
 
             MyPushButton {
-                text: "Ctrl-V"
-                Layout.preferredWidth: 150
+                text: "Paste"
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
                 onClicked: {
                     UtilitiesTabController.sendKeyboardCtrlV()
                 }
-             }
+            }
+
+            MyPushButton {
+                text: "Cut"
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+            }
+        }
+        LineSeparator {
+        }
+        RowLayout {
+            spacing: 18
+            Layout.fillWidth: true
+
             MyPushButton {
                 text: "Custom Key 1"
                 Layout.preferredWidth: 200
                 onClicked: {
                     UtilitiesTabController.sendKeyboardOne();
                 }
-             }
+            }
+
             MyPushButton {
                 text: "Custom Key 2"
                 Layout.preferredWidth: 200
                 onClicked: {
                     UtilitiesTabController.sendKeyboardTwo();
                 }
-             }
+            }
+
             MyPushButton {
                 text: "Custom Key 3"
                 Layout.preferredWidth: 200
                 onClicked: {
                     UtilitiesTabController.sendKeyboardThree();
                 }
-             }
+            }
 
             Item {
                 Layout.fillWidth: true
             }
+
+            MyPushButton {
+                text: "Bindings"
+                Layout.preferredWidth: 200
+            }
+        }
+        LineSeparator {
+            visible: vrcDebugRow.visible
         }
         RowLayout {
             spacing: 18

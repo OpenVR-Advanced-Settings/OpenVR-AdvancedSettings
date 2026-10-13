@@ -7,12 +7,17 @@ import "alarm_clock"
 import "keyboard_utils"
 import "../common"
 import "misc"
+import "space_fix"
 
 MyStackViewPage {
     headerText: "Utilities"
 
     content: ColumnLayout {
         spacing: 18
+
+        SpaceFixGroupBox {
+            id: spaceFixGroupBox
+        }
 
         KeyboardGroupBox {
             id: keyboardGroupBox

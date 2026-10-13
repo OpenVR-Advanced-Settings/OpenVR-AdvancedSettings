@@ -1,6 +1,6 @@
 <RCC>
 	<qresource prefix="/qt">
-		<file>qml/FixFloorPage.qml</file>
+		<file>qml/utilities_page/space_fix/SpaceFixGroupBox.qml</file>
 		<file>qml/PlayspacePage.qml</file>
 		<file>qml/RootPage.qml</file>
 		<file>qml/SettingsPage.qml</file>
