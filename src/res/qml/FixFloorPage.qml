@@ -165,7 +165,7 @@ MyStackViewPage {
 
         Connections {
             target: MoveCenterTabController
-            onTrackingUniverseChanged: {
+            function onTrackingUniverseChanged(value) {
                 // if (MoveCenterTabController.trackingUniverse === 0) {
                 //     fixButton.enabled = false
                 //     recenterButton.enabled = false

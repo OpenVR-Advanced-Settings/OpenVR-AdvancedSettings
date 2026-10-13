@@ -52,7 +52,7 @@ TextField {
     Connections {
         target: OverlayController
 
-        onSubmitLastTextField:{
+        function onSubmitLastTextField(value) {
             //value here is UID
             if(value == 0){
                 active = false;
@@ -65,14 +65,14 @@ TextField {
             }
         }
 
-        onKeyBoardInputSignal: {
+        function onKeyBoardInputSignal(input, userValue) {
             if (userValue == keyBoardUID) {
                 if(input == '\b'){
                     myTextField.text = text.slice(0,-1)
                     return
                 }
                 else if(input == '\e'){
-                    myTextField.text = text.slice(0,cursorPosition)+text.slice(cursorposition+1)
+                    myTextField.text = text.slice(0,cursorPosition)+text.slice(cursorPosition+1)
                     return;
                 }
                 //Execute input

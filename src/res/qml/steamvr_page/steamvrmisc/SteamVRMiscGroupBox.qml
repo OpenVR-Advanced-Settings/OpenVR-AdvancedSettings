@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: steamVRMiscGroupBox
     Layout.fillWidth: true
 
-    title: "Misc"
+    title: "General"
 
     ColumnLayout {
         anchors.fill: parent

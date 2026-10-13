@@ -220,7 +220,9 @@ set(ResourcesRC
     src/res/img/main_menu_icons/audio_tab_icon.svg
     src/res/img/main_menu_icons/bindings_tab_icon.svg
     src/res/img/main_menu_icons/chaperone_tab_icon.svg
+    src/res/img/main_menu_icons/discord_tab_icon.svg
     src/res/img/main_menu_icons/home_tab_icon.svg
+    src/res/img/main_menu_icons/language_icon.svg
     src/res/img/main_menu_icons/motion_tab_icon.svg
     src/res/img/main_menu_icons/offsets_tab_icon.svg
     src/res/img/main_menu_icons/rotation_tab_icon.svg
