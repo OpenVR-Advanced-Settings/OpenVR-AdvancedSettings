@@ -16,6 +16,7 @@ MyStackViewPage {
             GridLayout {
                 anchors.fill: parent
                 columns: 3
+                rowSpacing: 0
 
                 MyText {
                     text: "HMD Distance Moved:"
@@ -34,6 +35,10 @@ MyStackViewPage {
                     onClicked: {
                         StatisticsTabController.statsDistanceResetClicked()
                     }
+                }
+
+                LineSeparator {
+                    Layout.columnSpan: 3
                 }
 
                 MyText {
@@ -55,6 +60,10 @@ MyStackViewPage {
                     }
                 }
 
+                LineSeparator {
+                    Layout.columnSpan: 3
+                }
+
                 MyText {
                     text: "Left Controller Max Speed:"
                 }
@@ -72,6 +81,10 @@ MyStackViewPage {
                     onClicked: {
                         StatisticsTabController.statsLeftControllerSpeedResetClicked()
                     }
+                }
+
+                LineSeparator {
+                    Layout.columnSpan: 3
                 }
 
                 MyText {
@@ -100,6 +113,7 @@ MyStackViewPage {
             GridLayout {
                 anchors.fill: parent
                 columns: 3
+                rowSpacing: 0
 
                 MyText {
                     text: "Presented Frames:"
@@ -118,6 +132,10 @@ MyStackViewPage {
                     onClicked: {
                         StatisticsTabController.presentedFramesResetClicked()
                     }
+                }
+
+                LineSeparator {
+                    Layout.columnSpan: 3
                 }
 
                 MyText {
@@ -139,6 +157,10 @@ MyStackViewPage {
                     }
                 }
 
+                LineSeparator {
+                    Layout.columnSpan: 3
+                }
+
                 MyText {
                     text: "Reprojected Frames:"
                 }
@@ -158,6 +180,10 @@ MyStackViewPage {
                     }
                 }
 
+                LineSeparator {
+                    Layout.columnSpan: 3
+                }
+
                 MyText {
                     text: "Timed Out:"
                 }
@@ -175,6 +201,10 @@ MyStackViewPage {
                     onClicked: {
                         StatisticsTabController.timedOutResetClicked()
                     }
+                }
+
+                LineSeparator {
+                    Layout.columnSpan: 3
                 }
 
                 MyText {
