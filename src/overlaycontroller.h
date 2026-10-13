@@ -116,6 +116,7 @@ private:
 
     std::optional<vr::ETextureType> m_cached_vr_texture_type;
     std::unique_ptr<QRhiTexture> m_pFBTexture;
+    std::unique_ptr<QRhiRenderBuffer> m_pDepthStencil;
     std::unique_ptr<QRhiTextureRenderTarget> m_render_target;
     std::unique_ptr<QRhiRenderPassDescriptor> m_render_pass_descriptor;
 

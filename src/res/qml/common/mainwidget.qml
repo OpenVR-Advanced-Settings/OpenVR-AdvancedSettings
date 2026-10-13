@@ -16,7 +16,7 @@ import ovras.advsettings
 Rectangle {
     id: root
     color: "#1d2026"
-    width: 1450
+    width: 1400
     height: 800
 
     // Index into sideBarModel of the page currently shown.
@@ -58,7 +58,7 @@ Rectangle {
 
     Rectangle {
         id: sideBar
-        width: 250
+        width: 200
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -72,7 +72,7 @@ Rectangle {
             MyText {
                 x: 24
                 width: parent.width - 32
-                text: "Advanced Settings"
+                text: "OVR Advanced Settings"
                 font.pointSize: 13
                 font.bold: true
                 color: "#8b929a"
@@ -87,14 +87,14 @@ Rectangle {
                     spacing: 2
 
                     Rectangle {
-                        visible: modelData.separator === true
+                        visible: modelData.separator == true
                         x: 24
                         width: parent.width - 48
                         height: 1
                         color: "#3a4049"
                     }
                     Item {
-                        visible: modelData.separator === true
+                        visible: modelData.separator == true
                         width: 1
                         height: 4
                     }
@@ -104,7 +104,7 @@ Rectangle {
                         width: parent.width
                         height: 42
                         hoverEnabled: true
-                        property bool selected: index === root.currentSideBarIndex
+                        property bool selected: index == root.currentSideBarIndex
 
                         background: Rectangle {
                             color: sideBarButton.activeFocus && !sideBarButton.selected ? "#323741" : "transparent"

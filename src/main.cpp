@@ -104,19 +104,19 @@ int main( int argc, char* argv[] )
              || settings::getSetting(
                  settings::BoolSetting::APPLICATION_desktopModeToggle ) )
         {
-            //TODO TEMP
-            //qDebug() << "Desktop MODE!"; 
-            //auto m_pWindow = new QQuickWindow();
-            //qobject_cast<QQuickItem*>( quickObj )
-            //    ->setParentItem( m_pWindow->contentItem() );
-            //m_pWindow->setGeometry(
-            //    0,
-            //    0,
-            //    static_cast<int>(
-            //        qobject_cast<QQuickItem*>( quickObj )->width() ),
-            //    static_cast<int>(
-            //        qobject_cast<QQuickItem*>( quickObj )->height() ) );
-            //m_pWindow->show();
+            //TODO
+            qDebug() << "Desktop MODE!"; 
+            auto m_pWindow = new QQuickWindow();
+            qobject_cast<QQuickItem*>( quickObj )
+                ->setParentItem( m_pWindow->contentItem() );
+            m_pWindow->setGeometry(
+                0,
+                0,
+                static_cast<int>(
+                    qobject_cast<QQuickItem*>( quickObj )->width() ),
+                static_cast<int>(
+                    qobject_cast<QQuickItem*>( quickObj )->height() ) );
+            m_pWindow->show();
         }
         if ( commandLineArgs.resetSettings )
         {

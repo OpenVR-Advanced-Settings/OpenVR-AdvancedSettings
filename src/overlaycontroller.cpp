@@ -384,9 +384,9 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                 + std::string( vr::VROverlay()->GetOverlayErrorNameFromEnum(
                     overlayError ) ) ) );
         }
-        // Root QML item is 1450px wide (250px sidebar + 1200px pages), scaled
-        // from the previous 2.5m at 1200px so content keeps its physical size.
-        vr::VROverlay()->SetOverlayWidthInMeters( m_ulOverlayHandle, 3.0f );
+        //TODO fine-tuning size 1450 is a tad too large
+        // current is 1450 width
+        vr::VROverlay()->SetOverlayWidthInMeters( m_ulOverlayHandle, 2.8f );
         vr::VROverlay()->SetOverlayInputMethod(
             m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse );
         vr::VROverlay()->SetOverlayFlag(
@@ -439,8 +439,17 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         if ( !m_pFBTexture->create() )
             throw std::runtime_error( "RhiTexture not created" );
 
-        m_render_target.reset(
-            rhi->newTextureRenderTarget( { m_pFBTexture.get() } ) );
+        m_pDepthStencil.reset(
+            rhi->newRenderBuffer( QRhiRenderBuffer::DepthStencil,
+                                  quickItem->size().toSize(),
+                                  1 ) );
+        if ( !m_pDepthStencil->create() )
+            throw std::runtime_error( "failed to create depth-stencil buffer" );
+
+        QRhiTextureRenderTargetDescription rtDesc{ QRhiColorAttachment(
+            m_pFBTexture.get() ) };
+        rtDesc.setDepthStencilBuffer( m_pDepthStencil.get() );
+        m_render_target.reset( rhi->newTextureRenderTarget( rtDesc ) );
         m_render_pass_descriptor.reset(
             m_render_target->newCompatibleRenderPassDescriptor() );
         m_render_target->setRenderPassDescriptor(
