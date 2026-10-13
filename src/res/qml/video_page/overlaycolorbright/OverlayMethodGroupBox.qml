@@ -69,6 +69,8 @@ SettingsGroupBox {
             }
         }
 
+        LineSeparator {
+        }
         RowLayout {
             Layout.fillWidth: true
 
@@ -129,6 +131,8 @@ SettingsGroupBox {
             }
         }
 
+        LineSeparator {
+        }
         RowLayout {
             Layout.fillWidth: true
 

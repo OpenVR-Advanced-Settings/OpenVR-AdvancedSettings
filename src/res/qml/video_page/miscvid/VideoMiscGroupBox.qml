@@ -12,41 +12,42 @@ SettingsGroupBox {
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: 0
 
-        RowLayout {
-            spacing: 16
-
-            MyToggleButton {
-                id: videoMotionSmoothingToggle
-                text: "Motion Smoothing"
-                onCheckedChanged: {
-                       VideoTabController.setMotionSmoothing(this.checked, false)
-                }
-            }
-            Item {
-                Layout.preferredWidth: 20
-            }
-
-            MyToggleButton {
-                id: videoAllowSupersampleFilteringToggle
-                text: "Advanced SS Filtering"
-                onCheckedChanged: {
-                    VideoTabController.setAllowSupersampleFiltering(this.checked, false)
-                }
-            }
-            Item {
-                Layout.preferredWidth: 20
-            }
-
-            MyToggleButton {
-                id: videoUseOverlayToggle
-                text: "Use Overlay For Color"
-                onCheckedChanged: {
-                    VideoTabController.setIsOverlayMethodActive(this.checked, true)
-                }
+        MyToggleButton {
+            id: videoMotionSmoothingToggle
+            text: "Motion Smoothing"
+            Layout.fillWidth: true
+            Layout.rightMargin: 0
+            Layout.preferredHeight: 48
+            onCheckedChanged: {
+                VideoTabController.setMotionSmoothing(this.checked, false)
             }
         }
-
+        LineSeparator {
+        }
+        MyToggleButton {
+            id: videoAllowSupersampleFilteringToggle
+            text: "Advanced SS Filtering"
+            Layout.fillWidth: true
+            Layout.rightMargin: 0
+            Layout.preferredHeight: 48
+            onCheckedChanged: {
+                VideoTabController.setAllowSupersampleFiltering(this.checked, false)
+            }
+        }
+        LineSeparator {
+        }
+        MyToggleButton {
+            id: videoUseOverlayToggle
+            text: "Use Overlay For Color"
+            Layout.fillWidth: true
+            Layout.rightMargin: 0
+            Layout.preferredHeight: 48
+            onCheckedChanged: {
+                VideoTabController.setIsOverlayMethodActive(this.checked, true)
+            }
+        }
     }
 
     Component.onCompleted: {
