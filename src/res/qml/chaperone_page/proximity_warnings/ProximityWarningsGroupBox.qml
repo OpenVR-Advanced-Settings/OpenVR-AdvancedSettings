@@ -9,7 +9,7 @@ SettingsGroupBox {
     id: proximityWarningsGroupBox
     Layout.fillWidth: true
 
-    title: "Proximity Warnings"
+    title: "Boundary Warnings"
 
     // A single activation distance drives every warning type.
     function setActivationDistance(val) {
@@ -84,7 +84,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: audioWarningAdjustVolumeToggle
-            text: "Adjust Volume"
+            text: "Volume by Proximity"
             enabled: false
             Layout.fillWidth: true
             Layout.rightMargin: 0
