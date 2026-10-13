@@ -92,7 +92,7 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
-            title: "Status"
+            title: "Stats"
             GridLayout {
                 anchors.fill: parent
                 columns: 4

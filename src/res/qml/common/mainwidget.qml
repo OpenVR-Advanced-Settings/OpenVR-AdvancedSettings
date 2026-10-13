@@ -206,8 +206,11 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 36
                 height: 32
-                // Material's default padding/insets would leave no room for the icon.
-                padding: 6
+                // Material binds leftPadding/rightPadding/verticalPadding directly, which
+                // would push the icon off center; each must be overridden explicitly.
+                leftPadding: 0
+                rightPadding: 0
+                verticalPadding: 0
                 topInset: 0
                 bottomInset: 0
                 hoverEnabled: true
