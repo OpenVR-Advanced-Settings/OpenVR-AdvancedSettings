@@ -12,35 +12,34 @@ SettingsGroupBox {
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: 0
 
-        RowLayout {
+        MyToggleButton {
+            id: gravityToggleButton
+            text: "Enable Gravity"
             Layout.fillWidth: true
-
-            MyToggleButton {
-                id: gravityToggleButton
-                text: "On"
-                onCheckedChanged: {
-                    MoveCenterTabController.gravityActive = this.checked
-                }
+            Layout.rightMargin: 0
+            Layout.preferredHeight: 48
+            onCheckedChanged: {
+                MoveCenterTabController.gravityActive = this.checked
             }
-
-            Item {
-                Layout.fillWidth: true
-            }
+        }
+        LineSeparator {
+        }
+        RowLayout {
+            spacing: 16
+            Layout.leftMargin: 32
 
             MyText {
-                text: "Gravity Strength (+ is down):"
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 2
+                text: "Gravity Strength (+ is down)"
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignLeft
             }
-
             MyTextField {
                 id: gravityStrengthText
                 text: "9.80"
                 keyBoardUID: 152
                 Layout.preferredWidth: 120
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
@@ -48,71 +47,71 @@ SettingsGroupBox {
                         MoveCenterTabController.gravityStrength = val.toFixed(2)
                         text = MoveCenterTabController.gravityStrength.toFixed(2)
                     } else {
-                        text = MoveCenterTabController.gravityStrengtht.toFixed(2)
+                        text = MoveCenterTabController.gravityStrength.toFixed(2)
                     }
                 }
             }
-
             MyPushButton {
                 id: gravityMoonButton
                 Layout.preferredWidth: 110
-                text:"Moon"
+                text: "Moon"
                 onClicked: {
                     MoveCenterTabController.gravityStrength = 1.62
                 }
-           }
+            }
             MyPushButton {
                 id: gravityMarsButton
                 Layout.preferredWidth: 110
-                text:"Mars"
+                text: "Mars"
                 onClicked: {
                     MoveCenterTabController.gravityStrength = 3.71
                 }
-           }
+            }
             MyPushButton {
                 id: gravityEarthButton
                 Layout.preferredWidth: 110
-                text:"Earth"
+                text: "Earth"
                 onClicked: {
                     MoveCenterTabController.gravityStrength = 9.80
                 }
-           }
+            }
             MyPushButton {
                 id: gravityJupiterButton
                 Layout.preferredWidth: 110
-                text:"Jupiter"
+                text: "Jupiter"
                 onClicked: {
                     MoveCenterTabController.gravityStrength = 24.79
                 }
-           }
+            }
+        }
+        LineSeparator {
+        }
+        MyToggleButton {
+            id: momentumToggleButton
+            text: "Save Momentum"
+            Layout.fillWidth: true
+            Layout.leftMargin: 32
+            Layout.rightMargin: 0
+            Layout.preferredHeight: 48
+            onCheckedChanged: {
+                MoveCenterTabController.momentumSave = this.checked
+            }
+        }
+        LineSeparator {
         }
         RowLayout {
-            Layout.fillWidth: true
-
-            MyToggleButton {
-                id: momentumToggleButton
-                text: "Save Momentum"
-                onCheckedChanged: {
-                    MoveCenterTabController.momentumSave = this.checked
-                }
-            }
-
-            Item {
-                Layout.preferredWidth: 40
-            }
+            spacing: 16
+            Layout.leftMargin: 32
 
             MyText {
-                text: "Friction:"
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 2
+                text: "Friction"
+                horizontalAlignment: Text.AlignLeft
             }
-
             MyTextField {
                 id: frictionPercentText
                 text: "0%"
                 keyBoardUID: 156
-                Layout.preferredWidth: 130
-                Layout.leftMargin: 5
+                Layout.preferredWidth: 120
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseInt(input)
@@ -133,24 +132,18 @@ SettingsGroupBox {
                     }
                 }
             }
-
             Item {
                 Layout.fillWidth: true
             }
-
             MyText {
-                text: "Fling Strength:"
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 2
+                text: "Fling Strength"
+                horizontalAlignment: Text.AlignLeft
             }
-
             MyTextField {
                 id: flingStrengthText
                 text: "1.0"
                 keyBoardUID: 153
                 Layout.preferredWidth: 120
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
@@ -162,7 +155,6 @@ SettingsGroupBox {
                     }
                 }
             }
-
             MyPushButton2 {
                 Layout.preferredWidth: 50
                 text: "1x"
@@ -170,7 +162,6 @@ SettingsGroupBox {
                     MoveCenterTabController.flingStrength = 1.0
                 }
             }
-
             MyPushButton2 {
                 Layout.preferredWidth: 50
                 text: "2x"
@@ -178,7 +169,6 @@ SettingsGroupBox {
                     MoveCenterTabController.flingStrength = 2.0
                 }
             }
-
             MyPushButton2 {
                 Layout.preferredWidth: 50
                 text: "3x"
@@ -186,8 +176,6 @@ SettingsGroupBox {
                     MoveCenterTabController.flingStrength = 3.0
                 }
             }
-
-
         }
     }
 

@@ -160,6 +160,7 @@ set(QML_FILERC
     src/res/qml/common/MyDialogOkPopup.qml
     src/res/qml/common/mainwidget.qml
     src/res/qml/common/LineSeparator.qml
+    src/res/qml/common/VerticalSeparator.qml
     src/res/qml/common/MyPushButton2.qml
     src/res/qml/common/MyStackViewPage.qml
     src/res/qml/common/MyRadioButton.qml

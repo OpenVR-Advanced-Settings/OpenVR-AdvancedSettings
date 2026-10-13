@@ -90,6 +90,9 @@ MyStackViewPage {
                     }
                 }
 
+                LineSeparator {
+                }
+
                 ColumnLayout {
                     id: profileSection
                     spacing: 18
@@ -167,16 +170,20 @@ MyStackViewPage {
                 anchors.fill: parent
 
                 GridLayout {
-                    columns: 6
+                    Layout.fillWidth: true
+                    columns: 7
 
                     MyText {
                         text: "X-Axis (Left/Right):"
                         Layout.preferredWidth: 340
                     }
 
-                    MyText {
-                        text: " "
+                    MyPushButton2 {
                         Layout.preferredWidth: 40
+                        text: "0"
+                        onClicked: {
+                            MoveCenterTabController.offsetX = 0
+                        }
                     }
 
                     MyPushButton2 {
@@ -218,10 +225,18 @@ MyStackViewPage {
 
                     MyToggleButton {
                         id: lockXToggle
+                        Layout.leftMargin: 20
                         text: "Lock X"
                         onCheckedChanged: {
                             MoveCenterTabController.lockXToggle = this.checked
                         }
+                    }
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    LineSeparator {
+                        Layout.columnSpan: 7
                     }
 
                     MyText {
@@ -275,10 +290,18 @@ MyStackViewPage {
 
                     MyToggleButton {
                         id: lockYToggle
+                        Layout.leftMargin: 20
                         text: "Lock Y"
                         onCheckedChanged: {
                             MoveCenterTabController.lockYToggle = this.checked
                         }
+                    }
+                    Item {
+                        Layout.fillWidth: true
+                    }
+
+                    LineSeparator {
+                        Layout.columnSpan: 7
                     }
 
                     MyText {
@@ -286,9 +309,12 @@ MyStackViewPage {
                         Layout.preferredWidth: 340
                     }
 
-                    MyText {
-                        text: " "
+                    MyPushButton2 {
                         Layout.preferredWidth: 40
+                        text: "0"
+                        onClicked: {
+                            MoveCenterTabController.offsetZ = 0
+                        }
                     }
 
                     MyPushButton2 {
@@ -329,10 +355,14 @@ MyStackViewPage {
 
                     MyToggleButton {
                         id: lockZToggle
+                        Layout.leftMargin: 20
                         text: "Lock Z"
                         onCheckedChanged: {
                             MoveCenterTabController.lockZToggle = this.checked
                         }
+                    }
+                    Item {
+                        Layout.fillWidth: true
                     }
                 }
             }

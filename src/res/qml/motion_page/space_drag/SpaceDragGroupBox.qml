@@ -12,85 +12,83 @@ SettingsGroupBox {
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: 0
 
         RowLayout {
-            Layout.fillWidth: true
+            spacing: 16
 
             MyToggleButton {
                 id: moveShortcutLeft
                 text: "Left Hand"
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                Layout.rightMargin: 0
+                Layout.preferredHeight: 48
                 onCheckedChanged: {
                     MoveCenterTabController.moveShortcutLeft = this.checked
                 }
             }
-
+            VerticalSeparator {
+            }
             MyToggleButton {
                 id: moveShortcutRight
                 text: "Right Hand"
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                Layout.rightMargin: 0
+                Layout.preferredHeight: 48
                 onCheckedChanged: {
                     MoveCenterTabController.moveShortcutRight = this.checked
                 }
             }
-
-            Item {
-                Layout.fillWidth: true
-            }
+        }
+        LineSeparator {
+        }
+        RowLayout {
+            spacing: 16
+            Layout.leftMargin: 32
 
             MyText {
-                text: "Comfort Mode:"
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
+                text: "Comfort Mode"
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignLeft
             }
-
             MySlider {
                 id: dragComfortSlider
                 from: 0
                 to: 10
                 stepSize: 1
                 value: 0
-                Layout.preferredWidth: 180
+                Layout.preferredWidth: 300
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
                 onValueChanged: {
                     dragComfortText.text = dragComfortSlider.value
                     MoveCenterTabController.dragComfortFactor = dragComfortSlider.value
                 }
             }
-
             MyText {
                 id: dragComfortText
                 text: "0"
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 30
-                Layout.rightMargin: 10
-            }
-
-            MyToggleButton {
-                id: dragBounds
-                text: "Force Bounds"
-                onCheckedChanged: {
-                    MoveCenterTabController.dragBounds = this.checked
-                }
             }
         }
-        RowLayout{
-
-            Item{
-                Layout.fillWidth: true
-            }
+        LineSeparator {
+        }
+        RowLayout {
+            spacing: 16
+            Layout.leftMargin: 32
 
             MyText {
-                text: "Drag Multiplier:"
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 2
+                text: "Drag Multiplier"
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignLeft
             }
-
             MyTextField {
                 id: dragMultText
                 text: "1.0"
                 keyBoardUID: 157
                 Layout.preferredWidth: 120
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     var val = parseFloat(input)
@@ -102,7 +100,6 @@ SettingsGroupBox {
                     }
                 }
             }
-
             MyPushButton2 {
                 Layout.preferredWidth: 50
                 text: "1x"
@@ -110,7 +107,6 @@ SettingsGroupBox {
                     MoveCenterTabController.dragMult = 1.0
                 }
             }
-
             MyPushButton2 {
                 Layout.preferredWidth: 50
                 text: "2x"
@@ -118,13 +114,25 @@ SettingsGroupBox {
                     MoveCenterTabController.dragMult = 2.0
                 }
             }
-
             MyPushButton2 {
                 Layout.preferredWidth: 50
                 text: "3x"
                 onClicked: {
                     MoveCenterTabController.dragMult = 3.0
                 }
+            }
+        }
+        LineSeparator {
+        }
+        MyToggleButton {
+            id: dragBounds
+            text: "Force Bounds"
+            Layout.fillWidth: true
+            Layout.leftMargin: 32
+            Layout.rightMargin: 0
+            Layout.preferredHeight: 48
+            onCheckedChanged: {
+                MoveCenterTabController.dragBounds = this.checked
             }
         }
     }

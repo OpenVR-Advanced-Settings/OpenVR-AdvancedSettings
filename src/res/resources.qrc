@@ -40,6 +40,7 @@
 		<file>qml/common/MyTextField.qml</file>
 		<file>qml/common/MyToggleButton.qml</file>
 		<file>qml/common/TimeAssembly.qml</file>
+		<file>qml/common/VerticalSeparator.qml</file>
 		<file>qml/motion_page/MotionPage.qml</file>
 		<file>qml/motion_page/gravity/GravityGroupBox.qml</file>
 		<file>qml/motion_page/height_toggle/HeightToggleGroupBox.qml</file>
