@@ -1,6 +1,5 @@
 <RCC>
 	<qresource prefix="/qt">
-		<file>qml/ChaperoneWarningsPage.qml</file>
 		<file>qml/FixFloorPage.qml</file>
 		<file>qml/PlayspacePage.qml</file>
 		<file>qml/RootPage.qml</file>
@@ -20,6 +19,7 @@
 		<file>qml/audio_page/push_to_talk/PttButtons.qml</file>
 		<file>qml/chaperone_page/ChaperonePage.qml</file>
 		<file>qml/chaperone_page/change_orientation/ChangeOrientationGroupBox.qml</file>
+		<file>qml/chaperone_page/proximity_warnings/ProximityWarningsGroupBox.qml</file>
 		<file>qml/chaperone_page/chaperone_additional/ChaperoneAdditionalPage.qml</file>
 		<file>qml/chaperone_page/chaperone_additional/chaperoneboundscolor/ChaperoneBoundsColorGroupBox.qml</file>
 		<file>qml/chaperone_page/chaperone_additional/chaperonemisc/ChaperoneMiscGroupBox.qml</file>

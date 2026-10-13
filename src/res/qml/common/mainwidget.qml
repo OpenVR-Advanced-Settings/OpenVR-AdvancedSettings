@@ -368,11 +368,6 @@ Rectangle {
         visible: false
     }
 
-    property ChaperoneWarningsPage chaperoneWarningsPage: ChaperoneWarningsPage {
-        stackView: mainView
-        visible: false
-    }
-
     property ChaperoneAdditionalPage chaperoneAdditionalPage: ChaperoneAdditionalPage{
         stackView: mainView
         visible: false

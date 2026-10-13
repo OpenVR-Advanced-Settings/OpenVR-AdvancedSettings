@@ -123,9 +123,9 @@ set(QML_FILERC
     src/res/qml/motion_page/MotionPage.qml
     src/res/qml/PlayspacePage.qml
     src/res/qml/SettingsPage.qml
-    src/res/qml/ChaperoneWarningsPage.qml
     src/res/qml/chaperone_page/ChaperonePage.qml
     src/res/qml/chaperone_page/change_orientation/ChangeOrientationGroupBox.qml
+    src/res/qml/chaperone_page/proximity_warnings/ProximityWarningsGroupBox.qml
     src/res/qml/chaperone_page/chaperone_additional/ChaperoneAdditionalPage.qml
     src/res/qml/chaperone_page/chaperone_additional/chaperonemisc/ChaperoneMiscGroupBox.qml
     src/res/qml/chaperone_page/chaperone_additional/chaperonetype/ChaperoneTypeGroupBox.qml

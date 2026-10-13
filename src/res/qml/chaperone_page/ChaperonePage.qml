@@ -6,6 +6,7 @@ import ovras.advsettings 1.0
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 import "../common"
 import "change_orientation"
+import "proximity_warnings"
 
 MyStackViewPage {
     headerText: "Chaperone Settings"
@@ -495,15 +496,6 @@ MyStackViewPage {
 
         RowLayout {
             Layout.fillWidth: true
-            MyPushButton {
-                id: chaperoneWarningsConfigButton
-                text: "Proximity Warning Settings"
-                Layout.preferredWidth: 350
-                onClicked: {
-                    OverlayController.playFocusChangedSound()
-                    mainView.push(chaperoneWarningsPage)
-                }
-            }
             Item {Layout.fillWidth: true}
 
             MyPushButton {
@@ -519,6 +511,8 @@ MyStackViewPage {
         }
 
         ChangeOrientationGroupBox { }
+
+        ProximityWarningsGroupBox { }
 
 
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
