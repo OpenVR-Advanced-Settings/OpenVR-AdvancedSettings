@@ -7,6 +7,10 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 import "../common"
 import "change_orientation"
 import "proximity_warnings"
+import "chaperoneboundscolor"
+import "chaperonetype"
+import "chaperonemisc"
+import "chaperoneheight"
 
 MyStackViewPage {
     headerText: "Chaperone Settings"
@@ -494,23 +498,15 @@ MyStackViewPage {
             }
         }
 
-        RowLayout {
-            Layout.fillWidth: true
-            Item {Layout.fillWidth: true}
-
-            MyPushButton {
-                id: chaperoneAdditionalButton
-                text: "Additional Chaperone Settings"
-                Layout.preferredWidth: 400
-
-                onClicked: {
-                    OverlayController.playFocusChangedSound()
-                    mainView.push(chaperoneAdditionalPage)
-                }
-            }
-        }
-
         ChangeOrientationGroupBox { }
+
+        ChaperoneBoundsColorGroupBox { }
+
+        ChaperoneTypeGroupBox { }
+
+        ChaperoneMiscGroupBox { }
+
+        ChaperoneHeightGroupBox { }
 
         ProximityWarningsGroupBox { }
 

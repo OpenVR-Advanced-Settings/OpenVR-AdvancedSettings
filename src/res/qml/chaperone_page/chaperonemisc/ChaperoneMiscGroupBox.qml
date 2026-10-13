@@ -2,7 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
-import "../../../common"
+import "../../common"
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 SettingsGroupBox {
     id: chaperoneMiscGroupBox
@@ -12,39 +12,46 @@ SettingsGroupBox {
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: 0
 
+        MyToggleButton {
+            id: chaperoneFloorToggleBtn
+            text: "Floor Bounds Always On"
+            Layout.fillWidth: true
+            Layout.rightMargin: 0
+            onCheckedChanged: {
+                ChaperoneTabController.setChaperoneFloorToggle(this.checked, false)
+            }
+        }
+        LineSeparator {
+        }
+        MyToggleButton {
+            id: legacyCenterMarkerbtn
+            text: "Legacy Center Marker"
+            Layout.fillWidth: true
+            Layout.rightMargin: 0
+            onCheckedChanged: {
+                ChaperoneTabController.setCenterMarker(this.checked, false)
+            }
+        }
+        LineSeparator {
+        }
         RowLayout {
             spacing: 16
 
-            MyToggleButton {
-                id: chaperoneFloorToggleBtn
-                text: "Floor Bounds Always On"
-                Layout.preferredWidth: 375
-                onCheckedChanged: {
-                    ChaperoneTabController.setChaperoneFloorToggle(this.checked, false)
-                }
+            MyText {
+                text: "Turn Counter"
+                Layout.fillWidth: true
+                horizontalAlignment: Text.AlignLeft
             }
-
-
-            MyToggleButton {
-                id: legacyCenterMarkerbtn
-                text: "Legacy Center Marker"
-                Layout.preferredWidth: 375
-                onCheckedChanged: {
-                    ChaperoneTabController.setCenterMarker(this.checked, false)
-                }
-            }
-
-            MyPushButton{
-                id:btnResetOrientation
-                text: "Reset Turn Counter"
+            MyPushButton {
+                id: btnResetOrientation
+                text: "Reset"
                 onClicked: {
                     StatisticsTabController.statsRotationResetClicked()
                 }
             }
-
         }
-
     }
 
     Component.onCompleted: {

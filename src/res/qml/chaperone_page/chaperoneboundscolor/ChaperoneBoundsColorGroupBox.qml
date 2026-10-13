@@ -2,7 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
-import "../../../common"
+import "../../common"
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 
 SettingsGroupBox {
@@ -11,10 +11,20 @@ SettingsGroupBox {
 
     title: "Chaperone Color"
 
-    ColumnLayout {
-        anchors.fill: parent
+    function toHexByte(val) {
+        var h = Math.round(val).toString(16).toUpperCase()
+        return h.length < 2 ? "0" + h : h
+    }
 
-            RowLayout{
+    function updateHexText() {
+        colorHexText.text = "#" + toHexByte(chaperoneColorRedSlider.value)
+                + toHexByte(chaperoneColorGreenSlider.value)
+                + toHexByte(chaperoneColorBlueSlider.value)
+    }
+
+    GridLayout {
+        anchors.fill: parent
+        columns: 7
 
                 MyText {
                     text: "Red:"
@@ -33,6 +43,7 @@ SettingsGroupBox {
                         var val = (this.value).toFixed(0)
                         colorRedText.text = val
                         ChaperoneTabController.setChaperoneColorR(val, true)
+                        updateHexText()
                     }
                 }
 
@@ -78,6 +89,7 @@ SettingsGroupBox {
                         var val = (this.value).toFixed(0)
                         colorGreenText.text = val
                         ChaperoneTabController.setChaperoneColorG(val, true)
+                        updateHexText()
                     }
                 }
 
@@ -103,8 +115,6 @@ SettingsGroupBox {
                     }
                 }
 
-            }
-            RowLayout{
                 MyText {
                     text: "Blue:"
                     horizontalAlignment: Text.AlignRight
@@ -117,11 +127,12 @@ SettingsGroupBox {
                     to: 255
                     stepSize: 5
                     value: 255
-                    Layout.preferredWidth: 250
+                    Layout.fillWidth: true
                     onPositionChanged: {
                         var val = (this.value).toFixed(0)
                         colorBlueText.text = val
                         ChaperoneTabController.setChaperoneColorB(val, true)
+                        updateHexText()
                     }
                 }
 
@@ -146,7 +157,39 @@ SettingsGroupBox {
                         text = val
                     }
                 }
-        }
+
+                Item{
+                    Layout.preferredWidth: 200
+                }
+                MyText {
+                    text: "Hex:"
+                    horizontalAlignment: Text.AlignRight
+                    Layout.preferredWidth: 75
+                }
+
+                MyTextField {
+                    id: colorHexText
+                    text: "#00FFFF"
+                    keyBoardUID: 323
+                    Layout.columnSpan: 2
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignHCenter
+                    function onInputEvent(input) {
+                        var hex = input.trim().replace(/^#/, "")
+                        if (/^[0-9a-fA-F]{6}$/.test(hex)) {
+                            var r = parseInt(hex.substring(0, 2), 16)
+                            var g = parseInt(hex.substring(2, 4), 16)
+                            var b = parseInt(hex.substring(4, 6), 16)
+                            ChaperoneTabController.setChaperoneColorR(r, true)
+                            ChaperoneTabController.setChaperoneColorG(g, true)
+                            ChaperoneTabController.setChaperoneColorB(b, true)
+                            chaperoneColorRedSlider.value = r
+                            chaperoneColorGreenSlider.value = g
+                            chaperoneColorBlueSlider.value = b
+                        }
+                        updateHexText()
+                    }
+                }
     }
     Component.onCompleted: {
         // set up var here to prevent double call to c++ from qml
@@ -159,7 +202,7 @@ SettingsGroupBox {
        chaperoneColorRedSlider.value = redValue
        chaperoneColorGreenSlider.value = greenValue
        chaperoneColorBlueSlider.value = blueValue
-
+       updateHexText()
     }
 
     Connections {
@@ -168,16 +211,19 @@ SettingsGroupBox {
             var redValue = ChaperoneTabController.chaperoneColorR
             colorRedText.text = redValue
             chaperoneColorRedSlider.value = redValue
+            updateHexText()
         }
         function onChaperoneColorGChanged(){
             var greenValue = ChaperoneTabController.chaperoneColorG
             colorGreenText.text = greenValue
             chaperoneColorGreenSlider.value = greenValue
+            updateHexText()
         }
         function onChaperoneColorBChanged(){
             var blueValue = ChaperoneTabController.chaperoneColorB
             colorBlueText.text = blueValue
             chaperoneColorBlueSlider.value = blueValue
+            updateHexText()
         }
     }
 }

@@ -9,7 +9,6 @@ import "../video_page"
 import "../chaperone_page"
 import "../steamvr_page"
 import "../rotation_page"
-import "../chaperone_page/chaperone_additional"
 import "../steamvr_page/steamvr_additional"
 import ovras.advsettings
 
@@ -364,11 +363,6 @@ Rectangle {
     }
 
     property ChaperonePage chaperonePage: ChaperonePage {
-        stackView: mainView
-        visible: false
-    }
-
-    property ChaperoneAdditionalPage chaperoneAdditionalPage: ChaperoneAdditionalPage{
         stackView: mainView
         visible: false
     }
