@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: steamVRBindGroupBox
     Layout.fillWidth: true
 
-    title: "Binds"
+    title: "Per Application Bindings"
 
     ColumnLayout {
         anchors.fill: parent
@@ -18,7 +18,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: steamvrBindingToggle
-                text: "Enable Per-App"
+                text: "Enable"
                 Layout.preferredWidth: 250
                 onCheckedChanged: {
                     SteamVRTabController.setPerAppBindEnabled(this.checked, false)

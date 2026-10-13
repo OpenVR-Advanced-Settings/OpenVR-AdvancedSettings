@@ -27,7 +27,7 @@ MyStackViewPage {
             Layout.fillWidth: true
 
             MyPushButton {
-                text: "Device Pairing Information"
+                text: "Lighthouse Device Pairing"
                 Layout.preferredWidth: 350
 
                 onClicked: {
