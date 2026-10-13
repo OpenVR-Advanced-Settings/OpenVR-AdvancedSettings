@@ -6,6 +6,7 @@ import "../../common"
 
 MyToggleButton {
     id: audioMuteProximitySensorToggle
+    Layout.preferredHeight: 48
     Layout.preferredWidth: 600
     text: "Proximity Sensor Mutes/Unmutes Microphone"
     onClicked: {

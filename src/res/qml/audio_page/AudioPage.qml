@@ -54,11 +54,6 @@ MyStackViewPage {
                 PttButtons {
                     Layout.fillWidth: true
                 }
-                LineSeparator {
-                }
-                ProfileButtons {
-                    Layout.fillWidth: true
-                }
             }
         }
     }

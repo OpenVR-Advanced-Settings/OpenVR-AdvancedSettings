@@ -5,30 +5,44 @@ import ovras.advsettings 1.0
 import "../../common"
 
 ColumnLayout {
-    RowLayout {
-        MyToggleButton {
-            id: audioPttEnabledToggle
-            Layout.fillWidth: true
-            text: "Push-to-Talk:"
-            onClicked: {
-                AudioTabController.setPttEnabled(checked, true)
-            }
+    spacing: 0
+
+    MyToggleButton {
+        id: audioPttEnabledToggle
+        text: "Enable"
+        Layout.fillWidth: true
+        Layout.rightMargin: 0
+        Layout.preferredHeight: 48
+        onClicked: {
+            AudioTabController.setPttEnabled(checked, true)
         }
-        MyToggleButton {
-            id: audioPttShowNotificationToggle
-            Layout.fillWidth: true
-            text: "Show notification in HMD"
-            onCheckedChanged: {
-                AudioTabController.setPttShowNotification(checked, false)
-            }
+    }
+        LineSeparator {
+    }
+    MyToggleButton {
+        id: audioPttReverseToggle
+        enabled: audioPttEnabledToggle.checked
+        text: "Push-to-Mute"
+        Layout.fillWidth: true
+        Layout.leftMargin: 32
+        Layout.rightMargin: 0
+        Layout.preferredHeight: 48
+        onClicked: {
+            AudioTabController.setMicReversePtt(checked, false)
         }
-        MyToggleButton {
-            id: audioPttReverseToggle
-            Layout.fillWidth: true
-            text: "Push-to-Mute"
-            onClicked: {
-                AudioTabController.setMicReversePtt(checked, false)
-            }
+    }
+    LineSeparator {
+    }
+    MyToggleButton {
+        id: audioPttShowNotificationToggle
+        enabled: audioPttEnabledToggle.checked
+        text: "Show notification in HMD"
+        Layout.fillWidth: true
+        Layout.leftMargin: 32
+        Layout.rightMargin: 0
+        Layout.preferredHeight: 48
+        onCheckedChanged: {
+            AudioTabController.setPttShowNotification(checked, false)
         }
     }
 

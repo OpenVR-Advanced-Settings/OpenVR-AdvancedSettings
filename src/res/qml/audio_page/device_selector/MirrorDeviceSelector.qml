@@ -6,6 +6,7 @@ import "../../common"
 
 RowLayout {
     id: audioMirrorNameCombo
+    Layout.preferredHeight: 48
     // Text shown to the left.
     property string deviceText: "Mirror Device: "
 

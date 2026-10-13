@@ -6,6 +6,7 @@ import "../../common"
 
 RowLayout {
     id: audioMicNameCombo
+    Layout.preferredHeight: 48
     property string deviceText: "Microphone: "
 
     // The entries in the dropdown box.
@@ -19,6 +20,7 @@ RowLayout {
     }
     MyToggleButton {
         id: recordingOverrideToggle
+        visible: false
         Layout.preferredWidth: 250
         text: "Toggle Override"
         onClicked: {

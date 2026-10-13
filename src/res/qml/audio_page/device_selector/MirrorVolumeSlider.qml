@@ -6,11 +6,14 @@ import "../../common"
 import "."
 
 ColumnLayout {
-    spacing: 18
+    spacing: 0
     MirrorDeviceSelector {
         id: audioMirrorNameCombo
     }
+    LineSeparator {
+    }
     RowLayout {
+        Layout.preferredHeight: 48
         MyText {
             text: "Mirror Volume:"
             Layout.preferredWidth: 260

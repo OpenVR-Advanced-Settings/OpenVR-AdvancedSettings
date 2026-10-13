@@ -58,11 +58,6 @@ ColumnLayout {
                 }
             }
         }
-        MyText {
-            // Text continues in next RowLayout.
-            text: "Change the Push To Talk settings"
-            color: "#8b929a"
-        }
     }
     RowLayout {
         spacing: 18
@@ -88,11 +83,6 @@ ColumnLayout {
             onClicked: {
                 audioNewProfileDialog.openPopup()
             }
-        }
-        MyText {
-            // Text continues from RowLayout above.
-            text: "\t\tin the SteamVR bindings menu."
-            color: "#8b929a"
         }
     }
     Component.onCompleted: {

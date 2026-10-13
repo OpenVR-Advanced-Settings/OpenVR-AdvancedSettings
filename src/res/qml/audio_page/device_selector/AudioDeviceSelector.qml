@@ -6,6 +6,7 @@ import "../../common"
 
 RowLayout {
     id: audioPlaybackNameCombo
+    Layout.preferredHeight: 48
     property string deviceText: "Audio Device: "
 
     property alias devices: selector.model
@@ -17,6 +18,7 @@ RowLayout {
 
     MyToggleButton {
         id: playbackOverrideToggle
+        visible: false
         Layout.preferredWidth: 250
         text: "Toggle Override"
         onClicked: {

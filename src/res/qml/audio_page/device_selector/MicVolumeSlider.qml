@@ -5,11 +5,14 @@ import ovras.advsettings 1.0
 import "../../common"
 
 ColumnLayout {
-    spacing: 18
+    spacing: 0
     MicDeviceSelector {
         id: audioMicNameCombo
     }
+    LineSeparator {
+    }
     RowLayout {
+        Layout.preferredHeight: 48
         MyText {
             text: "Microphone Volume:"
             Layout.preferredWidth: 260
