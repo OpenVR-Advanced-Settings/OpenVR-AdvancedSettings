@@ -341,6 +341,8 @@ add_custom_command(TARGET AdvancedSettings POST_BUILD
         "${CMAKE_SOURCE_DIR}/LICENSE" "${COPY_DEST_DIR}/LICENSE"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/third-party/openvr/LICENSE-VALVE" "${COPY_DEST_DIR}/LICENSE-VALVE"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/third-party/material-symbols/LICENSE-MATERIAL-SYMBOLS" "${COPY_DEST_DIR}/LICENSE-MATERIAL-SYMBOLS"
         #COMMAND ${CMAKE_COMMAND} -E copy_if_different
         #"${CMAKE_SOURCE_DIR}/third-party/magic_enum/LICENSE" "${COPY_DEST_DIR}/LICENSE-MAGIC-ENUM"
 )

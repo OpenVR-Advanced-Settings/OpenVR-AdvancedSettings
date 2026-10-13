@@ -627,3 +627,5 @@ Full build instructions can be found [here](docs/building_for_linux.md).
 # License
 
 This software is released under GPL 3.0, and other third-party Licenses
+
+Icons are [Material Symbols](https://fonts.google.com/icons) by Google, used under the [Apache License 2.0](third-party/material-symbols/LICENSE-MATERIAL-SYMBOLS).

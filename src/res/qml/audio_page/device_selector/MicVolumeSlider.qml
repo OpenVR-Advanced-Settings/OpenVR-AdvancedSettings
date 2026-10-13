@@ -19,6 +19,22 @@ ColumnLayout {
         }
         
         MyPushButton2 {
+            id: audioMicMuteToggle
+            Layout.preferredWidth: 44
+            Layout.preferredHeight: 40
+            checkable: true
+            contentItem: Image {
+                source: parent.checked ? "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/microphone/mic_off.svg" : "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/microphone/mic_on.svg"
+                sourceSize.width: 26
+                sourceSize.height: 26
+                fillMode: Image.PreserveAspectFit
+            }
+            onCheckedChanged: {
+                AudioTabController.setMicMuted(checked)
+            }
+        }
+
+        MyPushButton2 {
             id: audioMicVolumeMinusButton
             text: "-"
             Layout.preferredWidth: 40
@@ -57,21 +73,6 @@ ColumnLayout {
             text: "100%"
             Layout.preferredWidth: 85
             horizontalAlignment: Text.AlignRight
-        }
-        
-        MyPushButton2 {
-            id: audioMicMuteToggle
-            Layout.leftMargin: 12
-            checkable: true
-            contentItem: Image {
-                source: parent.checked ? "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/microphone/mic_on.svg" : "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/microphone/mic_off.svg"
-                sourceSize.width: 32
-                sourceSize.height: 32
-                anchors.fill: parent
-            }
-            onCheckedChanged: {
-                AudioTabController.setMicMuted(checked)
-            }
         }
     }
     Component.onCompleted: {

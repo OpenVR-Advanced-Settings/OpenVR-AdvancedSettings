@@ -20,6 +20,22 @@ ColumnLayout {
         }
 
         MyPushButton2 {
+            id: audioMirrorMuteToggle
+            Layout.preferredWidth: 44
+            Layout.preferredHeight: 40
+            checkable: true
+            contentItem: Image {
+                source: parent.checked ? "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/speaker/speaker_off.svg" : "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/speaker/speaker_on.svg"
+                sourceSize.width: 26
+                sourceSize.height: 26
+                fillMode: Image.PreserveAspectFit
+            }
+            onCheckedChanged: {
+                AudioTabController.setMirrorMuted(checked, false)
+            }
+        }
+
+        MyPushButton2 {
             id: audioMirrorVolumeMinusButton
             text: "-"
             Layout.preferredWidth: 40
@@ -58,21 +74,6 @@ ColumnLayout {
             text: "100%"
             Layout.preferredWidth: 85
             horizontalAlignment: Text.AlignRight
-        }
-
-        MyPushButton2 {
-            id: audioMirrorMuteToggle
-            Layout.leftMargin: 12
-            checkable: true
-            contentItem: Image {
-                source: parent.checked ? "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/speaker/speaker_off.svg" : "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/speaker/speaker_on.svg"
-                sourceSize.width: 32
-                sourceSize.height: 32
-                anchors.fill: parent
-            }
-            onCheckedChanged: {
-                AudioTabController.setMirrorMuted(checked, false)
-            }
         }
     }
     Component.onCompleted: {
