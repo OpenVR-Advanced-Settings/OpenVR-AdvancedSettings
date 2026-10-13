@@ -172,6 +172,7 @@ MyStackViewPage {
                 GridLayout {
                     Layout.fillWidth: true
                     columns: 7
+                    rowSpacing: 0
 
                     MyText {
                         text: "X-Axis (Left/Right):"
