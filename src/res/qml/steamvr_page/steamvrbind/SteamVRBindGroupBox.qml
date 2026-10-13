@@ -12,45 +12,40 @@ SettingsGroupBox {
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: 0
 
+        MyToggleButton {
+            id: steamvrBindingToggle
+            text: "Enable"
+            Layout.fillWidth: true
+            Layout.rightMargin: 0
+            onCheckedChanged: {
+                SteamVRTabController.setPerAppBindEnabled(this.checked, false)
+                if(!steamvrBindingToggle.checked){
+                    appSelect.enabled = false;
+                    setDefaultBtn.enabled = false;
+                    setBinding.enabled = false;
+                }else{
+                    appSelect.enabled = true;
+                    setDefaultBtn.enabled = true;
+                    setBinding.enabled = true;
+                }
+            }
+        }
+        LineSeparator {
+        }
         RowLayout {
             spacing: 16
 
-            MyToggleButton {
-                id: steamvrBindingToggle
-                text: "Enable"
-                Layout.preferredWidth: 250
-                onCheckedChanged: {
-                    SteamVRTabController.setPerAppBindEnabled(this.checked, false)
-                    if(!steamvrBindingToggle.checked){
-                        appSelect.enabled = false;
-                        setDefaultBtn.enabled = false;
-                        setBinding.enabled = false;
-                    }else{
-                        appSelect.enabled = true;
-                        setDefaultBtn.enabled = true;
-                        setBinding.enabled = true;
-                    }
-                }
-            }
             MyText {
-                Layout.preferredWidth: 0
-                text: " "
-            }
-
-            MyText {
-                text: "Application: "
-                Layout.preferredWidth: 150
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 2
+                text: "Application:"
+                horizontalAlignment: Text.AlignLeft
             }
             MyTextField {
                 id: appSelect
                 Layout.fillWidth: true
                 text: "steam.overlay.1009850"
                 keyBoardUID: 201
-                Layout.leftMargin: 10
-                Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     this.text = input
@@ -66,34 +61,31 @@ SettingsGroupBox {
                 }
             }
         }
+        LineSeparator {
+        }
         RowLayout {
             spacing: 16
+
             MyText {
                 text: "Save Current Binding"
-                Layout.preferredWidth: 500
+                Layout.fillWidth: true
                 horizontalAlignment: Text.AlignLeft
-                Layout.rightMargin: 2
             }
             MyPushButton {
-                    id: setBinding
-                    text:"Game"
-                    onClicked: {
-                        SteamVRTabController.setBindingQMLWrapper(appSelect.text)
-                    }
-            }
-            MyText {
-                Layout.preferredWidth: 50
-                text: " "
+                id: setBinding
+                text: "Game"
+                onClicked: {
+                    SteamVRTabController.setBindingQMLWrapper(appSelect.text)
+                }
             }
             MyPushButton {
-                    id: setDefaultBtn
-                    text:"Default"
-                    onClicked: {
-                        SteamVRTabController.setBindingQMLWrapper(appSelect.text,true)
-                    }
+                id: setDefaultBtn
+                text: "Default"
+                onClicked: {
+                    SteamVRTabController.setBindingQMLWrapper(appSelect.text,true)
+                }
             }
         }
-
     }
 
     Component.onCompleted: {
