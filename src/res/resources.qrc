@@ -20,10 +20,8 @@
 		<file>qml/chaperone_page/ChaperonePage.qml</file>
 		<file>qml/chaperone_page/change_orientation/ChangeOrientationGroupBox.qml</file>
 		<file>qml/chaperone_page/proximity_warnings/ProximityWarningsGroupBox.qml</file>
-		<file>qml/chaperone_page/chaperoneheight/ChaperoneHeightGroupBox.qml</file>
 		<file>qml/chaperone_page/chaperoneboundscolor/ChaperoneBoundsColorGroupBox.qml</file>
 		<file>qml/chaperone_page/chaperonemisc/ChaperoneMiscGroupBox.qml</file>
-		<file>qml/chaperone_page/chaperonetype/ChaperoneTypeGroupBox.qml</file>
 		<file>qml/common/FullWidthSliderBox.qml</file>
 		<file>qml/common/HourComboBox.qml</file>
 		<file>qml/common/LineSeparator.qml</file>

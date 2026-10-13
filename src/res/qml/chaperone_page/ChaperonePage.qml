@@ -8,9 +8,7 @@ import "../common"
 import "change_orientation"
 import "proximity_warnings"
 import "chaperoneboundscolor"
-import "chaperonetype"
 import "chaperonemisc"
-import "chaperoneheight"
 
 MyStackViewPage {
     headerText: "Chaperone Settings"
@@ -244,14 +242,13 @@ MyStackViewPage {
             title: "Boundaries"
             ColumnLayout {
                 anchors.fill: parent
-                GridLayout {
-                    columns: 5
-
+                spacing: 0
+                RowLayout {
                     MyText {
                         text: "Visibility:"
                         Layout.rightMargin: 12
+                        Layout.preferredWidth: 200
                     }
-
                     MyPushButton2 {
                         id: chaperoneVisibilityMinus
                         text: "-"
@@ -260,7 +257,6 @@ MyStackViewPage {
                             chaperoneVisibilitySlider.value -= 0.05
                         }
                     }
-
                     MySlider {
                         id: chaperoneVisibilitySlider
                         from: 0.3
@@ -276,7 +272,6 @@ MyStackViewPage {
                             ChaperoneTabController.setBoundsVisibility(value.toFixed(2), false)
                         }
                     }
-
                     MyPushButton2 {
                         id: chaperoneVisibilityPlus
                         text: "+"
@@ -285,8 +280,6 @@ MyStackViewPage {
                             chaperoneVisibilitySlider.value += 0.05
                         }
                     }
-
-
                     MyTextField {
                         id: chaperoneVisibilityText
                         text: "60.00"
@@ -305,7 +298,6 @@ MyStackViewPage {
                                 if(val>100){
                                     val = 100.0
                                 }
-
                                 var v = (val/100).toFixed(2)
                                 if (v <= chaperoneVisibilitySlider.to) {
                                     chaperoneVisibilitySlider.value = v
@@ -316,12 +308,15 @@ MyStackViewPage {
                             text = Math.round(ChaperoneTabController.boundsVisibility * 100) + "%"
                         }
                     }
-
+                }
+                LineSeparator {
+                }
+                RowLayout {
                     MyText {
                         text: "Fade Distance:"
                         Layout.rightMargin: 12
+                        Layout.preferredWidth: 200
                     }
-
                     MyPushButton2 {
                         id: chaperoneFadeDistanceMinus
                         text: "-"
@@ -330,7 +325,6 @@ MyStackViewPage {
                             chaperoneFadeDistanceSlider.decrease()
                         }
                     }
-
                     MySlider {
                         id: chaperoneFadeDistanceSlider
                         from: 0.0
@@ -346,7 +340,6 @@ MyStackViewPage {
                             ChaperoneTabController.setFadeDistance(this.value.toFixed(1), false)
                         }
                     }
-
                     MyPushButton2 {
                         id: chaperoneFadeDistancePlus
                         text: "+"
@@ -355,7 +348,6 @@ MyStackViewPage {
                             chaperoneFadeDistanceSlider.increase()
                         }
                     }
-
                     MyTextField {
                         id: chaperoneFadeDistanceText
                         text: "0.00"
@@ -379,12 +371,38 @@ MyStackViewPage {
                             text = ChaperoneTabController.fadeDistance.toFixed(1)
                         }
                     }
+                }
+                LineSeparator {
+                }
+                MyToggleButton {
+                    id: chaperoneDisableChaperone
+                    text: "Disable Chaperone"
+                    Layout.fillWidth: true
+                    Layout.rightMargin: 0
+                    onCheckedChanged: {
+                        ChaperoneTabController.setDisableChaperone(this.checked, false)
+                        if(this.checked || ChaperoneTabController.chaperoneDimHeight > 0.0){
+                            chaperoneFadeDistanceMinus.enabled = false;
+                            chaperoneFadeDistancePlus.enabled = false;
+                            chaperoneFadeDistanceSlider.enabled = false;
+                            chaperoneFadeDistanceText.enabled = false;
 
+                        }else{
+                            chaperoneFadeDistanceMinus.enabled = true;
+                            chaperoneFadeDistancePlus.enabled = true;
+                            chaperoneFadeDistanceSlider.enabled = true;
+                            chaperoneFadeDistanceText.enabled = true;
+                        }
+                    }
+                }
+                LineSeparator {
+                }
+                RowLayout {
                     MyText {
                         text: "Height:"
                         Layout.rightMargin: 12
+                        Layout.preferredWidth: 200
                     }
-
                     MyPushButton2 {
                         text: "-"
                         Layout.preferredWidth: 40
@@ -392,7 +410,6 @@ MyStackViewPage {
                             chaperoneHeightSlider.decrease()
                         }
                     }
-
                     MySlider {
                         id: chaperoneHeightSlider
                         from: 0.01
@@ -411,7 +428,6 @@ MyStackViewPage {
                             ChaperoneTabController.setHeight(value.toFixed(2), false)
                         }
                     }
-
                     MyPushButton2 {
                         text: "+"
                         Layout.preferredWidth: 40
@@ -419,7 +435,6 @@ MyStackViewPage {
                             chaperoneHeightSlider.increase()
                         }
                     }
-
                     MyTextField {
                         id: chaperoneHeightText
                         text: "0.00"
@@ -444,56 +459,38 @@ MyStackViewPage {
                         }
                     }
                 }
-
-                RowLayout {
+                LineSeparator {
+                }
+                MyToggleButton {
+                    id: chaperoneCenterMarkerToggle
+                    text: "Center Marker"
                     Layout.fillWidth: true
-                    spacing: 32
-
-                    MyToggleButton {
-                        id: chaperoneCenterMarkerToggle
-                        text: "Center Marker"
-                        Layout.fillWidth: false
-                        onCheckedChanged: {
-                            ChaperoneTabController.setCenterMarkerNew(this.checked, false)
-                        }
+                    Layout.rightMargin: 0
+                    onCheckedChanged: {
+                        ChaperoneTabController.setCenterMarkerNew(this.checked, false)
                     }
-
-                    MyToggleButton {
-                        id: chaperonePlaySpaceToggle
-                        text: "Play Space"
-                        onCheckedChanged: {
-                            ChaperoneTabController.setPlaySpaceMarker(this.checked, false)
-                        }
+                }
+                LineSeparator {
+                }
+                MyToggleButton {
+                    id: chaperonePlaySpaceToggle
+                    text: "Play Space"
+                    Layout.fillWidth: true
+                    Layout.rightMargin: 0
+                    onCheckedChanged: {
+                        ChaperoneTabController.setPlaySpaceMarker(this.checked, false)
                     }
-
-                    MyToggleButton {
-                        id: chaperoneForceBoundsToggle
-                        text: "Force Bounds"
-                        onCheckedChanged: {
-                            ChaperoneTabController.setForceBounds(this.checked, false)
-                        }
+                }
+                LineSeparator {
+                }
+                MyToggleButton {
+                    id: chaperoneForceBoundsToggle
+                    text: "Force Bounds"
+                    Layout.fillWidth: true
+                    Layout.rightMargin: 0
+                    onCheckedChanged: {
+                        ChaperoneTabController.setForceBounds(this.checked, false)
                     }
-                    MyToggleButton {
-                        id: chaperoneDisableChaperone
-                        text: "Disable Chaperone"
-                        onCheckedChanged: {
-                            ChaperoneTabController.setDisableChaperone(this.checked, false)
-                            if(this.checked){
-                                chaperoneFadeDistanceMinus.enabled = false;
-                                chaperoneFadeDistancePlus.enabled = false;
-                                chaperoneFadeDistanceSlider.enabled = false;
-                                chaperoneFadeDistanceText.enabled = false;
-
-                            }else{
-                                chaperoneFadeDistanceMinus.enabled = true;
-                                chaperoneFadeDistancePlus.enabled = true;
-                                chaperoneFadeDistanceSlider.enabled = true;
-                                chaperoneFadeDistanceText.enabled = true;
-                            }
-                        }
-                    }
-
-                    Item { Layout.fillWidth: true }
                 }
             }
         }
@@ -502,11 +499,7 @@ MyStackViewPage {
 
         ChaperoneBoundsColorGroupBox { }
 
-        ChaperoneTypeGroupBox { }
-
         ChaperoneMiscGroupBox { }
-
-        ChaperoneHeightGroupBox { }
 
         ProximityWarningsGroupBox { }
 
@@ -560,11 +553,6 @@ MyStackViewPage {
             chaperoneForceBoundsToggle.checked = ChaperoneTabController.forceBounds
             chaperoneDisableChaperone.checked = ChaperoneTabController.disableChaperone
             var dim = ChaperoneTabController.chaperoneDimHeight
-            if(dim > 0.0){
-                chaperoneDisableChaperone.enabled = false;
-            }else{
-                chaperoneDisableChaperone.enabled = true;
-            }
             if(dim > 0.0 || chaperoneDisableChaperone.checked){
                 chaperoneFadeDistanceMinus.enabled = false;
                 chaperoneFadeDistancePlus.enabled = false;
@@ -603,11 +591,6 @@ MyStackViewPage {
             }
             function onChaperoneDimHeightChanged() {
                 var dim = ChaperoneTabController.chaperoneDimHeight
-                if(dim > 0.0){
-                    chaperoneDisableChaperone.enabled = false;
-                }else{
-                    chaperoneDisableChaperone.enabled = true;
-                }
                 if(dim > 0.0 || chaperoneDisableChaperone.checked){
                     chaperoneFadeDistanceMinus.enabled = false;
                     chaperoneFadeDistancePlus.enabled = false;

@@ -36,6 +36,8 @@ SettingsGroupBox {
         }
         RowLayout {
             spacing: 16
+            // Match the Enable toggle row height.
+            Layout.preferredHeight: steamvrBindingToggle.height
 
             MyText {
                 text: "Application:"
@@ -46,6 +48,7 @@ SettingsGroupBox {
                 Layout.fillWidth: true
                 text: "steam.overlay.1009850"
                 keyBoardUID: 201
+                Layout.fillHeight: true
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
                     this.text = input
@@ -53,6 +56,7 @@ SettingsGroupBox {
             }
             MyPushButton {
                 id: bindingsButton
+                Layout.fillHeight: true
                 activationSoundEnabled: false
                 text: "Open Bindings"
                 Layout.preferredWidth: 180
@@ -65,6 +69,8 @@ SettingsGroupBox {
         }
         RowLayout {
             spacing: 16
+            // Match the Enable toggle row height.
+            Layout.preferredHeight: steamvrBindingToggle.height
 
             MyText {
                 text: "Save Current Binding"
@@ -73,6 +79,7 @@ SettingsGroupBox {
             }
             MyPushButton {
                 id: setBinding
+                Layout.fillHeight: true
                 text: "Game"
                 onClicked: {
                     SteamVRTabController.setBindingQMLWrapper(appSelect.text)
@@ -80,6 +87,7 @@ SettingsGroupBox {
             }
             MyPushButton {
                 id: setDefaultBtn
+                Layout.fillHeight: true
                 text: "Default"
                 onClicked: {
                     SteamVRTabController.setBindingQMLWrapper(appSelect.text,true)

@@ -126,9 +126,7 @@ set(QML_FILERC
     src/res/qml/chaperone_page/ChaperonePage.qml
     src/res/qml/chaperone_page/change_orientation/ChangeOrientationGroupBox.qml
     src/res/qml/chaperone_page/proximity_warnings/ProximityWarningsGroupBox.qml
-    src/res/qml/chaperone_page/chaperoneheight/ChaperoneHeightGroupBox.qml
     src/res/qml/chaperone_page/chaperonemisc/ChaperoneMiscGroupBox.qml
-    src/res/qml/chaperone_page/chaperonetype/ChaperoneTypeGroupBox.qml
     src/res/qml/chaperone_page/chaperoneboundscolor/ChaperoneBoundsColorGroupBox.qml
     src/res/qml/RootPage.qml
     src/res/qml/steamvr_page/steamvrmisc/SteamVRMiscGroupBox.qml
