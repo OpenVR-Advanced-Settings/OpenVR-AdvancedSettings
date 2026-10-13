@@ -44,7 +44,7 @@ Rectangle {
         { text: "Home", icon: "home_tab_icon.svg", page: rootPage },
         { text: "SteamVR", icon: "steamvr_tab_icon.svg", page: steamVRPage },
         { text: "Chaperone", icon: "chaperone_tab_icon.svg", page: chaperonePage },
-        { text: "Offsets", icon: "offsets_tab_icon.svg", page: playspacePage separator: true},
+        { text: "Offsets", icon: "offsets_tab_icon.svg", page: playspacePage, separator: true},
         { text: "Motion", icon: "motion_tab_icon.svg", page: motionPage },
         { text: "Rotation", icon: "rotation_tab_icon.svg", page: rotationPage },
         { text: "Audio", icon: "audio_tab_icon.svg", page: audioPage, separator: true },
