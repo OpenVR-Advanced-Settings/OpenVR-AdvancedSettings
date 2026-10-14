@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.20)
-project(AdvancedSettings VERSION 5.7.4 LANGUAGES CXX)
+#app version will be auto-deployed to app
+if(NOT DEFINED OVRAS_VERSION)
+    set(OVRAS_VERSION 6.0.0)
+endif()
+
+project(AdvancedSettings VERSION ${OVRAS_VERSION} LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)

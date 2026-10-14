@@ -30,7 +30,17 @@ Popup {
         opacity: 0.8
      }
 
+    onAboutToShow: okClicked = false
+
     contentItem: Item {
+        // Clicking the dimmed area around the dialog cancels it.
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                okClicked = false
+                myDialogPopup.close()
+            }
+        }
         Rectangle {
             implicitWidth: dialogWidth
             implicitHeight: dialogHeight
@@ -39,6 +49,10 @@ Popup {
             color: "#262a31"
             border.width: 1
             border.color: "#3a4049"
+            // Swallow clicks on the dialog itself so they don't reach the background.
+            MouseArea {
+                anchors.fill: parent
+            }
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 12

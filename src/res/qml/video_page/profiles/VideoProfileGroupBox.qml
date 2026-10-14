@@ -9,15 +9,20 @@ SettingsGroupBox {
     id: videoProfileGroupBox
     Layout.fillWidth: true
 
+    property Item dialogParent: videoProfileGroupBox
+
     VideoDeleteProfileDialog {
         id: videoDeleteProfileDialog
+        parent: videoProfileGroupBox.dialogParent
     }
 
     VideoNewProfileDialog {
         id: videoNewProfileDialog
+        parent: videoProfileGroupBox.dialogParent
     }
     VideoMessageDialog{
         id:videoMessageDialog
+        parent: videoProfileGroupBox.dialogParent
     }
 
     title: "Video Profiles"

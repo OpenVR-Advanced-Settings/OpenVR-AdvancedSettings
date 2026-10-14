@@ -287,40 +287,6 @@ MyStackViewPage {
                         Layout.fillWidth: true
                     }
                 }
-
-                RowLayout {
-                    id: debugStateRow
-                    Layout.fillWidth: true
-
-                    MyText {
-                        id: debugStateLabel
-                        text: "Debug State: "
-                        horizontalAlignment: Text.AlignRight
-                        Layout.rightMargin: 2
-                    }
-
-                    MyTextField {
-                        id: debugStateText
-                        text: "0"
-                        keyBoardUID: 502
-                        Layout.preferredWidth: 140
-                        Layout.leftMargin: 10
-                        Layout.rightMargin: 1
-                        horizontalAlignment: Text.AlignHCenter
-                        function onInputEvent(input) {
-                            var val = parseInt(input, 10)
-                            if (!isNaN(val)) {
-                                OverlayController.debugState = val
-                                text = OverlayController.debugState
-                            } else {
-                                text = OverlayController.debugState
-                            }
-                        }
-                    }
-                    Item {
-                        Layout.fillWidth: true
-                    }
-                }
             }
         }
 
@@ -364,8 +330,6 @@ MyStackViewPage {
                 customTickRateText.visible = vsyncDisabledToggle.checked
                 customTickRateLabel.visible = vsyncDisabledToggle.checked
                 customTickRateMsLabel.visible = vsyncDisabledToggle.checked
-                debugStateRow.visible = OverlayController.enableDebug
-                debugStateText.text = OverlayController.debugState
                 disableVersionCheckToggle.checked = OverlayController.disableVersionCheck
                 nativeChaperoneToggleButton.checked = SettingsTabController.nativeChaperoneToggle
                 oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
@@ -414,13 +378,6 @@ MyStackViewPage {
                 customTickRateText.text = OverlayController.customTickRateMs
             }
 
-            function onEnableDebugChanged() {
-                debugStateRow.visible = OverlayController.enableDebug
-            }
-
-            function onDebugStateChanged() {
-                debugStateText.text = OverlayController.debugState
-            }
             function onDisableVersionCheckChanged() {
                 disableVersionCheckToggle.checked = OverlayController.disableVersionCheck
             }

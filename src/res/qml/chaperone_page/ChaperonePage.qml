@@ -38,7 +38,7 @@ MyStackViewPage {
         id: chaperoneNewProfileDialog
         dialogTitle: "Create New Profile"
         dialogWidth: 800
-        dialogHeight: 780
+        dialogHeight: 680
         dialogContentItem: ColumnLayout {
             RowLayout {
                 Layout.topMargin: 16
@@ -60,58 +60,124 @@ MyStackViewPage {
                 }
             }
             MyText {
-                Layout.topMargin: 24
+                Layout.topMargin: 16
                 text: "What to include:"
             }
-            MyToggleButton {
-                id: chaperoneNewProfileIncludeGeometry
-                Layout.leftMargin: 32
-                text: "Chaperone Geometry"
-            }
-            MyToggleButton {
-                id: chaperoneNewProfileIncludeStyle
-                Layout.leftMargin: 32
-                text: "Chaperone Style"
-            }
-            MyToggleButton {
-                id: chaperoneNewProfileIncludeBoundsColor
-                Layout.leftMargin: 32
-                text: "Chaperone Color"
-            }
-            MyToggleButton {
-                id: chaperoneNewProfileIncludeVisibility
-                Layout.leftMargin: 32
-                text: "Visibility Setting"
-            }
-            MyToggleButton {
-                id: chaperoneNewProfileIncludeFadeDistance
-                Layout.leftMargin: 32
-                text: "Fade Distance Setting"
-            }
-            MyToggleButton {
-                id: chaperoneNewProfileIncludeCenterMarker
-                Layout.leftMargin: 32
-                text: "Center Marker Setting"
-            }
-            MyToggleButton {
-                id: chaperoneNewProfileIncludePlaySpaceMarker
-                Layout.leftMargin: 32
-                text: "Play Space Marker Setting"
-            }
-            MyToggleButton {
-                id: chaperoneNewProfileIncludeFloorBoundsMarker
-                Layout.leftMargin: 32
-                text: "Floor Bounds Always On Setting"
-            }
-            MyToggleButton {
-                id: chaperoneNewProfileIncludeForceBounds
-                Layout.leftMargin: 32
-                text: "Force Bounds Setting"
-            }
-            MyToggleButton {
-                id: chaperoneNewProfileIncludeProximityWarnings
-                Layout.leftMargin: 32
-                text: "Proximity Warning Settings"
+            Flickable {
+                id: chaperoneNewProfileIncludeFlickable
+                Layout.preferredWidth: 760
+                Layout.preferredHeight: 420
+                clip: true
+                contentWidth: width
+                contentHeight: chaperoneNewProfileIncludeColumn.implicitHeight
+                flickableDirection: Flickable.VerticalFlick
+                boundsBehavior: Flickable.StopAtBounds
+                interactive: contentHeight > height
+
+                ScrollBar.vertical: ScrollBar {
+                    policy: chaperoneNewProfileIncludeFlickable.interactive ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
+                    contentItem: Rectangle {
+                        implicitWidth: 6
+                        radius: 3
+                        color: parent.pressed ? "#8b929a" : "#4b5361"
+                    }
+                }
+
+                ColumnLayout {
+                    id: chaperoneNewProfileIncludeColumn
+                    width: chaperoneNewProfileIncludeFlickable.width
+                    spacing: 0
+                    MyToggleButton {
+                        id: chaperoneNewProfileIncludeGeometry
+                        Layout.leftMargin: 32
+                        Layout.rightMargin: 20
+                        Layout.fillWidth: true
+                        topPadding: 2
+                        bottomPadding: 2
+                        text: "Chaperone Geometry"
+                    }
+                    MyToggleButton {
+                        id: chaperoneNewProfileIncludeStyle
+                        Layout.leftMargin: 32
+                        Layout.rightMargin: 20
+                        Layout.fillWidth: true
+                        topPadding: 2
+                        bottomPadding: 2
+                        text: "Chaperone Style"
+                    }
+                    MyToggleButton {
+                        id: chaperoneNewProfileIncludeBoundsColor
+                        Layout.leftMargin: 32
+                        Layout.rightMargin: 20
+                        Layout.fillWidth: true
+                        topPadding: 2
+                        bottomPadding: 2
+                        text: "Chaperone Color"
+                    }
+                    MyToggleButton {
+                        id: chaperoneNewProfileIncludeVisibility
+                        Layout.leftMargin: 32
+                        Layout.rightMargin: 20
+                        Layout.fillWidth: true
+                        topPadding: 2
+                        bottomPadding: 2
+                        text: "Visibility Setting"
+                    }
+                    MyToggleButton {
+                        id: chaperoneNewProfileIncludeFadeDistance
+                        Layout.leftMargin: 32
+                        Layout.rightMargin: 20
+                        Layout.fillWidth: true
+                        topPadding: 2
+                        bottomPadding: 2
+                        text: "Fade Distance Setting"
+                    }
+                    MyToggleButton {
+                        id: chaperoneNewProfileIncludeCenterMarker
+                        Layout.leftMargin: 32
+                        Layout.rightMargin: 20
+                        Layout.fillWidth: true
+                        topPadding: 2
+                        bottomPadding: 2
+                        text: "Center Marker Setting"
+                    }
+                    MyToggleButton {
+                        id: chaperoneNewProfileIncludePlaySpaceMarker
+                        Layout.leftMargin: 32
+                        Layout.rightMargin: 20
+                        Layout.fillWidth: true
+                        topPadding: 2
+                        bottomPadding: 2
+                        text: "Play Space Marker Setting"
+                    }
+                    MyToggleButton {
+                        id: chaperoneNewProfileIncludeFloorBoundsMarker
+                        Layout.leftMargin: 32
+                        Layout.rightMargin: 20
+                        Layout.fillWidth: true
+                        topPadding: 2
+                        bottomPadding: 2
+                        text: "Floor Bounds Always On Setting"
+                    }
+                    MyToggleButton {
+                        id: chaperoneNewProfileIncludeForceBounds
+                        Layout.leftMargin: 32
+                        Layout.rightMargin: 20
+                        Layout.fillWidth: true
+                        topPadding: 2
+                        bottomPadding: 2
+                        text: "Force Bounds Setting"
+                    }
+                    MyToggleButton {
+                        id: chaperoneNewProfileIncludeProximityWarnings
+                        Layout.leftMargin: 32
+                        Layout.rightMargin: 20
+                        Layout.fillWidth: true
+                        topPadding: 2
+                        bottomPadding: 2
+                        text: "Proximity Warning Settings"
+                    }
+                }
             }
         }
         onClosed: {
@@ -245,6 +311,70 @@ MyStackViewPage {
                 spacing: 0
                 RowLayout {
                     MyText {
+                        text: "Height:"
+                        Layout.rightMargin: 12
+                        Layout.preferredWidth: 200
+                    }
+                    MyPushButton2 {
+                        text: "-"
+                        Layout.preferredWidth: 40
+                        onClicked: {
+                            chaperoneHeightSlider.decrease()
+                        }
+                    }
+                    MySlider {
+                        id: chaperoneHeightSlider
+                        from: 0.01
+                        to: 5.0
+                        stepSize: 0.01
+                        value: 2.0
+                        Layout.fillWidth: true
+                        onPositionChanged: {
+                            var val = (this.from + ( this.position  * (this.to - this.from))).toFixed(2)
+                            if (activeFocus) {
+                                ChaperoneTabController.setHeight(val, false);
+                            }
+                            chaperoneHeightText.text = val
+                        }
+                        onValueChanged: {
+                            ChaperoneTabController.setHeight(value.toFixed(2), false)
+                        }
+                    }
+                    MyPushButton2 {
+                        text: "+"
+                        Layout.preferredWidth: 40
+                        onClicked: {
+                            chaperoneHeightSlider.increase()
+                        }
+                    }
+                    MyTextField {
+                        id: chaperoneHeightText
+                        text: "0.00"
+                        keyBoardUID: 303
+                        Layout.preferredWidth: 100
+                        Layout.leftMargin: 10
+                        horizontalAlignment: Text.AlignHCenter
+                        function onInputEvent(input) {
+                            var val = parseFloat(input)
+                            if (!isNaN(val)) {
+                                if (val < 0.01) {
+                                    val = 0.01
+                                }
+                                var v = val.toFixed(2)
+                                if (v <= chaperoneHeightSlider.to) {
+                                    chaperoneHeightSlider.value = v
+                                } else {
+                                    ChaperoneTabController.setHeight(v, false)
+                                }
+                            }
+                            text = ChaperoneTabController.height.toFixed(2)
+                        }
+                    }
+                }
+                LineSeparator {
+                }
+                RowLayout {
+                    MyText {
                         text: "Visibility:"
                         Layout.rightMargin: 12
                         Layout.preferredWidth: 200
@@ -374,122 +504,70 @@ MyStackViewPage {
                 }
                 LineSeparator {
                 }
-                MyToggleButton {
-                    id: chaperoneDisableChaperone
-                    text: "Disable Chaperone"
+                RowLayout {
                     Layout.fillWidth: true
-                    Layout.rightMargin: 0
-                    onCheckedChanged: {
-                        ChaperoneTabController.setDisableChaperone(this.checked, false)
-                        if(this.checked || ChaperoneTabController.chaperoneDimHeight > 0.0){
-                            chaperoneFadeDistanceMinus.enabled = false;
-                            chaperoneFadeDistancePlus.enabled = false;
-                            chaperoneFadeDistanceSlider.enabled = false;
-                            chaperoneFadeDistanceText.enabled = false;
+                    spacing: 16
+                    MyToggleButton {
+                        id: chaperoneDisableChaperone
+                        text: "Disable Chaperone"
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        Layout.rightMargin: 0
+                        onCheckedChanged: {
+                            ChaperoneTabController.setDisableChaperone(this.checked, false)
+                            if(this.checked || ChaperoneTabController.chaperoneDimHeight > 0.0){
+                                chaperoneFadeDistanceMinus.enabled = false;
+                                chaperoneFadeDistancePlus.enabled = false;
+                                chaperoneFadeDistanceSlider.enabled = false;
+                                chaperoneFadeDistanceText.enabled = false;
 
-                        }else{
-                            chaperoneFadeDistanceMinus.enabled = true;
-                            chaperoneFadeDistancePlus.enabled = true;
-                            chaperoneFadeDistanceSlider.enabled = true;
-                            chaperoneFadeDistanceText.enabled = true;
+                            }else{
+                                chaperoneFadeDistanceMinus.enabled = true;
+                                chaperoneFadeDistancePlus.enabled = true;
+                                chaperoneFadeDistanceSlider.enabled = true;
+                                chaperoneFadeDistanceText.enabled = true;
+                            }
+                        }
+                    }
+                    VerticalSeparator {
+                    }
+                    MyToggleButton {
+                        id: chaperoneForceBoundsToggle
+                        text: "Force Bounds"
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        Layout.rightMargin: 0
+                        onCheckedChanged: {
+                            ChaperoneTabController.setForceBounds(this.checked, false)
                         }
                     }
                 }
                 LineSeparator {
                 }
                 RowLayout {
-                    MyText {
-                        text: "Height:"
-                        Layout.rightMargin: 12
-                        Layout.preferredWidth: 200
-                    }
-                    MyPushButton2 {
-                        text: "-"
-                        Layout.preferredWidth: 40
-                        onClicked: {
-                            chaperoneHeightSlider.decrease()
-                        }
-                    }
-                    MySlider {
-                        id: chaperoneHeightSlider
-                        from: 0.01
-                        to: 5.0
-                        stepSize: 0.01
-                        value: 2.0
+                    Layout.fillWidth: true
+                    spacing: 16
+                    MyToggleButton {
+                        id: chaperonePlaySpaceToggle
+                        text: "Play Space"
                         Layout.fillWidth: true
-                        onPositionChanged: {
-                            var val = (this.from + ( this.position  * (this.to - this.from))).toFixed(2)
-                            if (activeFocus) {
-                                ChaperoneTabController.setHeight(val, false);
-                            }
-                            chaperoneHeightText.text = val
-                        }
-                        onValueChanged: {
-                            ChaperoneTabController.setHeight(value.toFixed(2), false)
+                        Layout.preferredWidth: 1
+                        Layout.rightMargin: 0
+                        onCheckedChanged: {
+                            ChaperoneTabController.setPlaySpaceMarker(this.checked, false)
                         }
                     }
-                    MyPushButton2 {
-                        text: "+"
-                        Layout.preferredWidth: 40
-                        onClicked: {
-                            chaperoneHeightSlider.increase()
+                    VerticalSeparator {
+                    }
+                    MyToggleButton {
+                        id: chaperoneCenterMarkerToggle
+                        text: "Center Marker"
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        Layout.rightMargin: 0
+                        onCheckedChanged: {
+                            ChaperoneTabController.setCenterMarkerNew(this.checked, false)
                         }
-                    }
-                    MyTextField {
-                        id: chaperoneHeightText
-                        text: "0.00"
-                        keyBoardUID: 303
-                        Layout.preferredWidth: 100
-                        Layout.leftMargin: 10
-                        horizontalAlignment: Text.AlignHCenter
-                        function onInputEvent(input) {
-                            var val = parseFloat(input)
-                            if (!isNaN(val)) {
-                                if (val < 0.01) {
-                                    val = 0.01
-                                }
-                                var v = val.toFixed(2)
-                                if (v <= chaperoneHeightSlider.to) {
-                                    chaperoneHeightSlider.value = v
-                                } else {
-                                    ChaperoneTabController.setHeight(v, false)
-                                }
-                            }
-                            text = ChaperoneTabController.height.toFixed(2)
-                        }
-                    }
-                }
-                LineSeparator {
-                }
-                MyToggleButton {
-                    id: chaperoneCenterMarkerToggle
-                    text: "Center Marker"
-                    Layout.fillWidth: true
-                    Layout.rightMargin: 0
-                    onCheckedChanged: {
-                        ChaperoneTabController.setCenterMarkerNew(this.checked, false)
-                    }
-                }
-                LineSeparator {
-                }
-                MyToggleButton {
-                    id: chaperonePlaySpaceToggle
-                    text: "Play Space"
-                    Layout.fillWidth: true
-                    Layout.rightMargin: 0
-                    onCheckedChanged: {
-                        ChaperoneTabController.setPlaySpaceMarker(this.checked, false)
-                    }
-                }
-                LineSeparator {
-                }
-                MyToggleButton {
-                    id: chaperoneForceBoundsToggle
-                    text: "Force Bounds"
-                    Layout.fillWidth: true
-                    Layout.rightMargin: 0
-                    onCheckedChanged: {
-                        ChaperoneTabController.setForceBounds(this.checked, false)
                     }
                 }
             }

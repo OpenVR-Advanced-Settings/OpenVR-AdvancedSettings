@@ -11,6 +11,7 @@ import "profiles"
 import "overlaycolorbright"
 
 MyStackViewPage {
+    id: videoPage
     headerText: "Video Settings"
     content: ColumnLayout {
         spacing: 10
@@ -27,6 +28,7 @@ MyStackViewPage {
         }
         VideoProfileGroupBox{
             id: videoProfileGroupBox
+            dialogParent: videoPage
         }
 
         VideoMiscGroupBox{

@@ -1218,21 +1218,6 @@ void OverlayController::setVersionCheckText( QString value, bool notify )
     }
 }
 
-int OverlayController::debugState() const
-{
-    return settings::getSetting( settings::IntSetting::APPLICATION_debugState );
-}
-
-void OverlayController::setDebugState( int value, bool notify )
-{
-    settings::setSetting( settings::IntSetting::APPLICATION_debugState, value );
-
-    if ( notify )
-    {
-        emit debugStateChanged( value );
-    }
-}
-
 void OverlayController::setPreviousShutdownSafe( bool value )
 {
     settings::setSetting(
@@ -1366,26 +1351,24 @@ void OverlayController::mainEventLoop()
         }
         break;
 
-        //removing scroll, really only used on sliders, but hover combined with stick drift means
-        // unintentional values are set just looking through ovras
-        //case vr::VREvent_ScrollSmooth:
-        //{
-        //    // Wheel speed is defined as 1/8 of a degree
-        //    QWheelEvent wheelEvent(
-        //        m_ptLastMouse,
-        //        m_window.mapToGlobal( m_ptLastMouse ),
-        //        QPoint(),
-        //        QPoint( static_cast<int>( vrEvent.data.scroll.xdelta
-        //                                  * ( 360.0f * 8.0f ) ),
-        //                static_cast<int>( vrEvent.data.scroll.ydelta
-        //                                  * ( 360.0f * 8.0f ) ) ),
-        //        m_lastMouseButtons,
-        //        Qt::KeyboardModifiers::fromInt( 0 ),
-        //        Qt::ScrollPhase::NoScrollPhase,
-        //        false );
-        //    QCoreApplication::sendEvent( &m_window, &wheelEvent );
-        //}
-        //break;
+        case vr::VREvent_ScrollSmooth:
+        {
+            // Wheel speed is defined as 1/8 of a degree
+            QWheelEvent wheelEvent(
+                m_ptLastMouse,
+                m_window.mapToGlobal( m_ptLastMouse ),
+                QPoint(),
+                QPoint( static_cast<int>( vrEvent.data.scroll.xdelta
+                                          * ( 360.0f * 8.0f ) ),
+                        static_cast<int>( vrEvent.data.scroll.ydelta
+                                          * ( 360.0f * 8.0f ) ) ),
+                m_lastMouseButtons,
+                Qt::KeyboardModifiers::fromInt( 0 ),
+                Qt::ScrollPhase::NoScrollPhase,
+                false );
+            QCoreApplication::sendEvent( &m_window, &wheelEvent );
+        }
+        break;
 
         case vr::VREvent_OverlayShown:
         {

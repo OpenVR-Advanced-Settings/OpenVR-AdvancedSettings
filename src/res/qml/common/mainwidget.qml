@@ -43,14 +43,14 @@ Rectangle {
     // separator: draw a divider above the entry.
     property var sideBarModel: [
         { text: "Home", icon: "home_tab_icon.svg", page: rootPage },
-        { text: "SteamVR", icon: "steamvr_tab_icon.svg", page: steamVRPage },
-        { text: "Chaperone", icon: "chaperone_tab_icon.svg", page: chaperonePage },
-        { text: "Offsets", icon: "offsets_tab_icon.svg", page: playspacePage, separator: true},
+        { text: "Offsets", icon: "offsets_tab_icon.svg", page: playspacePage, separator: true },
         { text: "Motion", icon: "motion_tab_icon.svg", page: motionPage },
         { text: "Rotation", icon: "rotation_tab_icon.svg", page: rotationPage },
-        { text: "Audio", icon: "audio_tab_icon.svg", page: audioPage, separator: true },
+        { text: "SteamVR", icon: "steamvr_tab_icon.svg", page: steamVRPage, separator: true },
+        { text: "Audio", icon: "audio_tab_icon.svg", page: audioPage },
         { text: "Video", icon: "video_tab_icon.svg", page: videoPage },
-        { text: "Utilities", icon: "utilities_tab_icon.svg", page: utilitiesPage, separator: true },
+        { text: "Chaperone", icon: "chaperone_tab_icon.svg", page: chaperonePage },
+        { text: "Utilities", icon: "utilities_tab_icon.svg", page: utilitiesPage },
         { text: "Statistics", icon: "statistics_tab_icon.svg", page: statisticsPage, separator: true },
         { text: "Settings", icon: "settings_tab_icon.svg", page: settingsPage },
         { text: "Bindings", icon: "bindings_tab_icon.svg", action: function() { SteamVRTabController.launchBindingUI() }, separator: true }

@@ -9,8 +9,6 @@ MyDialogOkCancelPopup {
     dialogTitle: "Create New Video Profile"
     dialogWidth: 600
     dialogHeight: 300
-    y: -200
-    x: 0
     dialogContentItem: ColumnLayout {
         RowLayout {
             Layout.topMargin: 16

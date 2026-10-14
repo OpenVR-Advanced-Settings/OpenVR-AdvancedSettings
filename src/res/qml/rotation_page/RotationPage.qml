@@ -13,6 +13,14 @@ MyStackViewPage {
     headerText: "Rotation Settings"
     content: ColumnLayout {
         spacing: 8
+        SpaceTurnGroupBox{
+            id:spaceTurnGroupBox
+        }
+
+        SnapTurnGroupBox{
+            id: snapTurnGroupBox
+        }
+
         AutoTurnGroupBox{
             id: autoTurnGroupBox
         }
@@ -25,13 +33,6 @@ MyStackViewPage {
             // Untitled, so it reads as a second row of the box above.
             // Pull it up so the gap matches a LineSeparator (2px).
             Layout.topMargin: -6
-        }
-        SpaceTurnGroupBox{
-            id:spaceTurnGroupBox
-        }
-
-        SnapTurnGroupBox{
-            id: snapTurnGroupBox
         }
 
 

@@ -84,8 +84,12 @@ SettingsGroupBox {
 
             MyText {
                 text: "Activation Distance"
-                Layout.fillWidth: true
+                Layout.preferredWidth: 275
+                Layout.rightMargin: 12
                 horizontalAlignment: Text.AlignLeft
+            }
+            Item {
+                Layout.preferredWidth: 25
             }
 
             MySlider {
@@ -94,8 +98,7 @@ SettingsGroupBox {
                 to: 1.0
                 stepSize: 0.05
                 value: .4
-                Layout.preferredWidth: 300
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+                Layout.fillWidth: true
                 onPositionChanged: {
                     var val = this.value
                     activationValueText.text = val.toFixed(2)
@@ -135,8 +138,12 @@ SettingsGroupBox {
 
             MyText {
                 text: "Deactivation Distance"
-                Layout.fillWidth: true
+                Layout.preferredWidth: 275
+                Layout.rightMargin: 12
                 horizontalAlignment: Text.AlignLeft
+            }
+            Item {
+                Layout.preferredWidth: 25
             }
 
             MySlider {
@@ -145,8 +152,7 @@ SettingsGroupBox {
                 to: 1.0
                 stepSize: 0.05
                 value: .15
-                Layout.preferredWidth: 300
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+                Layout.fillWidth: true
                 onPositionChanged: {
                     var val = this.value
                     deactivationValueText.text = val.toFixed(2)
@@ -186,8 +192,13 @@ SettingsGroupBox {
 
             MyText {
                 text: "Turn Speed (deg/sec)"
-                Layout.fillWidth: true
+                // Match the View Ratchetting toggle so all sliders start at the same x.
+                Layout.preferredWidth: 275
+                Layout.rightMargin: 12
                 horizontalAlignment: Text.AlignLeft
+            }
+            Item {
+                Layout.preferredWidth: 25
             }
 
             MySlider {
@@ -196,8 +207,7 @@ SettingsGroupBox {
                 to: 900
                 stepSize: 10
                 value: 90
-                Layout.preferredWidth: 300
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+                Layout.fillWidth: true
                 onPositionChanged: {
                     var val = this.value
                     speedValueText.text = val.toFixed() + "°"

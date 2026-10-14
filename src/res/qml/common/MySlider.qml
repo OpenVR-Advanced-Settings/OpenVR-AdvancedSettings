@@ -7,7 +7,8 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 
 Slider {
     snapMode: Slider.SnapAlways
-    wheelEnabled: true
+    // Scroll wheel (and VR thumbstick scroll) must not change values; let it pass through to the page instead.
+    wheelEnabled: false
     hoverEnabled: true
     to: 1.0
     from: 0.0

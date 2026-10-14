@@ -180,6 +180,8 @@ MyStackViewPage {
                     }
 
                     MyPushButton2 {
+                        topPadding: 3
+                        bottomPadding: 3
                         Layout.preferredWidth: 40
                         text: "0"
                         onClicked: {
@@ -188,6 +190,8 @@ MyStackViewPage {
                     }
 
                     MyPushButton2 {
+                        topPadding: 3
+                        bottomPadding: 3
                         id: spaceMoveXMinusButton
                         Layout.preferredWidth: 40
                         text: "-"
@@ -197,6 +201,8 @@ MyStackViewPage {
                     }
 
 					MyTextField {
+                        topPadding: 3
+                        bottomPadding: 3
                         id: spaceMoveXText
                         text: "0.00"
 						keyBoardUID: 101
@@ -216,6 +222,8 @@ MyStackViewPage {
                     }
 
                     MyPushButton2 {
+                        topPadding: 3
+                        bottomPadding: 3
                         id: spaceMoveXPlusButton
                         Layout.preferredWidth: 40
                         text: "+"
@@ -225,6 +233,8 @@ MyStackViewPage {
                     }
 
                     MyToggleButton {
+                        topPadding: 3
+                        bottomPadding: 3
                         id: lockXToggle
                         Layout.leftMargin: 20
                         text: "Lock X"
@@ -236,16 +246,14 @@ MyStackViewPage {
                         Layout.fillWidth: true
                     }
 
-                    LineSeparator {
-                        Layout.columnSpan: 7
-                    }
-
                     MyText {
                         text: "Y-Axis (Down/Up):"
                         Layout.preferredWidth: 340
                     }
 
                     MyPushButton2 {
+                        topPadding: 3
+                        bottomPadding: 3
                         Layout.preferredWidth: 40
                         text: "0"
                         onClicked: {
@@ -254,6 +262,8 @@ MyStackViewPage {
                     }
 
                     MyPushButton2 {
+                        topPadding: 3
+                        bottomPadding: 3
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
@@ -262,6 +272,8 @@ MyStackViewPage {
                     }
 
                     MyTextField {
+                        topPadding: 3
+                        bottomPadding: 3
                         id: spaceMoveYText
                         text: "0.00"
                         keyBoardUID: 102
@@ -281,6 +293,8 @@ MyStackViewPage {
                     }
 
                     MyPushButton2 {
+                        topPadding: 3
+                        bottomPadding: 3
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
@@ -290,6 +304,8 @@ MyStackViewPage {
 
 
                     MyToggleButton {
+                        topPadding: 3
+                        bottomPadding: 3
                         id: lockYToggle
                         Layout.leftMargin: 20
                         text: "Lock Y"
@@ -301,16 +317,14 @@ MyStackViewPage {
                         Layout.fillWidth: true
                     }
 
-                    LineSeparator {
-                        Layout.columnSpan: 7
-                    }
-
                     MyText {
                         text: "Z-Axis (Forth/Back):"
                         Layout.preferredWidth: 340
                     }
 
                     MyPushButton2 {
+                        topPadding: 3
+                        bottomPadding: 3
                         Layout.preferredWidth: 40
                         text: "0"
                         onClicked: {
@@ -319,6 +333,8 @@ MyStackViewPage {
                     }
 
                     MyPushButton2 {
+                        topPadding: 3
+                        bottomPadding: 3
                         Layout.preferredWidth: 40
                         text: "-"
                         onClicked: {
@@ -327,6 +343,8 @@ MyStackViewPage {
                     }
 
                     MyTextField {
+                        topPadding: 3
+                        bottomPadding: 3
                         id: spaceMoveZText
                         text: "0.00"
                         keyBoardUID: 103
@@ -346,6 +364,8 @@ MyStackViewPage {
                     }
 
                     MyPushButton2 {
+                        topPadding: 3
+                        bottomPadding: 3
                         Layout.preferredWidth: 40
                         text: "+"
                         onClicked: {
@@ -355,6 +375,8 @@ MyStackViewPage {
 
 
                     MyToggleButton {
+                        topPadding: 3
+                        bottomPadding: 3
                         id: lockZToggle
                         Layout.leftMargin: 20
                         text: "Lock Z"

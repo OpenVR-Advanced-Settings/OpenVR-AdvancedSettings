@@ -90,8 +90,6 @@ class OverlayController : public QObject
                     setVersionCheckText NOTIFY versionCheckTextChanged )
     Q_PROPERTY( int customTickRateMs READ customTickRateMs WRITE
                     setCustomTickRateMs NOTIFY customTickRateMsChanged )
-    Q_PROPERTY( int debugState READ debugState WRITE setDebugState NOTIFY
-                    debugStateChanged )
     Q_PROPERTY(
         bool exclusiveInputEnabled READ exclusiveInputEnabled WRITE
             setExclusiveInputEnabled NOTIFY exclusiveInputEnabledChanged )
@@ -271,7 +269,6 @@ public:
     bool vsyncDisabled() const;
     QString versionCheckText() const;
     int customTickRateMs() const;
-    int debugState() const;
     std::string autoApplyChaperoneName();
 
     double soundVolume() const;
@@ -300,7 +297,6 @@ public slots:
     void setVersionCheckText( QString value, bool notify = true );
     void setVsyncDisabled( bool value, bool notify = true );
     void setCustomTickRateMs( int value, bool notify = true );
-    void setDebugState( int value, bool notify = true );
     void setAutoApplyChaperoneEnabled( bool value, bool notify = true );
     void setSoundVolume( double value, bool notify = true );
     void setDesktopModeToggle( bool value, bool notify = true );
@@ -315,7 +311,6 @@ signals:
     void versionCheckTextChanged( QString value );
     void vsyncDisabledChanged( bool value );
     void customTickRateMsChanged( int value );
-    void debugStateChanged( int value );
     void autoApplyChaperoneEnabledChanged( bool value );
     void soundVolumeChanged( double value );
     void desktopModeToggleChanged( bool value );

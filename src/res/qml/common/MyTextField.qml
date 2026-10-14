@@ -41,10 +41,9 @@ TextField {
             active = false;
         }
     }
-    onEditingFinished: {
-        if(OverlayController.desktopMode){
-            myTextField.onInputEvent(text)
-        }
+    //Enter/Return drops focus, which applies the text via onActiveFocusChanged
+    onAccepted: {
+        myTextField.focus = false
     }
     function onInputEvent(input) {
         text = input

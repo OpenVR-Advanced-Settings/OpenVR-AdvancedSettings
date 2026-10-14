@@ -8,6 +8,8 @@ SettingsGroupBox {
     id: snapTurnGroupBox
     Layout.fillWidth: true
 
+    title: "Bind Turn"
+
     ColumnLayout {
         anchors.fill: parent
 
@@ -41,7 +43,7 @@ SettingsGroupBox {
 
             MyPushButton {
                 id: snapTurnButton45
-                Layout.preferredWidth: 90
+                Layout.preferredWidth: 70
                 text:"45°"
                 onClicked: {
                     MoveCenterTabController.snapTurnAngle = 4500
@@ -49,7 +51,7 @@ SettingsGroupBox {
            }
             MyPushButton {
                 id: snapTurnButton90
-                Layout.preferredWidth: 90
+                Layout.preferredWidth: 70
                 text:"90°"
                 onClicked: {
                     MoveCenterTabController.snapTurnAngle = 9000
@@ -57,7 +59,7 @@ SettingsGroupBox {
            }
             MyPushButton {
                 id: snapTurnButton180
-                Layout.preferredWidth: 90
+                Layout.preferredWidth: 70
                 text:"180°"
                 onClicked: {
                     MoveCenterTabController.snapTurnAngle = 18000
@@ -66,6 +68,9 @@ SettingsGroupBox {
 
            Item {
                Layout.fillWidth: true
+           }
+
+           VerticalSeparator {
            }
 
            MyText {
@@ -89,6 +94,23 @@ SettingsGroupBox {
                    } else {
                        text = MoveCenterTabController.smoothTurnRate + "%"
                    }
+               }
+           }
+
+           Item {
+               Layout.fillWidth: true
+           }
+
+           VerticalSeparator {
+           }
+
+           MyPushButton {
+               id: snapTurnBindingsButton
+               activationSoundEnabled: false
+               text: "Open Bindings"
+               Layout.preferredWidth: 180
+               onClicked: {
+                   SteamVRTabController.launchBindingUI()
                }
            }
 
