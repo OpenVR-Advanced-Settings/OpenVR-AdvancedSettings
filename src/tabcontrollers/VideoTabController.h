@@ -11,13 +11,6 @@
 
 class QQuickWindow;
 
-namespace video_keys
-{
-constexpr auto k_brightnessOverlayFilename = "/res/img/video/dimmer.png";
-constexpr auto k_colorOverlayFilename = "/res/img/video/color.png";
-
-} // namespace video_keys
-
 namespace advsettings
 {
 // forward declaration

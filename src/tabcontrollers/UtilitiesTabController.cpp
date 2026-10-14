@@ -228,26 +228,6 @@ void UtilitiesTabController::setTrackerOvlEnabled( bool value, bool notify )
     }
 }
 
-QString getBatteryIconPath( int batteryState )
-{
-    constexpr auto batteryPrefix = "/res/img/battery/battery_";
-
-    const auto batteryFullPath
-        = ( batteryPrefix + QString::number( batteryState ) + ".png" )
-              .toStdString();
-
-    const auto batteryPath = paths::binaryDirectoryFindFile( batteryFullPath );
-
-    if ( !batteryPath.has_value() )
-    {
-        qCritical() << "Unable to find battery image number '" << batteryState
-                    << "'.";
-        return "";
-    }
-
-    return QString::fromStdString( *batteryPath );
-}
-
 vr::VROverlayHandle_t UtilitiesTabController::createBatteryOverlay(
     vr::TrackedDeviceIndex_t index,
     unsigned style )
@@ -260,17 +240,17 @@ vr::VROverlayHandle_t UtilitiesTabController::createBatteryOverlay(
     if ( overlayError == vr::VROverlayError_None )
     {
         m_batteryImgs[0] = std::unique_ptr<QImage>(
-            new QImage( ":qt/qml/AdvancedSettings/src/res/img/battery/battery_0.png" ) );
+            new QImage( ":/qt/qml/AdvancedSettings/img/battery/battery_0.png" ) );
         m_batteryImgs[1] = std::unique_ptr<QImage>(
-            new QImage( ":qt/qml/AdvancedSettings/src/res/img/battery/battery_1.png" ) );
+            new QImage( ":/qt/qml/AdvancedSettings/img/battery/battery_1.png" ) );
         m_batteryImgs[2] = std::unique_ptr<QImage>(
-            new QImage( ":qt/qml/AdvancedSettings/src/res/img/battery/battery_2.png" ) );
+            new QImage( ":/qt/qml/AdvancedSettings/img/battery/battery_2.png" ) );
         m_batteryImgs[3] = std::unique_ptr<QImage>(
-            new QImage( ":qt/qml/AdvancedSettings/src/res/img/battery/battery_3.png" ) );
+            new QImage( ":/qt/qml/AdvancedSettings/img/battery/battery_3.png" ) );
         m_batteryImgs[4] = std::unique_ptr<QImage>(
-            new QImage( ":qt/qml/AdvancedSettings/src/res/img/battery/battery_4.png" ) );
+            new QImage( ":/qt/qml/AdvancedSettings/img/battery/battery_4.png" ) );
         m_batteryImgs[5] = std::unique_ptr<QImage>(
-            new QImage( ":qt/qml/AdvancedSettings/src/res/img/battery/battery_5.png" ) );
+            new QImage( ":/qt/qml/AdvancedSettings/img/battery/battery_5.png" ) );
         ovr_overlay_wrapper::setOverlayFromQImage( handle, *m_batteryImgs[0] );
         vr::VROverlay()->SetOverlayWidthInMeters( handle, 0.045f );
         vr::HmdMatrix34_t notificationTransform;

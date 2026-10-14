@@ -26,7 +26,7 @@ ColumnLayout {
             Layout.preferredHeight: 40
             checkable: true
             contentItem: Image {
-                source: parent.checked ? "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/speaker/speaker_off.svg" : "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/speaker/speaker_on.svg"
+                source: parent.checked ? "qrc:/qt/qml/AdvancedSettings/img/audio/speaker/speaker_off.svg" : "qrc:/qt/qml/AdvancedSettings/img/audio/speaker/speaker_on.svg"
                 sourceSize.width: 26
                 sourceSize.height: 26
                 fillMode: Image.PreserveAspectFit

@@ -71,8 +71,8 @@ int main( int argc, char* argv[] )
                                                 commandLineArgs.forceNoSound,
                                                 qmlEngine ) );
         //const auto url
-        //    = QUrl( ":/qt/qml/AdvancedSettings/src/res/qml/common/mainwidget.qml" );
-        QQmlComponent component( &qmlEngine, ":/qt/qml/AdvancedSettings/src/res/qml/common/mainwidget.qml" );
+        //    = QUrl( ":/qt/qml/AdvancedSettings/qml/common/mainwidget.qml" );
+        QQmlComponent component( &qmlEngine, ":/qt/qml/AdvancedSettings/qml/common/mainwidget.qml" );
         auto errors = component.errors();
         for ( auto& e : errors )
         {

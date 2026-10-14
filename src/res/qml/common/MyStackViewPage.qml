@@ -27,7 +27,7 @@ Rectangle {
                 enabled: headerShowBackButton
                 visible: headerShowBackButton
                 contentItem: Image {
-                    source: "qrc:/qt/qml/AdvancedSettings/src/res/img/common/backarrow.svg"
+                    source: "qrc:/qt/qml/AdvancedSettings/img/common/backarrow.svg"
                     sourceSize.width: 40
                     sourceSize.height: 40
                     anchors.fill: parent

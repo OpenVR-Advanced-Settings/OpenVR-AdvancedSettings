@@ -75,32 +75,6 @@ OverlayError setOverlayWidthInMeters( vr::VROverlayHandle_t overlayHandle,
     return OverlayError::NoError;
 }
 
-OverlayError setOverlayFromFile( vr::VROverlayHandle_t overlayHandle,
-                                 std::string fileName,
-                                 std::string customErrorMsg )
-{
-    {
-        const auto overlayPath = paths::binaryDirectoryFindFile( fileName );
-        if ( !overlayPath.has_value() )
-        {
-            qCritical() << "File not Found: " << fileName << customErrorMsg;
-            return OverlayError::UndefinedError;
-        }
-        vr::VROverlayError oError = vr::VROverlay()->SetOverlayFromFile(
-            overlayHandle, overlayPath->c_str() );
-        if ( oError != vr::VROverlayError_None )
-        {
-            qCritical() << "Error setting Overlay from file For "
-                        << getOverlayKey( overlayHandle ) << " with error: "
-                        << vr::VROverlay()->GetOverlayErrorNameFromEnum(
-                               oError )
-                        << " " << customErrorMsg;
-            return OverlayError::UndefinedError;
-        }
-        return OverlayError::NoError;
-    }
-}
-
 OverlayError setOverlayFromQImage( vr::VROverlayHandle_t overlayHandle,
                                    QImage& image,
                                    std::string customErrorMsg )

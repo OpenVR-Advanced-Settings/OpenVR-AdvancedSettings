@@ -24,7 +24,7 @@ Rectangle {
     // Width of the widest sidebar entry (icon + label), used to center the entries.
     property real sideBarMenuWidth: 0
 
-    readonly property string iconBase: "qrc:/qt/qml/AdvancedSettings/src/res/img/main_menu_icons/"
+    readonly property string iconBase: "qrc:/qt/qml/AdvancedSettings/img/main_menu_icons/"
 
     // Languages offered in the footer language dropdown.
     // TODO: hook up to an actual translation backend.

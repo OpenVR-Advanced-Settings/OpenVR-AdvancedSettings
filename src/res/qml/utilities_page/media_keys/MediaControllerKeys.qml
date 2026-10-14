@@ -13,10 +13,10 @@ SettingsGroupBox {
         anchors.fill: parent
 
         RowLayout {
-            property string playPauseButtonPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/media_keys/outline_play_pause_white_24dp.svg"
-            property string stopButtonPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/media_keys/outline_stop_white_24dp.svg"
-            property string previousButtonPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/media_keys/outline_skip_previous_white_24dp.svg"
-            property string nextButtonPath: "qrc:/qt/qml/AdvancedSettings/src/res/img/audio/media_keys/outline_skip_next_white_24dp.svg"
+            property string playPauseButtonPath: "qrc:/qt/qml/AdvancedSettings/img/audio/media_keys/outline_play_pause_white_24dp.svg"
+            property string stopButtonPath: "qrc:/qt/qml/AdvancedSettings/img/audio/media_keys/outline_stop_white_24dp.svg"
+            property string previousButtonPath: "qrc:/qt/qml/AdvancedSettings/img/audio/media_keys/outline_skip_previous_white_24dp.svg"
+            property string nextButtonPath: "qrc:/qt/qml/AdvancedSettings/img/audio/media_keys/outline_skip_next_white_24dp.svg"
 
             MediaButton {
                 id: previousSongButton

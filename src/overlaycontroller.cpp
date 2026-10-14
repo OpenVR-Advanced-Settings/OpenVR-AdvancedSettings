@@ -126,13 +126,13 @@ OverlayController::OverlayController( bool desktopMode,
     qInfo() << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
     const double initVol = soundVolume();
-    m_activationSoundEffect.setSource( QUrl( ":/qt/qml/AdvancedSettings/src/res/sounds/click.wav" ) );
+    m_activationSoundEffect.setSource( QUrl( "qrc:/qt/qml/AdvancedSettings/sounds/click.wav" ) );
     m_activationSoundEffect.setVolume( initVol );
 
-    m_focusChangedSoundEffect.setSource( QUrl( ":/qt/qml/AdvancedSettings/src/res/sounds/focus.wav" ) );
+    m_focusChangedSoundEffect.setSource( QUrl( "qrc:/qt/qml/AdvancedSettings/sounds/focus.wav" ) );
     m_focusChangedSoundEffect.setVolume( initVol );
 
-    m_alarm01SoundEffect.setSource( QUrl( ":/qt/qml/AdvancedSettings/src/res/sounds/alarm01.wav" ) );
+    m_alarm01SoundEffect.setSource( QUrl( "qrc:/qt/qml/AdvancedSettings/sounds/alarm01.wav" ) );
     m_alarm01SoundEffect.setVolume( 1.0 );
 
     // If we have desktop mode flag ignore waht toggle says otherwise we use
@@ -444,7 +444,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             true );
 
         {
-            QImage thumbiconImg( ":qt/qml/AdvancedSettings/src/res/img/icons/thumbicon.png");
+            QImage thumbiconImg( ":/qt/qml/AdvancedSettings/img/icons/thumbicon.png");
             ovr_overlay_wrapper::setOverlayFromQImage(
                 m_ulOverlayThumbnailHandle, thumbiconImg );
         }

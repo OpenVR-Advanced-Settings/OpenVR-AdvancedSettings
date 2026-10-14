@@ -12,7 +12,7 @@ set(CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1)
 #find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core)
 #find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets QuickControls2 QuickDialogs2 Svg)
 #find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS DBus)
-find_package(Qt6 REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets QuickControls2 QuickDialogs2 Svg Qml Core5Compat)
+find_package(Qt6 REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets QuickControls2 QuickDialogs2 Svg Core5Compat)
 find_package(Vulkan REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.8)
@@ -148,7 +148,6 @@ set(QML_FILERC
     src/res/qml/audio_page/push_to_talk/PttButtons.qml
     src/res/qml/utilities_page/space_fix/SpaceFixGroupBox.qml
     src/res/qml/common/MySlider.qml
-    src/res/qml/common/MyResources.qml
     src/res/qml/common/MyPushButton.qml
     src/res/qml/common/HourComboBox.qml
     src/res/qml/common/MyText.qml
@@ -196,7 +195,6 @@ set(ResourcesRC
     src/res/img/audio/microphone/mic_on.svg
     src/res/img/audio/microphone/ptm_notification.png
     src/res/img/audio/microphone/ptt_notification.png
-    src/res/img/audio/microphone/ptt_notification.svg
     src/res/img/audio/speaker/speaker_off.svg
     src/res/img/audio/speaker/speaker_on.svg
     src/res/img/battery/battery_0.png
@@ -214,7 +212,6 @@ set(ResourcesRC
     src/res/img/chaperone/centermarkr3.png
     src/res/img/common/backarrow.svg
     src/res/img/common/check.svg
-    src/res/img/icons/advicon256px.ico
     src/res/img/icons/thumbicon.png
     src/res/img/main_menu_icons/audio_tab_icon.svg
     src/res/img/main_menu_icons/bindings_tab_icon.svg
@@ -234,7 +231,6 @@ set(ResourcesRC
     src/res/img/main_menu_icons/youtube_tab_icon.svg
     src/res/img/rotation/autoturn.png
     src/res/img/rotation/noautoturn.png
-    src/res/img/rotation/noautoturn.svg
     src/res/img/video/color.png
     src/res/img/video/dimmer.png
     src/res/sounds/alarm01.wav
@@ -242,13 +238,22 @@ set(ResourcesRC
     src/res/sounds/focus.wav
 )
 
-#set_source_files_properties(src/res/qml/common/MyResources.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+# Strip the "src/res/" prefix so resources land at :/qt/qml/AdvancedSettings/<path>
+foreach(res_file IN LISTS QML_FILERC ResourcesRC)
+    string(REGEX REPLACE "^src/res/" "" res_alias "${res_file}")
+    set_source_files_properties(${res_file} PROPERTIES QT_RESOURCE_ALIAS "${res_alias}")
+endforeach()
+
 #qt_add_executable(AdvancedSettings WIN32 MACOSX_BUNDLE ${SRCS} ${HEADERS})
 qt_add_executable(AdvancedSettings
     ${SRCS}
     ${HEADERS}
 )
-#src/res/resources.qrc
+
+if (WIN32)
+    configure_file(cmake/AdvancedSettings.rc.in "${CMAKE_CURRENT_BINARY_DIR}/AdvancedSettings.rc" @ONLY)
+    target_sources(AdvancedSettings PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/AdvancedSettings.rc")
+endif ()
 
 qt_add_qml_module(AdvancedSettings
         URI AdvancedSettings
@@ -305,14 +310,11 @@ target_link_libraries(AdvancedSettings PRIVATE
     Qt::QuickControls2
     Qt::QuickDialogs2
     Qt::Svg
-    Qt::Qml
     openvr_api
     
 )
 #${OPENVR_LIBRARIES}
 
-#qt6_add_resources(RESOURCES src/res/resources.qrc)
-#target_sources(AdvancedSettings PRIVATE ${RESOURCES})
 
 #qt_add_qml_module(AdvancedSettings
 #    URI AdvancedSettings
@@ -325,15 +327,9 @@ set_target_properties(AdvancedSettings PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${COPY_DEST_DIR}"
 )
 
-# resCopy
-add_custom_command(TARGET AdvancedSettings POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_SOURCE_DIR}/src/res" "${COPY_DEST_DIR}/res"
-)
-
 # readmeCopy
 add_custom_command(TARGET AdvancedSettings POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/Readme.md" "${COPY_DEST_DIR}/Readme.md"
 )
 
@@ -541,7 +537,6 @@ qt_generate_deploy_qml_app_script(
 )
 install(SCRIPT ${deploy_script})
 message(STATUS "Deploy Script ${deploy_script}")
-install(SCRIPT ${deploy_script})
 
 # message(STATUS "Path to qml: ${CMAKE_SOURCE_DIR}/src/res/qml")
 #This should be re-dundant but for some reason Visual Studio really wants this

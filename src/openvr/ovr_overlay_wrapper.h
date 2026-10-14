@@ -40,9 +40,6 @@ OverlayError setOverlayAlpha( vr::VROverlayHandle_t overlayHandle,
 OverlayError setOverlayWidthInMeters( vr::VROverlayHandle_t overlayHandle,
                                       float widthInMeters,
                                       std::string customErrorMsg = "" );
-OverlayError setOverlayFromFile( vr::VROverlayHandle_t overlayHandle,
-                                 std::string fileName,
-                                 std::string customErrorMsg = "" );
 OverlayError setOverlayFromQImage( vr::VROverlayHandle_t overlayHandle,
                                    QImage& image,
                                    std::string customErrorMsg = "" );
