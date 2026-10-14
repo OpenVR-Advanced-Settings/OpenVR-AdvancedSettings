@@ -63,6 +63,7 @@ set(SRCS
     src/utils/FrameRateUtils.cpp
     src/utils/paths.cpp
     src/utils/setup.cpp
+    src/utils/sound_player.cpp
     src/utils/update_rate.cpp
 )
 
@@ -105,6 +106,7 @@ set(HEADERS
     src/utils/FrameRateUtils.h
     src/utils/paths.h
     src/utils/setup.h
+    src/utils/sound_player.h
     src/utils/update_rate.h
     src/utils/Matrix.h
     src/quaternion/quaternion.h

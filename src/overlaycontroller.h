@@ -18,7 +18,6 @@
 #include <QQuickWindow>
 #include <QQuickItem>
 #include <QQuickRenderControl>
-#include <QSoundEffect>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -47,6 +46,7 @@
 #include "alarm_clock/vr_alarm.h"
 
 #include "utils/update_rate.h"
+#include "utils/sound_player.h"
 
 namespace application_strings
 {
@@ -151,9 +151,7 @@ private:
 
     utils::ChaperoneUtils m_chaperoneUtils;
 
-    QSoundEffect m_activationSoundEffect;
-    QSoundEffect m_focusChangedSoundEffect;
-    QSoundEffect m_alarm01SoundEffect;
+    std::unique_ptr<SoundPlayer> m_soundPlayer;
 
     uint64_t m_currentFrame = 0;
     uint64_t m_lastFrame = 0;

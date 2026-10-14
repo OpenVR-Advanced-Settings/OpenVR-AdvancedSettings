@@ -126,15 +126,8 @@ OverlayController::OverlayController( bool desktopMode,
     m_runtimePathUrl = QUrl::fromLocalFile( tempRuntimePath );
     qInfo() << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
-    const double initVol = soundVolume();
-    m_activationSoundEffect.setSource( QUrl( "qrc:/qt/qml/AdvancedSettings/sounds/click.wav" ) );
-    m_activationSoundEffect.setVolume( initVol );
-
-    m_focusChangedSoundEffect.setSource( QUrl( "qrc:/qt/qml/AdvancedSettings/sounds/focus.wav" ) );
-    m_focusChangedSoundEffect.setVolume( initVol );
-
-    m_alarm01SoundEffect.setSource( QUrl( "qrc:/qt/qml/AdvancedSettings/sounds/alarm01.wav" ) );
-    m_alarm01SoundEffect.setVolume( 1.0 );
+    //Makes a Thread for Sound, to prevent stalls
+    m_soundPlayer = std::make_unique<SoundPlayer>( soundVolume() );
 
     // If we have desktop mode flag ignore waht toggle says otherwise we use
     // toggle
@@ -383,6 +376,8 @@ void OverlayController::Shutdown()
                 this,
                 SLOT( OnTimeoutPumpEvents() ) );
     m_pumpEventsTimer.stop();
+
+    m_soundPlayer->shutdown();
 
     if ( m_pRenderTimer )
     {
@@ -1815,10 +1810,7 @@ void OverlayController::setKeyboardPos()
 
 void OverlayController::setSoundVolume( double value, bool notify )
 {
-    m_activationSoundEffect.setVolume( value );
-    m_focusChangedSoundEffect.setVolume( value );
-    // leaving alarm sound alone for now as chaperone warning setting effects it
-    // m_alarm01SoundEffect.setVolume( value);
+    m_soundPlayer->setVolume( value );
     settings::setSetting( settings::DoubleSetting::APPLICATION_appVolume,
                           value );
     if ( notify )
@@ -1853,7 +1845,7 @@ void OverlayController::playActivationSound()
 {
     if ( !m_noSound )
     {
-        m_activationSoundEffect.play();
+        m_soundPlayer->playActivation();
     }
 }
 
@@ -1861,34 +1853,26 @@ void OverlayController::playFocusChangedSound()
 {
     if ( !m_noSound )
     {
-        m_focusChangedSoundEffect.play();
+        m_soundPlayer->playFocusChanged();
     }
 }
 
 void OverlayController::playAlarm01Sound( bool loop )
 {
-    if ( !m_noSound && !m_alarm01SoundEffect.isPlaying() )
+    if ( !m_noSound )
     {
-        if ( loop )
-        {
-            m_alarm01SoundEffect.setLoopCount( QSoundEffect::Infinite );
-        }
-        else
-        {
-            m_alarm01SoundEffect.setLoopCount( 1 );
-        }
-        m_alarm01SoundEffect.play();
+        m_soundPlayer->playAlarm01( loop );
     }
 }
 
 void OverlayController::setAlarm01SoundVolume( float vol )
 {
-    m_alarm01SoundEffect.setVolume( static_cast<double>( vol ) );
+    m_soundPlayer->setAlarm01Volume( static_cast<double>( vol ) );
 }
 
 void OverlayController::cancelAlarm01Sound()
 {
-    m_alarm01SoundEffect.stop();
+    m_soundPlayer->cancelAlarm01();
 }
 
 void OverlayController::OnNetworkReply( QNetworkReply* reply )
