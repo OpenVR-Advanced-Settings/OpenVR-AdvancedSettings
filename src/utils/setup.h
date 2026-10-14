@@ -10,6 +10,8 @@
 #include <iostream>
 #include <QtLogging>
 #include <QtDebug>
+#include <QSGRendererInterface>
+#include <optional>
 #include "../openvr/openvr_init.h"
 
 enum ReturnErrorCode
@@ -28,6 +30,9 @@ struct CommandLineOptions
     const bool forceInstallManifest = false;
     const bool forceRemoveManifest = false;
     const bool resetSettings = false;
+    // Unset means Qt picks its platform default.
+    const std::optional<QSGRendererInterface::GraphicsApi> graphicsApi
+        = std::nullopt;
 };
 
 // Manages the programs control flow and main settings.
@@ -92,6 +97,16 @@ constexpr auto k_forceRemoveManifestDescription
 constexpr auto k_resetSettings = "reset-steamvr-settings";
 constexpr auto k_resetSettingsDescription
     = "Resets all SteamVR values that can be modified in OVRAS to defaults.";
+
+constexpr auto k_graphicsApi = "graphics-api";
+#ifdef _WIN32
+constexpr auto k_graphicsApiDescription
+    = "Overrides the rendering backend: d3d11, vulkan or opengl.";
+#else
+constexpr auto k_graphicsApiDescription
+    = "Overrides the rendering backend: vulkan or opengl.";
+#endif
+constexpr auto k_graphicsApiValueName = "backend";
 
 CommandLineOptions returnCommandLineParser( const MyQApplication& application );
 

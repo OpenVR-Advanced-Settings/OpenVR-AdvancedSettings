@@ -114,7 +114,6 @@ private:
     QQuickRenderControl m_renderControl;
     QQuickWindow m_window{ &m_renderControl };
 
-    std::optional<vr::ETextureType> m_cached_vr_texture_type;
     std::unique_ptr<QRhiTexture> m_pFBTexture;
     std::unique_ptr<QRhiRenderBuffer> m_pDepthStencil;
     std::unique_ptr<QRhiTextureRenderTarget> m_render_target;
@@ -207,6 +206,9 @@ private:
 
 public:
     void SetOverlayFromQRhiTexture( QRhiTexture& tex );
+#if QT_CONFIG( vulkan )
+    void TransitionVulkanTextureForOpenVR( QRhiTexture& tex );
+#endif
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
     virtual ~OverlayController();
 

@@ -83,6 +83,10 @@ CommandLineOptions returnCommandLineParser( const MyQApplication& application )
                                       k_resetSettingsDescription );
     parser.addOption( resetSettings );
 
+    QCommandLineOption graphicsApi(
+        k_graphicsApi, k_graphicsApiDescription, k_graphicsApiValueName );
+    parser.addOption( graphicsApi );
+
     parser.process( application );
 
     const bool desktopModeEnabled = parser.isSet( desktopMode );
@@ -109,10 +113,31 @@ CommandLineOptions returnCommandLineParser( const MyQApplication& application )
     if ( resetSettingsEnabled )
         qInfo() << "Reset SteamVR Settings.";
 
+    std::optional<QSGRendererInterface::GraphicsApi> graphicsApiValue;
+    if ( parser.isSet( graphicsApi ) )
+    {
+        const QString value = parser.value( graphicsApi ).toLower();
+        if ( value == "vulkan" )
+            graphicsApiValue = QSGRendererInterface::Vulkan;
+        if ( value == "opengl" )
+            graphicsApiValue = QSGRendererInterface::OpenGL;
+#ifdef _WIN32
+        if ( value == "d3d11" )
+            graphicsApiValue = QSGRendererInterface::Direct3D11;
+#endif
+
+        if ( graphicsApiValue )
+            qInfo() << "Graphics API override:" << value;
+        else
+            qCritical() << "Unknown graphics API" << value
+                        << ", using Qt's default.";
+    }
+
     const CommandLineOptions commandLineArgs{
         desktopModeEnabled,         forceNoSoundEnabled,
         forceNoManifestEnabled,     forceInstallManifestEnabled,
-        forceRemoveManifestEnabled, resetSettingsEnabled
+        forceRemoveManifestEnabled, resetSettingsEnabled,
+        graphicsApiValue
     };
 
     qInfo() << "Command line arguments processed.";

@@ -12,6 +12,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsEllipseItem>
 #include <QQuickGraphicsConfiguration>
+#include <QQuickGraphicsDevice>
 #include <QOpenGLExtraFunctions>
 #include <QCursor>
 #include <QProcess>
@@ -30,11 +31,58 @@
 #include <qnamespace.h>
 #include <rhi/qrhi.h>
 #include <stdexcept>
-#include <d3d11.h>
+#if QT_CONFIG( vulkan )
+#include <QVulkanInstance>
+#include <QVulkanFunctions>
+#endif
 
 // application namespace
 namespace advsettings
 {
+#if QT_CONFIG( vulkan )
+namespace
+{
+    // OpenVR returns Vulkan extensions as a single space separated string.
+    QByteArrayList splitVulkanExtensions( const QByteArray& buffer )
+    {
+        QByteArrayList extensions = QByteArray( buffer.constData() ).split( ' ' );
+        extensions.removeIf( []( const QByteArray& ext ) { return ext.isEmpty(); } );
+        return extensions;
+    }
+
+    QByteArrayList getOpenVRVulkanInstanceExtensions()
+    {
+        if ( !vr::VRCompositor() )
+            return {};
+        const uint32_t size
+            = vr::VRCompositor()->GetVulkanInstanceExtensionsRequired( nullptr,
+                                                                       0 );
+        if ( size == 0 )
+            return {};
+        QByteArray buffer( static_cast<qsizetype>( size ), '\0' );
+        vr::VRCompositor()->GetVulkanInstanceExtensionsRequired( buffer.data(),
+                                                                 size );
+        return splitVulkanExtensions( buffer );
+    }
+
+    QByteArrayList
+        getOpenVRVulkanDeviceExtensions( VkPhysicalDevice physicalDevice )
+    {
+        if ( !vr::VRCompositor() )
+            return {};
+        const uint32_t size
+            = vr::VRCompositor()->GetVulkanDeviceExtensionsRequired(
+                physicalDevice, nullptr, 0 );
+        if ( size == 0 )
+            return {};
+        QByteArray buffer( static_cast<qsizetype>( size ), '\0' );
+        vr::VRCompositor()->GetVulkanDeviceExtensionsRequired(
+            physicalDevice, buffer.data(), size );
+        return splitVulkanExtensions( buffer );
+    }
+} // namespace
+#endif
+
 int verifyCustomTickRate( const int tickRate )
 {
     if ( tickRate < 1 )
@@ -355,6 +403,7 @@ void OverlayController::Shutdown()
     }
     m_render_pass_descriptor.reset();
     m_render_target.reset();
+    m_pDepthStencil.reset();
     m_pFBTexture.reset();
 }
 
@@ -412,18 +461,64 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                  this,
                  SLOT( renderOverlay() ) );
 
+        // Make Qt render on the same GPU SteamVR uses, with any extensions
+        // OpenVR needs to share textures with it.
+        QQuickGraphicsConfiguration graphicsConfig;
+        switch ( QQuickWindow::graphicsApi() )
+        {
 #if QT_CONFIG( vulkan )
-        if ( m_window.graphicsApi() == QSGRendererInterface::Vulkan )
+        case QSGRendererInterface::Vulkan:
         {
             m_vulkanInstance.reset( new QVulkanInstance );
             m_vulkanInstance->setExtensions(
-                QQuickGraphicsConfiguration::preferredInstanceExtensions() );
+                QQuickGraphicsConfiguration::preferredInstanceExtensions()
+                + getOpenVRVulkanInstanceExtensions() );
             if ( !m_vulkanInstance->create() )
                 throw std::runtime_error( "Cannot create vulkan instance" );
 
             m_window.setVulkanInstance( m_vulkanInstance.get() );
+
+            uint64_t hmdPhysicalDevice = 0;
+            vr::VRSystem()->GetOutputDevice( &hmdPhysicalDevice,
+                                             vr::TextureType_Vulkan,
+                                             m_vulkanInstance->vkInstance() );
+            auto physicalDevice
+                = reinterpret_cast<VkPhysicalDevice>( hmdPhysicalDevice );
+            if ( physicalDevice != VK_NULL_HANDLE )
+            {
+                m_window.setGraphicsDevice(
+                    QQuickGraphicsDevice::fromPhysicalDevice( physicalDevice ) );
+                graphicsConfig.setDeviceExtensions(
+                    getOpenVRVulkanDeviceExtensions( physicalDevice ) );
+            }
+            else
+            {
+                qWarning() << "OpenVR did not report a Vulkan output device, "
+                              "using Qt's default";
+            }
         }
+        break;
 #endif
+#ifdef _WIN32
+        case QSGRendererInterface::Direct3D11:
+        {
+            // For D3D, OpenVR returns the adapter LUID.
+            uint64_t adapterLuid = 0;
+            vr::VRSystem()->GetOutputDevice( &adapterLuid,
+                                             vr::TextureType_DirectX );
+            if ( adapterLuid != 0 )
+            {
+                m_window.setGraphicsDevice( QQuickGraphicsDevice::fromAdapter(
+                    static_cast<quint32>( adapterLuid & 0xFFFFFFFF ),
+                    static_cast<qint32>( adapterLuid >> 32 ) ) );
+            }
+        }
+        break;
+#endif
+        default:
+            break;
+        }
+        m_window.setGraphicsConfiguration( graphicsConfig );
 
         if ( !m_renderControl.initialize() )
             throw std::runtime_error( "could not initialize m_renderControl" );
@@ -562,11 +657,20 @@ void OverlayController::SetOverlayFromQRhiTexture( QRhiTexture& tex )
 {
     vr::Texture_t vrTex = {};
     QRhi* rhi = this->rhi();
+#if QT_CONFIG( vulkan )
+    // Must outlive the switch, vrTex.handle points at it.
+    vr::VRVulkanTextureData_t vulkanData = {};
+#endif
 
     switch ( rhi->backend() )
     {
     case QRhi::OpenGLES2:
     {
+        // OpenVR needs a current GL context and the rendering flushed.
+        if ( rhi->makeThreadLocalNativeContextCurrent() )
+        {
+            QOpenGLContext::currentContext()->functions()->glFlush();
+        }
         vrTex.handle = reinterpret_cast<void*>( tex.nativeTexture().object );
         vrTex.eType = vr::TextureType_OpenGL;
         vrTex.eColorSpace = vr::ColorSpace_Auto;
@@ -574,19 +678,18 @@ void OverlayController::SetOverlayFromQRhiTexture( QRhiTexture& tex )
     break;
     case QRhi::D3D11:
     {
-        vrTex.handle = reinterpret_cast<ID3D11Texture2D *>( tex.nativeTexture().object );
+        vrTex.handle = reinterpret_cast<void*>( tex.nativeTexture().object );
         vrTex.eType = vr::TextureType_DirectX;
         vrTex.eColorSpace = vr::ColorSpace_Auto;
-    
     }
     break;
 #if QT_CONFIG( vulkan )
     case QRhi::Vulkan:
     {
         const QRhiVulkanNativeHandles* vulkan_handles
-            = reinterpret_cast<const QRhiVulkanNativeHandles*>(
+            = static_cast<const QRhiVulkanNativeHandles*>(
                 rhi->nativeHandles() );
-        vr::VRVulkanTextureData_t vulkan = {
+        vulkanData = {
             .m_nImage = tex.nativeTexture().object,
             .m_pDevice = vulkan_handles->dev,
             .m_pPhysicalDevice = vulkan_handles->physDev,
@@ -595,10 +698,11 @@ void OverlayController::SetOverlayFromQRhiTexture( QRhiTexture& tex )
             .m_nQueueFamilyIndex = vulkan_handles->gfxQueueIdx,
             .m_nWidth = static_cast<uint32_t>( tex.pixelSize().width() ),
             .m_nHeight = static_cast<uint32_t>( tex.pixelSize().height() ),
-            .m_nFormat = static_cast<uint32_t>(tex.format()),
+            // m_pFBTexture is QRhiTexture::RGBA8
+            .m_nFormat = VK_FORMAT_R8G8B8A8_UNORM,
             .m_nSampleCount = static_cast<uint32_t>( tex.sampleCount() ),
         };
-        vrTex.handle = &vulkan;
+        vrTex.handle = &vulkanData;
         vrTex.eType = vr::TextureType_Vulkan;
         vrTex.eColorSpace = vr::ColorSpace_Auto;
     }
@@ -610,6 +714,55 @@ void OverlayController::SetOverlayFromQRhiTexture( QRhiTexture& tex )
     }
     vr::VROverlay()->SetOverlayTexture( m_ulOverlayHandle, &vrTex );
 }
+
+#if QT_CONFIG( vulkan )
+// OpenVR expects Vulkan images in VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL.
+// Must be called between render() and endFrame() so the barrier is part of
+// the frame's command buffer.
+void OverlayController::TransitionVulkanTextureForOpenVR( QRhiTexture& tex )
+{
+    const QRhiTexture::NativeTexture native = tex.nativeTexture();
+    const auto currentLayout = static_cast<VkImageLayout>( native.layout );
+    if ( currentLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL )
+        return;
+
+    const auto* rhiHandles = static_cast<const QRhiVulkanNativeHandles*>(
+        rhi()->nativeHandles() );
+    QRhiCommandBuffer* cb = m_renderControl.commandBuffer();
+
+    cb->beginExternal();
+    const auto* cbHandles
+        = static_cast<const QRhiVulkanCommandBufferNativeHandles*>(
+            cb->nativeHandles() );
+
+    VkImageMemoryBarrier barrier = {};
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+    barrier.oldLayout = currentLayout;
+    barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = reinterpret_cast<VkImage>( native.object );
+    barrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+
+    rhiHandles->inst->deviceFunctions( rhiHandles->dev )
+        ->vkCmdPipelineBarrier( cbHandles->commandBuffer,
+                                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                                VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                0,
+                                0,
+                                nullptr,
+                                0,
+                                nullptr,
+                                1,
+                                &barrier );
+    cb->endExternal();
+
+    // Tell QRhi about the new layout so it transitions back on the next frame.
+    tex.setNativeLayout( VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL );
+}
+#endif
 
 void OverlayController::renderOverlay()
 {
@@ -625,6 +778,12 @@ void OverlayController::renderOverlay()
         m_renderControl.beginFrame();
         m_renderControl.sync();
         m_renderControl.render();
+#if QT_CONFIG( vulkan )
+        if ( rhi()->backend() == QRhi::Vulkan )
+        {
+            TransitionVulkanTextureForOpenVR( *m_pFBTexture );
+        }
+#endif
         m_renderControl.endFrame();
 
         SetOverlayFromQRhiTexture( *m_pFBTexture );

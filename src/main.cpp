@@ -36,6 +36,13 @@ int main( int argc, char* argv[] )
     const auto commandLineArgs
         = argument::returnCommandLineParser( mainEventLoop );
 
+    // Must happen before any QQuickWindow is created (OverlayController owns
+    // one).
+    if ( commandLineArgs.graphicsApi )
+    {
+        QQuickWindow::setGraphicsApi( *commandLineArgs.graphicsApi );
+    }
+
     // It is important that either install_manifest or remove_manifest are true,
     // otherwise the handleManifests function will not behave properly.
     if ( commandLineArgs.forceInstallManifest
