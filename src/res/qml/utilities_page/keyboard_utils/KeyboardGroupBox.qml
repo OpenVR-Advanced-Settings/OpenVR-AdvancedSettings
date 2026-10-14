@@ -31,7 +31,7 @@ SettingsGroupBox {
                 }
                 Connections {
                     target: OverlayController
-                    function onKeyBoardInputSignal() {
+                    function onKeyBoardInputSignal(input, userValue) {
                         if (userValue == 601) {
                             UtilitiesTabController.sendKeyboardInput(input)
                         }

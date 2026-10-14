@@ -71,7 +71,7 @@ TextField {
                     myTextField.text = text.slice(0,-1)
                     return
                 }
-                else if(input == '\e'){
+                else if(input == '\x7f'){
                     myTextField.text = text.slice(0,cursorPosition)+text.slice(cursorPosition+1)
                     return;
                 }
