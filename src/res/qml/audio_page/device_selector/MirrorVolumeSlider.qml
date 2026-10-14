@@ -9,13 +9,14 @@ ColumnLayout {
     spacing: 0
     MirrorDeviceSelector {
         id: audioMirrorNameCombo
+        Layout.fillWidth: true
     }
     LineSeparator {
     }
     RowLayout {
         Layout.preferredHeight: 48
         MyText {
-            text: "Mirror Volume:"
+            text: "Mirror Volume"
             Layout.preferredWidth: 260
         }
 

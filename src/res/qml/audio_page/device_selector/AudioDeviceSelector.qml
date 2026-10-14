@@ -7,13 +7,13 @@ import "../../common"
 RowLayout {
     id: audioPlaybackNameCombo
     Layout.preferredHeight: 48
-    property string deviceText: "Audio Device: "
+    property string deviceText: "Audio Device"
 
     property alias devices: selector.model
     property alias deviceIndex: selector.currentIndex
     MyText {
         text: deviceText
-        Layout.preferredWidth: 200
+        Layout.preferredWidth: 260
     }
 
     MyToggleButton {

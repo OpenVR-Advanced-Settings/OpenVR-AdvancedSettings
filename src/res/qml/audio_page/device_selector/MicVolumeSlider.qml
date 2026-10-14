@@ -8,13 +8,14 @@ ColumnLayout {
     spacing: 0
     MicDeviceSelector {
         id: audioMicNameCombo
+        Layout.fillWidth: true
     }
     LineSeparator {
     }
     RowLayout {
         Layout.preferredHeight: 48
         MyText {
-            text: "Microphone Volume:"
+            text: "Microphone Volume"
             Layout.preferredWidth: 260
         }
         

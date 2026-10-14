@@ -8,7 +8,7 @@ RowLayout {
     id: audioMirrorNameCombo
     Layout.preferredHeight: 48
     // Text shown to the left.
-    property string deviceText: "Mirror Device: "
+    property string deviceText: "Mirror Device"
 
     // The entries in the dropdown box.
     property alias devices: selector.model
@@ -21,9 +21,7 @@ RowLayout {
     }
     MyComboBox {
         id: selector
-        Layout.maximumWidth: 850
-        Layout.minimumWidth: 850
-        Layout.preferredWidth: 850
+        Layout.fillWidth: true
         onActivated: {
             if (deviceIndex >= 0) {
                 // The mirror device list contains a "None" entry, hence

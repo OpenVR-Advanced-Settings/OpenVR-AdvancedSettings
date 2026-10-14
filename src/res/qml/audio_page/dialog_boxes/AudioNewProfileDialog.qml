@@ -17,7 +17,7 @@ MyDialogOkCancelPopup {
             Layout.leftMargin: 16
             Layout.rightMargin: 16
             MyText {
-                text: "Name: "
+                text: "Name"
             }
             MyTextField {
                 id: audioNewProfileName

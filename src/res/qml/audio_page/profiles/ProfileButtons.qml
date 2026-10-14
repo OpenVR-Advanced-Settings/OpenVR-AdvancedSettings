@@ -24,7 +24,7 @@ ColumnLayout {
 
         MyText {
             Layout.preferredWidth: 150
-            text: "Audio Profile:"
+            text: "Audio Profile"
             visible: false
         }
 

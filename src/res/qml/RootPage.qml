@@ -93,73 +93,119 @@ MyStackViewPage {
 
         SettingsGroupBox {
             title: "Stats"
-            GridLayout {
+            ColumnLayout {
                 anchors.fill: parent
-                columns: 4
-                columnSpacing: 24
-                rowSpacing: 8
+                spacing: 0
 
-                MyText {
-                    text: "Tracking Universe"
-                    color: "#8b929a"
-                }
-                MyText {
-                    id: summaryPlaySpaceModeText
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignRight
-                    text: "Unknown"
-                }
-                MyText {
-                    text: "HMD Rotations"
-                    color: "#8b929a"
-                }
-                MyText {
-                    id: summaryHmdRotationsText
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignRight
-                    text: "-999.9"
-                }
-
-                MyText {
-                    text: "Dropped Frames"
-                    color: "#8b929a"
-                }
-                MyText {
-                    id: summaryDroppedFramesText
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignRight
-                    text: "0"
-                }
-                MyText {
-                    text: "Reprojected Frames"
-                    color: "#8b929a"
-                }
-                MyText {
-                    id: summaryReprojectedFramesText
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignRight
-                    text: "0"
+                RowLayout {
+                    Layout.preferredHeight: 40
+                    spacing: 16
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        MyText {
+                            text: "Tracking Universe"
+                            color: "#8b929a"
+                        }
+                        MyText {
+                            id: summaryPlaySpaceModeText
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignRight
+                            text: "Unknown"
+                        }
+                    }
+                    VerticalSeparator {
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        MyText {
+                            text: "HMD Rotations"
+                            color: "#8b929a"
+                        }
+                        MyText {
+                            id: summaryHmdRotationsText
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignRight
+                            text: "-999.9"
+                        }
+                    }
                 }
 
-                MyText {
-                    text: "Timed Out"
-                    color: "#8b929a"
+                LineSeparator {
                 }
-                MyText {
-                    id: summaryTimedOutText
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignRight
-                    text: "0"
+
+                RowLayout {
+                    Layout.preferredHeight: 40
+                    spacing: 16
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        MyText {
+                            text: "Dropped Frames"
+                            color: "#8b929a"
+                        }
+                        MyText {
+                            id: summaryDroppedFramesText
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignRight
+                            text: "0"
+                        }
+                    }
+                    VerticalSeparator {
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        MyText {
+                            text: "Reprojected Frames"
+                            color: "#8b929a"
+                        }
+                        MyText {
+                            id: summaryReprojectedFramesText
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignRight
+                            text: "0"
+                        }
+                    }
                 }
-                MyText {
-                    text: "Reprojection Ratio"
-                    color: "#8b929a"
+
+                LineSeparator {
                 }
-                MyText {
-                    id: summaryTotalRatioText
-                    Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignRight
-                    text: "0"
+
+                RowLayout {
+                    Layout.preferredHeight: 40
+                    spacing: 16
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        MyText {
+                            text: "Timed Out"
+                            color: "#8b929a"
+                        }
+                        MyText {
+                            id: summaryTimedOutText
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignRight
+                            text: "0"
+                        }
+                    }
+                    VerticalSeparator {
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        MyText {
+                            text: "Reprojection Ratio"
+                            color: "#8b929a"
+                        }
+                        MyText {
+                            id: summaryTotalRatioText
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignRight
+                            text: "0"
+                        }
+                    }
                 }
             }
         }

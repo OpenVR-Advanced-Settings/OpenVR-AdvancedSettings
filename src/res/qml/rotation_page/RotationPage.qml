@@ -22,6 +22,9 @@ MyStackViewPage {
         }
         ViewRatchetGroupBox{
             id: vgiiewRatchetGroupBox
+            // Untitled, so it reads as a second row of the box above.
+            // Pull it up so the gap matches a LineSeparator (2px).
+            Layout.topMargin: -6
         }
         SpaceTurnGroupBox{
             id:spaceTurnGroupBox
