@@ -111,7 +111,8 @@ int main( int argc, char* argv[] )
              || settings::getSetting(
                  settings::BoolSetting::APPLICATION_desktopModeToggle ) )
         {
-            //TODO
+            //Qrhi seems to work automatically, it will default to system default,
+            //or if using the launch option it will move to correct rendering system
             qDebug() << "Desktop MODE!"; 
             auto m_pWindow = new QQuickWindow();
             qobject_cast<QQuickItem*>( quickObj )

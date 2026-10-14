@@ -1,7 +1,8 @@
 Material Symbols
 ---
 
-The SVG icons under `src/res/img` (except `main_menu_icons/discord_tab_icon.svg`)
+The SVG icons under `src/res/img` (except `main_menu_icons/discord_tab_icon.svg`
+and `main_menu_icons/youtube_tab_icon.svg`)
 are Material Symbols (Outlined, 24px) by Google, from https://fonts.google.com/icons
 and https://github.com/google/material-design-icons.
 

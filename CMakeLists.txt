@@ -231,6 +231,7 @@ set(ResourcesRC
     src/res/img/main_menu_icons/steamvr_tab_icon.svg
     src/res/img/main_menu_icons/utilities_tab_icon.svg
     src/res/img/main_menu_icons/video_tab_icon.svg
+    src/res/img/main_menu_icons/youtube_tab_icon.svg
     src/res/img/rotation/autoturn.png
     src/res/img/rotation/noautoturn.png
     src/res/img/rotation/noautoturn.svg

@@ -180,7 +180,7 @@ Rectangle {
             }
         }
 
-        // Footer bar: Discord invite link and language indicator.
+        // Footer bar: Discord invite link, YouTube channel link and language indicator.
         Rectangle {
             id: sideBarFooter
             anchors.left: parent.left
@@ -235,6 +235,45 @@ Rectangle {
                 onClicked: {
                     OverlayController.playActivationSound()
                     Qt.openUrlExternally("https://discord.gg/CX8Kh8G")
+                }
+            }
+
+            Button {
+                id: youtubeButton
+                anchors.left: discordButton.right
+                anchors.leftMargin: 4
+                anchors.verticalCenter: parent.verticalCenter
+                width: 36
+                height: 32
+                // Same Material padding overrides as discordButton to keep the icon centered.
+                leftPadding: 0
+                rightPadding: 0
+                verticalPadding: 0
+                topInset: 0
+                bottomInset: 0
+                hoverEnabled: true
+                background: Rectangle {
+                    radius: 4
+                    color: youtubeButton.activeFocus ? "#323741" : "transparent"
+                }
+                contentItem: Item {
+                    Image {
+                        anchors.centerIn: parent
+                        source: root.iconBase + "youtube_tab_icon.svg"
+                        sourceSize.width: 24
+                        sourceSize.height: 24
+                    }
+                }
+                onHoveredChanged: {
+                    if (hovered) {
+                        forceActiveFocus()
+                    } else {
+                        focus = false
+                    }
+                }
+                onClicked: {
+                    OverlayController.playActivationSound()
+                    Qt.openUrlExternally("https://www.youtube.com/@OVRAdvancedSettings")
                 }
             }
 
