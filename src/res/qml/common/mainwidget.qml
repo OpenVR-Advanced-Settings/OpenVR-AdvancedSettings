@@ -240,8 +240,9 @@ Rectangle {
 
             Button {
                 id: youtubeButton
-                anchors.left: discordButton.right
-                anchors.leftMargin: 4
+                // Centered in the gap so Discord, YouTube and language are equally spaced.
+                x: discordButton.x + discordButton.width
+                   + (languageButton.x - discordButton.x - discordButton.width - width) / 2
                 anchors.verticalCenter: parent.verticalCenter
                 width: 36
                 height: 32
