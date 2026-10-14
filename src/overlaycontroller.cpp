@@ -141,7 +141,6 @@ OverlayController::OverlayController( bool desktopMode,
     {
         m_desktopMode = desktopModeToggle();
     }
-    m_desktopMode = false;
 
     if ( !vr::VROverlay() )
     {
