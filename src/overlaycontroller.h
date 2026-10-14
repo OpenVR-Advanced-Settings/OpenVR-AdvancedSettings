@@ -186,6 +186,9 @@ public:
 
 private:
     QPointF getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
+    void sendMouseEvent( QEvent::Type type,
+                         const QPointF& pos,
+                         Qt::MouseButton button );
     void processInputBindings();
     void processMediaKeyBindings();
     void processMotionBindings();

@@ -19,6 +19,7 @@
 #include <QMessageBox>
 #include <QtLogging>
 #include <QtDebug>
+#include <qpa/qwindowsysteminterface.h>
 #include <iostream>
 #include <cmath>
 #include <openvr.h>
@@ -814,6 +815,25 @@ QPointF OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
     return { mouse.x, y };
 }
 
+// Mouse events must go through QGuiApplication's input pipeline rather than
+// being sent to the window directly. QT6 change
+
+//This along with QRhi is technically part of QGUI Private.
+//Minor Version changes could break it, but is required.
+void OverlayController::sendMouseEvent( QEvent::Type type,
+                                        const QPointF& pos,
+                                        Qt::MouseButton button )
+{
+    QWindowSystemInterface::handleMouseEvent<
+        QWindowSystemInterface::SynchronousDelivery>(
+        &m_window,
+        pos,
+        m_window.mapToGlobal( pos ),
+        m_lastMouseButtons,
+        button,
+        type );
+}
+
 void OverlayController::processMediaKeyBindings()
 {
     if ( m_actions.nextSong() )
@@ -1320,14 +1340,8 @@ void OverlayController::mainEventLoop()
             QPointF ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
             if ( ptNewMouse != m_ptLastMouse )
             {
-                QMouseEvent mouseEvent( QEvent::MouseMove,
-                                        ptNewMouse,
-                                        m_window.mapToGlobal( ptNewMouse ),
-                                        Qt::NoButton,
-                                        m_lastMouseButtons,
-                                        Qt::NoModifier );
                 m_ptLastMouse = ptNewMouse;
-                QCoreApplication::sendEvent( &m_window, &mouseEvent );
+                sendMouseEvent( QEvent::MouseMove, ptNewMouse, Qt::NoButton );
                 OnRenderRequest();
             }
         }
@@ -1341,13 +1355,7 @@ void OverlayController::mainEventLoop()
                       ? Qt::RightButton
                       : Qt::LeftButton;
             m_lastMouseButtons |= button;
-            QMouseEvent mouseEvent( QEvent::MouseButtonPress,
-                                    ptNewMouse,
-                                    m_window.mapToGlobal( ptNewMouse ),
-                                    button,
-                                    m_lastMouseButtons,
-                                    Qt::NoModifier );
-            QCoreApplication::sendEvent( &m_window, &mouseEvent );
+            sendMouseEvent( QEvent::MouseButtonPress, ptNewMouse, button );
         }
         break;
 
@@ -1359,13 +1367,7 @@ void OverlayController::mainEventLoop()
                       ? Qt::RightButton
                       : Qt::LeftButton;
             m_lastMouseButtons &= ~button;
-            QMouseEvent mouseEvent( QEvent::MouseButtonRelease,
-                                    ptNewMouse,
-                                    m_window.mapToGlobal( ptNewMouse ),
-                                    button,
-                                    m_lastMouseButtons,
-                                    Qt::NoModifier );
-            QCoreApplication::sendEvent( &m_window, &mouseEvent );
+            sendMouseEvent( QEvent::MouseButtonRelease, ptNewMouse, button );
         }
         break;
 
