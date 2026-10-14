@@ -17,6 +17,7 @@ Rectangle {
     color: "#1d2026"
     width: 1400
     height: 800
+    Material.accent: "#1a9fff"
 
     // Index into sideBarModel of the page currently shown.
     property int currentSideBarIndex: 0
