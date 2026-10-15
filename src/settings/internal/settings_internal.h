@@ -25,7 +25,7 @@ struct QtInfo
     const std::string settingName;
 };
 
-inline [[nodiscard]] QSettings& getQSettings()
+[[nodiscard]] inline QSettings& getQSettings()
 {
     static QSettings s( QSettings::IniFormat,
                         QSettings::UserScope,
@@ -35,7 +35,7 @@ inline [[nodiscard]] QSettings& getQSettings()
     return s;
 }
 
-inline [[nodiscard]] std::string getQtCategoryName( const SettingCategory category )
+[[nodiscard]] inline std::string getQtCategoryName( const SettingCategory category )
 {
     switch ( category )
     {
@@ -63,7 +63,7 @@ inline [[nodiscard]] std::string getQtCategoryName( const SettingCategory catego
     return "no-value";
 }
 
-inline [[nodiscard]] QVariant getQtSetting( const SettingCategory category,
+[[nodiscard]] inline QVariant getQtSetting( const SettingCategory category,
                                        const std::string qtSettingName )
 {
     getQSettings().beginGroup( getQtCategoryName( category ).c_str() );

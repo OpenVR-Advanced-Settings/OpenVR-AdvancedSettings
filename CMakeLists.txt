@@ -450,7 +450,7 @@ elseif (UNIX)
                 src/keyboard_input/input_sender_X11.cpp
         )
         find_package(X11 REQUIRED)
-        target_link_libraries(AdvancedSettings PRIVATE ${X11_LIBRARIES})
+        target_link_libraries(AdvancedSettings PRIVATE ${X11_LIBRARIES} X11::Xtst)
     elseif (NOT APPLE AND noX11)
         target_sources(AdvancedSettings PRIVATE
                 src/keyboard_input/input_sender_dummy.cpp
