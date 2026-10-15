@@ -556,7 +556,6 @@ install(IMPORTED_RUNTIME_ARTIFACTS openvr_api
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-# The app looks these up in its binary directory at runtime
 install(FILES
         "${CMAKE_SOURCE_DIR}/Readme.md"
         "${CMAKE_SOURCE_DIR}/LICENSE"
@@ -577,8 +576,7 @@ if (WIN32)
     )
 endif ()
 
-# Deploys Qt libraries, plugins and QML modules. On Linux, system libraries
-# (glibc, libGL, libvulkan, X11/xcb, pulse, dbus) are excluded by default.
+# Deploys Qt libraries, plugins and QML modules
 # qgtk3 is excluded because it needs GTK3, which the Steam Linux Runtime
 # (steamrt4) does not ship; Qt falls back to its built-in theme without it.
 qt_generate_deploy_qml_app_script(

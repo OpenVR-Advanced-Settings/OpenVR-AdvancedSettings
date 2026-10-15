@@ -4,6 +4,7 @@
 		"app_key": "steam.overlay.1009850",
 		"launch_type": "binary",
 		"binary_path_windows": "AdvancedSettings.exe",
+		"binary_path_linux": "AdvancedSettings_app",
 		"is_dashboard_overlay": true,
 
 		"strings": {
