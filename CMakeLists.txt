@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 4.1)
 #app version will be auto-deployed to app
 if(NOT DEFINED OVRAS_VERSION)
     set(OVRAS_VERSION 6.0.0)
