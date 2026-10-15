@@ -17,7 +17,7 @@ set(CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1)
 #find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core)
 #find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets QuickControls2 QuickDialogs2 Svg)
 #find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS DBus)
-find_package(Qt6 REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets QuickControls2 QuickDialogs2 Svg Core5Compat)
+find_package(Qt6 REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets QuickControls2 QuickDialogs2 Svg GuiPrivate)
 find_package(Vulkan REQUIRED)
 
 qt_standard_project_setup(REQUIRES 6.8)
@@ -314,7 +314,6 @@ endif ()
 
 target_link_libraries(AdvancedSettings PRIVATE
     Qt::Gui
-    Qt6::Core5Compat
     # For QRhi
     Qt::GuiPrivate
     Qt::Multimedia
