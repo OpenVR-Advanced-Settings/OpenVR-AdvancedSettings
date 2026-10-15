@@ -1,11 +1,10 @@
 #include "RotationTabController.h"
 #include <QQuickWindow>
-#include <QPainter>
-#include <QSvgRenderer>
 #include <QtLogging>
 #include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../settings/settings.h"
+#include "../utils/ImageUtils.h"
 #include "../utils/Matrix.h"
 #include "../quaternion/quaternion.h"
 #include <cmath>
@@ -43,28 +42,17 @@ void RotationTabController::initStage2( OverlayController* var_parent )
     }
     // Build the notification icons from SVGs: the rotation tab icon, and the
     // same icon with a "block" symbol drawn on top for autoturn disabled.
-    constexpr int k_autoturnIconSize = 64;
-    QSvgRenderer rotationSvg( QStringLiteral(
-        ":/qt/qml/AdvancedSettings/img/main_menu_icons/rotation_tab_icon.svg" ) );
-    QSvgRenderer blockSvg(
-        QStringLiteral( ":/qt/qml/AdvancedSettings/img/rotation/block.svg" ) );
-
-    m_autoturnValues.autoturnImg.reset( new QImage(
-        k_autoturnIconSize, k_autoturnIconSize, QImage::Format_RGBA8888 ) );
-    m_autoturnValues.autoturnImg->fill( Qt::transparent );
-    {
-        QPainter painter( m_autoturnValues.autoturnImg.get() );
-        painter.setRenderHint( QPainter::Antialiasing );
-        rotationSvg.render( &painter );
-    }
+    constexpr QSize k_autoturnIconSize( 64, 64 );
+    m_autoturnValues.autoturnImg.reset( new QImage( utils::renderSvgToImage(
+        QStringLiteral( ":/qt/qml/AdvancedSettings/img/main_menu_icons/"
+                        "rotation_tab_icon.svg" ),
+        k_autoturnIconSize ) ) );
 
     m_autoturnValues.noautoturnImg.reset(
         new QImage( *m_autoturnValues.autoturnImg ) );
-    {
-        QPainter painter( m_autoturnValues.noautoturnImg.get() );
-        painter.setRenderHint( QPainter::Antialiasing );
-        blockSvg.render( &painter );
-    }
+    utils::renderSvgOntoImage(
+        *m_autoturnValues.noautoturnImg,
+        QStringLiteral( ":/qt/qml/AdvancedSettings/img/rotation/block.svg" ) );
 
     ovr_overlay_wrapper::setOverlayFromQImage( m_autoturnValues.overlayHandle,
                                                *m_autoturnValues.autoturnImg );

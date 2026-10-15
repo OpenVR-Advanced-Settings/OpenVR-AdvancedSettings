@@ -66,6 +66,7 @@ set(SRCS
     src/tabcontrollers/VideoTabController.cpp
     src/utils/ChaperoneUtils.cpp
     src/utils/FrameRateUtils.cpp
+    src/utils/ImageUtils.cpp
     src/utils/paths.cpp
     src/utils/setup.cpp
     src/utils/sound_player.cpp
@@ -109,6 +110,7 @@ set(HEADERS
     src/tabcontrollers/VideoTabController.h
     src/utils/ChaperoneUtils.h
     src/utils/FrameRateUtils.h
+    src/utils/ImageUtils.h
     src/utils/paths.h
     src/utils/setup.h
     src/utils/sound_player.h

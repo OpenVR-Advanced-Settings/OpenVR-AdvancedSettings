@@ -1,14 +1,13 @@
 #include "AudioTabController.h"
 #include <QQuickWindow>
 #include <QApplication>
-#include <QPainter>
-#include <QSvgRenderer>
 #include <QtLogging>
 #include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../settings/settings.h"
 #include "../settings/settings_object.h"
 #include "../utils/update_rate.h"
+#include "../utils/ImageUtils.h"
 #include "../openvr/ovr_overlay_wrapper.h"
 #ifdef _WIN32
 #    include "audiomanager/AudioManagerWindows.h"
@@ -21,30 +20,6 @@
 // application namespace
 namespace advsettings
 {
-
-namespace
-{
-    constexpr QSize k_pttNotificationSize( 64, 64 );
-
-    QImage renderSvgToImage( const QString& path, const QSize& size )
-    {
-        QSvgRenderer renderer( path );
-        if ( !renderer.isValid() )
-        {
-            qCritical() << "Could not load svg:" << path;
-            return {};
-        }
-
-        QImage image( size, QImage::Format_ARGB32_Premultiplied );
-        image.fill( Qt::transparent );
-        QPainter painter( &image );
-        painter.setRenderHint( QPainter::Antialiasing );
-        renderer.render( &painter );
-        painter.end();
-        return image;
-    }
-}
-
 void AudioTabController::initStage1()
 {
     vr::EVRSettingsError vrSettingsError;
@@ -114,14 +89,15 @@ void AudioTabController::initStage2( OverlayController* var_parent )
         return;
     }
 
+    constexpr QSize k_pttIconSize( 64, 64 );
     m_pushToTalkValues.pushToTalkImg = std::make_unique<QImage>(
-        renderSvgToImage( ":/qt/qml/AdvancedSettings/img/audio/microphone/"
-                          "mic_on.svg",
-                          k_pttNotificationSize ) );
+        utils::renderSvgToImage( ":/qt/qml/AdvancedSettings/img/audio/"
+                                 "microphone/mic_on.svg",
+                                 k_pttIconSize ) );
     m_pushToTalkValues.pushToMuteImg = std::make_unique<QImage>(
-        renderSvgToImage( ":/qt/qml/AdvancedSettings/img/audio/microphone/"
-                          "mic_off.svg",
-                          k_pttNotificationSize ) );
+        utils::renderSvgToImage( ":/qt/qml/AdvancedSettings/img/audio/"
+                                 "microphone/mic_off.svg",
+                                 k_pttIconSize ) );
 
     updatePttNotificationImage(
         settings::getSetting( settings::BoolSetting::AUDIO_micReversePtt ) );
