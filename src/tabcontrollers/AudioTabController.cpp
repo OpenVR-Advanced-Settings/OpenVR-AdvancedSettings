@@ -1,6 +1,8 @@
 #include "AudioTabController.h"
 #include <QQuickWindow>
 #include <QApplication>
+#include <QPainter>
+#include <QSvgRenderer>
 #include <QtLogging>
 #include <QtDebug>
 #include "../overlaycontroller.h"
@@ -19,6 +21,30 @@
 // application namespace
 namespace advsettings
 {
+
+namespace
+{
+    constexpr QSize k_pttNotificationSize( 64, 64 );
+
+    QImage renderSvgToImage( const QString& path, const QSize& size )
+    {
+        QSvgRenderer renderer( path );
+        if ( !renderer.isValid() )
+        {
+            qCritical() << "Could not load svg:" << path;
+            return {};
+        }
+
+        QImage image( size, QImage::Format_ARGB32_Premultiplied );
+        image.fill( Qt::transparent );
+        QPainter painter( &image );
+        painter.setRenderHint( QPainter::Antialiasing );
+        renderer.render( &painter );
+        painter.end();
+        return image;
+    }
+}
+
 void AudioTabController::initStage1()
 {
     vr::EVRSettingsError vrSettingsError;
@@ -88,19 +114,17 @@ void AudioTabController::initStage2( OverlayController* var_parent )
         return;
     }
 
-    m_pushToTalkValues.pushToTalkImg.reset(
-        new QImage( ":/qt/qml/AdvancedSettings/img/audio/microphone/ptt_notification.png" ) );
-    m_pushToTalkValues.pushToMuteImg.reset(
-        new QImage( ":/qt/qml/AdvancedSettings/img/audio/microphone/ptm_notification.png" ) );
+    m_pushToTalkValues.pushToTalkImg = std::make_unique<QImage>(
+        renderSvgToImage( ":/qt/qml/AdvancedSettings/img/audio/microphone/"
+                          "mic_on.svg",
+                          k_pttNotificationSize ) );
+    m_pushToTalkValues.pushToMuteImg = std::make_unique<QImage>(
+        renderSvgToImage( ":/qt/qml/AdvancedSettings/img/audio/microphone/"
+                          "mic_off.svg",
+                          k_pttNotificationSize ) );
 
-    auto* pushToImg = m_pushToTalkValues.pushToTalkImg.get();
-    if ( settings::getSetting( settings::BoolSetting::AUDIO_micReversePtt ) )
-    {
-        pushToImg = m_pushToTalkValues.pushToMuteImg.get();
-    }
-
-    ovr_overlay_wrapper::setOverlayFromQImage( m_pushToTalkValues.overlayHandle,
-                                               *pushToImg );
+    updatePttNotificationImage(
+        settings::getSetting( settings::BoolSetting::AUDIO_micReversePtt ) );
     vr::VROverlay()->SetOverlayWidthInMeters( m_pushToTalkValues.overlayHandle,
                                               0.02f );
     vr::HmdMatrix34_t notificationTransform
@@ -345,16 +369,7 @@ void AudioTabController::setMicReversePtt( bool value, bool notify )
 
     settings::setSetting( settings::BoolSetting::AUDIO_micReversePtt, value );
 
-    // TODO: if reenabled use `ovr_overlay_wrapper::setOverlayFromQImage`
-    // instead
-    if ( value )
-    {
-        // vr::VROverlay()->SetOverlayFromFile(m_ptt_overlayHandle,/*pt_mute*/);
-    }
-    else
-    {
-        // vr::VROverlay()->SetOverlayFromFile(m_ptt_overlayHandle,/*pt_talk*/);
-    }
+    updatePttNotificationImage( value );
 
     if ( pttEnabled() )
     {
@@ -371,6 +386,25 @@ void AudioTabController::setMicReversePtt( bool value, bool notify )
     {
         emit micReversePttChanged( value );
     }
+}
+
+void AudioTabController::updatePttNotificationImage( bool reversePtt )
+{
+
+    if ( m_pushToTalkValues.overlayHandle == vr::k_ulOverlayHandleInvalid )
+    {
+        return;
+    }
+
+    auto* image = reversePtt ? m_pushToTalkValues.pushToMuteImg.get()
+                             : m_pushToTalkValues.pushToTalkImg.get();
+    if ( image == nullptr || image->isNull() )
+    {
+        return;
+    }
+
+    ovr_overlay_wrapper::setOverlayFromQImage( m_pushToTalkValues.overlayHandle,
+                                               *image );
 }
 
 void AudioTabController::setAudioProfileDefault( bool value, bool notify )

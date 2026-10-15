@@ -1,5 +1,7 @@
 #include "RotationTabController.h"
 #include <QQuickWindow>
+#include <QPainter>
+#include <QSvgRenderer>
 #include <QtLogging>
 #include <QtDebug>
 #include "../overlaycontroller.h"
@@ -39,10 +41,30 @@ void RotationTabController::initStage2( OverlayController* var_parent )
 
         return;
     }
-    m_autoturnValues.autoturnImg.reset(
-        new QImage( ":/qt/qml/AdvancedSettings/img/rotation/autoturn.png" ) );
+    // Build the notification icons from SVGs: the rotation tab icon, and the
+    // same icon with a "block" symbol drawn on top for autoturn disabled.
+    constexpr int k_autoturnIconSize = 64;
+    QSvgRenderer rotationSvg( QStringLiteral(
+        ":/qt/qml/AdvancedSettings/img/main_menu_icons/rotation_tab_icon.svg" ) );
+    QSvgRenderer blockSvg(
+        QStringLiteral( ":/qt/qml/AdvancedSettings/img/rotation/block.svg" ) );
+
+    m_autoturnValues.autoturnImg.reset( new QImage(
+        k_autoturnIconSize, k_autoturnIconSize, QImage::Format_RGBA8888 ) );
+    m_autoturnValues.autoturnImg->fill( Qt::transparent );
+    {
+        QPainter painter( m_autoturnValues.autoturnImg.get() );
+        painter.setRenderHint( QPainter::Antialiasing );
+        rotationSvg.render( &painter );
+    }
+
     m_autoturnValues.noautoturnImg.reset(
-        new QImage( ":/qt/qml/AdvancedSettings/img/rotation/noautoturn.png" ) );
+        new QImage( *m_autoturnValues.autoturnImg ) );
+    {
+        QPainter painter( m_autoturnValues.noautoturnImg.get() );
+        painter.setRenderHint( QPainter::Antialiasing );
+        blockSvg.render( &painter );
+    }
 
     ovr_overlay_wrapper::setOverlayFromQImage( m_autoturnValues.overlayHandle,
                                                *m_autoturnValues.autoturnImg );

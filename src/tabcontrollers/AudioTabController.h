@@ -150,6 +150,7 @@ private:
     void onPttStop();
     void onPttEnabled();
     void onPttDisabled();
+    void updatePttNotificationImage( bool reversePtt );
 
     virtual vr::VROverlayHandle_t getNotificationOverlayHandle()
     {

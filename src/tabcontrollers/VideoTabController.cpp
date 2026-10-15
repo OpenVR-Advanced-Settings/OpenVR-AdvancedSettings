@@ -52,7 +52,8 @@ void VideoTabController::initBrightnessOverlay()
         notifKey.c_str(), notifKey.c_str(), &m_brightnessOverlayHandle );
     if ( overlayError == vr::VROverlayError_None )
     {
-        QImage notifIcon(  ":/qt/qml/AdvancedSettings/img/video/dimmer.png"  );
+        QImage notifIcon( 16, 16, QImage::Format_RGBA8888 );
+        notifIcon.fill( Qt::black );
         ovr_overlay_wrapper::setOverlayFromQImage( m_brightnessOverlayHandle,
                                                    notifIcon );
         vr::VROverlay()->SetOverlayWidthInMeters( m_brightnessOverlayHandle,
@@ -86,7 +87,8 @@ void VideoTabController::initColorOverlay()
         notifKey.c_str(), notifKey.c_str(), &m_colorOverlayHandle );
     if ( overlayError == vr::VROverlayError_None )
     {
-        QImage notifIcon(":/qt/qml/AdvancedSettings/img/video/color.png");
+        QImage notifIcon( 16, 16, QImage::Format_RGBA8888 );
+        notifIcon.fill( Qt::white );
         ovr_overlay_wrapper::setOverlayFromQImage( m_colorOverlayHandle,
                                                    notifIcon );
         vr::VROverlay()->SetOverlayWidthInMeters( m_colorOverlayHandle,

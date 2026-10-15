@@ -236,10 +236,7 @@ set(ResourcesRC
     src/res/img/main_menu_icons/utilities_tab_icon.svg
     src/res/img/main_menu_icons/video_tab_icon.svg
     src/res/img/main_menu_icons/youtube_tab_icon.svg
-    src/res/img/rotation/autoturn.png
-    src/res/img/rotation/noautoturn.png
-    src/res/img/video/color.png
-    src/res/img/video/dimmer.png
+    src/res/img/rotation/block.svg
     src/res/sounds/alarm01.wav
     src/res/sounds/click.wav
     src/res/sounds/focus.wav
