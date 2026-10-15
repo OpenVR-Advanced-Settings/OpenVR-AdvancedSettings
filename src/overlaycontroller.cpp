@@ -809,12 +809,12 @@ bool OverlayController::pollNextEvent( vr::VROverlayHandle_t ulOverlayHandle,
 
 QPointF OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
 {
-    //TODO temp mouse is negative??
     float y = m_window.height() - mouse.y;
-#ifdef __linux__
-    float h = static_cast<float>( m_window.height() );
-    y = h - y;
-#endif
+//10/15/26 I think that this isn't required my testing shows inverting of mouse when not necessary
+//#ifdef __linux__
+//    float h = static_cast<float>( m_window.height() );
+//    y = h - y;
+//#endif
     return { mouse.x, y };
 }
 
