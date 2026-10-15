@@ -297,9 +297,18 @@ target_compile_definitions(AdvancedSettings PRIVATE
 #    NO_DEFAULT_PATH
 #    NO_CMAKE_FIND_ROOT_PATH)
 
+add_library(openvr_api SHARED IMPORTED)
 if (WIN32)
-    target_link_directories(AdvancedSettings PRIVATE
-            ${CMAKE_SOURCE_DIR}/third-party/openvr/lib/win64
+    set_target_properties(openvr_api PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/third-party/openvr/bin/win64/openvr_api.dll"
+            IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/third-party/openvr/lib/win64/openvr_api.lib"
+    )
+else ()
+    # NO_SONAME links with -lopenvr_api so the binary needs "libopenvr_api.so"
+    # instead of an absolute path into the source tree
+    set_target_properties(openvr_api PROPERTIES
+            IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/third-party/openvr/lib/linux64/libopenvr_api.so"
+            IMPORTED_NO_SONAME TRUE
     )
 endif ()
 
@@ -375,17 +384,10 @@ if (WIN32)
 endif ()
 
 # openvrApiCopy
-if (WIN32)
-    add_custom_command(TARGET AdvancedSettings POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_SOURCE_DIR}/third-party/openvr/bin/win64/openvr_api.dll" "${COPY_DEST_DIR}/openvr_api.dll"
-    )
-else ()
-    add_custom_command(TARGET AdvancedSettings POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_SOURCE_DIR}/third-party/openvr/lib/linux64/libopenvr_api.so" "${COPY_DEST_DIR}/libopenvr_api.so"
-    )
-endif ()
+add_custom_command(TARGET AdvancedSettings POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:openvr_api>" "${COPY_DEST_DIR}/$<TARGET_FILE_NAME:openvr_api>"
+)
 
 # opensslCopy
 if (WIN32)
@@ -528,21 +530,45 @@ install(TARGETS AdvancedSettings
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-#qt_generate_deploy_qml_app_script(
-#    TARGET AdvancedSettings
-#    OUTPUT_SCRIPT deploy_script
-#)
-#install(SCRIPT ${deploy_script})
+# Windows loads DLLs from next to the exe, Linux finds the .so through the
+# $ORIGIN/../lib RPATH set by qt_standard_project_setup
+install(IMPORTED_RUNTIME_ARTIFACTS openvr_api
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+# The app looks these up in its binary directory at runtime
+install(FILES
+        "${CMAKE_SOURCE_DIR}/Readme.md"
+        "${CMAKE_SOURCE_DIR}/LICENSE"
+        "${CMAKE_SOURCE_DIR}/third-party/openvr/LICENSE-VALVE"
+        "${CMAKE_SOURCE_DIR}/third-party/material-symbols/LICENSE-MATERIAL-SYMBOLS"
+        "${CMAKE_SOURCE_DIR}/src/package_files/action_manifest.json"
+        "${CMAKE_SOURCE_DIR}/src/package_files/manifest.vrmanifest"
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/package_files/default_action_manifests"
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 if (WIN32)
+    install(FILES
+            "${CMAKE_SOURCE_DIR}/src/package_files/restartvrserver.bat"
+            "${CMAKE_SOURCE_DIR}/src/package_files/startdesktopmode.bat"
+            DESTINATION ${CMAKE_INSTALL_BINDIR}
+    )
+endif ()
+
+# Deploys Qt libraries, plugins and QML modules. On Linux, system libraries
+# (glibc, libGL, libvulkan, X11/xcb, pulse, dbus) are excluded by default.
 qt_generate_deploy_qml_app_script(
     TARGET AdvancedSettings
     OUTPUT_SCRIPT deploy_script
     MACOS_BUNDLE_POST_BUILD
-    NO_UNSUPPORTED_PLATFORM_ERROR
-    DEPLOY_USER_QML_MODULES_ON_UNSUPPORTED_PLATFORM
 )
 install(SCRIPT ${deploy_script})
 message(STATUS "Deploy Script ${deploy_script}")
+
+if (WIN32)
 
 # message(STATUS "Path to qml: ${CMAKE_SOURCE_DIR}/src/res/qml")
 #This should be re-dundant but for some reason Visual Studio really wants this
