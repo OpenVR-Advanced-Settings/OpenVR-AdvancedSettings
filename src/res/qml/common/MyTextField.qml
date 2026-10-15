@@ -39,6 +39,9 @@ TextField {
         else{
             myTextField.onInputEvent(text)
             active = false;
+            if (!OverlayController.desktopMode) {
+                OverlayController.hideKeyboard(keyBoardUID)
+            }
         }
     }
     //Enter/Return drops focus, which applies the text via onActiveFocusChanged
@@ -67,14 +70,21 @@ TextField {
         function onKeyBoardInputSignal(input, userValue) {
             if (userValue == keyBoardUID) {
                 if(input == '\b'){
-                    myTextField.text = text.slice(0,-1)
+                    if (selectionStart !== selectionEnd) {
+                        remove(selectionStart, selectionEnd)
+                    } else if (cursorPosition > 0) {
+                        remove(cursorPosition - 1, cursorPosition)
+                    }
                     return
                 }
                 else if(input == '\x7f'){
-                    myTextField.text = text.slice(0,cursorPosition)+text.slice(cursorPosition+1)
+                    if (selectionStart !== selectionEnd) {
+                        remove(selectionStart, selectionEnd)
+                    } else {
+                        remove(cursorPosition, cursorPosition + 1)
+                    }
                     return;
                 }
-                //Execute input
                 else if(input == '\n'){
                     if(!OverlayController.desktopMode){
                         //myTextField.onInputEvent(input)
@@ -86,11 +96,15 @@ TextField {
                     return;
                 }
                 else{
-                    myTextField.text = text + input;
+                    if (selectionStart !== selectionEnd) {
+                        remove(selectionStart, selectionEnd)
+                    }
+                    insert(cursorPosition, input)
                 }
                 //if (myTextField.text !== input) {
                 //    myTextField.onInputEvent(input)
                 //}
+
             }
         }
     }

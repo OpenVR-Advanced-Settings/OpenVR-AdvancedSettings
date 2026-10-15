@@ -143,7 +143,10 @@ private:
     QString m_updateMessage = "";
     QString m_optionalMessage = "";
     QString m_versionCheckText = "";
+    //last UID for keyboard
     unsigned long m_lastTextUID = 0;
+    //current UID for keyboard
+    unsigned long m_keyboardUID = 0;
 
     QUrl m_runtimePathUrl;
 
@@ -281,6 +284,7 @@ public slots:
     void OnNetworkReply( QNetworkReply* reply );
 
     void showKeyboard( QString existingText, unsigned long userValue = 0 );
+    void hideKeyboard( unsigned long userValue = 0 );
     void setKeyboardPos();
 
     void playActivationSound();

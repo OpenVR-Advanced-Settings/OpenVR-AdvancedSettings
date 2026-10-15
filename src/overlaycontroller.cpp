@@ -1409,6 +1409,7 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_HideKeyboard:
         {
+            m_keyboardUID = 0;
             if(0UL != m_lastTextUID){
                 submitLastTextField(m_lastTextUID);
                 m_lastTextUID = 0;
@@ -1772,12 +1773,23 @@ void OverlayController::showKeyboard( QString existingText,
         m_ulOverlayHandle,
         vr::k_EGamepadTextInputModeNormal,
         vr::k_EGamepadTextInputLineModeSingleLine,
-        vr::KeyboardFlag_Modal+vr::KeyboardFlag_Minimal+vr::KeyboardFlag_HideDoneKey,
+        vr::KeyboardFlag_Minimal + vr::KeyboardFlag_HideDoneKey,
         "Advanced Settings Overlay",
         1024,
         existingText.toStdString().c_str(),
         userValue );
+    m_keyboardUID = userValue;
     setKeyboardPos();
+}
+
+void OverlayController::hideKeyboard( unsigned long userValue )
+{
+    if ( userValue != m_keyboardUID )
+    {
+        return;
+    }
+    m_keyboardUID = 0;
+    vr::VROverlay()->HideKeyboard();
 }
 
 void OverlayController::setKeyboardPos()
