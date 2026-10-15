@@ -85,6 +85,38 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
+    },
+    {
+      "name": "linux-clang-base",
+      "hidden": true,
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "linux-clang-Debug",
+      "displayName": "Linux Clang Debug",
+      "inherits": "linux-clang-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "linux-clang-RelWithDebInfo",
+      "displayName": "Linux Clang RelWithDebInfo",
+      "inherits": "linux-clang-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "linux-clang-Release",
+      "displayName": "Linux Clang Release",
+      "inherits": "linux-clang-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
     }
   ],
   "buildPresets": [
@@ -117,6 +149,21 @@
       "name": "linux-Release",
       "displayName": "Linux Release",
       "configurePreset": "linux-Release"
+    },
+    {
+      "name": "linux-clang-Debug",
+      "displayName": "Linux Clang Debug",
+      "configurePreset": "linux-clang-Debug"
+    },
+    {
+      "name": "linux-clang-RelWithDebInfo",
+      "displayName": "Linux Clang RelWithDebInfo",
+      "configurePreset": "linux-clang-RelWithDebInfo"
+    },
+    {
+      "name": "linux-clang-Release",
+      "displayName": "Linux Clang Release",
+      "configurePreset": "linux-clang-Release"
     }
   ]
 }

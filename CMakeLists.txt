@@ -413,6 +413,21 @@ if (WIN32)
     )
 endif ()
 
+# Linux equivalent of windeployqt: run the install step (which includes the
+# Qt deploy script below) into a self-contained folder with Qt libs, plugins
+# and QML modules, so the result runs without Qt installed on the machine
+if (UNIX AND NOT APPLE)
+    set(LINUX_DEPLOY_DIR "${CMAKE_CURRENT_BINARY_DIR}/deploy/$<CONFIG>")
+    # Start from an empty folder, install never removes stale files
+    add_custom_command(TARGET AdvancedSettings POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E rm -rf "${LINUX_DEPLOY_DIR}"
+            COMMAND ${CMAKE_COMMAND} --install "${CMAKE_CURRENT_BINARY_DIR}"
+            --config $<CONFIG>
+            --prefix "${LINUX_DEPLOY_DIR}"
+            COMMENT "Deploying Qt runtime to ${LINUX_DEPLOY_DIR}"
+    )
+endif ()
+
 target_include_directories(AdvancedSettings PRIVATE
         third-party/openvr/headers
         third-party/policyconfig
@@ -497,23 +512,28 @@ elseif (UNIX)
                 -Wcast-align
                 -Wconversion
                 -Wdouble-promotion
-                -Wduplicated-branches
-                -Wduplicated-cond
                 -Wextra
                 -Wformat=2
-                -Wlogical-op
                 -Wno-sign-conversion
                 -Wnon-virtual-dtor
                 -Wnull-dereference
                 -Wold-style-cast
                 -Woverloaded-virtual
                 -Wpedantic
-                -Wrestrict
                 -Wshadow
                 -Wunused
                 -Wzero-as-null-pointer-constant
                 #-flto
         )
+        # GCC-only warnings, clang rejects these as unknown
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+            target_compile_options(AdvancedSettings PRIVATE
+                    -Wduplicated-branches
+                    -Wduplicated-cond
+                    -Wlogical-op
+                    -Wrestrict
+            )
+        endif ()
         if (warnings_as_errors)
             target_compile_options(AdvancedSettings PRIVATE -Werror)
         endif ()
@@ -559,10 +579,13 @@ endif ()
 
 # Deploys Qt libraries, plugins and QML modules. On Linux, system libraries
 # (glibc, libGL, libvulkan, X11/xcb, pulse, dbus) are excluded by default.
+# qgtk3 is excluded because it needs GTK3, which the Steam Linux Runtime
+# (steamrt4) does not ship; Qt falls back to its built-in theme without it.
 qt_generate_deploy_qml_app_script(
     TARGET AdvancedSettings
     OUTPUT_SCRIPT deploy_script
     MACOS_BUNDLE_POST_BUILD
+    EXCLUDE_PLUGINS qgtk3
 )
 install(SCRIPT ${deploy_script})
 message(STATUS "Deploy Script ${deploy_script}")
