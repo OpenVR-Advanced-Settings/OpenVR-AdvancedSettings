@@ -98,7 +98,7 @@ constexpr auto k_resetSettings = "reset-steamvr-settings";
 constexpr auto k_resetSettingsDescription
     = "Resets all SteamVR values that can be modified in OVRAS to defaults.";
 
-constexpr auto k_graphicsApi = "graphics-api";
+constexpr auto k_graphicsApi = "graphics";
 #ifdef _WIN32
 constexpr auto k_graphicsApiDescription
     = "Overrides the rendering backend: d3d11 (default), vulkan or opengl.";
