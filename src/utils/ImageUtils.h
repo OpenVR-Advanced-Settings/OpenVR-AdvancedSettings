@@ -6,8 +6,7 @@
 
 namespace utils
 {
-// Renders the svg at path into a new transparent image of the given size.
-// Returns a null QImage if the svg could not be loaded.
+//Renders SVG->Qimage
 QImage renderSvgToImage( const QString& path, const QSize& size );
 
 // Renders the svg at path on top of the existing contents of image, scaled to

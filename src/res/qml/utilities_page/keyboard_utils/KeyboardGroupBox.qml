@@ -118,6 +118,9 @@ SettingsGroupBox {
                 text: "Cut"
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
+                onClicked: {
+                    UtilitiesTabController.sendKeyboardCtrlX()
+                }
             }
         }
         LineSeparator {

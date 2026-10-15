@@ -55,6 +55,7 @@ public slots:
     void sendKeyboardAltEnter();
     void sendKeyboardCtrlC();
     void sendKeyboardCtrlV();
+    void sendKeyboardCtrlX();
     void sendKeyboardBackspace( const int count );
     void sendKeyboardRShiftTilde1();
     void sendKeyboardRShiftTilde2();
