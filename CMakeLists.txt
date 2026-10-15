@@ -413,19 +413,19 @@ if (WIN32)
     )
 endif ()
 
-# Linux equivalent of windeployqt: run the install step (which includes the
-# Qt deploy script below) into a self-contained folder with Qt libs, plugins
-# and QML modules, so the result runs without Qt installed on the machine
+# Linux equivalent of windeployqt
 if (UNIX AND NOT APPLE)
     set(LINUX_DEPLOY_DIR "${CMAKE_CURRENT_BINARY_DIR}/deploy/$<CONFIG>")
-    # Start from an empty folder, install never removes stale files
-    add_custom_command(TARGET AdvancedSettings POST_BUILD
+    # new target ensures empty folder, install wont' remove stale files
+    add_custom_target(AdvancedSettingsDeploy ALL
             COMMAND ${CMAKE_COMMAND} -E rm -rf "${LINUX_DEPLOY_DIR}"
             COMMAND ${CMAKE_COMMAND} --install "${CMAKE_CURRENT_BINARY_DIR}"
             --config $<CONFIG>
             --prefix "${LINUX_DEPLOY_DIR}"
             COMMENT "Deploying Qt runtime to ${LINUX_DEPLOY_DIR}"
+            VERBATIM
     )
+    add_dependencies(AdvancedSettingsDeploy AdvancedSettings)
 endif ()
 
 target_include_directories(AdvancedSettings PRIVATE
@@ -587,6 +587,21 @@ qt_generate_deploy_qml_app_script(
 )
 install(SCRIPT ${deploy_script})
 message(STATUS "Deploy Script ${deploy_script}")
+
+# Remove SymLinks if made in build process (wsl/windows)
+if (UNIX AND NOT APPLE)
+    install(CODE [[
+        file(GLOB_RECURSE _ovras_files LIST_DIRECTORIES false "${CMAKE_INSTALL_PREFIX}/*")
+        foreach(_link IN LISTS _ovras_files)
+            if(IS_SYMLINK "${_link}")
+                file(REAL_PATH "${_link}" _real)
+                file(REMOVE "${_link}")
+                file(RENAME "${_real}" "${_link}")
+            endif()
+        endforeach()
+        message(STATUS "Replaced library symlinks with real files")
+    ]])
+endif ()
 
 if (WIN32)
 

@@ -664,7 +664,15 @@ void OverlayController::SetOverlayFromQRhiTexture( QRhiTexture& tex )
         // OpenVR needs a current GL context and the rendering flushed.
         if ( rhi->makeThreadLocalNativeContextCurrent() )
         {
-            QOpenGLContext::currentContext()->functions()->glFlush();
+            auto* f = QOpenGLContext::currentContext()->functions();
+            //Workaround for some odd OpenGL/SteamVR issues
+            f->glDisable( GL_SCISSOR_TEST );
+            f->glDisable( GL_DEPTH_TEST );
+            f->glDisable( GL_STENCIL_TEST );
+            f->glDisable( GL_BLEND );
+            f->glDisable( GL_CULL_FACE );
+            f->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+            f->glFlush();
         }
         vrTex.handle = reinterpret_cast<void*>( tex.nativeTexture().object );
         vrTex.eType = vr::TextureType_OpenGL;

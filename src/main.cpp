@@ -23,7 +23,7 @@ int main( int argc, char* argv[] )
 
     QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
     //TODO check if Needed?
-    QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+    //QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
     MyQApplication mainEventLoop( argc, argv );
     mainEventLoop.setOrganizationName(
         application_strings::applicationOrganizationName );
@@ -36,12 +36,24 @@ int main( int argc, char* argv[] )
     const auto commandLineArgs
         = argument::returnCommandLineParser( mainEventLoop );
 
-    // Must happen before any QQuickWindow is created (OverlayController owns
-    // one).
+
+    //Picks Graphics API, defaulting to vulkan/d3d11 for linux/win
     if ( commandLineArgs.graphicsApi )
     {
         QQuickWindow::setGraphicsApi( *commandLineArgs.graphicsApi );
     }
+#ifdef __linux__
+    else
+    {
+        QQuickWindow::setGraphicsApi( QSGRendererInterface::Vulkan );
+    }
+#endif
+#ifdef _WIN32
+    else
+    {
+        QQuickWindow::setGraphicsApi( QSGRendererInterface::Direct3D11 );
+    }
+#endif
 
     // It is important that either install_manifest or remove_manifest are true,
     // otherwise the handleManifests function will not behave properly.

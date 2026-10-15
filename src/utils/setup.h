@@ -40,7 +40,7 @@ class MyQApplication : public QApplication
 {
 public:
     using QApplication::QApplication;
-
+    //TODO 10/15/26 Verify if needed
     // Intercept event calls and log them on exceptions.
     // From the official docs
     // https://doc.qt.io/qt-5/qcoreapplication.html#notify:
@@ -101,10 +101,10 @@ constexpr auto k_resetSettingsDescription
 constexpr auto k_graphicsApi = "graphics-api";
 #ifdef _WIN32
 constexpr auto k_graphicsApiDescription
-    = "Overrides the rendering backend: d3d11, vulkan or opengl.";
+    = "Overrides the rendering backend: d3d11 (default), vulkan or opengl.";
 #else
 constexpr auto k_graphicsApiDescription
-    = "Overrides the rendering backend: vulkan or opengl.";
+    = "Overrides the rendering backend: vulkan (default) or opengl.";
 #endif
 constexpr auto k_graphicsApiValueName = "backend";
 
