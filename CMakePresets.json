@@ -35,11 +35,55 @@
       }
     },
     {
+      "name": "x64-RelWithDebInfo",
+      "displayName": "x64 RelWithDebInfo",
+      "inherits": "windows-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
       "name": "x64-Release",
       "displayName": "x64 Release",
       "inherits": "windows-base",
       "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "linux-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "linux-Debug",
+      "displayName": "Linux Debug",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "linux-RelWithDebInfo",
+      "displayName": "Linux RelWithDebInfo",
+      "inherits": "linux-base",
+      "cacheVariables": {
         "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "linux-Release",
+      "displayName": "Linux Release",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
       }
     }
   ],
@@ -50,9 +94,29 @@
       "configurePreset": "x64-Debug"
     },
     {
+      "name": "x64-RelWithDebInfo",
+      "displayName": "x64 RelWithDebInfo",
+      "configurePreset": "x64-RelWithDebInfo"
+    },
+    {
       "name": "x64-Release",
       "displayName": "x64 Release",
       "configurePreset": "x64-Release"
+    },
+    {
+      "name": "linux-Debug",
+      "displayName": "Linux Debug",
+      "configurePreset": "linux-Debug"
+    },
+    {
+      "name": "linux-RelWithDebInfo",
+      "displayName": "Linux RelWithDebInfo",
+      "configurePreset": "linux-RelWithDebInfo"
+    },
+    {
+      "name": "linux-Release",
+      "displayName": "Linux Release",
+      "configurePreset": "linux-Release"
     }
   ]
 }
