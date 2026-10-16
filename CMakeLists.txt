@@ -368,8 +368,21 @@ add_custom_command(TARGET AdvancedSettings POST_BUILD
         "${CMAKE_SOURCE_DIR}/third-party/openvr/LICENSE-VALVE" "${COPY_DEST_DIR}/LICENSE-VALVE"
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/third-party/material-symbols/LICENSE-MATERIAL-SYMBOLS" "${COPY_DEST_DIR}/LICENSE-MATERIAL-SYMBOLS"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/third-party/noto-sans-cjk/LICENSE-NOTO-SANS-CJK" "${COPY_DEST_DIR}/LICENSE-NOTO-SANS-CJK"
         #COMMAND ${CMAKE_COMMAND} -E copy_if_different
         #"${CMAKE_SOURCE_DIR}/third-party/magic_enum/LICENSE" "${COPY_DEST_DIR}/LICENSE-MAGIC-ENUM"
+)
+
+# fontsCopy, CJK fallback fonts loaded at runtime by src/utils/translations.cpp
+set(CJK_FONT_FILES
+    "${CMAKE_SOURCE_DIR}/third-party/noto-sans-cjk/NotoSansJP-Regular.otf"
+    "${CMAKE_SOURCE_DIR}/third-party/noto-sans-cjk/NotoSansSC-Regular.otf"
+    "${CMAKE_SOURCE_DIR}/third-party/noto-sans-cjk/NotoSansTC-Regular.otf"
+)
+add_custom_command(TARGET AdvancedSettings POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${COPY_DEST_DIR}/fonts"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CJK_FONT_FILES} "${COPY_DEST_DIR}/fonts"
 )
 
 # packageFoldersCopy
@@ -574,12 +587,16 @@ install(FILES
         "${CMAKE_SOURCE_DIR}/LICENSE"
         "${CMAKE_SOURCE_DIR}/third-party/openvr/LICENSE-VALVE"
         "${CMAKE_SOURCE_DIR}/third-party/material-symbols/LICENSE-MATERIAL-SYMBOLS"
+        "${CMAKE_SOURCE_DIR}/third-party/noto-sans-cjk/LICENSE-NOTO-SANS-CJK"
         "${CMAKE_SOURCE_DIR}/src/package_files/action_manifest.json"
         "${CMAKE_SOURCE_DIR}/src/package_files/manifest.vrmanifest"
         DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/package_files/default_action_manifests"
         DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(FILES ${CJK_FONT_FILES}
+        DESTINATION ${CMAKE_INSTALL_BINDIR}/fonts
 )
 if (WIN32)
     install(FILES
