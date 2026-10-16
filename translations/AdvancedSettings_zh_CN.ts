@@ -183,7 +183,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/video_page/brightness/BrightnessGroupBox.qml" line="31"/>
-        <source>Brightness:</source>
+        <source>Brightness</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -232,22 +232,22 @@
     </message>
     <message>
         <location filename="../src/res/qml/chaperone_page/chaperoneboundscolor/ChaperoneBoundsColorGroupBox.qml" line="30"/>
-        <source>Red:</source>
+        <source>Red</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/chaperone_page/chaperoneboundscolor/ChaperoneBoundsColorGroupBox.qml" line="76"/>
-        <source>Green:</source>
+        <source>Green</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/chaperone_page/chaperoneboundscolor/ChaperoneBoundsColorGroupBox.qml" line="119"/>
-        <source>Blue:</source>
+        <source>Blue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/chaperone_page/chaperoneboundscolor/ChaperoneBoundsColorGroupBox.qml" line="165"/>
-        <source>Hex:</source>
+        <source>Hex</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -285,7 +285,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/chaperone_page/chaperonemisc/ChaperoneMiscGroupBox.qml" line="61"/>
-        <source>Disable chaperone below height: </source>
+        <source>Disable chaperone below height </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -347,12 +347,12 @@
     </message>
     <message>
         <location filename="../src/res/qml/chaperone_page/ChaperonePage.qml" line="48"/>
-        <source>Name: </source>
+        <source>Name </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/chaperone_page/ChaperonePage.qml" line="64"/>
-        <source>What to include:</source>
+        <source>What to include</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -427,7 +427,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/chaperone_page/ChaperonePage.qml" line="248"/>
-        <source>Profile:</source>
+        <source>Profile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -447,17 +447,17 @@
     </message>
     <message>
         <location filename="../src/res/qml/chaperone_page/ChaperonePage.qml" line="314"/>
-        <source>Height:</source>
+        <source>Height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/chaperone_page/ChaperonePage.qml" line="378"/>
-        <source>Visibility:</source>
+        <source>Visibility</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/chaperone_page/ChaperonePage.qml" line="446"/>
-        <source>Fade Distance:</source>
+        <source>Fade Distance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -500,17 +500,17 @@
     </message>
     <message>
         <location filename="../src/res/qml/video_page/color/ColorGroupBox.qml" line="20"/>
-        <source>Red:</source>
+        <source>Red</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/video_page/color/ColorGroupBox.qml" line="68"/>
-        <source>Green:</source>
+        <source>Green</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/video_page/color/ColorGroupBox.qml" line="117"/>
-        <source>Blue:</source>
+        <source>Blue</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -589,7 +589,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/motion_page/height_toggle/HeightToggleGroupBox.qml" line="32"/>
-        <source>Height Offset (+ is down):</source>
+        <source>Height Offset (+ is down)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -607,7 +607,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/utilities_page/keyboard_utils/KeyboardGroupBox.qml" line="18"/>
-        <source>Send to active application: </source>
+        <source>Send to active application </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -846,27 +846,27 @@
     </message>
     <message>
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="32"/>
-        <source>Brightness:</source>
+        <source>Brightness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="89"/>
-        <source>Opacity:</source>
+        <source>Opacity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="140"/>
-        <source>Red:</source>
+        <source>Red</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="182"/>
-        <source>Green:</source>
+        <source>Green</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="225"/>
-        <source>Blue:</source>
+        <source>Blue</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -896,7 +896,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/PlayspacePage.qml" line="43"/>
-        <source>Name: </source>
+        <source>Name </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -911,7 +911,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/PlayspacePage.qml" line="83"/>
-        <source>Tracking Universe:</source>
+        <source>Tracking Universe</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -923,7 +923,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/PlayspacePage.qml" line="103"/>
-        <source>Profile:</source>
+        <source>Profile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -944,7 +944,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/PlayspacePage.qml" line="178"/>
-        <source>X-Axis (Left/Right):</source>
+        <source>X-Axis (Left/Right)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -954,7 +954,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/PlayspacePage.qml" line="250"/>
-        <source>Y-Axis (Down/Up):</source>
+        <source>Y-Axis (Down/Up)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -964,7 +964,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/PlayspacePage.qml" line="321"/>
-        <source>Z-Axis (Forth/Back):</source>
+        <source>Z-Axis (Forth/Back)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1075,7 +1075,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/chaperone_page/proximity_warnings/ProximityWarningsGroupBox.qml" line="112"/>
-        <source>Activation Distance: </source>
+        <source>Activation Distance </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1131,7 +1131,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/rotation_page/redirected/RedirectedGroupBox.qml" line="65"/>
-        <source>Radius: </source>
+        <source>Radius </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1339,7 +1339,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/SettingsPage.qml" line="254"/>
-        <source>Custom Tick Rate: </source>
+        <source>Custom Tick Rate </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1367,12 +1367,12 @@
     </message>
     <message>
         <location filename="../src/res/qml/rotation_page/snap_turn/SnapTurnGroupBox.qml" line="20"/>
-        <source>Snap Turn Angle:</source>
+        <source>Snap Turn Angle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/rotation_page/snap_turn/SnapTurnGroupBox.qml" line="77"/>
-        <source>Smooth Turn Rate:</source>
+        <source>Smooth Turn Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1400,7 +1400,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/motion_page/space_drag/SpaceDragGroupBox.qml" line="40"/>
-        <source>Comfort Mode:</source>
+        <source>Comfort Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1476,7 +1476,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/rotation_page/space_turn/SpaceTurnGroupBox.qml" line="40"/>
-        <source>Comfort Mode:</source>
+        <source>Comfort Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1499,7 +1499,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/StatisticsPage.qml" line="22"/>
-        <source>HMD Distance Moved:</source>
+        <source>HMD Distance Moved</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1517,7 +1517,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/StatisticsPage.qml" line="45"/>
-        <source>HMD Rotations:</source>
+        <source>HMD Rotations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1527,12 +1527,12 @@
     </message>
     <message>
         <location filename="../src/res/qml/StatisticsPage.qml" line="68"/>
-        <source>Left Controller Max Speed:</source>
+        <source>Left Controller Max Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/StatisticsPage.qml" line="91"/>
-        <source>Right Controller Max Speed:</source>
+        <source>Right Controller Max Speed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1542,27 +1542,27 @@
     </message>
     <message>
         <location filename="../src/res/qml/StatisticsPage.qml" line="119"/>
-        <source>Presented Frames:</source>
+        <source>Presented Frames</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/StatisticsPage.qml" line="142"/>
-        <source>Dropped Frames:</source>
+        <source>Dropped Frames</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/StatisticsPage.qml" line="165"/>
-        <source>Reprojected Frames:</source>
+        <source>Reprojected Frames</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/StatisticsPage.qml" line="188"/>
-        <source>Timed Out:</source>
+        <source>Timed Out</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/StatisticsPage.qml" line="211"/>
-        <source>Reprojection Ratio:</source>
+        <source>Reprojection Ratio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1590,7 +1590,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvrbind/SteamVRBindGroupBox.qml" line="43"/>
-        <source>Application:</source>
+        <source>Application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1694,7 +1694,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvr_additional/SteamVRTXRXPage.qml" line="29"/>
-        <source>Status:</source>
+        <source>Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1704,7 +1704,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvr_additional/SteamVRTXRXPage.qml" line="46"/>
-        <source>Dongles Used:</source>
+        <source>Dongles Used</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1719,17 +1719,17 @@
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvr_additional/SteamVRTXRXPage.qml" line="102"/>
-        <source>Device ID:</source>
+        <source>Device ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvr_additional/SteamVRTXRXPage.qml" line="121"/>
-        <source>Dongle ID:</source>
+        <source>Dongle ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvr_additional/SteamVRTXRXPage.qml" line="145"/>
-        <source>Dongle Type:</source>
+        <source>Dongle Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1809,7 +1809,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/video_page/dialogboxes/VideoNewProfileDialog.qml" line="18"/>
-        <source>Name: </source>
+        <source>Name </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1840,7 +1840,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/video_page/profiles/VideoProfileGroupBox.qml" line="37"/>
-        <source>Profile:  </source>
+        <source>Profile  </source>
         <translation type="unfinished"></translation>
     </message>
     <message>

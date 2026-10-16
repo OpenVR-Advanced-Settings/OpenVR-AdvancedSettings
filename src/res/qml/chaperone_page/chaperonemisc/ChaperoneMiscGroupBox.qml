@@ -58,7 +58,7 @@ SettingsGroupBox {
             spacing: 16
 
             MyText {
-                text: qsTr("Disable chaperone below height: ")
+                text: qsTr("Disable chaperone below height ")
                 Layout.preferredWidth: 400
                 horizontalAlignment: Text.AlignLeft
             }

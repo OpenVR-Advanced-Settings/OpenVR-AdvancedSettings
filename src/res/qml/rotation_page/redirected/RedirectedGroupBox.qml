@@ -62,7 +62,7 @@ SettingsGroupBox {
            }
 
             MyText{
-                text: qsTr("Radius: ")
+                text: qsTr("Radius ")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 4
             }

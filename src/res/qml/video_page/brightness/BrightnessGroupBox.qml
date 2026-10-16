@@ -28,7 +28,7 @@ SettingsGroupBox {
             }
 
             MyText {
-                text: qsTr("Brightness:")
+                text: qsTr("Brightness")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }

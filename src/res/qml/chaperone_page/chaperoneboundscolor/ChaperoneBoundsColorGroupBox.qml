@@ -27,7 +27,7 @@ SettingsGroupBox {
         columns: 7
 
                 MyText {
-                    text: qsTr("Red:")
+                    text: qsTr("Red")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
                 }
@@ -73,7 +73,7 @@ SettingsGroupBox {
                     Layout.preferredWidth: 200
                 }
                 MyText {
-                    text: qsTr("Green:")
+                    text: qsTr("Green")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
                 }
@@ -116,7 +116,7 @@ SettingsGroupBox {
                 }
 
                 MyText {
-                    text: qsTr("Blue:")
+                    text: qsTr("Blue")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
                 }
@@ -162,7 +162,7 @@ SettingsGroupBox {
                     Layout.preferredWidth: 200
                 }
                 MyText {
-                    text: qsTr("Hex:")
+                    text: qsTr("Hex")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
                 }

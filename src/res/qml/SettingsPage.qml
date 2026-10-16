@@ -251,7 +251,7 @@ MyStackViewPage {
 
                     MyText {
                         id: customTickRateLabel
-                        text: qsTr("Custom Tick Rate: ")
+                        text: qsTr("Custom Tick Rate ")
                         horizontalAlignment: Text.AlignRight
                         Layout.leftMargin: 20
                         Layout.rightMargin: 2

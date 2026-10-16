@@ -15,7 +15,7 @@ MyDialogOkCancelPopup {
             Layout.leftMargin: 16
             Layout.rightMargin: 16
             MyText {
-                text: qsTr("Name: ")
+                text: qsTr("Name ")
             }
             MyTextField {
                 id: videoNewProfileName

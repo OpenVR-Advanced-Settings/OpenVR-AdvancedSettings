@@ -45,7 +45,7 @@ MyStackViewPage {
                 Layout.leftMargin: 16
                 Layout.rightMargin: 16
                 MyText {
-                    text: qsTr("Name: ")
+                    text: qsTr("Name ")
                 }
                 MyTextField {
                     id: chaperoneNewProfileName
@@ -61,7 +61,7 @@ MyStackViewPage {
             }
             MyText {
                 Layout.topMargin: 16
-                text: qsTr("What to include:")
+                text: qsTr("What to include")
             }
             Flickable {
                 id: chaperoneNewProfileIncludeFlickable
@@ -245,7 +245,7 @@ MyStackViewPage {
                     spacing: 18
 
                     MyText {
-                        text: qsTr("Profile:")
+                        text: qsTr("Profile")
                     }
 
                     MyComboBox {
@@ -311,7 +311,7 @@ MyStackViewPage {
                 spacing: 0
                 RowLayout {
                     MyText {
-                        text: qsTr("Height:")
+                        text: qsTr("Height")
                         Layout.rightMargin: 12
                         Layout.preferredWidth: 200
                     }
@@ -375,7 +375,7 @@ MyStackViewPage {
                 }
                 RowLayout {
                     MyText {
-                        text: qsTr("Visibility:")
+                        text: qsTr("Visibility")
                         Layout.rightMargin: 12
                         Layout.preferredWidth: 200
                     }
@@ -443,7 +443,7 @@ MyStackViewPage {
                 }
                 RowLayout {
                     MyText {
-                        text: qsTr("Fade Distance:")
+                        text: qsTr("Fade Distance")
                         Layout.rightMargin: 12
                         Layout.preferredWidth: 200
                     }

@@ -19,7 +19,7 @@ MyStackViewPage {
                 rowSpacing: 0
 
                 MyText {
-                    text: qsTr("HMD Distance Moved:")
+                    text: qsTr("HMD Distance Moved")
                 }
 
                 MyText {
@@ -42,7 +42,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: qsTr("HMD Rotations:")
+                    text: qsTr("HMD Rotations")
                 }
 
                 MyText {
@@ -65,7 +65,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: qsTr("Left Controller Max Speed:")
+                    text: qsTr("Left Controller Max Speed")
                 }
 
                 MyText {
@@ -88,7 +88,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: qsTr("Right Controller Max Speed:")
+                    text: qsTr("Right Controller Max Speed")
                 }
 
                 MyText {
@@ -116,7 +116,7 @@ MyStackViewPage {
                 rowSpacing: 0
 
                 MyText {
-                    text: qsTr("Presented Frames:")
+                    text: qsTr("Presented Frames")
                 }
 
                 MyText {
@@ -139,7 +139,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: qsTr("Dropped Frames:")
+                    text: qsTr("Dropped Frames")
                 }
 
                 MyText {
@@ -162,7 +162,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: qsTr("Reprojected Frames:")
+                    text: qsTr("Reprojected Frames")
                 }
 
                 MyText {
@@ -185,7 +185,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: qsTr("Timed Out:")
+                    text: qsTr("Timed Out")
                 }
 
                 MyText {
@@ -208,7 +208,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: qsTr("Reprojection Ratio:")
+                    text: qsTr("Reprojection Ratio")
                 }
 
                 MyText {

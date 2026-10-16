@@ -40,7 +40,7 @@ MyStackViewPage {
                 Layout.leftMargin: 16
                 Layout.rightMargin: 16
                 MyText {
-                    text: qsTr("Name: ")
+                    text: qsTr("Name ")
                 }
                 MyTextField {
                     id: offsetNewProfileName
@@ -80,7 +80,7 @@ MyStackViewPage {
                 anchors.fill: parent
                 RowLayout {
                     MyText {
-                        text: qsTr("Tracking Universe:")
+                        text: qsTr("Tracking Universe")
                         Layout.preferredWidth: 230
                     }
                     MyText {
@@ -100,7 +100,7 @@ MyStackViewPage {
                         spacing: 18
 
                         MyText {
-                            text: qsTr("Profile:")
+                            text: qsTr("Profile")
                         }
 
                         MyComboBox {
@@ -175,7 +175,7 @@ MyStackViewPage {
                     rowSpacing: 0
 
                     MyText {
-                        text: qsTr("X-Axis (Left/Right):")
+                        text: qsTr("X-Axis (Left/Right)")
                         Layout.preferredWidth: 340
                     }
 
@@ -247,7 +247,7 @@ MyStackViewPage {
                     }
 
                     MyText {
-                        text: qsTr("Y-Axis (Down/Up):")
+                        text: qsTr("Y-Axis (Down/Up)")
                         Layout.preferredWidth: 340
                     }
 
@@ -318,7 +318,7 @@ MyStackViewPage {
                     }
 
                     MyText {
-                        text: qsTr("Z-Axis (Forth/Back):")
+                        text: qsTr("Z-Axis (Forth/Back)")
                         Layout.preferredWidth: 340
                     }
 

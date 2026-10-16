@@ -40,7 +40,7 @@ SettingsGroupBox {
             Layout.preferredHeight: steamvrBindingToggle.height
 
             MyText {
-                text: qsTr("Application:")
+                text: qsTr("Application")
                 horizontalAlignment: Text.AlignLeft
             }
             MyTextField {

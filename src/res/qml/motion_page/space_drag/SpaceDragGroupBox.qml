@@ -37,7 +37,7 @@ SettingsGroupBox {
             }
 
             MyText {
-                text: qsTr("Comfort Mode:")
+                text: qsTr("Comfort Mode")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }

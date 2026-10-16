@@ -109,7 +109,7 @@ SettingsGroupBox {
         }
         RowLayout {
             MyText {
-                text: qsTr("Activation Distance: ")
+                text: qsTr("Activation Distance ")
                 Layout.preferredWidth: 250
             }
             MyPushButton2 {

@@ -29,7 +29,7 @@ SettingsGroupBox {
             }
 
             MyText {
-                text: qsTr("Height Offset (+ is down):")
+                text: qsTr("Height Offset (+ is down)")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 2
             }

@@ -26,7 +26,7 @@ MyStackViewPage {
                 RowLayout {
                     Layout.fillWidth: true
                     MyText {
-                        text: qsTr("Status:")
+                        text: qsTr("Status")
                         Layout.preferredWidth: 250
                     }
                     MyText {
@@ -43,7 +43,7 @@ MyStackViewPage {
                 RowLayout {
                     Layout.fillWidth: true
                     MyText {
-                        text: qsTr("Dongles Used:")
+                        text: qsTr("Dongles Used")
                         Layout.preferredWidth: 250
                     }
                     MyText {
@@ -99,7 +99,7 @@ MyStackViewPage {
                             Layout.preferredWidth: deviceInfoLayout.halfWidth
                             Layout.maximumWidth: deviceInfoLayout.halfWidth
                             MyText {
-                                text: qsTr("Device ID:")
+                                text: qsTr("Device ID")
                                 Layout.preferredWidth: deviceInfoLayout.labelWidth
                             }
                             MyText {
@@ -118,7 +118,7 @@ MyStackViewPage {
                             Layout.preferredWidth: deviceInfoLayout.halfWidth
                             Layout.maximumWidth: deviceInfoLayout.halfWidth
                             MyText {
-                                text: qsTr("Dongle ID:")
+                                text: qsTr("Dongle ID")
                                 Layout.preferredWidth: deviceInfoLayout.labelWidth
                             }
                             MyText {
@@ -142,7 +142,7 @@ MyStackViewPage {
                             Layout.preferredWidth: deviceInfoLayout.halfWidth
                             Layout.maximumWidth: deviceInfoLayout.halfWidth
                             MyText {
-                                text: qsTr("Dongle Type:")
+                                text: qsTr("Dongle Type")
                                 Layout.preferredWidth: deviceInfoLayout.labelWidth
                             }
                             MyText {

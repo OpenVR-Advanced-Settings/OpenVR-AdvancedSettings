@@ -17,7 +17,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
 
             MyText {
-                text: qsTr("Red:")
+                text: qsTr("Red")
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 75
             }
@@ -65,7 +65,7 @@ SettingsGroupBox {
                 }
             }
             MyText {
-                text: qsTr("Green:")
+                text: qsTr("Green")
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 85
             }
@@ -114,7 +114,7 @@ SettingsGroupBox {
             }
 
                 MyText {
-                    text: qsTr("Blue:")
+                    text: qsTr("Blue")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
                 }

@@ -15,7 +15,7 @@ SettingsGroupBox {
         
         
         MyText {
-            text: qsTr("Send to active application: ")
+            text: qsTr("Send to active application ")
         }
         
         RowLayout {

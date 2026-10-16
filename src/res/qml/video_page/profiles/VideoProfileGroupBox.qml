@@ -34,7 +34,7 @@ SettingsGroupBox {
 
             MyText {
                 Layout.preferredWidth: 150
-                text: qsTr("Profile:  ")
+                text: qsTr("Profile  ")
             }
 
             MyComboBox {

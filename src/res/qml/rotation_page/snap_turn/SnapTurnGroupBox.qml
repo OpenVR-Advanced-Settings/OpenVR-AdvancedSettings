@@ -17,7 +17,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
 
             MyText {
-                text: qsTr("Snap Turn Angle:")
+                text: qsTr("Snap Turn Angle")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 2
             }
@@ -74,7 +74,7 @@ SettingsGroupBox {
            }
 
            MyText {
-               text: qsTr("Smooth Turn Rate:")
+               text: qsTr("Smooth Turn Rate")
                horizontalAlignment: Text.AlignRight
                Layout.rightMargin: 2
            }
