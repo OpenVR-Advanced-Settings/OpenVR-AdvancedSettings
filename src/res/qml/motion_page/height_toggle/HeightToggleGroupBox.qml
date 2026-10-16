@@ -18,7 +18,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: heightToggleButton
-                text: qsTr("On")
+                text: qsTr("On/Off")
                 onCheckedChanged: {
                     MoveCenterTabController.heightToggle = this.checked
                 }

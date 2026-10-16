@@ -18,7 +18,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: videoAllowSupersampleOverrideToggle
-                text: qsTr("Toggle Override")
+                text: qsTr("Override")
                 onCheckedChanged: {
                     VideoTabController.setAllowSupersampleOverride(this.checked, false)
                     VideoTabController.setSuperSampling(videoSupersamplingSlider.value, true)

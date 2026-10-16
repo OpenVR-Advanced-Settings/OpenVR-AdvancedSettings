@@ -16,7 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: steamvrCameraActiveToggle
-            text: qsTr("Enable Camera")
+            text: qsTr("Camera")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {

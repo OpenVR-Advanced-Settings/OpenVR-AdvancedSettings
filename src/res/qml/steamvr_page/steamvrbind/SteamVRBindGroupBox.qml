@@ -16,7 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: steamvrBindingToggle
-            text: qsTr("Enable")
+            text: qsTr("On/Off")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {

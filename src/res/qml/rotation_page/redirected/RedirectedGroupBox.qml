@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: redirectedGroupBox
     Layout.fillWidth: true
 
-    title: qsTr("Vestibular Motion (for continuous redirected walking)")
+    title: qsTr("Continuous Redirected Walking")
 
     ColumnLayout {
         anchors.fill: parent
@@ -16,7 +16,7 @@ SettingsGroupBox {
       RowLayout{
             MyToggleButton {
                 id: redirectedModeToggle
-                text: qsTr("Toggle On/Off")
+                text: qsTr("On/Off")
                 Layout.preferredWidth: 225
                 onCheckedChanged: {
                     RotationTabController.setVestibularMotionEnabled(this.checked, true);

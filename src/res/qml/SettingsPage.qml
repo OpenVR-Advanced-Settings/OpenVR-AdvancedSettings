@@ -146,7 +146,7 @@ MyStackViewPage {
                 }
                 MyToggleButton {
                     id: exclusiveInputToggleButton
-                    text: qsTr("Exclusive Input Toggle (This enables Key Binding to Toggle state)")
+                    text: qsTr("Exclusive Input")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
                     onCheckedChanged: {
@@ -164,7 +164,7 @@ MyStackViewPage {
 
                 MyToggleButton {
                     id: nativeChaperoneToggleButton
-                    text: qsTr("Force Use SteamVR Chaperone (experimental + SteamVR restart required)")
+                    text: qsTr("Force Use SteamVR Chaperone (SteamVR restart required)")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
                     onCheckedChanged: {
@@ -225,7 +225,7 @@ MyStackViewPage {
 
                 MyToggleButton {
                     id: oculusSdkToggleButton
-                    text: qsTr("Force Use SteamVR (Disable Oculus API [experimental])")
+                    text: qsTr("Force Use SteamVR (Disable Oculus API)")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
                     onCheckedChanged: {
@@ -238,23 +238,9 @@ MyStackViewPage {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 40
 
-                    MyToggleButton {
-                        id: vsyncDisabledToggle
-                        text: qsTr("Disable App Vsync")
-                        onCheckedChanged: {
-                            OverlayController.setVsyncDisabled(checked, true)
-                            customTickRateText.visible = checked
-                            customTickRateLabel.visible = checked
-                            customTickRateMsLabel.visible = checked
-                        }
-                    }
-
                     MyText {
-                        id: customTickRateLabel
-                        text: qsTr("Custom Tick Rate ")
-                        horizontalAlignment: Text.AlignRight
-                        Layout.leftMargin: 20
-                        Layout.rightMargin: 2
+                        text: qsTr("Custom Update Rate")
+                        Layout.fillWidth: true
                     }
 
                     MyTextField {
@@ -262,7 +248,6 @@ MyStackViewPage {
                         text: "20"
                         keyBoardUID: 501
                         Layout.preferredWidth: 140
-                        Layout.leftMargin: 10
                         Layout.rightMargin: 1
                         horizontalAlignment: Text.AlignHCenter
                         function onInputEvent(input) {
@@ -277,14 +262,19 @@ MyStackViewPage {
                     }
 
                     MyText {
-                        id: customTickRateMsLabel
                         text: qsTr("ms")
                         horizontalAlignment: Text.AlignLeft
                         Layout.leftMargin: 1
+                        Layout.rightMargin: 20
                     }
 
-                    Item {
-                        Layout.fillWidth: true
+                    MyToggleButton {
+                        id: vsyncDisabledToggle
+                        text: ""
+                        Layout.rightMargin: 0
+                        onCheckedChanged: {
+                            OverlayController.setVsyncDisabled(checked, true)
+                        }
                     }
                 }
             }
@@ -327,9 +317,6 @@ MyStackViewPage {
                 disableCrashRecoveryToggle.checked = !OverlayController.crashRecoveryDisabled
                 customTickRateText.text = OverlayController.customTickRateMs
                 vsyncDisabledToggle.checked = OverlayController.vsyncDisabled
-                customTickRateText.visible = vsyncDisabledToggle.checked
-                customTickRateLabel.visible = vsyncDisabledToggle.checked
-                customTickRateMsLabel.visible = vsyncDisabledToggle.checked
                 disableVersionCheckToggle.checked = OverlayController.disableVersionCheck
                 nativeChaperoneToggleButton.checked = SettingsTabController.nativeChaperoneToggle
                 oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
@@ -366,9 +353,6 @@ MyStackViewPage {
             target: OverlayController
             function onVsyncDisabledChanged() {
                 vsyncDisabledToggle.checked = OverlayController.vsyncDisabled
-                customTickRateText.visible = vsyncDisabledToggle.checked
-                customTickRateLabel.visible = vsyncDisabledToggle.checked
-                customTickRateMsLabel.visible = vsyncDisabledToggle.checked
             }
             function onCrashRecoveryDisabledChanged() {
                 disableCrashRecoveryToggle.checked = !OverlayController.crashRecoveryDisabled

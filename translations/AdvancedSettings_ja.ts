@@ -173,6 +173,7 @@
     <name>BrightnessGroupBox</name>
     <message>
         <location filename="../src/res/qml/video_page/brightness/BrightnessGroupBox.qml" line="11"/>
+        <location filename="../src/res/qml/video_page/brightness/BrightnessGroupBox.qml" line="31"/>
         <source>Brightness</source>
         <translation>明るさ</translation>
     </message>
@@ -180,11 +181,6 @@
         <location filename="../src/res/qml/video_page/brightness/BrightnessGroupBox.qml" line="21"/>
         <source>Toggle On/Off</source>
         <translation>明るさを適用</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/video_page/brightness/BrightnessGroupBox.qml" line="31"/>
-        <source>Brightness</source>
-        <translation>明るさ</translation>
     </message>
 </context>
 <context>
@@ -1299,8 +1295,22 @@
     </message>
     <message>
         <location filename="../src/res/qml/SettingsPage.qml" line="149"/>
+        <source>Exclusive Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/SettingsPage.qml" line="167"/>
+        <source>Force Use SteamVR Chaperone (SteamVR restart required)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/SettingsPage.qml" line="228"/>
+        <source>Force Use SteamVR (Disable Oculus API)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Exclusive Input Toggle (This enables Key Binding to Toggle state)</source>
-        <translation>排他的入力の切り替え (キー割り当てでの切り替えが可能になります)</translation>
+        <translation type="vanished">排他的入力の切り替え (キー割り当てでの切り替えが可能になります)</translation>
     </message>
     <message>
         <location filename="../src/res/qml/SettingsPage.qml" line="160"/>
@@ -1308,9 +1318,8 @@
         <translation type="unfinished">境界線</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="167"/>
         <source>Force Use SteamVR Chaperone (experimental + SteamVR restart required)</source>
-        <translation>強制的にSteamVRの境界線を使用 (実験的・SteamVRの再起動必須)</translation>
+        <translation type="vanished">強制的にSteamVRの境界線を使用 (実験的・SteamVRの再起動必須)</translation>
     </message>
     <message>
         <location filename="../src/res/qml/SettingsPage.qml" line="181"/>
@@ -1328,32 +1337,34 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="228"/>
         <source>Force Use SteamVR (Disable Oculus API [experimental])</source>
-        <translation>強制的にSteamVRを使用 (Oculus APIを無効化 [実験的])</translation>
+        <translation type="vanished">強制的にSteamVRを使用 (Oculus APIを無効化 [実験的])</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="243"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="242"/>
+        <source>Custom Update Rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Disable App Vsync</source>
-        <translation>OVRASのVSyncを無効化</translation>
+        <translation type="vanished">OVRASのVSyncを無効化</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="254"/>
         <source>Custom Tick Rate </source>
-        <translation>カスタムティックレート </translation>
+        <translation type="vanished">カスタムティックレート </translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="281"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="265"/>
         <source>ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="304"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="294"/>
         <source>Debug</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="317"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="307"/>
         <source>Shutdown OVRAS</source>
         <translation>OVRASを終了</translation>
     </message>

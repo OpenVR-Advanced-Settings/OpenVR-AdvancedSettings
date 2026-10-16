@@ -18,7 +18,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: brightnessToggle
-                text: qsTr("Toggle On/Off")
+                text: qsTr("On/Off")
                 onCheckedChanged: {
                     VideoTabController.setBrightnessEnabled(this.checked, true)
                 }
@@ -76,7 +76,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: colorToggle
-                text: qsTr("Toggle On/Off")
+                text: qsTr("On/Off")
                 onCheckedChanged: {
                     VideoTabController.setColorOverlayEnabled(this.checked, true)                }
             }

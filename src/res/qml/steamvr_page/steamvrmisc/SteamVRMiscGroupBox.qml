@@ -16,7 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: steamvrPerformanceGraphToggle
-            text: qsTr("Enable Timing Overlay")
+            text: qsTr("Timing Overlay")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -60,7 +60,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrSystemButtonToggle
-            text: qsTr("Enable System Button Binding")
+            text: qsTr("System Button Binding")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {

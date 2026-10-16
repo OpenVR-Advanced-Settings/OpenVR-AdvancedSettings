@@ -173,17 +173,13 @@
     <name>BrightnessGroupBox</name>
     <message>
         <location filename="../src/res/qml/video_page/brightness/BrightnessGroupBox.qml" line="11"/>
+        <location filename="../src/res/qml/video_page/brightness/BrightnessGroupBox.qml" line="31"/>
         <source>Brightness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/video_page/brightness/BrightnessGroupBox.qml" line="21"/>
         <source>Toggle On/Off</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/video_page/brightness/BrightnessGroupBox.qml" line="31"/>
-        <source>Brightness</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1299,7 +1295,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/SettingsPage.qml" line="149"/>
-        <source>Exclusive Input Toggle (This enables Key Binding to Toggle state)</source>
+        <source>Exclusive Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1309,7 +1305,12 @@
     </message>
     <message>
         <location filename="../src/res/qml/SettingsPage.qml" line="167"/>
-        <source>Force Use SteamVR Chaperone (experimental + SteamVR restart required)</source>
+        <source>Force Use SteamVR Chaperone (SteamVR restart required)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/SettingsPage.qml" line="228"/>
+        <source>Force Use SteamVR (Disable Oculus API)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1328,32 +1329,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="228"/>
-        <source>Force Use SteamVR (Disable Oculus API [experimental])</source>
+        <location filename="../src/res/qml/SettingsPage.qml" line="242"/>
+        <source>Custom Update Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="243"/>
-        <source>Disable App Vsync</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="254"/>
-        <source>Custom Tick Rate </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="281"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="265"/>
         <source>ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="304"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="294"/>
         <source>Debug</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="317"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="307"/>
         <source>Shutdown OVRAS</source>
         <translation type="unfinished"></translation>
     </message>

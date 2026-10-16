@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: autoTurnGroupBox
     Layout.fillWidth: true
 
-    title: qsTr("Auto-Turn (for discrete redirected walking)")
+    title: qsTr("Discrete Redirected Walking")
 
     ColumnLayout {
         anchors.fill: parent
@@ -18,7 +18,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: autoTurn
-                text: qsTr("Toggle On/Off")
+                text: qsTr("On/Off")
                 onCheckedChanged: {
                     RotationTabController.setAutoTurnEnabled(this.checked, true)
                 }
