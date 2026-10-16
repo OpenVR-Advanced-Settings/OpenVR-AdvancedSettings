@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: gravityGroupBox
     Layout.fillWidth: true
 
-    title: "Gravity Settings"
+    title: qsTr("Gravity Settings")
 
     ColumnLayout {
         anchors.fill: parent
@@ -16,7 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: gravityToggleButton
-            text: "Enable Gravity"
+            text: qsTr("Enable Gravity")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             Layout.preferredHeight: 48
@@ -31,7 +31,7 @@ SettingsGroupBox {
             Layout.leftMargin: 32
 
             MyText {
-                text: "Gravity Strength (+ is down)"
+                text: qsTr("Gravity Strength (+ is down)")
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignLeft
             }
@@ -54,7 +54,7 @@ SettingsGroupBox {
             MyPushButton {
                 id: gravityMoonButton
                 Layout.preferredWidth: 110
-                text: "Moon"
+                text: qsTr("Moon")
                 onClicked: {
                     MoveCenterTabController.gravityStrength = 1.62
                 }
@@ -62,7 +62,7 @@ SettingsGroupBox {
             MyPushButton {
                 id: gravityMarsButton
                 Layout.preferredWidth: 110
-                text: "Mars"
+                text: qsTr("Mars")
                 onClicked: {
                     MoveCenterTabController.gravityStrength = 3.71
                 }
@@ -70,7 +70,7 @@ SettingsGroupBox {
             MyPushButton {
                 id: gravityEarthButton
                 Layout.preferredWidth: 110
-                text: "Earth"
+                text: qsTr("Earth")
                 onClicked: {
                     MoveCenterTabController.gravityStrength = 9.80
                 }
@@ -78,7 +78,7 @@ SettingsGroupBox {
             MyPushButton {
                 id: gravityJupiterButton
                 Layout.preferredWidth: 110
-                text: "Jupiter"
+                text: qsTr("Jupiter")
                 onClicked: {
                     MoveCenterTabController.gravityStrength = 24.79
                 }
@@ -88,7 +88,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: momentumToggleButton
-            text: "Save Momentum"
+            text: qsTr("Save Momentum")
             Layout.fillWidth: true
             Layout.leftMargin: 32
             Layout.rightMargin: 0
@@ -104,7 +104,7 @@ SettingsGroupBox {
             Layout.leftMargin: 32
 
             MyText {
-                text: "Friction"
+                text: qsTr("Friction")
                 horizontalAlignment: Text.AlignLeft
             }
             MyTextField {
@@ -136,7 +136,7 @@ SettingsGroupBox {
                 Layout.fillWidth: true
             }
             MyText {
-                text: "Fling Strength"
+                text: qsTr("Fling Strength")
                 horizontalAlignment: Text.AlignLeft
             }
             MyTextField {

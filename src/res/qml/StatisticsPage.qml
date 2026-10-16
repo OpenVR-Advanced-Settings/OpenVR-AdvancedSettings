@@ -6,20 +6,20 @@ import "common"
 
 
 MyStackViewPage {
-    headerText: "Statistics"
+    headerText: qsTr("Statistics")
 
     content: ColumnLayout {
         spacing: 18
 
         SettingsGroupBox {
-            title: "Movement"
+            title: qsTr("Movement")
             GridLayout {
                 anchors.fill: parent
                 columns: 3
                 rowSpacing: 0
 
                 MyText {
-                    text: "HMD Distance Moved:"
+                    text: qsTr("HMD Distance Moved:")
                 }
 
                 MyText {
@@ -31,7 +31,7 @@ MyStackViewPage {
                 }
 
                 MyPushButton {
-                    text: "Reset"
+                    text: qsTr("Reset")
                     onClicked: {
                         StatisticsTabController.statsDistanceResetClicked()
                     }
@@ -42,19 +42,19 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: "HMD Rotations:"
+                    text: qsTr("HMD Rotations:")
                 }
 
                 MyText {
                     id: statsHmdRotationText
-                    text: "0.0 CCW"
+                    text: qsTr("0.0 CCW")
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignRight
                     Layout.rightMargin: 10
                 }
 
                 MyPushButton {
-                    text: "Reset"
+                    text: qsTr("Reset")
                     onClicked: {
                         StatisticsTabController.statsRotationResetClicked()
                     }
@@ -65,7 +65,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: "Left Controller Max Speed:"
+                    text: qsTr("Left Controller Max Speed:")
                 }
 
                 MyText {
@@ -77,7 +77,7 @@ MyStackViewPage {
                 }
 
                 MyPushButton {
-                    text: "Reset"
+                    text: qsTr("Reset")
                     onClicked: {
                         StatisticsTabController.statsLeftControllerSpeedResetClicked()
                     }
@@ -88,7 +88,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: "Right Controller Max Speed:"
+                    text: qsTr("Right Controller Max Speed:")
                 }
 
                 MyText {
@@ -100,7 +100,7 @@ MyStackViewPage {
                 }
 
                 MyPushButton {
-                    text: "Reset"
+                    text: qsTr("Reset")
                     onClicked: {
                         StatisticsTabController.statsRightControllerSpeedResetClicked()
                     }
@@ -109,14 +109,14 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
-            title: "Frames"
+            title: qsTr("Frames")
             GridLayout {
                 anchors.fill: parent
                 columns: 3
                 rowSpacing: 0
 
                 MyText {
-                    text: "Presented Frames:"
+                    text: qsTr("Presented Frames:")
                 }
 
                 MyText {
@@ -128,7 +128,7 @@ MyStackViewPage {
                 }
 
                 MyPushButton {
-                    text: "Reset"
+                    text: qsTr("Reset")
                     onClicked: {
                         StatisticsTabController.presentedFramesResetClicked()
                     }
@@ -139,7 +139,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: "Dropped Frames:"
+                    text: qsTr("Dropped Frames:")
                 }
 
                 MyText {
@@ -151,7 +151,7 @@ MyStackViewPage {
                 }
 
                 MyPushButton {
-                    text: "Reset"
+                    text: qsTr("Reset")
                     onClicked: {
                         StatisticsTabController.droppedFramesResetClicked()
                     }
@@ -162,7 +162,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: "Reprojected Frames:"
+                    text: qsTr("Reprojected Frames:")
                 }
 
                 MyText {
@@ -174,7 +174,7 @@ MyStackViewPage {
                 }
 
                 MyPushButton {
-                    text: "Reset"
+                    text: qsTr("Reset")
                     onClicked: {
                         StatisticsTabController.reprojectedFramesResetClicked()
                     }
@@ -185,7 +185,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: "Timed Out:"
+                    text: qsTr("Timed Out:")
                 }
 
                 MyText {
@@ -197,7 +197,7 @@ MyStackViewPage {
                 }
 
                 MyPushButton {
-                    text: "Reset"
+                    text: qsTr("Reset")
                     onClicked: {
                         StatisticsTabController.timedOutResetClicked()
                     }
@@ -208,7 +208,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: "Reprojection Ratio:"
+                    text: qsTr("Reprojection Ratio:")
                 }
 
                 MyText {
@@ -220,7 +220,7 @@ MyStackViewPage {
                 }
 
                 MyPushButton {
-                    text: "Reset"
+                    text: qsTr("Reset")
                     onClicked: {
                         StatisticsTabController.totalRatioResetClicked()
                     }
@@ -235,9 +235,9 @@ MyStackViewPage {
             statsHmdMovedText.text = StatisticsTabController.hmdDistanceMoved.toFixed(1) + " m"
             var rotations = StatisticsTabController.hmdRotations
             if (rotations > 0) {
-                statsHmdRotationText.text = rotations.toFixed(2) + " CCW"
+                statsHmdRotationText.text = qsTr("%1 CCW").arg(rotations.toFixed(2))
             } else {
-                statsHmdRotationText.text = -rotations.toFixed(2) + " CW"
+                statsHmdRotationText.text = qsTr("%1 CW").arg(-rotations.toFixed(2))
             }
             statsLeftControllerSpeedText.text = "    " + StatisticsTabController.leftControllerMaxSpeed.toFixed(1) + " m/s"
             statsRightControllerSpeedText.text = "    " + StatisticsTabController.rightControllerMaxSpeed.toFixed(1) + " m/s"

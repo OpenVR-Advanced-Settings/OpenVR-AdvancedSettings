@@ -6,18 +6,18 @@ import ovras.advsettings 1.0
 import "common"
 
 MyStackViewPage {
-    headerText: "Application Settings"
+    headerText: qsTr("Application Settings")
 
     content: ColumnLayout {
         spacing: 18
 
         SettingsGroupBox {
-            title: "Sound"
+            title: qsTr("Sound")
             RowLayout {
                 anchors.fill: parent
 
                 MyText {
-                    text: "Application Volume"
+                    text: qsTr("Application Volume")
                     Layout.rightMargin: 12
                 }
 
@@ -84,14 +84,14 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
-            title: "General"
+            title: qsTr("General")
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
 
                 MyToggleButton {
                     id: settingsAutoStartToggle
-                    text: "Autostart"
+                    text: qsTr("Autostart")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
                     onCheckedChanged: {
@@ -102,7 +102,7 @@ MyStackViewPage {
                 }
                 MyToggleButton {
                     id: desktopModeToggleButton
-                    text: "Desktop Mode (restart required)"
+                    text: qsTr("Desktop Mode (restart required)")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
                     onCheckedChanged: {
@@ -113,7 +113,7 @@ MyStackViewPage {
                 }
                 MyToggleButton {
                     id: universeCenteredRotationToggle
-                    text: "Universe-Centered Rotation (Disables HMD Centering)"
+                    text: qsTr("Universe-Centered Rotation (Disables HMD Centering)")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
                     onCheckedChanged: {
@@ -124,7 +124,7 @@ MyStackViewPage {
                 }
                 MyToggleButton {
                     id: disableCrashRecoveryToggle
-                    text: "Enable Automatic Crash Recovery of Chaperone Config"
+                    text: qsTr("Enable Automatic Crash Recovery of Chaperone Config")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
                     onCheckedChanged: {
@@ -135,7 +135,7 @@ MyStackViewPage {
                 }
                 MyToggleButton {
                     id: disableVersionCheckToggle
-                    text: "Disable Notification of Newer Version Availability"
+                    text: qsTr("Disable Notification of Newer Version Availability")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
                     onCheckedChanged: {
@@ -146,7 +146,7 @@ MyStackViewPage {
                 }
                 MyToggleButton {
                     id: exclusiveInputToggleButton
-                    text: "Exclusive Input Toggle (This enables Key Binding to Toggle state)"
+                    text: qsTr("Exclusive Input Toggle (This enables Key Binding to Toggle state)")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
                     onCheckedChanged: {
@@ -157,14 +157,14 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
-            title: "Chaperone"
+            title: qsTr("Chaperone")
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
 
                 MyToggleButton {
                     id: nativeChaperoneToggleButton
-                    text: "Force Use SteamVR Chaperone (experimental + SteamVR restart required)"
+                    text: qsTr("Force Use SteamVR Chaperone (experimental + SteamVR restart required)")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
                     onCheckedChanged: {
@@ -178,7 +178,7 @@ MyStackViewPage {
 
                     MyToggleButton {
                         id: autoApplyChaperoneToggleButton
-                        text: "Auto Apply Chaperone Profile"
+                        text: qsTr("Auto Apply Chaperone Profile")
                         Layout.fillWidth: true
                         Layout.rightMargin: 0
                         onCheckedChanged: {
@@ -204,7 +204,7 @@ MyStackViewPage {
                         id: summaryChaperoneProfileApplyButton
                         enabled: false
                         Layout.preferredWidth: 150
-                        text: "Select"
+                        text: qsTr("Select")
                         onClicked: {
                             if (summaryChaperoneProfileComboBox.currentIndex > 0) {
                                 ChaperoneTabController.applyChaperoneProfile(summaryChaperoneProfileComboBox.currentIndex - 1)
@@ -218,14 +218,14 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
-            title: "Advanced"
+            title: qsTr("Advanced")
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
 
                 MyToggleButton {
                     id: oculusSdkToggleButton
-                    text: "Force Use SteamVR (Disable Oculus API [experimental])"
+                    text: qsTr("Force Use SteamVR (Disable Oculus API [experimental])")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
                     onCheckedChanged: {
@@ -240,7 +240,7 @@ MyStackViewPage {
 
                     MyToggleButton {
                         id: vsyncDisabledToggle
-                        text: "Disable App Vsync"
+                        text: qsTr("Disable App Vsync")
                         onCheckedChanged: {
                             OverlayController.setVsyncDisabled(checked, true)
                             customTickRateText.visible = checked
@@ -251,7 +251,7 @@ MyStackViewPage {
 
                     MyText {
                         id: customTickRateLabel
-                        text: "Custom Tick Rate: "
+                        text: qsTr("Custom Tick Rate: ")
                         horizontalAlignment: Text.AlignRight
                         Layout.leftMargin: 20
                         Layout.rightMargin: 2
@@ -278,7 +278,7 @@ MyStackViewPage {
 
                     MyText {
                         id: customTickRateMsLabel
-                        text: "ms"
+                        text: qsTr("ms")
                         horizontalAlignment: Text.AlignLeft
                         Layout.leftMargin: 1
                     }
@@ -301,7 +301,7 @@ MyStackViewPage {
                 // set visible to true here in builds when we need a debug toggle checkbox, otherwise false when on master branch.
                 visible: false
                 id: debugToggle
-                text: "Debug"
+                text: qsTr("Debug")
                 onCheckedChanged: {
                     OverlayController.setEnableDebug(checked, true)
                 }
@@ -314,7 +314,7 @@ MyStackViewPage {
             MyPushButton {
                 id: shutdownButton
                 Layout.preferredWidth: 250
-                text: "Shutdown OVRAS"
+                text: qsTr("Shutdown OVRAS")
                 onClicked: {
                     OverlayController.exitApp()
                     }

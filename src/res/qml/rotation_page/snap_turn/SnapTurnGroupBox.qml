@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: snapTurnGroupBox
     Layout.fillWidth: true
 
-    title: "Bind Turn"
+    title: qsTr("Bind Turn")
 
     ColumnLayout {
         anchors.fill: parent
@@ -17,7 +17,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
 
             MyText {
-                text: "Snap Turn Angle:"
+                text: qsTr("Snap Turn Angle:")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 2
             }
@@ -74,7 +74,7 @@ SettingsGroupBox {
            }
 
            MyText {
-               text: "Smooth Turn Rate:"
+               text: qsTr("Smooth Turn Rate:")
                horizontalAlignment: Text.AlignRight
                Layout.rightMargin: 2
            }
@@ -107,7 +107,7 @@ SettingsGroupBox {
            MyPushButton {
                id: snapTurnBindingsButton
                activationSoundEnabled: false
-               text: "Open Bindings"
+               text: qsTr("Open Bindings")
                Layout.preferredWidth: 180
                onClicked: {
                    SteamVRTabController.launchBindingUI()

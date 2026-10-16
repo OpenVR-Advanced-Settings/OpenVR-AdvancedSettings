@@ -17,10 +17,14 @@ set(CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1)
 #find_package(QT NAMES Qt6 REQUIRED COMPONENTS Core)
 #find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets QuickControls2 QuickDialogs2 Svg)
 #find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS DBus)
-find_package(Qt6 REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets QuickControls2 QuickDialogs2 Svg GuiPrivate)
+find_package(Qt6 REQUIRED COMPONENTS Gui Multimedia Qml Quick WebSockets Widgets QuickControls2 QuickDialogs2 Svg GuiPrivate LinguistTools)
 find_package(Vulkan REQUIRED)
 
-qt_standard_project_setup(REQUIRES 6.8)
+# I18N_TRANSLATED_LANGUAGES must match the languageModel in src/res/qml/common/mainwidget.qml
+qt_standard_project_setup(REQUIRES 6.8
+    I18N_SOURCE_LANGUAGE en
+    I18N_TRANSLATED_LANGUAGES de es pt ja zh_TW zh_CN
+)
 
 #qt_standard_project_setup should cover these
 #include(GNUInstallDirs)
@@ -70,6 +74,7 @@ set(SRCS
     src/utils/paths.cpp
     src/utils/setup.cpp
     src/utils/sound_player.cpp
+    src/utils/translations.cpp
     src/utils/update_rate.cpp
 )
 
@@ -114,6 +119,7 @@ set(HEADERS
     src/utils/paths.h
     src/utils/setup.h
     src/utils/sound_player.h
+    src/utils/translations.h
     src/utils/update_rate.h
     src/utils/Matrix.h
     src/quaternion/quaternion.h
@@ -268,6 +274,13 @@ qt_add_qml_module(AdvancedSettings
         RESOURCES
             ${ResourcesRC}
         VERSION ${PROJECT_VERSION}
+)
+
+# Languages come from I18N_TRANSLATED_LANGUAGES above.
+# Run the update_translations target to refresh the .ts files from source.
+qt_add_translations(AdvancedSettings
+    TS_FILE_DIR translations
+    RESOURCE_PREFIX /i18n
 )
 
 target_include_directories(AdvancedSettings PUBLIC

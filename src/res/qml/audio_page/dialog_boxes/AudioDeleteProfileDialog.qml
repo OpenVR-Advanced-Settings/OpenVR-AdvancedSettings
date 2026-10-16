@@ -11,8 +11,8 @@ MyDialogOkCancelPopup {
     y: -300
     x: 100
     property int profileIndex: -1
-    dialogTitle: "Delete Profile"
-    dialogText: "Do you really want to delete this audio profile?"
+    dialogTitle: qsTr("Delete Profile")
+    dialogText: qsTr("Do you really want to delete this audio profile?")
     onClosed: {
         if (okClicked) {
             AudioTabController.deleteAudioProfile(profileIndex)

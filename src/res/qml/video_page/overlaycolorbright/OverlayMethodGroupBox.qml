@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: overlayMethodGroupBox
     Layout.fillWidth: true
 
-    title: "Brightness and Color (via overlay)"
+    title: qsTr("Brightness and Color (via overlay)")
 
     ColumnLayout {
         anchors.fill: parent
@@ -18,7 +18,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: brightnessToggle
-                text: "Toggle On/Off"
+                text: qsTr("Toggle On/Off")
                 onCheckedChanged: {
                     VideoTabController.setBrightnessEnabled(this.checked, true)
                 }
@@ -29,7 +29,7 @@ SettingsGroupBox {
             }
 
             MyText {
-                text: "Brightness:"
+                text: qsTr("Brightness:")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }
@@ -76,7 +76,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: colorToggle
-                text: "Toggle On/Off"
+                text: qsTr("Toggle On/Off")
                 onCheckedChanged: {
                     VideoTabController.setColorOverlayEnabled(this.checked, true)                }
             }
@@ -86,7 +86,7 @@ SettingsGroupBox {
             }
 
             MyText {
-                text: "Opacity:"
+                text: qsTr("Opacity:")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }
@@ -137,7 +137,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
 
             MyText {
-                text: "Red:"
+                text: qsTr("Red:")
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 75
             }
@@ -179,7 +179,7 @@ SettingsGroupBox {
                 }
             }
             MyText {
-                text: "Green:"
+                text: qsTr("Green:")
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 85
             }
@@ -222,7 +222,7 @@ SettingsGroupBox {
             }
 
                 MyText {
-                    text: "Blue:"
+                    text: qsTr("Blue:")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
                 }

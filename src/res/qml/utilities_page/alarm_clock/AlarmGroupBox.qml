@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: alarmGroupBox
     Layout.fillWidth: true
     
-    title: "Alarm Clock"
+    title: qsTr("Alarm Clock")
     ColumnLayout {
         anchors.fill: parent
 
@@ -18,7 +18,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: alarmClockToggle
-                text: "On/Off"
+                text: qsTr("On/Off")
                 onCheckedChanged: {
                     VrAlarm.alarmEnabled = checked
                 }
@@ -42,7 +42,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
 
             MyPushButton {
-                text: "Current Time"
+                text: qsTr("Current Time")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {
@@ -54,7 +54,7 @@ SettingsGroupBox {
             }
 
             MyPushButton {
-                text: "+1 Hour"
+                text: qsTr("+1 Hour")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {
@@ -63,7 +63,7 @@ SettingsGroupBox {
             }
 
             MyPushButton {
-                text: "-1 Hour"
+                text: qsTr("-1 Hour")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {
@@ -72,7 +72,7 @@ SettingsGroupBox {
             }
 
             MyPushButton {
-                text: "+5 Min"
+                text: qsTr("+5 Min")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {
@@ -81,7 +81,7 @@ SettingsGroupBox {
             }
 
             MyPushButton {
-                text: "-5 Min"
+                text: qsTr("-5 Min")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {

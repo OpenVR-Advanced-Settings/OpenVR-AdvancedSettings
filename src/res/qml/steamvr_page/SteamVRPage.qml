@@ -8,7 +8,7 @@ import "steamvrmisc"
 import "steamvrbind"
 
 MyStackViewPage {
-    headerText: "SteamVR"
+    headerText: qsTr("SteamVR")
 
     content: ColumnLayout {
         spacing: 16
@@ -27,7 +27,7 @@ MyStackViewPage {
             Layout.fillWidth: true
 
             MyPushButton {
-                text: "Lighthouse Device Pairing"
+                text: qsTr("Lighthouse Device Pairing")
                 Layout.preferredWidth: 350
 
                 onClicked: {
@@ -41,7 +41,7 @@ MyStackViewPage {
 
             MyPushButton {
                 id: steamVRRestartButton
-                text: "Restart SteamVR"
+                text: qsTr("Restart SteamVR")
                 Layout.preferredWidth: 250
                 onClicked: {
                     SteamVRTabController.restartSteamVR()

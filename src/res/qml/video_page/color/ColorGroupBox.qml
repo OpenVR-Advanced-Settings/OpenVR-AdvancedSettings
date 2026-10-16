@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: brightnessGroupBox
     Layout.fillWidth: true
 
-    title: "Color Adjustment"
+    title: qsTr("Color Adjustment")
 
     ColumnLayout {
         anchors.fill: parent
@@ -17,7 +17,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
 
             MyText {
-                text: "Red:"
+                text: qsTr("Red:")
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 75
             }
@@ -65,7 +65,7 @@ SettingsGroupBox {
                 }
             }
             MyText {
-                text: "Green:"
+                text: qsTr("Green:")
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 85
             }
@@ -114,7 +114,7 @@ SettingsGroupBox {
             }
 
                 MyText {
-                    text: "Blue:"
+                    text: qsTr("Blue:")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
                 }

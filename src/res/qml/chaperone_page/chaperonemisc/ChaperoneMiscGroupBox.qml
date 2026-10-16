@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: chaperoneMiscGroupBox
     Layout.fillWidth: true
 
-    title: "Misc"
+    title: qsTr("Misc")
 
     ColumnLayout {
         anchors.fill: parent
@@ -16,7 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: chaperoneFloorToggleBtn
-            text: "Floor Bounds Always On"
+            text: qsTr("Floor Bounds Always On")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -27,7 +27,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: legacyCenterMarkerbtn
-            text: "Legacy Center Marker"
+            text: qsTr("Legacy Center Marker")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -40,13 +40,13 @@ SettingsGroupBox {
             spacing: 16
 
             MyText {
-                text: "Turn Counter"
+                text: qsTr("Turn Counter")
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignLeft
             }
             MyPushButton {
                 id: btnResetOrientation
-                text: "Reset"
+                text: qsTr("Reset")
                 onClicked: {
                     StatisticsTabController.statsRotationResetClicked()
                 }
@@ -58,7 +58,7 @@ SettingsGroupBox {
             spacing: 16
 
             MyText {
-                text: "Disable chaperone below height: "
+                text: qsTr("Disable chaperone below height: ")
                 Layout.preferredWidth: 400
                 horizontalAlignment: Text.AlignLeft
             }
@@ -134,7 +134,7 @@ SettingsGroupBox {
             spacing: 16
 
             MyText {
-                text: "Chaperone Style"
+                text: qsTr("Chaperone Style")
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignLeft
             }

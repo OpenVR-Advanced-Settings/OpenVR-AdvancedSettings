@@ -15,7 +15,7 @@ ColumnLayout {
     RowLayout {
         Layout.preferredHeight: 48
         MyText {
-            text: "Microphone Volume"
+            text: qsTr("Microphone Volume")
             Layout.preferredWidth: 260
         }
         

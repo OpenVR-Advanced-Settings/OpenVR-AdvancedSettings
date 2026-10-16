@@ -100,6 +100,8 @@ class OverlayController : public QObject
                     soundVolumeChanged )
     Q_PROPERTY( bool desktopModeToggle READ desktopModeToggle WRITE
                     setDesktopModeToggle NOTIFY desktopModeToggleChanged )
+    Q_PROPERTY(
+        QString language READ language WRITE setLanguage NOTIFY languageChanged )
 
 private:
     vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
@@ -133,6 +135,7 @@ private:
 
     bool m_desktopMode;
     bool m_noSound;
+    QQmlEngine& m_qmlEngine;
     bool m_newVersionDetected = false;
     int m_remoteVersionMajor = -1;
     int m_remoteVersionMinor = -1;
@@ -276,6 +279,7 @@ public:
 
     double soundVolume() const;
     bool desktopModeToggle() const;
+    QString language() const;
 
 public slots:
     void renderOverlay();
@@ -304,6 +308,7 @@ public slots:
     void setAutoApplyChaperoneEnabled( bool value, bool notify = true );
     void setSoundVolume( double value, bool notify = true );
     void setDesktopModeToggle( bool value, bool notify = true );
+    void setLanguage( QString value, bool notify = true );
 
 signals:
     void keyBoardInputSignal( QString input, unsigned long userValue = 0 );
@@ -318,6 +323,7 @@ signals:
     void autoApplyChaperoneEnabledChanged( bool value );
     void soundVolumeChanged( double value );
     void desktopModeToggleChanged( bool value );
+    void languageChanged( QString value );
     void submitLastTextField(unsigned long value = 0);
 };
 

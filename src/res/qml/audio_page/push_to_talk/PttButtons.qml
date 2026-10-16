@@ -9,7 +9,7 @@ ColumnLayout {
 
     MyToggleButton {
         id: audioPttEnabledToggle
-        text: "Enable"
+        text: qsTr("Enable")
         Layout.fillWidth: true
         Layout.rightMargin: 0
         Layout.preferredHeight: 48
@@ -22,7 +22,7 @@ ColumnLayout {
     MyToggleButton {
         id: audioPttReverseToggle
         enabled: audioPttEnabledToggle.checked
-        text: "Push-to-Mute"
+        text: qsTr("Push-to-Mute")
         Layout.fillWidth: true
         Layout.leftMargin: 32
         Layout.rightMargin: 0
@@ -36,7 +36,7 @@ ColumnLayout {
     MyToggleButton {
         id: audioPttShowNotificationToggle
         enabled: audioPttEnabledToggle.checked
-        text: "Show notification in HMD"
+        text: qsTr("Show notification in HMD")
         Layout.fillWidth: true
         Layout.leftMargin: 32
         Layout.rightMargin: 0

@@ -10,14 +10,14 @@ import "video_page"
 
 MyStackViewPage {
     id: rootPage
-    headerText: "Home"
+    headerText: qsTr("Home")
     headerShowBackButton: false
     stackView: mainView
     content: ColumnLayout {
         spacing: 18
 
         SettingsGroupBox {
-            title: "Profiles"
+            title: qsTr("Profiles")
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
@@ -25,7 +25,7 @@ MyStackViewPage {
                 RowLayout {
                     spacing: 12
                     MyText {
-                        text: "Video Profile"
+                        text: qsTr("Video Profile")
                         Layout.fillWidth: true
                     }
                     MyComboBox {
@@ -44,7 +44,7 @@ MyStackViewPage {
                         id: summaryVideoProfileApplyButton
                         enabled: false
                         Layout.preferredWidth: 120
-                        text: "Apply"
+                        text: qsTr("Apply")
                         onClicked: {
                             if (summaryVideoProfileComboBox.currentIndex > 0) {
                                 VideoTabController.applyVideoProfile(summaryVideoProfileComboBox.currentIndex - 1)
@@ -60,7 +60,7 @@ MyStackViewPage {
                 RowLayout {
                     spacing: 12
                     MyText {
-                        text: "Chaperone Profile"
+                        text: qsTr("Chaperone Profile")
                         Layout.fillWidth: true
                     }
                     MyComboBox {
@@ -79,7 +79,7 @@ MyStackViewPage {
                         id: summaryChaperoneProfileApplyButton
                         enabled: false
                         Layout.preferredWidth: 120
-                        text: "Apply"
+                        text: qsTr("Apply")
                         onClicked: {
                             if (summaryChaperoneProfileComboBox.currentIndex > 0) {
                                 ChaperoneTabController.applyChaperoneProfile(summaryChaperoneProfileComboBox.currentIndex - 1)
@@ -92,7 +92,7 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
-            title: "Stats"
+            title: qsTr("Stats")
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
@@ -104,14 +104,14 @@ MyStackViewPage {
                         Layout.fillWidth: true
                         Layout.preferredWidth: 1
                         MyText {
-                            text: "Tracking Universe"
+                            text: qsTr("Tracking Universe")
                             color: "#8b929a"
                         }
                         MyText {
                             id: summaryPlaySpaceModeText
                             Layout.fillWidth: true
                             horizontalAlignment: Text.AlignRight
-                            text: "Unknown"
+                            text: qsTr("Unknown")
                         }
                     }
                     VerticalSeparator {
@@ -120,7 +120,7 @@ MyStackViewPage {
                         Layout.fillWidth: true
                         Layout.preferredWidth: 1
                         MyText {
-                            text: "HMD Rotations"
+                            text: qsTr("HMD Rotations")
                             color: "#8b929a"
                         }
                         MyText {
@@ -142,7 +142,7 @@ MyStackViewPage {
                         Layout.fillWidth: true
                         Layout.preferredWidth: 1
                         MyText {
-                            text: "Dropped Frames"
+                            text: qsTr("Dropped Frames")
                             color: "#8b929a"
                         }
                         MyText {
@@ -158,7 +158,7 @@ MyStackViewPage {
                         Layout.fillWidth: true
                         Layout.preferredWidth: 1
                         MyText {
-                            text: "Reprojected Frames"
+                            text: qsTr("Reprojected Frames")
                             color: "#8b929a"
                         }
                         MyText {
@@ -180,7 +180,7 @@ MyStackViewPage {
                         Layout.fillWidth: true
                         Layout.preferredWidth: 1
                         MyText {
-                            text: "Timed Out"
+                            text: qsTr("Timed Out")
                             color: "#8b929a"
                         }
                         MyText {
@@ -196,7 +196,7 @@ MyStackViewPage {
                         Layout.fillWidth: true
                         Layout.preferredWidth: 1
                         MyText {
-                            text: "Reprojection Ratio"
+                            text: qsTr("Reprojection Ratio")
                             color: "#8b929a"
                         }
                         MyText {
@@ -211,7 +211,7 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
-            title: "Microphone"
+            title: qsTr("Microphone")
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
@@ -261,7 +261,7 @@ MyStackViewPage {
 
                 MyToggleButton {
                     id: summaryPttToggle
-                    text: "Push-to-Talk"
+                    text: qsTr("Push-to-Talk")
                     Layout.fillWidth: true
                     onClicked: {
                          AudioTabController.setPttEnabled(checked, true)
@@ -326,11 +326,11 @@ MyStackViewPage {
 
 
        if (MoveCenterTabController.trackingUniverse === 0) {
-           summaryPlaySpaceModeText.text = "Sitting"
+           summaryPlaySpaceModeText.text = qsTr("Sitting")
        } else if (MoveCenterTabController.trackingUniverse === 1) {
-           summaryPlaySpaceModeText.text = "Standing"
+           summaryPlaySpaceModeText.text = qsTr("Standing")
        } else {
-           summaryPlaySpaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
+           summaryPlaySpaceModeText.text = qsTr("Unknown(%1)").arg(MoveCenterTabController.trackingUniverse)
        }
        updateStatistics()
        if (visible) {
@@ -401,11 +401,11 @@ MyStackViewPage {
        target: MoveCenterTabController
        function onTrackingUniverseChanged() {
            if (MoveCenterTabController.trackingUniverse === 0) {
-               summaryPlaySpaceModeText.text = "Sitting"
+               summaryPlaySpaceModeText.text = qsTr("Sitting")
            } else if (MoveCenterTabController.trackingUniverse === 1) {
-               summaryPlaySpaceModeText.text = "Standing"
+               summaryPlaySpaceModeText.text = qsTr("Standing")
            } else {
-               summaryPlaySpaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
+               summaryPlaySpaceModeText.text = qsTr("Unknown(%1)").arg(MoveCenterTabController.trackingUniverse)
            }
        }
    }
@@ -414,9 +414,9 @@ MyStackViewPage {
    function updateStatistics() {
        var rotations = StatisticsTabController.hmdRotations
        if (rotations > 0) {
-           summaryHmdRotationsText.text = rotations.toFixed(2) + " CCW"
+           summaryHmdRotationsText.text = qsTr("%1 CCW").arg(rotations.toFixed(2))
        } else {
-           summaryHmdRotationsText.text = -rotations.toFixed(2) + " CW"
+           summaryHmdRotationsText.text = qsTr("%1 CW").arg(-rotations.toFixed(2))
        }
        summaryDroppedFramesText.text = StatisticsTabController.droppedFrames
        summaryReprojectedFramesText.text = StatisticsTabController.reprojectedFrames

@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: spaceTurnGroupBox
     Layout.fillWidth: true
 
-    title: "Space Turn (for manual redirected walking)"
+    title: qsTr("Space Turn (for manual redirected walking)")
 
     ColumnLayout {
         anchors.fill: parent
@@ -18,7 +18,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: turnBindLeft
-                text: "Left Hand"
+                text: qsTr("Left Hand")
                 onCheckedChanged: {
                     MoveCenterTabController.turnBindLeft = this.checked
                 }
@@ -26,7 +26,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: turnBindRight
-                text: "Right Hand"
+                text: qsTr("Right Hand")
                 onCheckedChanged: {
                     MoveCenterTabController.turnBindRight = this.checked
                 }
@@ -37,7 +37,7 @@ SettingsGroupBox {
             }
 
             MyText {
-                text: "Comfort Mode:"
+                text: qsTr("Comfort Mode:")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }
@@ -66,7 +66,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: turnBounds
-                text: "Force Bounds"
+                text: qsTr("Force Bounds")
                 onCheckedChanged: {
                     MoveCenterTabController.turnBounds = this.checked
                 }

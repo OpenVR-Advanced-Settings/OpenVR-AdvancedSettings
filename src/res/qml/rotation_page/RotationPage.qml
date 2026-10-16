@@ -10,7 +10,7 @@ import "view_ratchet"
 
 
 MyStackViewPage {
-    headerText: "Rotation Settings"
+    headerText: qsTr("Rotation Settings")
     content: ColumnLayout {
         spacing: 8
         SpaceTurnGroupBox{

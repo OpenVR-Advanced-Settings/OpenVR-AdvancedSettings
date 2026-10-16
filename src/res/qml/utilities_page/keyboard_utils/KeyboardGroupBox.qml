@@ -8,14 +8,14 @@ SettingsGroupBox {
     id: keyboardGroupBox
     Layout.fillWidth: true
     
-    title: "Keyboard Utilities"
+    title: qsTr("Keyboard Utilities")
     ColumnLayout {
         anchors.fill: parent
         
         
         
         MyText {
-            text: "Send to active application: "
+            text: qsTr("Send to active application: ")
         }
         
         RowLayout {
@@ -23,7 +23,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
             
             MyPushButton {
-                text: "Keyboard Input"
+                text: qsTr("Keyboard Input")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {
@@ -40,7 +40,7 @@ SettingsGroupBox {
             }
             
             MyPushButton {
-                text: "Enter"
+                text: qsTr("Enter")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {
@@ -49,7 +49,7 @@ SettingsGroupBox {
             }
             
             MyPushButton {
-                text: "Alt-Tab"
+                text: qsTr("Alt-Tab")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {
@@ -64,7 +64,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
 
             MyPushButton {
-                text: "Backspace"
+                text: qsTr("Backspace")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {
@@ -73,7 +73,7 @@ SettingsGroupBox {
             }
             
             MyPushButton {
-                text: "10x Backspace"
+                text: qsTr("10x Backspace")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {
@@ -82,7 +82,7 @@ SettingsGroupBox {
             }
             
             MyPushButton {
-                text: "Alt-Enter"
+                text: qsTr("Alt-Enter")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {
@@ -97,7 +97,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
 
             MyPushButton {
-                text: "Copy"
+                text: qsTr("Copy")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {
@@ -106,7 +106,7 @@ SettingsGroupBox {
             }
 
             MyPushButton {
-                text: "Paste"
+                text: qsTr("Paste")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {
@@ -115,7 +115,7 @@ SettingsGroupBox {
             }
 
             MyPushButton {
-                text: "Cut"
+                text: qsTr("Cut")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 onClicked: {
@@ -130,7 +130,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
 
             MyPushButton {
-                text: "Custom Key 1"
+                text: qsTr("Custom Key 1")
                 Layout.preferredWidth: 200
                 onClicked: {
                     UtilitiesTabController.sendKeyboardOne();
@@ -138,7 +138,7 @@ SettingsGroupBox {
             }
 
             MyPushButton {
-                text: "Custom Key 2"
+                text: qsTr("Custom Key 2")
                 Layout.preferredWidth: 200
                 onClicked: {
                     UtilitiesTabController.sendKeyboardTwo();
@@ -146,7 +146,7 @@ SettingsGroupBox {
             }
 
             MyPushButton {
-                text: "Custom Key 3"
+                text: qsTr("Custom Key 3")
                 Layout.preferredWidth: 200
                 onClicked: {
                     UtilitiesTabController.sendKeyboardThree();
@@ -158,7 +158,7 @@ SettingsGroupBox {
             }
 
             MyPushButton {
-                text: "Bindings"
+                text: qsTr("Bindings")
                 Layout.preferredWidth: 200
             }
         }
@@ -172,7 +172,7 @@ SettingsGroupBox {
 
             MyPushButton {
                 id: rShiftTilde1Button
-                text: "RSh~1"
+                text: qsTr("RSh~1")
                 Layout.fillWidth: true
                 onClicked: {
                     UtilitiesTabController.sendKeyboardRShiftTilde1()
@@ -192,7 +192,7 @@ SettingsGroupBox {
 
             MyPushButton {
                 id: rShiftTilde2Button
-                text: "RSh~2"
+                text: qsTr("RSh~2")
                 Layout.fillWidth: true
                 onClicked: {
                     UtilitiesTabController.sendKeyboardRShiftTilde2()
@@ -212,7 +212,7 @@ SettingsGroupBox {
 
             MyPushButton {
                 id: rShiftTilde3Button
-                text: "RSh~3"
+                text: qsTr("RSh~3")
                 Layout.fillWidth: true
                 onClicked: {
                     UtilitiesTabController.sendKeyboardRShiftTilde3()
@@ -232,7 +232,7 @@ SettingsGroupBox {
 
             MyPushButton {
                 id: rShiftTilde4Button
-                text: "RSh~4"
+                text: qsTr("RSh~4")
                 Layout.fillWidth: true
                 onClicked: {
                     UtilitiesTabController.sendKeyboardRShiftTilde4()
@@ -252,7 +252,7 @@ SettingsGroupBox {
 
             MyPushButton {
                 id: rShiftTilde5Button
-                text: "RSh~5"
+                text: qsTr("RSh~5")
                 Layout.fillWidth: true
                 onClicked: {
                     UtilitiesTabController.sendKeyboardRShiftTilde5()
@@ -272,7 +272,7 @@ SettingsGroupBox {
 
             MyPushButton {
                 id: rShiftTilde6Button
-                text: "RSh~6"
+                text: qsTr("RSh~6")
                 Layout.fillWidth: true
                 onClicked: {
                     UtilitiesTabController.sendKeyboardRShiftTilde6()
@@ -292,7 +292,7 @@ SettingsGroupBox {
 
             MyPushButton {
                 id: rShiftTilde7Button
-                text: "RSh~7"
+                text: qsTr("RSh~7")
                 Layout.fillWidth: true
                 onClicked: {
                     UtilitiesTabController.sendKeyboardRShiftTilde7()
@@ -312,7 +312,7 @@ SettingsGroupBox {
 
             MyPushButton {
                 id: rShiftTilde8Button
-                text: "RSh~8"
+                text: qsTr("RSh~8")
                 Layout.fillWidth: true
                 onClicked: {
                     UtilitiesTabController.sendKeyboardRShiftTilde8()
@@ -332,7 +332,7 @@ SettingsGroupBox {
 
             MyPushButton {
                 id: rShiftTilde9Button
-                text: "RSh~9"
+                text: qsTr("RSh~9")
                 Layout.fillWidth: true
                 onClicked: {
                     UtilitiesTabController.sendKeyboardRShiftTilde9()
@@ -352,7 +352,7 @@ SettingsGroupBox {
 
             MyPushButton {
                 id: rShiftTilde0Button
-                text: "RSh~0"
+                text: qsTr("RSh~0")
                 Layout.fillWidth: true
                 onClicked: {
                     UtilitiesTabController.sendKeyboardRShiftTilde0()

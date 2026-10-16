@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: spaceDragGroupBox
     Layout.fillWidth: true
 
-    title: "Space Drag"
+    title: qsTr("Space Drag")
 
     ColumnLayout {
         anchors.fill: parent
@@ -18,7 +18,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: moveShortcutLeft
-                text: "Left Hand"
+                text: qsTr("Left Hand")
                 onCheckedChanged: {
                     MoveCenterTabController.moveShortcutLeft = this.checked
                 }
@@ -26,7 +26,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: moveShortcutRight
-                text: "Right Hand"
+                text: qsTr("Right Hand")
                 onCheckedChanged: {
                     MoveCenterTabController.moveShortcutRight = this.checked
                 }
@@ -37,7 +37,7 @@ SettingsGroupBox {
             }
 
             MyText {
-                text: "Comfort Mode:"
+                text: qsTr("Comfort Mode:")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }
@@ -66,7 +66,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: dragBounds
-                text: "Force Bounds"
+                text: qsTr("Force Bounds")
                 onCheckedChanged: {
                     MoveCenterTabController.dragBounds = this.checked
                 }
@@ -80,7 +80,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
 
             MyText {
-                text: "Drag Multiplier"
+                text: qsTr("Drag Multiplier")
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignLeft
             }

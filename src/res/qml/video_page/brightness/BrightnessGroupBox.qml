@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: brightnessGroupBox
     Layout.fillWidth: true
 
-    title: "Brightness"
+    title: qsTr("Brightness")
 
     ColumnLayout {
         anchors.fill: parent
@@ -18,7 +18,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: brightnessToggle
-                text: "Toggle On/Off"
+                text: qsTr("Toggle On/Off")
                 onCheckedChanged: {
                     VideoTabController.setBrightnessEnabled(this.checked, true)                }
             }
@@ -28,7 +28,7 @@ SettingsGroupBox {
             }
 
             MyText {
-                text: "Brightness:"
+                text: qsTr("Brightness:")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 10
             }

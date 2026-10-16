@@ -580,6 +580,11 @@ private:
                             SettingCategory::Application,
                             QtInfo{ "autoApplyChaperoneName" },
                             nameDefault },
+        // Empty means follow the system locale.
+        StringSettingValue{ StringSetting::APPLICATION_language,
+                            SettingCategory::Application,
+                            QtInfo{ "language" },
+                            "" },
     };
 
     constexpr static auto intSettingsSize

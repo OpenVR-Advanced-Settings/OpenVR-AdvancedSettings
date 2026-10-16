@@ -9,7 +9,7 @@ SettingsGroupBox {
     id: changeOrientationGroupBox
     Layout.fillWidth: true
 
-    title: "Rotate Orientation (permanent)"
+    title: qsTr("Rotate Orientation (permanent)")
 
     ColumnLayout {
         anchors.fill: parent
@@ -75,7 +75,7 @@ SettingsGroupBox {
                 MyPushButton {
                     id: spaceRotationApplyButton
                     Layout.preferredWidth: 145
-                    text:"Apply"
+                    text:qsTr("Apply")
                     onClicked: {
                         ChaperoneTabController.flipOrientation(spaceRotationSlider.value)
                         spaceRotationSlider.value = 0

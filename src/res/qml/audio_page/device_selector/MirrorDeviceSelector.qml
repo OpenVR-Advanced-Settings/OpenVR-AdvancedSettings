@@ -8,7 +8,7 @@ RowLayout {
     id: audioMirrorNameCombo
     Layout.preferredHeight: 48
     // Text shown to the left.
-    property string deviceText: "Mirror Device"
+    property string deviceText: qsTr("Mirror Device")
 
     // The entries in the dropdown box.
     property alias devices: selector.model
@@ -49,7 +49,7 @@ RowLayout {
         }
     }
     function getAudioDeviceList() {
-        var devices = ["<None>"]
+        var devices = [qsTr("<None>")]
         var playbackDevicesCount = AudioTabController.getPlaybackDeviceCount()
         for (var i = 0; i < playbackDevicesCount; i++) {
             var deviceName = AudioTabController.getPlaybackDeviceName(i)

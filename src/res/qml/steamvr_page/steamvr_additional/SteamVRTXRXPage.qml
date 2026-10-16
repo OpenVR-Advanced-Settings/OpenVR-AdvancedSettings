@@ -6,7 +6,7 @@ import "." // QTBUG-34418, singletons require explicit import to load qmldir fil
 import "../../common"
 
 MyStackViewPage {
-    headerText: "Device Pairing Information"
+    headerText: qsTr("Device Pairing Information")
 
     ListModel {
         id: listModelRXTX
@@ -18,7 +18,7 @@ MyStackViewPage {
         SettingsGroupBox {
             id: pairingStatusGroupBox
             Layout.fillWidth: true
-            title: "Pairing"
+            title: qsTr("Pairing")
 
             ColumnLayout {
                 anchors.fill: parent
@@ -26,12 +26,12 @@ MyStackViewPage {
                 RowLayout {
                     Layout.fillWidth: true
                     MyText {
-                        text: "Status:"
+                        text: qsTr("Status:")
                         Layout.preferredWidth: 250
                     }
                     MyText {
                         id: statusText
-                        text: "Ready to Pair"
+                        text: qsTr("Ready to Pair")
                         elide: Text.ElideRight
                         Layout.fillWidth: true
                     }
@@ -43,7 +43,7 @@ MyStackViewPage {
                 RowLayout {
                     Layout.fillWidth: true
                     MyText {
-                        text: "Dongles Used:"
+                        text: qsTr("Dongles Used:")
                         Layout.preferredWidth: 250
                     }
                     MyText {
@@ -53,7 +53,7 @@ MyStackViewPage {
                     }
                     MyPushButton {
                         id: searchButton
-                        text: "Refresh Device List"
+                        text: qsTr("Refresh Device List")
                         Layout.preferredWidth: 300
                         onClicked: {
                             getRXTX()
@@ -65,7 +65,7 @@ MyStackViewPage {
                 }
 
                 MyText {
-                    text: "Set the device to pairing mode, then hit Pair on the desired unconnected dongle. To pair to a dongle that is currently in use, turn off the attached device and refresh the list."
+                    text: qsTr("Set the device to pairing mode, then hit Pair on the desired unconnected dongle. To pair to a dongle that is currently in use, turn off the attached device and refresh the list.")
                     wrapMode: Text.WordWrap
                     color: "#8b929a"
                     Layout.fillWidth: true
@@ -99,7 +99,7 @@ MyStackViewPage {
                             Layout.preferredWidth: deviceInfoLayout.halfWidth
                             Layout.maximumWidth: deviceInfoLayout.halfWidth
                             MyText {
-                                text: "Device ID:"
+                                text: qsTr("Device ID:")
                                 Layout.preferredWidth: deviceInfoLayout.labelWidth
                             }
                             MyText {
@@ -118,7 +118,7 @@ MyStackViewPage {
                             Layout.preferredWidth: deviceInfoLayout.halfWidth
                             Layout.maximumWidth: deviceInfoLayout.halfWidth
                             MyText {
-                                text: "Dongle ID:"
+                                text: qsTr("Dongle ID:")
                                 Layout.preferredWidth: deviceInfoLayout.labelWidth
                             }
                             MyText {
@@ -142,7 +142,7 @@ MyStackViewPage {
                             Layout.preferredWidth: deviceInfoLayout.halfWidth
                             Layout.maximumWidth: deviceInfoLayout.halfWidth
                             MyText {
-                                text: "Dongle Type:"
+                                text: qsTr("Dongle Type:")
                                 Layout.preferredWidth: deviceInfoLayout.labelWidth
                             }
                             MyText {
@@ -161,7 +161,7 @@ MyStackViewPage {
                         }
 
                         MyPushButton {
-                            text: "Pair"
+                            text: qsTr("Pair")
                             enabled: Dev === "No Connection"
                             Layout.preferredWidth: 200
                             onClicked: {
@@ -174,7 +174,7 @@ MyStackViewPage {
         }
 
         MyText {
-            text: "No dongles found."
+            text: qsTr("No dongles found.")
             visible: listModelRXTX.count === 0
             color: "#8b929a"
             Layout.leftMargin: 2

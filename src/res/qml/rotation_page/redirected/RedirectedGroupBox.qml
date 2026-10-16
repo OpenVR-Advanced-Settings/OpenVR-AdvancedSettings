@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: redirectedGroupBox
     Layout.fillWidth: true
 
-    title: "Vestibular Motion (for continuous redirected walking)"
+    title: qsTr("Vestibular Motion (for continuous redirected walking)")
 
     ColumnLayout {
         anchors.fill: parent
@@ -16,7 +16,7 @@ SettingsGroupBox {
       RowLayout{
             MyToggleButton {
                 id: redirectedModeToggle
-                text: "Toggle On/Off"
+                text: qsTr("Toggle On/Off")
                 Layout.preferredWidth: 225
                 onCheckedChanged: {
                     RotationTabController.setVestibularMotionEnabled(this.checked, true);
@@ -31,7 +31,7 @@ SettingsGroupBox {
             MyPushButton {
                 id: imperceptableButton
                 Layout.preferredWidth: 180
-                text:"Imperceptable"
+                text:qsTr("Imperceptable")
                 onClicked: {
                     RotationTabController.setVestibularMotionRadius(22.0)
                 }
@@ -39,7 +39,7 @@ SettingsGroupBox {
             MyPushButton {
                 id: lightButton
                 Layout.preferredWidth: 125
-                text:"Light"
+                text:qsTr("Light")
                 onClicked: {
                     RotationTabController.setVestibularMotionRadius(11.0)
                 }
@@ -47,7 +47,7 @@ SettingsGroupBox {
             MyPushButton {
                 id: strongButton
                 Layout.preferredWidth: 125
-                text:"Strong"
+                text:qsTr("Strong")
                 onClicked: {
                     RotationTabController.setVestibularMotionRadius(5.0)
                 }
@@ -55,14 +55,14 @@ SettingsGroupBox {
             MyPushButton {
                 id: extremeButton
                 Layout.preferredWidth: 125
-                text:"Extreme"
+                text:qsTr("Extreme")
                 onClicked: {
                     RotationTabController.setVestibularMotionRadius(1.0)
                 }
            }
 
             MyText{
-                text: "Radius: "
+                text: qsTr("Radius: ")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 4
             }

@@ -6,7 +6,7 @@ import "../../common"
 
 MyDialogOkCancelPopup {
     id: videoNewProfileDialog
-    dialogTitle: "Create New Video Profile"
+    dialogTitle: qsTr("Create New Video Profile")
     dialogWidth: 600
     dialogHeight: 300
     dialogContentItem: ColumnLayout {
@@ -15,7 +15,7 @@ MyDialogOkCancelPopup {
             Layout.leftMargin: 16
             Layout.rightMargin: 16
             MyText {
-                text: "Name: "
+                text: qsTr("Name: ")
             }
             MyTextField {
                 id: videoNewProfileName
@@ -35,7 +35,7 @@ MyDialogOkCancelPopup {
             if (videoNewProfileName.text != "") {
                 VideoTabController.addVideoProfile(videoNewProfileName.text)
             } else {
-                videoMessageDialog.showMessage("Create New Profile", "ERROR: No name given.")
+                videoMessageDialog.showMessage(qsTr("Create New Profile"), qsTr("ERROR: No name given."))
             }
         }
     }

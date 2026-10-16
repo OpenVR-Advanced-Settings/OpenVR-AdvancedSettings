@@ -27,33 +27,50 @@ Rectangle {
 
     readonly property string iconBase: "qrc:/qt/qml/AdvancedSettings/img/main_menu_icons/"
 
-    // Languages offered in the footer language dropdown.
-    // TODO: hook up to an actual translation backend.
+    // Languages offered in the footer language dropdown. locale must match the
+    // suffix of a translations/AdvancedSettings_<locale>.ts file ("en" is the source language).
+    // Names are intentionally not wrapped in qsTr so each language shows in its own script.
     property var languageModel: [
-        { code: "EN", name: "English" },
-        { code: "DE", name: "Deutsch" },
-        { code: "ES", name: "Español" },
-        { code: "FR", name: "Français" },
-        { code: "PT", name: "Português" },
-        { code: "RU", name: "Русский" }
+        { code: "EN", locale: "en", name: "English" },
+        { code: "DE", locale: "de", name: "Deutsch" },
+        { code: "ES", locale: "es", name: "Español" },
+        { code: "PT", locale: "pt", name: "Português" },
+        { code: "JA", locale: "ja", name: "日本語" },
+        { code: "ZH-TW", locale: "zh_TW", name: "繁體中文" },
+        { code: "ZH-CN", locale: "zh_CN", name: "简体中文" }
     ]
-    property int currentLanguageIndex: 0
+    property int currentLanguageIndex: Math.max(0, languageModel.findIndex(function(l) {
+        return l.locale === OverlayController.language
+    }))
+
+    // Width of the widest language code, so the footer button and popup code column
+    // stay the same size whichever language is selected. Font sizes must match the
+    // code MyText items in the footer.
+    FontMetrics { id: footerCodeMetrics; font.pointSize: 10 }
+    FontMetrics { id: popupCodeMetrics; font.pointSize: 11 }
+    function widestLanguageCode(metrics) {
+        var widest = 0
+        for (var i = 0; i < languageModel.length; i++) {
+            widest = Math.max(widest, metrics.advanceWidth(languageModel[i].code))
+        }
+        return Math.ceil(widest)
+    }
 
     // page: top level page to show, action: function to run instead,
     // separator: draw a divider above the entry.
     property var sideBarModel: [
-        { text: "Home", icon: "home_tab_icon.svg", page: rootPage },
-        { text: "Offsets", icon: "offsets_tab_icon.svg", page: playspacePage, separator: true },
-        { text: "Motion", icon: "motion_tab_icon.svg", page: motionPage },
-        { text: "Rotation", icon: "rotation_tab_icon.svg", page: rotationPage },
-        { text: "SteamVR", icon: "steamvr_tab_icon.svg", page: steamVRPage, separator: true },
-        { text: "Audio", icon: "audio_tab_icon.svg", page: audioPage },
-        { text: "Video", icon: "video_tab_icon.svg", page: videoPage },
-        { text: "Chaperone", icon: "chaperone_tab_icon.svg", page: chaperonePage },
-        { text: "Utilities", icon: "utilities_tab_icon.svg", page: utilitiesPage },
-        { text: "Statistics", icon: "statistics_tab_icon.svg", page: statisticsPage, separator: true },
-        { text: "Settings", icon: "settings_tab_icon.svg", page: settingsPage },
-        { text: "Bindings", icon: "bindings_tab_icon.svg", action: function() { SteamVRTabController.launchBindingUI() }, separator: true }
+        { text: qsTr("Home"), icon: "home_tab_icon.svg", page: rootPage },
+        { text: qsTr("Offsets"), icon: "offsets_tab_icon.svg", page: playspacePage, separator: true },
+        { text: qsTr("Motion"), icon: "motion_tab_icon.svg", page: motionPage },
+        { text: qsTr("Rotation"), icon: "rotation_tab_icon.svg", page: rotationPage },
+        { text: qsTr("SteamVR"), icon: "steamvr_tab_icon.svg", page: steamVRPage, separator: true },
+        { text: qsTr("Audio"), icon: "audio_tab_icon.svg", page: audioPage },
+        { text: qsTr("Video"), icon: "video_tab_icon.svg", page: videoPage },
+        { text: qsTr("Chaperone"), icon: "chaperone_tab_icon.svg", page: chaperonePage },
+        { text: qsTr("Utilities"), icon: "utilities_tab_icon.svg", page: utilitiesPage },
+        { text: qsTr("Statistics"), icon: "statistics_tab_icon.svg", page: statisticsPage, separator: true },
+        { text: qsTr("Settings"), icon: "settings_tab_icon.svg", page: settingsPage },
+        { text: qsTr("Bindings"), icon: "bindings_tab_icon.svg", action: function() { SteamVRTabController.launchBindingUI() }, separator: true }
     ]
 
     function showSideBarPage(index) {
@@ -87,7 +104,7 @@ Rectangle {
             MyText {
                 x: 16
                 width: parent.width - 32
-                text: "OVR Advanced Settings"
+                text: qsTr("OVR Advanced Settings")
                 font.pointSize: 20
                 minimumPointSize: 8
                 fontSizeMode: Text.HorizontalFit
@@ -300,8 +317,10 @@ Rectangle {
                     spacing: 6
                     MyText {
                         anchors.verticalCenter: parent.verticalCenter
+                        width: root.widestLanguageCode(footerCodeMetrics)
+                        horizontalAlignment: Text.AlignHCenter
                         text: root.languageModel[root.currentLanguageIndex].code
-                        font.pointSize: 11
+                        font.pointSize: 10
                         color: languageButton.activeFocus || languagePopup.opened ? "#ffffff" : "#b8bcbf"
                     }
                     Image {
@@ -361,7 +380,7 @@ Rectangle {
                                     spacing: 12
                                     MyText {
                                         anchors.verticalCenter: parent.verticalCenter
-                                        width: 28
+                                        width: root.widestLanguageCode(popupCodeMetrics)
                                         text: modelData.code
                                         font.pointSize: 11
                                         color: "#8b929a"
@@ -382,7 +401,7 @@ Rectangle {
                                 }
                                 onClicked: {
                                     OverlayController.playFocusChangedSound()
-                                    root.currentLanguageIndex = index
+                                    OverlayController.language = modelData.locale
                                     languagePopup.close()
                                 }
                             }

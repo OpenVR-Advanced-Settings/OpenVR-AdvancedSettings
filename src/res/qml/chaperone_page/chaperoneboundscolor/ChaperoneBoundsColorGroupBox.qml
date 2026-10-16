@@ -9,7 +9,7 @@ SettingsGroupBox {
     id: chaperoneBoundsColorGroupBox
     Layout.fillWidth: true
 
-    title: "Chaperone Color"
+    title: qsTr("Chaperone Color")
 
     function toHexByte(val) {
         var h = Math.round(val).toString(16).toUpperCase()
@@ -27,7 +27,7 @@ SettingsGroupBox {
         columns: 7
 
                 MyText {
-                    text: "Red:"
+                    text: qsTr("Red:")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
                 }
@@ -73,7 +73,7 @@ SettingsGroupBox {
                     Layout.preferredWidth: 200
                 }
                 MyText {
-                    text: "Green:"
+                    text: qsTr("Green:")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
                 }
@@ -116,7 +116,7 @@ SettingsGroupBox {
                 }
 
                 MyText {
-                    text: "Blue:"
+                    text: qsTr("Blue:")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
                 }
@@ -162,14 +162,14 @@ SettingsGroupBox {
                     Layout.preferredWidth: 200
                 }
                 MyText {
-                    text: "Hex:"
+                    text: qsTr("Hex:")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
                 }
 
                 MyTextField {
                     id: colorHexText
-                    text: "#00FFFF"
+                    text: qsTr("#00FFFF")
                     keyBoardUID: 323
                     Layout.columnSpan: 2
                     Layout.fillWidth: true

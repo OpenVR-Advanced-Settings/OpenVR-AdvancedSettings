@@ -8,7 +8,7 @@ MyToggleButton {
     id: audioMuteProximitySensorToggle
     Layout.preferredHeight: 48
     Layout.preferredWidth: 600
-    text: "Proximity Sensor Mutes/Unmutes Microphone"
+    text: qsTr("Proximity Sensor Mutes/Unmutes Microphone")
     onClicked: {
         AudioTabController.setMicProximitySensorCanMute(checked, false)
     }

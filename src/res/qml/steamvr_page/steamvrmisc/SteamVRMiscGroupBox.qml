@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: steamVRMiscGroupBox
     Layout.fillWidth: true
 
-    title: "General"
+    title: qsTr("General")
 
     ColumnLayout {
         anchors.fill: parent
@@ -16,7 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: steamvrPerformanceGraphToggle
-            text: "Enable Timing Overlay"
+            text: qsTr("Enable Timing Overlay")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -27,7 +27,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrNoHMDToggle
-            text: "Require HMD"
+            text: qsTr("Require HMD")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -38,7 +38,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrNoFadeToGridToggle
-            text: "No Fade to Grid"
+            text: qsTr("No Fade to Grid")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -49,7 +49,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrMultipleDriverToggle
-            text: "Allow Multiple Drivers"
+            text: qsTr("Allow Multiple Drivers")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -60,7 +60,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrSystemButtonToggle
-            text: "Enable System Button Binding"
+            text: qsTr("Enable System Button Binding")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -71,7 +71,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrNotificationToggle
-            text: "Disable Notifications"
+            text: qsTr("Disable Notifications")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -82,7 +82,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrControllerPowerToggle
-            text: "Controller Power Turns on SteamVR"
+            text: qsTr("Controller Power Turns on SteamVR")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {

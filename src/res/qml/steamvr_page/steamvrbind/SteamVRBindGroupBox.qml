@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: steamVRBindGroupBox
     Layout.fillWidth: true
 
-    title: "Per-Game Bindings"
+    title: qsTr("Per-Game Bindings")
 
     ColumnLayout {
         anchors.fill: parent
@@ -16,7 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: steamvrBindingToggle
-            text: "Enable"
+            text: qsTr("Enable")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -40,13 +40,13 @@ SettingsGroupBox {
             Layout.preferredHeight: steamvrBindingToggle.height
 
             MyText {
-                text: "Application:"
+                text: qsTr("Application:")
                 horizontalAlignment: Text.AlignLeft
             }
             MyTextField {
                 id: appSelect
                 Layout.fillWidth: true
-                text: "steam.overlay.1009850"
+                text: qsTr("steam.overlay.1009850")
                 keyBoardUID: 201
                 Layout.fillHeight: true
                 horizontalAlignment: Text.AlignHCenter
@@ -58,7 +58,7 @@ SettingsGroupBox {
                 id: bindingsButton
                 Layout.fillHeight: true
                 activationSoundEnabled: false
-                text: "Open Bindings"
+                text: qsTr("Open Bindings")
                 Layout.preferredWidth: 180
                 onClicked: {
                      SteamVRTabController.launchBindingUI()
@@ -73,14 +73,14 @@ SettingsGroupBox {
             Layout.preferredHeight: steamvrBindingToggle.height
 
             MyText {
-                text: "Save Current Binding"
+                text: qsTr("Save Current Binding")
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignLeft
             }
             MyPushButton {
                 id: setBinding
                 Layout.fillHeight: true
-                text: "Game"
+                text: qsTr("Game")
                 onClicked: {
                     SteamVRTabController.setBindingQMLWrapper(appSelect.text)
                 }
@@ -88,7 +88,7 @@ SettingsGroupBox {
             MyPushButton {
                 id: setDefaultBtn
                 Layout.fillHeight: true
-                text: "Default"
+                text: qsTr("Default")
                 onClicked: {
                     SteamVRTabController.setBindingQMLWrapper(appSelect.text,true)
                 }

@@ -26,7 +26,7 @@ SettingsGroupBox {
     // Private properties
     id: sliderBox
     Layout.fillWidth: true
-    title: "MISSING HEADER TEXT"
+    title: qsTr("MISSING HEADER TEXT")
 
     property real sliderStepSize: 0.10
     readonly property real rightLeftLimit: 4.0

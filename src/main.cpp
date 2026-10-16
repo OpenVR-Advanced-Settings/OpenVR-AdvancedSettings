@@ -1,6 +1,7 @@
 #include "utils/setup.h"
 #include "settings/settings.h"
 #include "openvr/ovr_settings_wrapper.h"
+#include "utils/translations.h"
 
 #include <QtLogging>
 #include <QtDebug>
@@ -32,6 +33,8 @@ int main( int argc, char* argv[] )
         application_strings::applicationDisplayName );
     mainEventLoop.setApplicationVersion(
         application_strings::applicationVersionString );
+
+    translations::initialize();
 
     const auto commandLineArgs
         = argument::returnCommandLineParser( mainEventLoop );

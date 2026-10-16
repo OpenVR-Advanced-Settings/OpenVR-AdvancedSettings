@@ -25,7 +25,7 @@ SettingsGroupBox {
         parent: videoProfileGroupBox.dialogParent
     }
 
-    title: "Video Profiles"
+    title: qsTr("Video Profiles")
     ColumnLayout {
         anchors.fill: parent
 
@@ -34,7 +34,7 @@ SettingsGroupBox {
 
             MyText {
                 Layout.preferredWidth: 150
-                text: "Profile:  "
+                text: qsTr("Profile:  ")
             }
 
             MyComboBox {
@@ -56,7 +56,7 @@ SettingsGroupBox {
                 id: videoApplyProfileButton
                 enabled: true
                 Layout.preferredWidth: 150
-                text: "Apply"
+                text: qsTr("Apply")
                 onClicked: {
                     if (videoProfileComboBox.currentIndex > 0) {
                         VideoTabController.applyVideoProfile(
@@ -76,7 +76,7 @@ SettingsGroupBox {
                 enabled: true
                 Layout.preferredWidth: 200
 
-                text: "Delete Profile"
+                text: qsTr("Delete Profile")
                 onClicked: {
                     if (videoProfileComboBox.currentIndex > 0) {
                         videoDeleteProfileDialog.profileIndex = videoProfileComboBox.currentIndex - 1
@@ -86,7 +86,7 @@ SettingsGroupBox {
             }
             MyPushButton {
                 Layout.preferredWidth: 200
-                text: "New Profile"
+                text: qsTr("New Profile")
                 onClicked: {
                     videoNewProfileDialog.openPopup()
                 }

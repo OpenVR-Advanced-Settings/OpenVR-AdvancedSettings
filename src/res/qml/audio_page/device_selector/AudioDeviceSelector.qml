@@ -7,7 +7,7 @@ import "../../common"
 RowLayout {
     id: audioPlaybackNameCombo
     Layout.preferredHeight: 48
-    property string deviceText: "Audio Device"
+    property string deviceText: qsTr("Audio Device")
 
     property alias devices: selector.model
     property alias deviceIndex: selector.currentIndex
@@ -20,7 +20,7 @@ RowLayout {
         id: playbackOverrideToggle
         visible: false
         Layout.preferredWidth: 250
-        text: "Toggle Override"
+        text: qsTr("Toggle Override")
         onClicked: {
             AudioTabController.setPlaybackOverride(this.checked, false)
         }

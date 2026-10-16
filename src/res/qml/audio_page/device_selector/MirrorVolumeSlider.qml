@@ -16,7 +16,7 @@ ColumnLayout {
     RowLayout {
         Layout.preferredHeight: 48
         MyText {
-            text: "Mirror Volume"
+            text: qsTr("Mirror Volume")
             Layout.preferredWidth: 260
         }
 

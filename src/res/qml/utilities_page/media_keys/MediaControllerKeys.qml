@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: mediaKeysGroupBox
     Layout.fillWidth: true
 
-    title: "Media Control Keys"
+    title: qsTr("Media Control Keys")
     ColumnLayout {
         anchors.fill: parent
 

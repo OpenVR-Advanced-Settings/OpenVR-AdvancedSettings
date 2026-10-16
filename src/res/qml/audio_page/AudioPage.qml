@@ -9,13 +9,13 @@ import "push_to_talk"
 import "profiles"
 
 MyStackViewPage {
-    headerText: "Audio Settings"
+    headerText: qsTr("Audio Settings")
 
     content: ColumnLayout {
         spacing: 18
 
         SettingsGroupBox {
-            title: "Output"
+            title: qsTr("Output")
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
@@ -31,7 +31,7 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
-            title: "Voice"
+            title: qsTr("Voice")
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
@@ -47,7 +47,7 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
-            title: "Push-to-Talk"
+            title: qsTr("Push-to-Talk")
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0

@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: utilMiscGroupBox
     Layout.fillWidth: true
 
-    title: "Misc"
+    title: qsTr("Misc")
 
     ColumnLayout {
         anchors.fill: parent
@@ -16,7 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: trackerOvlToggle
-            text: "Show Tracker Batteries"
+            text: qsTr("Show Tracker Batteries")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {

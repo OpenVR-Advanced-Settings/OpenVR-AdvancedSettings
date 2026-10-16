@@ -112,9 +112,10 @@ enum class StringSetting
     KEYBOARDSHORTCUT_keyPressSystem,
 
     APPLICATION_autoApplyChaperoneName,
+    APPLICATION_language,
 
     // LAST_ENUMERATOR must always be set to the last value
-    LAST_ENUMERATOR = APPLICATION_autoApplyChaperoneName,
+    LAST_ENUMERATOR = APPLICATION_language,
 };
 
 enum class IntSetting

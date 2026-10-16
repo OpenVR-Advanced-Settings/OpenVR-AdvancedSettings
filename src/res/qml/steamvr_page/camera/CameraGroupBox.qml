@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: cameraGroupBox
     Layout.fillWidth: true
 
-    title: "Camera: (requires SteamVR restart)"
+    title: qsTr("Camera: (requires SteamVR restart)")
 
     ColumnLayout {
         anchors.fill: parent
@@ -16,7 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: steamvrCameraActiveToggle
-            text: "Enable Camera"
+            text: qsTr("Enable Camera")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -34,7 +34,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrCameraBoundsToggle
-            text: "Show camera on bounds collision"
+            text: qsTr("Show camera on bounds collision")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -45,7 +45,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrCameraContToggle
-            text: "Show camera on controller"
+            text: qsTr("Show camera on controller")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {

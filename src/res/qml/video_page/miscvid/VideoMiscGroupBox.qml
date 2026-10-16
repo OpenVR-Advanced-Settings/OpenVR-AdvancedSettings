@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: brightnessGroupBox
     Layout.fillWidth: true
 
-    title: "Misc"
+    title: qsTr("Misc")
 
     ColumnLayout {
         anchors.fill: parent
@@ -16,7 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: videoMotionSmoothingToggle
-            text: "Motion Smoothing"
+            text: qsTr("Motion Smoothing")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             Layout.preferredHeight: 48
@@ -28,7 +28,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: videoAllowSupersampleFilteringToggle
-            text: "Advanced SS Filtering"
+            text: qsTr("Advanced SS Filtering")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             Layout.preferredHeight: 48
@@ -40,7 +40,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: videoUseOverlayToggle
-            text: "Use Overlay For Color"
+            text: qsTr("Use Overlay For Color")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             Layout.preferredHeight: 48

@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: brightnessGroupBox
     Layout.fillWidth: true
 
-    title: "SuperSampling: (may require refresh of dashboard or restart of SteamVR)"
+    title: qsTr("SuperSampling: (may require refresh of dashboard or restart of SteamVR)")
 
     ColumnLayout {
         anchors.fill: parent
@@ -18,7 +18,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: videoAllowSupersampleOverrideToggle
-                text: "Toggle Override"
+                text: qsTr("Toggle Override")
                 onCheckedChanged: {
                     VideoTabController.setAllowSupersampleOverride(this.checked, false)
                     VideoTabController.setSuperSampling(videoSupersamplingSlider.value, true)

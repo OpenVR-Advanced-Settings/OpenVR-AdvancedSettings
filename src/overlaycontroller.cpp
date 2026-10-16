@@ -27,6 +27,7 @@
 #include "utils/Matrix.h"
 #include "keyboard_input/input_sender.h"
 #include "settings/settings.h"
+#include "utils/translations.h"
 #include <qapplication.h>
 #include <qlogging.h>
 #include <qnamespace.h>
@@ -102,6 +103,7 @@ OverlayController::OverlayController( bool desktopMode,
                                       bool noSound,
                                       QQmlEngine& qmlEngine )
     : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ),
+      m_qmlEngine( qmlEngine ),
       m_verifiedCustomTickRateMs( verifyCustomTickRate( settings::getSetting(
           settings::IntSetting::APPLICATION_customTickRateMs ) ) ),
       m_actions(), m_alarm()
@@ -138,8 +140,9 @@ OverlayController::OverlayController( bool desktopMode,
 
     if ( !vr::VROverlay() )
     {
-        QMessageBox::critical(
-            nullptr, "OpenVR Advanced Settings Overlay", "Is OpenVR running?" );
+        QMessageBox::critical( nullptr,
+                               tr( "OpenVR Advanced Settings Overlay" ),
+                               tr( "Is OpenVR running?" ) );
         throw std::runtime_error( std::string( "No Overlay interface" ) );
     }
 
@@ -419,9 +422,10 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         {
             if ( overlayError == vr::VROverlayError_KeyInUse )
             {
-                QMessageBox::critical( nullptr,
-                                       "OpenVR Advanced Settings Overlay",
-                                       "Another instance is already running." );
+                QMessageBox::critical(
+                    nullptr,
+                    tr( "OpenVR Advanced Settings Overlay" ),
+                    tr( "Another instance is already running." ) );
             }
             throw std::runtime_error( std::string(
                 "Failed to create Overlay: "
@@ -1844,6 +1848,27 @@ bool OverlayController::desktopModeToggle() const
         settings::BoolSetting::APPLICATION_desktopModeToggle );
 }
 
+QString OverlayController::language() const
+{
+    return translations::currentLanguage();
+}
+
+void OverlayController::setLanguage( QString value, bool notify )
+{
+    if ( value == translations::currentLanguage() )
+    {
+        return;
+    }
+    translations::setLanguage( value );
+    // Re-evaluates every qsTr() binding in the loaded QML.
+    m_qmlEngine.retranslate();
+    if ( notify )
+    {
+        emit languageChanged( translations::currentLanguage() );
+    }
+    settings::saveChangedSettings();
+}
+
 void OverlayController::playActivationSound()
 {
     if ( !m_noSound )
@@ -1920,11 +1945,10 @@ void OverlayController::OnNetworkReply( QNetworkReply* reply )
                 else
                 {
                     setVersionCheckText(
-                        "Newer version ("
-                        + QString::number( m_remoteVersionMajor ) + "."
-                        + QString::number( m_remoteVersionMinor ) + "."
-                        + QString::number( m_remoteVersionPatch )
-                        + ") available." );
+                        tr( "Newer version (%1.%2.%3) available." )
+                            .arg( m_remoteVersionMajor )
+                            .arg( m_remoteVersionMinor )
+                            .arg( m_remoteVersionPatch ) );
                 }
                 qInfo() << "Version Check: Newer version ("
                         << m_remoteVersionMajor << "." << m_remoteVersionMinor

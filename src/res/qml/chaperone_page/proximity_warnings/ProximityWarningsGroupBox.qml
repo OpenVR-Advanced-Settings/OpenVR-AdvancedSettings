@@ -9,7 +9,7 @@ SettingsGroupBox {
     id: proximityWarningsGroupBox
     Layout.fillWidth: true
 
-    title: "Boundary Warnings"
+    title: qsTr("Boundary Warnings")
 
     // A single activation distance drives every warning type.
     function setActivationDistance(val) {
@@ -39,7 +39,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: switchBeginnerToggle
-            text: "Switch to Beginner Mode"
+            text: qsTr("Switch to Beginner Mode")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -50,7 +50,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: hapticFeedbackToggle
-            text: "Trigger Haptic Feedback"
+            text: qsTr("Trigger Haptic Feedback")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -61,7 +61,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: audioWarningToggle
-            text: "Audio Warning"
+            text: qsTr("Audio Warning")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -72,7 +72,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: audioWarningLoopingToggle
-            text: "Loop Audio"
+            text: qsTr("Loop Audio")
             enabled: audioWarningToggle.checked
             Layout.fillWidth: true
             Layout.leftMargin: 32
@@ -85,7 +85,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: audioWarningAdjustVolumeToggle
-            text: "Volume by Proximity"
+            text: qsTr("Volume by Proximity")
             enabled: audioWarningToggle.checked && audioWarningLoopingToggle.checked
             Layout.fillWidth: true
             Layout.leftMargin: 32
@@ -98,7 +98,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: openDashboardToggle
-            text: "Open Dashboard"
+            text: qsTr("Open Dashboard")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             onCheckedChanged: {
@@ -109,7 +109,7 @@ SettingsGroupBox {
         }
         RowLayout {
             MyText {
-                text: "Activation Distance: "
+                text: qsTr("Activation Distance: ")
                 Layout.preferredWidth: 250
             }
             MyPushButton2 {

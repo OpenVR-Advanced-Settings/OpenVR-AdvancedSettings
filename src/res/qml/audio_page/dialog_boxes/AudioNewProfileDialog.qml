@@ -6,7 +6,7 @@ import "../../common"
 
 MyDialogOkCancelPopup {
     id: audioNewProfileDialog
-    dialogTitle: "Create New Audio Profile"
+    dialogTitle: qsTr("Create New Audio Profile")
     dialogWidth: 600
     dialogHeight: 300
     y: -300
@@ -17,7 +17,7 @@ MyDialogOkCancelPopup {
             Layout.leftMargin: 16
             Layout.rightMargin: 16
             MyText {
-                text: "Name"
+                text: qsTr("Name")
             }
             MyTextField {
                 id: audioNewProfileName
@@ -39,7 +39,7 @@ MyDialogOkCancelPopup {
             MyToggleButton {
                 id: audioDefaultProfileToggle
                 Layout.preferredWidth: 250
-                text: "Make Default"
+                text: qsTr("Make Default")
                 onCheckedChanged: {
                     AudioTabController.setAudioProfileDefault(checked, false)
                 }
@@ -54,7 +54,7 @@ MyDialogOkCancelPopup {
             if (audioNewProfileName.text != "") {
                 AudioTabController.addAudioProfile(audioNewProfileName.text)
             } else {
-                audioMessageDialog.showMessage("Create New Profile", "ERROR: No name given.")
+                audioMessageDialog.showMessage(qsTr("Create New Profile"), qsTr("ERROR: No name given."))
             }
         }
     }

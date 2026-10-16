@@ -8,20 +8,20 @@ SettingsGroupBox {
     id: spaceFixGroupBox
     Layout.fillWidth: true
 
-    title: "Space Fix"
+    title: qsTr("Space Fix")
 
     ColumnLayout {
         anchors.fill: parent
 
         MyText {
-            text: "Place one controller on the ground, and ensure it is tracked."
+            text: qsTr("Place one controller on the ground, and ensure it is tracked.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
         }
 
         MyText {
             id: seatedWarningText
-            text: "(Disabled in 'Seated' Universe Type)"
+            text: qsTr("(Disabled in 'Seated' Universe Type)")
             visible: false
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
@@ -38,7 +38,7 @@ SettingsGroupBox {
         MyPushButton {
             id: fixButton
             Layout.fillWidth: true
-            text: "Fix Floor"
+            text: qsTr("Fix Floor")
             onClicked: {
                 FixFloorTabController.fixFloorClicked()
             }
@@ -50,7 +50,7 @@ SettingsGroupBox {
         MyPushButton {
             id: recenterButton
             Layout.fillWidth: true
-            text: "Recenter Space"
+            text: qsTr("Recenter Space")
             onClicked: {
                 FixFloorTabController.recenterClicked()
             }
@@ -66,7 +66,7 @@ SettingsGroupBox {
             // TODO re-enable undo and remove visible: false
             visible: false
             Layout.fillWidth: true
-            text: "Undo Fix"
+            text: qsTr("Undo Fix")
             onClicked: {
                 FixFloorTabController.undoFixFloorClicked()
             }
@@ -78,7 +78,7 @@ SettingsGroupBox {
         MyPushButton {
             id: zeroSpaceButton
             Layout.fillWidth: true
-            text: "Apply Space Settings Offsets as Center"
+            text: qsTr("Apply Space Settings Offsets as Center")
             onClicked: {
                 MoveCenterTabController.addCurOffsetAsCenter()
             }
@@ -90,7 +90,7 @@ SettingsGroupBox {
         MyPushButton {
             id: revertButton
             Layout.fillWidth: true
-            text: "Revert All Changes from This Session"
+            text: qsTr("Revert All Changes from This Session")
             onClicked: {
                 ChaperoneTabController.applyAutosavedProfile()
             }

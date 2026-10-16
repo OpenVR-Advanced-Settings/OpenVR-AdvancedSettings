@@ -8,7 +8,7 @@ SettingsGroupBox {
     id: autoTurnGroupBox
     Layout.fillWidth: true
 
-    title: "Auto-Turn (for discrete redirected walking)"
+    title: qsTr("Auto-Turn (for discrete redirected walking)")
 
     ColumnLayout {
         anchors.fill: parent
@@ -18,7 +18,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: autoTurn
-                text: "Toggle On/Off"
+                text: qsTr("Toggle On/Off")
                 onCheckedChanged: {
                     RotationTabController.setAutoTurnEnabled(this.checked, true)
                 }
@@ -38,7 +38,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: autoTurnNotificationToggle
-                text: "HMD Icon"
+                text: qsTr("HMD Icon")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 Layout.rightMargin: 0
@@ -52,7 +52,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: cornerAngle
-                text: "Use Corner Angle"
+                text: qsTr("Use Corner Angle")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 Layout.rightMargin: 0
@@ -66,7 +66,7 @@ SettingsGroupBox {
 
             MyToggleButton {
                 id: autoTurnModeToggle
-                text: "Use Smooth Turn"
+                text: qsTr("Use Smooth Turn")
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 Layout.rightMargin: 0
@@ -83,7 +83,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
 
             MyText {
-                text: "Activation Distance"
+                text: qsTr("Activation Distance")
                 Layout.preferredWidth: 275
                 Layout.rightMargin: 12
                 horizontalAlignment: Text.AlignLeft
@@ -137,7 +137,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
 
             MyText {
-                text: "Deactivation Distance"
+                text: qsTr("Deactivation Distance")
                 Layout.preferredWidth: 275
                 Layout.rightMargin: 12
                 horizontalAlignment: Text.AlignLeft
@@ -191,7 +191,7 @@ SettingsGroupBox {
             Layout.fillWidth: true
 
             MyText {
-                text: "Turn Speed (deg/sec)"
+                text: qsTr("Turn Speed (deg/sec)")
                 // Match the View Ratchetting toggle so all sliders start at the same x.
                 Layout.preferredWidth: 275
                 Layout.rightMargin: 12
@@ -255,7 +255,7 @@ SettingsGroupBox {
                 Layout.preferredWidth: 1
 
                 MyText {
-                    text: "Detangle Min Rotations"
+                    text: qsTr("Detangle Min Rotations")
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignLeft
                 }
@@ -289,7 +289,7 @@ SettingsGroupBox {
                 Layout.preferredWidth: 1
 
                 MyText {
-                    text: "Max Wall Angle"
+                    text: qsTr("Max Wall Angle")
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignLeft
                 }

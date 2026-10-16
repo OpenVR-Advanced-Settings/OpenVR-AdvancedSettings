@@ -11,7 +11,7 @@ Rectangle {
 
     property StackView stackView
 
-    property string headerText: "Header Title"
+    property string headerText: qsTr("Header Title")
 
     // Top level pages are reached from the sidebar, only sub pages need a back button.
     property bool headerShowBackButton: stackView ? stackView.depth > 1 : false
@@ -62,7 +62,7 @@ Rectangle {
 
     property Item content: Frame {
         MyText {
-            text: "Content"
+            text: qsTr("Content")
         }
     }
 

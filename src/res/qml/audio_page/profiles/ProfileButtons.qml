@@ -24,7 +24,7 @@ ColumnLayout {
 
         MyText {
             Layout.preferredWidth: 150
-            text: "Audio Profile"
+            text: qsTr("Audio Profile")
             visible: false
         }
 
@@ -50,7 +50,7 @@ ColumnLayout {
             enabled: false
             visible: false
             Layout.preferredWidth: 150
-            text: "Apply"
+            text: qsTr("Apply")
             onClicked: {
                 if (audioProfileComboBox.currentIndex > 0) {
                     AudioTabController.applyAudioProfile(
@@ -67,7 +67,7 @@ ColumnLayout {
             enabled: false
             visible: false
             Layout.preferredWidth: 200
-            text: "Delete Profile"
+            text: qsTr("Delete Profile")
             onClicked: {
                 if (audioProfileComboBox.currentIndex > 0) {
                     audioDeleteProfileDialog.profileIndex = audioProfileComboBox.currentIndex - 1
@@ -79,7 +79,7 @@ ColumnLayout {
             enabled: false
             visible: false
             Layout.preferredWidth: 200
-            text: "New Profile"
+            text: qsTr("New Profile")
             onClicked: {
                 audioNewProfileDialog.openPopup()
             }
