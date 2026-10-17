@@ -2,6 +2,44 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="es" sourcelanguage="en">
 <context>
+    <name>AdjustOrientationGroupBox</name>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="12"/>
+        <source>Adjust Orientation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="42"/>
+        <source>Roll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="98"/>
+        <source>Lock Roll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="105"/>
+        <source>Pitch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="161"/>
+        <source>Lock Pitch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="168"/>
+        <source>Yaw</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="224"/>
+        <source>Lock Yaw</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AlarmGroupBox</name>
     <message>
         <location filename="../src/res/qml/utilities_page/alarm_clock/AlarmGroupBox.qml" line="11"/>
@@ -120,12 +158,12 @@
     <name>AutoTurnGroupBox</name>
     <message>
         <location filename="../src/res/qml/rotation_page/redirected/AutoTurnGroupBox.qml" line="11"/>
-        <source>Auto-Turn (for discrete redirected walking)</source>
+        <source>Discrete Redirected Walking</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/rotation_page/redirected/AutoTurnGroupBox.qml" line="21"/>
-        <source>Toggle On/Off</source>
+        <source>On/Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -179,7 +217,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/video_page/brightness/BrightnessGroupBox.qml" line="21"/>
-        <source>Toggle On/Off</source>
+        <source>On/Off</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -192,7 +230,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/camera/CameraGroupBox.qml" line="19"/>
-        <source>Enable Camera</source>
+        <source>Camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -527,7 +565,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/motion_page/gravity/GravityGroupBox.qml" line="19"/>
-        <source>Enable Gravity</source>
+        <source>Gravity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -580,7 +618,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/motion_page/height_toggle/HeightToggleGroupBox.qml" line="21"/>
-        <source>On</source>
+        <source>On/Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -788,8 +826,72 @@
 <context>
     <name>MotionPage</name>
     <message>
-        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="11"/>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="13"/>
         <source>Motion Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="27"/>
+        <source>Delete Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="28"/>
+        <source>Do you really want to delete this profile?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="38"/>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="65"/>
+        <source>Create New Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="47"/>
+        <source>Name </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="65"/>
+        <source>ERROR: Empty profile name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MoveSpaceGroupBox</name>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="12"/>
+        <source>Move Space</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="22"/>
+        <source>X-Axis (Left/Right)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="84"/>
+        <source>Lock X</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="94"/>
+        <source>Y-Axis (Down/Up)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="155"/>
+        <source>Lock Y</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="165"/>
+        <source>Z-Axis (Forth/Back)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="226"/>
+        <source>Lock Z</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -828,6 +930,63 @@
     </message>
 </context>
 <context>
+    <name>OffsetProfilesGroupBox</name>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="11"/>
+        <source>Profiles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="21"/>
+        <source>Tracking Universe</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="27"/>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="103"/>
+        <source>Standing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="41"/>
+        <source>Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="63"/>
+        <source>Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="81"/>
+        <source>Delete Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="90"/>
+        <source>New Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="101"/>
+        <source>Sitting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="105"/>
+        <source>Unknown(%1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>OrientPage</name>
+    <message>
+        <location filename="../src/res/qml/orient_page/OrientPage.qml" line="10"/>
+        <source>Orientation Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>OverlayMethodGroupBox</name>
     <message>
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="11"/>
@@ -837,7 +996,7 @@
     <message>
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="21"/>
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="79"/>
-        <source>Toggle On/Off</source>
+        <source>On/Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -863,141 +1022,6 @@
     <message>
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="225"/>
         <source>Blue</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PlayspacePage</name>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="9"/>
-        <source>Space Offsets</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="23"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="143"/>
-        <source>Delete Profile</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="24"/>
-        <source>Do you really want to delete this profile?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="34"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="61"/>
-        <source>Create New Profile</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="43"/>
-        <source>Name </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="61"/>
-        <source>ERROR: Empty profile name.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="78"/>
-        <source>Profiles</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="83"/>
-        <source>Tracking Universe</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="89"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="541"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="581"/>
-        <source>Standing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="103"/>
-        <source>Profile</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="125"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="470"/>
-        <source>Apply</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="153"/>
-        <source>New Profile</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="168"/>
-        <source>Move Space</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="178"/>
-        <source>X-Axis (Left/Right)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="240"/>
-        <source>Lock X</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="250"/>
-        <source>Y-Axis (Down/Up)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="311"/>
-        <source>Lock Y</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="321"/>
-        <source>Z-Axis (Forth/Back)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="382"/>
-        <source>Lock Z</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="399"/>
-        <source>Rotate Space</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="490"/>
-        <source>Reset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="504"/>
-        <source>Log Matrices</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="514"/>
-        <source>Re-center</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="538"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="578"/>
-        <source>Sitting</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="543"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="583"/>
-        <source>Unknown(%1)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1097,12 +1121,12 @@
     <name>RedirectedGroupBox</name>
     <message>
         <location filename="../src/res/qml/rotation_page/redirected/RedirectedGroupBox.qml" line="11"/>
-        <source>Vestibular Motion (for continuous redirected walking)</source>
+        <source>Continuous Redirected Walking</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/rotation_page/redirected/RedirectedGroupBox.qml" line="19"/>
-        <source>Toggle On/Off</source>
+        <source>On/Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1210,6 +1234,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/res/qml/RootPage.qml" line="264"/>
+        <source>Push-to-Mute</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/res/qml/RootPage.qml" line="329"/>
         <location filename="../src/res/qml/RootPage.qml" line="404"/>
         <source>Sitting</source>
@@ -1239,20 +1268,28 @@
     </message>
 </context>
 <context>
+    <name>RotateSpaceGroupBox</name>
+    <message>
+        <location filename="../src/res/qml/rotation_page/rotate_space/RotateSpaceGroupBox.qml" line="12"/>
+        <source>Rotate Space</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/rotation_page/rotate_space/RotateSpaceGroupBox.qml" line="83"/>
+        <source>Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RotationPage</name>
     <message>
-        <location filename="../src/res/qml/rotation_page/RotationPage.qml" line="13"/>
+        <location filename="../src/res/qml/rotation_page/RotationPage.qml" line="14"/>
         <source>Rotation Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>SettingsPage</name>
-    <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="9"/>
-        <source>Application Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <location filename="../src/res/qml/SettingsPage.qml" line="15"/>
         <source>Sound</source>
@@ -1300,51 +1337,61 @@
     </message>
     <message>
         <location filename="../src/res/qml/SettingsPage.qml" line="160"/>
+        <source>Hide Socials</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/SettingsPage.qml" line="171"/>
         <source>Chaperone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="167"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="178"/>
         <source>Force Use SteamVR Chaperone (SteamVR restart required)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="228"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="239"/>
         <source>Force Use SteamVR (Disable Oculus API)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="181"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="192"/>
         <source>Auto Apply Chaperone Profile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="207"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="9"/>
+        <source>OVRAS Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/SettingsPage.qml" line="218"/>
         <source>Select</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="221"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="232"/>
         <source>Advanced</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="242"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="254"/>
         <source>Custom Update Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="265"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="278"/>
         <source>ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="294"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="307"/>
         <source>Debug</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="307"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="320"/>
         <source>Shutdown OVRAS</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1445,6 +1492,24 @@
     <message>
         <location filename="../src/res/qml/utilities_page/space_fix/SpaceFixGroupBox.qml" line="93"/>
         <source>Revert All Changes from This Session</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SpaceOrientGroupBox</name>
+    <message>
+        <location filename="../src/res/qml/orient_page/space_orient/SpaceOrientGroupBox.qml" line="12"/>
+        <source>Space Orient</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/space_orient/SpaceOrientGroupBox.qml" line="22"/>
+        <source>Left Hand</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/space_orient/SpaceOrientGroupBox.qml" line="27"/>
+        <source>Right Hand</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1576,7 +1641,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvrbind/SteamVRBindGroupBox.qml" line="19"/>
-        <source>Enable</source>
+        <source>On/Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1619,7 +1684,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvrmisc/SteamVRMiscGroupBox.qml" line="19"/>
-        <source>Enable Timing Overlay</source>
+        <source>Timing Overlay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1639,7 +1704,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvrmisc/SteamVRMiscGroupBox.qml" line="63"/>
-        <source>Enable System Button Binding</source>
+        <source>System Button Binding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1743,7 +1808,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/video_page/supersampling/SuperSamplingGroupBox.qml" line="21"/>
-        <source>Toggle Override</source>
+        <source>Override</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1877,7 +1942,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/overlaycontroller.cpp" line="1948"/>
+        <location filename="../src/overlaycontroller.cpp" line="1964"/>
         <source>Newer version (%1.%2.%3) available.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1885,13 +1950,8 @@
 <context>
     <name>mainwidget</name>
     <message>
-        <location filename="../src/res/qml/common/mainwidget.qml" line="62"/>
-        <source>Home</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../src/res/qml/common/mainwidget.qml" line="63"/>
-        <source>Offsets</source>
+        <source>Home</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1901,51 +1961,56 @@
     </message>
     <message>
         <location filename="../src/res/qml/common/mainwidget.qml" line="65"/>
-        <source>Rotation</source>
+        <source>Orient</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/common/mainwidget.qml" line="66"/>
-        <source>SteamVR</source>
+        <source>Rotation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/common/mainwidget.qml" line="67"/>
-        <source>Audio</source>
+        <source>SteamVR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/common/mainwidget.qml" line="68"/>
-        <source>Video</source>
+        <source>Audio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/common/mainwidget.qml" line="69"/>
-        <source>Chaperone</source>
+        <source>Video</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/common/mainwidget.qml" line="70"/>
-        <source>Utilities</source>
+        <source>Chaperone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/common/mainwidget.qml" line="71"/>
-        <source>Statistics</source>
+        <source>Utilities</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/common/mainwidget.qml" line="72"/>
-        <source>Settings</source>
+        <source>Statistics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/common/mainwidget.qml" line="73"/>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/common/mainwidget.qml" line="74"/>
         <source>Bindings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/common/mainwidget.qml" line="107"/>
+        <location filename="../src/res/qml/common/mainwidget.qml" line="108"/>
         <source>OVR Advanced Settings</source>
         <translation type="unfinished"></translation>
     </message>

@@ -2,6 +2,44 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ja" sourcelanguage="en">
 <context>
+    <name>AdjustOrientationGroupBox</name>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="12"/>
+        <source>Adjust Orientation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="42"/>
+        <source>Roll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="98"/>
+        <source>Lock Roll</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="105"/>
+        <source>Pitch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="161"/>
+        <source>Lock Pitch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="168"/>
+        <source>Yaw</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml" line="224"/>
+        <source>Lock Yaw</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AlarmGroupBox</name>
     <message>
         <location filename="../src/res/qml/utilities_page/alarm_clock/AlarmGroupBox.qml" line="11"/>
@@ -120,13 +158,13 @@
     <name>AutoTurnGroupBox</name>
     <message>
         <location filename="../src/res/qml/rotation_page/redirected/AutoTurnGroupBox.qml" line="11"/>
-        <source>Auto-Turn (for discrete redirected walking)</source>
-        <translation>自動回転 (離散的なリダイレクテッド・ウォーキング)</translation>
+        <source>Discrete Redirected Walking</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/rotation_page/redirected/AutoTurnGroupBox.qml" line="21"/>
-        <source>Toggle On/Off</source>
-        <translation>有効化</translation>
+        <source>On/Off</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/rotation_page/redirected/AutoTurnGroupBox.qml" line="41"/>
@@ -179,8 +217,8 @@
     </message>
     <message>
         <location filename="../src/res/qml/video_page/brightness/BrightnessGroupBox.qml" line="21"/>
-        <source>Toggle On/Off</source>
-        <translation>明るさを適用</translation>
+        <source>On/Off</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -192,8 +230,8 @@
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/camera/CameraGroupBox.qml" line="19"/>
-        <source>Enable Camera</source>
-        <translation>カメラを有効化</translation>
+        <source>Camera</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/camera/CameraGroupBox.qml" line="37"/>
@@ -527,7 +565,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/motion_page/gravity/GravityGroupBox.qml" line="19"/>
-        <source>Enable Gravity</source>
+        <source>Gravity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -580,8 +618,8 @@
     </message>
     <message>
         <location filename="../src/res/qml/motion_page/height_toggle/HeightToggleGroupBox.qml" line="21"/>
-        <source>On</source>
-        <translation>有効化</translation>
+        <source>On/Off</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/motion_page/height_toggle/HeightToggleGroupBox.qml" line="32"/>
@@ -788,9 +826,73 @@
 <context>
     <name>MotionPage</name>
     <message>
-        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="11"/>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="13"/>
         <source>Motion Settings</source>
         <translation>モーション設定 (移動設定)</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="27"/>
+        <source>Delete Profile</source>
+        <translation type="unfinished">プロファイルを削除</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="28"/>
+        <source>Do you really want to delete this profile?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="38"/>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="65"/>
+        <source>Create New Profile</source>
+        <translation type="unfinished">プロファイルを新規作成</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="47"/>
+        <source>Name </source>
+        <translation type="unfinished">プロファイル名 </translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/MotionPage.qml" line="65"/>
+        <source>ERROR: Empty profile name.</source>
+        <translation type="unfinished">プロファイル名を空にすることはできません！</translation>
+    </message>
+</context>
+<context>
+    <name>MoveSpaceGroupBox</name>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="12"/>
+        <source>Move Space</source>
+        <translation type="unfinished">空間を移動</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="22"/>
+        <source>X-Axis (Left/Right)</source>
+        <translation type="unfinished">X軸 (左右)</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="84"/>
+        <source>Lock X</source>
+        <translation type="unfinished">X軸を固定</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="94"/>
+        <source>Y-Axis (Down/Up)</source>
+        <translation type="unfinished">Y軸 (上下)</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="155"/>
+        <source>Lock Y</source>
+        <translation type="unfinished">Y軸を固定</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="165"/>
+        <source>Z-Axis (Forth/Back)</source>
+        <translation type="unfinished">Z軸 (前後)</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml" line="226"/>
+        <source>Lock Z</source>
+        <translation type="unfinished">Z軸を固定</translation>
     </message>
 </context>
 <context>
@@ -828,6 +930,63 @@
     </message>
 </context>
 <context>
+    <name>OffsetProfilesGroupBox</name>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="11"/>
+        <source>Profiles</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="21"/>
+        <source>Tracking Universe</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="27"/>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="103"/>
+        <source>Standing</source>
+        <translation type="unfinished">直立</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="41"/>
+        <source>Profile</source>
+        <translation type="unfinished">プロファイル</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="63"/>
+        <source>Apply</source>
+        <translation type="unfinished">適用</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="81"/>
+        <source>Delete Profile</source>
+        <translation type="unfinished">プロファイルを削除</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="90"/>
+        <source>New Profile</source>
+        <translation type="unfinished">プロファイルを作成</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="101"/>
+        <source>Sitting</source>
+        <translation type="unfinished">着席</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml" line="105"/>
+        <source>Unknown(%1)</source>
+        <translation type="unfinished">不明(%1)</translation>
+    </message>
+</context>
+<context>
+    <name>OrientPage</name>
+    <message>
+        <location filename="../src/res/qml/orient_page/OrientPage.qml" line="10"/>
+        <source>Orientation Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>OverlayMethodGroupBox</name>
     <message>
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="11"/>
@@ -837,8 +996,8 @@
     <message>
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="21"/>
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="79"/>
-        <source>Toggle On/Off</source>
-        <translation>明るさを適用</translation>
+        <source>On/Off</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="32"/>
@@ -864,141 +1023,6 @@
         <location filename="../src/res/qml/video_page/overlaycolorbright/OverlayMethodGroupBox.qml" line="225"/>
         <source>Blue</source>
         <translation>青</translation>
-    </message>
-</context>
-<context>
-    <name>PlayspacePage</name>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="9"/>
-        <source>Space Offsets</source>
-        <translation>位置の補正</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="23"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="143"/>
-        <source>Delete Profile</source>
-        <translation>プロファイルを削除</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="24"/>
-        <source>Do you really want to delete this profile?</source>
-        <translation>本当にプロファイルを削除しますか？後悔しない？</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="34"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="61"/>
-        <source>Create New Profile</source>
-        <translation>プロファイルを新規作成</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="43"/>
-        <source>Name </source>
-        <translation>プロファイル名 </translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="61"/>
-        <source>ERROR: Empty profile name.</source>
-        <translation>プロファイル名を空にすることはできません！</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="78"/>
-        <source>Profiles</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="83"/>
-        <source>Tracking Universe</source>
-        <translation>トラッキングのモード</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="89"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="541"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="581"/>
-        <source>Standing</source>
-        <translation>直立</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="103"/>
-        <source>Profile</source>
-        <translation>プロファイル</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="125"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="470"/>
-        <source>Apply</source>
-        <translation>適用</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="153"/>
-        <source>New Profile</source>
-        <translation>プロファイルを作成</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="168"/>
-        <source>Move Space</source>
-        <translation>空間を移動</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="178"/>
-        <source>X-Axis (Left/Right)</source>
-        <translation>X軸 (左右)</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="240"/>
-        <source>Lock X</source>
-        <translation>X軸を固定</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="250"/>
-        <source>Y-Axis (Down/Up)</source>
-        <translation>Y軸 (上下)</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="311"/>
-        <source>Lock Y</source>
-        <translation>Y軸を固定</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="321"/>
-        <source>Z-Axis (Forth/Back)</source>
-        <translation>Z軸 (前後)</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="382"/>
-        <source>Lock Z</source>
-        <translation>Z軸を固定</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="399"/>
-        <source>Rotate Space</source>
-        <translation>空間を回転</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="490"/>
-        <source>Reset</source>
-        <translation>リセット</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="504"/>
-        <source>Log Matrices</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="514"/>
-        <source>Re-center</source>
-        <translation>リセンター</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="538"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="578"/>
-        <source>Sitting</source>
-        <translation>着席</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="543"/>
-        <location filename="../src/res/qml/PlayspacePage.qml" line="583"/>
-        <source>Unknown(%1)</source>
-        <translation>不明(%1)</translation>
     </message>
 </context>
 <context>
@@ -1097,13 +1121,13 @@
     <name>RedirectedGroupBox</name>
     <message>
         <location filename="../src/res/qml/rotation_page/redirected/RedirectedGroupBox.qml" line="11"/>
-        <source>Vestibular Motion (for continuous redirected walking)</source>
-        <translation>リダイレクテッド・ウォーキング (連続的)</translation>
+        <source>Continuous Redirected Walking</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/rotation_page/redirected/RedirectedGroupBox.qml" line="19"/>
-        <source>Toggle On/Off</source>
-        <translation>有効化</translation>
+        <source>On/Off</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/rotation_page/redirected/RedirectedGroupBox.qml" line="34"/>
@@ -1210,6 +1234,11 @@
         <translation>プッシュトゥートーク</translation>
     </message>
     <message>
+        <location filename="../src/res/qml/RootPage.qml" line="264"/>
+        <source>Push-to-Mute</source>
+        <translation type="unfinished">プッシュトゥーミュート</translation>
+    </message>
+    <message>
         <location filename="../src/res/qml/RootPage.qml" line="329"/>
         <location filename="../src/res/qml/RootPage.qml" line="404"/>
         <source>Sitting</source>
@@ -1239,9 +1268,22 @@
     </message>
 </context>
 <context>
+    <name>RotateSpaceGroupBox</name>
+    <message>
+        <location filename="../src/res/qml/rotation_page/rotate_space/RotateSpaceGroupBox.qml" line="12"/>
+        <source>Rotate Space</source>
+        <translation type="unfinished">空間を回転</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/rotation_page/rotate_space/RotateSpaceGroupBox.qml" line="83"/>
+        <source>Apply</source>
+        <translation type="unfinished">適用</translation>
+    </message>
+</context>
+<context>
     <name>RotationPage</name>
     <message>
-        <location filename="../src/res/qml/rotation_page/RotationPage.qml" line="13"/>
+        <location filename="../src/res/qml/rotation_page/RotationPage.qml" line="14"/>
         <source>Rotation Settings</source>
         <translation>回転の設定</translation>
     </message>
@@ -1250,8 +1292,8 @@
     <name>SettingsPage</name>
     <message>
         <location filename="../src/res/qml/SettingsPage.qml" line="9"/>
-        <source>Application Settings</source>
-        <translation>OVRASの設定</translation>
+        <source>OVRAS Settings</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/SettingsPage.qml" line="15"/>
@@ -1299,72 +1341,57 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="167"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="160"/>
+        <source>Hide Socials</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/SettingsPage.qml" line="178"/>
         <source>Force Use SteamVR Chaperone (SteamVR restart required)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="228"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="239"/>
         <source>Force Use SteamVR (Disable Oculus API)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Exclusive Input Toggle (This enables Key Binding to Toggle state)</source>
-        <translation type="vanished">排他的入力の切り替え (キー割り当てでの切り替えが可能になります)</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="160"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="171"/>
         <source>Chaperone</source>
         <translation type="unfinished">境界線</translation>
     </message>
     <message>
-        <source>Force Use SteamVR Chaperone (experimental + SteamVR restart required)</source>
-        <translation type="vanished">強制的にSteamVRの境界線を使用 (実験的・SteamVRの再起動必須)</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="181"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="192"/>
         <source>Auto Apply Chaperone Profile</source>
         <translation type="unfinished">境界線設定を自動的に適用</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="207"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="218"/>
         <source>Select</source>
         <translation>選択</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="221"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="232"/>
         <source>Advanced</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Force Use SteamVR (Disable Oculus API [experimental])</source>
-        <translation type="vanished">強制的にSteamVRを使用 (Oculus APIを無効化 [実験的])</translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="242"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="254"/>
         <source>Custom Update Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Disable App Vsync</source>
-        <translation type="vanished">OVRASのVSyncを無効化</translation>
-    </message>
-    <message>
-        <source>Custom Tick Rate </source>
-        <translation type="vanished">カスタムティックレート </translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="265"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="278"/>
         <source>ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="294"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="307"/>
         <source>Debug</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/res/qml/SettingsPage.qml" line="307"/>
+        <location filename="../src/res/qml/SettingsPage.qml" line="320"/>
         <source>Shutdown OVRAS</source>
         <translation>OVRASを終了</translation>
     </message>
@@ -1466,6 +1493,24 @@
         <location filename="../src/res/qml/utilities_page/space_fix/SpaceFixGroupBox.qml" line="93"/>
         <source>Revert All Changes from This Session</source>
         <translation>このセッションでのすべての変更を取り消す</translation>
+    </message>
+</context>
+<context>
+    <name>SpaceOrientGroupBox</name>
+    <message>
+        <location filename="../src/res/qml/orient_page/space_orient/SpaceOrientGroupBox.qml" line="12"/>
+        <source>Space Orient</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/space_orient/SpaceOrientGroupBox.qml" line="22"/>
+        <source>Left Hand</source>
+        <translation type="unfinished">左手</translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/orient_page/space_orient/SpaceOrientGroupBox.qml" line="27"/>
+        <source>Right Hand</source>
+        <translation type="unfinished">右手</translation>
     </message>
 </context>
 <context>
@@ -1596,7 +1641,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvrbind/SteamVRBindGroupBox.qml" line="19"/>
-        <source>Enable</source>
+        <source>On/Off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1639,8 +1684,8 @@
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvrmisc/SteamVRMiscGroupBox.qml" line="19"/>
-        <source>Enable Timing Overlay</source>
-        <translation>タイミングオーバーレイを有効化</translation>
+        <source>Timing Overlay</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvrmisc/SteamVRMiscGroupBox.qml" line="30"/>
@@ -1659,8 +1704,8 @@
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvrmisc/SteamVRMiscGroupBox.qml" line="63"/>
-        <source>Enable System Button Binding</source>
-        <translation>システムボタンの割り当てを有効にする</translation>
+        <source>System Button Binding</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/res/qml/steamvr_page/steamvrmisc/SteamVRMiscGroupBox.qml" line="74"/>
@@ -1763,8 +1808,8 @@
     </message>
     <message>
         <location filename="../src/res/qml/video_page/supersampling/SuperSamplingGroupBox.qml" line="21"/>
-        <source>Toggle Override</source>
-        <translation>設定を上書き</translation>
+        <source>Override</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1897,7 +1942,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/overlaycontroller.cpp" line="1948"/>
+        <location filename="../src/overlaycontroller.cpp" line="1964"/>
         <source>Newer version (%1.%2.%3) available.</source>
         <translation>新しいバージョン (%1.%2.%3) が利用可能です！</translation>
     </message>
@@ -1905,14 +1950,9 @@
 <context>
     <name>mainwidget</name>
     <message>
-        <location filename="../src/res/qml/common/mainwidget.qml" line="62"/>
+        <location filename="../src/res/qml/common/mainwidget.qml" line="63"/>
         <source>Home</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/res/qml/common/mainwidget.qml" line="63"/>
-        <source>Offsets</source>
-        <translation type="unfinished">位置補正</translation>
     </message>
     <message>
         <location filename="../src/res/qml/common/mainwidget.qml" line="64"/>
@@ -1921,51 +1961,56 @@
     </message>
     <message>
         <location filename="../src/res/qml/common/mainwidget.qml" line="65"/>
+        <source>Orient</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/res/qml/common/mainwidget.qml" line="66"/>
         <source>Rotation</source>
         <translation type="unfinished">回転</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/common/mainwidget.qml" line="66"/>
+        <location filename="../src/res/qml/common/mainwidget.qml" line="67"/>
         <source>SteamVR</source>
         <translation>SteamVRの設定</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/common/mainwidget.qml" line="67"/>
+        <location filename="../src/res/qml/common/mainwidget.qml" line="68"/>
         <source>Audio</source>
         <translation type="unfinished">音声</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/common/mainwidget.qml" line="68"/>
+        <location filename="../src/res/qml/common/mainwidget.qml" line="69"/>
         <source>Video</source>
         <translation type="unfinished">映像</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/common/mainwidget.qml" line="69"/>
+        <location filename="../src/res/qml/common/mainwidget.qml" line="70"/>
         <source>Chaperone</source>
         <translation type="unfinished">境界線</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/common/mainwidget.qml" line="70"/>
+        <location filename="../src/res/qml/common/mainwidget.qml" line="71"/>
         <source>Utilities</source>
         <translation>その他のユーティリティ</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/common/mainwidget.qml" line="71"/>
+        <location filename="../src/res/qml/common/mainwidget.qml" line="72"/>
         <source>Statistics</source>
         <translation>統計</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/common/mainwidget.qml" line="72"/>
+        <location filename="../src/res/qml/common/mainwidget.qml" line="73"/>
         <source>Settings</source>
         <translation type="unfinished">設定</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/common/mainwidget.qml" line="73"/>
+        <location filename="../src/res/qml/common/mainwidget.qml" line="74"/>
         <source>Bindings</source>
         <translation type="unfinished">割り当て</translation>
     </message>
     <message>
-        <location filename="../src/res/qml/common/mainwidget.qml" line="107"/>
+        <location filename="../src/res/qml/common/mainwidget.qml" line="108"/>
         <source>OVR Advanced Settings</source>
         <translation>OVR Advanced Settings (日本語化パッチ)</translation>
     </message>
