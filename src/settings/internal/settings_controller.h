@@ -335,6 +335,10 @@ private:
                           SettingCategory::Application,
                           QtInfo{ "desktopModeToggle" },
                           false },
+        BoolSettingValue{ BoolSetting::APPLICATION_hideSocials,
+                          SettingCategory::Application,
+                          QtInfo{ "hideSocials" },
+                          false },
 
         BoolSettingValue{ BoolSetting::AUDIO_pttEnabled,
                           SettingCategory::Audio,

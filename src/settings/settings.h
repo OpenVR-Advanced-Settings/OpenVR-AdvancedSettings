@@ -37,6 +37,7 @@ enum class BoolSetting
     APPLICATION_openXRWorkAround,
     APPLICATION_autoApplyChaperone,
     APPLICATION_desktopModeToggle,
+    APPLICATION_hideSocials,
 
     AUDIO_pttEnabled,
     AUDIO_pttShowNotification,

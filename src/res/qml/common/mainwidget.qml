@@ -5,6 +5,7 @@ import ".."
 import "../utilities_page"
 import "../audio_page"
 import "../motion_page"
+import "../orient_page"
 import "../video_page"
 import "../chaperone_page"
 import "../steamvr_page"
@@ -60,8 +61,8 @@ Rectangle {
     // separator: draw a divider above the entry.
     property var sideBarModel: [
         { text: qsTr("Home"), icon: "home_tab_icon.svg", page: rootPage },
-        { text: qsTr("Offsets"), icon: "offsets_tab_icon.svg", page: playspacePage, separator: true },
-        { text: qsTr("Motion"), icon: "motion_tab_icon.svg", page: motionPage },
+        { text: qsTr("Motion"), icon: "motion_tab_icon.svg", page: motionPage, separator: true },
+        { text: qsTr("Orient"), icon: "orient_tab_icon.svg", page: orientPage },
         { text: qsTr("Rotation"), icon: "rotation_tab_icon.svg", page: rotationPage },
         { text: qsTr("SteamVR"), icon: "steamvr_tab_icon.svg", page: steamVRPage, separator: true },
         { text: qsTr("Audio"), icon: "audio_tab_icon.svg", page: audioPage },
@@ -217,6 +218,7 @@ Rectangle {
 
             Button {
                 id: discordButton
+                visible: !OverlayController.hideSocials
                 anchors.left: parent.left
                 anchors.leftMargin: 16
                 anchors.verticalCenter: parent.verticalCenter
@@ -258,6 +260,7 @@ Rectangle {
 
             Button {
                 id: youtubeButton
+                visible: !OverlayController.hideSocials
                 // Centered in the gap so Discord, YouTube and language are equally spaced.
                 x: discordButton.x + discordButton.width
                    + (languageButton.x - discordButton.x - discordButton.width - width) / 2
@@ -431,12 +434,12 @@ Rectangle {
         visible: false
     }
 
-    property PlayspacePage playspacePage: PlayspacePage {
+    property MotionPage motionPage: MotionPage {
         stackView: mainView
         visible: false
     }
 
-    property MotionPage motionPage: MotionPage {
+    property OrientPage orientPage: OrientPage {
         stackView: mainView
         visible: false
     }

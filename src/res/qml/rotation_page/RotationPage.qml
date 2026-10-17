@@ -7,6 +7,7 @@ import "redirected"
 import "space_turn"
 import "snap_turn"
 import "view_ratchet"
+import "rotate_space"
 
 
 MyStackViewPage {
@@ -19,6 +20,10 @@ MyStackViewPage {
 
         SnapTurnGroupBox{
             id: snapTurnGroupBox
+        }
+
+        RotateSpaceGroupBox{
+            id: rotateSpaceGroupBox
         }
 
         AutoTurnGroupBox{

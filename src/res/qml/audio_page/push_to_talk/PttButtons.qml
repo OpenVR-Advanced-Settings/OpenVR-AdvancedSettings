@@ -28,7 +28,7 @@ ColumnLayout {
         Layout.rightMargin: 0
         Layout.preferredHeight: 48
         onClicked: {
-            AudioTabController.setMicReversePtt(checked, false)
+            AudioTabController.setMicReversePtt(checked, true)
         }
     }
     LineSeparator {

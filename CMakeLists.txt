@@ -136,7 +136,11 @@ set(QML_FILERC
     src/res/qml/motion_page/height_toggle/HeightToggleGroupBox.qml
     src/res/qml/motion_page/gravity/GravityGroupBox.qml
     src/res/qml/motion_page/MotionPage.qml
-    src/res/qml/PlayspacePage.qml
+    src/res/qml/orient_page/space_orient/SpaceOrientGroupBox.qml
+    src/res/qml/orient_page/adjust_orientation/AdjustOrientationGroupBox.qml
+    src/res/qml/orient_page/OrientPage.qml
+    src/res/qml/motion_page/move_space/MoveSpaceGroupBox.qml
+    src/res/qml/motion_page/offset_profiles/OffsetProfilesGroupBox.qml
     src/res/qml/SettingsPage.qml
     src/res/qml/chaperone_page/ChaperonePage.qml
     src/res/qml/chaperone_page/change_orientation/ChangeOrientationGroupBox.qml
@@ -186,6 +190,7 @@ set(QML_FILERC
     src/res/qml/rotation_page/redirected/AutoTurnGroupBox.qml
     src/res/qml/rotation_page/snap_turn/SnapTurnGroupBox.qml
     src/res/qml/rotation_page/space_turn/SpaceTurnGroupBox.qml
+    src/res/qml/rotation_page/rotate_space/RotateSpaceGroupBox.qml
     src/res/qml/rotation_page/RotationPage.qml
     src/res/qml/video_page/brightness/BrightnessGroupBox.qml
     src/res/qml/video_page/profiles/VideoProfileGroupBox.qml
@@ -236,6 +241,7 @@ set(ResourcesRC
     src/res/img/main_menu_icons/language_icon.svg
     src/res/img/main_menu_icons/motion_tab_icon.svg
     src/res/img/main_menu_icons/offsets_tab_icon.svg
+    src/res/img/main_menu_icons/orient_tab_icon.svg
     src/res/img/main_menu_icons/rotation_tab_icon.svg
     src/res/img/main_menu_icons/settings_tab_icon.svg
     src/res/img/main_menu_icons/space_fix_tab_icon.svg

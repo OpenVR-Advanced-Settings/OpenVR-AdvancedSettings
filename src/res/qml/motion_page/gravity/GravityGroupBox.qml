@@ -16,7 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: gravityToggleButton
-            text: qsTr("Enable Gravity")
+            text: qsTr("Gravity")
             Layout.fillWidth: true
             Layout.rightMargin: 0
             Layout.preferredHeight: 48

@@ -6,7 +6,7 @@ import ovras.advsettings 1.0
 import "common"
 
 MyStackViewPage {
-    headerText: qsTr("Application Settings")
+    headerText: qsTr("OVRAS Settings")
 
     content: ColumnLayout {
         spacing: 18
@@ -153,6 +153,17 @@ MyStackViewPage {
                         OverlayController.setExclusiveInputEnabled(this.checked, true)
                     }
                 }
+                LineSeparator {
+                }
+                MyToggleButton {
+                    id: hideSocialsToggleButton
+                    text: qsTr("Hide Socials")
+                    Layout.fillWidth: true
+                    Layout.rightMargin: 0
+                    onCheckedChanged: {
+                        OverlayController.setHideSocials(this.checked, true)
+                    }
+                }
             }
         }
 
@@ -236,7 +247,8 @@ MyStackViewPage {
                 }
                 RowLayout {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 40
+                    // Match the height of the plain toggle rows on this page.
+                    Layout.preferredHeight: oculusSdkToggleButton.height
 
                     MyText {
                         text: qsTr("Custom Update Rate")
@@ -248,6 +260,7 @@ MyStackViewPage {
                         text: "20"
                         keyBoardUID: 501
                         Layout.preferredWidth: 140
+                        Layout.maximumHeight: oculusSdkToggleButton.height
                         Layout.rightMargin: 1
                         horizontalAlignment: Text.AlignHCenter
                         function onInputEvent(input) {
@@ -323,6 +336,7 @@ MyStackViewPage {
                 exclusiveInputToggleButton.checked = OverlayController.exclusiveInputEnabled
                 autoApplyChaperoneToggleButton.checked = OverlayController.autoApplyChaperoneEnabled
                 desktopModeToggleButton.checked = OverlayController.desktopModeToggle
+                hideSocialsToggleButton.checked = OverlayController.hideSocials
 
 
                 reloadChaperoneProfiles()
@@ -376,6 +390,9 @@ MyStackViewPage {
             }
             function onDesktopModeToggleChanged(){
                 desktopModeToggleButton.checked = OverlayController.desktopModeToggle
+            }
+            function onHideSocialsChanged(){
+                hideSocialsToggleButton.checked = OverlayController.hideSocials
             }
         }
         Connections{

@@ -1848,6 +1848,22 @@ bool OverlayController::desktopModeToggle() const
         settings::BoolSetting::APPLICATION_desktopModeToggle );
 }
 
+void OverlayController::setHideSocials( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::APPLICATION_hideSocials,
+                          value );
+    if ( notify )
+    {
+        emit hideSocialsChanged( value );
+    }
+    settings::saveChangedSettings();
+}
+bool OverlayController::hideSocials() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::APPLICATION_hideSocials );
+}
+
 QString OverlayController::language() const
 {
     return translations::currentLanguage();

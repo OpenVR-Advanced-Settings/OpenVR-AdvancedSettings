@@ -261,7 +261,7 @@ MyStackViewPage {
 
                 MyToggleButton {
                     id: summaryPttToggle
-                    text: qsTr("Push-to-Talk")
+                    text: AudioTabController.micReversePtt ? qsTr("Push-to-Mute") : qsTr("Push-to-Talk")
                     Layout.fillWidth: true
                     onClicked: {
                          AudioTabController.setPttEnabled(checked, true)

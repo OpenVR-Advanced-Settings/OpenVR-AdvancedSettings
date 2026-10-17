@@ -100,6 +100,8 @@ class OverlayController : public QObject
                     soundVolumeChanged )
     Q_PROPERTY( bool desktopModeToggle READ desktopModeToggle WRITE
                     setDesktopModeToggle NOTIFY desktopModeToggleChanged )
+    Q_PROPERTY( bool hideSocials READ hideSocials WRITE setHideSocials NOTIFY
+                    hideSocialsChanged )
     Q_PROPERTY(
         QString language READ language WRITE setLanguage NOTIFY languageChanged )
 
@@ -279,6 +281,7 @@ public:
 
     double soundVolume() const;
     bool desktopModeToggle() const;
+    bool hideSocials() const;
     QString language() const;
 
 public slots:
@@ -308,6 +311,7 @@ public slots:
     void setAutoApplyChaperoneEnabled( bool value, bool notify = true );
     void setSoundVolume( double value, bool notify = true );
     void setDesktopModeToggle( bool value, bool notify = true );
+    void setHideSocials( bool value, bool notify = true );
     void setLanguage( QString value, bool notify = true );
 
 signals:
@@ -323,6 +327,7 @@ signals:
     void autoApplyChaperoneEnabledChanged( bool value );
     void soundVolumeChanged( double value );
     void desktopModeToggleChanged( bool value );
+    void hideSocialsChanged( bool value );
     void languageChanged( QString value );
     void submitLastTextField(unsigned long value = 0);
 };
