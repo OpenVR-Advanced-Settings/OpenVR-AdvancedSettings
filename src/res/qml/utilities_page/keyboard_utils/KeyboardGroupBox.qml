@@ -10,15 +10,22 @@ SettingsGroupBox {
     
     title: qsTr("Keyboard Utilities")
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
         
         
         
         MyText {
+            Layout.preferredHeight: rowHeight
+            verticalAlignment: Text.AlignVCenter
             text: qsTr("Send to active application ")
         }
         
+        LineSeparator {
+        }
+
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 18
             Layout.fillWidth: true
             
@@ -60,6 +67,7 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 18
             Layout.fillWidth: true
 
@@ -93,6 +101,7 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 18
             Layout.fillWidth: true
 
@@ -126,6 +135,7 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 18
             Layout.fillWidth: true
 
@@ -169,6 +179,7 @@ SettingsGroupBox {
             spacing: 18
             Layout.fillWidth: true
             id: vrcDebugRow
+            Layout.preferredHeight: rowHeight
 
             MyPushButton {
                 id: rShiftTilde1Button

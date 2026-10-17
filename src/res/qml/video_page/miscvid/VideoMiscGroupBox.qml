@@ -16,10 +16,10 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: videoMotionSmoothingToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Motion Smoothing")
             Layout.fillWidth: true
             Layout.rightMargin: 0
-            Layout.preferredHeight: 48
             onCheckedChanged: {
                 VideoTabController.setMotionSmoothing(this.checked, false)
             }
@@ -28,10 +28,10 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: videoAllowSupersampleFilteringToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Advanced SS Filtering")
             Layout.fillWidth: true
             Layout.rightMargin: 0
-            Layout.preferredHeight: 48
             onCheckedChanged: {
                 VideoTabController.setAllowSupersampleFiltering(this.checked, false)
             }
@@ -40,10 +40,10 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: videoUseOverlayToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Use Overlay For Color")
             Layout.fillWidth: true
             Layout.rightMargin: 0
-            Layout.preferredHeight: 48
             onCheckedChanged: {
                 VideoTabController.setIsOverlayMethodActive(this.checked, true)
             }

@@ -10,9 +10,11 @@ SettingsGroupBox {
 
     title: qsTr("Media Control Keys")
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             property string playPauseButtonPath: "qrc:/qt/qml/AdvancedSettings/img/audio/media_keys/outline_play_pause_white_24dp.svg"
             property string stopButtonPath: "qrc:/qt/qml/AdvancedSettings/img/audio/media_keys/outline_stop_white_24dp.svg"
             property string previousButtonPath: "qrc:/qt/qml/AdvancedSettings/img/audio/media_keys/outline_skip_previous_white_24dp.svg"

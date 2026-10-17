@@ -6,19 +6,32 @@ import "../common"
 import "camera"
 import "steamvrmisc"
 import "steamvrbind"
+import "gamebindings"
 
 MyStackViewPage {
     headerText: qsTr("SteamVR")
 
+    // Every group box row on this page uses this height.
+    readonly property int groupBoxRowHeight: 44
+
     content: ColumnLayout {
-        spacing: 16
+        spacing: 8
 
         SteamVRMiscGroupBox {
-        id: steamVRMiscGroupBox}
+            id: steamVRMiscGroupBox
+            rowHeight: groupBoxRowHeight
+        }
         CameraGroupBox {
-        id:  cameraGroupBox}
+            id: cameraGroupBox
+            rowHeight: groupBoxRowHeight
+        }
         SteamVRBindGroupBox{
             id: steamVRBindGroupBox
+            rowHeight: groupBoxRowHeight
+        }
+        GameBindingsGroupBox {
+            id: gameBindingsGroupBox
+            rowHeight: groupBoxRowHeight
         }
 
         Item { Layout.fillHeight: true; Layout.fillWidth: true}

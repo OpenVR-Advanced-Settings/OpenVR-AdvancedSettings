@@ -11,9 +11,11 @@ SettingsGroupBox {
     title: qsTr("SuperSampling: (may require refresh of dashboard or restart of SteamVR)")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 16
 
             MyToggleButton {

@@ -17,9 +17,11 @@ SettingsGroupBox {
     property string customOverrideDevice: ""
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
             spacing: 16
 
@@ -38,7 +40,7 @@ SettingsGroupBox {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
 
-                MyPushButton2 {
+                MyPushButton {
                     text: qsTr("Override")
                     onClicked: {
                         spaceOrientDeviceDialog.openPopup(qsTr("Left Hand Override"),
@@ -60,6 +62,7 @@ SettingsGroupBox {
         }
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
             spacing: 16
 
@@ -78,7 +81,7 @@ SettingsGroupBox {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
 
-                MyPushButton2 {
+                MyPushButton {
                     text: qsTr("Override")
                     onClicked: {
                         spaceOrientDeviceDialog.openPopup(qsTr("Right Hand Override"),
@@ -100,6 +103,7 @@ SettingsGroupBox {
         }
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
             spacing: 16
 
@@ -118,7 +122,7 @@ SettingsGroupBox {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
 
-                MyPushButton2 {
+                MyPushButton {
                     text: qsTr("Override")
                     onClicked: {
                         spaceOrientDeviceDialog.openPopup(qsTr("Custom Override"),

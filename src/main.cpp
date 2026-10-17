@@ -3,6 +3,7 @@
 #include "openvr/ovr_settings_wrapper.h"
 #include "utils/translations.h"
 
+#include <QQuickStyle>
 #include <QtLogging>
 #include <QtDebug>
 #include <memory>
@@ -35,6 +36,9 @@ int main( int argc, char* argv[] )
         application_strings::applicationVersionString );
 
     translations::initialize();
+    // The QML components are custom styled for Basic. Without this a QApplication
+    // on Windows falls back to the native style, which ignores that styling.
+    QQuickStyle::setStyle( "Basic" );
 
     const auto commandLineArgs
         = argument::returnCommandLineParser( mainEventLoop );

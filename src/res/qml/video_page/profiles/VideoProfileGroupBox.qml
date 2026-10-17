@@ -27,9 +27,11 @@ SettingsGroupBox {
 
     title: qsTr("Video Profiles")
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 10
 
             MyText {
@@ -65,7 +67,11 @@ SettingsGroupBox {
                 }
             }
         }
+        LineSeparator {
+        }
+
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 10
             Item{
                 Layout.fillWidth: true

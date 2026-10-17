@@ -13,6 +13,9 @@ import "chaperonemisc"
 MyStackViewPage {
     headerText: qsTr("Chaperone Settings")
 
+    // Every group box row on this page uses this height.
+    readonly property int groupBoxRowHeight: 44
+
     MyDialogOkPopup {
         id: chaperoneMessageDialog
         function showMessage(title, text) {
@@ -234,14 +237,16 @@ MyStackViewPage {
 
 
     content: ColumnLayout {
-        spacing: 18
+        spacing: 8
 
         SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
             title: qsTr("Profiles")
             ColumnLayout {
                 anchors.fill: parent
-                spacing: 18
+                spacing: 0
                 RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
                     spacing: 18
 
                     MyText {
@@ -276,7 +281,11 @@ MyStackViewPage {
                         }
                     }
                 }
+                LineSeparator {
+                }
+
                 RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
                     spacing: 18
                     Item {
                         Layout.fillWidth: true
@@ -305,11 +314,13 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
             title: qsTr("Boundaries")
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
                 RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
                     MyText {
                         text: qsTr("Height")
                         Layout.rightMargin: 12
@@ -374,6 +385,7 @@ MyStackViewPage {
                 LineSeparator {
                 }
                 RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
                     MyText {
                         text: qsTr("Visibility")
                         Layout.rightMargin: 12
@@ -442,6 +454,7 @@ MyStackViewPage {
                 LineSeparator {
                 }
                 RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
                     MyText {
                         text: qsTr("Fade Distance")
                         Layout.rightMargin: 12
@@ -505,6 +518,7 @@ MyStackViewPage {
                 LineSeparator {
                 }
                 RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
                     Layout.fillWidth: true
                     spacing: 16
                     MyToggleButton {
@@ -545,6 +559,7 @@ MyStackViewPage {
                 LineSeparator {
                 }
                 RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
                     Layout.fillWidth: true
                     spacing: 16
                     MyToggleButton {
@@ -573,13 +588,13 @@ MyStackViewPage {
             }
         }
 
-        ChangeOrientationGroupBox { }
+        ChangeOrientationGroupBox { rowHeight: groupBoxRowHeight }
 
-        ChaperoneBoundsColorGroupBox { }
+        ChaperoneBoundsColorGroupBox { rowHeight: groupBoxRowHeight }
 
-        ChaperoneMiscGroupBox { }
+        ChaperoneMiscGroupBox { rowHeight: groupBoxRowHeight }
 
-        ProximityWarningsGroupBox { }
+        ProximityWarningsGroupBox { rowHeight: groupBoxRowHeight }
 
 
         Item { Layout.fillHeight: true; Layout.fillWidth: true}

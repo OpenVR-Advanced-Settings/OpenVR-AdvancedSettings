@@ -10,9 +10,11 @@ SettingsGroupBox {
     
     title: qsTr("Alarm Clock")
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 18
             Layout.fillWidth: true
 
@@ -38,6 +40,7 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 18
             Layout.fillWidth: true
 

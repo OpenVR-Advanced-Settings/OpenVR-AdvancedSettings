@@ -7,12 +7,15 @@ import "../../common"
 ColumnLayout {
     spacing: 0
 
+    // Height of each row, set by the page. -1 leaves rows at their implicit height.
+    property real rowHeight: -1
+
     MyToggleButton {
         id: audioPttEnabledToggle
+        Layout.preferredHeight: rowHeight
         text: qsTr("Enable")
         Layout.fillWidth: true
         Layout.rightMargin: 0
-        Layout.preferredHeight: 48
         onClicked: {
             AudioTabController.setPttEnabled(checked, true)
         }
@@ -21,12 +24,12 @@ ColumnLayout {
     }
     MyToggleButton {
         id: audioPttReverseToggle
+        Layout.preferredHeight: rowHeight
         enabled: audioPttEnabledToggle.checked
         text: qsTr("Push-to-Mute")
         Layout.fillWidth: true
         Layout.leftMargin: 32
         Layout.rightMargin: 0
-        Layout.preferredHeight: 48
         onClicked: {
             AudioTabController.setMicReversePtt(checked, true)
         }
@@ -35,12 +38,12 @@ ColumnLayout {
     }
     MyToggleButton {
         id: audioPttShowNotificationToggle
+        Layout.preferredHeight: rowHeight
         enabled: audioPttEnabledToggle.checked
         text: qsTr("Show notification in HMD")
         Layout.fillWidth: true
         Layout.leftMargin: 32
         Layout.rightMargin: 0
-        Layout.preferredHeight: 48
         onCheckedChanged: {
             AudioTabController.setPttShowNotification(checked, false)
         }

@@ -11,9 +11,11 @@ SettingsGroupBox {
     title: qsTr("Continuous Redirected Walking")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
       RowLayout{
+            Layout.preferredHeight: rowHeight
             MyToggleButton {
                 id: redirectedModeToggle
                 text: qsTr("On/Off")

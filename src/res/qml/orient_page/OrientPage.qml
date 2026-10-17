@@ -9,16 +9,24 @@ import "adjust_orientation"
 MyStackViewPage {
     headerText: qsTr("Orientation Settings")
 
+    // Every group box row on this page uses this height.
+    readonly property int groupBoxRowHeight: 44
+
     DeviceOverrideDialog {
         id: spaceOrientDeviceDialog
     }
 
     content: ColumnLayout {
-        spacing: 18
+        spacing: 8
 
-        SpaceOrientGroupBox { id: spaceOrientGroupBox }
+        SpaceOrientGroupBox {
+            id: spaceOrientGroupBox
+            rowHeight: groupBoxRowHeight
+        }
 
-        AdjustOrientationGroupBox { id: adjustOrientationGroupBox }
+        AdjustOrientationGroupBox {
+            id: adjustOrientationGroupBox
+        }
 
 
         Item {

@@ -155,6 +155,7 @@ set(QML_FILERC
     src/res/qml/steamvr_page/camera/CameraGroupBox.qml
     src/res/qml/steamvr_page/steamvr_additional/SteamVRTXRXPage.qml
     src/res/qml/steamvr_page/steamvrbind/SteamVRBindGroupBox.qml
+    src/res/qml/steamvr_page/gamebindings/GameBindingsGroupBox.qml
     src/res/qml/audio_page/device_selector/MicDeviceSelector.qml
     src/res/qml/audio_page/device_selector/AudioDeviceSelector.qml
     src/res/qml/audio_page/device_selector/MirrorDeviceSelector.qml

@@ -11,9 +11,12 @@ SettingsGroupBox {
     title: qsTr("Space Fix")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         MyText {
+            Layout.minimumHeight: rowHeight
+            verticalAlignment: Text.AlignVCenter
             text: qsTr("Place one controller on the ground, and ensure it is tracked.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
@@ -35,8 +38,12 @@ SettingsGroupBox {
             Layout.fillWidth: true
         }
 
+        LineSeparator {
+        }
+
         MyPushButton {
             id: fixButton
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
             text: qsTr("Fix Floor")
             onClicked: {
@@ -49,6 +56,7 @@ SettingsGroupBox {
 
         MyPushButton {
             id: recenterButton
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
             text: qsTr("Recenter Space")
             onClicked: {
@@ -62,6 +70,7 @@ SettingsGroupBox {
 
         MyPushButton {
             id: undoFixButton
+            Layout.preferredHeight: rowHeight
             enabled: false
             // TODO re-enable undo and remove visible: false
             visible: false
@@ -77,6 +86,7 @@ SettingsGroupBox {
 
         MyPushButton {
             id: zeroSpaceButton
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
             text: qsTr("Apply Space Settings Offsets as Center")
             onClicked: {
@@ -89,6 +99,7 @@ SettingsGroupBox {
 
         MyPushButton {
             id: revertButton
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
             text: qsTr("Revert All Changes from This Session")
             onClicked: {

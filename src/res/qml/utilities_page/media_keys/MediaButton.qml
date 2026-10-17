@@ -13,7 +13,7 @@ MyPushButton2 {
     property string imagePath: ""
 
     // Private properties
-    Layout.preferredHeight: 48
+    Layout.fillHeight: true
     Layout.preferredWidth: 48
     contentItem: Image {
         source: parent.imagePath

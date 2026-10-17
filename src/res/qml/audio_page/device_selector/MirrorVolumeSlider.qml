@@ -7,14 +7,18 @@ import "."
 
 ColumnLayout {
     spacing: 0
+
+    // Height of each row, set by the page. -1 leaves rows at their implicit height.
+    property real rowHeight: -1
     MirrorDeviceSelector {
         id: audioMirrorNameCombo
+        Layout.preferredHeight: rowHeight
         Layout.fillWidth: true
     }
     LineSeparator {
     }
     RowLayout {
-        Layout.preferredHeight: 48
+        Layout.preferredHeight: rowHeight
         MyText {
             text: qsTr("Mirror Volume")
             Layout.preferredWidth: 260

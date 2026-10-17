@@ -12,10 +12,13 @@ SettingsGroupBox {
     title: qsTr("Rotate Space")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         ColumnLayout {
+            spacing: 0
             RowLayout {
+                Layout.preferredHeight: rowHeight
                 MyPushButton2 {
                     id: spaceRotationMinusButton
                     Layout.preferredWidth: 40

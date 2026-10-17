@@ -16,6 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: trackerOvlToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Show Tracker Batteries")
             Layout.fillWidth: true
             Layout.rightMargin: 0

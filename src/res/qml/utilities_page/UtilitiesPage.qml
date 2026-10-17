@@ -12,27 +12,35 @@ import "space_fix"
 MyStackViewPage {
     headerText: qsTr("Utilities")
 
+    // Every group box row on this page uses this height.
+    readonly property int groupBoxRowHeight: 44
+
     content: ColumnLayout {
-        spacing: 18
+        spacing: 8
 
         SpaceFixGroupBox {
             id: spaceFixGroupBox
+            rowHeight: groupBoxRowHeight
         }
 
         KeyboardGroupBox {
             id: keyboardGroupBox
+            rowHeight: groupBoxRowHeight
         }
 
         AlarmGroupBox {
             id: alarmGroupBox
+            rowHeight: groupBoxRowHeight
         }
 
         MediaControllerKeys {
             id: mediaKeysGroupBox
+            rowHeight: groupBoxRowHeight
         }
 
         MiscBox{
-            id:utilMiscGroupBox
+            id: utilMiscGroupBox
+            rowHeight: groupBoxRowHeight
         }
 
         Item {

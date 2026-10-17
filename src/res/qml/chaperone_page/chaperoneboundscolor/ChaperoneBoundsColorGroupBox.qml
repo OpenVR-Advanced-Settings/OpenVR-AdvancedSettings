@@ -23,10 +23,13 @@ SettingsGroupBox {
     }
 
     GridLayout {
+        rowSpacing: 0
         anchors.fill: parent
         columns: 7
 
                 MyText {
+                    Layout.preferredHeight: rowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("Red")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
@@ -73,6 +76,8 @@ SettingsGroupBox {
                     Layout.preferredWidth: 200
                 }
                 MyText {
+                    Layout.preferredHeight: rowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("Green")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
@@ -115,7 +120,13 @@ SettingsGroupBox {
                     }
                 }
 
+                LineSeparator {
+                    Layout.columnSpan: 7
+                }
+
                 MyText {
+                    Layout.preferredHeight: rowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("Blue")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
@@ -162,6 +173,8 @@ SettingsGroupBox {
                     Layout.preferredWidth: 200
                 }
                 MyText {
+                    Layout.preferredHeight: rowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("Hex")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75

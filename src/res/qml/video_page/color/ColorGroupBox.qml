@@ -11,9 +11,11 @@ SettingsGroupBox {
     title: qsTr("Color Adjustment")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyText {

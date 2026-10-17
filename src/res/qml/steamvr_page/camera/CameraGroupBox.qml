@@ -16,6 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: steamvrCameraActiveToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Camera")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -34,6 +35,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrCameraBoundsToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Show camera on bounds collision")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -45,6 +47,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrCameraContToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Show camera on controller")
             Layout.fillWidth: true
             Layout.rightMargin: 0

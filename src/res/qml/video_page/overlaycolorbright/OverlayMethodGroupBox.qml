@@ -11,9 +11,11 @@ SettingsGroupBox {
     title: qsTr("Brightness and Color (via overlay)")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyToggleButton {
@@ -72,6 +74,7 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyToggleButton {
@@ -134,6 +137,7 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyText {

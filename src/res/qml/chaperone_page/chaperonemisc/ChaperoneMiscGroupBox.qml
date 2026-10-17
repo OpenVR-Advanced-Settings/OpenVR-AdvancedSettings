@@ -16,6 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: chaperoneFloorToggleBtn
+            Layout.preferredHeight: rowHeight
             text: qsTr("Floor Bounds Always On")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -27,6 +28,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: legacyCenterMarkerbtn
+            Layout.preferredHeight: rowHeight
             text: qsTr("Legacy Center Marker")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -37,6 +39,7 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 16
 
             MyText {
@@ -55,6 +58,7 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 16
 
             MyText {
@@ -131,6 +135,7 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 16
 
             MyText {

@@ -11,9 +11,11 @@ SettingsGroupBox {
     title: qsTr("Discrete Redirected Walking")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyToggleButton {
@@ -33,6 +35,7 @@ SettingsGroupBox {
         }
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
             spacing: 16
 
@@ -80,6 +83,7 @@ SettingsGroupBox {
         }
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyText {
@@ -134,6 +138,7 @@ SettingsGroupBox {
         }
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyText {
@@ -188,6 +193,7 @@ SettingsGroupBox {
         }
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyText {
@@ -247,6 +253,7 @@ SettingsGroupBox {
         }
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
             spacing: 16
 

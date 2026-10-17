@@ -8,9 +8,17 @@ GroupBox {
     id: settingsGroupBox
     Layout.fillWidth: true
 
+    // Height of each setting row, set by the page so every row on it matches.
+    // -1 leaves rows at their implicit height.
+    property real rowHeight: -1
+
+    // With fixed rows the panel edge acts like a LineSeparator, so the first and
+    // last rows get the same 4px gap as rows between separators.
+    readonly property real edgePadding: rowHeight >= 0 ? 4 : 14
+
     padding: 16
-    topPadding: (title.length > 0 ? groupBoxLabel.implicitHeight + 8 : 0) + 14
-    bottomPadding: 14
+    topPadding: (title.length > 0 ? groupBoxLabel.implicitHeight + 8 : 0) + edgePadding
+    bottomPadding: edgePadding
 
     label: MyText {
         id: groupBoxLabel

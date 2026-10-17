@@ -16,10 +16,10 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: gravityToggleButton
+            Layout.preferredHeight: rowHeight
             text: qsTr("Gravity")
             Layout.fillWidth: true
             Layout.rightMargin: 0
-            Layout.preferredHeight: 48
             onCheckedChanged: {
                 MoveCenterTabController.gravityActive = this.checked
             }
@@ -27,6 +27,7 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 16
             Layout.leftMargin: 32
 
@@ -88,11 +89,11 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: momentumToggleButton
+            Layout.preferredHeight: rowHeight
             text: qsTr("Save Momentum")
             Layout.fillWidth: true
             Layout.leftMargin: 32
             Layout.rightMargin: 0
-            Layout.preferredHeight: 48
             onCheckedChanged: {
                 MoveCenterTabController.momentumSave = this.checked
             }
@@ -100,6 +101,7 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 16
             Layout.leftMargin: 32
 

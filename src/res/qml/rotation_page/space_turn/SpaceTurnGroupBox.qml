@@ -11,9 +11,11 @@ SettingsGroupBox {
     title: qsTr("Space Turn (for manual redirected walking)")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyToggleButton {

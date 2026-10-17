@@ -12,4 +12,7 @@ Rectangle {
     width: 2
     Layout.preferredWidth: 2
     Layout.fillHeight: true
+    // Extend through the row's 4px gaps so it meets the LineSeparators.
+    Layout.topMargin: -4
+    Layout.bottomMargin: -4
 }

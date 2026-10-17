@@ -12,6 +12,9 @@ import "offset_profiles"
 MyStackViewPage {
     headerText: qsTr("Motion Settings")
 
+    // Every group box row on this page uses this height (Gravity Strength row).
+    readonly property int groupBoxRowHeight: 44
+
     DeviceOverrideDialog {
         id: spaceDragDeviceDialog
     }
@@ -80,18 +83,28 @@ MyStackViewPage {
     }
 
     content: ColumnLayout {
-        spacing: 18
+        spacing: 8
 
-        SpaceDragGroupBox { id: spaceDragGroupBox }
+        SpaceDragGroupBox {
+            id: spaceDragGroupBox
+            rowHeight: groupBoxRowHeight
+        }
 
         MoveSpaceGroupBox { id: moveSpaceGroupBox }
 
-        GravityGroupBox { id: gravityGroupBox }
+        GravityGroupBox {
+            id: gravityGroupBox
+            rowHeight: groupBoxRowHeight
+        }
 
-        HeightToggleGroupBox { id: heightToggleGroupBox }
+        HeightToggleGroupBox {
+            id: heightToggleGroupBox
+            rowHeight: groupBoxRowHeight
+        }
 
         OffsetProfilesGroupBox {
             id: offsetProfilesGroupBox
+            rowHeight: groupBoxRowHeight
             onNewProfileRequested: offsetNewProfileDialog.openPopup()
             onDeleteProfileRequested: function(profileIndex) {
                 offsetDeleteProfileDialog.profileIndex = profileIndex

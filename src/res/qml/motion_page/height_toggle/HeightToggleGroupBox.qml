@@ -11,9 +11,11 @@ SettingsGroupBox {
     title: qsTr("Height Toggle / Gravity Floor Offset")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyToggleButton {

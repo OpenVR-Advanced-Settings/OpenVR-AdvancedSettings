@@ -8,10 +8,14 @@ import "common"
 MyStackViewPage {
     headerText: qsTr("Statistics")
 
+    // Every group box row on this page uses this height.
+    readonly property int groupBoxRowHeight: 44
+
     content: ColumnLayout {
-        spacing: 18
+        spacing: 8
 
         SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
             title: qsTr("Movement")
             GridLayout {
                 anchors.fill: parent
@@ -19,11 +23,15 @@ MyStackViewPage {
                 rowSpacing: 0
 
                 MyText {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("HMD Distance Moved")
                 }
 
                 MyText {
                     id: statsHmdMovedText
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: "-00.0"
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignRight
@@ -42,11 +50,15 @@ MyStackViewPage {
                 }
 
                 MyText {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("HMD Rotations")
                 }
 
                 MyText {
                     id: statsHmdRotationText
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("0.0 CCW")
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignRight
@@ -65,11 +77,15 @@ MyStackViewPage {
                 }
 
                 MyText {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("Left Controller Max Speed")
                 }
 
                 MyText {
                     id: statsLeftControllerSpeedText
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: "99.9 m/s"
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignRight
@@ -88,11 +104,15 @@ MyStackViewPage {
                 }
 
                 MyText {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("Right Controller Max Speed")
                 }
 
                 MyText {
                     id: statsRightControllerSpeedText
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: "99.9 m/s"
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignRight
@@ -109,6 +129,7 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
             title: qsTr("Frames")
             GridLayout {
                 anchors.fill: parent
@@ -116,11 +137,15 @@ MyStackViewPage {
                 rowSpacing: 0
 
                 MyText {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("Presented Frames")
                 }
 
                 MyText {
                     id: statsPresentedFramesText
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: "000"
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignRight
@@ -139,11 +164,15 @@ MyStackViewPage {
                 }
 
                 MyText {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("Dropped Frames")
                 }
 
                 MyText {
                     id: statsDroppedFramesText
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: "000"
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignRight
@@ -162,11 +191,15 @@ MyStackViewPage {
                 }
 
                 MyText {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("Reprojected Frames")
                 }
 
                 MyText {
                     id: statsReprojectionFramesText
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: "000"
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignRight
@@ -185,11 +218,15 @@ MyStackViewPage {
                 }
 
                 MyText {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("Timed Out")
                 }
 
                 MyText {
                     id: statsTimedOutText
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: "000"
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignRight
@@ -208,11 +245,15 @@ MyStackViewPage {
                 }
 
                 MyText {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: qsTr("Reprojection Ratio")
                 }
 
                 MyText {
                     id: statstotalRatioText
+                    Layout.preferredHeight: groupBoxRowHeight
+                    verticalAlignment: Text.AlignVCenter
                     text: "0.0"
                     Layout.fillWidth: true
                     horizontalAlignment: Text.AlignRight

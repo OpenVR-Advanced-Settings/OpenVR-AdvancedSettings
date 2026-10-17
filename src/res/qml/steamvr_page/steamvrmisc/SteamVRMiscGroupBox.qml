@@ -16,6 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: steamvrPerformanceGraphToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Timing Overlay")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -27,6 +28,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrNoHMDToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Require HMD")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -38,6 +40,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrNoFadeToGridToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("No Fade to Grid")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -49,6 +52,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrMultipleDriverToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Allow Multiple Drivers")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -60,6 +64,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrSystemButtonToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("System Button Binding")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -71,6 +76,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrNotificationToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Disable Notifications")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -82,6 +88,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: steamvrControllerPowerToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Controller Power Turns on SteamVR")
             Layout.fillWidth: true
             Layout.rightMargin: 0

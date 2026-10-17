@@ -15,8 +15,10 @@ SettingsGroupBox {
     signal deleteProfileRequested(int profileIndex)
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
         RowLayout {
+            Layout.preferredHeight: rowHeight
             MyText {
                 text: qsTr("Tracking Universe")
                 Layout.preferredWidth: 230
@@ -33,8 +35,9 @@ SettingsGroupBox {
 
         ColumnLayout {
             id: profileSection
-            spacing: 18
+            spacing: 0
             RowLayout {
+                Layout.preferredHeight: rowHeight
                 spacing: 18
 
                 MyText {
@@ -69,7 +72,11 @@ SettingsGroupBox {
                     }
                 }
             }
+            LineSeparator {
+            }
+
             RowLayout {
+                Layout.preferredHeight: rowHeight
                 spacing: 18
                 Item {
                     Layout.fillWidth: true

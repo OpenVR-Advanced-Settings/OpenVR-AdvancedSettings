@@ -16,6 +16,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: steamvrBindingToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("On/Off")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -35,9 +36,9 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 16
             // Match the Enable toggle row height.
-            Layout.preferredHeight: steamvrBindingToggle.height
 
             MyText {
                 text: qsTr("Application")
@@ -68,9 +69,9 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 16
             // Match the Enable toggle row height.
-            Layout.preferredHeight: steamvrBindingToggle.height
 
             MyText {
                 text: qsTr("Save Current Binding")

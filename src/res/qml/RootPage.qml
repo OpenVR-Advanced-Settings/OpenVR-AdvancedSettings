@@ -11,18 +11,23 @@ import "video_page"
 MyStackViewPage {
     id: rootPage
     headerText: qsTr("Home")
+
+    // Every group box row on this page uses this height.
+    readonly property int groupBoxRowHeight: 44
     headerShowBackButton: false
     stackView: mainView
     content: ColumnLayout {
-        spacing: 18
+        spacing: 8
 
         SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
             title: qsTr("Profiles")
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
 
                 RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
                     spacing: 12
                     MyText {
                         text: qsTr("Video Profile")
@@ -58,6 +63,7 @@ MyStackViewPage {
                 }
 
                 RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
                     spacing: 12
                     MyText {
                         text: qsTr("Chaperone Profile")
@@ -92,13 +98,14 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
             title: qsTr("Stats")
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
 
                 RowLayout {
-                    Layout.preferredHeight: 40
+                    Layout.preferredHeight: groupBoxRowHeight
                     spacing: 16
                     RowLayout {
                         Layout.fillWidth: true
@@ -136,7 +143,7 @@ MyStackViewPage {
                 }
 
                 RowLayout {
-                    Layout.preferredHeight: 40
+                    Layout.preferredHeight: groupBoxRowHeight
                     spacing: 16
                     RowLayout {
                         Layout.fillWidth: true
@@ -174,7 +181,7 @@ MyStackViewPage {
                 }
 
                 RowLayout {
-                    Layout.preferredHeight: 40
+                    Layout.preferredHeight: groupBoxRowHeight
                     spacing: 16
                     RowLayout {
                         Layout.fillWidth: true
@@ -211,12 +218,14 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
             title: qsTr("Microphone")
             ColumnLayout {
                 anchors.fill: parent
                 spacing: 0
 
                 RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
                     spacing: 8
                     MyPushButton2 {
                         id: summaryMicMuteToggle
@@ -261,6 +270,7 @@ MyStackViewPage {
 
                 MyToggleButton {
                     id: summaryPttToggle
+                    Layout.preferredHeight: groupBoxRowHeight
                     text: AudioTabController.micReversePtt ? qsTr("Push-to-Mute") : qsTr("Push-to-Talk")
                     Layout.fillWidth: true
                     onClicked: {

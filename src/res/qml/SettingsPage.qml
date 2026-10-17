@@ -8,12 +8,17 @@ import "common"
 MyStackViewPage {
     headerText: qsTr("OVRAS Settings")
 
+    // Every group box row on this page uses this height.
+    readonly property int groupBoxRowHeight: 44
+
     content: ColumnLayout {
-        spacing: 18
+        spacing: 8
 
         SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
             title: qsTr("Sound")
             RowLayout {
+                Layout.preferredHeight: groupBoxRowHeight
                 anchors.fill: parent
 
                 MyText {
@@ -84,6 +89,7 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
             title: qsTr("General")
             ColumnLayout {
                 anchors.fill: parent
@@ -91,6 +97,7 @@ MyStackViewPage {
 
                 MyToggleButton {
                     id: settingsAutoStartToggle
+                    Layout.preferredHeight: groupBoxRowHeight
                     text: qsTr("Autostart")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
@@ -102,6 +109,7 @@ MyStackViewPage {
                 }
                 MyToggleButton {
                     id: desktopModeToggleButton
+                    Layout.preferredHeight: groupBoxRowHeight
                     text: qsTr("Desktop Mode (restart required)")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
@@ -113,6 +121,7 @@ MyStackViewPage {
                 }
                 MyToggleButton {
                     id: universeCenteredRotationToggle
+                    Layout.preferredHeight: groupBoxRowHeight
                     text: qsTr("Universe-Centered Rotation (Disables HMD Centering)")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
@@ -124,6 +133,7 @@ MyStackViewPage {
                 }
                 MyToggleButton {
                     id: disableCrashRecoveryToggle
+                    Layout.preferredHeight: groupBoxRowHeight
                     text: qsTr("Enable Automatic Crash Recovery of Chaperone Config")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
@@ -135,6 +145,7 @@ MyStackViewPage {
                 }
                 MyToggleButton {
                     id: disableVersionCheckToggle
+                    Layout.preferredHeight: groupBoxRowHeight
                     text: qsTr("Disable Notification of Newer Version Availability")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
@@ -146,6 +157,7 @@ MyStackViewPage {
                 }
                 MyToggleButton {
                     id: exclusiveInputToggleButton
+                    Layout.preferredHeight: groupBoxRowHeight
                     text: qsTr("Exclusive Input")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
@@ -157,6 +169,7 @@ MyStackViewPage {
                 }
                 MyToggleButton {
                     id: hideSocialsToggleButton
+                    Layout.preferredHeight: groupBoxRowHeight
                     text: qsTr("Hide Socials")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
@@ -168,6 +181,7 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
             title: qsTr("Chaperone")
             ColumnLayout {
                 anchors.fill: parent
@@ -175,6 +189,7 @@ MyStackViewPage {
 
                 MyToggleButton {
                     id: nativeChaperoneToggleButton
+                    Layout.preferredHeight: groupBoxRowHeight
                     text: qsTr("Force Use SteamVR Chaperone (SteamVR restart required)")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
@@ -185,6 +200,7 @@ MyStackViewPage {
                 LineSeparator {
                 }
                 RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
                     spacing: 18
 
                     MyToggleButton {
@@ -229,6 +245,7 @@ MyStackViewPage {
         }
 
         SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
             title: qsTr("Advanced")
             ColumnLayout {
                 anchors.fill: parent
@@ -236,6 +253,7 @@ MyStackViewPage {
 
                 MyToggleButton {
                     id: oculusSdkToggleButton
+                    Layout.preferredHeight: groupBoxRowHeight
                     text: qsTr("Force Use SteamVR (Disable Oculus API)")
                     Layout.fillWidth: true
                     Layout.rightMargin: 0
@@ -246,9 +264,9 @@ MyStackViewPage {
                 LineSeparator {
                 }
                 RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
                     Layout.fillWidth: true
                     // Match the height of the plain toggle rows on this page.
-                    Layout.preferredHeight: oculusSdkToggleButton.height
 
                     MyText {
                         text: qsTr("Custom Update Rate")

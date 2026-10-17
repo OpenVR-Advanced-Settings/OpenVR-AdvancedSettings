@@ -39,6 +39,7 @@ SettingsGroupBox {
 
         MyToggleButton {
             id: switchBeginnerToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Switch to Beginner Mode")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -50,6 +51,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: hapticFeedbackToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Trigger Haptic Feedback")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -61,6 +63,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: audioWarningToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Audio Warning")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -72,6 +75,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: audioWarningLoopingToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Loop Audio")
             enabled: audioWarningToggle.checked
             Layout.fillWidth: true
@@ -85,6 +89,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: audioWarningAdjustVolumeToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Volume by Proximity")
             enabled: audioWarningToggle.checked && audioWarningLoopingToggle.checked
             Layout.fillWidth: true
@@ -98,6 +103,7 @@ SettingsGroupBox {
         }
         MyToggleButton {
             id: openDashboardToggle
+            Layout.preferredHeight: rowHeight
             text: qsTr("Open Dashboard")
             Layout.fillWidth: true
             Layout.rightMargin: 0
@@ -108,6 +114,7 @@ SettingsGroupBox {
         LineSeparator {
         }
         RowLayout {
+            Layout.preferredHeight: rowHeight
             MyText {
                 text: qsTr("Activation Distance ")
                 Layout.preferredWidth: 250

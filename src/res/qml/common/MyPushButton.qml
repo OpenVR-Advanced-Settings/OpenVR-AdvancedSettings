@@ -2,7 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import ovras.advsettings
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
-
+// Button With a background
 Button {
     // Overload this
     // Empty string = no icon
