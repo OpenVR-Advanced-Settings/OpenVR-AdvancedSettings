@@ -4,30 +4,20 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-// UI only for now, values are held here until a tab controller exists.
 SettingsGroupBox {
     id: adjustOrientationGroupBox
     Layout.fillWidth: true
 
     title: qsTr("Adjust Orientation")
 
-    property int roll: 0
-    property int pitch: 0
-    property int yaw: 0
     readonly property int stepDegrees: 5
     // Shared width so the lock switches line up despite different label lengths.
     readonly property real lockToggleWidth: Math.max(lockRollToggle.implicitWidth,
                                                      lockPitchToggle.implicitWidth,
                                                      lockYawToggle.implicitWidth)
 
-    function clampDegrees(val) {
-        return Math.max(-180, Math.min(180, Math.round(val)))
-    }
-
-    // Parses keyboard input, falling back to the current value when it isn't a number.
-    function parseDegrees(input, current) {
-        var val = parseInt(input, 10)
-        return isNaN(val) ? current : clampDegrees(val)
+    function formatDegrees(val) {
+        return Math.round(val) + "°"
     }
 
     ColumnLayout {
@@ -49,7 +39,7 @@ SettingsGroupBox {
                 Layout.preferredWidth: 40
                 text: "0"
                 onClicked: {
-                    roll = 0
+                    MoveCenterTabController.offsetRoll = 0
                 }
             }
 
@@ -59,7 +49,7 @@ SettingsGroupBox {
                 Layout.preferredWidth: 40
                 text: "-"
                 onClicked: {
-                    roll = clampDegrees(roll - stepDegrees)
+                    MoveCenterTabController.modOffsetRoll(-stepDegrees)
                 }
             }
 
@@ -67,15 +57,18 @@ SettingsGroupBox {
                 topPadding: 4
                 bottomPadding: 4
                 id: orientRollText
-                text: roll + "°"
+                text: "0°"
                 keyBoardUID: 1101
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
                 Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
-                    roll = parseDegrees(input, roll)
-                    text = roll + "°"
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        MoveCenterTabController.offsetRoll = val
+                    }
+                    text = formatDegrees(MoveCenterTabController.offsetRoll)
                 }
             }
 
@@ -85,7 +78,7 @@ SettingsGroupBox {
                 Layout.preferredWidth: 40
                 text: "+"
                 onClicked: {
-                    roll = clampDegrees(roll + stepDegrees)
+                    MoveCenterTabController.modOffsetRoll(stepDegrees)
                 }
             }
 
@@ -96,6 +89,9 @@ SettingsGroupBox {
                 Layout.preferredWidth: lockToggleWidth
                 Layout.leftMargin: 20
                 text: qsTr("Lock Roll")
+                onCheckedChanged: {
+                    MoveCenterTabController.lockRollToggle = this.checked
+                }
             }
             Item {
                 Layout.fillWidth: true
@@ -112,7 +108,7 @@ SettingsGroupBox {
                 Layout.preferredWidth: 40
                 text: "0"
                 onClicked: {
-                    pitch = 0
+                    MoveCenterTabController.offsetPitch = 0
                 }
             }
 
@@ -122,7 +118,7 @@ SettingsGroupBox {
                 Layout.preferredWidth: 40
                 text: "-"
                 onClicked: {
-                    pitch = clampDegrees(pitch - stepDegrees)
+                    MoveCenterTabController.modOffsetPitch(-stepDegrees)
                 }
             }
 
@@ -130,15 +126,18 @@ SettingsGroupBox {
                 topPadding: 4
                 bottomPadding: 4
                 id: orientPitchText
-                text: pitch + "°"
+                text: "0°"
                 keyBoardUID: 1102
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
                 Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
-                    pitch = parseDegrees(input, pitch)
-                    text = pitch + "°"
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        MoveCenterTabController.offsetPitch = val
+                    }
+                    text = formatDegrees(MoveCenterTabController.offsetPitch)
                 }
             }
 
@@ -148,7 +147,7 @@ SettingsGroupBox {
                 Layout.preferredWidth: 40
                 text: "+"
                 onClicked: {
-                    pitch = clampDegrees(pitch + stepDegrees)
+                    MoveCenterTabController.modOffsetPitch(stepDegrees)
                 }
             }
 
@@ -159,6 +158,9 @@ SettingsGroupBox {
                 Layout.preferredWidth: lockToggleWidth
                 Layout.leftMargin: 20
                 text: qsTr("Lock Pitch")
+                onCheckedChanged: {
+                    MoveCenterTabController.lockPitchToggle = this.checked
+                }
             }
             Item {
                 Layout.fillWidth: true
@@ -175,7 +177,7 @@ SettingsGroupBox {
                 Layout.preferredWidth: 40
                 text: "0"
                 onClicked: {
-                    yaw = 0
+                    MoveCenterTabController.offsetYaw = 0
                 }
             }
 
@@ -185,7 +187,7 @@ SettingsGroupBox {
                 Layout.preferredWidth: 40
                 text: "-"
                 onClicked: {
-                    yaw = clampDegrees(yaw - stepDegrees)
+                    MoveCenterTabController.modOffsetYaw(-stepDegrees)
                 }
             }
 
@@ -193,15 +195,18 @@ SettingsGroupBox {
                 topPadding: 4
                 bottomPadding: 4
                 id: orientYawText
-                text: yaw + "°"
+                text: "0°"
                 keyBoardUID: 1103
                 Layout.preferredWidth: 140
                 Layout.leftMargin: 10
                 Layout.rightMargin: 10
                 horizontalAlignment: Text.AlignHCenter
                 function onInputEvent(input) {
-                    yaw = parseDegrees(input, yaw)
-                    text = yaw + "°"
+                    var val = parseFloat(input)
+                    if (!isNaN(val)) {
+                        MoveCenterTabController.offsetYaw = val
+                    }
+                    text = formatDegrees(MoveCenterTabController.offsetYaw)
                 }
             }
 
@@ -211,7 +216,7 @@ SettingsGroupBox {
                 Layout.preferredWidth: 40
                 text: "+"
                 onClicked: {
-                    yaw = clampDegrees(yaw + stepDegrees)
+                    MoveCenterTabController.modOffsetYaw(stepDegrees)
                 }
             }
 
@@ -222,6 +227,9 @@ SettingsGroupBox {
                 Layout.preferredWidth: lockToggleWidth
                 Layout.leftMargin: 20
                 text: qsTr("Lock Yaw")
+                onCheckedChanged: {
+                    MoveCenterTabController.lockYawToggle = this.checked
+                }
             }
             Item {
                 Layout.fillWidth: true
@@ -229,8 +237,34 @@ SettingsGroupBox {
         }
     }
 
-    // Typing into a field breaks its text binding, so refresh the text on every change.
-    onRollChanged: orientRollText.text = roll + "°"
-    onPitchChanged: orientPitchText.text = pitch + "°"
-    onYawChanged: orientYawText.text = yaw + "°"
+    Component.onCompleted: {
+        orientRollText.text = formatDegrees(MoveCenterTabController.offsetRoll)
+        orientPitchText.text = formatDegrees(MoveCenterTabController.offsetPitch)
+        orientYawText.text = formatDegrees(MoveCenterTabController.offsetYaw)
+        lockRollToggle.checked = MoveCenterTabController.lockRollToggle
+        lockPitchToggle.checked = MoveCenterTabController.lockPitchToggle
+        lockYawToggle.checked = MoveCenterTabController.lockYawToggle
+    }
+
+    Connections {
+        target: MoveCenterTabController
+        function onOffsetRollChanged() {
+            orientRollText.text = formatDegrees(MoveCenterTabController.offsetRoll)
+        }
+        function onOffsetPitchChanged() {
+            orientPitchText.text = formatDegrees(MoveCenterTabController.offsetPitch)
+        }
+        function onOffsetYawChanged() {
+            orientYawText.text = formatDegrees(MoveCenterTabController.offsetYaw)
+        }
+        function onRequireLockRollChanged() {
+            lockRollToggle.checked = MoveCenterTabController.lockRollToggle
+        }
+        function onRequireLockPitchChanged() {
+            lockPitchToggle.checked = MoveCenterTabController.lockPitchToggle
+        }
+        function onRequireLockYawChanged() {
+            lockYawToggle.checked = MoveCenterTabController.lockYawToggle
+        }
+    }
 }

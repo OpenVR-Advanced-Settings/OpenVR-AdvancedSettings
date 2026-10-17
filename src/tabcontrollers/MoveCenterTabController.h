@@ -79,6 +79,12 @@ class MoveCenterTabController : public QObject
         float offsetY READ offsetY WRITE setOffsetY NOTIFY offsetYChanged )
     Q_PROPERTY(
         float offsetZ READ offsetZ WRITE setOffsetZ NOTIFY offsetZChanged )
+    Q_PROPERTY( float offsetRoll READ offsetRoll WRITE setOffsetRoll NOTIFY
+                    offsetRollChanged )
+    Q_PROPERTY( float offsetPitch READ offsetPitch WRITE setOffsetPitch NOTIFY
+                    offsetPitchChanged )
+    Q_PROPERTY( float offsetYaw READ offsetYaw WRITE setOffsetYaw NOTIFY
+                    offsetYawChanged )
     Q_PROPERTY(
         int rotation READ rotation WRITE setRotation NOTIFY rotationChanged )
     Q_PROPERTY( int tempRotation READ tempRotation WRITE setTempRotation NOTIFY
@@ -123,6 +129,12 @@ class MoveCenterTabController : public QObject
                     requireLockYChanged )
     Q_PROPERTY( bool lockZToggle READ lockZToggle WRITE setLockZ NOTIFY
                     requireLockZChanged )
+    Q_PROPERTY( bool lockRollToggle READ lockRollToggle WRITE setLockRoll NOTIFY
+                    requireLockRollChanged )
+    Q_PROPERTY( bool lockPitchToggle READ lockPitchToggle WRITE setLockPitch
+                    NOTIFY requireLockPitchChanged )
+    Q_PROPERTY( bool lockYawToggle READ lockYawToggle WRITE setLockYaw NOTIFY
+                    requireLockYawChanged )
     Q_PROPERTY(
         bool showLogMatricesButton READ showLogMatricesButton WRITE
             setShowLogMatricesButton NOTIFY showLogMatricesButtonChanged )
@@ -144,6 +156,12 @@ private:
     float m_oldOffsetX = 0.0f;
     float m_oldOffsetY = 0.0f;
     float m_oldOffsetZ = 0.0f;
+    float m_roll = 0.0f;
+    float m_pitch = 0.0f;
+    float m_yaw = 0.0f;
+    float m_oldRoll = 0.0f;
+    float m_oldPitch = 0.0f;
+    float m_oldYaw = 0.0f;
     int m_rotation = 0;
     int m_oldRotation = 0;
     int m_tempRotation = 0;
@@ -202,6 +220,31 @@ private:
     // Matrix used For Center Marker
     vr::HmdMatrix34_t m_offsetmatrix = utils::k_forwardUpMatrix;
 
+    // Full zero poses including pitch and roll, re-applied through
+    // ovr_paths_wrapper since the chaperone universe only stores yaw
+    vr::HmdMatrix34_t m_orientedStandingZeroPose
+        = { { { 1.0f, 0.0f, 0.0f, 0.0f },
+              { 0.0f, 1.0f, 0.0f, 0.0f },
+              { 0.0f, 0.0f, 1.0f, 0.0f } } };
+    vr::HmdMatrix34_t m_orientedSeatedZeroPose
+        = { { { 1.0f, 0.0f, 0.0f, 0.0f },
+              { 0.0f, 1.0f, 0.0f, 0.0f },
+              { 0.0f, 0.0f, 1.0f, 0.0f } } };
+    bool m_orientedSeatedActive = false;
+
+    // Whether the transforms ovr_paths_wrapper writes match what the runtime
+    // uses, checked once
+    enum class ChaperoneTransformsState
+    {
+        Unchecked,
+        Valid,
+        Invalid,
+    };
+    ChaperoneTransformsState m_chaperoneTransformsState
+        = ChaperoneTransformsState::Unchecked;
+    // Generous, the values should match exactly
+    static constexpr float k_chaperoneTransformTolerance = 1e-3f;
+
     double m_velocity[3] = { 0.0, 0.0, 0.0 };
     std::chrono::steady_clock::time_point m_lastGravityUpdateTimePoint;
     std::chrono::steady_clock::time_point m_lastDragUpdateTimePoint;
@@ -224,6 +267,10 @@ private:
     void updateHandTurn( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateGravity();
     void updateSpace( bool forceUpdate = false );
+    vr::HmdMatrix34_t orientationOffsetMatrix() const;
+    bool hasTiltOffset() const;
+    bool chaperoneTransformsValid();
+    void applyOrientationTransforms();
     void clampVelocity( double* velocity );
     void applyChaperoneResetData();
     // void saveUncommittedChaperone();
@@ -241,6 +288,9 @@ public:
     float offsetX() const;
     float offsetY() const;
     float offsetZ() const;
+    float offsetRoll() const;
+    float offsetPitch() const;
+    float offsetYaw() const;
     int rotation() const;
     int tempRotation() const;
     int snapTurnAngle() const;
@@ -264,6 +314,9 @@ public:
     bool lockXToggle() const;
     bool lockYToggle() const;
     bool lockZToggle() const;
+    bool lockRollToggle() const;
+    bool lockPitchToggle() const;
+    bool lockYawToggle() const;
     bool showLogMatricesButton() const;
     // bool allowExternalEdits() const;
     bool universeCenteredRotation() const;
@@ -315,6 +368,10 @@ public slots:
     void setOffsetY( float value, bool notify = true );
     void setOffsetZ( float value, bool notify = true );
 
+    void setOffsetRoll( float value, bool notify = true );
+    void setOffsetPitch( float value, bool notify = true );
+    void setOffsetYaw( float value, bool notify = true );
+
     void setRotation( int value, bool notify = true );
     void setTempRotation( int value, bool notify = true );
     void setSnapTurnAngle( int value, bool notify = true );
@@ -341,9 +398,16 @@ public slots:
     void modOffsetY( float value, bool notify = true );
     void modOffsetZ( float value, bool notify = true );
 
+    void modOffsetRoll( float value, bool notify = true );
+    void modOffsetPitch( float value, bool notify = true );
+    void modOffsetYaw( float value, bool notify = true );
+
     void setLockX( bool value, bool notify = true );
     void setLockY( bool value, bool notify = true );
     void setLockZ( bool value, bool notify = true );
+    void setLockRoll( bool value, bool notify = true );
+    void setLockPitch( bool value, bool notify = true );
+    void setLockYaw( bool value, bool notify = true );
     void setShowLogMatricesButton( bool value, bool notify = true );
     // void setAllowExternalEdits( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
@@ -364,6 +428,9 @@ signals:
     void offsetXChanged( float value );
     void offsetYChanged( float value );
     void offsetZChanged( float value );
+    void offsetRollChanged( float value );
+    void offsetPitchChanged( float value );
+    void offsetYawChanged( float value );
     void rotationChanged( int value );
     void tempRotationChanged( int value );
     void snapTurnAngleChanged( int value );
@@ -387,6 +454,9 @@ signals:
     void requireLockXChanged( bool value );
     void requireLockYChanged( bool value );
     void requireLockZChanged( bool value );
+    void requireLockRollChanged( bool value );
+    void requireLockPitchChanged( bool value );
+    void requireLockYawChanged( bool value );
     void showLogMatricesButtonChanged( bool value );
     void universeCenteredRotationChanged( bool value );
     void offsetProfilesUpdated();

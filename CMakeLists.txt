@@ -53,6 +53,7 @@ set(SRCS
     src/openvr/openvr_init.cpp
     src/openvr/ovr_application_wrapper.cpp
     src/openvr/ovr_overlay_wrapper.cpp
+    src/openvr/ovr_paths_wrapper.cpp
     src/openvr/ovr_settings_wrapper.cpp
     src/openvr/ovr_system_wrapper.cpp
     src/overlaycontroller.cpp
@@ -92,6 +93,7 @@ set(HEADERS
     src/openvr/openvr_init.h
     src/openvr/ovr_application_wrapper.h
     src/openvr/ovr_overlay_wrapper.h
+    src/openvr/ovr_paths_wrapper.h
     src/openvr/ovr_settings_wrapper.h
     src/openvr/ovr_system_wrapper.h
     src/overlaycontroller.h

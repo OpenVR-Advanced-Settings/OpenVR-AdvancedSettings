@@ -5,6 +5,7 @@
 #include "../overlaycontroller.h"
 #include "../quaternion/quaternion.h"
 #include "../settings/settings.h"
+#include "../openvr/ovr_paths_wrapper.h"
 
 void rotateCoordinates( double coordinates[3], double angle )
 {
@@ -33,6 +34,21 @@ void rotateFloatCoordinates( float coordinates[3], float angle )
     float newZ = coordinates[0] * s + coordinates[2] * c;
     coordinates[0] = newX;
     coordinates[2] = newZ;
+}
+
+// Wraps an angle in degrees into the (-180, 180] range
+float wrapDegrees( float degrees )
+{
+    float wrapped = std::fmod( degrees, 360.0f );
+    if ( wrapped > 180.0f )
+    {
+        wrapped -= 360.0f;
+    }
+    else if ( wrapped <= -180.0f )
+    {
+        wrapped += 360.0f;
+    }
+    return wrapped;
 }
 
 // application namespace
@@ -322,6 +338,45 @@ void MoveCenterTabController::setOffsetZ( float value, bool notify )
     if ( m_offsetZ != value )
     {
         modOffsetZ( value - m_offsetZ, notify );
+    }
+}
+
+float MoveCenterTabController::offsetRoll() const
+{
+    return m_roll;
+}
+
+void MoveCenterTabController::setOffsetRoll( float value, bool notify )
+{
+    if ( m_roll != value )
+    {
+        modOffsetRoll( value - m_roll, notify );
+    }
+}
+
+float MoveCenterTabController::offsetPitch() const
+{
+    return m_pitch;
+}
+
+void MoveCenterTabController::setOffsetPitch( float value, bool notify )
+{
+    if ( m_pitch != value )
+    {
+        modOffsetPitch( value - m_pitch, notify );
+    }
+}
+
+float MoveCenterTabController::offsetYaw() const
+{
+    return m_yaw;
+}
+
+void MoveCenterTabController::setOffsetYaw( float value, bool notify )
+{
+    if ( m_yaw != value )
+    {
+        modOffsetYaw( value - m_yaw, notify );
     }
 }
 
@@ -823,6 +878,54 @@ void MoveCenterTabController::setLockZ( bool value, bool notify )
     }
 }
 
+bool MoveCenterTabController::lockRollToggle() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_lockRollToggle );
+}
+
+void MoveCenterTabController::setLockRoll( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_lockRollToggle,
+                          value );
+    if ( notify )
+    {
+        emit requireLockRollChanged( value );
+    }
+}
+
+bool MoveCenterTabController::lockPitchToggle() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_lockPitchToggle );
+}
+
+void MoveCenterTabController::setLockPitch( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_lockPitchToggle,
+                          value );
+    if ( notify )
+    {
+        emit requireLockPitchChanged( value );
+    }
+}
+
+bool MoveCenterTabController::lockYawToggle() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_lockYawToggle );
+}
+
+void MoveCenterTabController::setLockYaw( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_lockYawToggle,
+                          value );
+    if ( notify )
+    {
+        emit requireLockYawChanged( value );
+    }
+}
+
 bool MoveCenterTabController::showLogMatricesButton() const
 {
     return settings::getSetting(
@@ -899,6 +1002,42 @@ void MoveCenterTabController::modOffsetZ( float value, bool notify )
     }
 }
 
+void MoveCenterTabController::modOffsetRoll( float value, bool notify )
+{
+    if ( !lockRollToggle() )
+    {
+        m_roll = wrapDegrees( m_roll + value );
+        if ( notify )
+        {
+            emit offsetRollChanged( m_roll );
+        }
+    }
+}
+
+void MoveCenterTabController::modOffsetPitch( float value, bool notify )
+{
+    if ( !lockPitchToggle() )
+    {
+        m_pitch = wrapDegrees( m_pitch + value );
+        if ( notify )
+        {
+            emit offsetPitchChanged( m_pitch );
+        }
+    }
+}
+
+void MoveCenterTabController::modOffsetYaw( float value, bool notify )
+{
+    if ( !lockYawToggle() )
+    {
+        m_yaw = wrapDegrees( m_yaw + value );
+        if ( notify )
+        {
+            emit offsetYawChanged( m_yaw );
+        }
+    }
+}
+
 void MoveCenterTabController::shutdown()
 {
     vr::VRChaperoneSetup()->RevertWorkingCopy();
@@ -952,10 +1091,16 @@ void MoveCenterTabController::reset()
     m_oldOffsetX = 0.0f;
     m_oldOffsetY = 0.0f;
     m_oldOffsetZ = 0.0f;
+    m_oldRoll = 0.0f;
+    m_oldPitch = 0.0f;
+    m_oldYaw = 0.0f;
     m_oldRotation = 0;
     m_offsetX = 0.0f;
     m_offsetY = 0.0f;
     m_offsetZ = 0.0f;
+    m_roll = 0.0f;
+    m_pitch = 0.0f;
+    m_yaw = 0.0f;
     m_rotation = 0;
     m_lastControllerPosition[0] = 0.0f;
     m_lastControllerPosition[1] = 0.0f;
@@ -996,6 +1141,9 @@ void MoveCenterTabController::reset()
     emit offsetXChanged( m_offsetX );
     emit offsetYChanged( m_offsetY );
     emit offsetZChanged( m_offsetZ );
+    emit offsetRollChanged( m_roll );
+    emit offsetPitchChanged( m_pitch );
+    emit offsetYawChanged( m_yaw );
     emit rotationChanged( m_rotation );
 }
 
@@ -1080,14 +1228,23 @@ void MoveCenterTabController::zeroOffsets()
     m_oldOffsetX = 0.0f;
     m_oldOffsetY = 0.0f;
     m_oldOffsetZ = 0.0f;
+    m_oldRoll = 0.0f;
+    m_oldPitch = 0.0f;
+    m_oldYaw = 0.0f;
     m_oldRotation = 0;
     m_offsetX = 0.0f;
     m_offsetY = 0.0f;
     m_offsetZ = 0.0f;
+    m_roll = 0.0f;
+    m_pitch = 0.0f;
+    m_yaw = 0.0f;
     m_rotation = 0;
     emit offsetXChanged( m_offsetX );
     emit offsetYChanged( m_offsetY );
     emit offsetZChanged( m_offsetZ );
+    emit offsetRollChanged( m_roll );
+    emit offsetPitchChanged( m_pitch );
+    emit offsetYawChanged( m_yaw );
     emit rotationChanged( m_rotation );
     updateChaperoneResetData();
     m_pendingZeroOffsets = false;
@@ -1879,10 +2036,16 @@ void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
         m_offsetX = 0.0f;
         m_offsetY = 0.0f;
         m_offsetZ = 0.0f;
+        m_roll = 0.0f;
+        m_pitch = 0.0f;
+        m_yaw = 0.0f;
         m_rotation = 0;
         emit offsetXChanged( m_offsetX );
         emit offsetYChanged( m_offsetY );
         emit offsetZChanged( m_offsetZ );
+        emit offsetRollChanged( m_roll );
+        emit offsetPitchChanged( m_pitch );
+        emit offsetYawChanged( m_yaw );
         emit rotationChanged( m_rotation );
         updateSpace( true );
 
@@ -2488,17 +2651,88 @@ void MoveCenterTabController::updateGravity()
     m_velocity[2] = 0.0;
 }
 
+vr::HmdMatrix34_t MoveCenterTabController::orientationOffsetMatrix() const
+{
+    // Angles -> quaternion -> rotation matrix
+    vr::HmdQuaternion_t orientation = quaternion::fromEulerAngles(
+        static_cast<double>( m_roll ) * M_PI / 180.0,
+        static_cast<double>( m_pitch ) * M_PI / 180.0,
+        static_cast<double>( m_yaw ) * M_PI / 180.0 );
+    return quaternion::toHmdMatrix34( orientation );
+}
+
+bool MoveCenterTabController::hasTiltOffset() const
+{
+    return m_roll != 0.0f || m_pitch != 0.0f;
+}
+
+bool MoveCenterTabController::chaperoneTransformsValid()
+{
+    if ( m_chaperoneTransformsState != ChaperoneTransformsState::Unchecked )
+    {
+        return m_chaperoneTransformsState == ChaperoneTransformsState::Valid;
+    }
+    if ( !vr::VRSystem() )
+    {
+        // Not initialized yet, check again later
+        return false;
+    }
+
+    // The runtime answers this from the same path, so a mismatch means the
+    // path no longer holds what the runtime uses
+    vr::HmdMatrix34_t standingTransform;
+    if ( ovr_paths_wrapper::readStandingTransform( standingTransform )
+             != ovr_paths_wrapper::PathsError::NoError
+         || !quaternion::nearlyEqual(
+             standingTransform,
+             vr::VRSystem()->GetRawZeroPoseToStandingAbsoluteTrackingPose(),
+             k_chaperoneTransformTolerance ) )
+    {
+        m_chaperoneTransformsState = ChaperoneTransformsState::Invalid;
+        qWarning() << "Chaperone orientation transforms unavailable, pitch "
+                      "and roll will not be applied";
+        return false;
+    }
+
+    m_chaperoneTransformsState = ChaperoneTransformsState::Valid;
+    qInfo() << "Chaperone orientation transforms available";
+    return true;
+}
+
+void MoveCenterTabController::applyOrientationTransforms()
+{
+    // yaw-only orientations are fully handled by the working copy
+    if ( !hasTiltOffset() || !chaperoneTransformsValid() )
+    {
+        return;
+    }
+    // The paths hold the raw-to-universe transform, the inverse of the zero
+    // pose
+    ovr_paths_wrapper::writeStandingTransform(
+        quaternion::invertRigid( m_orientedStandingZeroPose ) );
+    if ( m_orientedSeatedActive )
+    {
+        ovr_paths_wrapper::writeSeatedTransform(
+            quaternion::invertRigid( m_orientedSeatedZeroPose ) );
+    }
+}
+
 void MoveCenterTabController::updateSpace( bool forceUpdate )
 {
     // Do nothing if all offsets and rotation are still the same...
     if ( ( abs( m_offsetX - m_oldOffsetX ) + abs( m_offsetY - m_oldOffsetY )
-           + abs( m_offsetZ - m_oldOffsetZ ) )
+           + abs( m_offsetZ - m_oldOffsetZ ) + abs( m_roll - m_oldRoll )
+           + abs( m_pitch - m_oldPitch ) + abs( m_yaw - m_oldYaw ) )
              == 0
          && m_rotation == m_oldRotation && !forceUpdate )
     {
+        // the server rebuilds the transforms on chaperone changes, so keep
+        // re-applying pitch and roll
+        applyOrientationTransforms();
         return;
     }
     if ( ( abs( m_offsetX ) + abs( m_offsetY ) + abs( m_offsetZ )
+           + abs( m_roll ) + abs( m_pitch ) + abs( m_yaw )
            + abs( static_cast<float>( m_rotation ) ) )
              == 0
          && !forceUpdate )
@@ -2519,8 +2753,13 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         rotationMatrix,
         1,
         static_cast<float>( m_rotation * k_centidegreesToRadians ) );
+    // apply the orientation offset in the universe's local axes
+    vr::HmdMatrix34_t orientationMatrix = orientationOffsetMatrix();
+    vr::HmdMatrix34_t rotatedUniverseCenter;
     utils::matMul33(
-        offsetUniverseCenter, rotationMatrix, m_universeCenterForReset );
+        rotatedUniverseCenter, rotationMatrix, m_universeCenterForReset );
+    utils::matMul33(
+        offsetUniverseCenter, rotatedUniverseCenter, orientationMatrix );
     // fill in matrix coordinates for basis universe zero point
     offsetUniverseCenter.m[0][3] = m_universeCenterForReset.m[0][3];
     offsetUniverseCenter.m[1][3] = m_universeCenterForReset.m[1][3];
@@ -2616,13 +2855,17 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     }
 
     // keep the seated origin synced with offsets if in seated mode
+    m_orientedSeatedActive = false;
     if ( m_trackingUniverse == vr::TrackingUniverseSeated || m_trackingUniverse == vr::TrackingUniverseRawAndUncalibrated )
     {
         vr::HmdMatrix34_t offsetSeatedCenter;
 
         // set offsetSeatedCenter to the current angle
+        vr::HmdMatrix34_t rotatedSeatedCenter;
         utils::matMul33(
-            offsetSeatedCenter, rotationMatrix, m_seatedCenterForReset );
+            rotatedSeatedCenter, rotationMatrix, m_seatedCenterForReset );
+        utils::matMul33(
+            offsetSeatedCenter, rotatedSeatedCenter, orientationMatrix );
         // fill in matrix coordinates for basis universe zero point
         offsetSeatedCenter.m[0][3] = m_seatedCenterForReset.m[0][3];
         offsetSeatedCenter.m[1][3] = m_seatedCenterForReset.m[1][3];
@@ -2650,8 +2893,12 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
         offsetSeatedCenter.m[2][3]
             += m_seatedCenterForReset.m[2][2] * m_offsetZ;
 
+        vr::HmdMatrix34_t seatedYawOnly
+            = quaternion::yawOnly( offsetSeatedCenter );
         vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
-            &offsetSeatedCenter );
+            &seatedYawOnly );
+        m_orientedSeatedZeroPose = offsetSeatedCenter;
+        m_orientedSeatedActive = true;
     }
 
     // Center Marker for playspace.
@@ -2698,10 +2945,17 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
             &finalmatrix );
     }
 
+    // The universe only stores yaw, pitch and roll are applied on top
+    // through the runtime's transforms once the preview is showing
+    vr::HmdMatrix34_t standingYawOnly
+        = quaternion::yawOnly( offsetUniverseCenter );
     vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
-        &offsetUniverseCenter );
+        &standingYawOnly );
 
     vr::VRChaperoneSetup()->ShowWorkingSetPreview();
+
+    m_orientedStandingZeroPose = offsetUniverseCenter;
+    applyOrientationTransforms();
 
     if ( m_collisionBoundsCountForReset > 0 )
     {
@@ -2711,6 +2965,9 @@ void MoveCenterTabController::updateSpace( bool forceUpdate )
     m_oldOffsetX = m_offsetX;
     m_oldOffsetY = m_offsetY;
     m_oldOffsetZ = m_offsetZ;
+    m_oldRoll = m_roll;
+    m_oldPitch = m_pitch;
+    m_oldYaw = m_yaw;
     m_oldRotation = m_rotation;
 }
 
