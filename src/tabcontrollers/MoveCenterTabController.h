@@ -2,6 +2,7 @@
 #pragma once
 
 #include <QObject>
+#include <QStringList>
 #include <openvr.h>
 #include <chrono>
 #include <qmath.h>
@@ -333,6 +334,9 @@ public:
     void saveOffsetProfiles();
     Q_INVOKABLE unsigned getOffsetProfileCount();
     Q_INVOKABLE QString getOffsetProfileName( unsigned index );
+
+    // Display names of the currently connected wearable tracked devices.
+    Q_INVOKABLE QStringList getTrackedDeviceList();
 
     void addOffset( float offset[3] );
 

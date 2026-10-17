@@ -9,6 +9,10 @@ import "adjust_orientation"
 MyStackViewPage {
     headerText: qsTr("Orientation Settings")
 
+    DeviceOverrideDialog {
+        id: spaceOrientDeviceDialog
+    }
+
     content: ColumnLayout {
         spacing: 18
 

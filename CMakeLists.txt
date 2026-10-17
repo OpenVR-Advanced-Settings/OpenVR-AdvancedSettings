@@ -186,6 +186,7 @@ set(QML_FILERC
     src/res/qml/common/MyRadioButton.qml
     src/res/qml/common/FullWidthSliderBox.qml
     src/res/qml/common/MyDialogOkCancelPopup.qml
+    src/res/qml/common/DeviceOverrideDialog.qml
     src/res/qml/common/SettingsGroupBox.qml
     src/res/qml/rotation_page/view_ratchet/ViewRatchetGroupBox.qml
     src/res/qml/rotation_page/redirected/RedirectedGroupBox.qml

@@ -12,6 +12,10 @@ import "offset_profiles"
 MyStackViewPage {
     headerText: qsTr("Motion Settings")
 
+    DeviceOverrideDialog {
+        id: spaceDragDeviceDialog
+    }
+
     MyDialogOkPopup {
         id: offsetMessageDialog
         function showMessage(title, text) {

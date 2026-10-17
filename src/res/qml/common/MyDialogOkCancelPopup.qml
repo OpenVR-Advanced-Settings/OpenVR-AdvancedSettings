@@ -11,6 +11,7 @@ Popup {
 
     property string dialogTitle: ""
     property string dialogText: ""
+    property string acceptText: qsTr("Accept")
     property int dialogWidth: 600
     property int dialogHeight: 300
 
@@ -88,7 +89,7 @@ Popup {
                     Layout.bottomMargin: 12
                     MyPushButton {
                         implicitWidth: 200
-                        text: qsTr("Ok")
+                        text: acceptText
                         onClicked: {
                             okClicked = true
                             myDialogPopup.close()

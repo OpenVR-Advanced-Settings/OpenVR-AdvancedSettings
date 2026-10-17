@@ -6,6 +6,7 @@
 #include "../quaternion/quaternion.h"
 #include "../settings/settings.h"
 #include "../openvr/ovr_paths_wrapper.h"
+#include "../openvr/ovr_system_wrapper.h"
 
 void rotateCoordinates( double coordinates[3], double angle )
 {
@@ -93,6 +94,21 @@ Q_INVOKABLE QString
     {
         return QString::fromStdString( m_offsetProfiles[index].profileName );
     }
+}
+
+Q_INVOKABLE QStringList MoveCenterTabController::getTrackedDeviceList()
+{
+    QStringList devices;
+    for ( auto index : ovr_system_wrapper::getAllConnectedDevices( true ) )
+    {
+        auto name = ovr_system_wrapper::getDeviceName( index );
+        auto serial = ovr_system_wrapper::getStringTrackedProperty(
+                          index, vr::Prop_SerialNumber_String )
+                          .second;
+        // Serial keeps identical device models distinguishable.
+        devices.append( QString::fromStdString( name + " (" + serial + ")" ) );
+    }
+    return devices;
 }
 
 void MoveCenterTabController::addOffsetProfile( QString name )

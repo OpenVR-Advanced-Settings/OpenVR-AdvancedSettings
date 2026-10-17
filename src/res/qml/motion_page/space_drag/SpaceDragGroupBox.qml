@@ -10,63 +10,184 @@ SettingsGroupBox {
 
     title: qsTr("Space Drag")
 
+    // Override devices are UI only for now. Empty string means not set.
+    property string leftOverrideDevice: ""
+    property string rightOverrideDevice: ""
+    property string customOverrideDevice: ""
+
     ColumnLayout {
         anchors.fill: parent
 
         RowLayout {
             Layout.fillWidth: true
+            spacing: 16
 
             MyToggleButton {
                 id: moveShortcutLeft
                 text: qsTr("Left Hand")
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                Layout.rightMargin: 0
                 onCheckedChanged: {
                     MoveCenterTabController.moveShortcutLeft = this.checked
                 }
             }
 
+            VerticalSeparator {
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+
+                MyPushButton2 {
+                    text: qsTr("Override")
+                    onClicked: {
+                        spaceDragDeviceDialog.openPopup(qsTr("Left Hand Override"),
+                                                        leftOverrideDevice,
+                                                        function(device) { leftOverrideDevice = device })
+                    }
+                }
+
+                MyText {
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
+                    elide: Text.ElideRight
+                    text: leftOverrideDevice === "" ? qsTr("Not Set") : leftOverrideDevice
+                }
+            }
+        }
+
+        LineSeparator {
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 16
+
             MyToggleButton {
                 id: moveShortcutRight
                 text: qsTr("Right Hand")
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                Layout.rightMargin: 0
                 onCheckedChanged: {
                     MoveCenterTabController.moveShortcutRight = this.checked
                 }
             }
 
-            Item {
+            VerticalSeparator {
+            }
+
+            RowLayout {
                 Layout.fillWidth: true
+                Layout.preferredWidth: 1
+
+                MyPushButton2 {
+                    text: qsTr("Override")
+                    onClicked: {
+                        spaceDragDeviceDialog.openPopup(qsTr("Right Hand Override"),
+                                                        rightOverrideDevice,
+                                                        function(device) { rightOverrideDevice = device })
+                    }
+                }
+
+                MyText {
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
+                    elide: Text.ElideRight
+                    text: rightOverrideDevice === "" ? qsTr("Not Set") : rightOverrideDevice
+                }
+            }
+        }
+
+        LineSeparator {
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 16
+
+            MyToggleButton {
+                id: moveShortcutCustom
+                text: qsTr("Custom")
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                Layout.rightMargin: 0
             }
 
-            MyText {
-                text: qsTr("Comfort Mode")
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
+            VerticalSeparator {
             }
 
-            MySlider {
-                id: dragComfortSlider
-                from: 0
-                to: 10
-                stepSize: 1
-                value: 0
-                Layout.preferredWidth: 180
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-                onValueChanged: {
-                    dragComfortText.text = dragComfortSlider.value
-                    MoveCenterTabController.dragComfortFactor = dragComfortSlider.value
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+
+                MyPushButton2 {
+                    text: qsTr("Override")
+                    onClicked: {
+                        spaceDragDeviceDialog.openPopup(qsTr("Custom Override"),
+                                                        customOverrideDevice,
+                                                        function(device) { customOverrideDevice = device })
+                    }
+                }
+
+                MyText {
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignRight
+                    elide: Text.ElideRight
+                    text: customOverrideDevice === "" ? qsTr("Not Set") : customOverrideDevice
+                }
+            }
+        }
+
+        LineSeparator {
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 16
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+
+                MyText {
+                    text: qsTr("Comfort Mode")
+                    Layout.rightMargin: 10
+                }
+
+                MySlider {
+                    id: dragComfortSlider
+                    from: 0
+                    to: 10
+                    stepSize: 1
+                    value: 0
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignVCenter
+                    onValueChanged: {
+                        dragComfortText.text = dragComfortSlider.value
+                        MoveCenterTabController.dragComfortFactor = dragComfortSlider.value
+                    }
+                }
+
+                MyText {
+                    id: dragComfortText
+                    text: "0"
+                    horizontalAlignment: Text.AlignRight
+                    Layout.preferredWidth: 30
                 }
             }
 
-            MyText {
-                id: dragComfortText
-                text: "0"
-                horizontalAlignment: Text.AlignRight
-                Layout.preferredWidth: 30
-                Layout.rightMargin: 10
+            VerticalSeparator {
             }
 
             MyToggleButton {
                 id: dragBounds
                 text: qsTr("Force Bounds")
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                Layout.rightMargin: 0
                 onCheckedChanged: {
                     MoveCenterTabController.dragBounds = this.checked
                 }
