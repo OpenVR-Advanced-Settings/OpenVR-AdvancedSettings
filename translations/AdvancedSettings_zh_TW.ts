@@ -145,7 +145,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/audio_page/dialog_boxes/AudioNewProfileDialog.qml" line="57"/>
-        <source>ERROR: No name given.</source>
+        <source>ERROR: Empty profile name.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2008,7 +2008,7 @@
     </message>
     <message>
         <location filename="../src/res/qml/video_page/dialogboxes/VideoNewProfileDialog.qml" line="38"/>
-        <source>ERROR: No name given.</source>
+        <source>ERROR: Empty profile name.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -54,7 +54,7 @@ MyDialogOkCancelPopup {
             if (audioNewProfileName.text != "") {
                 AudioTabController.addAudioProfile(audioNewProfileName.text)
             } else {
-                audioMessageDialog.showMessage(qsTr("Create New Profile"), qsTr("ERROR: No name given."))
+                audioMessageDialog.showMessage(qsTr("Create New Profile"), qsTr("ERROR: Empty profile name."))
             }
         }
     }

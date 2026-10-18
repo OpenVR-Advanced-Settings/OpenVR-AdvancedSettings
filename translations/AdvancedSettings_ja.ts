@@ -145,8 +145,12 @@
     </message>
     <message>
         <location filename="../src/res/qml/audio_page/dialog_boxes/AudioNewProfileDialog.qml" line="57"/>
+        <source>ERROR: Empty profile name.</source>
+        <translation type="unfinished">プロファイル名を空にすることはできません！</translation>
+    </message>
+    <message>
         <source>ERROR: No name given.</source>
-        <translation>プロファイル名を空にすることはできません！</translation>
+        <translation type="vanished">プロファイル名を空にすることはできません！</translation>
     </message>
 </context>
 <context>
@@ -2008,8 +2012,12 @@
     </message>
     <message>
         <location filename="../src/res/qml/video_page/dialogboxes/VideoNewProfileDialog.qml" line="38"/>
+        <source>ERROR: Empty profile name.</source>
+        <translation type="unfinished">プロファイル名を空にすることはできません！</translation>
+    </message>
+    <message>
         <source>ERROR: No name given.</source>
-        <translation>プロファイル名を空にすることはできません！</translation>
+        <translation type="vanished">プロファイル名を空にすることはできません！</translation>
     </message>
 </context>
 <context>

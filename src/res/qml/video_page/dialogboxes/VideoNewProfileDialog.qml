@@ -35,7 +35,7 @@ MyDialogOkCancelPopup {
             if (videoNewProfileName.text != "") {
                 VideoTabController.addVideoProfile(videoNewProfileName.text)
             } else {
-                videoMessageDialog.showMessage(qsTr("Create New Profile"), qsTr("ERROR: No name given."))
+                videoMessageDialog.showMessage(qsTr("Create New Profile"), qsTr("ERROR: Empty profile name."))
             }
         }
     }
