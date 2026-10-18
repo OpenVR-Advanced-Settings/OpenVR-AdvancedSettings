@@ -103,7 +103,7 @@ void VideoTabController::initColorOverlay()
             m_colorOverlayHandle,
             vr::k_unTrackedDeviceIndex_Hmd,
             &notificationTransform );
-        vr::VROverlay()->SetOverlaySortOrder( m_brightnessOverlayHandle,
+        vr::VROverlay()->SetOverlaySortOrder( m_colorOverlayHandle,
                                               sortMax );
     }
     else
