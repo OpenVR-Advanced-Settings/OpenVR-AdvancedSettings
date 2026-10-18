@@ -27,6 +27,7 @@ Rectangle {
     property real sideBarMenuWidth: 0
 
     readonly property string iconBase: "qrc:/qt/qml/AdvancedSettings/img/main_menu_icons/"
+    readonly property string discordUrl: "https://discord.gg/CX8Kh8G"
 
     // Languages offered in the footer language dropdown. locale must match the
     // suffix of a translations/AdvancedSettings_<locale>.ts file ("en" is the source language).
@@ -73,6 +74,18 @@ Rectangle {
         { text: qsTr("Settings"), icon: "settings_tab_icon.svg", page: settingsPage },
         { text: qsTr("Bindings"), icon: "bindings_tab_icon.svg", action: function() { SteamVRTabController.launchBindingUI() }, separator: true }
     ]
+
+    // Asks once whether to keep a mainly AI translated language, whether it was
+    // picked in the footer or chosen from the system locale at startup.
+    function showAiTranslationPromptIfNeeded() {
+        var locale = OverlayController.language
+        if (!OverlayController.aiTranslationPromptSeen(locale)
+                && OverlayController.isAiTranslated(locale)) {
+            aiTranslationPopup.openFor(locale, languageModel[currentLanguageIndex].name)
+        }
+    }
+
+    Component.onCompleted: showAiTranslationPromptIfNeeded()
 
     function showSideBarPage(index) {
         var entry = sideBarModel[index]
@@ -254,7 +267,7 @@ Rectangle {
                 }
                 onClicked: {
                     OverlayController.playActivationSound()
-                    Qt.openUrlExternally("https://discord.gg/CX8Kh8G")
+                    Qt.openUrlExternally(root.discordUrl)
                 }
             }
 
@@ -406,6 +419,7 @@ Rectangle {
                                     OverlayController.playFocusChangedSound()
                                     OverlayController.language = modelData.locale
                                     languagePopup.close()
+                                    root.showAiTranslationPromptIfNeeded()
                                 }
                             }
                         }
@@ -533,5 +547,10 @@ Rectangle {
 		}
 
         initialItem: rootPage
+    }
+
+    AiTranslationPopup {
+        id: aiTranslationPopup
+        discordUrl: root.discordUrl
     }
 }

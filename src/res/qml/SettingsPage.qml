@@ -177,6 +177,21 @@ MyStackViewPage {
                         OverlayController.setHideSocials(this.checked, true)
                     }
                 }
+                LineSeparator {
+                }
+                RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    Layout.fillWidth: true
+                    Item {
+                        Layout.fillWidth: true
+                    }
+                    MyPushButton {
+                        text: qsTr("Reset Translation Warning")
+                        onClicked: {
+                            OverlayController.resetAiTranslationPrompts()
+                        }
+                    }
+                }
             }
         }
 

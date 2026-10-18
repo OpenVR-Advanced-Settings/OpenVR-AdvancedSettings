@@ -8,6 +8,7 @@
 #include <QQmlContext>
 #include <QtWidgets/QWidget>
 #include <QMouseEvent>
+#include <map>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsEllipseItem>
@@ -1881,6 +1882,85 @@ void OverlayController::setLanguage( QString value, bool notify )
     if ( notify )
     {
         emit languageChanged( translations::currentLanguage() );
+    }
+    settings::saveChangedSettings();
+}
+
+namespace
+{
+struct LanguageSettings
+{
+    settings::BoolSetting aiTranslated;
+    settings::BoolSetting promptSeen;
+};
+
+// Per language settings for the AI translation prompt, keyed by UI locale.
+const std::map<QString, LanguageSettings>& languageSettings()
+{
+    using settings::BoolSetting;
+    static const std::map<QString, LanguageSettings> map{
+        { "en",
+          { BoolSetting::APPLICATION_aiTranslatedEn,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenEn } },
+        { "de",
+          { BoolSetting::APPLICATION_aiTranslatedDe,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenDe } },
+        { "es",
+          { BoolSetting::APPLICATION_aiTranslatedEs,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenEs } },
+        { "pt",
+          { BoolSetting::APPLICATION_aiTranslatedPt,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenPt } },
+        { "ja",
+          { BoolSetting::APPLICATION_aiTranslatedJa,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenJa } },
+        { "zh_TW",
+          { BoolSetting::APPLICATION_aiTranslatedZhTw,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenZhTw } },
+        { "zh_CN",
+          { BoolSetting::APPLICATION_aiTranslatedZhCn,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenZhCn } },
+    };
+    return map;
+}
+} // namespace
+
+bool OverlayController::isAiTranslated( QString locale ) const
+{
+    const auto language = languageSettings().find( locale );
+    if ( language == languageSettings().end() )
+    {
+        return false;
+    }
+    return settings::getSetting( language->second.aiTranslated );
+}
+
+bool OverlayController::aiTranslationPromptSeen( QString locale ) const
+{
+    const auto language = languageSettings().find( locale );
+    if ( language == languageSettings().end() )
+    {
+        return true;
+    }
+    return settings::getSetting( language->second.promptSeen );
+}
+
+void OverlayController::setAiTranslationPromptSeen( QString locale )
+{
+    const auto language = languageSettings().find( locale );
+    if ( language == languageSettings().end() )
+    {
+        return;
+    }
+    settings::setSetting( language->second.promptSeen, true );
+    settings::saveChangedSettings();
+}
+
+void OverlayController::resetAiTranslationPrompts()
+{
+    for ( const auto& language : languageSettings() )
+    {
+        settings::setSetting( language.second.promptSeen, false );
     }
     settings::saveChangedSettings();
 }

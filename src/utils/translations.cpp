@@ -2,6 +2,7 @@
 #include "paths.h"
 #include "../settings/settings.h"
 #include <QCoreApplication>
+#include <QFileInfo>
 #include <QFont>
 #include <QFontDatabase>
 #include <QGuiApplication>
@@ -102,9 +103,31 @@ bool install( const QString& locale )
     }
 
     QCoreApplication::installTranslator( &g_translator );
-    g_currentLanguage = locale;
-    qInfo() << "Loaded translation" << locale;
+    // load() falls back from e.g. "es_MX" to the "es" file, so record the
+    // language of the file that was actually loaded.
+    g_currentLanguage = QFileInfo( g_translator.filePath() )
+                            .completeBaseName()
+                            .mid( QString( kFileBaseName ).size() + 1 );
+    qInfo() << "Loaded translation" << g_currentLanguage << "for" << locale;
     return true;
+}
+
+// Tries the full locale (e.g. "pt_BR"), then just its language ("pt").
+bool installForLocale( const QLocale& locale )
+{
+    if ( install( locale.name() ) )
+    {
+        return true;
+    }
+    // Chinese translations are split by script rather than language, so e.g.
+    // zh_HK/zh_MO use Traditional and zh_SG uses Simplified.
+    if ( locale.language() == QLocale::Chinese )
+    {
+        return install( locale.script() == QLocale::TraditionalChineseScript
+                            ? QStringLiteral( "zh_TW" )
+                            : QStringLiteral( "zh_CN" ) );
+    }
+    return install( QLocale::languageToCode( locale.language() ) );
 }
 
 void installFromSettingsOrSystem()
@@ -117,23 +140,16 @@ void installFromSettingsOrSystem()
         return;
     }
 
-    // No saved choice: try the full system locale (e.g. "pt_BR"), then just
-    // its language ("pt").
-    const auto system = QLocale::system();
-    if ( install( system.name() ) )
+    // No saved choice: follow the OS display languages in order of preference
+    // (not the regional format), using the first one that has a translation.
+    for ( const auto& uiLanguage : QLocale::system().uiLanguages() )
     {
-        return;
+        if ( installForLocale( QLocale( uiLanguage ) ) )
+        {
+            return;
+        }
     }
-    // Chinese translations are split by script rather than language, so e.g.
-    // zh_HK/zh_MO use Traditional and zh_SG uses Simplified.
-    if ( system.language() == QLocale::Chinese )
-    {
-        install( system.script() == QLocale::TraditionalChineseScript
-                     ? QStringLiteral( "zh_TW" )
-                     : QStringLiteral( "zh_CN" ) );
-        return;
-    }
-    install( QLocale::languageToCode( system.language() ) );
+    install( translations::kSourceLanguage );
 }
 } // namespace
 

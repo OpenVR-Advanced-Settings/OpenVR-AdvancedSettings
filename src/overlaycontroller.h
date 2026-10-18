@@ -261,6 +261,14 @@ public:
 
     Q_INVOKABLE bool soundDisabled();
 
+    // Whether the given UI locale (e.g. "ja", "zh_TW") is mainly AI translated.
+    Q_INVOKABLE bool isAiTranslated( QString locale ) const;
+    // Whether the AI translation prompt was already answered for the locale.
+    Q_INVOKABLE bool aiTranslationPromptSeen( QString locale ) const;
+    Q_INVOKABLE void setAiTranslationPromptSeen( QString locale );
+    // Shows the prompt again for every language.
+    Q_INVOKABLE void resetAiTranslationPrompts();
+
     const vr::VROverlayHandle_t& overlayHandle();
     const vr::VROverlayHandle_t& overlayThumbnailHandle();
 

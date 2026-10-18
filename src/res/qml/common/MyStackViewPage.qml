@@ -1,6 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.2
+import QtQuick.Templates as T
 import ovras.advsettings
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 // Needed for OverlayController in the default folder.
@@ -9,7 +10,8 @@ import ".."
 Rectangle {
     color: "#1d2026"
 
-    property StackView stackView
+    // Template type so it accepts the StackView of any style (mainwidget uses Material).
+    property T.StackView stackView
 
     property string headerText: qsTr("Header Title")
 
