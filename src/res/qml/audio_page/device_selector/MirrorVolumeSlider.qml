@@ -6,14 +6,38 @@ import "../../common"
 import "."
 
 ColumnLayout {
-    spacing: 18
+    spacing: 0
+
+    // Height of each row, set by the page. -1 leaves rows at their implicit height.
+    property real rowHeight: -1
     MirrorDeviceSelector {
         id: audioMirrorNameCombo
+        Layout.preferredHeight: rowHeight
+        Layout.fillWidth: true
+    }
+    LineSeparator {
     }
     RowLayout {
+        Layout.preferredHeight: rowHeight
         MyText {
-            text: "Mirror Volume:"
+            text: qsTr("Mirror Volume")
             Layout.preferredWidth: 260
+        }
+
+        MyPushButton2 {
+            id: audioMirrorMuteToggle
+            Layout.preferredWidth: 44
+            Layout.preferredHeight: 40
+            checkable: true
+            contentItem: Image {
+                source: parent.checked ? "qrc:/qt/qml/AdvancedSettings/img/audio/speaker/speaker_off.svg" : "qrc:/qt/qml/AdvancedSettings/img/audio/speaker/speaker_on.svg"
+                sourceSize.width: 26
+                sourceSize.height: 26
+                fillMode: Image.PreserveAspectFit
+            }
+            onCheckedChanged: {
+                AudioTabController.setMirrorMuted(checked, false)
+            }
         }
 
         MyPushButton2 {
@@ -56,21 +80,6 @@ ColumnLayout {
             Layout.preferredWidth: 85
             horizontalAlignment: Text.AlignRight
         }
-
-        MyPushButton2 {
-            id: audioMirrorMuteToggle
-            Layout.leftMargin: 12
-            checkable: true
-            contentItem: Image {
-                source: parent.checked ? "qrc:/speaker/off" : "qrc:/speaker/on"
-                sourceSize.width: 32
-                sourceSize.height: 32
-                anchors.fill: parent
-            }
-            onCheckedChanged: {
-                AudioTabController.setMirrorMuted(checked, false)
-            }
-        }
     }
     Component.onCompleted: {
         if (AudioTabController.mirrorDeviceIndex < 0) {
@@ -89,7 +98,7 @@ ColumnLayout {
     }
     Connections {
         target: AudioTabController
-        onMirrorDeviceIndexChanged: {
+        function onMirrorDeviceIndexChanged() {
             if (index < 0) {
                 audioMirrorNameCombo.deviceIndex = 0
                 audioMirrorVolumeMinusButton.enabled = false
@@ -104,13 +113,13 @@ ColumnLayout {
                 audioMirrorNameCombo.deviceIndex = index + 1
             }
         }
-        onMirrorVolumeChanged: {
+        function onMirrorVolumeChanged() {
             audioMirrorVolumeSlider.value = AudioTabController.mirrorVolume
         }
-        onMirrorMutedChanged: {
+        function onMirrorMutedChanged() {
             audioMirrorMuteToggle.checked = AudioTabController.mirrorMuted
         }
-        onPlaybackDeviceListChanged: {
+        function onPlaybackDeviceListChanged() {
             if (AudioTabController.mirrorDeviceIndex < 0) {
                 audioMirrorVolumeMinusButton.enabled = false
                 audioMirrorVolumeSlider.enabled = false

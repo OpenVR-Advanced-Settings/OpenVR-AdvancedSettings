@@ -6,21 +6,23 @@ import ovras.advsettings 1.0
 import "common"
 
 MyStackViewPage {
-    headerText: "Application Settings"
+    headerText: qsTr("OVRAS Settings")
 
-    content: ScrollView{
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        clip: true
+    // Every group box row on this page uses this height.
+    readonly property int groupBoxRowHeight: 44
 
-            ColumnLayout {
-            spacing: 18
+    content: ColumnLayout {
+        spacing: 8
 
-            RowLayout{
+        SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
+            title: qsTr("Sound")
+            RowLayout {
+                Layout.preferredHeight: groupBoxRowHeight
+                anchors.fill: parent
+
                 MyText {
-                    text: "Application Volume:"
+                    text: qsTr("Application Volume")
                     Layout.rightMargin: 12
                 }
 
@@ -84,252 +86,290 @@ MyStackViewPage {
                     }
                 }
             }
+        }
 
-            MyToggleButton {
-                id: settingsAutoStartToggle
-                text: "Autostart"
-                onCheckedChanged: {
-                    SettingsTabController.setAutoStartEnabled(checked, false)
-                }
-            }
-            MyToggleButton {
-                id: desktopModeToggleButton
-                text: "Desktop Mode (restart required)"
-                onCheckedChanged: {
-                    OverlayController.setDesktopModeToggle(this.checked, false)
-                }
-            }
-
-            MyToggleButton {
-                id: universeCenteredRotationToggle
-                text: "Universe-Centered Rotation (Disables HMD Centering)"
-                onCheckedChanged: {
-                    MoveCenterTabController.setUniverseCenteredRotation(checked, true)
-                }
-            }
-
-
-            MyToggleButton {
-                id: disableCrashRecoveryToggle
-                text: "Enable Automatic Crash Recovery of Chaperone Config"
-                onCheckedChanged: {
-                    OverlayController.setCrashRecoveryDisabled(!checked, true)
-                }
-            }
-
-            MyToggleButton {
-                id: disableVersionCheckToggle
-                text: "Disable Notification of Newer Version Availability"
-                onCheckedChanged: {
-                    OverlayController.setDisableVersionCheck(checked, true)
-                }
-            }
-            MyToggleButton {
-                id: nativeChaperoneToggleButton
-                text: "Force Use SteamVR Chaperone (experimental + SteamVR restart required)"
-                onCheckedChanged: {
-                    SettingsTabController.setNativeChaperoneToggle(this.checked, true)
-                }
-            }
-            RowLayout {
-                spacing: 18
+        SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
+            title: qsTr("General")
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
 
                 MyToggleButton {
-                    id: autoApplyChaperoneToggleButton
-                    text: "Auto Apply Chaperone Profile:"
-                    onCheckedChanged: {
-                        OverlayController.setAutoApplyChaperoneEnabled(this.checked, true)
-                    }
-                }
-
-                MyComboBox {
-                    id: summaryChaperoneProfileComboBox
-                    Layout.leftMargin: 47
-                    Layout.maximumWidth: 378
-                    Layout.minimumWidth: 378
-                    Layout.preferredWidth: 378
+                    id: settingsAutoStartToggle
+                    Layout.preferredHeight: groupBoxRowHeight
+                    text: qsTr("Autostart")
                     Layout.fillWidth: true
-                    model: [""]
-                    onCurrentIndexChanged: {
-                        if (currentIndex > 0) {
-                            summaryChaperoneProfileApplyButton.enabled = true
-                        } else {
-                            summaryChaperoneProfileApplyButton.enabled = false
+                    Layout.rightMargin: 0
+                    onCheckedChanged: {
+                        SettingsTabController.setAutoStartEnabled(checked, false)
+                    }
+                }
+                LineSeparator {
+                }
+                MyToggleButton {
+                    id: desktopModeToggleButton
+                    Layout.preferredHeight: groupBoxRowHeight
+                    text: qsTr("Desktop Mode (restart required)")
+                    Layout.fillWidth: true
+                    Layout.rightMargin: 0
+                    onCheckedChanged: {
+                        OverlayController.setDesktopModeToggle(this.checked, false)
+                    }
+                }
+                LineSeparator {
+                }
+                MyToggleButton {
+                    id: universeCenteredRotationToggle
+                    Layout.preferredHeight: groupBoxRowHeight
+                    text: qsTr("Universe-Centered Rotation (Disables HMD Centering)")
+                    Layout.fillWidth: true
+                    Layout.rightMargin: 0
+                    onCheckedChanged: {
+                        MoveCenterTabController.setUniverseCenteredRotation(checked, true)
+                    }
+                }
+                LineSeparator {
+                }
+                MyToggleButton {
+                    id: disableCrashRecoveryToggle
+                    Layout.preferredHeight: groupBoxRowHeight
+                    text: qsTr("Enable Automatic Crash Recovery of Chaperone Config")
+                    Layout.fillWidth: true
+                    Layout.rightMargin: 0
+                    onCheckedChanged: {
+                        OverlayController.setCrashRecoveryDisabled(!checked, true)
+                    }
+                }
+                LineSeparator {
+                }
+                MyToggleButton {
+                    id: disableVersionCheckToggle
+                    Layout.preferredHeight: groupBoxRowHeight
+                    text: qsTr("Disable Notification of Newer Version Availability")
+                    Layout.fillWidth: true
+                    Layout.rightMargin: 0
+                    onCheckedChanged: {
+                        OverlayController.setDisableVersionCheck(checked, true)
+                    }
+                }
+                LineSeparator {
+                }
+                MyToggleButton {
+                    id: exclusiveInputToggleButton
+                    Layout.preferredHeight: groupBoxRowHeight
+                    text: qsTr("Exclusive Input")
+                    Layout.fillWidth: true
+                    Layout.rightMargin: 0
+                    onCheckedChanged: {
+                        OverlayController.setExclusiveInputEnabled(this.checked, true)
+                    }
+                }
+                LineSeparator {
+                }
+                MyToggleButton {
+                    id: hideSocialsToggleButton
+                    Layout.preferredHeight: groupBoxRowHeight
+                    text: qsTr("Hide Socials")
+                    Layout.fillWidth: true
+                    Layout.rightMargin: 0
+                    onCheckedChanged: {
+                        OverlayController.setHideSocials(this.checked, true)
+                    }
+                }
+                LineSeparator {
+                }
+                RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    Layout.fillWidth: true
+                    Item {
+                        Layout.fillWidth: true
+                    }
+                    MyPushButton {
+                        text: qsTr("Reset Translation Warning")
+                        onClicked: {
+                            OverlayController.resetAiTranslationPrompts()
                         }
                     }
                 }
+            }
+        }
 
-                MyPushButton {
-                    id: summaryChaperoneProfileApplyButton
-                    enabled: false
-                    Layout.preferredWidth: 150
-                    text: "Select"
-                    onClicked: {
-                        if (summaryChaperoneProfileComboBox.currentIndex > 0) {
-                            ChaperoneTabController.applyChaperoneProfile(summaryChaperoneProfileComboBox.currentIndex - 1)
-                            OverlayController.setAutoChapProfileName(summaryChaperoneProfileComboBox.currentIndex - 1)
-                            summaryChaperoneProfileComboBox.currentIndex = 0
-                        }
-                    }
-                }
-            }
-            MyToggleButton {
-                id: oculusSdkToggleButton
-                text: "Force Use SteamVR (Disable Oculus API [experimental])"
-                onCheckedChanged: {
-                    SettingsTabController.setOculusSdkToggle(this.checked, true)
-                }
-            }
-            MyToggleButton {
-                id: exclusiveInputToggleButton
-                text: "Exclusive Input Toggle (This enables Key Binding to Toggle state)"
-                onCheckedChanged: {
-                    OverlayController.setExclusiveInputEnabled(this.checked, true)
-                }
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
+        SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
+            title: qsTr("Chaperone")
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
 
                 MyToggleButton {
-                    id: vsyncDisabledToggle
-                    text: "Disable App Vsync"
+                    id: nativeChaperoneToggleButton
+                    Layout.preferredHeight: groupBoxRowHeight
+                    text: qsTr("Force Use SteamVR Chaperone (SteamVR restart required)")
+                    Layout.fillWidth: true
+                    Layout.rightMargin: 0
                     onCheckedChanged: {
-                        OverlayController.setVsyncDisabled(checked, true)
-                        customTickRateText.visible = checked
-                        customTickRateLabel.visible = checked
-                        customTickRateMsLabel.visible = checked
+                        SettingsTabController.setNativeChaperoneToggle(this.checked, true)
                     }
                 }
-
-                MyText {
-                    id: customTickRateLabel
-                    text: "Custom Tick Rate: "
-                    horizontalAlignment: Text.AlignRight
-                    Layout.leftMargin: 20
-                    Layout.rightMargin: 2
+                LineSeparator {
                 }
+                RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    spacing: 18
 
-                MyTextField {
-                    id: customTickRateText
-                    text: "20"
-                    keyBoardUID: 501
-                    Layout.preferredWidth: 140
-                    Layout.leftMargin: 10
-                    Layout.rightMargin: 1
-                    horizontalAlignment: Text.AlignHCenter
-                    function onInputEvent(input) {
-                        var val = parseInt(input, 10)
-                        if (!isNaN(val)) {
-                            OverlayController.customTickRateMs = val
-                            text = OverlayController.customTickRateMs
-                        } else {
-                            text = OverlayController.customTickRateMs
+                    MyToggleButton {
+                        id: autoApplyChaperoneToggleButton
+                        text: qsTr("Auto Apply Chaperone Profile")
+                        Layout.fillWidth: true
+                        Layout.rightMargin: 0
+                        onCheckedChanged: {
+                            OverlayController.setAutoApplyChaperoneEnabled(this.checked, true)
                         }
                     }
-                }
 
-                MyText {
-                    id: customTickRateMsLabel
-                    text: "ms"
-                    horizontalAlignment: Text.AlignLeft
-                    Layout.leftMargin: 1
-                }
+                    MyComboBox {
+                        id: summaryChaperoneProfileComboBox
+                        Layout.leftMargin: 30
+                        Layout.preferredWidth: 378
+                        model: [""]
+                        onCurrentIndexChanged: {
+                            if (currentIndex > 0) {
+                                summaryChaperoneProfileApplyButton.enabled = true
+                            } else {
+                                summaryChaperoneProfileApplyButton.enabled = false
+                            }
+                        }
+                    }
 
-                Item {
-                    Layout.fillWidth: true
+                    MyPushButton {
+                        id: summaryChaperoneProfileApplyButton
+                        enabled: false
+                        Layout.preferredWidth: 150
+                        text: qsTr("Select")
+                        onClicked: {
+                            if (summaryChaperoneProfileComboBox.currentIndex > 0) {
+                                ChaperoneTabController.applyChaperoneProfile(summaryChaperoneProfileComboBox.currentIndex - 1)
+                                OverlayController.setAutoChapProfileName(summaryChaperoneProfileComboBox.currentIndex - 1)
+                                summaryChaperoneProfileComboBox.currentIndex = 0
+                            }
+                        }
+                    }
                 }
             }
+        }
 
-            RowLayout {
-                id: debugStateRow
-                Layout.fillWidth: true
+        SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
+            title: qsTr("Advanced")
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
 
-                MyText {
-                    id: debugStateLabel
-                    text: "Debug State: "
-                    horizontalAlignment: Text.AlignRight
-                    Layout.leftMargin: 20
-                    Layout.rightMargin: 2
-                }
-
-                MyTextField {
-                    id: debugStateText
-                    text: "0"
-                    keyBoardUID: 502
-                    Layout.preferredWidth: 140
-                    Layout.leftMargin: 10
-                    Layout.rightMargin: 1
-                    horizontalAlignment: Text.AlignHCenter
-                    function onInputEvent(input) {
-                        var val = parseInt(input, 10)
-                        if (!isNaN(val)) {
-                            OverlayController.debugState = val
-                            text = OverlayController.debugState
-                        } else {
-                            text = OverlayController.debugState
-                        }
+                MyToggleButton {
+                    id: oculusSdkToggleButton
+                    Layout.preferredHeight: groupBoxRowHeight
+                    text: qsTr("Force Use SteamVR (Disable Oculus API)")
+                    Layout.fillWidth: true
+                    Layout.rightMargin: 0
+                    onCheckedChanged: {
+                        SettingsTabController.setOculusSdkToggle(this.checked, true)
                     }
                 }
-                Item {
+                LineSeparator {
+                }
+                RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
                     Layout.fillWidth: true
+                    // Match the height of the plain toggle rows on this page.
+
+                    MyText {
+                        text: qsTr("Custom Update Rate")
+                        Layout.fillWidth: true
+                    }
+
+                    MyTextField {
+                        id: customTickRateText
+                        text: "20"
+                        keyBoardUID: 501
+                        Layout.preferredWidth: 140
+                        Layout.maximumHeight: oculusSdkToggleButton.height
+                        Layout.rightMargin: 1
+                        horizontalAlignment: Text.AlignHCenter
+                        function onInputEvent(input) {
+                            var val = parseInt(input, 10)
+                            if (!isNaN(val)) {
+                                OverlayController.customTickRateMs = val
+                                text = OverlayController.customTickRateMs
+                            } else {
+                                text = OverlayController.customTickRateMs
+                            }
+                        }
+                    }
+
+                    MyText {
+                        text: qsTr("ms")
+                        horizontalAlignment: Text.AlignLeft
+                        Layout.leftMargin: 1
+                        Layout.rightMargin: 20
+                    }
+
+                    MyToggleButton {
+                        id: vsyncDisabledToggle
+                        text: ""
+                        Layout.rightMargin: 0
+                        onCheckedChanged: {
+                            OverlayController.setVsyncDisabled(checked, true)
+                        }
+                    }
                 }
             }
-            RowLayout{
-                Item {
-                    Layout.fillWidth: true
+        }
+
+        Item {
+            Layout.fillHeight: true
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+
+            MyToggleButton {
+                // set visible to true here in builds when we need a debug toggle checkbox, otherwise false when on master branch.
+                visible: false
+                id: debugToggle
+                text: qsTr("Debug")
+                onCheckedChanged: {
+                    OverlayController.setEnableDebug(checked, true)
                 }
-                MyPushButton {
-                    id: shutdownButton
-                    Layout.preferredWidth: 250
-                    text: "Shutdown OVRAS"
-                    onClicked: {
-                        OverlayController.exitApp()
-                        }
-                    }
             }
 
             Item {
-                Layout.fillHeight: true
+                Layout.fillWidth: true
             }
 
-            RowLayout {
-                Layout.fillWidth: true
-
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                MyToggleButton {
-                    // set visible to true here in builds when we need a debug toggle checkbox, otherwise false when on master branch.
-                    visible: false
-                    id: debugToggle
-                    text: "Debug"
-                    onCheckedChanged: {
-                        OverlayController.setEnableDebug(checked, true)
+            MyPushButton {
+                id: shutdownButton
+                Layout.preferredWidth: 250
+                text: qsTr("Shutdown OVRAS")
+                onClicked: {
+                    OverlayController.exitApp()
                     }
                 }
+        }
 
-            }
-        } // end column
             Component.onCompleted: {
                 settingsAutoStartToggle.checked = SettingsTabController.autoStartEnabled
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
                 disableCrashRecoveryToggle.checked = !OverlayController.crashRecoveryDisabled
                 customTickRateText.text = OverlayController.customTickRateMs
                 vsyncDisabledToggle.checked = OverlayController.vsyncDisabled
-                customTickRateText.visible = vsyncDisabledToggle.checked
-                customTickRateLabel.visible = vsyncDisabledToggle.checked
-                customTickRateMsLabel.visible = vsyncDisabledToggle.checked
-                debugStateRow.visible = OverlayController.enableDebug
-                debugStateText.text = OverlayController.debugState
                 disableVersionCheckToggle.checked = OverlayController.disableVersionCheck
                 nativeChaperoneToggleButton.checked = SettingsTabController.nativeChaperoneToggle
                 oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
                 exclusiveInputToggleButton.checked = OverlayController.exclusiveInputEnabled
                 autoApplyChaperoneToggleButton.checked = OverlayController.autoApplyChaperoneEnabled
                 desktopModeToggleButton.checked = OverlayController.desktopModeToggle
+                hideSocialsToggleButton.checked = OverlayController.hideSocials
 
 
                 reloadChaperoneProfiles()
@@ -338,66 +378,59 @@ MyStackViewPage {
 
         Connections {
             target: SettingsTabController
-            onAutoStartEnabledChanged: {
+            function onAutoStartEnabledChanged() {
                 settingsAutoStartToggle.checked = SettingsTabController.autoStartEnabled
             }
-            onNativeChaperoneToggleChanged:{
+            function onNativeChaperoneToggleChanged(){
                 nativeChaperoneToggleButton.checked = SettingsTabController.nativeChaperoneToggle
             }
-            onOculusSdkToggleChanged:{
+            function onOculusSdkToggleChanged(){
                 oculusSdkToggleButton.checked = SettingsTabController.oculusSdkToggle
             }
         }
 
         Connections {
             target: MoveCenterTabController
-            onUniverseCenteredRotationChanged: {
+            function onUniverseCenteredRotationChanged() {
                 universeCenteredRotationToggle.checked = MoveCenterTabController.universeCenteredRotation
             }
         }
 
         Connections {
             target: OverlayController
-            onVsyncDisabledChanged: {
+            function onVsyncDisabledChanged() {
                 vsyncDisabledToggle.checked = OverlayController.vsyncDisabled
-                customTickRateText.visible = vsyncDisabledToggle.checked
-                customTickRateLabel.visible = vsyncDisabledToggle.checked
-                customTickRateMsLabel.visible = vsyncDisabledToggle.checked
             }
-            onCrashRecoveryDisabledChanged: {
+            function onCrashRecoveryDisabledChanged() {
                 disableCrashRecoveryToggle.checked = !OverlayController.crashRecoveryDisabled
             }
 
-            onCustomTickRateMsChanged: {
+            function onCustomTickRateMsChanged() {
                 customTickRateText.text = OverlayController.customTickRateMs
             }
 
-            onEnableDebugChanged: {
-                debugStateRow.visible = OverlayController.enableDebug
-            }
-
-            onDebugStateChanged: {
-                debugStateText.text = OverlayController.debugState
-            }
-            onDisableVersionCheckChanged: {
+            function onDisableVersionCheckChanged() {
                 disableVersionCheckToggle.checked = OverlayController.disableVersionCheck
             }
-            onExclusiveInputEnabledChanged:{
+            function onExclusiveInputEnabledChanged(){
                 exclusiveInputToggleButton.checked = OverlayController.exclusiveInputEnabled
             }
-            onAutoApplyChaperoneEnabledChanged: {
+            function onAutoApplyChaperoneEnabledChanged() {
                autoApplyChaperoneToggleButton.checked = OverlayController.autoApplyChaperoneEnabled
             }
-            onSoundVolumeChanged:{
+            function onSoundVolumeChanged(){
                 volumeSlider.value = OverlayController.soundVolume
             }
-            onDesktopModeToggleChanged:{
+            function onDesktopModeToggleChanged(){
                 desktopModeToggleButton.checked = OverlayController.desktopModeToggle
+            }
+            function onHideSocialsChanged(){
+                hideSocialsToggleButton.checked = OverlayController.hideSocials
             }
         }
         Connections{
             target: ChaperoneTabController
-            onChaperoneProfilesUpdated: {
+            function onChaperoneProfilesUpdated() {
                 reloadChaperoneProfiles()
             }
         }

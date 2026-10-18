@@ -40,10 +40,10 @@ MyComboBox {
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             text: parent.text
-            color: parent.enabled ? "#d9dbe0" : "#65676b"
+            color: parent.enabled ? "#dcdedf" : "#5d636b"
         }
         background: Rectangle {
-            color: parent.pressed ? "#282b31" : (parent.hovered ? "#484f5b" : "#2a2e35")
+            color: parent.pressed ? "#1a9fff" : (parent.hovered ? "#4b5361" : "#2a2e36")
         }
     }
 }

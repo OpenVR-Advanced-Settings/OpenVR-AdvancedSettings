@@ -5,30 +5,47 @@ import ovras.advsettings 1.0
 import "../../common"
 
 ColumnLayout {
-    RowLayout {
-        MyToggleButton {
-            id: audioPttEnabledToggle
-            Layout.fillWidth: true
-            text: "Push-to-Talk:"
-            onClicked: {
-                AudioTabController.setPttEnabled(checked, true)
-            }
+    spacing: 0
+
+    // Height of each row, set by the page. -1 leaves rows at their implicit height.
+    property real rowHeight: -1
+
+    MyToggleButton {
+        id: audioPttEnabledToggle
+        Layout.preferredHeight: rowHeight
+        text: qsTr("Enable")
+        Layout.fillWidth: true
+        Layout.rightMargin: 0
+        onClicked: {
+            AudioTabController.setPttEnabled(checked, true)
         }
-        MyToggleButton {
-            id: audioPttShowNotificationToggle
-            Layout.fillWidth: true
-            text: "Show notification in HMD"
-            onCheckedChanged: {
-                AudioTabController.setPttShowNotification(checked, false)
-            }
+    }
+        LineSeparator {
+    }
+    MyToggleButton {
+        id: audioPttReverseToggle
+        Layout.preferredHeight: rowHeight
+        enabled: audioPttEnabledToggle.checked
+        text: qsTr("Push-to-Mute")
+        Layout.fillWidth: true
+        Layout.leftMargin: 32
+        Layout.rightMargin: 0
+        onClicked: {
+            AudioTabController.setMicReversePtt(checked, true)
         }
-        MyToggleButton {
-            id: audioPttReverseToggle
-            Layout.fillWidth: true
-            text: "Push-to-Mute"
-            onClicked: {
-                AudioTabController.setMicReversePtt(checked, false)
-            }
+    }
+    LineSeparator {
+    }
+    MyToggleButton {
+        id: audioPttShowNotificationToggle
+        Layout.preferredHeight: rowHeight
+        enabled: audioPttEnabledToggle.checked
+        text: qsTr("Show notification in HMD")
+        Layout.fillWidth: true
+        Layout.leftMargin: 32
+        Layout.rightMargin: 0
+        onCheckedChanged: {
+            AudioTabController.setPttShowNotification(checked, false)
         }
     }
 
@@ -39,13 +56,13 @@ ColumnLayout {
     }
     Connections {
         target: AudioTabController
-        onPttEnabledChanged: {
+        function onPttEnabledChanged() {
             audioPttEnabledToggle.checked = AudioTabController.pttEnabled
         }
-        onMicReversePttChanged: {
+        function onMicReversePttChanged() {
             audioPttReverseToggle.checked = AudioTabController.micReversePtt
         }
-        onPttShowNotificationChanged: {
+        function onPttShowNotificationChanged() {
             audioPttShowNotificationToggle.checked = AudioTabController.pttShowNotification
         }
     }

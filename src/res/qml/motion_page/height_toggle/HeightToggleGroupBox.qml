@@ -4,37 +4,23 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: heightToggleGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "Height Toggle / Gravity Floor Offset"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.color: "#d9dbe0"
-        radius: 8
-    }
+    title: qsTr("Height Toggle / Gravity Floor Offset")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
-        Rectangle {
-            color: "#d9dbe0"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 5
-        }
-
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyToggleButton {
                 id: heightToggleButton
-                text: "On"
+                text: qsTr("On/Off")
                 onCheckedChanged: {
                     MoveCenterTabController.heightToggle = this.checked
                 }
@@ -45,7 +31,7 @@ GroupBox {
             }
 
             MyText {
-                text: "Height Offset (+ is down):"
+                text: qsTr("Height Offset (+ is down)")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 2
             }
@@ -72,7 +58,7 @@ GroupBox {
             MyPushButton {
                 id: heightOffsetFromYOffsetButton
                 Layout.preferredWidth: 230
-                text:"Set From Y-Offset"
+                text:qsTr("Set From Y-Offset")
                 onClicked: {
                     MoveCenterTabController.heightToggleOffset = MoveCenterTabController.offsetY
                 }
@@ -88,10 +74,10 @@ GroupBox {
     Connections {
         target: MoveCenterTabController
 
-        onHeightToggleChanged: {
+        function onHeightToggleChanged() {
             heightToggleButton.checked = MoveCenterTabController.heightToggle
         }
-        onHeightToggleOffsetChanged: {
+        function onHeightToggleOffsetChanged() {
             heightToggleOffsetText.text = MoveCenterTabController.heightToggleOffset.toFixed(2)
         }
     }

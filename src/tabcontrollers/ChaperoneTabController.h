@@ -2,6 +2,7 @@
 #pragma once
 
 #include <QObject>
+#include <map>
 #include <memory>
 #include <chrono>
 #include <thread>
@@ -379,7 +380,7 @@ private:
 
     std::vector<ChaperoneProfile> chaperoneProfiles;
 
-    std::string m_floorMarkerFN = "/res/img/chaperone/centermark.png";
+    std::map<int, std::unique_ptr<QImage>> m_floorMarkers;
     void initCenterMarkerOverlay();
     void updateCenterMarkerOverlayColor();
     void checkCenterMarkerOverlayRotationCount();

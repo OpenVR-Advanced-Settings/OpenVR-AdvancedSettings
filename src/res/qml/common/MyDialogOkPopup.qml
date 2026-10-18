@@ -1,6 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.3
+import ovras.advsettings
 
 Popup {
     id: myDialogPopup
@@ -34,20 +35,24 @@ Popup {
             implicitWidth: dialogWidth
             implicitHeight: dialogHeight
             anchors.centerIn: parent
-            radius: 24
-            color: "#2a2e35"
-            border.color: "#d9dbe0"
-            border.width: 2
+            radius: 6
+            color: "#262a31"
+            border.width: 1
+            border.color: "#3a4049"
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 12
                 MyText {
                     Layout.leftMargin: 16
                     Layout.rightMargin: 16
+                    Layout.topMargin: 8
                     text: dialogTitle
+                    font.pointSize: 18
+                    font.bold: true
+                    color: "#ffffff"
                 }
                 Rectangle {
-                    color: "#2a2e35"
+                    color: "#3a4049"
                     height: 1
                     Layout.fillWidth: true
                 }
@@ -72,7 +77,7 @@ Popup {
                     }
                     MyPushButton {
                         implicitWidth: 200
-                        text: "Ok"
+                        text: qsTr("Ok")
                         onClicked: {
                             okClicked = true
                             myDialogPopup.close()

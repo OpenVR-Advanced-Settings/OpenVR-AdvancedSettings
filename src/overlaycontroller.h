@@ -1,9 +1,10 @@
 #pragma once
+
+#include <algorithm>
 #include <openvr.h>
 #include <QtCore/QtCore>
 // because of incompatibilities with QtOpenGL and GLEW we need to cherry pick
 // includes
-#include <QVector2D>
 #include <QMatrix4x4>
 #include <QVector>
 #include <QVector2D>
@@ -17,12 +18,13 @@
 #include <QQuickWindow>
 #include <QQuickItem>
 #include <QQuickRenderControl>
-#include <QSoundEffect>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QQuickRenderTarget>
 #include <memory>
-#include <easylogging++.h>
+#include <optional>
+#include <rhi/qrhi.h>
 
 #include "openvr/openvr_init.h"
 
@@ -44,6 +46,7 @@
 #include "alarm_clock/vr_alarm.h"
 
 #include "utils/update_rate.h"
+#include "utils/sound_player.h"
 
 namespace application_strings
 {
@@ -87,8 +90,6 @@ class OverlayController : public QObject
                     setVersionCheckText NOTIFY versionCheckTextChanged )
     Q_PROPERTY( int customTickRateMs READ customTickRateMs WRITE
                     setCustomTickRateMs NOTIFY customTickRateMsChanged )
-    Q_PROPERTY( int debugState READ debugState WRITE setDebugState NOTIFY
-                    debugStateChanged )
     Q_PROPERTY(
         bool exclusiveInputEnabled READ exclusiveInputEnabled WRITE
             setExclusiveInputEnabled NOTIFY exclusiveInputEnabledChanged )
@@ -99,27 +100,44 @@ class OverlayController : public QObject
                     soundVolumeChanged )
     Q_PROPERTY( bool desktopModeToggle READ desktopModeToggle WRITE
                     setDesktopModeToggle NOTIFY desktopModeToggleChanged )
+    Q_PROPERTY( bool hideSocials READ hideSocials WRITE setHideSocials NOTIFY
+                    hideSocialsChanged )
+    Q_PROPERTY(
+        QString language READ language WRITE setLanguage NOTIFY languageChanged )
 
 private:
     vr::VROverlayHandle_t m_ulOverlayHandle = vr::k_ulOverlayHandleInvalid;
     vr::VROverlayHandle_t m_ulOverlayThumbnailHandle
         = vr::k_ulOverlayHandleInvalid;
 
+#if QT_CONFIG( vulkan )
+    std::unique_ptr<QVulkanInstance> m_vulkanInstance = nullptr;
+#endif
     QQuickRenderControl m_renderControl;
     QQuickWindow m_window{ &m_renderControl };
+
+    std::unique_ptr<QRhiTexture> m_pFBTexture;
+    std::unique_ptr<QRhiRenderBuffer> m_pDepthStencil;
+    std::unique_ptr<QRhiTextureRenderTarget> m_render_target;
+    std::unique_ptr<QRhiRenderPassDescriptor> m_render_pass_descriptor;
+
+    /*
     std::unique_ptr<QOpenGLFramebufferObject> m_pFbo;
+    QQuickRenderTarget m_pRenderTarget;
     QOpenGLContext m_openGLContext;
     QOffscreenSurface m_offscreenSurface;
+    */
 
     QTimer m_pumpEventsTimer;
     std::unique_ptr<QTimer> m_pRenderTimer;
     bool m_dashboardVisible = false;
 
-    QPoint m_ptLastMouse;
-    Qt::MouseButtons m_lastMouseButtons = nullptr;
+    QPointF m_ptLastMouse;
+    Qt::MouseButtons m_lastMouseButtons;
 
     bool m_desktopMode;
     bool m_noSound;
+    QQmlEngine& m_qmlEngine;
     bool m_newVersionDetected = false;
     int m_remoteVersionMajor = -1;
     int m_remoteVersionMinor = -1;
@@ -130,15 +148,16 @@ private:
     QString m_updateMessage = "";
     QString m_optionalMessage = "";
     QString m_versionCheckText = "";
+    //last UID for keyboard
     unsigned long m_lastTextUID = 0;
+    //current UID for keyboard
+    unsigned long m_keyboardUID = 0;
 
     QUrl m_runtimePathUrl;
 
     utils::ChaperoneUtils m_chaperoneUtils;
 
-    QSoundEffect m_activationSoundEffect;
-    QSoundEffect m_focusChangedSoundEffect;
-    QSoundEffect m_alarm01SoundEffect;
+    std::unique_ptr<SoundPlayer> m_soundPlayer;
 
     uint64_t m_currentFrame = 0;
     uint64_t m_lastFrame = 0;
@@ -154,8 +173,9 @@ private:
     QJsonDocument m_remoteVersionJsonDocument = QJsonDocument();
     QJsonObject m_remoteVersionJsonObject;
 
-public: // I know it's an ugly hack to make them public to enable external
-        // access, but I am too lazy to implement getters.
+public:
+    // I know it's an ugly hack to make them public to enable external
+    // access, but I am too lazy to implement getters.
     SteamVRTabController m_steamVRTabController;
     ChaperoneTabController m_chaperoneTabController;
     MoveCenterTabController m_moveCenterTabController;
@@ -169,7 +189,10 @@ public: // I know it's an ugly hack to make them public to enable external
     bool m_incomingReset = false;
 
 private:
-    QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
+    QPointF getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
+    void sendMouseEvent( QEvent::Type type,
+                         const QPointF& pos,
+                         Qt::MouseButton button );
     void processInputBindings();
     void processMediaKeyBindings();
     void processMotionBindings();
@@ -179,11 +202,20 @@ private:
     void processRotationBindings();
     void processExclusiveInputBinding();
 
+    inline QRhi* rhi()
+    {
+        return m_renderControl.rhi();
+    }
+
     bool m_exclusiveState = false;
     bool m_keyPressOneState = false;
     bool m_keyPressTwoState = false;
 
 public:
+    void SetOverlayFromQRhiTexture( QRhiTexture& tex );
+#if QT_CONFIG( vulkan )
+    void TransitionVulkanTextureForOpenVR( QRhiTexture& tex );
+#endif
     OverlayController( bool desktopMode, bool noSound, QQmlEngine& qmlEngine );
     virtual ~OverlayController();
 
@@ -229,6 +261,14 @@ public:
 
     Q_INVOKABLE bool soundDisabled();
 
+    // Whether the given UI locale (e.g. "ja", "zh_TW") is mainly AI translated.
+    Q_INVOKABLE bool isAiTranslated( QString locale ) const;
+    // Whether the AI translation prompt was already answered for the locale.
+    Q_INVOKABLE bool aiTranslationPromptSeen( QString locale ) const;
+    Q_INVOKABLE void setAiTranslationPromptSeen( QString locale );
+    // Shows the prompt again for every language.
+    Q_INVOKABLE void resetAiTranslationPrompts();
+
     const vr::VROverlayHandle_t& overlayHandle();
     const vr::VROverlayHandle_t& overlayThumbnailHandle();
 
@@ -245,11 +285,12 @@ public:
     bool vsyncDisabled() const;
     QString versionCheckText() const;
     int customTickRateMs() const;
-    int debugState() const;
     std::string autoApplyChaperoneName();
 
     double soundVolume() const;
     bool desktopModeToggle() const;
+    bool hideSocials() const;
+    QString language() const;
 
 public slots:
     void renderOverlay();
@@ -258,6 +299,7 @@ public slots:
     void OnNetworkReply( QNetworkReply* reply );
 
     void showKeyboard( QString existingText, unsigned long userValue = 0 );
+    void hideKeyboard( unsigned long userValue = 0 );
     void setKeyboardPos();
 
     void playActivationSound();
@@ -274,10 +316,11 @@ public slots:
     void setVersionCheckText( QString value, bool notify = true );
     void setVsyncDisabled( bool value, bool notify = true );
     void setCustomTickRateMs( int value, bool notify = true );
-    void setDebugState( int value, bool notify = true );
     void setAutoApplyChaperoneEnabled( bool value, bool notify = true );
     void setSoundVolume( double value, bool notify = true );
     void setDesktopModeToggle( bool value, bool notify = true );
+    void setHideSocials( bool value, bool notify = true );
+    void setLanguage( QString value, bool notify = true );
 
 signals:
     void keyBoardInputSignal( QString input, unsigned long userValue = 0 );
@@ -289,10 +332,11 @@ signals:
     void versionCheckTextChanged( QString value );
     void vsyncDisabledChanged( bool value );
     void customTickRateMsChanged( int value );
-    void debugStateChanged( int value );
     void autoApplyChaperoneEnabledChanged( bool value );
     void soundVolumeChanged( double value );
     void desktopModeToggleChanged( bool value );
+    void hideSocialsChanged( bool value );
+    void languageChanged( QString value );
     void submitLastTextField(unsigned long value = 0);
 };
 

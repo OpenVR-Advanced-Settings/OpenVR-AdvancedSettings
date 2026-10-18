@@ -4,18 +4,22 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: snapTurnGroupBox
     Layout.fillWidth: true
 
+    title: qsTr("Bind Turn")
+
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyText {
-                text: "Snap Turn Angle:"
+                text: qsTr("Snap Turn Angle")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 2
             }
@@ -41,7 +45,7 @@ GroupBox {
 
             MyPushButton {
                 id: snapTurnButton45
-                Layout.preferredWidth: 90
+                Layout.preferredWidth: 70
                 text:"45°"
                 onClicked: {
                     MoveCenterTabController.snapTurnAngle = 4500
@@ -49,7 +53,7 @@ GroupBox {
            }
             MyPushButton {
                 id: snapTurnButton90
-                Layout.preferredWidth: 90
+                Layout.preferredWidth: 70
                 text:"90°"
                 onClicked: {
                     MoveCenterTabController.snapTurnAngle = 9000
@@ -57,7 +61,7 @@ GroupBox {
            }
             MyPushButton {
                 id: snapTurnButton180
-                Layout.preferredWidth: 90
+                Layout.preferredWidth: 70
                 text:"180°"
                 onClicked: {
                     MoveCenterTabController.snapTurnAngle = 18000
@@ -68,8 +72,11 @@ GroupBox {
                Layout.fillWidth: true
            }
 
+           VerticalSeparator {
+           }
+
            MyText {
-               text: "Smooth Turn Rate:"
+               text: qsTr("Smooth Turn Rate")
                horizontalAlignment: Text.AlignRight
                Layout.rightMargin: 2
            }
@@ -92,6 +99,23 @@ GroupBox {
                }
            }
 
+           Item {
+               Layout.fillWidth: true
+           }
+
+           VerticalSeparator {
+           }
+
+           MyPushButton {
+               id: snapTurnBindingsButton
+               activationSoundEnabled: false
+               text: qsTr("Open Bindings")
+               Layout.preferredWidth: 180
+               onClicked: {
+                   SteamVRTabController.launchBindingUI()
+               }
+           }
+
         }
     }
 
@@ -103,10 +127,10 @@ GroupBox {
     Connections {
         target: MoveCenterTabController
 
-        onSnapTurnAngleChanged: {
+        function onSnapTurnAngleChanged() {
             snapTurnAngleText.text = ( Math.round( MoveCenterTabController.snapTurnAngle / 100 ) ) + "°"
         }
-        onSmoothTurnRateChanged: {
+        function onSmoothTurnRateChanged() {
             smoothTurnRateText.text = MoveCenterTabController.smoothTurnRate + "%"
         }
     }

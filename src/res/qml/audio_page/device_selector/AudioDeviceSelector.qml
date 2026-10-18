@@ -6,19 +6,21 @@ import "../../common"
 
 RowLayout {
     id: audioPlaybackNameCombo
-    property string deviceText: "Audio Device: "
+    Layout.preferredHeight: 48
+    property string deviceText: qsTr("Audio Device")
 
     property alias devices: selector.model
     property alias deviceIndex: selector.currentIndex
     MyText {
         text: deviceText
-        Layout.preferredWidth: 200
+        Layout.preferredWidth: 260
     }
 
     MyToggleButton {
         id: playbackOverrideToggle
+        visible: false
         Layout.preferredWidth: 250
-        text: "Toggle Override"
+        text: qsTr("Toggle Override")
         onClicked: {
             AudioTabController.setPlaybackOverride(this.checked, false)
         }
@@ -44,14 +46,14 @@ RowLayout {
 
     Connections {
         target: AudioTabController
-        onPlaybackDeviceIndexChanged: {
+        function onPlaybackDeviceIndexChanged() {
             setShownAudioDevice(index)
         }
-        onPlaybackDeviceListChanged: {
+        function onPlaybackDeviceListChanged() {
             audioPlaybackNameCombo.devices = getAudioDeviceList()
             setShownAudioDevice(AudioTabController.playbackDeviceIndex)
         }
-        onPlaybackOverrideChanged: {
+        function onPlaybackOverrideChanged() {
             playbackOverrideToggle.value = AudioTabController.playbackOverride
         }
     }

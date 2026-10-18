@@ -1,54 +1,63 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
+import ovras.advsettings
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
-// Needed for MyResources in the default folder.
+// Needed for OverlayControllers in the default folder.
 import ".."
+import QtQuick.Layouts 1.3
 
+// Steam style switch: label on the left, switch on the right.
+// When given extra width (Layout.fillWidth) the switch sits at the far right.
 CheckBox {
-    checkState: Qt.Checked
+    id: myToggle
     tristate: false
     hoverEnabled: true
-    spacing: 12
+    spacing: 14
+    leftPadding: 0
+    rightPadding: 0
+    // Keep the switch from touching whatever follows it in a row.
+    Layout.rightMargin: 12
 
-	indicator: Rectangle {
-		implicitWidth: 28
-		implicitHeight: 28
-		x: parent.leftPadding
-		y: parent.height / 2 - height / 2
-        color: parent.enabled ? (parent.down ? "#181a1e" : "#3d4450") : "#181a1e"
+    property color onColor: "#1a9fff"
+
+    implicitWidth: contentItem.implicitWidth
+
+    indicator: Rectangle {
+        implicitWidth: 46
+        implicitHeight: 24
+        x: myToggle.width - width - myToggle.rightPadding
+        y: myToggle.height / 2 - height / 2
+        radius: implicitHeight / 2
+        color: myToggle.checked ? myToggle.onColor : (myToggle.activeFocus ? "#5a616c" : "#4a505a")
         border.width: 0
-        Path {
-            startX: 0
-            startY: 0
-            PathLine {
-                x: 40
-                y: 40
+
+        Rectangle {
+            id: thumb
+            width: 20
+            height: 20
+            radius: 10
+            color: myToggle.enabled ? "#ffffff" : "#8b929a"
+            y: (parent.height - height) / 2
+            x: myToggle.checked ? (parent.width - width - 2) : 2
+            Behavior on x {
+                NumberAnimation { duration: 120; easing.type: Easing.InOutQuad }
             }
         }
+    }
 
-		Image {
-            width: 28
-            height: 28
-			x: (parent.width - width) / 2
-			y: (parent.height - height) / 2
-            source: "qrc:/common/box_checkmark"
-			sourceSize.width: width
-			sourceSize.height: height
-			visible: parent.parent.checked
-		}
-	}
-
-	contentItem: MyText {
-        text: parent.text
+    contentItem: MyText {
+        text: myToggle.text
         horizontalAlignment: Text.AlignLeft
-		verticalAlignment: Text.AlignVCenter
-        leftPadding: parent.indicator.width + parent.spacing
-        color: parent.enabled ? "#d9dbe0" : "#65676b"
-	}
+        verticalAlignment: Text.AlignVCenter
+        leftPadding: 0
+        // The control sizes contentItem to its full width, reserve the switch area.
+        rightPadding: myToggle.indicator.width + (text.length > 0 ? myToggle.spacing : 0)
+        elide: Text.ElideRight
+        color: myToggle.enabled ? "#dcdedf" : "#5d636b"
+    }
 
-	background: Rectangle {
-        color: "#2a2e35"
-        opacity: parent.activeFocus ? 1.0 : 0
+    background: Rectangle {
+        color: "transparent"
     }
 
     onHoveredChanged: {
@@ -60,6 +69,10 @@ CheckBox {
     }
 
     onClicked: {
-        MyResources.playActivationSound()
+        OverlayController.playActivationSound()
+    }
+
+    Connections {
+    target: OverlayController
     }
 }

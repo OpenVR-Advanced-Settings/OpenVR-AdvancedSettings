@@ -4,31 +4,21 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: mediaKeysGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "Media Control Keys"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.color: "#d9dbe0"
-        radius: 8
-    }
+    title: qsTr("Media Control Keys")
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
-        LineSeparator {
-        }
-
         RowLayout {
-            property string playPauseButtonPath: "qrc:/media_keys/play_pause"
-            property string stopButtonPath: "qrc:/media_keys/stop"
-            property string previousButtonPath: "qrc:/media_keys/previous"
-            property string nextButtonPath: "qrc:/media_keys/next"
+            Layout.preferredHeight: rowHeight
+            property string playPauseButtonPath: "qrc:/qt/qml/AdvancedSettings/img/audio/media_keys/outline_play_pause_white_24dp.svg"
+            property string stopButtonPath: "qrc:/qt/qml/AdvancedSettings/img/audio/media_keys/outline_stop_white_24dp.svg"
+            property string previousButtonPath: "qrc:/qt/qml/AdvancedSettings/img/audio/media_keys/outline_skip_previous_white_24dp.svg"
+            property string nextButtonPath: "qrc:/qt/qml/AdvancedSettings/img/audio/media_keys/outline_skip_next_white_24dp.svg"
 
             MediaButton {
                 id: previousSongButton

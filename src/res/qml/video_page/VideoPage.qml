@@ -11,27 +11,39 @@ import "profiles"
 import "overlaycolorbright"
 
 MyStackViewPage {
-    width: 1200
-    headerText: "Video Settings"
+    id: videoPage
+    headerText: qsTr("Video Settings")
+
+    // Every group box row on this page uses this height.
+    readonly property int groupBoxRowHeight: 44
     content: ColumnLayout {
-        spacing: 10
+        spacing: 8
 
         OverlayMethodGroupBox{
-        id: overlayMethodGroupBox
+            id: overlayMethodGroupBox
+            rowHeight: groupBoxRowHeight
         }
         BrightnessGroupBox {
-        id: brightnessGroupBox}
+            id: brightnessGroupBox
+            rowHeight: groupBoxRowHeight
+        }
         ColorGroupBox {
-        id:  colorGroupBox}
+            id: colorGroupBox
+            rowHeight: groupBoxRowHeight
+        }
         SuperSamplingGroupBox{
             id: ssGroupBox
+            rowHeight: groupBoxRowHeight
         }
         VideoProfileGroupBox{
             id: videoProfileGroupBox
+            rowHeight: groupBoxRowHeight
+            dialogParent: videoPage
         }
 
         VideoMiscGroupBox{
-            id:miscVideoGroupBox
+            id: miscVideoGroupBox
+            rowHeight: groupBoxRowHeight
         }
 
         Item {
@@ -47,7 +59,7 @@ MyStackViewPage {
 
     Connections {
         target: VideoTabController
-            onIsOverlayMethodActiveChanged:{
+            function onIsOverlayMethodActiveChanged(){
                 overlayMethodGroupBox.visible = VideoTabController.isOverlayMethodActive
                 brightnessGroupBox.visible = !(VideoTabController.isOverlayMethodActive);
                 colorGroupBox.visible = !(VideoTabController.isOverlayMethodActive);

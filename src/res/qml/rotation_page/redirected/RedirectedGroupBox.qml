@@ -4,35 +4,21 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: redirectedGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "Vestibular Motion (for continuous redirected walking)"
-        bottomPadding: -12
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.color: "#d9dbe0"
-        radius: 8
-    }
+    title: qsTr("Continuous Redirected Walking")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
-        Rectangle {
-            color: "#d9dbe0"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 3
-        }
-
       RowLayout{
+            Layout.preferredHeight: rowHeight
             MyToggleButton {
                 id: redirectedModeToggle
-                text: "Toggle On/Off"
+                text: qsTr("On/Off")
                 Layout.preferredWidth: 225
                 onCheckedChanged: {
                     RotationTabController.setVestibularMotionEnabled(this.checked, true);
@@ -47,7 +33,7 @@ GroupBox {
             MyPushButton {
                 id: imperceptableButton
                 Layout.preferredWidth: 180
-                text:"Imperceptable"
+                text:qsTr("Imperceptable")
                 onClicked: {
                     RotationTabController.setVestibularMotionRadius(22.0)
                 }
@@ -55,7 +41,7 @@ GroupBox {
             MyPushButton {
                 id: lightButton
                 Layout.preferredWidth: 125
-                text:"Light"
+                text:qsTr("Light")
                 onClicked: {
                     RotationTabController.setVestibularMotionRadius(11.0)
                 }
@@ -63,7 +49,7 @@ GroupBox {
             MyPushButton {
                 id: strongButton
                 Layout.preferredWidth: 125
-                text:"Strong"
+                text:qsTr("Strong")
                 onClicked: {
                     RotationTabController.setVestibularMotionRadius(5.0)
                 }
@@ -71,14 +57,14 @@ GroupBox {
             MyPushButton {
                 id: extremeButton
                 Layout.preferredWidth: 125
-                text:"Extreme"
+                text:qsTr("Extreme")
                 onClicked: {
                     RotationTabController.setVestibularMotionRadius(1.0)
                 }
            }
 
             MyText{
-                text: "Radius: "
+                text: qsTr("Radius ")
                 horizontalAlignment: Text.AlignRight
                 Layout.rightMargin: 4
             }
@@ -115,10 +101,10 @@ GroupBox {
     Connections {
         target: RotationTabController
 
-        onVestibularMotionEnabledChanged:{
+        function onVestibularMotionEnabledChanged(){
          redirectedModeToggle.checked = RotationTabController.vestibularMotionEnabled
         }
-        onVestibularMotionRadiusChanged:{
+        function onVestibularMotionRadiusChanged(){
             redirectedWalkingRadiusText.text =  ((RotationTabController.vestibularMotionRadius).toFixed(2))
         }
     }

@@ -8,7 +8,10 @@
 #include <QStandardPaths>
 #include <openvr.h>
 #include <iostream>
-#include <easylogging++.h>
+#include <QtLogging>
+#include <QtDebug>
+#include <QSGRendererInterface>
+#include <optional>
 #include "../openvr/openvr_init.h"
 
 enum ReturnErrorCode
@@ -27,6 +30,9 @@ struct CommandLineOptions
     const bool forceInstallManifest = false;
     const bool forceRemoveManifest = false;
     const bool resetSettings = false;
+    // Unset means Qt picks its platform default.
+    const std::optional<QSGRendererInterface::GraphicsApi> graphicsApi
+        = std::nullopt;
 };
 
 // Manages the programs control flow and main settings.
@@ -34,7 +40,7 @@ class MyQApplication : public QApplication
 {
 public:
     using QApplication::QApplication;
-
+    //TODO 10/15/26 Verify if needed
     // Intercept event calls and log them on exceptions.
     // From the official docs
     // https://doc.qt.io/qt-5/qcoreapplication.html#notify:
@@ -55,8 +61,8 @@ public:
         }
         catch ( std::exception& e )
         {
-            LOG( ERROR ) << "Exception thrown from an event handler: "
-                         << e.what();
+            qCritical() << "Exception thrown from an event handler: "
+                        << e.what();
         }
         return false;
     }
@@ -91,6 +97,16 @@ constexpr auto k_forceRemoveManifestDescription
 constexpr auto k_resetSettings = "reset-steamvr-settings";
 constexpr auto k_resetSettingsDescription
     = "Resets all SteamVR values that can be modified in OVRAS to defaults.";
+
+constexpr auto k_graphicsApi = "graphics";
+#ifdef _WIN32
+constexpr auto k_graphicsApiDescription
+    = "Overrides the rendering backend: d3d11 (default), vulkan or opengl.";
+#else
+constexpr auto k_graphicsApiDescription
+    = "Overrides the rendering backend: vulkan (default) or opengl.";
+#endif
+constexpr auto k_graphicsApiValueName = "backend";
 
 CommandLineOptions returnCommandLineParser( const MyQApplication& application );
 

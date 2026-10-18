@@ -627,3 +627,7 @@ Full build instructions can be found [here](docs/building_for_linux.md).
 # License
 
 This software is released under GPL 3.0, and other third-party Licenses
+
+Icons are [Material Symbols](https://fonts.google.com/icons) by Google, used under the [Apache License 2.0](third-party/material-symbols/LICENSE-MATERIAL-SYMBOLS).
+
+Japanese and Chinese text uses [Noto Sans CJK](https://github.com/notofonts/noto-cjk) by Google and Adobe, used under the [SIL Open Font License 1.1](third-party/noto-sans-cjk/LICENSE-NOTO-SANS-CJK).

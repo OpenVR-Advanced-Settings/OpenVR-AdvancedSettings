@@ -3,7 +3,6 @@
 #include <openvr.h>
 #include <iostream>
 #include <string>
-#include <easylogging++.h>
 #include <utility>
 #include <map>
 

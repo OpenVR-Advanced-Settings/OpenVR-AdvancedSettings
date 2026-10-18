@@ -2,7 +2,8 @@
 #include <assert.h>
 #include <array>
 #include <vector>
-#include <easylogging++.h>
+#include <QtLogging>
+#include <QtDebug>
 #include "../settings.h"
 #include "setting_value.h"
 #include "../../utils/setup.h"
@@ -64,12 +65,12 @@ void verifySettings( std::array<Value, ArraySize> v ) noexcept
 
             const auto enumSettingNumber = static_cast<int>( currentSetting );
 
-            LOG( ERROR ) << enumName << ": at index '" << settingIndex
-                         << "' is incorrect. Current value: '"
-                         << enumSettingNumber
-                         << "'. Exiting "
-                            "with error code "
-                         << ReturnErrorCode::SETTING_INCORRECT_INDEX << ".";
+            qCritical() << enumName << ": at index '" << settingIndex
+                        << "' is incorrect. Current value: '"
+                        << enumSettingNumber
+                        << "'. Exiting "
+                           "with error code "
+                        << ReturnErrorCode::SETTING_INCORRECT_INDEX << ".";
             exit( ReturnErrorCode::SETTING_INCORRECT_INDEX );
         }
     }
@@ -219,6 +220,18 @@ private:
                           SettingCategory::Playspace,
                           QtInfo{ "lockZToggle" },
                           false },
+        BoolSettingValue{ BoolSetting::PLAYSPACE_lockRollToggle,
+                          SettingCategory::Playspace,
+                          QtInfo{ "lockRollToggle" },
+                          false },
+        BoolSettingValue{ BoolSetting::PLAYSPACE_lockPitchToggle,
+                          SettingCategory::Playspace,
+                          QtInfo{ "lockPitchToggle" },
+                          false },
+        BoolSettingValue{ BoolSetting::PLAYSPACE_lockYawToggle,
+                          SettingCategory::Playspace,
+                          QtInfo{ "lockYawToggle" },
+                          false },
         BoolSettingValue{ BoolSetting::PLAYSPACE_momentumSave,
                           SettingCategory::Playspace,
                           QtInfo{ "momentumSave" },
@@ -333,6 +346,68 @@ private:
         BoolSettingValue{ BoolSetting::APPLICATION_desktopModeToggle,
                           SettingCategory::Application,
                           QtInfo{ "desktopModeToggle" },
+                          false },
+        BoolSettingValue{ BoolSetting::APPLICATION_hideSocials,
+                          SettingCategory::Application,
+                          QtInfo{ "hideSocials" },
+                          false },
+        // Whether each UI language is mainly AI translated, shows the translation prompt.
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslatedEn,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslated_en" },
+                          false },
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslatedDe,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslated_de" },
+                          true },
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslatedEs,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslated_es" },
+                          true },
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslatedPt,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslated_pt" },
+                          true },
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslatedJa,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslated_ja" },
+                          false },
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslatedZhTw,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslated_zh_TW" },
+                          true },
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslatedZhCn,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslated_zh_CN" },
+                          true },
+        // Whether the AI translation prompt has been answered for each language.
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslationPromptSeenEn,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslationPromptSeen_en" },
+                          false },
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslationPromptSeenDe,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslationPromptSeen_de" },
+                          false },
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslationPromptSeenEs,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslationPromptSeen_es" },
+                          false },
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslationPromptSeenPt,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslationPromptSeen_pt" },
+                          false },
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslationPromptSeenJa,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslationPromptSeen_ja" },
+                          false },
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslationPromptSeenZhTw,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslationPromptSeen_zh_TW" },
+                          false },
+        BoolSettingValue{ BoolSetting::APPLICATION_aiTranslationPromptSeenZhCn,
+                          SettingCategory::Application,
+                          QtInfo{ "aiTranslationPromptSeen_zh_CN" },
                           false },
 
         BoolSettingValue{ BoolSetting::AUDIO_pttEnabled,
@@ -579,6 +654,11 @@ private:
                             SettingCategory::Application,
                             QtInfo{ "autoApplyChaperoneName" },
                             nameDefault },
+        // Empty means follow the system locale.
+        StringSettingValue{ StringSetting::APPLICATION_language,
+                            SettingCategory::Application,
+                            QtInfo{ "language" },
+                            "" },
     };
 
     constexpr static auto intSettingsSize
