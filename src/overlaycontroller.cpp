@@ -1894,7 +1894,8 @@ struct LanguageSettings
     settings::BoolSetting promptSeen;
 };
 
-// Per language settings for the AI translation prompt, keyed by UI locale.
+//list of languages, whether they are ai translated or not (true is, false is not)
+//and if you have seen the prompt for the language
 const std::map<QString, LanguageSettings>& languageSettings()
 {
     using settings::BoolSetting;
