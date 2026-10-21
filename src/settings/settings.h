@@ -124,6 +124,7 @@ enum class IntSetting
     PLAYSPACE_dragComfortFactor,
     PLAYSPACE_turnComfortFactor,
     PLAYSPACE_frictionPercent,
+    PLAYSPACE_offsetsOnRecenter,
 
     APPLICATION_debugState,
     APPLICATION_customTickRateMs,

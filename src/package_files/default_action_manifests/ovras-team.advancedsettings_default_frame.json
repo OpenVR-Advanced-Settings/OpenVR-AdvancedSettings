@@ -60,8 +60,8 @@
             {
                "inputs" : [
                   [ "/user/hand/left/input/dpad_down", "single" ],
-                  [ "/user/hand/right/input/x", "touch" ],
-                  [ "/user/hand/right/input/a", "touch" ]
+                  [ "/user/hand/right/input/x", "click" ],
+                  [ "/user/hand/right/input/a", "click" ]
                ],
                "output" : "/actions/motion/in/resetoffsets"
             }
