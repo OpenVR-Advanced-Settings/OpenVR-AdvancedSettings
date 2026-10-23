@@ -984,10 +984,10 @@ void MoveCenterTabController::incomingZeroReset()
     // Running_OK, so they can't be told apart from a user recenter. With
     // offsetsOnRecenter set to keep (default on Steam Frame), re-sync the
     // working copy with SteamVR and re-apply the current offsets. The Frame
-    // also sends these resets in response to our own working copy changes
-    // during space drag, so re-syncing on every event loops; ignoring them
-    // leaves SteamVR and OVRAS disagreeing on the origin. Re-sync at most
-    // every k_zeroResetResyncIntervalMs instead (see resyncAfterZeroReset).
+    // sends these near continuously while relocalizing, and also in response
+    // to our own working copy changes, so re-applying on a fixed interval
+    // fights SteamVR. Wait until the resets go quiet for
+    // k_zeroResetQuietMs instead (see resyncAfterZeroReset).
     auto offsetsOnRecenter = settings::getSetting(
         settings::IntSetting::PLAYSPACE_offsetsOnRecenter );
     if ( offsetsOnRecenter == k_offsetsOnRecenterKeep
@@ -996,7 +996,7 @@ void MoveCenterTabController::incomingZeroReset()
     {
         m_zeroResetCount++;
         m_zeroResetResyncPending = true;
-        resyncAfterZeroReset();
+        m_lastZeroResetTimePoint = std::chrono::steady_clock::now();
         return;
     }
     LOG( INFO ) << "incomingZeroReset: discarding offsets X: " << m_offsetX
@@ -1026,28 +1026,40 @@ void MoveCenterTabController::incomingZeroReset()
     return;
 }
 
-// Re-applies the current offsets after zero pose resets, rate limited.
-// Called on reset events and every tick while a re-sync is pending.
+// Re-applies the current offsets once zero pose resets have stopped for
+// k_zeroResetQuietMs and no space drag is active. Called every tick.
 void MoveCenterTabController::resyncAfterZeroReset()
 {
-    auto now = std::chrono::steady_clock::now();
     if ( !m_zeroResetResyncPending
-         || now - m_lastZeroResetResyncTimePoint
-                < std::chrono::milliseconds( k_zeroResetResyncIntervalMs ) )
+         || m_activeDragHand != vr::TrackedControllerRole_Invalid
+         || std::chrono::steady_clock::now() - m_lastZeroResetTimePoint
+                < std::chrono::milliseconds( k_zeroResetQuietMs ) )
     {
         return;
     }
+    bool hasOffsets = ( abs( m_offsetX ) + abs( m_offsetY ) + abs( m_offsetZ )
+                        + abs( static_cast<float>( m_rotation ) ) )
+                      != 0;
     LOG( INFO ) << "incomingZeroReset: " << m_zeroResetCount
-                << " reset(s), re-applying offsets X: " << m_offsetX
-                << " Y: " << m_offsetY << " Z: " << m_offsetZ
+                << " reset(s), "
+                << ( hasOffsets ? "re-applying" : "no" ) << " offsets X: "
+                << m_offsetX << " Y: " << m_offsetY << " Z: " << m_offsetZ
                 << " Rot: " << m_rotation;
     vr::VRChaperoneSetup()->RevertWorkingCopy();
     getValidWorkingZeroPose( true, &m_universeCenterForReset );
     getValidWorkingZeroPose( false, &m_seatedCenterForReset );
-    updateSpace( true );
+    if ( hasOffsets )
+    {
+        updateSpace( true );
+    }
+    else
+    {
+        // nothing to apply, let SteamVR own the origin rather than pinning
+        // it to the pose we just read
+        vr::VRChaperoneSetup()->HideWorkingSetPreview();
+    }
     m_zeroResetCount = 0;
     m_zeroResetResyncPending = false;
-    m_lastZeroResetResyncTimePoint = now;
 }
 
 //TODO 9/4/26 This needs to be looked at This moves the chaperone, and seems to do same thing as
