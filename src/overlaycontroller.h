@@ -167,6 +167,7 @@ public: // I know it's an ugly hack to make them public to enable external
     VideoTabController m_videoTabController;
     RotationTabController m_rotationTabController;
     bool m_incomingReset = false;
+    std::string m_lastHmdModel;
 
 private:
     QPoint getMousePositionForEvent( vr::VREvent_Mouse_t mouse );
@@ -191,6 +192,7 @@ public:
     Q_INVOKABLE void exitApp();
     Q_INVOKABLE void setAutoChapProfileName( int index );
 
+    bool isSteamFrameHmd();
     bool isDashboardVisible()
     {
         return m_dashboardVisible;

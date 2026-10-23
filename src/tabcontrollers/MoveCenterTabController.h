@@ -27,6 +27,12 @@ constexpr double k_frictionHalt_mps = 0.0000001;
 constexpr double k_maxOpenvrWorkingSetOffest = 39900.0;
 constexpr double k_maxOpenvrCommitOffset = 990.0;
 constexpr double k_maxOvrasUniverseCenteredTurningOffset = 25000.0;
+// PLAYSPACE_offsetsOnRecenter values
+constexpr int k_offsetsOnRecenterAuto = 0;
+constexpr int k_offsetsOnRecenterReset = 1;
+constexpr int k_offsetsOnRecenterKeep = 2;
+// how long zero pose resets must stop before re-applying offsets in keep mode
+constexpr int k_zeroResetQuietMs = 1500;
 
 class OverlayController;
 
@@ -189,6 +195,19 @@ private:
     bool m_gravityReversed = false;
     bool m_pendingZeroOffsets = true;
     bool m_dashWasOpenPreviousFrame = false;
+    bool m_dragHandTrackingLost = false;
+    bool m_dragHandNoDevice = false;
+    unsigned m_zeroResetCount = 0;
+    bool m_zeroResetResyncPending = false;
+    std::chrono::steady_clock::time_point m_lastZeroResetTimePoint;
+    bool m_lastLeftHandDragInput = false;
+    bool m_lastRightHandDragInput = false;
+    bool m_lastOverrideLeftHandDragInput = false;
+    bool m_lastOverrideRightHandDragInput = false;
+    bool m_lastSwapLeftHandDragInput = false;
+    bool m_lastSwapRightHandDragInput = false;
+    vr::ETrackingResult m_lastHmdTrackingResult
+        = vr::TrackingResult_Uninitialized;
     bool m_roomSetupModeDetected = false;
     bool m_seatedModeDetected = false;
     unsigned settingsUpdateCounter = 0;
@@ -271,6 +290,7 @@ public:
     double getHmdYawTotal();
     void resetHmdYawTotal();
     void incomingZeroReset();
+    void resyncAfterZeroReset();
     void setBoundsBasisHeight( float newHeight );
     float getBoundsBasisMaxY();
 

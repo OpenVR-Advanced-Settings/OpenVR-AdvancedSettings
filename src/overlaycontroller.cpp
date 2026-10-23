@@ -544,7 +544,8 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         auto info = ovr_system_wrapper::getInt32TrackedProperty(device, vr::Prop_ControllerRoleHint_Int32);
         //auto error = info.first;
         auto ctrlRole = info.second;
-        if ( vr::TrackedDeviceClass_HMD == ctrlRole )
+        if ( vr::VRSystem()->GetTrackedDeviceClass( device )
+             == vr::TrackedDeviceClass_HMD )
         {
             LOG(INFO) << "HMD is: " << ovr_system_wrapper::getDeviceName(device);
             continue;
@@ -561,6 +562,29 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         }
     }
     LOG(INFO)<< "Initilizaion is complete--------------------------------------------------";
+}
+
+// Steam Frame specific behaviour (see PLAYSPACE_offsetsOnRecenter)
+bool OverlayController::isSteamFrameHmd()
+{
+    auto hmd = static_cast<int>( vr::k_unTrackedDeviceIndex_Hmd );
+    std::string model = ovr_system_wrapper::getStringTrackedProperty(
+                            hmd, vr::Prop_ModelNumber_String )
+                            .second;
+    std::string type = ovr_system_wrapper::getStringTrackedProperty(
+                           hmd, vr::Prop_ControllerType_String )
+                           .second;
+    std::string ids = QString::fromStdString( model + " " + type )
+                          .toLower()
+                          .toStdString();
+    bool isFrame = ids.find( "frame" ) != std::string::npos;
+    if ( model != m_lastHmdModel )
+    {
+        LOG( INFO ) << "HMD model: '" << model << "' type: '" << type
+                    << "' Steam Frame: " << isFrame;
+        m_lastHmdModel = model;
+    }
+    return isFrame;
 }
 
 void OverlayController::OnRenderRequest()
@@ -1273,7 +1297,40 @@ void OverlayController::mainEventLoop()
         case vr::VREvent_SeatedZeroPoseReset:
         case vr::VREvent_StandingZeroPoseReset:
         {
+            // logged (rate limited) in MoveCenterTabController::incomingZeroReset
             m_incomingReset = true;
+        }
+        break;
+
+        case vr::VREvent_TrackedDeviceActivated:
+        case vr::VREvent_TrackedDeviceDeactivated:
+        case vr::VREvent_TrackedDeviceRoleChanged:
+        {
+            // Logged to track down space drag not working after switching
+            // controllers
+            auto device = vrEvent.trackedDeviceIndex;
+            LOG( INFO ) << "(VREvent) "
+                        << vr::VRSystem()->GetEventTypeNameFromEnum(
+                               static_cast<vr::EVREventType>(
+                                   vrEvent.eventType ) )
+                        << " device: " << device << " ("
+                        << ovr_system_wrapper::getDeviceName(
+                               static_cast<int>( device ) )
+                        << ") left hand: "
+                        << vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
+                               vr::TrackedControllerRole_LeftHand )
+                        << " right hand: "
+                        << vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
+                               vr::TrackedControllerRole_RightHand );
+        }
+        break;
+
+        case vr::VREvent_ChaperoneUniverseHasChanged:
+        {
+            LOG( INFO ) << "(VREvent) ChaperoneUniverseHasChanged... Previous: "
+                        << vrEvent.data.chaperone.m_nPreviousUniverse_deprecated
+                        << " Current: "
+                        << vrEvent.data.chaperone.m_nCurrentUniverse;
         }
         break;
 

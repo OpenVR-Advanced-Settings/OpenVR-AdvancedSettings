@@ -36,6 +36,64 @@ void rotateFloatCoordinates( float coordinates[3], float angle )
 // application namespace
 namespace advsettings
 {
+// Gets the standing or seated zero pose from the working copy, rejecting it
+// if the call fails or returns garbage. On Steam Frame these calls were seen
+// to fail and leave uninitialized data, which got treated as a universe
+// center ~100km away and triggered a reset to the autosaved profile.
+static bool getValidWorkingZeroPose( bool standing, vr::HmdMatrix34_t* pose )
+{
+    vr::HmdMatrix34_t result;
+    bool ok = standing
+                  ? vr::VRChaperoneSetup()
+                        ->GetWorkingStandingZeroPoseToRawTrackingPose( &result )
+                  : vr::VRChaperoneSetup()
+                        ->GetWorkingSeatedZeroPoseToRawTrackingPose( &result );
+    for ( int row = 0; ok && row < 3; row++ )
+    {
+        for ( int col = 0; col < 4; col++ )
+        {
+            if ( !std::isfinite( result.m[row][col] ) )
+            {
+                ok = false;
+            }
+        }
+        // rotation rows must be unit length
+        double length = std::sqrt(
+            static_cast<double>( result.m[row][0] * result.m[row][0]
+                                 + result.m[row][1] * result.m[row][1]
+                                 + result.m[row][2] * result.m[row][2] ) );
+        if ( std::abs( length - 1.0 ) > 0.1
+             || std::abs( result.m[row][3] ) > k_maxOpenvrWorkingSetOffest )
+        {
+            ok = false;
+        }
+    }
+    if ( !ok )
+    {
+        LOG( WARNING ) << "Ignoring invalid "
+                       << ( standing ? "standing" : "seated" )
+                       << " zero pose from SteamVR";
+        return false;
+    }
+    *pose = result;
+    return true;
+}
+
+// Logs presses and releases of space drag actions, to see which binding fires
+static void logDragInput( const char* action,
+                          bool active,
+                          bool& lastActive,
+                          bool handEnabled )
+{
+    if ( active == lastActive )
+    {
+        return;
+    }
+    LOG( INFO ) << "Input: " << action << ( active ? " pressed" : " released" )
+                << ( handEnabled ? "" : " (ignored, hand is disabled)" );
+    lastActive = active;
+}
+
 void MoveCenterTabController::initStage1()
 {
     reloadOffsetProfiles();
@@ -921,18 +979,87 @@ void MoveCenterTabController::incomingZeroReset()
     //TODO 8/3/2026 SteamFrame May Need special handling, will discuss With Valve currently
     //reset zero pose seems to move floor level as well as our changes, requiring 2 resets to set at correct level
     //or we could potentially not apply our offset during this process
+    // Steam Frame sends zero pose resets on its own when inside-out tracking
+    // relocalizes (e.g. cameras covered), even while the hmd reports
+    // Running_OK, so they can't be told apart from a user recenter. With
+    // offsetsOnRecenter set to keep (default on Steam Frame), re-sync the
+    // working copy with SteamVR and re-apply the current offsets. The Frame
+    // sends these near continuously while relocalizing, and also in response
+    // to our own working copy changes, so re-applying on a fixed interval
+    // fights SteamVR. Wait until the resets go quiet for
+    // k_zeroResetQuietMs instead (see resyncAfterZeroReset).
+    auto offsetsOnRecenter = settings::getSetting(
+        settings::IntSetting::PLAYSPACE_offsetsOnRecenter );
+    if ( offsetsOnRecenter == k_offsetsOnRecenterKeep
+         || ( offsetsOnRecenter == k_offsetsOnRecenterAuto
+              && parent->isSteamFrameHmd() ) )
+    {
+        m_zeroResetCount++;
+        m_zeroResetResyncPending = true;
+        m_lastZeroResetTimePoint = std::chrono::steady_clock::now();
+        return;
+    }
+    LOG( INFO ) << "incomingZeroReset: discarding offsets X: " << m_offsetX
+                << " Y: " << m_offsetY << " Z: " << m_offsetZ
+                << " Rot: " << m_rotation
+                << " dragging: " << ( m_activeDragHand
+                                      != vr::TrackedControllerRole_Invalid );
     float offset[3] = { 0, 0, 0 };
     offset[1] = -m_offsetY;
     //TODO set universe center and seated recenter as 0 for this part
     vr::VRChaperoneSetup()->RevertWorkingCopy();
-    vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-        &m_universeCenterForReset );
-    vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
-        &m_seatedCenterForReset );
+    vr::HmdMatrix34_t universeCenter;
+    vr::HmdMatrix34_t seatedCenter;
+    if ( !getValidWorkingZeroPose( true, &universeCenter )
+         || !getValidWorkingZeroPose( false, &seatedCenter ) )
+    {
+        // keep the current offsets rather than resetting onto a bad basis
+        LOG( WARNING ) << "incomingZeroReset: skipped, keeping offsets";
+        updateSpace( true );
+        return;
+    }
+    m_universeCenterForReset = universeCenter;
+    m_seatedCenterForReset = seatedCenter;
     addOffset(offset);
     resetOffsets(true);
     //reset();
     return;
+}
+
+// Re-applies the current offsets once zero pose resets have stopped for
+// k_zeroResetQuietMs and no space drag is active. Called every tick.
+void MoveCenterTabController::resyncAfterZeroReset()
+{
+    if ( !m_zeroResetResyncPending
+         || m_activeDragHand != vr::TrackedControllerRole_Invalid
+         || std::chrono::steady_clock::now() - m_lastZeroResetTimePoint
+                < std::chrono::milliseconds( k_zeroResetQuietMs ) )
+    {
+        return;
+    }
+    bool hasOffsets = ( abs( m_offsetX ) + abs( m_offsetY ) + abs( m_offsetZ )
+                        + abs( static_cast<float>( m_rotation ) ) )
+                      != 0;
+    LOG( INFO ) << "incomingZeroReset: " << m_zeroResetCount
+                << " reset(s), "
+                << ( hasOffsets ? "re-applying" : "no" ) << " offsets X: "
+                << m_offsetX << " Y: " << m_offsetY << " Z: " << m_offsetZ
+                << " Rot: " << m_rotation;
+    vr::VRChaperoneSetup()->RevertWorkingCopy();
+    getValidWorkingZeroPose( true, &m_universeCenterForReset );
+    getValidWorkingZeroPose( false, &m_seatedCenterForReset );
+    if ( hasOffsets )
+    {
+        updateSpace( true );
+    }
+    else
+    {
+        // nothing to apply, let SteamVR own the origin rather than pinning
+        // it to the pose we just read
+        vr::VRChaperoneSetup()->HideWorkingSetPreview();
+    }
+    m_zeroResetCount = 0;
+    m_zeroResetResyncPending = false;
 }
 
 //TODO 9/4/26 This needs to be looked at This moves the chaperone, and seems to do same thing as
@@ -950,6 +1077,9 @@ void MoveCenterTabController::reset()
                           "basis is acquired!";
         return;
     }
+    LOG( INFO ) << "reset: discarding offsets X: " << m_offsetX
+                << " Y: " << m_offsetY << " Z: " << m_offsetZ
+                << " Rot: " << m_rotation;
     m_heightToggle = false;
     emit heightToggleChanged( m_heightToggle );
     m_oldOffsetX = 0.0f;
@@ -1007,9 +1137,8 @@ void MoveCenterTabController::zeroOffsets()
 {
     // first we'll check if we're outside the max commit distance
 
-    vr::HmdMatrix34_t currentCenter;
-    vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-        &currentCenter );
+    vr::HmdMatrix34_t currentCenter = m_universeCenterForReset;
+    bool currentCenterValid = getValidWorkingZeroPose( true, &currentCenter );
     double currentCenterYaw = static_cast<double>(
         std::atan2( currentCenter.m[0][2], currentCenter.m[2][2] ) );
     double currentCenterXyz[3]
@@ -1020,7 +1149,11 @@ void MoveCenterTabController::zeroOffsets()
     rotateCoordinates( currentCenterXyz,
                        currentCenterYaw
                            - ( m_rotation * k_centidegreesToRadians ) );
-    if ( abs( currentCenterXyz[0] ) > k_maxOpenvrCommitOffset )
+    if ( !currentCenterValid )
+    {
+        LOG( WARNING ) << "Zero Offsets: skipped commit bounds check";
+    }
+    else if ( abs( currentCenterXyz[0] ) > k_maxOpenvrCommitOffset )
     {
         LOG( INFO ) << "Attempted Zero Offsets out of commit bounds ( X: "
                     << currentCenterXyz[0] << " )";
@@ -1201,10 +1334,9 @@ void MoveCenterTabController::updateChaperoneResetData()
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo(
         m_collisionBoundsForReset, &currentQuadCount );
 
-    vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
-        &m_universeCenterForReset );
-    vr::VRChaperoneSetup()->GetWorkingSeatedZeroPoseToRawTrackingPose(
-        &m_seatedCenterForReset );
+    // on failure keep the previous basis
+    getValidWorkingZeroPose( true, &m_universeCenterForReset );
+    getValidWorkingZeroPose( false, &m_seatedCenterForReset );
 
     // updateCollisionBoundsForOffset();
     parent->m_chaperoneTabController.updateHeight( getBoundsBasisMaxY() );
@@ -1292,6 +1424,10 @@ float MoveCenterTabController::getBoundsBasisMaxY()
 
 void MoveCenterTabController::leftHandSpaceDrag( bool leftHandDragActive )
 {
+    logDragInput( "left hand space drag",
+                  leftHandDragActive,
+                  m_lastLeftHandDragInput,
+                  moveShortcutLeft() );
     if ( !moveShortcutLeft() )
     {
         return;
@@ -1345,6 +1481,10 @@ void MoveCenterTabController::leftHandSpaceDrag( bool leftHandDragActive )
 
 void MoveCenterTabController::rightHandSpaceDrag( bool rightHandDragActive )
 {
+    logDragInput( "right hand space drag",
+                  rightHandDragActive,
+                  m_lastRightHandDragInput,
+                  moveShortcutRight() );
     if ( !moveShortcutRight() )
     {
         return;
@@ -1399,6 +1539,10 @@ void MoveCenterTabController::rightHandSpaceDrag( bool rightHandDragActive )
 void MoveCenterTabController::optionalOverrideLeftHandSpaceDrag(
     bool overrideLeftHandDragActive )
 {
+    logDragInput( "left hand override space drag",
+                  overrideLeftHandDragActive,
+                  m_lastOverrideLeftHandDragInput,
+                  moveShortcutLeft() );
     if ( !moveShortcutLeft() )
     {
         return;
@@ -1451,6 +1595,10 @@ void MoveCenterTabController::optionalOverrideLeftHandSpaceDrag(
 void MoveCenterTabController::optionalOverrideRightHandSpaceDrag(
     bool overrideRightHandDragActive )
 {
+    logDragInput( "right hand override space drag",
+                  overrideRightHandDragActive,
+                  m_lastOverrideRightHandDragInput,
+                  moveShortcutRight() );
     if ( !moveShortcutRight() )
     {
         return;
@@ -1503,6 +1651,10 @@ void MoveCenterTabController::optionalOverrideRightHandSpaceDrag(
 void MoveCenterTabController::swapSpaceDragToLeftHandOverride(
     bool swapDragToLeftHand )
 {
+    logDragInput( "swap space drag to left hand",
+                  swapDragToLeftHand,
+                  m_lastSwapLeftHandDragInput,
+                  moveShortcutLeft() );
     if ( !moveShortcutLeft() )
     {
         return;
@@ -1581,6 +1733,10 @@ void MoveCenterTabController::swapSpaceDragToLeftHandOverride(
 void MoveCenterTabController::swapSpaceDragToRightHandOverride(
     bool swapDragToRightHand )
 {
+    logDragInput( "swap space drag to right hand",
+                  swapDragToRightHand,
+                  m_lastSwapRightHandDragInput,
+                  moveShortcutRight() );
     if ( !moveShortcutRight() )
     {
         return;
@@ -1882,6 +2038,9 @@ void MoveCenterTabController::resetOffsets( bool resetOffsetsJustPressed )
     // of keyboard input.
     if ( resetOffsetsJustPressed )
     {
+        LOG( INFO ) << "resetOffsets: discarding offsets X: " << m_offsetX
+                    << " Y: " << m_offsetY << " Z: " << m_offsetZ
+                    << " Rot: " << m_rotation;
         m_offsetX = 0.0f;
         m_offsetY = 0.0f;
         m_offsetZ = 0.0f;
@@ -2152,6 +2311,16 @@ void MoveCenterTabController::updateHandDrag(
     auto moveHandId = vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(
         m_activeDragHand );
 
+    bool noDeviceForHand
+        = m_activeDragHand != vr::TrackedControllerRole_Invalid
+          && ( moveHandId == vr::k_unTrackedDeviceIndexInvalid
+               || moveHandId >= vr::k_unMaxTrackedDeviceCount );
+    if ( noDeviceForHand && !m_dragHandNoDevice )
+    {
+        LOG( INFO ) << "Space drag: SteamVR has no device for hand role "
+                    << m_activeDragHand;
+    }
+    m_dragHandNoDevice = noDeviceForHand;
     if ( m_activeDragHand == vr::TrackedControllerRole_Invalid
          || moveHandId == vr::k_unTrackedDeviceIndexInvalid
          || moveHandId >= vr::k_unMaxTrackedDeviceCount )
@@ -2188,9 +2357,18 @@ void MoveCenterTabController::updateHandDrag(
     if ( !movePose->bPoseIsValid || !movePose->bDeviceIsConnected
          || movePose->eTrackingResult != vr::TrackingResult_Running_OK )
     {
+        if ( m_lastMoveHand == m_activeDragHand && !m_dragHandTrackingLost )
+        {
+            LOG( INFO ) << "Drag hand lost tracking during space drag"
+                        << " (valid: " << movePose->bPoseIsValid
+                        << " connected: " << movePose->bDeviceIsConnected
+                        << " result: " << movePose->eTrackingResult << ")";
+        }
+        m_dragHandTrackingLost = true;
         m_lastMoveHand = m_activeDragHand;
         return;
     }
+    m_dragHandTrackingLost = false;
 
     double relativeControllerPosition[] = {
         static_cast<double>( movePose->mDeviceToAbsoluteTracking.m[0][3] ),
@@ -2224,11 +2402,28 @@ void MoveCenterTabController::updateHandDrag(
 
         // prevent positional glitches from exceeding max openvr offset
         // clamps. We do this by detecting a drag larger than 100m in a
-        // single frame.
+        // single frame and discarding that frame, rather than resetting
+        // and then still applying the glitched diff.
         if ( abs( diff[0] ) > 100.0 || abs( diff[1] ) > 100.0
              || abs( diff[2] ) > 100.0 )
         {
-            reset();
+            LOG( WARNING ) << "Discarding space drag glitch ( X: " << diff[0]
+                           << " Y: " << diff[1] << " Z: " << diff[2] << " )";
+            m_velocity[0] = 0.0;
+            m_velocity[1] = 0.0;
+            m_velocity[2] = 0.0;
+            m_lastControllerPosition[0] = absoluteControllerPosition[0];
+            m_lastControllerPosition[1] = absoluteControllerPosition[1];
+            m_lastControllerPosition[2] = absoluteControllerPosition[2];
+            return;
+        }
+        // smaller jumps are likely tracking relocalization, log but apply
+        if ( abs( diff[0] ) > 1.0 || abs( diff[1] ) > 1.0
+             || abs( diff[2] ) > 1.0 )
+        {
+            LOG( INFO ) << "Large space drag jump in one frame ( X: "
+                        << diff[0] << " Y: " << diff[1] << " Z: " << diff[2]
+                        << " )";
         }
 
         // prevents updating if axis movement is locked
@@ -2780,8 +2975,21 @@ void MoveCenterTabController::eventLoopTick(
     }
     setTrackingUniverse( int( universe ) );
 
+    resyncAfterZeroReset();
+
     // get current space rotation in radians
     double angle = m_rotation * k_centidegreesToRadians;
+
+    // log hmd tracking state changes, tracking loss/relocalization can
+    // coincide with unexpected playspace resets
+    if ( devicePoses[0].eTrackingResult != m_lastHmdTrackingResult )
+    {
+        LOG( INFO ) << "HMD tracking result changed: "
+                    << m_lastHmdTrackingResult << " -> "
+                    << devicePoses[0].eTrackingResult;
+        m_lastHmdTrackingResult = devicePoses[0].eTrackingResult;
+    }
+
 
     // hmd rotations stats counting doesn't need to be smooth, so we
     // skip some frames for performance
