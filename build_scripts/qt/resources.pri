@@ -33,6 +33,7 @@ DISTFILES += \
     src/res/qml/motion_page/gravity/* \
     src/res/qml/motion_page/height_toggle/* \
     src/res/qml/motion_page/space_drag/* \
+    src/res/qml/motion_page/tracking_jump/* \
     src/res/qml/RootPage.qml \
     src/res/qml/SettingsPage.qml \
     src/res/qml/StatisticsPage.qml \

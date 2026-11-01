@@ -843,6 +843,277 @@ void MoveCenterTabController::setShowLogMatricesButton( bool value,
     }
 }
 
+bool MoveCenterTabController::preserveRecenterView() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_preserveRecenterView );
+}
+
+void MoveCenterTabController::setPreserveRecenterView( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::PLAYSPACE_preserveRecenterView,
+                          value );
+    if ( notify )
+    {
+        emit preserveRecenterViewChanged( value );
+    }
+}
+
+bool MoveCenterTabController::trackingJumpCorrection() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::PLAYSPACE_trackingJumpCorrection );
+}
+
+void MoveCenterTabController::setTrackingJumpCorrection( bool value,
+                                                         bool notify )
+{
+    settings::setSetting(
+        settings::BoolSetting::PLAYSPACE_trackingJumpCorrection, value );
+    m_trackingDiscontinuity.reset();
+    if ( notify )
+    {
+        emit trackingJumpCorrectionChanged( value );
+    }
+}
+
+double MoveCenterTabController::trackingJumpDistance() const
+{
+    const double value = settings::getSetting(
+        settings::DoubleSetting::PLAYSPACE_trackingJumpDistance );
+    return std::isfinite( value ) && value >= 0.01 && value <= 10.0 ? value
+                                                                    : 0.5;
+}
+
+void MoveCenterTabController::setTrackingJumpDistance( double value,
+                                                       bool notify )
+{
+    if ( !std::isfinite( value ) )
+    {
+        return;
+    }
+    value = std::max( 0.01, std::min( 10.0, value ) );
+    settings::setSetting(
+        settings::DoubleSetting::PLAYSPACE_trackingJumpDistance, value );
+    m_trackingDiscontinuity.reset();
+    if ( notify )
+    {
+        emit trackingJumpDistanceChanged( value );
+    }
+}
+
+double MoveCenterTabController::trackingJumpSpeed() const
+{
+    const double value = settings::getSetting(
+        settings::DoubleSetting::PLAYSPACE_trackingJumpSpeed );
+    return std::isfinite( value ) && value >= 0.1 && value <= 100.0 ? value
+                                                                    : 5.0;
+}
+
+void MoveCenterTabController::setTrackingJumpSpeed( double value, bool notify )
+{
+    if ( !std::isfinite( value ) )
+    {
+        return;
+    }
+    value = std::max( 0.1, std::min( 100.0, value ) );
+    settings::setSetting( settings::DoubleSetting::PLAYSPACE_trackingJumpSpeed,
+                          value );
+    m_trackingDiscontinuity.reset();
+    if ( notify )
+    {
+        emit trackingJumpSpeedChanged( value );
+    }
+}
+
+double MoveCenterTabController::trackingJumpAngle() const
+{
+    const double value = settings::getSetting(
+        settings::DoubleSetting::PLAYSPACE_trackingJumpAngle );
+    return std::isfinite( value ) && value >= 1.0 && value <= 180.0 ? value
+                                                                    : 45.0;
+}
+
+void MoveCenterTabController::setTrackingJumpAngle( double value, bool notify )
+{
+    if ( !std::isfinite( value ) )
+    {
+        return;
+    }
+    value = std::max( 1.0, std::min( 180.0, value ) );
+    settings::setSetting( settings::DoubleSetting::PLAYSPACE_trackingJumpAngle,
+                          value );
+    m_trackingDiscontinuity.reset();
+    if ( notify )
+    {
+        emit trackingJumpAngleChanged( value );
+    }
+}
+
+double MoveCenterTabController::trackingJumpAngularSpeed() const
+{
+    const double value = settings::getSetting(
+        settings::DoubleSetting::PLAYSPACE_trackingJumpAngularSpeed );
+    return std::isfinite( value ) && value >= 1.0 && value <= 10000.0 ? value
+                                                                      : 720.0;
+}
+
+void MoveCenterTabController::setTrackingJumpAngularSpeed( double value,
+                                                           bool notify )
+{
+    if ( !std::isfinite( value ) )
+    {
+        return;
+    }
+    value = std::max( 1.0, std::min( 10000.0, value ) );
+    settings::setSetting(
+        settings::DoubleSetting::PLAYSPACE_trackingJumpAngularSpeed, value );
+    m_trackingDiscontinuity.reset();
+    if ( notify )
+    {
+        emit trackingJumpAngularSpeedChanged( value );
+    }
+}
+
+void MoveCenterTabController::updateTrackingJumpCorrection()
+{
+    if ( !trackingJumpCorrection() || !m_chaperoneBasisAcquired
+         || m_trackingUniverse != vr::TrackingUniverseStanding
+         || parent->isDashboardVisible() || m_pendingZeroOffsets
+         || m_roomSetupModeDetected || gravityActive()
+         || m_activeDragHand != vr::TrackedControllerRole_Invalid
+         || m_activeTurnHand != vr::TrackedControllerRole_Invalid
+         || lockXToggle() || lockYToggle() || lockZToggle()
+         || m_offsetX != m_oldOffsetX || m_offsetY != m_oldOffsetY
+         || m_offsetZ != m_oldOffsetZ || m_rotation != m_oldRotation )
+    {
+        m_trackingDiscontinuity.reset();
+        return;
+    }
+    vr::TrackedDevicePose_t poses[vr::k_unMaxTrackedDeviceCount];
+    vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+        vr::TrackingUniverseRawAndUncalibrated,
+        0.0f,
+        poses,
+        vr::k_unMaxTrackedDeviceCount );
+    vr::HmdMatrix34_t previous;
+    const double now = std::chrono::duration<double>(
+                           std::chrono::steady_clock::now().time_since_epoch() )
+                           .count();
+    if ( !m_trackingDiscontinuity.update( poses[vr::k_unTrackedDeviceIndex_Hmd],
+                                          now,
+                                          previous,
+                                          { trackingJumpDistance(),
+                                            trackingJumpSpeed(),
+                                            trackingJumpAngle(),
+                                            trackingJumpAngularSpeed() } ) )
+    {
+        return;
+    }
+    const auto& current
+        = poses[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking;
+    vr::HmdMatrix34_t origin;
+    if ( !vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+             &origin ) )
+    {
+        return;
+    }
+    const auto detection = m_trackingDiscontinuity.detection();
+    auto target = previous;
+    if ( !detection.position )
+    {
+        for ( unsigned axis = 0; axis < 3; ++axis )
+        {
+            target.m[axis][3] = current.m[axis][3];
+        }
+    }
+    if ( !detection.yaw )
+    {
+        for ( unsigned row = 0; row < 3; ++row )
+        {
+            for ( unsigned column = 0; column < 3; ++column )
+            {
+                target.m[row][column] = current.m[row][column];
+            }
+        }
+    }
+    const auto correction = utils::trackingJumpCorrection(
+        target, current, origin, m_universeCenterForReset );
+    LOG( INFO ) << "Tracking jump correction requested: position="
+                << detection.position << " yaw=" << detection.yaw
+                << " offsetDelta=(" << correction.offsets[0] - m_offsetX << ", "
+                << correction.offsets[1] - m_offsetY << ", "
+                << correction.offsets[2] - m_offsetZ << ")m yawDelta="
+                << correction.yaw * k_radiansToCentidegrees / 100.0 << "deg";
+    applyTrackingCorrection( correction );
+}
+
+void MoveCenterTabController::applyTrackingCorrection(
+    const utils::TrackingJumpCorrection& correction )
+{
+    m_offsetX = correction.offsets[0];
+    m_offsetY = correction.offsets[1];
+    m_offsetZ = correction.offsets[2];
+    m_rotation = ( m_rotation
+                   + static_cast<int>( std::round(
+                       correction.yaw * k_radiansToCentidegrees ) ) )
+                 % 36000;
+    emit offsetXChanged( m_offsetX );
+    emit offsetYChanged( m_offsetY );
+    emit offsetZChanged( m_offsetZ );
+    emit rotationChanged( m_rotation );
+}
+
+void MoveCenterTabController::cacheRecenterView()
+{
+    m_viewBeforeRecenterValid = false;
+    if ( !trackingJumpCorrection() || !preserveRecenterView()
+         || !m_chaperoneBasisAcquired
+         || m_trackingUniverse != vr::TrackingUniverseStanding )
+    {
+        return;
+    }
+    vr::TrackedDevicePose_t pose{};
+    vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+        vr::TrackingUniverseStanding, 0.0f, &pose, 1 );
+    if ( utils::validTrackingPose( pose ) )
+    {
+        m_viewBeforeRecenter = pose.mDeviceToAbsoluteTracking;
+        m_viewBeforeRecenterTime = std::chrono::steady_clock::now();
+        m_viewBeforeRecenterValid = true;
+    }
+}
+
+bool MoveCenterTabController::compensateRecenter(
+    const vr::TrackedDevicePose_t& pose )
+{
+    m_preserveRecenterPending = false;
+    m_viewBeforeRecenterValid = false;
+    m_trackingDiscontinuity.reset();
+    if ( !trackingJumpCorrection() || !preserveRecenterView()
+         || m_trackingUniverse != vr::TrackingUniverseStanding
+         || !utils::validTrackingPose( pose )
+         || std::chrono::steady_clock::now() - m_viewBeforeRecenterTime
+                >= std::chrono::milliseconds( 100 ) )
+    {
+        return false;
+    }
+    vr::HmdMatrix34_t origin;
+    if ( !vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
+             &origin ) )
+    {
+        return false;
+    }
+    const auto correction
+        = utils::recenterViewCorrection( m_viewBeforeRecenter,
+                                         pose.mDeviceToAbsoluteTracking,
+                                         origin,
+                                         m_universeCenterForReset );
+    applyTrackingCorrection( correction );
+    LOG( INFO ) << "Recenter view compensation requested";
+    return true;
+}
+
 bool MoveCenterTabController::universeCenteredRotation() const
 {
     return settings::getSetting(
@@ -909,6 +1180,17 @@ void MoveCenterTabController::shutdown()
 
 void MoveCenterTabController::incomingZeroReset()
 {
+    m_preserveRecenterPending
+        = trackingJumpCorrection() && preserveRecenterView()
+          && m_chaperoneBasisAcquired && !m_pendingZeroOffsets
+          && !m_roomSetupModeDetected && m_viewBeforeRecenterValid
+          && std::chrono::steady_clock::now() - m_viewBeforeRecenterTime
+                 < std::chrono::milliseconds( 100 )
+          && m_trackingUniverse == vr::TrackingUniverseStanding
+          && vr::VRCompositor()->GetTrackingSpace()
+                 == vr::TrackingUniverseStanding;
+
+    m_trackingDiscontinuity.reset();
     // Calibration state is ultimately no longer a safety issue per discussions
     // with valve (the warnings/error's dont' mean anything for out context)
     // However It does appear to effect the recenter method (potentially other
@@ -939,6 +1221,9 @@ void MoveCenterTabController::incomingZeroReset()
 //zerooffsets....
 void MoveCenterTabController::reset()
 {
+    m_preserveRecenterPending = false;
+    m_viewBeforeRecenterValid = false;
+    m_trackingDiscontinuity.reset();
     // DO NOT attempt to apply autosaved profile on reset, as it is triggered by
     // the apply chaperone profile Side effects are bad!
     //auto calState = vr::VRChaperone()->GetCalibrationState();
@@ -1005,6 +1290,9 @@ void MoveCenterTabController::reset()
 //TODO This needs to be renamed, it's mainly for initilization reasons
 void MoveCenterTabController::zeroOffsets()
 {
+    m_preserveRecenterPending = false;
+    m_viewBeforeRecenterValid = false;
+    m_trackingDiscontinuity.reset();
     // first we'll check if we're outside the max commit distance
 
     vr::HmdMatrix34_t currentCenter;
@@ -2725,6 +3013,12 @@ void MoveCenterTabController::eventLoopTick(
     vr::TrackedDevicePose_t* devicePoses )
 
 {
+    if ( universe != m_trackingUniverse || m_pendingZeroOffsets
+         || m_roomSetupModeDetected )
+    {
+        m_trackingDiscontinuity.reset();
+    }
+
     // detect if room setup is running
     if ( universe == vr::TrackingUniverseRawAndUncalibrated
          && vr::VRApplications()->GetApplicationProcessId(
@@ -2780,20 +3074,43 @@ void MoveCenterTabController::eventLoopTick(
     }
     setTrackingUniverse( int( universe ) );
 
+    const bool recenterCompensated
+        = m_preserveRecenterPending
+          && compensateRecenter( devicePoses[vr::k_unTrackedDeviceIndex_Hmd] );
+    if ( recenterCompensated )
+    {
+        m_lastMoveHand = vr::TrackedControllerRole_Invalid;
+        m_lastRotateHand = vr::TrackedControllerRole_Invalid;
+        m_lastHandQuaternion.w = k_quaternionInvalidValue;
+        m_lastHmdQuaternion.w = k_quaternionInvalidValue;
+        m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
+        m_lastGravityUpdateTimePoint = m_lastDragUpdateTimePoint;
+        m_turnComfortFrameSkipCounter = 0;
+        m_dragComfortFrameSkipCounter = 0;
+        m_hmdRotationStatsUpdateCounter = 0;
+        if ( m_activeDragHand != vr::TrackedControllerRole_Invalid )
+        {
+            m_velocity[0] = m_velocity[1] = m_velocity[2] = 0.0;
+        }
+    }
+
     // get current space rotation in radians
     double angle = m_rotation * k_centidegreesToRadians;
 
-    // hmd rotations stats counting doesn't need to be smooth, so we
-    // skip some frames for performance
-    if ( m_hmdRotationStatsUpdateCounter >= k_hmdRotationCounterUpdateRate )
+    if ( !recenterCompensated )
     {
-        // device pose index 0 is always the hmd
-        updateHmdRotationCounter( devicePoses[0], angle );
-        m_hmdRotationStatsUpdateCounter = 0;
-    }
-    else
-    {
-        m_hmdRotationStatsUpdateCounter++;
+        // hmd rotations stats counting doesn't need to be smooth, so we
+        // skip some frames for performance
+        if ( m_hmdRotationStatsUpdateCounter >= k_hmdRotationCounterUpdateRate )
+        {
+            // device pose index 0 is always the hmd
+            updateHmdRotationCounter( devicePoses[0], angle );
+            m_hmdRotationStatsUpdateCounter = 0;
+        }
+        else
+        {
+            m_hmdRotationStatsUpdateCounter++;
+        }
     }
 
     // only update dynamic motion if the dash is closed
@@ -2827,40 +3144,43 @@ void MoveCenterTabController::eventLoopTick(
                 parent->m_chaperoneTabController.forceBounds() );
         }
 
-        // Smooth turn motion can cause sim-sickness so we check if the
-        // user wants to skip frames to reduce vection. We use the
-        // factor squared because of logarithmic human perception.
-        if ( m_turnComfortFrameSkipCounter >= static_cast<unsigned>(
-                 ( turnComfortFactor() * turnComfortFactor() ) ) )
+        if ( !recenterCompensated )
         {
-            updateHandTurn( devicePoses, angle );
-            m_turnComfortFrameSkipCounter = 0;
-        }
-        else
-        {
-            m_turnComfortFrameSkipCounter++;
-        }
+            // Smooth turn motion can cause sim-sickness so we check if the
+            // user wants to skip frames to reduce vection. We use the
+            // factor squared because of logarithmic human perception.
+            if ( m_turnComfortFrameSkipCounter >= static_cast<unsigned>(
+                     ( turnComfortFactor() * turnComfortFactor() ) ) )
+            {
+                updateHandTurn( devicePoses, angle );
+                m_turnComfortFrameSkipCounter = 0;
+            }
+            else
+            {
+                m_turnComfortFrameSkipCounter++;
+            }
 
-        // Smooth drag motion can cause sim-sickness so we check if the
-        // user wants to skip frames to reduce vection. We use the
-        // factor squared because of logarithmic human perception.
-        if ( m_dragComfortFrameSkipCounter >= static_cast<unsigned>(
-                 ( dragComfortFactor() * dragComfortFactor() ) ) )
-        {
-            updateHandDrag( devicePoses, angle );
-            m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
-            m_dragComfortFrameSkipCounter = 0;
-        }
-        else
-        {
-            m_dragComfortFrameSkipCounter++;
-        }
+            // Smooth drag motion can cause sim-sickness so we check if the
+            // user wants to skip frames to reduce vection. We use the
+            // factor squared because of logarithmic human perception.
+            if ( m_dragComfortFrameSkipCounter >= static_cast<unsigned>(
+                     ( dragComfortFactor() * dragComfortFactor() ) ) )
+            {
+                updateHandDrag( devicePoses, angle );
+                m_lastDragUpdateTimePoint = std::chrono::steady_clock::now();
+                m_dragComfortFrameSkipCounter = 0;
+            }
+            else
+            {
+                m_dragComfortFrameSkipCounter++;
+            }
 
-        if ( m_gravityActive
-             && m_activeDragHand == vr::TrackedControllerRole_Invalid )
-        {
-            updateGravity();
-            m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
+            if ( m_gravityActive
+                 && m_activeDragHand == vr::TrackedControllerRole_Invalid )
+            {
+                updateGravity();
+                m_lastGravityUpdateTimePoint = std::chrono::steady_clock::now();
+            }
         }
         m_dashWasOpenPreviousFrame = false;
     }
@@ -2869,7 +3189,12 @@ void MoveCenterTabController::eventLoopTick(
         // dash is open this frame
         m_dashWasOpenPreviousFrame = true;
     }
+    if ( !recenterCompensated )
+    {
+        updateTrackingJumpCorrection();
+    }
     updateSpace();
+    cacheRecenterView();
 }
 
 } // namespace advsettings
