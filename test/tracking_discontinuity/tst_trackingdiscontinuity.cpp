@@ -1,4 +1,5 @@
 #include "../../src/utils/TrackingDiscontinuity.h"
+#include "../../src/utils/Matrix.h"
 #include <QtTest>
 #include <limits>
 
@@ -11,6 +12,9 @@ private slots:
     void configurableThresholds();
     void correctionPreservesPose();
     void recenterCompensation();
+    void transientSpikes();
+    void sampleDiscontinuities();
+    void recenterNearVertical();
 };
 
 void TrackingDiscontinuityTest::trackingSequence()
@@ -31,7 +35,7 @@ void TrackingDiscontinuityTest::trackingSequence()
     QVERIFY( !detector.detection().yaw );
     QVERIFY( previous.m[0][3] == 0.0f );
     pose.mDeviceToAbsoluteTracking.m[0][3] = 2.0f;
-    QVERIFY( !detector.update( pose, 1.01, previous ) );
+    QVERIFY( detector.update( pose, 1.01, previous ) );
     pose.bPoseIsValid = false;
     QVERIFY( !detector.update( pose, 1.02, previous ) );
     pose.bPoseIsValid = true;
@@ -159,6 +163,129 @@ void TrackingDiscontinuityTest::recenterCompensation()
     for ( const auto offset : unchanged.offsets )
         QVERIFY( std::abs( offset ) < 0.00001 );
     QVERIFY( std::abs( unchanged.yaw ) < 0.00001 );
+}
+
+void TrackingDiscontinuityTest::transientSpikes()
+{
+    for ( const bool position : { false, true } )
+    {
+        utils::TrackingDiscontinuity detector;
+        vr::TrackedDevicePose_t pose{};
+        pose.bDeviceIsConnected = pose.bPoseIsValid = true;
+        pose.eTrackingResult = vr::TrackingResult_Running_OK;
+        vr::HmdMatrix34_t basis;
+        utils::initRotationMatrix( basis, 1, 0.0f );
+        auto origin = basis;
+        auto normal = basis;
+        normal.m[0][3] = 2.0f;
+        normal.m[1][3] = 1.6f;
+        vr::HmdMatrix34_t previous{};
+        pose.mDeviceToAbsoluteTracking = normal;
+        QVERIFY( !detector.update( pose, 0.0, previous ) );
+        double rotation = 0.0;
+        for ( int frame = 1; frame <= 4; ++frame )
+        {
+            auto sample = normal;
+            if ( frame % 2 != 0 )
+            {
+                if ( position )
+                    sample.m[0][3] += 1.0f;
+                else
+                {
+                    utils::initRotationMatrix( sample, 1, 0.5f );
+                    sample.m[0][3] = normal.m[0][3];
+                    sample.m[1][3] = normal.m[1][3];
+                }
+            }
+            pose.mDeviceToAbsoluteTracking = sample;
+            QVERIFY( detector.update( pose, frame * 0.01, previous ) );
+            QCOMPARE( detector.detection().position, position );
+            QCOMPARE( detector.detection().yaw, !position );
+            const auto correction = utils::trackingJumpCorrection(
+                previous, sample, origin, basis );
+            rotation += correction.yaw;
+            utils::initRotationMatrix( origin, 1, static_cast<float>( rotation ) );
+            for ( unsigned axis = 0; axis < 3; ++axis )
+                origin.m[axis][3] = correction.offsets[axis];
+            if ( frame % 2 == 0 )
+            {
+                QVERIFY( std::abs( rotation ) < 0.00001 );
+                for ( unsigned axis = 0; axis < 3; ++axis )
+                    QVERIFY( std::abs( origin.m[axis][3] ) < 0.00001 );
+            }
+        }
+    }
+}
+
+void TrackingDiscontinuityTest::sampleDiscontinuities()
+{
+    utils::TrackingDiscontinuity detector;
+    vr::TrackedDevicePose_t pose{};
+    pose.bDeviceIsConnected = pose.bPoseIsValid = true;
+    pose.eTrackingResult = vr::TrackingResult_Running_OK;
+    utils::initRotationMatrix( pose.mDeviceToAbsoluteTracking, 1, 0.0f );
+    vr::HmdMatrix34_t previous{};
+    QVERIFY( !detector.update( pose, 0.0, previous ) );
+    pose.mDeviceToAbsoluteTracking.m[0][3] = 1.0f;
+    QVERIFY( !detector.update( pose, 1.0, previous ) ); // Long sample gap.
+    pose.mDeviceToAbsoluteTracking.m[0][3] = 2.0f;
+    QVERIFY( detector.update( pose, 1.01, previous ) ); // No settling delay.
+    pose.bPoseIsValid = false;
+    QVERIFY( !detector.update( pose, 1.02, previous ) );
+    pose.bPoseIsValid = true;
+    pose.mDeviceToAbsoluteTracking.m[0][3] = 10.0f;
+    QVERIFY( !detector.update( pose, 1.03, previous ) ); // Reacquire baseline.
+    pose.mDeviceToAbsoluteTracking.m[0][3] = 11.0f;
+    QVERIFY( detector.update( pose, 1.04, previous ) );
+    QVERIFY( !detector.update(
+        pose, std::numeric_limits<double>::quiet_NaN(), previous ) );
+    QVERIFY( !detector.update( pose, 1.05, previous ) );
+    pose.mDeviceToAbsoluteTracking.m[0][3] = 12.0f;
+    QVERIFY( !detector.update( pose, 1.05, previous ) ); // Duplicate timestamp.
+    pose.mDeviceToAbsoluteTracking.m[0][3] = 13.0f;
+    QVERIFY( !detector.update( pose, 1.04, previous ) ); // Clock moves backwards.
+    pose.mDeviceToAbsoluteTracking.m[0][3] = 14.0f;
+    QVERIFY( detector.update( pose, 1.06, previous ) );
+}
+
+void TrackingDiscontinuityTest::recenterNearVertical()
+{
+    constexpr double radians = 0.017453292519943295;
+    for ( const double pitch : { -91.0, -90.0, 89.0, 90.0, 179.0 } )
+    {
+        for ( const double yaw : { -1.0, 0.0, 1.0 } )
+        {
+            vr::HmdMatrix34_t previous;
+            vr::HmdMatrix34_t pitched;
+            vr::HmdMatrix34_t turn;
+            utils::initRotationMatrix(
+                previous, 0, static_cast<float>( pitch * radians ) );
+            utils::initRotationMatrix(
+                pitched, 0, static_cast<float>( ( pitch + 2.0 ) * radians ) );
+            utils::initRotationMatrix( turn, 1, static_cast<float>( yaw ) );
+            vr::HmdMatrix34_t current{};
+            utils::matMul33( current, turn, pitched );
+            previous.m[0][3] = current.m[0][3] = 1.0f;
+            previous.m[1][3] = current.m[1][3] = 1.6f;
+            // Also check a rotated/translated standing basis.
+            vr::HmdMatrix34_t origin;
+            utils::initRotationMatrix( origin, 1, 0.7f );
+            origin.m[0][3] = 3.0f;
+            const auto correction = utils::recenterViewCorrection(
+                previous, current, origin, origin );
+            QVERIFY( std::abs( correction.yaw - yaw ) < 0.00001 );
+            if ( yaw == 0.0 )
+            {
+                for ( const auto offset : correction.offsets )
+                    QVERIFY( std::abs( offset ) < 0.00001 );
+            }
+        }
+    }
+    vr::HmdMatrix34_t previous;
+    vr::HmdMatrix34_t current;
+    utils::initRotationMatrix( previous, 0, 0.0f );
+    utils::initRotationMatrix( current, 0, static_cast<float>( 180.0 * radians ) );
+    QCOMPARE( utils::trackingYawDifference( previous, current ), 0.0 );
 }
 
 QTEST_APPLESS_MAIN( TrackingDiscontinuityTest )

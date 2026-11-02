@@ -1090,7 +1090,7 @@ bool MoveCenterTabController::compensateRecenter(
     m_preserveRecenterPending = false;
     m_viewBeforeRecenterValid = false;
     m_trackingDiscontinuity.reset();
-    if ( !trackingJumpCorrection() || !preserveRecenterView()
+    if ( !trackingJumpCorrection() || !preserveRecenterView() || gravityActive()
          || m_trackingUniverse != vr::TrackingUniverseStanding
          || !utils::validTrackingPose( pose )
          || std::chrono::steady_clock::now() - m_viewBeforeRecenterTime
@@ -1182,6 +1182,7 @@ void MoveCenterTabController::incomingZeroReset()
 {
     m_preserveRecenterPending
         = trackingJumpCorrection() && preserveRecenterView()
+          && !gravityActive()
           && m_chaperoneBasisAcquired && !m_pendingZeroOffsets
           && !m_roomSetupModeDetected && m_viewBeforeRecenterValid
           && std::chrono::steady_clock::now() - m_viewBeforeRecenterTime

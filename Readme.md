@@ -465,7 +465,7 @@ Allows users to temporarily move and rotate the center of the playspace. This al
   - **Save Momentum**: whether your momentum is saved between on/off toggles of gravity.
   - **Fling Strength**: adjusts the strength at which you "throw" yourself with space drag feature.
 - **Tracking Jump Correction (Experimental)**: Compensates for sudden position or yaw changes in standing tracking. Disabled by default.
-  - **Preserve View on Recenter**: Compensates position and yaw after a standing-mode recenter while correction is enabled, when a recent valid view pose is available. Off by default.
+  - **Preserve View on Recenter**: Compensates position and yaw after a standing-mode recenter while correction is enabled, when a recent valid view pose is available. Paused while gravity is active. Off by default.
   - **Minimum Change / Speed**: Sets the position and yaw detection limits. Both limits must be exceeded; higher values reduce sensitivity.
 
 
