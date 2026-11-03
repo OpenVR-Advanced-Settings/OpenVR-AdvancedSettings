@@ -290,6 +290,7 @@ public:
     double getHmdYawTotal();
     void resetHmdYawTotal();
     void incomingZeroReset();
+    void incomingUniverseChange();
     void resyncAfterZeroReset();
     void setBoundsBasisHeight( float newHeight );
     float getBoundsBasisMaxY();

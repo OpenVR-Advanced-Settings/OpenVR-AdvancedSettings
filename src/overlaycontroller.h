@@ -167,6 +167,7 @@ public: // I know it's an ugly hack to make them public to enable external
     VideoTabController m_videoTabController;
     RotationTabController m_rotationTabController;
     bool m_incomingReset = false;
+    bool m_incomingUniverseChange = false;
     std::string m_lastHmdModel;
 
 private:

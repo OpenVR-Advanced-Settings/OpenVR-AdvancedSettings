@@ -1331,6 +1331,13 @@ void OverlayController::mainEventLoop()
                         << vrEvent.data.chaperone.m_nPreviousUniverse_deprecated
                         << " Current: "
                         << vrEvent.data.chaperone.m_nCurrentUniverse;
+            // The committed universe can shift without an accompanying
+            // Standing/SeatedZeroPoseReset — e.g. SteamVR relocalizing,
+            // another app recentering, or a chaperone profile reload.
+            // Feed the keep-offsets debounce so saved offsets re-apply
+            // against the new basis instead of silently drifting until
+            // the user resets the floor by hand.
+            m_incomingUniverseChange = true;
         }
         break;
 
@@ -1383,6 +1390,11 @@ void OverlayController::mainEventLoop()
     {
         m_incomingReset = false;
         m_moveCenterTabController.incomingZeroReset();
+    }
+    if ( m_incomingUniverseChange )
+    {
+        m_incomingUniverseChange = false;
+        m_moveCenterTabController.incomingUniverseChange();
     }
 
     vr::TrackedDevicePose_t devicePoses[vr::k_unMaxTrackedDeviceCount];

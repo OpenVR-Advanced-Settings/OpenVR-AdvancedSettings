@@ -36,6 +36,13 @@ void rotateFloatCoordinates( float coordinates[3], float angle )
 // application namespace
 namespace advsettings
 {
+// Tracks whether SteamVR's chaperone working copy has produced a valid
+// zero pose at least once this process. Reads before that are expected
+// garbage during init and get suppressed to keep the log readable.
+static bool g_firstValidZeroPoseSeen = false;
+static size_t g_suppressedInvalidZeroPoses = 0;
+static size_t g_suppressedCommitBoundsSkips = 0;
+
 // Gets the standing or seated zero pose from the working copy, rejecting it
 // if the call fails or returns garbage. On Steam Frame these calls were seen
 // to fail and leave uninitialized data, which got treated as a universe
@@ -70,13 +77,50 @@ static bool getValidWorkingZeroPose( bool standing, vr::HmdMatrix34_t* pose )
     }
     if ( !ok )
     {
+        // Suppress noise while SteamVR's chaperone working copy is still
+        // initializing. The first ~2 seconds after launch can produce
+        // thousands of these as every tick reads before the data is ready.
+        if ( !g_firstValidZeroPoseSeen )
+        {
+            g_suppressedInvalidZeroPoses++;
+            return false;
+        }
         LOG( WARNING ) << "Ignoring invalid "
                        << ( standing ? "standing" : "seated" )
                        << " zero pose from SteamVR";
         return false;
     }
+    if ( !g_firstValidZeroPoseSeen )
+    {
+        g_firstValidZeroPoseSeen = true;
+        if ( g_suppressedInvalidZeroPoses > 0
+             || g_suppressedCommitBoundsSkips > 0 )
+        {
+            LOG( INFO ) << "Chaperone working copy ready; suppressed "
+                        << g_suppressedInvalidZeroPoses
+                        << " invalid zero pose warning(s) and "
+                        << g_suppressedCommitBoundsSkips
+                        << " commit-bounds skip warning(s) during init";
+            g_suppressedInvalidZeroPoses = 0;
+            g_suppressedCommitBoundsSkips = 0;
+        }
+    }
     *pose = result;
     return true;
+}
+
+// True once SteamVR has produced at least one valid chaperone working-copy
+// zero pose this process. Used to gate init-time log spam.
+static bool chaperoneWorkingCopyIsReady()
+{
+    return g_firstValidZeroPoseSeen;
+}
+
+// Call when a known init-time warning site decides to suppress — bumps the
+// counter so the summary message is accurate.
+static void noteSuppressedCommitBoundsSkip()
+{
+    g_suppressedCommitBoundsSkips++;
 }
 
 // Logs presses and releases of space drag actions, to see which binding fires
@@ -1026,6 +1070,26 @@ void MoveCenterTabController::incomingZeroReset()
     return;
 }
 
+// Called when SteamVR emits ChaperoneUniverseHasChanged. The committed
+// universe id changes when the user resets the floor, when SteamVR
+// relocalizes against a different map, or when another app recenters —
+// even without a matching Standing/SeatedZeroPoseReset event. Treat it
+// like a reset for the keep-offsets debounce path, so wearers whose
+// origin silently drifts during a session still get offsets re-applied
+// instead of needing a manual floor reset. We never discard offsets
+// here regardless of PLAYSPACE_offsetsOnRecenter — a universe change is
+// not a user recenter.
+void MoveCenterTabController::incomingUniverseChange()
+{
+    if ( !m_chaperoneBasisAcquired )
+    {
+        return;
+    }
+    m_zeroResetCount++;
+    m_zeroResetResyncPending = true;
+    m_lastZeroResetTimePoint = std::chrono::steady_clock::now();
+}
+
 // Re-applies the current offsets once zero pose resets have stopped for
 // k_zeroResetQuietMs and no space drag is active. Called every tick.
 void MoveCenterTabController::resyncAfterZeroReset()
@@ -1151,7 +1215,14 @@ void MoveCenterTabController::zeroOffsets()
                            - ( m_rotation * k_centidegreesToRadians ) );
     if ( !currentCenterValid )
     {
-        LOG( WARNING ) << "Zero Offsets: skipped commit bounds check";
+        if ( chaperoneWorkingCopyIsReady() )
+        {
+            LOG( WARNING ) << "Zero Offsets: skipped commit bounds check";
+        }
+        else
+        {
+            noteSuppressedCommitBoundsSkip();
+        }
     }
     else if ( abs( currentCenterXyz[0] ) > k_maxOpenvrCommitOffset )
     {
