@@ -1188,6 +1188,15 @@ void MoveCenterTabController::resyncAfterZeroReset()
     {
         return;
     }
+    // Don't resync while HMD tracking is degraded. During a tracking
+    // blackout SteamVR's committed pose can be garbage; re-applying
+    // offsets on top of garbage then re-asserts the garbage on recovery.
+    // Wait for Running_OK, then let the next reset event re-queue us.
+    if ( m_lastHmdTrackingResult != vr::TrackingResult_Uninitialized
+         && m_lastHmdTrackingResult != vr::TrackingResult_Running_OK )
+    {
+        return;
+    }
     // Peek at the current committed universe. On Steam Frame, SteamVR
     // emits StandingZeroPoseReset for every inside-out tracking
     // relocalization, including many that do not alter Live at all. If
@@ -2605,13 +2614,62 @@ void MoveCenterTabController::updateHandDrag(
         // because the glitched diff gets baked into m_offsetX/Y/Z and
         // every subsequent reset re-asserts the bad position.
         constexpr double k_dragGlitchDiscardMeters = 0.5;
-        if ( abs( rawDiff[0] ) > k_dragGlitchDiscardMeters
-             || abs( rawDiff[1] ) > k_dragGlitchDiscardMeters
-             || abs( rawDiff[2] ) > k_dragGlitchDiscardMeters )
+        bool magnitudeGlitch
+            = ( abs( rawDiff[0] ) > k_dragGlitchDiscardMeters
+                || abs( rawDiff[1] ) > k_dragGlitchDiscardMeters
+                || abs( rawDiff[2] ) > k_dragGlitchDiscardMeters );
+
+        // Velocity-sanity check: SteamVR provides a reported controller
+        // velocity derived from recent pose history. If a frame's implied
+        // speed is far above that, the delta came from a tracking spike
+        // (Steam Frame's inside-out tracking produces sub-threshold
+        // oscillations that accumulate into visible drift even when no
+        // single frame breaches k_dragGlitchDiscardMeters). Compare
+        // per-axis, and allow generous slack so legitimate fast gestures
+        // still land.
+        constexpr double k_velocitySanityRatio = 4.0;
+        constexpr double k_velocitySanitySlack_mps = 1.5;
+        constexpr double k_velocitySanityMinSpeed_mps = 0.3;
+        bool velocityGlitch = false;
+        double dtEstimate = std::chrono::duration<double>(
+                                std::chrono::steady_clock::now()
+                                - m_lastDragUpdateTimePoint )
+                                .count();
+        if ( dtEstimate > 0.0005 )
+        {
+            double vx = static_cast<double>( movePose->vVelocity.v[0] );
+            double vy = static_cast<double>( movePose->vVelocity.v[1] );
+            double vz = static_cast<double>( movePose->vVelocity.v[2] );
+            double impliedSpeed[3] = {
+                std::abs( rawDiff[0] / dtEstimate ),
+                std::abs( rawDiff[1] / dtEstimate ),
+                std::abs( rawDiff[2] / dtEstimate ),
+            };
+            double reportedSpeed[3] = {
+                std::abs( vx ),
+                std::abs( vy ),
+                std::abs( vz ),
+            };
+            for ( int i = 0; i < 3; ++i )
+            {
+                double limit = reportedSpeed[i] * k_velocitySanityRatio
+                               + k_velocitySanitySlack_mps;
+                if ( impliedSpeed[i] > limit
+                     && impliedSpeed[i] > k_velocitySanityMinSpeed_mps )
+                {
+                    velocityGlitch = true;
+                    break;
+                }
+            }
+        }
+
+        if ( magnitudeGlitch || velocityGlitch )
         {
             LOG( WARNING ) << "Discarding space drag glitch ( raw X: "
                            << rawDiff[0] << " Y: " << rawDiff[1]
-                           << " Z: " << rawDiff[2] << " )";
+                           << " Z: " << rawDiff[2]
+                           << ( velocityGlitch ? " ) [velocity mismatch]"
+                                               : " )" );
             m_velocity[0] = 0.0;
             m_velocity[1] = 0.0;
             m_velocity[2] = 0.0;
