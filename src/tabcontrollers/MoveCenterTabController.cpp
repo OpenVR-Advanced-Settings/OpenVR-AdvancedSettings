@@ -123,6 +123,30 @@ static void noteSuppressedCommitBoundsSkip()
     g_suppressedCommitBoundsSkips++;
 }
 
+// True if two chaperone zero-pose matrices agree within `eps` meters on
+// translation and are nearly identical in rotation. Used to decide whether
+// SteamVR has materially changed Live between our commits.
+static bool matricesApproxEqual( const vr::HmdMatrix34_t& a,
+                                 const vr::HmdMatrix34_t& b,
+                                 float eps )
+{
+    for ( int row = 0; row < 3; ++row )
+    {
+        for ( int col = 0; col < 3; ++col )
+        {
+            if ( std::abs( a.m[row][col] - b.m[row][col] ) > eps )
+            {
+                return false;
+            }
+        }
+        if ( std::abs( a.m[row][3] - b.m[row][3] ) > eps )
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 // Logs presses and releases of space drag actions, to see which binding fires
 static void logDragInput( const char* action,
                           bool active,
@@ -1101,6 +1125,29 @@ void MoveCenterTabController::resyncAfterZeroReset()
     {
         return;
     }
+    // Peek at the current committed universe. On Steam Frame, SteamVR
+    // emits StandingZeroPoseReset for every inside-out tracking
+    // relocalization, including many that do not alter Live at all. If
+    // Live still matches what we last pushed, nothing to re-apply — doing
+    // so would both compound offsets onto an already-offset basis and
+    // snap the user visibly.
+    vr::VRChaperoneSetup()->RevertWorkingCopy();
+    vr::HmdMatrix34_t currentLive;
+    bool currentLiveOk = getValidWorkingZeroPose( true, &currentLive );
+    if ( currentLiveOk && m_hasLastCommittedUniverseCenter
+         && matricesApproxEqual( currentLive,
+                                 m_lastCommittedUniverseCenter,
+                                 k_universeMatchEpsilon ) )
+    {
+        // Live is unchanged from our last commit; the reset event was
+        // informational (or our own echo). Keep the current preview and
+        // bail without a re-apply.
+        LOG( INFO ) << "incomingZeroReset: " << m_zeroResetCount
+                    << " reset(s), Live unchanged, skipping re-apply";
+        m_zeroResetCount = 0;
+        m_zeroResetResyncPending = false;
+        return;
+    }
     bool hasOffsets = ( abs( m_offsetX ) + abs( m_offsetY ) + abs( m_offsetZ )
                         + abs( static_cast<float>( m_rotation ) ) )
                       != 0;
@@ -1109,8 +1156,10 @@ void MoveCenterTabController::resyncAfterZeroReset()
                 << ( hasOffsets ? "re-applying" : "no" ) << " offsets X: "
                 << m_offsetX << " Y: " << m_offsetY << " Z: " << m_offsetZ
                 << " Rot: " << m_rotation;
-    vr::VRChaperoneSetup()->RevertWorkingCopy();
-    getValidWorkingZeroPose( true, &m_universeCenterForReset );
+    if ( currentLiveOk )
+    {
+        m_universeCenterForReset = currentLive;
+    }
     getValidWorkingZeroPose( false, &m_seatedCenterForReset );
     if ( hasOffsets )
     {
@@ -1394,6 +1443,8 @@ void MoveCenterTabController::updateChaperoneResetData()
     //{
         vr::VRChaperoneSetup()->CommitWorkingCopy(
             vr::EChaperoneConfigFile_Live );
+        m_lastSelfCommitTimePoint = std::chrono::steady_clock::now();
+        m_hasLastSelfCommit = true;
         vr::VRChaperoneSetup()->RevertWorkingCopy();
     //}
     unsigned currentQuadCount = 0;
@@ -1408,6 +1459,11 @@ void MoveCenterTabController::updateChaperoneResetData()
     // on failure keep the previous basis
     getValidWorkingZeroPose( true, &m_universeCenterForReset );
     getValidWorkingZeroPose( false, &m_seatedCenterForReset );
+    // Cache what we just committed to Live so resyncAfterZeroReset can
+    // skip spurious Steam-Frame reset events that don't actually change
+    // Live from our perspective.
+    m_lastCommittedUniverseCenter = m_universeCenterForReset;
+    m_hasLastCommittedUniverseCenter = true;
 
     // updateCollisionBoundsForOffset();
     parent->m_chaperoneTabController.updateHeight( getBoundsBasisMaxY() );
@@ -1436,7 +1492,19 @@ void MoveCenterTabController::applyChaperoneResetData()
     //  vr::VRChaperoneSetup()->SetWorkingSeatedZeroPoseToRawTrackingPose(
     //     &m_seatedCenterForReset );
 
+    {
+        // Snapshot what's about to become Live so resyncAfterZeroReset
+        // can tell this commit apart from a SteamVR relocalization.
+        vr::HmdMatrix34_t aboutToCommit;
+        if ( getValidWorkingZeroPose( true, &aboutToCommit ) )
+        {
+            m_lastCommittedUniverseCenter = aboutToCommit;
+            m_hasLastCommittedUniverseCenter = true;
+        }
+    }
     vr::VRChaperoneSetup()->CommitWorkingCopy( vr::EChaperoneConfigFile_Live );
+    m_lastSelfCommitTimePoint = std::chrono::steady_clock::now();
+    m_hasLastSelfCommit = true;
 
     unsigned checkQuadCount = 0;
     vr::VRChaperoneSetup()->GetWorkingCollisionBoundsInfo( nullptr,

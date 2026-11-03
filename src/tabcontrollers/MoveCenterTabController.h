@@ -33,6 +33,10 @@ constexpr int k_offsetsOnRecenterReset = 1;
 constexpr int k_offsetsOnRecenterKeep = 2;
 // how long zero pose resets must stop before re-applying offsets in keep mode
 constexpr int k_zeroResetQuietMs = 1500;
+// matrix-equality threshold (meters) for deciding Live was not touched
+constexpr float k_universeMatchEpsilon = 0.005f;
+// how long after our own commit to treat incoming reset events as echoes
+constexpr int k_selfCommitEchoMs = 400;
 
 class OverlayController;
 
@@ -200,6 +204,19 @@ private:
     unsigned m_zeroResetCount = 0;
     bool m_zeroResetResyncPending = false;
     std::chrono::steady_clock::time_point m_lastZeroResetTimePoint;
+    // Caches the standing zero pose matrix we last committed to Live, so
+    // resyncAfterZeroReset can tell apart "SteamVR actually changed Live"
+    // (needs re-apply) from "SteamVR fired a reset event without changing
+    // Live" (common on Steam Frame inside-out relocalization; skip to
+    // avoid snapping the user around).
+    vr::HmdMatrix34_t m_lastCommittedUniverseCenter{};
+    bool m_hasLastCommittedUniverseCenter = false;
+    // When we commit, SteamVR often echoes a reset event back to us. If an
+    // incoming reset event lands within k_selfCommitEchoMs of our last
+    // commit, treat it as our own echo and let the cache-compare in the
+    // resync handle whether anything actually changed.
+    std::chrono::steady_clock::time_point m_lastSelfCommitTimePoint;
+    bool m_hasLastSelfCommit = false;
     bool m_lastLeftHandDragInput = false;
     bool m_lastRightHandDragInput = false;
     bool m_lastOverrideLeftHandDragInput = false;
