@@ -1094,6 +1094,69 @@ void MoveCenterTabController::incomingZeroReset()
     return;
 }
 
+// Emulate the in-headset "Set Floor Height" action that Steam Frame users
+// otherwise have to run manually at the start of every session. Steam
+// Frame boots with an unstable standing-pose estimate — SteamVR keeps
+// emitting StandingZeroPoseReset events as it relocalizes, and OVRAS's
+// keep-mode re-apply fights an origin that never settles. Writing a
+// known-good standing zero pose at Chaperone init tells SteamVR the pose
+// IS the pose, matching what the headset menu does under the hood.
+//
+// The pose we write: identity rotation, translation such that the user's
+// current HMD position sits at k_steamFrameAssumedUserHeightMeters above
+// the floor origin. If the user is a different height they can
+// re-trigger via the dashboard, same as before.
+void MoveCenterTabController::autoSetFloorHeightForSteamFrame(
+    const vr::TrackedDevicePose_t& hmdPose )
+{
+    if ( m_steamFrameAutoFloorDone )
+    {
+        return;
+    }
+    if ( !parent || !parent->isSteamFrameHmd() )
+    {
+        return;
+    }
+    if ( !hmdPose.bPoseIsValid
+         || hmdPose.eTrackingResult != vr::TrackingResult_Running_OK )
+    {
+        return;
+    }
+    // Standing zero pose is a transform from standing-space to raw tracking
+    // space. For the HMD to appear at Y = k_steamFrameAssumedUserHeightMeters
+    // in standing space when its raw Y is hmdY, the standing-pose translation
+    // on Y must equal hmdY - k_steamFrameAssumedUserHeightMeters. We leave
+    // the horizontal position and rotation at their current raw values so
+    // the user does not get yanked sideways.
+    vr::HmdMatrix34_t basis{};
+    bool haveBasis = getValidWorkingZeroPose( true, &basis );
+    vr::HmdMatrix34_t pose = haveBasis ? basis : vr::HmdMatrix34_t{};
+    if ( !haveBasis )
+    {
+        // identity rotation if we have no basis yet
+        pose.m[0][0] = 1.0f;
+        pose.m[1][1] = 1.0f;
+        pose.m[2][2] = 1.0f;
+    }
+    pose.m[1][3] = hmdPose.mDeviceToAbsoluteTracking.m[1][3]
+                   - k_steamFrameAssumedUserHeightMeters;
+    vr::VRChaperoneSetup()->RevertWorkingCopy();
+    vr::VRChaperoneSetup()->SetWorkingStandingZeroPoseToRawTrackingPose(
+        &pose );
+    vr::VRChaperoneSetup()->CommitWorkingCopy(
+        vr::EChaperoneConfigFile_Live );
+    m_lastSelfCommitTimePoint = std::chrono::steady_clock::now();
+    m_hasLastSelfCommit = true;
+    m_lastCommittedUniverseCenter = pose;
+    m_hasLastCommittedUniverseCenter = true;
+    m_universeCenterForReset = pose;
+    m_steamFrameAutoFloorDone = true;
+    LOG( INFO ) << "Steam Frame auto-floor-set: HMD Y="
+                << hmdPose.mDeviceToAbsoluteTracking.m[1][3]
+                << " assumed user height=" << k_steamFrameAssumedUserHeightMeters
+                << " written floor Y=" << pose.m[1][3];
+}
+
 // Called when SteamVR emits ChaperoneUniverseHasChanged. The committed
 // universe id changes when the user resets the floor, when SteamVR
 // relocalizes against a different map, or when another app recenters —
@@ -3124,6 +3187,16 @@ void MoveCenterTabController::eventLoopTick(
                     << m_lastHmdTrackingResult << " -> "
                     << devicePoses[0].eTrackingResult;
         m_lastHmdTrackingResult = devicePoses[0].eTrackingResult;
+    }
+
+    // Steam Frame specific: as soon as the HMD reports Running_OK and the
+    // chaperone basis is acquired, auto-run the equivalent of the headset
+    // menu's Set Floor Height action. No-op on other headsets and after
+    // the first fire this session.
+    if ( m_chaperoneBasisAcquired && !m_steamFrameAutoFloorDone
+         && devicePoses[0].eTrackingResult == vr::TrackingResult_Running_OK )
+    {
+        autoSetFloorHeightForSteamFrame( devicePoses[0] );
     }
 
 

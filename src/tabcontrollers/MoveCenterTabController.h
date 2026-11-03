@@ -37,6 +37,11 @@ constexpr int k_zeroResetQuietMs = 1500;
 constexpr float k_universeMatchEpsilon = 0.005f;
 // how long after our own commit to treat incoming reset events as echoes
 constexpr int k_selfCommitEchoMs = 400;
+// assumed standing user height for Steam Frame auto-floor-set. Steam Frame
+// boots with an unstable standing-pose estimate until the user triggers the
+// in-headset Set Floor Height action; emulate that at session start so
+// users don't have to do it manually every launch.
+constexpr float k_steamFrameAssumedUserHeightMeters = 1.75f;
 
 class OverlayController;
 
@@ -217,6 +222,8 @@ private:
     // resync handle whether anything actually changed.
     std::chrono::steady_clock::time_point m_lastSelfCommitTimePoint;
     bool m_hasLastSelfCommit = false;
+    // Set once Steam Frame's auto-floor has fired for this session.
+    bool m_steamFrameAutoFloorDone = false;
     bool m_lastLeftHandDragInput = false;
     bool m_lastRightHandDragInput = false;
     bool m_lastOverrideLeftHandDragInput = false;
@@ -309,6 +316,8 @@ public:
     void incomingZeroReset();
     void incomingUniverseChange();
     void resyncAfterZeroReset();
+    void autoSetFloorHeightForSteamFrame(
+        const vr::TrackedDevicePose_t& hmdPose );
     void setBoundsBasisHeight( float newHeight );
     float getBoundsBasisMaxY();
 
