@@ -2524,7 +2524,7 @@ void MoveCenterTabController::updateHandDrag(
 
     if ( m_lastMoveHand == m_activeDragHand )
     {
-        double diff[3] = {
+        double rawDiff[3] = {
             static_cast<double>( absoluteControllerPosition[0]
                                  - m_lastControllerPosition[0] ),
             static_cast<double>( absoluteControllerPosition[1]
@@ -2533,21 +2533,22 @@ void MoveCenterTabController::updateHandDrag(
                                  - m_lastControllerPosition[2] ),
         };
 
-        // offset is un-rotated coordinates
-
-        diff[0] = diff[0] * static_cast<double>( dragMult() );
-        diff[1] = diff[1] * static_cast<double>( dragMult() );
-        diff[2] = diff[2] * static_cast<double>( dragMult() );
-
-        // prevent positional glitches from exceeding max openvr offset
-        // clamps. We do this by detecting a drag larger than 100m in a
-        // single frame and discarding that frame, rather than resetting
-        // and then still applying the glitched diff.
-        if ( abs( diff[0] ) > 100.0 || abs( diff[1] ) > 100.0
-             || abs( diff[2] ) > 100.0 )
+        // Discard glitch frames before applying dragMult. Human hand
+        // motion caps at well under 50cm per frame even at 90Hz, so a
+        // raw controller delta above k_dragGlitchDiscardMeters is a
+        // tracking spike (common on Steam Frame when inside-out
+        // relocalization fires mid-drag). Applying such frames was
+        // throwing the user meters at a time, which is unrecoverable
+        // because the glitched diff gets baked into m_offsetX/Y/Z and
+        // every subsequent reset re-asserts the bad position.
+        constexpr double k_dragGlitchDiscardMeters = 0.5;
+        if ( abs( rawDiff[0] ) > k_dragGlitchDiscardMeters
+             || abs( rawDiff[1] ) > k_dragGlitchDiscardMeters
+             || abs( rawDiff[2] ) > k_dragGlitchDiscardMeters )
         {
-            LOG( WARNING ) << "Discarding space drag glitch ( X: " << diff[0]
-                           << " Y: " << diff[1] << " Z: " << diff[2] << " )";
+            LOG( WARNING ) << "Discarding space drag glitch ( raw X: "
+                           << rawDiff[0] << " Y: " << rawDiff[1]
+                           << " Z: " << rawDiff[2] << " )";
             m_velocity[0] = 0.0;
             m_velocity[1] = 0.0;
             m_velocity[2] = 0.0;
@@ -2556,14 +2557,10 @@ void MoveCenterTabController::updateHandDrag(
             m_lastControllerPosition[2] = absoluteControllerPosition[2];
             return;
         }
-        // smaller jumps are likely tracking relocalization, log but apply
-        if ( abs( diff[0] ) > 1.0 || abs( diff[1] ) > 1.0
-             || abs( diff[2] ) > 1.0 )
-        {
-            LOG( INFO ) << "Large space drag jump in one frame ( X: "
-                        << diff[0] << " Y: " << diff[1] << " Z: " << diff[2]
-                        << " )";
-        }
+
+        double diff[3] = { rawDiff[0] * static_cast<double>( dragMult() ),
+                           rawDiff[1] * static_cast<double>( dragMult() ),
+                           rawDiff[2] * static_cast<double>( dragMult() ) };
 
         // prevents updating if axis movement is locked
         if ( !lockXToggle() )
