@@ -5,33 +5,20 @@ import ovras.advsettings 1.0
 import "../../common"
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 
-GroupBox {
+SettingsGroupBox {
     id: changeOrientationGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "Rotate Orientation (permanent)"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.color: "#d9dbe0"
-        radius: 8
-    }
+    title: qsTr("Rotate Orientation (permanent)")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
-        Rectangle {
-            color: "#d9dbe0"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 5
-        }
-
         ColumnLayout {
+            spacing: 0
             RowLayout {
+                Layout.preferredHeight: rowHeight
                 MyPushButton2 {
                     id: spaceRotationMinusButton
                     Layout.preferredWidth: 40
@@ -91,7 +78,7 @@ GroupBox {
                 MyPushButton {
                     id: spaceRotationApplyButton
                     Layout.preferredWidth: 145
-                    text:"Apply"
+                    text:qsTr("Apply")
                     onClicked: {
                         ChaperoneTabController.flipOrientation(spaceRotationSlider.value)
                         spaceRotationSlider.value = 0

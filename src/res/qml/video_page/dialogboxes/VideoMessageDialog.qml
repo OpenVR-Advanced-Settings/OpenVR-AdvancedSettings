@@ -6,8 +6,6 @@ import "../../common"
 
 MyDialogOkPopup {
     id: videoMessageDialog
-    y: -200
-    x: 0
     function showMessage(title, text) {
         dialogTitle = title
         dialogText = text

@@ -4,36 +4,22 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: brightnessGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "Color Adjustment"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.color: "#d9dbe0"
-        radius: 8
-    }
+    title: qsTr("Color Adjustment")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
-        Rectangle {
-            color: "#d9dbe0"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 5
-        }
-
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyText {
-                text: "Red:"
+                text: qsTr("Red")
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 75
             }
@@ -81,7 +67,7 @@ GroupBox {
                 }
             }
             MyText {
-                text: "Green:"
+                text: qsTr("Green")
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 85
             }
@@ -130,7 +116,7 @@ GroupBox {
             }
 
                 MyText {
-                    text: "Blue:"
+                    text: qsTr("Blue")
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: 75
                 }
@@ -197,17 +183,17 @@ GroupBox {
 
     Connections {
         target: VideoTabController
-        onColorRedChanged:{
+        function onColorRedChanged(){
             var redValue = VideoTabController.colorRed
             colorRedText.text = Math.round(redValue * 100) + "%"
             colorRedSlider.value = redValue
         }
-        onColorGreenChanged:{
+        function onColorGreenChanged(){
             var greenValue = VideoTabController.colorGreen
             colorGreenText.text = Math.round(greenValue * 100) + "%"
             colorGreenSlider.value = greenValue
         }
-        onColorBlueChanged:{
+        function onColorBlueChanged(){
             var blueValue = VideoTabController.colorBlue
             colorBlueText.text = Math.round(blueValue * 100) + "%"
             colorBlueSlider.value = blueValue

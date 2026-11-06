@@ -23,6 +23,7 @@ void sendKeyboardAltTab();
 void sendKeyboardAltEnter();
 void sendKeyboardCtrlC();
 void sendKeyboardCtrlV();
+void sendKeyboardCtrlX();
 
 // the following functions are used for debug commands in VRChat
 // I (Kung) wanted them personally because they're very hard to

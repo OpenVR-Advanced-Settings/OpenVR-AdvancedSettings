@@ -1,6 +1,7 @@
 #pragma once
 #include <openvr.h>
-#include <easylogging++.h>
+#include <QtLogging>
+#include <QtDebug>
 
 namespace input
 {
@@ -17,9 +18,8 @@ public:
 
         if ( error != vr::EVRInputError::VRInputError_None )
         {
-            LOG( ERROR ) << "Error getting input handle for '"
-                         << inputSourceName
-                         << "'. OpenVR Input Error: " << error;
+            qCritical() << "Error getting input handle for '" << inputSourceName
+                        << "'. OpenVR Input Error: " << error;
         }
     }
     /*!

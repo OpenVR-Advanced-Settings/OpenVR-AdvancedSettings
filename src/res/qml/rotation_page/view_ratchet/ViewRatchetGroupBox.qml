@@ -4,18 +4,20 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: viewRatchetGroupBox
     Layout.fillWidth: true
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
             MyToggleButton{
                 id: viewRatchetToggleBtn
-                text: "View Ratchetting"
+                text: qsTr("View Ratchetting")
                 Layout.preferredWidth: 275
                 onCheckedChanged: {
                     RotationTabController.setViewRatchettingEnabled(this.checked, true);
@@ -76,10 +78,10 @@ GroupBox {
     Connections {
         target: RotationTabController
 
-        onViewRatchettingEnabledChanged:{
+        function onViewRatchettingEnabledChanged(){
             viewRatchetToggleBtn.checked = RotationTabController.viewRatchettingEnabled
         }
-        onViewRatchettingPercentChanged:{
+        function onViewRatchettingPercentChanged(){
             var ratchetPercVal = RotationTabController.viewRatchettingPercent
             viewRatchetSlider.value = ratchetPercVal
             viewRatchetText.text = ratchetPercVal.toFixed(2)

@@ -1,7 +1,7 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.3
-import ovras.advsettings 1.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import ovras.advsettings
 import "." // QTBUG-34418, singletons require explicit import to load qmldir file
 import "common"
 import "utilities_page"
@@ -10,436 +10,316 @@ import "video_page"
 
 MyStackViewPage {
     id: rootPage
-    width: 1200
-    height: 800
-    headerText: "OVR Advanced Settings"
+    headerText: qsTr("Home")
+
+    // Every group box row on this page uses this height.
+    readonly property int groupBoxRowHeight: 44
     headerShowBackButton: false
     stackView: mainView
-    content: Item {
-           ColumnLayout {
-           anchors.fill: parent
-           RowLayout {
-               Layout.fillHeight: true
-               Layout.fillWidth: true
-               ColumnLayout {
-                   Layout.preferredWidth: 250
-                   Layout.maximumWidth: 250
-                   Layout.fillHeight: true
-                   spacing: 10
-                   MyPushButton {
-                       id: steamVRButton
-                       iconPath: "qrc:/main_menu_icons/steamvr_tab_icon"
-                       activationSoundEnabled: false
-                       text: "   SteamVR"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(steamVRPage)
-                       }
-                   }
+    content: ColumnLayout {
+        spacing: 8
 
-                   MyPushButton {
-                       id: chaperoneButton
-                       iconPath: "qrc:/main_menu_icons/chaperone_tab_icon"
-                       activationSoundEnabled: false
-                       text: "   Chaperone"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(chaperonePage)
-                       }
-                   }
+        SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
+            title: qsTr("Profiles")
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
 
-                   MyPushButton {
-                       id: playSpaceButton
-                       iconPath: "qrc:/main_menu_icons/offsets_tab_icon"
-                       activationSoundEnabled: false
-                       text: "   Offsets"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(playspacePage)
-                       }
-                   }
+                RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    spacing: 12
+                    MyText {
+                        text: qsTr("Video Profile")
+                        Layout.fillWidth: true
+                    }
+                    MyComboBox {
+                        id: summaryVideoProfileComboBox
+                        Layout.preferredWidth: 320
+                        model: [""]
+                        onCurrentIndexChanged: {
+                            if (currentIndex > 0) {
+                                summaryVideoProfileApplyButton.enabled = true
+                            } else {
+                                summaryVideoProfileApplyButton.enabled = false
+                            }
+                        }
+                    }
+                    MyPushButton {
+                        id: summaryVideoProfileApplyButton
+                        enabled: false
+                        Layout.preferredWidth: 120
+                        text: qsTr("Apply")
+                        onClicked: {
+                            if (summaryVideoProfileComboBox.currentIndex > 0) {
+                                VideoTabController.applyVideoProfile(summaryVideoProfileComboBox.currentIndex - 1)
+                                summaryVideoProfileComboBox.currentIndex = 0
+                            }
+                        }
+                    }
+                }
 
-                   MyPushButton {
-                       id: motionButton
-                       iconPath: "qrc:/main_menu_icons/motion_tab_icon"
-                       activationSoundEnabled: false
-                       text: "   Motion"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(motionPage)
-                       }
-                   }
-                   MyPushButton {
-                       id: rotationButton
-                       iconPath: "qrc:/main_menu_icons/rotation_tab_icon"
-                       activationSoundEnabled: false
-                       text: "   Rotation"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(rotationPage)
-                       }
-                   }
+                LineSeparator {
+                }
 
-                   MyPushButton {
-                       id: fixFloorButton
-                       iconPath: "qrc:/main_menu_icons/space_fix_tab_icon"
-                       activationSoundEnabled: false
-                       text: "   Space Fix"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(fixFloorPage)
-                       }
-                   }
+                RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    spacing: 12
+                    MyText {
+                        text: qsTr("Chaperone Profile")
+                        Layout.fillWidth: true
+                    }
+                    MyComboBox {
+                        id: summaryChaperoneProfileComboBox
+                        Layout.preferredWidth: 320
+                        model: [""]
+                        onCurrentIndexChanged: {
+                            if (currentIndex > 0) {
+                                summaryChaperoneProfileApplyButton.enabled = true
+                            } else {
+                                summaryChaperoneProfileApplyButton.enabled = false
+                            }
+                        }
+                    }
+                    MyPushButton {
+                        id: summaryChaperoneProfileApplyButton
+                        enabled: false
+                        Layout.preferredWidth: 120
+                        text: qsTr("Apply")
+                        onClicked: {
+                            if (summaryChaperoneProfileComboBox.currentIndex > 0) {
+                                ChaperoneTabController.applyChaperoneProfile(summaryChaperoneProfileComboBox.currentIndex - 1)
+                                summaryChaperoneProfileComboBox.currentIndex = 0
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-                   MyPushButton {
-                       id: audioButton
-                       iconPath: "qrc:/main_menu_icons/audio_tab_icon"
-                       activationSoundEnabled: false
-                       text: "   Audio"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(audioPage)
-                       }
-                   }
+        SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
+            title: qsTr("Stats")
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
 
-                   MyPushButton {
-                       id: videoButton
-                       iconPath: "qrc:/main_menu_icons/video_tab_icon"
-                       activationSoundEnabled: false
-                       text: "   Video"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(videoPage)
-                       }
-                   }
+                RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    spacing: 16
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        MyText {
+                            text: qsTr("Tracking Universe")
+                            color: "#8b929a"
+                        }
+                        MyText {
+                            id: summaryPlaySpaceModeText
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignRight
+                            text: qsTr("Unknown")
+                        }
+                    }
+                    VerticalSeparator {
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        MyText {
+                            text: qsTr("HMD Rotations")
+                            color: "#8b929a"
+                        }
+                        MyText {
+                            id: summaryHmdRotationsText
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignRight
+                            text: "-999.9"
+                        }
+                    }
+                }
 
-                   MyPushButton {
-                       id: utilitiesButton
-                       iconPath: "qrc:/main_menu_icons/utilities_tab_icon"
-                       activationSoundEnabled: false
-                       text: "   Utilities"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(utilitiesPage)
-                       }
-                   }
+                LineSeparator {
+                }
 
+                RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    spacing: 16
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        MyText {
+                            text: qsTr("Dropped Frames")
+                            color: "#8b929a"
+                        }
+                        MyText {
+                            id: summaryDroppedFramesText
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignRight
+                            text: "0"
+                        }
+                    }
+                    VerticalSeparator {
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        MyText {
+                            text: qsTr("Reprojected Frames")
+                            color: "#8b929a"
+                        }
+                        MyText {
+                            id: summaryReprojectedFramesText
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignRight
+                            text: "0"
+                        }
+                    }
+                }
 
-                   MyPushButton {
-                       id: statisticsButton
-                       iconPath: "qrc:/main_menu_icons/statistics_tab_icon"
-                       activationSoundEnabled: false
-                       text: "   Statistics"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(statisticsPage)
-                       }
-                   }
+                LineSeparator {
+                }
 
-                   Item {
-                       Layout.fillHeight: true
-                       Layout.fillWidth: true
-                   }
+                RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    spacing: 16
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        MyText {
+                            text: qsTr("Timed Out")
+                            color: "#8b929a"
+                        }
+                        MyText {
+                            id: summaryTimedOutText
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignRight
+                            text: "0"
+                        }
+                    }
+                    VerticalSeparator {
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: 1
+                        MyText {
+                            text: qsTr("Reprojection Ratio")
+                            color: "#8b929a"
+                        }
+                        MyText {
+                            id: summaryTotalRatioText
+                            Layout.fillWidth: true
+                            horizontalAlignment: Text.AlignRight
+                            text: "0"
+                        }
+                    }
+                }
+            }
+        }
 
-                   MyPushButton {
-                       id: bindingsButton
-                       iconPath: "qrc:/main_menu_icons/bindings_tab_icon"
-                       activationSoundEnabled: false
-                       text: "   Bindings"
-                       Layout.fillWidth: true
-                       onClicked: {
-                            SteamVRTabController.launchBindingUI()
-                       }
-                   }
+        SettingsGroupBox {
+            rowHeight: groupBoxRowHeight
+            title: qsTr("Microphone")
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 0
 
-                   MyPushButton {
-                       id: settingsButton
-                       iconPath: "qrc:/main_menu_icons/settings_tab_icon"
-                       activationSoundEnabled: false
-                       text: "   Settings"
-                       Layout.fillWidth: true
-                       onClicked: {
-                           MyResources.playFocusChangedSound()
-                           mainView.push(settingsPage)
-                       }
-                   }
-               }
+                RowLayout {
+                    Layout.preferredHeight: groupBoxRowHeight
+                    spacing: 8
+                    MyPushButton2 {
+                        id: summaryMicMuteToggle
+                        Layout.preferredWidth: 44
+                        Layout.preferredHeight: 40
+                        checkable: true
+                        contentItem: Image {
+                            source: parent.checked ? "qrc:/qt/qml/AdvancedSettings/img/audio/microphone/mic_off.svg" : "qrc:/qt/qml/AdvancedSettings/img/audio/microphone/mic_on.svg"
+                            sourceSize.width: 26
+                            sourceSize.height: 26
+                            fillMode: Image.PreserveAspectFit
+                        }
+                        onCheckedChanged: {
+                            AudioTabController.setMicMuted(checked)
+                        }
+                    }
+                    MySlider {
+                        id: summaryMicVolumeSlider
+                        from: 0.0
+                        to: 1.0
+                        stepSize: 0.01
+                        value: 1.0
+                        Layout.fillWidth: true
+                        onPositionChanged: {
+                            var val = this.position * 100
+                            summaryMicVolumeText.text = Math.round(val) + "%"
+                        }
+                        onValueChanged: {
+                            AudioTabController.setMicVolume(this.value.toFixed(2))
+                        }
+                    }
+                    MyText {
+                        id: summaryMicVolumeText
+                        text: "100%"
+                        Layout.preferredWidth: 64
+                        horizontalAlignment: Text.AlignRight
+                    }
+                }
 
+                LineSeparator {
+                }
 
-               ColumnLayout {
-                   Layout.fillHeight: true
-                   Layout.fillWidth: true
-                   Layout.leftMargin: 80
-                   spacing: 9
+                MyToggleButton {
+                    id: summaryPttToggle
+                    Layout.preferredHeight: groupBoxRowHeight
+                    text: AudioTabController.micReversePtt ? qsTr("Push-to-Mute") : qsTr("Push-to-Talk")
+                    Layout.fillWidth: true
+                    onClicked: {
+                         AudioTabController.setPttEnabled(checked, true)
+                    }
+                }
+            }
+        }
 
-                   RowLayout {
-                       spacing: 18
+        Item {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+        }
 
-                       MyText {
-                           text: "Video Profile:"
-                       }
-                       Item{
-                          Layout.fillWidth: true
-                       }
+        RowLayout {
+            spacing: 12
 
-                       MyComboBox {
-                           id: summaryVideoProfileComboBox
-                           Layout.maximumWidth: 378
-                           Layout.minimumWidth: 378
-                           Layout.preferredWidth: 378
-                           model: [""]
-                           onCurrentIndexChanged: {
-                               if (currentIndex > 0) {
-                                   summaryVideoProfileApplyButton.enabled = true
-                               } else {
-                                   summaryVideoProfileApplyButton.enabled = false
-                               }
-                           }
-                       }
+            Rectangle {
+                id: summaryVersionCheckTextRect
+                visible: true
+                color: "transparent"
+                radius: 3
+                MyText {
+                    id: summaryVersionCheckText
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: ""
+                    color: "#ffffff"
+                    font.pointSize: 15
+                    minimumPointSize: 10
+                    fontSizeMode: Text.Fit
+                    leftPadding: 12
+                    rightPadding: 12
+                    horizontalAlignment: Text.AlignLeft
+                    width: parent.width
+                    wrapMode: Text.Wrap
+                }
+                height: 36
+                Layout.fillWidth: true
+            }
 
-                       MyPushButton {
-                           id: summaryVideoProfileApplyButton
-                           enabled: false
-                           Layout.preferredWidth: 150
-                           text: "Apply"
-                           onClicked: {
-                               if (summaryVideoProfileComboBox.currentIndex > 0) {
-                                   VideoTabController.applyVideoProfile(summaryVideoProfileComboBox.currentIndex - 1)
-                                   summaryVideoProfileComboBox.currentIndex = 0
-                               }
-                           }
-                       }
-                   }
-
-                   RowLayout {
-                       spacing: 18
-
-                       MyText {
-                           text: "Chaperone Profile:"
-                       }
-
-                       MyComboBox {
-                           id: summaryChaperoneProfileComboBox
-                           Layout.leftMargin: 47
-                           Layout.maximumWidth: 378
-                           Layout.minimumWidth: 378
-                           Layout.preferredWidth: 378
-                           Layout.fillWidth: true
-                           model: [""]
-                           onCurrentIndexChanged: {
-                               if (currentIndex > 0) {
-                                   summaryChaperoneProfileApplyButton.enabled = true
-                               } else {
-                                   summaryChaperoneProfileApplyButton.enabled = false
-                               }
-                           }
-                       }
-
-                       MyPushButton {
-                           id: summaryChaperoneProfileApplyButton
-                           enabled: false
-                           Layout.preferredWidth: 150
-                           text: "Apply"
-                           onClicked: {
-                               if (summaryChaperoneProfileComboBox.currentIndex > 0) {
-                                   ChaperoneTabController.applyChaperoneProfile(summaryChaperoneProfileComboBox.currentIndex - 1)
-                                   summaryChaperoneProfileComboBox.currentIndex = 0
-                               }
-                           }
-                       }
-                   }
-
-                   Item {
-                       Layout.fillHeight: true
-                       Layout.fillWidth: true
-                   }
-
-                   RowLayout {
-                       MyText {
-                           text: "Tracking Universe:"
-                       }
-                       MyText {
-                           id: summaryPlaySpaceModeText
-                           Layout.fillWidth: true
-                           horizontalAlignment: Text.AlignRight
-                           text: "Unknown"
-                       }
-                   }
-
-                   RowLayout {
-                       MyText {
-                           text: "HMD Rotations:"
-                       }
-                       MyText {
-                           id: summaryHmdRotationsText
-                           Layout.fillWidth: true
-                           horizontalAlignment: Text.AlignRight
-                           text: "-999.9"
-                       }
-                   }
-
-                   Item {
-                       Layout.fillHeight: true
-                       Layout.fillWidth: true
-                   }
-
-                   RowLayout {
-                       MyText {
-                           text: "Dropped Frames:"
-                       }
-                       MyText {
-                           id: summaryDroppedFramesText
-                           Layout.fillWidth: true
-                           horizontalAlignment: Text.AlignRight
-                           text: "0"
-                       }
-                   }
-
-                   RowLayout {
-                       MyText {
-                           text: "Reprojected Frames:"
-                       }
-                       MyText {
-                           id: summaryReprojectedFramesText
-                           Layout.fillWidth: true
-                           horizontalAlignment: Text.AlignRight
-                           text: "0"
-                       }
-                   }
-
-                   RowLayout {
-                       MyText {
-                           text: "Timed Out:"
-                       }
-                       MyText {
-                           id: summaryTimedOutText
-                           Layout.fillWidth: true
-                           horizontalAlignment: Text.AlignRight
-                           text: "0"
-                       }
-                   }
-
-                   RowLayout {
-                       MyText {
-                           text: "Reprojection Ratio:"
-                       }
-                       MyText {
-                           id: summaryTotalRatioText
-                           Layout.fillWidth: true
-                           horizontalAlignment: Text.AlignRight
-                           text: "0"
-                       }
-                   }
-
-                   Item {
-                       Layout.fillHeight: true
-                       Layout.fillWidth: true
-                   }
-
-
-
-                   RowLayout {
-                       MyText {
-                           text: "Microphone:"
-                       }
-                       MySlider {
-                           id: summaryMicVolumeSlider
-                           from: 0.0
-                           to: 1.0
-                           stepSize: 0.01
-                           value: 1.0
-                           Layout.fillWidth: true
-                           onPositionChanged: {
-                               var val = this.position * 100
-                               summaryMicVolumeText.text = Math.round(val) + "%"
-                           }
-                           onValueChanged: {
-                               AudioTabController.setMicVolume(this.value.toFixed(2))
-                           }
-                       }
-                       MyText {
-                           id: summaryMicVolumeText
-                           text: "100%"
-                           Layout.preferredWidth: 85
-                           horizontalAlignment: Text.AlignRight
-                       }
-
-                       MyPushButton2 {
-                           id: summaryMicMuteToggle
-                           Layout.leftMargin: 12
-                           checkable: true
-                           contentItem: Image {
-                               source: parent.checked ? "qrc:/microphone/off" : "qrc:/microphone/on"
-                               sourceSize.width: 32
-                               sourceSize.height: 32
-                               anchors.fill: parent
-                           }
-                           onCheckedChanged: {
-                               AudioTabController.setMicMuted(checked)
-                           }
-                       }
-                   }
-                   RowLayout {
-                       MyToggleButton {
-                           id: summaryPttToggle
-                           text: "Push-to-Talk"
-                           onClicked: {
-                                AudioTabController.setPttEnabled(checked, true)
-                           }
-                       }
-                   }
-
-                   Item {
-                       Layout.fillHeight: true
-                       Layout.fillWidth: true
-                   }
-
-                   RowLayout {
-
-                           Rectangle {
-                               id: summaryVersionCheckTextRect
-                               visible: true
-                               color: "#2a2e35"
-                               MyText {
-                                   id: summaryVersionCheckText
-                                   text: ""
-                                   color: "#3d4450"
-                                   font.pointSize: 22
-                                   minimumPointSize: 11
-                                   fontSizeMode: Text.Fit
-                                   leftPadding: 8
-                                   rightPadding: 8
-                                   horizontalAlignment: Text.AlignHCenter
-                                   width: parent.width
-                                   wrapMode: Text.Wrap
-                               }
-                               height: 40
-                               Layout.fillWidth: true
-                           }
-
-                       MyText {
-                           id: summaryVersionText
-                           text: "v0.0.0"
-                           font.pointSize: 16
-                           horizontalAlignment: Text.AlignRight
-                       }
-                   }
-
-
-               }
-           }
-       }
-   }
+            MyText {
+                id: summaryVersionText
+                text: "v0.0.0"
+                font.pointSize: 13
+                color: "#8b929a"
+                horizontalAlignment: Text.AlignRight
+            }
+        }
+    }
 
    Component.onCompleted: {
        reloadChaperoneProfiles()
@@ -449,18 +329,18 @@ MyStackViewPage {
        summaryVersionCheckText.text = OverlayController.versionCheckText
        if (OverlayController.newVersionDetected)
        {
-           summaryVersionCheckTextRect.color = "#ff0000"
+           summaryVersionCheckTextRect.color = "#c4372d"
        } else {
-           summaryVersionCheckTextRect.color = "#2a2e35"
+           summaryVersionCheckTextRect.color = "transparent"
        }
 
 
        if (MoveCenterTabController.trackingUniverse === 0) {
-           summaryPlaySpaceModeText.text = "Sitting"
+           summaryPlaySpaceModeText.text = qsTr("Sitting")
        } else if (MoveCenterTabController.trackingUniverse === 1) {
-           summaryPlaySpaceModeText.text = "Standing"
+           summaryPlaySpaceModeText.text = qsTr("Standing")
        } else {
-           summaryPlaySpaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
+           summaryPlaySpaceModeText.text = qsTr("Unknown(%1)").arg(MoveCenterTabController.trackingUniverse)
        }
        updateStatistics()
        if (visible) {
@@ -470,32 +350,31 @@ MyStackViewPage {
        summaryMicMuteToggle.checked = AudioTabController.micMuted
        summaryPttToggle.checked = AudioTabController.pttEnabled
    }
-
    Connections {
-       target: OverlayController
-       onNewVersionDetectedChanged: {
+       target: OverlayController 
+       function onNewVersionDetectedChanged() {
            if (OverlayController.newVersionDetected)
            {
-               summaryVersionCheckTextRect.color = "#ff0000"
+               summaryVersionCheckTextRect.color = "#c4372d"
            } else {
-               summaryVersionCheckTextRect.color = "#2a2e35"
+               summaryVersionCheckTextRect.color = "transparent"
            }
        }
-       onVersionCheckTextChanged: {
+       function onVersionCheckTextChanged() {
            summaryVersionCheckText.text = OverlayController.versionCheckText
        }
-       onDisableVersionCheckChanged: {
+       function onDisableVersionCheckChanged() {
            if (OverlayController.disableVersionCheck)
            {
                summaryVersionCheckText.visible = false
-               summaryVersionCheckTextRect.color = "#2a2e35"
+               summaryVersionCheckTextRect.color = "transparent"
            } else {
                summaryVersionCheckText.visible = true
                if (OverlayController.newVersionDetected)
                {
-                   summaryVersionCheckTextRect.color = "#ff0000"
+                   summaryVersionCheckTextRect.color = "#c4372d"
                } else {
-                   summaryVersionCheckTextRect.color = "#2a2e35"
+                   summaryVersionCheckTextRect.color = "transparent"
                }
            }
        }
@@ -503,40 +382,40 @@ MyStackViewPage {
 
    Connections {
        target: ChaperoneTabController
-       onChaperoneProfilesUpdated: {
+       function onChaperoneProfilesUpdated() {
            reloadChaperoneProfiles()
        }
    }
 
    Connections {
        target: VideoTabController
-       onVideoProfilesUpdated: {
+       function onVideoProfilesUpdated() {
            reloadVideoProfiles()
        }
    }
 
    Connections {
        target: AudioTabController
-       onMicVolumeChanged: {
+       function onMicVolumeChanged() {
            summaryMicVolumeSlider.value = AudioTabController.micVolume
        }
-       onMicMutedChanged: {
+       function onMicMutedChanged() {
            summaryMicMuteToggle.checked = AudioTabController.micMuted
        }
-       onPttEnabledChanged: {
+       function onPttEnabledChanged() {
            summaryPttToggle.checked = AudioTabController.pttEnabled
        }
    }
 
    Connections {
        target: MoveCenterTabController
-       onTrackingUniverseChanged: {
+       function onTrackingUniverseChanged() {
            if (MoveCenterTabController.trackingUniverse === 0) {
-               summaryPlaySpaceModeText.text = "Sitting"
+               summaryPlaySpaceModeText.text = qsTr("Sitting")
            } else if (MoveCenterTabController.trackingUniverse === 1) {
-               summaryPlaySpaceModeText.text = "Standing"
+               summaryPlaySpaceModeText.text = qsTr("Standing")
            } else {
-               summaryPlaySpaceModeText.text = "Unknown(" + MoveCenterTabController.trackingUniverse + ")"
+               summaryPlaySpaceModeText.text = qsTr("Unknown(%1)").arg(MoveCenterTabController.trackingUniverse)
            }
        }
    }
@@ -545,9 +424,9 @@ MyStackViewPage {
    function updateStatistics() {
        var rotations = StatisticsTabController.hmdRotations
        if (rotations > 0) {
-           summaryHmdRotationsText.text = rotations.toFixed(2) + " CCW"
+           summaryHmdRotationsText.text = qsTr("%1 CCW").arg(rotations.toFixed(2))
        } else {
-           summaryHmdRotationsText.text = -rotations.toFixed(2) + " CW"
+           summaryHmdRotationsText.text = qsTr("%1 CW").arg(-rotations.toFixed(2))
        }
        summaryDroppedFramesText.text = StatisticsTabController.droppedFrames
        summaryReprojectedFramesText.text = StatisticsTabController.reprojectedFrames

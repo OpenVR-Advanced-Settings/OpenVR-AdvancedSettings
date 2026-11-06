@@ -4,37 +4,23 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: brightnessGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "SuperSampling: (may require refresh of dashboard or restart of SteamVR)"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.color: "#d9dbe0"
-        radius: 8
-    }
+    title: qsTr("SuperSampling: (may require refresh of dashboard or restart of SteamVR)")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
-        Rectangle {
-            color: "#d9dbe0"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 5
-        }
-
         RowLayout {
+            Layout.preferredHeight: rowHeight
             spacing: 16
 
             MyToggleButton {
                 id: videoAllowSupersampleOverrideToggle
-                text: "Toggle Override"
+                text: qsTr("Override")
                 onCheckedChanged: {
                     VideoTabController.setAllowSupersampleOverride(this.checked, false)
                     VideoTabController.setSuperSampling(videoSupersamplingSlider.value, true)
@@ -133,12 +119,12 @@ GroupBox {
     Connections {
         target: VideoTabController
 
-        onSuperSamplingChanged: {
+        function onSuperSamplingChanged() {
             var s1 = VideoTabController.superSampling
             videoSupersamplingSlider.value = s1
             videoSupersamplingText.text = s1.toFixed(2)
         }
-        onAllowSupersampleOverrideChanged: {
+        function onAllowSupersampleOverrideChanged() {
             videoAllowSupersampleOverrideToggle.checked = VideoTabController.allowSupersampleOverride
             var s1 = VideoTabController.superSampling
             videoSupersamplingSlider.value = s1

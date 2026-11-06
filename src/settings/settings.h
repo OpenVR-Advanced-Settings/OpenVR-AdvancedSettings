@@ -8,6 +8,9 @@ enum class BoolSetting
     PLAYSPACE_lockXToggle,
     PLAYSPACE_lockYToggle,
     PLAYSPACE_lockZToggle,
+    PLAYSPACE_lockRollToggle,
+    PLAYSPACE_lockPitchToggle,
+    PLAYSPACE_lockYawToggle,
     PLAYSPACE_momentumSave,
     PLAYSPACE_turnBindLeft,
     PLAYSPACE_turnBindRight,
@@ -37,6 +40,21 @@ enum class BoolSetting
     APPLICATION_openXRWorkAround,
     APPLICATION_autoApplyChaperone,
     APPLICATION_desktopModeToggle,
+    APPLICATION_hideSocials,
+    APPLICATION_aiTranslatedEn,
+    APPLICATION_aiTranslatedDe,
+    APPLICATION_aiTranslatedEs,
+    APPLICATION_aiTranslatedPt,
+    APPLICATION_aiTranslatedJa,
+    APPLICATION_aiTranslatedZhTw,
+    APPLICATION_aiTranslatedZhCn,
+    APPLICATION_aiTranslationPromptSeenEn,
+    APPLICATION_aiTranslationPromptSeenDe,
+    APPLICATION_aiTranslationPromptSeenEs,
+    APPLICATION_aiTranslationPromptSeenPt,
+    APPLICATION_aiTranslationPromptSeenJa,
+    APPLICATION_aiTranslationPromptSeenZhTw,
+    APPLICATION_aiTranslationPromptSeenZhCn,
 
     AUDIO_pttEnabled,
     AUDIO_pttShowNotification,
@@ -112,9 +130,10 @@ enum class StringSetting
     KEYBOARDSHORTCUT_keyPressSystem,
 
     APPLICATION_autoApplyChaperoneName,
+    APPLICATION_language,
 
     // LAST_ENUMERATOR must always be set to the last value
-    LAST_ENUMERATOR = APPLICATION_autoApplyChaperoneName,
+    LAST_ENUMERATOR = APPLICATION_language,
 };
 
 enum class IntSetting

@@ -60,6 +60,15 @@ void sendKeyboardCtrlV()
     sendTokensAsInput( tokens );
 }
 
+void sendKeyboardCtrlX()
+{
+    const auto tokens = std::vector<Token>{ Token::TOKEN_NO_KEYUP_NEXT,
+                                            Token::MODIFIER_CTRL,
+                                            Token::KEY_x };
+
+    sendTokensAsInput( tokens );
+}
+
 void sendKeyboardRShiftTilde1()
 {
     const auto tokens = std::vector<Token>{

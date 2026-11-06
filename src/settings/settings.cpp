@@ -1,5 +1,6 @@
 #include <utility>
-#include <easylogging++.h>
+#include <QtLogging>
+#include <QtDebug>
 #include "../overlaycontroller.h"
 #include "internal/settings_controller.h"
 
@@ -14,9 +15,9 @@ void saveChangedSettings()
 
 void saveAllSettings()
 {
-    LOG( INFO ) << "Saving all settings.";
+    qInfo() << "Saving all settings.";
     settingController.saveAllSettings();
-    LOG( INFO ) << "All settings saved.";
+    qInfo() << "All settings saved.";
 }
 
 [[nodiscard]] bool getSetting( const BoolSetting setting )

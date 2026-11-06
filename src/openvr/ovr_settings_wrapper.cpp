@@ -1,4 +1,6 @@
 #include "ovr_settings_wrapper.h"
+#include <QtLogging>
+#include <QtDebug>
 
 namespace ovr_settings_wrapper
 {
@@ -19,9 +21,9 @@ SettingsError handleErrors( std::string settingsKey,
         {
             return SettingsError::UndefinedError;
         }
-        LOG( ERROR ) << "Could not access \"" << settingsKey << "\" setting: "
-                     << vr::VRSettings()->GetSettingsErrorNameFromEnum( error )
-                     << " " << customErrorMsg;
+        qCritical() << "Could not access \"" << settingsKey << "\" setting: "
+                    << vr::VRSettings()->GetSettingsErrorNameFromEnum( error )
+                    << " " << customErrorMsg;
         if ( error
              == vr::EVRSettingsError::VRSettingsError_UnsetSettingHasNoDefault )
         {

@@ -1,6 +1,7 @@
 #include "AudioManagerWindows.h"
 #include <exception>
-#include "easylogging++.h"
+#include <QtLogging>
+#include <QtDebug>
 #include "../AudioTabController.h"
 
 #include <locale>
@@ -48,7 +49,7 @@ void AudioManagerWindows::init( AudioTabController* var_controller )
     playbackAudioDevice = getDefaultPlaybackDevice( audioDeviceEnumerator );
     if ( !playbackAudioDevice )
     {
-        LOG( WARNING ) << "Could not find a default recording device.";
+        qWarning() << "Could not find a default recording device.";
     }
     micAudioDevice = getDefaultRecordingDevice( audioDeviceEnumerator );
     if ( micAudioDevice )
@@ -57,7 +58,7 @@ void AudioManagerWindows::init( AudioTabController* var_controller )
     }
     else
     {
-        LOG( WARNING ) << "Could not find a default recording device.";
+        qWarning() << "Could not find a default recording device.";
     }
     this->controller = var_controller;
     audioDeviceEnumerator->RegisterEndpointNotificationCallback(
@@ -65,7 +66,7 @@ void AudioManagerWindows::init( AudioTabController* var_controller )
     policyConfig = getPolicyConfig();
     if ( !policyConfig )
     {
-        LOG( ERROR ) << "Could not find PolicyConfig interface";
+        qCritical() << "Could not find PolicyConfig interface";
     }
 }
 
@@ -78,8 +79,7 @@ void AudioManagerWindows::setPlaybackDevice( const std::string& id,
         auto dev = getDevice( audioDeviceEnumerator, id );
         if ( !dev )
         {
-            LOG( WARNING ) << "Could not find playback device \"" << id
-                           << "\".";
+            qWarning() << "Could not find playback device \"" << id << "\".";
         }
         else
         {
@@ -142,7 +142,7 @@ void AudioManagerWindows::setMirrorDevice( const std::string& id, bool notify )
         }
         else
         {
-            LOG( WARNING ) << "Could not find mirror device \"" << id << "\".";
+            qWarning() << "Could not find mirror device \"" << id << "\".";
         }
     }
     if ( notify )
@@ -258,8 +258,7 @@ void AudioManagerWindows::setMicDevice( const std::string& id, bool notify )
         auto dev = getDevice( audioDeviceEnumerator, id );
         if ( !dev )
         {
-            LOG( WARNING ) << "Could not find recording device \"" << id
-                           << "\".";
+            qWarning() << "Could not find recording device \"" << id << "\".";
         }
         else
         {
@@ -617,7 +616,7 @@ AudioManagerWindows::OnDefaultDeviceChanged( EDataFlow flow,
                 }
                 else if ( !pwstrDefaultDeviceId )
                 {
-                    LOG( WARNING ) << "No recording device available.";
+                    qWarning() << "No recording device available.";
                 }
                 else
                 {
@@ -625,8 +624,8 @@ AudioManagerWindows::OnDefaultDeviceChanged( EDataFlow flow,
                         converter;
                     std::string name
                         = converter.to_bytes( pwstrDefaultDeviceId );
-                    LOG( WARNING ) << "Could not find recording device \""
-                                   << name << "\".";
+                    qWarning() << "Could not find recording device \"" << name
+                               << "\".";
                 }
                 controller->onNewRecordingDevice();
             }
@@ -647,7 +646,7 @@ AudioManagerWindows::OnDefaultDeviceChanged( EDataFlow flow,
                 playbackAudioDevice = device;
                 if ( !pwstrDefaultDeviceId )
                 {
-                    LOG( WARNING ) << "No playback device available.";
+                    qWarning() << "No playback device available.";
                 }
                 else if ( !playbackAudioDevice )
                 {
@@ -655,7 +654,7 @@ AudioManagerWindows::OnDefaultDeviceChanged( EDataFlow flow,
                         converter;
                     std::string name
                         = converter.to_bytes( pwstrDefaultDeviceId );
-                    LOG( WARNING )
+                    qWarning()
                         << "Could not find playback device \"" << name << "\".";
                 }
                 controller->onNewPlaybackDevice();

@@ -6,7 +6,8 @@ import "../../common"
 
 RowLayout {
     id: audioMicNameCombo
-    property string deviceText: "Microphone: "
+    Layout.preferredHeight: 48
+    property string deviceText: qsTr("Microphone")
 
     // The entries in the dropdown box.
     property alias devices: selector.model
@@ -15,12 +16,13 @@ RowLayout {
     property alias deviceIndex: selector.currentIndex
     MyText {
         text: deviceText
-        Layout.preferredWidth: 200
+        Layout.preferredWidth: 260
     }
     MyToggleButton {
         id: recordingOverrideToggle
+        visible: false
         Layout.preferredWidth: 250
-        text: "Toggle Override"
+        text: qsTr("Toggle Override")
         onClicked: {
             AudioTabController.setRecordingOverride(this.checked, false)
         }
@@ -63,14 +65,14 @@ RowLayout {
     }
     Connections {
         target: AudioTabController
-        onMicDeviceIndexChanged: {
+        function onMicDeviceIndexChanged() {
             setShownAudioDevice(index)
         }
-        onRecordingDeviceListChanged: {
+        function onRecordingDeviceListChanged() {
             devices = getAudioDeviceList()
             setShownAudioDevice(AudioTabController.micDeviceIndex)
         }
-        onRecordingOverrideChanged: {
+        function onRecordingOverrideChanged() {
             recordingOverrideToggle.value = AudioTabController.recordingOverride
         }
     }

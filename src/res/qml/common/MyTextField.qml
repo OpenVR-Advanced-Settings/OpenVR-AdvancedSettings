@@ -7,15 +7,20 @@ TextField {
     property string savedText: ""
     property bool active: false
     id: myTextField
-    color: "#d9dbe0"
+    color: "#ffffff"
     text: ""
-    font.pointSize: 20
+    font.pointSize: 16
+    leftPadding: 10
+    rightPadding: 10
+    topPadding: 6
+    bottomPadding: 6
     background: Button {
         hoverEnabled: true
         background: Rectangle {
-            color: parent.hovered ? "#484f5b" : "#2a2e35"
-            border.color: "#d9dbe0"
-            border.width: 2
+            color: parent.hovered ? "#262a31" : "#1d2026"
+            border.width: 1
+            border.color: myTextField.activeFocus ? "#1a9fff" : "#3a4049"
+            radius: 3
         }
         onClicked: {
             myTextField.forceActiveFocus()
@@ -34,12 +39,14 @@ TextField {
         else{
             myTextField.onInputEvent(text)
             active = false;
+            if (!OverlayController.desktopMode) {
+                OverlayController.hideKeyboard(keyBoardUID)
+            }
         }
     }
-    onEditingFinished: {
-        if(OverlayController.desktopMode){
-            myTextField.onInputEvent(text)
-        }
+    //Enter/Return drops focus, which applies the text via onActiveFocusChanged
+    onAccepted: {
+        myTextField.focus = false
     }
     function onInputEvent(input) {
         text = input
@@ -47,7 +54,7 @@ TextField {
     Connections {
         target: OverlayController
 
-        onSubmitLastTextField:{
+        function onSubmitLastTextField(value) {
             //value here is UID
             if(value == 0){
                 active = false;
@@ -60,17 +67,24 @@ TextField {
             }
         }
 
-        onKeyBoardInputSignal: {
+        function onKeyBoardInputSignal(input, userValue) {
             if (userValue == keyBoardUID) {
                 if(input == '\b'){
-                    myTextField.text = text.slice(0,-1)
+                    if (selectionStart !== selectionEnd) {
+                        remove(selectionStart, selectionEnd)
+                    } else if (cursorPosition > 0) {
+                        remove(cursorPosition - 1, cursorPosition)
+                    }
                     return
                 }
-                else if(input == '\e'){
-                    myTextField.text = text.slice(0,cursorPosition)+text.slice(cursorposition+1)
+                else if(input == '\x7f'){
+                    if (selectionStart !== selectionEnd) {
+                        remove(selectionStart, selectionEnd)
+                    } else {
+                        remove(cursorPosition, cursorPosition + 1)
+                    }
                     return;
                 }
-                //Execute input
                 else if(input == '\n'){
                     if(!OverlayController.desktopMode){
                         //myTextField.onInputEvent(input)
@@ -82,11 +96,15 @@ TextField {
                     return;
                 }
                 else{
-                    myTextField.text = text + input;
+                    if (selectionStart !== selectionEnd) {
+                        remove(selectionStart, selectionEnd)
+                    }
+                    insert(cursorPosition, input)
                 }
                 //if (myTextField.text !== input) {
                 //    myTextField.onInputEvent(input)
                 //}
+
             }
         }
     }

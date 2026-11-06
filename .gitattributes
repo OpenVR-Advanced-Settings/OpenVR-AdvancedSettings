@@ -43,6 +43,10 @@
 #*.svg text
 *.eps binary
 
+# Fonts
+*.otf binary
+*.ttf binary
+
 #
 # Exclude files from exporting
 #

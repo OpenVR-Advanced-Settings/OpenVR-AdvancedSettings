@@ -4,65 +4,50 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: brightnessGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "Misc:"
-        bottomPadding: -10
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.color: "#d9dbe0"
-        radius: 8
-    }
+    title: qsTr("Misc")
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: 0
 
-        Rectangle {
-            color: "#d9dbe0"
-            height: 1
+        MyToggleButton {
+            id: videoMotionSmoothingToggle
+            Layout.preferredHeight: rowHeight
+            text: qsTr("Motion Smoothing")
             Layout.fillWidth: true
-            Layout.bottomMargin: 5
-        }
-
-        RowLayout {
-            spacing: 16
-
-            MyToggleButton {
-                id: videoMotionSmoothingToggle
-                text: "Motion Smoothing"
-                onCheckedChanged: {
-                       VideoTabController.setMotionSmoothing(this.checked, false)
-                }
-            }
-            Item {
-                Layout.preferredWidth: 20
-            }
-
-            MyToggleButton {
-                id: videoAllowSupersampleFilteringToggle
-                text: "Advanced SS Filtering"
-                onCheckedChanged: {
-                    VideoTabController.setAllowSupersampleFiltering(this.checked, false)
-                }
-            }
-            Item {
-                Layout.preferredWidth: 20
-            }
-
-            MyToggleButton {
-                id: videoUseOverlayToggle
-                text: "Use Overlay For Color"
-                onCheckedChanged: {
-                    VideoTabController.setIsOverlayMethodActive(this.checked, true)
-                }
+            Layout.rightMargin: 0
+            onCheckedChanged: {
+                VideoTabController.setMotionSmoothing(this.checked, false)
             }
         }
-
+        LineSeparator {
+        }
+        MyToggleButton {
+            id: videoAllowSupersampleFilteringToggle
+            Layout.preferredHeight: rowHeight
+            text: qsTr("Advanced SS Filtering")
+            Layout.fillWidth: true
+            Layout.rightMargin: 0
+            onCheckedChanged: {
+                VideoTabController.setAllowSupersampleFiltering(this.checked, false)
+            }
+        }
+        LineSeparator {
+        }
+        MyToggleButton {
+            id: videoUseOverlayToggle
+            Layout.preferredHeight: rowHeight
+            text: qsTr("Use Overlay For Color")
+            Layout.fillWidth: true
+            Layout.rightMargin: 0
+            onCheckedChanged: {
+                VideoTabController.setIsOverlayMethodActive(this.checked, true)
+            }
+        }
     }
 
     Component.onCompleted: {
@@ -73,14 +58,14 @@ GroupBox {
 
     Connections {
         target: VideoTabController
-        onAllowSupersampleFilteringChanged: {
+        function onAllowSupersampleFilteringChanged() {
             videoAllowSupersampleFilteringToggle.checked = VideoTabController.allowSupersampleFiltering
         }
 
-        onMotionSmoothingChanged: {
+        function onMotionSmoothingChanged() {
             videoMotionSmoothingToggle.checked = VideoTabController.motionSmoothing
         }
-        onIsOverlayMethodActiveChanged:{
+        function onIsOverlayMethodActiveChanged(){
             videoUseOverlayToggle.checked = VideoTabController.isOverlayMethodActive
         }
 

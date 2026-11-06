@@ -1,5 +1,6 @@
 #include "FrameRateUtils.h"
-#include <easylogging++.h>
+#include <QtLogging>
+#include <QtDebug>
 
 namespace utils
 {
@@ -18,11 +19,10 @@ unsigned int adjustUpdateRate( const unsigned int baseRefreshKey )
 
     if ( vrSettingsError != vr::VRSettingsError_None )
     {
-        LOG( WARNING ) << "Could not read \""
-                       << vr::k_pch_SteamVR_PreferredRefreshRate
-                       << "\" setting: "
-                       << vr::VRSettings()->GetSettingsErrorNameFromEnum(
-                              vrSettingsError );
+        qWarning() << "Could not read \""
+                   << vr::k_pch_SteamVR_PreferredRefreshRate << "\" setting: "
+                   << vr::VRSettings()->GetSettingsErrorNameFromEnum(
+                          vrSettingsError );
         return baseRefreshKey;
     }
 

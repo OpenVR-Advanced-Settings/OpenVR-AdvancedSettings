@@ -1,4 +1,7 @@
 #include "ovr_system_wrapper.h"
+#include <QtLogging>
+#include <QtDebug>
+#include <vector>
 
 namespace ovr_system_wrapper
 {
@@ -8,11 +11,11 @@ SystemError handleTrackedPropertyErrors( vr::TrackedDeviceProperty tdp,
 {
     if ( error != vr::TrackedProp_Success )
     {
-        LOG( ERROR ) << "Could not get Property with error \""
-                     << vr::VRSystem()->GetPropErrorNameFromEnum( error )
-                     << "\" property: "
-                     << "todo"
-                     << " " << customErrorMsg;
+        qCritical() << "Could not get Property with error \""
+                    << vr::VRSystem()->GetPropErrorNameFromEnum( error )
+                    << "\" property: "
+                    << "todo"
+                    << " " << customErrorMsg;
         if ( tdp == vr::Prop_TrackedDeviceProperty_Max )
         {
             // Just for Error OPPS todo
@@ -295,7 +298,7 @@ std::string getControllerName()
     }
     if ( !isLeftCon && !isRightCon && hasHMD )
     {
-        LOG( WARNING ) << "WARNING: No Controllers assuming based on HMD";
+        qWarning() << "WARNING: No Controllers assuming based on HMD";
         auto hmdName
             = getStringTrackedProperty( hmdIdx, vr::Prop_ControllerType_String )
                   .second;
@@ -309,27 +312,27 @@ std::string getControllerName()
         }
         if ( hmdName == "vive_pro" )
         {
-            LOG( WARNING )
+            qWarning()
                 << "Vive Pro Detected, Assuming Knuckles this may be wrong";
             return "knuckles";
         }
         if ( hmdName == "holographic_hmd" )
         {
-            LOG( WARNING ) << "WMR detected, Assuming HP CONTROLLERS";
+            qWarning() << "WMR detected, Assuming HP CONTROLLERS";
             return "hpmotioncontroller";
         }
         if ( hmdName == "rift" )
         {
             return "oculus_touch";
         }
-        LOG( WARNING ) << "Headset Not recognized Assuming touch controllers "
-                              + hmdName;
+        qWarning() << "Headset Not recognized Assuming touch controllers "
+                          + hmdName;
         return "oculus_touch";
     }
     if ( right != left )
     {
-        LOG( WARNING ) << "WARNING: Left and Right Controllers are Different, "
-                          "Prioritizing right";
+        qWarning() << "WARNING: Left and Right Controllers are Different, "
+                      "Prioritizing right";
     }
     if ( rightIdx == 999 )
     {

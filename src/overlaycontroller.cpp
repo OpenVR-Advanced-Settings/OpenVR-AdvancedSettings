@@ -8,24 +8,84 @@
 #include <QQmlContext>
 #include <QtWidgets/QWidget>
 #include <QMouseEvent>
+#include <map>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsEllipseItem>
+#include <QQuickGraphicsConfiguration>
+#include <QQuickGraphicsDevice>
 #include <QOpenGLExtraFunctions>
 #include <QCursor>
 #include <QProcess>
 #include <QMessageBox>
+#include <QtLogging>
+#include <QtDebug>
+#include <qpa/qwindowsysteminterface.h>
 #include <iostream>
 #include <cmath>
 #include <openvr.h>
-#include <easylogging++.h>
+#include "openvr/ovr_overlay_wrapper.h"
 #include "utils/Matrix.h"
 #include "keyboard_input/input_sender.h"
 #include "settings/settings.h"
+#include "utils/translations.h"
+#include <qapplication.h>
+#include <qlogging.h>
+#include <qnamespace.h>
+#include <rhi/qrhi.h>
+#include <stdexcept>
+#if QT_CONFIG( vulkan )
+#include <QVulkanInstance>
+#include <QVulkanFunctions>
+#endif
 
 // application namespace
 namespace advsettings
 {
+#if QT_CONFIG( vulkan )
+namespace
+{
+    // OpenVR returns Vulkan extensions as a single space separated string.
+    QByteArrayList splitVulkanExtensions( const QByteArray& buffer )
+    {
+        QByteArrayList extensions = QByteArray( buffer.constData() ).split( ' ' );
+        extensions.removeIf( []( const QByteArray& ext ) { return ext.isEmpty(); } );
+        return extensions;
+    }
+
+    QByteArrayList getOpenVRVulkanInstanceExtensions()
+    {
+        if ( !vr::VRCompositor() )
+            return {};
+        const uint32_t size
+            = vr::VRCompositor()->GetVulkanInstanceExtensionsRequired( nullptr,
+                                                                       0 );
+        if ( size == 0 )
+            return {};
+        QByteArray buffer( static_cast<qsizetype>( size ), '\0' );
+        vr::VRCompositor()->GetVulkanInstanceExtensionsRequired( buffer.data(),
+                                                                 size );
+        return splitVulkanExtensions( buffer );
+    }
+
+    QByteArrayList
+        getOpenVRVulkanDeviceExtensions( VkPhysicalDevice physicalDevice )
+    {
+        if ( !vr::VRCompositor() )
+            return {};
+        const uint32_t size
+            = vr::VRCompositor()->GetVulkanDeviceExtensionsRequired(
+                physicalDevice, nullptr, 0 );
+        if ( size == 0 )
+            return {};
+        QByteArray buffer( static_cast<qsizetype>( size ), '\0' );
+        vr::VRCompositor()->GetVulkanDeviceExtensionsRequired(
+            physicalDevice, buffer.data(), size );
+        return splitVulkanExtensions( buffer );
+    }
+} // namespace
+#endif
+
 int verifyCustomTickRate( const int tickRate )
 {
     if ( tickRate < 1 )
@@ -44,6 +104,7 @@ OverlayController::OverlayController( bool desktopMode,
                                       bool noSound,
                                       QQmlEngine& qmlEngine )
     : QObject(), m_desktopMode( desktopMode ), m_noSound( noSound ),
+      m_qmlEngine( qmlEngine ),
       m_verifiedCustomTickRateMs( verifyCustomTickRate( settings::getSetting(
           settings::IntSetting::APPLICATION_customTickRateMs ) ) ),
       m_actions(), m_alarm()
@@ -60,61 +121,16 @@ OverlayController::OverlayController( bool desktopMode,
     // Throw Error If over 16k characters in path string
     if ( !pathIsGood )
     {
-        LOG( ERROR ) << "Error Finding VR Runtime Path, Attempting Recovery: ";
+        qCritical() << "Error Finding VR Runtime Path, Attempting Recovery: ";
         uint32_t maxLengthRe = requiredLength;
-        LOG( INFO ) << "Open VR reporting Required path length of: "
-                    << maxLengthRe;
+        qInfo() << "Open VR reporting Required path length of: " << maxLengthRe;
     }
 
     m_runtimePathUrl = QUrl::fromLocalFile( tempRuntimePath );
-    LOG( INFO ) << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
+    qInfo() << "VR Runtime Path: " << m_runtimePathUrl.toLocalFile();
 
-    const double initVol = soundVolume();
-    constexpr auto clickSoundURL = "res/sounds/click.wav";
-    const auto activationSoundFile
-        = paths::binaryDirectoryFindFile( clickSoundURL );
-
-    if ( activationSoundFile.has_value() )
-    {
-        m_activationSoundEffect.setSource( QUrl::fromLocalFile(
-            QString::fromStdString( ( *activationSoundFile ) ) ) );
-        m_activationSoundEffect.setVolume( initVol );
-    }
-    else
-    {
-        LOG( ERROR ) << "Could not find activation sound file "
-                     << clickSoundURL;
-    }
-    constexpr auto focusChangedSoundURL = "res/sounds/focus.wav";
-    const auto focusChangedSoundFile
-        = paths::binaryDirectoryFindFile( focusChangedSoundURL );
-
-    if ( focusChangedSoundFile.has_value() )
-    {
-        m_focusChangedSoundEffect.setSource( QUrl::fromLocalFile(
-            QString::fromStdString( ( *focusChangedSoundFile ) ) ) );
-        m_focusChangedSoundEffect.setVolume( initVol );
-    }
-    else
-    {
-        LOG( ERROR ) << "Could not find focus Changed sound file "
-                     << focusChangedSoundURL;
-    }
-
-    constexpr auto alarmFileName = "res/sounds/alarm01.wav";
-    const auto alarm01SoundFile
-        = paths::binaryDirectoryFindFile( alarmFileName );
-
-    if ( alarm01SoundFile.has_value() )
-    {
-        m_alarm01SoundEffect.setSource( QUrl::fromLocalFile(
-            QString::fromStdString( ( *alarm01SoundFile ) ) ) );
-        m_alarm01SoundEffect.setVolume( 1.0 );
-    }
-    else
-    {
-        LOG( ERROR ) << "Could not find alarm01 sound file " << alarmFileName;
-    }
+    //Makes a Thread for Sound, to prevent stalls
+    m_soundPlayer = std::make_unique<SoundPlayer>( soundVolume() );
 
     // If we have desktop mode flag ignore waht toggle says otherwise we use
     // toggle
@@ -123,32 +139,11 @@ OverlayController::OverlayController( bool desktopMode,
         m_desktopMode = desktopModeToggle();
     }
 
-    QSurfaceFormat format;
-    // Qt's QOpenGLPaintDevice is not compatible with OpenGL versions >= 3.0
-    // NVIDIA does not care, but unfortunately AMD does
-    // Are subtle changes to the semantics of OpenGL functions actually covered
-    // by the compatibility profile, and this is an AMD bug?
-    format.setVersion( 2, 1 );
-    // format.setProfile( QSurfaceFormat::CompatibilityProfile );
-    format.setDepthBufferSize( 16 );
-    format.setStencilBufferSize( 8 );
-    format.setSamples( 16 );
-
-    m_openGLContext.setFormat( format );
-    if ( !m_openGLContext.create() )
-    {
-        throw std::runtime_error( "Could not create OpenGL context" );
-    }
-
-    // create an offscreen surface to attach the context and FBO to
-    m_offscreenSurface.setFormat( m_openGLContext.format() );
-    m_offscreenSurface.create();
-    m_openGLContext.makeCurrent( &m_offscreenSurface );
-
     if ( !vr::VROverlay() )
     {
-        QMessageBox::critical(
-            nullptr, "OpenVR Advanced Settings Overlay", "Is OpenVR running?" );
+        QMessageBox::critical( nullptr,
+                               tr( "OpenVR Advanced Settings Overlay" ),
+                               tr( "Is OpenVR running?" ) );
         throw std::runtime_error( std::string( "No Overlay interface" ) );
     }
 
@@ -344,11 +339,11 @@ OverlayController::OverlayController( bool desktopMode,
     }
     else
     {
-        LOG( INFO ) << "Version Check: Feature disabled. Not checking version.";
+        qInfo() << "Version Check: Feature disabled. Not checking version.";
     }
 
-    LOG( INFO ) << "OPENSSL VERSION: "
-                << QSslSocket::sslLibraryBuildVersionString();
+    qInfo() << "OPENSSL VERSION: "
+            << QSslSocket::sslLibraryBuildVersionString();
 }
 
 OverlayController::~OverlayController()
@@ -373,7 +368,7 @@ void OverlayController::exitApp()
     Shutdown();
     QApplication::exit();
 
-    LOG( INFO ) << "All systems exited.";
+    qInfo() << "All systems exited.";
     exit( EXIT_SUCCESS );
     // Does not fallthrough
 }
@@ -385,6 +380,8 @@ void OverlayController::Shutdown()
                 this,
                 SLOT( OnTimeoutPumpEvents() ) );
     m_pumpEventsTimer.stop();
+
+    m_soundPlayer->shutdown();
 
     if ( m_pRenderTimer )
     {
@@ -403,7 +400,10 @@ void OverlayController::Shutdown()
         m_pRenderTimer->stop();
         m_pRenderTimer.reset();
     }
-    m_pFbo.reset();
+    m_render_pass_descriptor.reset();
+    m_render_target.reset();
+    m_pDepthStencil.reset();
+    m_pFBTexture.reset();
 }
 
 void OverlayController::SetWidget( QQuickItem* quickItem,
@@ -412,6 +412,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
 {
     if ( !m_desktopMode )
     {
+        qDebug() << "not desktop mode";
         vr::VROverlayError overlayError
             = vr::VROverlay()->CreateDashboardOverlay(
                 key.c_str(),
@@ -422,16 +423,19 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         {
             if ( overlayError == vr::VROverlayError_KeyInUse )
             {
-                QMessageBox::critical( nullptr,
-                                       "OpenVR Advanced Settings Overlay",
-                                       "Another instance is already running." );
+                QMessageBox::critical(
+                    nullptr,
+                    tr( "OpenVR Advanced Settings Overlay" ),
+                    tr( "Another instance is already running." ) );
             }
             throw std::runtime_error( std::string(
                 "Failed to create Overlay: "
                 + std::string( vr::VROverlay()->GetOverlayErrorNameFromEnum(
                     overlayError ) ) ) );
         }
-        vr::VROverlay()->SetOverlayWidthInMeters( m_ulOverlayHandle, 2.5f );
+        //TODO fine-tuning size 1450 is a tad too large
+        // current is 1450 width
+        vr::VROverlay()->SetOverlayWidthInMeters( m_ulOverlayHandle, 2.8f );
         vr::VROverlay()->SetOverlayInputMethod(
             m_ulOverlayHandle, vr::VROverlayInputMethod_Mouse );
         vr::VROverlay()->SetOverlayFlag(
@@ -439,24 +443,17 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
             vr::VROverlayFlags_SendVRSmoothScrollEvents,
             true );
 
-        constexpr auto thumbiconFilename = "res/img/icons/thumbicon.png";
-        const auto thumbIconPath
-            = paths::binaryDirectoryFindFile( thumbiconFilename );
-        if ( thumbIconPath.has_value() )
         {
-            vr::VROverlay()->SetOverlayFromFile( m_ulOverlayThumbnailHandle,
-                                                 thumbIconPath->c_str() );
-        }
-        else
-        {
-            LOG( ERROR ) << "Could not find thumbnail icon \""
-                         << thumbiconFilename << "\"";
+            QImage thumbiconImg( ":/qt/qml/AdvancedSettings/img/icons/thumbicon.png");
+            ovr_overlay_wrapper::setOverlayFromQImage(
+                m_ulOverlayThumbnailHandle, thumbiconImg );
         }
 
         // Too many render calls in too short time overwhelm Qt and an
         // assertion gets thrown. Therefore we use an timer to delay render
         // calls
         m_pRenderTimer.reset( new QTimer() );
+        m_pRenderTimer->moveToThread( qApp->thread() );
         m_pRenderTimer->setSingleShot( true );
         m_pRenderTimer->setInterval( 5 );
         connect( m_pRenderTimer.get(),
@@ -464,22 +461,106 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                  this,
                  SLOT( renderOverlay() ) );
 
-        QOpenGLFramebufferObjectFormat fboFormat;
-        fboFormat.setAttachment(
-            QOpenGLFramebufferObject::CombinedDepthStencil );
-        fboFormat.setTextureTarget( GL_TEXTURE_2D );
-        m_pFbo.reset( new QOpenGLFramebufferObject(
-            static_cast<int>( quickItem->width() ),
-            static_cast<int>( quickItem->height() ),
-            fboFormat ) );
+        // Make Qt render on the same GPU SteamVR uses, with any extensions
+        // OpenVR needs to share textures with it.
+        QQuickGraphicsConfiguration graphicsConfig;
+        switch ( QQuickWindow::graphicsApi() )
+        {
+#if QT_CONFIG( vulkan )
+        case QSGRendererInterface::Vulkan:
+        {
+            m_vulkanInstance.reset( new QVulkanInstance );
+            m_vulkanInstance->setExtensions(
+                QQuickGraphicsConfiguration::preferredInstanceExtensions()
+                + getOpenVRVulkanInstanceExtensions() );
+            if ( !m_vulkanInstance->create() )
+                throw std::runtime_error( "Cannot create vulkan instance" );
 
-        m_window.setRenderTarget( m_pFbo.get() );
+            m_window.setVulkanInstance( m_vulkanInstance.get() );
+
+            uint64_t hmdPhysicalDevice = 0;
+            vr::VRSystem()->GetOutputDevice( &hmdPhysicalDevice,
+                                             vr::TextureType_Vulkan,
+                                             m_vulkanInstance->vkInstance() );
+            auto physicalDevice
+                = reinterpret_cast<VkPhysicalDevice>( hmdPhysicalDevice );
+            if ( physicalDevice != VK_NULL_HANDLE )
+            {
+                m_window.setGraphicsDevice(
+                    QQuickGraphicsDevice::fromPhysicalDevice( physicalDevice ) );
+                graphicsConfig.setDeviceExtensions(
+                    getOpenVRVulkanDeviceExtensions( physicalDevice ) );
+            }
+            else
+            {
+                qWarning() << "OpenVR did not report a Vulkan output device, "
+                              "using Qt's default";
+            }
+        }
+        break;
+#endif
+#ifdef _WIN32
+        case QSGRendererInterface::Direct3D11:
+        {
+            // For D3D, OpenVR returns the adapter LUID.
+            uint64_t adapterLuid = 0;
+            vr::VRSystem()->GetOutputDevice( &adapterLuid,
+                                             vr::TextureType_DirectX );
+            if ( adapterLuid != 0 )
+            {
+                m_window.setGraphicsDevice( QQuickGraphicsDevice::fromAdapter(
+                    static_cast<quint32>( adapterLuid & 0xFFFFFFFF ),
+                    static_cast<qint32>( adapterLuid >> 32 ) ) );
+            }
+        }
+        break;
+#endif
+        default:
+            break;
+        }
+        m_window.setGraphicsConfiguration( graphicsConfig );
+
+        if ( !m_renderControl.initialize() )
+            throw std::runtime_error( "could not initialize m_renderControl" );
+        QRhi* rhi = this->rhi();
+
+        qInfo() << "Started with" << rhi->backendName();
+
+        m_pFBTexture.reset( rhi->newTexture(
+            QRhiTexture::RGBA8,
+            quickItem->size().toSize(),
+            1,
+            QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource ) );
+        if ( !m_pFBTexture->create() )
+            throw std::runtime_error( "RhiTexture not created" );
+
+        m_pDepthStencil.reset(
+            rhi->newRenderBuffer( QRhiRenderBuffer::DepthStencil,
+                                  quickItem->size().toSize(),
+                                  1 ) );
+        if ( !m_pDepthStencil->create() )
+            throw std::runtime_error( "failed to create depth-stencil buffer" );
+
+        QRhiTextureRenderTargetDescription rtDesc{ QRhiColorAttachment(
+            m_pFBTexture.get() ) };
+        rtDesc.setDepthStencilBuffer( m_pDepthStencil.get() );
+        m_render_target.reset( rhi->newTextureRenderTarget( rtDesc ) );
+        m_render_pass_descriptor.reset(
+            m_render_target->newCompatibleRenderPassDescriptor() );
+        m_render_target->setRenderPassDescriptor(
+            m_render_pass_descriptor.get() );
+        if ( !m_render_target->create() )
+            throw std::runtime_error( "failed to create render target" );
+
+        auto qqrt
+            = QQuickRenderTarget::fromRhiRenderTarget( m_render_target.get() );
+
+        m_window.setRenderTarget( qqrt );
         quickItem->setParentItem( m_window.contentItem() );
         m_window.setGeometry( 0,
                               0,
                               static_cast<int>( quickItem->width() ),
                               static_cast<int>( quickItem->height() ) );
-        m_renderControl.initialize( &m_openGLContext );
 
         vr::HmdVector2_t vecWindowSize
             = { static_cast<float>( quickItem->width() ),
@@ -510,7 +591,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
     m_steamVRTabController.initStage2( this );
     m_chaperoneTabController.initStage2( this );
     m_fixFloorTabController.initStage2( this );
-    m_audioTabController.initStage2();
+    m_audioTabController.initStage2( this );
     m_statisticsTabController.initStage2( this );
     m_settingsTabController.initStage2( this );
     m_utilitiesTabController.initStage2( this );
@@ -526,7 +607,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                 autoApplyChaperoneName() );
         if ( chapindex.first )
         {
-            LOG( INFO ) << "Auto Applying Chaperone";
+            qInfo() << "Auto Applying Chaperone";
             m_chaperoneTabController.applyChaperoneProfile( chapindex.second );
             // This should be the way to stop room-setup from starting... as it
             // sends steamvr a signal that it is completed
@@ -534,7 +615,7 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
                 vr::EChaperoneConfigFile_Live );
             return;
         }
-        LOG( WARNING ) << "Profile Not Found for Auto Apply Chaperone!";
+        qWarning() << "Profile Not Found for Auto Apply Chaperone!";
     }
     auto indexList = ovr_system_wrapper::getAllConnectedDevices();
 
@@ -546,21 +627,22 @@ void OverlayController::SetWidget( QQuickItem* quickItem,
         auto ctrlRole = info.second;
         if ( vr::TrackedDeviceClass_HMD == ctrlRole )
         {
-            LOG(INFO) << "HMD is: " << ovr_system_wrapper::getDeviceName(device);
+            qInfo() << "HMD is: "
+                    << ovr_system_wrapper::getDeviceName( device );
             continue;
         }
         if ( vr::TrackedControllerRole_LeftHand == ctrlRole )
         {
-            LOG(INFO) << "Controller (L) is: " << ovr_system_wrapper::getDeviceName(device);
+           qInfo() << "Controller (L) is: " << ovr_system_wrapper::getDeviceName(device);
             continue;
         }
         if ( vr::TrackedControllerRole_RightHand == ctrlRole )
         {
-            LOG(INFO) << "Controller (R) is: " << ovr_system_wrapper::getDeviceName(device);
+            qInfo() << "Controller (R) is: " << ovr_system_wrapper::getDeviceName(device);
             continue;
         }
     }
-    LOG(INFO)<< "Initilizaion is complete--------------------------------------------------";
+    qInfo() << "Initilizaion is complete--------------------------------------------------";
 }
 
 void OverlayController::OnRenderRequest()
@@ -570,6 +652,125 @@ void OverlayController::OnRenderRequest()
         m_pRenderTimer->start();
     }
 }
+
+void OverlayController::SetOverlayFromQRhiTexture( QRhiTexture& tex )
+{
+    vr::Texture_t vrTex = {};
+    QRhi* rhi = this->rhi();
+#if QT_CONFIG( vulkan )
+    // Must outlive the switch, vrTex.handle points at it.
+    vr::VRVulkanTextureData_t vulkanData = {};
+#endif
+
+    switch ( rhi->backend() )
+    {
+    case QRhi::OpenGLES2:
+    {
+        // OpenVR needs a current GL context and the rendering flushed.
+        if ( rhi->makeThreadLocalNativeContextCurrent() )
+        {
+            auto* f = QOpenGLContext::currentContext()->functions();
+            //Workaround for some odd OpenGL/SteamVR issues
+            f->glDisable( GL_SCISSOR_TEST );
+            f->glDisable( GL_DEPTH_TEST );
+            f->glDisable( GL_STENCIL_TEST );
+            f->glDisable( GL_BLEND );
+            f->glDisable( GL_CULL_FACE );
+            f->glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+            f->glFlush();
+        }
+        vrTex.handle = reinterpret_cast<void*>( tex.nativeTexture().object );
+        vrTex.eType = vr::TextureType_OpenGL;
+        vrTex.eColorSpace = vr::ColorSpace_Auto;
+    }
+    break;
+    case QRhi::D3D11:
+    {
+        vrTex.handle = reinterpret_cast<void*>( tex.nativeTexture().object );
+        vrTex.eType = vr::TextureType_DirectX;
+        vrTex.eColorSpace = vr::ColorSpace_Auto;
+    }
+    break;
+#if QT_CONFIG( vulkan )
+    case QRhi::Vulkan:
+    {
+        const QRhiVulkanNativeHandles* vulkan_handles
+            = static_cast<const QRhiVulkanNativeHandles*>(
+                rhi->nativeHandles() );
+        vulkanData = {
+            .m_nImage = tex.nativeTexture().object,
+            .m_pDevice = vulkan_handles->dev,
+            .m_pPhysicalDevice = vulkan_handles->physDev,
+            .m_pInstance = vulkan_handles->inst->vkInstance(),
+            .m_pQueue = vulkan_handles->gfxQueue,
+            .m_nQueueFamilyIndex = vulkan_handles->gfxQueueIdx,
+            .m_nWidth = static_cast<uint32_t>( tex.pixelSize().width() ),
+            .m_nHeight = static_cast<uint32_t>( tex.pixelSize().height() ),
+            // m_pFBTexture is QRhiTexture::RGBA8
+            .m_nFormat = VK_FORMAT_R8G8B8A8_UNORM,
+            .m_nSampleCount = static_cast<uint32_t>( tex.sampleCount() ),
+        };
+        vrTex.handle = &vulkanData;
+        vrTex.eType = vr::TextureType_Vulkan;
+        vrTex.eColorSpace = vr::ColorSpace_Auto;
+    }
+    break;
+#endif
+    default:
+        qFatal() << "unimplemented backend:" << rhi->backend();
+        throw std::runtime_error( "unimplemented backend" );
+    }
+    vr::VROverlay()->SetOverlayTexture( m_ulOverlayHandle, &vrTex );
+}
+
+#if QT_CONFIG( vulkan )
+// OpenVR expects Vulkan images in VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL.
+// Must be called between render() and endFrame() so the barrier is part of
+// the frame's command buffer.
+void OverlayController::TransitionVulkanTextureForOpenVR( QRhiTexture& tex )
+{
+    const QRhiTexture::NativeTexture native = tex.nativeTexture();
+    const auto currentLayout = static_cast<VkImageLayout>( native.layout );
+    if ( currentLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL )
+        return;
+
+    const auto* rhiHandles = static_cast<const QRhiVulkanNativeHandles*>(
+        rhi()->nativeHandles() );
+    QRhiCommandBuffer* cb = m_renderControl.commandBuffer();
+
+    cb->beginExternal();
+    const auto* cbHandles
+        = static_cast<const QRhiVulkanCommandBufferNativeHandles*>(
+            cb->nativeHandles() );
+
+    VkImageMemoryBarrier barrier = {};
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+    barrier.oldLayout = currentLayout;
+    barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = reinterpret_cast<VkImage>( native.object );
+    barrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+
+    rhiHandles->inst->deviceFunctions( rhiHandles->dev )
+        ->vkCmdPipelineBarrier( cbHandles->commandBuffer,
+                                VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                                VK_PIPELINE_STAGE_TRANSFER_BIT,
+                                0,
+                                0,
+                                nullptr,
+                                0,
+                                nullptr,
+                                1,
+                                &barrier );
+    cb->endExternal();
+
+    // Tell QRhi about the new layout so it transitions back on the next frame.
+    tex.setNativeLayout( VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL );
+}
+#endif
 
 void OverlayController::renderOverlay()
 {
@@ -582,28 +783,18 @@ void OverlayController::renderOverlay()
                       m_ulOverlayThumbnailHandle ) ) )
             return;
         m_renderControl.polishItems();
+        m_renderControl.beginFrame();
         m_renderControl.sync();
         m_renderControl.render();
-
-        GLuint unTexture = m_pFbo->texture();
-        if ( unTexture != 0 )
+#if QT_CONFIG( vulkan )
+        if ( rhi()->backend() == QRhi::Vulkan )
         {
-#if defined _WIN64 || defined _LP64
-            // To avoid any compiler warning because of cast to a larger
-            // pointer type (warning C4312 on VC)
-            vr::Texture_t texture = { reinterpret_cast<void*>(
-                                          static_cast<uint64_t>( unTexture ) ),
-                                      vr::TextureType_OpenGL,
-                                      vr::ColorSpace_Auto };
-#else
-            vr::Texture_t texture = { reinterpret_cast<void*>( unTexture ),
-                                      vr::TextureType_OpenGL,
-                                      vr::ColorSpace_Auto };
-#endif
-            vr::VROverlay()->SetOverlayTexture( m_ulOverlayHandle, &texture );
+            TransitionVulkanTextureForOpenVR( *m_pFBTexture );
         }
-        m_openGLContext.functions()->glFlush(); // We need to flush otherwise
-                                                // the texture may be empty.*/
+#endif
+        m_renderControl.endFrame();
+
+        SetOverlayFromQRhiTexture( *m_pFBTexture );
     }
 }
 
@@ -621,14 +812,34 @@ bool OverlayController::pollNextEvent( vr::VROverlayHandle_t ulOverlayHandle,
     }
 }
 
-QPoint OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
+QPointF OverlayController::getMousePositionForEvent( vr::VREvent_Mouse_t mouse )
 {
-    float y = mouse.y;
-#ifdef __linux__
-    float h = static_cast<float>( m_window.height() );
-    y = h - y;
-#endif
-    return QPoint( static_cast<int>( mouse.x ), static_cast<int>( y ) );
+    float y = m_window.height() - mouse.y;
+//10/15/26 I think that this isn't required my testing shows inverting of mouse when not necessary
+//#ifdef __linux__
+//    float h = static_cast<float>( m_window.height() );
+//    y = h - y;
+//#endif
+    return { mouse.x, y };
+}
+
+// Mouse events must go through QGuiApplication's input pipeline rather than
+// being sent to the window directly. QT6 change
+
+//This along with QRhi is technically part of QGUI Private.
+//Minor Version changes could break it, but is required.
+void OverlayController::sendMouseEvent( QEvent::Type type,
+                                        const QPointF& pos,
+                                        Qt::MouseButton button )
+{
+    QWindowSystemInterface::handleMouseEvent<
+        QWindowSystemInterface::SynchronousDelivery>(
+        &m_window,
+        pos,
+        m_window.mapToGlobal( pos ),
+        m_lastMouseButtons,
+        button,
+        type );
 }
 
 void OverlayController::processMediaKeyBindings()
@@ -1013,25 +1224,10 @@ QString OverlayController::versionCheckText() const
 void OverlayController::setVersionCheckText( QString value, bool notify )
 {
     m_versionCheckText = value;
-    LOG( INFO ) << "m_versionCheckText = " << m_versionCheckText;
+    qInfo() << "m_versionCheckText = " << m_versionCheckText;
     if ( notify )
     {
         emit versionCheckTextChanged( m_versionCheckText );
-    }
-}
-
-int OverlayController::debugState() const
-{
-    return settings::getSetting( settings::IntSetting::APPLICATION_debugState );
-}
-
-void OverlayController::setDebugState( int value, bool notify )
-{
-    settings::setSetting( settings::IntSetting::APPLICATION_debugState, value );
-
-    if ( notify )
-    {
-        emit debugStateChanged( value );
     }
 }
 
@@ -1134,17 +1330,11 @@ void OverlayController::mainEventLoop()
         {
         case vr::VREvent_MouseMove:
         {
-            QPoint ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
+            QPointF ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
             if ( ptNewMouse != m_ptLastMouse )
             {
-                QMouseEvent mouseEvent( QEvent::MouseMove,
-                                        ptNewMouse,
-                                        m_window.mapToGlobal( ptNewMouse ),
-                                        Qt::NoButton,
-                                        m_lastMouseButtons,
-                                        nullptr );
                 m_ptLastMouse = ptNewMouse;
-                QCoreApplication::sendEvent( &m_window, &mouseEvent );
+                sendMouseEvent( QEvent::MouseMove, ptNewMouse, Qt::NoButton );
                 OnRenderRequest();
             }
         }
@@ -1152,37 +1342,25 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_MouseButtonDown:
         {
-            QPoint ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
+            QPointF ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
             Qt::MouseButton button
                 = vrEvent.data.mouse.button == vr::VRMouseButton_Right
                       ? Qt::RightButton
                       : Qt::LeftButton;
             m_lastMouseButtons |= button;
-            QMouseEvent mouseEvent( QEvent::MouseButtonPress,
-                                    ptNewMouse,
-                                    m_window.mapToGlobal( ptNewMouse ),
-                                    button,
-                                    m_lastMouseButtons,
-                                    nullptr );
-            QCoreApplication::sendEvent( &m_window, &mouseEvent );
+            sendMouseEvent( QEvent::MouseButtonPress, ptNewMouse, button );
         }
         break;
 
         case vr::VREvent_MouseButtonUp:
         {
-            QPoint ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
+            QPointF ptNewMouse = getMousePositionForEvent( vrEvent.data.mouse );
             Qt::MouseButton button
                 = vrEvent.data.mouse.button == vr::VRMouseButton_Right
                       ? Qt::RightButton
                       : Qt::LeftButton;
             m_lastMouseButtons &= ~button;
-            QMouseEvent mouseEvent( QEvent::MouseButtonRelease,
-                                    ptNewMouse,
-                                    m_window.mapToGlobal( ptNewMouse ),
-                                    button,
-                                    m_lastMouseButtons,
-                                    nullptr );
-            QCoreApplication::sendEvent( &m_window, &mouseEvent );
+            sendMouseEvent( QEvent::MouseButtonRelease, ptNewMouse, button );
         }
         break;
 
@@ -1197,10 +1375,10 @@ void OverlayController::mainEventLoop()
                                           * ( 360.0f * 8.0f ) ),
                         static_cast<int>( vrEvent.data.scroll.ydelta
                                           * ( 360.0f * 8.0f ) ) ),
-                0,
-                Qt::Vertical,
                 m_lastMouseButtons,
-                nullptr );
+                Qt::KeyboardModifiers::fromInt( 0 ),
+                Qt::ScrollPhase::NoScrollPhase,
+                false );
             QCoreApplication::sendEvent( &m_window, &wheelEvent );
         }
         break;
@@ -1213,7 +1391,7 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_Quit:
         {
-            LOG( INFO ) << "Received quit request.";
+            qInfo() << "Received quit request.";
             vr::VRSystem()->AcknowledgeQuit_Exiting(); // Let us buy some
                                                        // time just in case
 
@@ -1225,14 +1403,14 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_DashboardActivated:
         {
-            LOG( DEBUG ) << "Dashboard activated";
+            qDebug() << "Dashboard activated";
             m_dashboardVisible = true;
         }
         break;
 
         case vr::VREvent_DashboardDeactivated:
         {
-            LOG( DEBUG ) << "Dashboard deactivated";
+            qDebug() << "Dashboard deactivated";
             m_dashboardVisible = false;
             settings::saveChangedSettings();
             if(0UL != m_lastTextUID){
@@ -1244,6 +1422,7 @@ void OverlayController::mainEventLoop()
 
         case vr::VREvent_HideKeyboard:
         {
+            m_keyboardUID = 0;
             if(0UL != m_lastTextUID){
                 submitLastTextField(m_lastTextUID);
                 m_lastTextUID = 0;
@@ -1412,7 +1591,7 @@ void OverlayController::RotateUniverseCenter(
         // }
         vr::HmdMatrix34_t curPos;
         auto calState = vr::VRChaperone()->GetCalibrationState();
-        LOG( INFO ) << "Calibration State on Rotate is: " << calState;
+        qInfo() << "Calibration State on Rotate is: " << calState;
         if ( universe == vr::TrackingUniverseStanding )
         {
             vr::VRChaperoneSetup()->GetWorkingStandingZeroPoseToRawTrackingPose(
@@ -1427,7 +1606,7 @@ void OverlayController::RotateUniverseCenter(
         {
             //TODO 8/3/26, will see if this causes issues
             //should exclusively happen with openxr
-            LOG(INFO) << "rotating on undefined tracking universe probably openxr";
+            qInfo() << "rotating on undefined tracking universe probably openxr";
             vr::VRChaperoneSetup()->GetLiveSeatedZeroPoseToRawTrackingPose(&curPos);
         }
 
@@ -1607,12 +1786,23 @@ void OverlayController::showKeyboard( QString existingText,
         m_ulOverlayHandle,
         vr::k_EGamepadTextInputModeNormal,
         vr::k_EGamepadTextInputLineModeSingleLine,
-        vr::KeyboardFlag_Modal+vr::KeyboardFlag_Minimal+vr::KeyboardFlag_HideDoneKey,
+        vr::KeyboardFlag_Minimal + vr::KeyboardFlag_HideDoneKey,
         "Advanced Settings Overlay",
         1024,
         existingText.toStdString().c_str(),
         userValue );
+    m_keyboardUID = userValue;
     setKeyboardPos();
+}
+
+void OverlayController::hideKeyboard( unsigned long userValue )
+{
+    if ( userValue != m_keyboardUID )
+    {
+        return;
+    }
+    m_keyboardUID = 0;
+    vr::VROverlay()->HideKeyboard();
 }
 
 void OverlayController::setKeyboardPos()
@@ -1628,10 +1818,7 @@ void OverlayController::setKeyboardPos()
 
 void OverlayController::setSoundVolume( double value, bool notify )
 {
-    m_activationSoundEffect.setVolume( value );
-    m_focusChangedSoundEffect.setVolume( value );
-    // leaving alarm sound alone for now as chaperone warning setting effects it
-    // m_alarm01SoundEffect.setVolume( value);
+    m_soundPlayer->setVolume( value );
     settings::setSetting( settings::DoubleSetting::APPLICATION_appVolume,
                           value );
     if ( notify )
@@ -1654,7 +1841,7 @@ void OverlayController::setDesktopModeToggle( bool value, bool notify )
     {
         emit desktopModeToggleChanged( value );
     }
-    settings::saveAllSettings();
+    settings::saveChangedSettings();
 }
 bool OverlayController::desktopModeToggle() const
 {
@@ -1662,11 +1849,128 @@ bool OverlayController::desktopModeToggle() const
         settings::BoolSetting::APPLICATION_desktopModeToggle );
 }
 
+void OverlayController::setHideSocials( bool value, bool notify )
+{
+    settings::setSetting( settings::BoolSetting::APPLICATION_hideSocials,
+                          value );
+    if ( notify )
+    {
+        emit hideSocialsChanged( value );
+    }
+    settings::saveChangedSettings();
+}
+bool OverlayController::hideSocials() const
+{
+    return settings::getSetting(
+        settings::BoolSetting::APPLICATION_hideSocials );
+}
+
+QString OverlayController::language() const
+{
+    return translations::currentLanguage();
+}
+
+void OverlayController::setLanguage( QString value, bool notify )
+{
+    if ( value == translations::currentLanguage() )
+    {
+        return;
+    }
+    translations::setLanguage( value );
+    // Re-evaluates every qsTr() binding in the loaded QML.
+    m_qmlEngine.retranslate();
+    if ( notify )
+    {
+        emit languageChanged( translations::currentLanguage() );
+    }
+    settings::saveChangedSettings();
+}
+
+namespace
+{
+struct LanguageSettings
+{
+    settings::BoolSetting aiTranslated;
+    settings::BoolSetting promptSeen;
+};
+
+//list of languages, whether they are ai translated or not (true is, false is not)
+//and if you have seen the prompt for the language
+const std::map<QString, LanguageSettings>& languageSettings()
+{
+    using settings::BoolSetting;
+    static const std::map<QString, LanguageSettings> map{
+        { "en",
+          { BoolSetting::APPLICATION_aiTranslatedEn,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenEn } },
+        { "de",
+          { BoolSetting::APPLICATION_aiTranslatedDe,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenDe } },
+        { "es",
+          { BoolSetting::APPLICATION_aiTranslatedEs,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenEs } },
+        { "pt",
+          { BoolSetting::APPLICATION_aiTranslatedPt,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenPt } },
+        { "ja",
+          { BoolSetting::APPLICATION_aiTranslatedJa,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenJa } },
+        { "zh_TW",
+          { BoolSetting::APPLICATION_aiTranslatedZhTw,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenZhTw } },
+        { "zh_CN",
+          { BoolSetting::APPLICATION_aiTranslatedZhCn,
+            BoolSetting::APPLICATION_aiTranslationPromptSeenZhCn } },
+    };
+    return map;
+}
+} // namespace
+
+bool OverlayController::isAiTranslated( QString locale ) const
+{
+    const auto language = languageSettings().find( locale );
+    if ( language == languageSettings().end() )
+    {
+        return false;
+    }
+    return settings::getSetting( language->second.aiTranslated );
+}
+
+bool OverlayController::aiTranslationPromptSeen( QString locale ) const
+{
+    const auto language = languageSettings().find( locale );
+    if ( language == languageSettings().end() )
+    {
+        return true;
+    }
+    return settings::getSetting( language->second.promptSeen );
+}
+
+void OverlayController::setAiTranslationPromptSeen( QString locale )
+{
+    const auto language = languageSettings().find( locale );
+    if ( language == languageSettings().end() )
+    {
+        return;
+    }
+    settings::setSetting( language->second.promptSeen, true );
+    settings::saveChangedSettings();
+}
+
+void OverlayController::resetAiTranslationPrompts()
+{
+    for ( const auto& language : languageSettings() )
+    {
+        settings::setSetting( language.second.promptSeen, false );
+    }
+    settings::saveChangedSettings();
+}
+
 void OverlayController::playActivationSound()
 {
     if ( !m_noSound )
     {
-        m_activationSoundEffect.play();
+        m_soundPlayer->playActivation();
     }
 }
 
@@ -1674,34 +1978,26 @@ void OverlayController::playFocusChangedSound()
 {
     if ( !m_noSound )
     {
-        m_focusChangedSoundEffect.play();
+        m_soundPlayer->playFocusChanged();
     }
 }
 
 void OverlayController::playAlarm01Sound( bool loop )
 {
-    if ( !m_noSound && !m_alarm01SoundEffect.isPlaying() )
+    if ( !m_noSound )
     {
-        if ( loop )
-        {
-            m_alarm01SoundEffect.setLoopCount( QSoundEffect::Infinite );
-        }
-        else
-        {
-            m_alarm01SoundEffect.setLoopCount( 1 );
-        }
-        m_alarm01SoundEffect.play();
+        m_soundPlayer->playAlarm01( loop );
     }
 }
 
 void OverlayController::setAlarm01SoundVolume( float vol )
 {
-    m_alarm01SoundEffect.setVolume( static_cast<double>( vol ) );
+    m_soundPlayer->setAlarm01Volume( static_cast<double>( vol ) );
 }
 
 void OverlayController::cancelAlarm01Sound()
 {
-    m_alarm01SoundEffect.stop();
+    m_soundPlayer->cancelAlarm01();
 }
 
 void OverlayController::OnNetworkReply( QNetworkReply* reply )
@@ -1709,7 +2005,7 @@ void OverlayController::OnNetworkReply( QNetworkReply* reply )
     if ( reply->error() == QNetworkReply::NoError )
     {
         QByteArray replyByteData = reply->readAll();
-        LOG( INFO ) << "Version Check: Recieved Data: " << replyByteData;
+        qInfo() << "Version Check: Recieved Data: " << replyByteData;
         QJsonParseError parseError;
         m_remoteVersionJsonDocument
             = QJsonDocument::fromJson( replyByteData, &parseError );
@@ -1746,16 +2042,14 @@ void OverlayController::OnNetworkReply( QNetworkReply* reply )
                 else
                 {
                     setVersionCheckText(
-                        "Newer version ("
-                        + QString::number( m_remoteVersionMajor ) + "."
-                        + QString::number( m_remoteVersionMinor ) + "."
-                        + QString::number( m_remoteVersionPatch )
-                        + ") available." );
+                        tr( "Newer version (%1.%2.%3) available." )
+                            .arg( m_remoteVersionMajor )
+                            .arg( m_remoteVersionMinor )
+                            .arg( m_remoteVersionPatch ) );
                 }
-                LOG( INFO )
-                    << "Version Check: Newer version (" << m_remoteVersionMajor
-                    << "." << m_remoteVersionMinor << "."
-                    << m_remoteVersionPatch << ") available.";
+                qInfo() << "Version Check: Newer version ("
+                        << m_remoteVersionMajor << "." << m_remoteVersionMinor
+                        << "." << m_remoteVersionPatch << ") available.";
             }
             else
             {
@@ -1764,22 +2058,22 @@ void OverlayController::OnNetworkReply( QNetworkReply* reply )
                     setVersionCheckText( m_optionalMessage );
                 }
                 setNewVersionDetected( false );
-                LOG( INFO ) << "Version Check: Installed version is latest "
-                               "release.";
+                qInfo() << "Version Check: Installed version is latest "
+                           "release.";
             }
         }
         else
         {
-            LOG( ERROR )
+            qCritical()
                 << "Version Check: Error parsing json. QJsonParseError = "
                 << parseError.error;
         }
     }
     else
     {
-        LOG( ERROR ) << "Version Check: Error connecting to network. "
-                        "QNetworkReply::NetworkError = "
-                     << reply->error();
+        qCritical() << "Version Check: Error connecting to network. "
+                       "QNetworkReply::NetworkError = "
+                    << reply->error();
     }
     reply->deleteLater();
 }

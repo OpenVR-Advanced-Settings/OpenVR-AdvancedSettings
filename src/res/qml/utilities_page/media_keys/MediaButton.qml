@@ -13,7 +13,7 @@ MyPushButton2 {
     property string imagePath: ""
 
     // Private properties
-    Layout.preferredHeight: 48
+    Layout.fillHeight: true
     Layout.preferredWidth: 48
     contentItem: Image {
         source: parent.imagePath
@@ -30,7 +30,7 @@ MyPushButton2 {
     background: Rectangle {
         // Provides feedback for mousing over and clicking buttons.
         opacity: parent.down ? 1.0 : (parent.activeFocus ? 0.5 : 0.0)
-        color: "#3d4450"
+        color: "#4b5361"
         radius: 4
         anchors.fill: parent
     }

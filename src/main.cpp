@@ -1,6 +1,13 @@
 #include "utils/setup.h"
 #include "settings/settings.h"
 #include "openvr/ovr_settings_wrapper.h"
+#include "utils/translations.h"
+
+#include <QQuickStyle>
+#include <QtLogging>
+#include <QtDebug>
+#include <memory>
+
 #ifdef _WIN64
 #    include <windows.h>
 extern "C" __declspec( dllexport ) DWORD NvOptimusEnablement = 0x00000001;
@@ -8,19 +15,17 @@ extern "C" __declspec( dllexport ) DWORD AmdPowerXpressRequestHighPerformance
     = 0x00000001;
 #endif
 
-INITIALIZE_EASYLOGGINGPP
-
 int main( int argc, char* argv[] )
 {
     setUpLogging();
 
-    LOG( INFO ) << "Settings File: "
-                << settings::initializeAndGetSettingsPath();
+    qInfo() << "Settings File: " << settings::initializeAndGetSettingsPath();
 
-    LOG( INFO ) << settings::getSettingsAndValues();
+    qInfo() << settings::getSettingsAndValues();
 
     QCoreApplication::setAttribute( Qt::AA_Use96Dpi );
-    QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+    //TODO check if Needed?
+    //QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
     MyQApplication mainEventLoop( argc, argv );
     mainEventLoop.setOrganizationName(
         application_strings::applicationOrganizationName );
@@ -30,10 +35,32 @@ int main( int argc, char* argv[] )
     mainEventLoop.setApplicationVersion(
         application_strings::applicationVersionString );
 
-    qInstallMessageHandler( mainQtMessageHandler );
+    translations::initialize();
+    // The QML components are custom styled for Basic. Without this a QApplication
+    // on Windows falls back to the native style, which ignores that styling.
+    QQuickStyle::setStyle( "Basic" );
 
     const auto commandLineArgs
         = argument::returnCommandLineParser( mainEventLoop );
+
+
+    //Picks Graphics API, defaulting to vulkan/d3d11 for linux/win
+    if ( commandLineArgs.graphicsApi )
+    {
+        QQuickWindow::setGraphicsApi( *commandLineArgs.graphicsApi );
+    }
+#ifdef __linux__
+    else
+    {
+        QQuickWindow::setGraphicsApi( QSGRendererInterface::Vulkan );
+    }
+#endif
+#ifdef _WIN32
+    else
+    {
+        QQuickWindow::setGraphicsApi( QSGRendererInterface::Direct3D11 );
+    }
+#endif
 
     // It is important that either install_manifest or remove_manifest are true,
     // otherwise the handleManifests function will not behave properly.
@@ -46,39 +73,35 @@ int main( int argc, char* argv[] )
 
     openvr_init::initializeOpenVR(
         openvr_init::OpenVrInitializationType::Overlay );
-
     try
     {
         QQmlEngine qmlEngine;
 
-        advsettings::OverlayController controller( commandLineArgs.desktopMode,
-                                                   commandLineArgs.forceNoSound,
-                                                   qmlEngine );
-
-        constexpr auto widgetPath = "res/qml/common/mainwidget.qml";
-        const auto path = paths::binaryDirectoryFindFile( widgetPath );
-
-        if ( !path.has_value() )
+        // Just error checking to ensure QRC works properly
+        qDebug() << "list of qmldirs";
+        QDirIterator it( ":", QDirIterator::Subdirectories );
+        while ( it.hasNext() )
         {
-            LOG( ERROR ) << "Unable to find file '" << widgetPath << "'.";
-            throw std::runtime_error(
-                "Unable to find critical file. See log for more information." );
+           qDebug() << it.next();
         }
 
-        const auto url
-            = QUrl::fromLocalFile( QString::fromStdString( ( *path ) ) );
-
-        QQmlComponent component( &qmlEngine, url );
+        std::unique_ptr<advsettings::OverlayController> controller(
+            new advsettings::OverlayController( commandLineArgs.desktopMode,
+                                                commandLineArgs.forceNoSound,
+                                                qmlEngine ) );
+        //const auto url
+        //    = QUrl( ":/qt/qml/AdvancedSettings/qml/common/mainwidget.qml" );
+        QQmlComponent component( &qmlEngine, ":/qt/qml/AdvancedSettings/qml/common/mainwidget.qml" );
         auto errors = component.errors();
         for ( auto& e : errors )
         {
-            LOG( ERROR ) << "QML Error: " << e.toString().toStdString()
-                         << std::endl;
+            qCritical() << "QML Error: "
+                        << e.toString().toStdString(); //<< std::endl;
         }
         auto quickObj = component.create();
-        controller.SetWidget( qobject_cast<QQuickItem*>( quickObj ),
-                              application_strings::applicationDisplayName,
-                              application_strings::applicationKey );
+        controller->SetWidget( qobject_cast<QQuickItem*>( quickObj ),
+                               application_strings::applicationDisplayName,
+                               application_strings::applicationKey );
 
         // Attempts to install the application manifest on all "regular" starts.
         if ( !commandLineArgs.forceNoManifest )
@@ -99,7 +122,7 @@ int main( int argc, char* argv[] )
             }
             catch ( std::exception& e )
             {
-                LOG( ERROR ) << e.what();
+                qCritical() << e.what();
             }
         }
 
@@ -107,6 +130,9 @@ int main( int argc, char* argv[] )
              || settings::getSetting(
                  settings::BoolSetting::APPLICATION_desktopModeToggle ) )
         {
+            //Qrhi seems to work automatically, it will default to system default,
+            //or if using the launch option it will move to correct rendering system
+            qDebug() << "Desktop MODE!"; 
             auto m_pWindow = new QQuickWindow();
             qobject_cast<QQuickItem*>( quickObj )
                 ->setParentItem( m_pWindow->contentItem() );
@@ -129,7 +155,7 @@ int main( int argc, char* argv[] )
     }
     catch ( const std::exception& e )
     {
-        LOG( FATAL ) << e.what();
+        qFatal() << e.what();
         return ReturnErrorCode::GENERAL_FAILURE;
     }
 }

@@ -3,9 +3,9 @@
 #include <openvr.h>
 #include <iostream>
 #include <string>
-#include <easylogging++.h>
 #include <utility>
 #include <string>
+#include <QImage>
 #include "../utils/paths.h"
 
 /* Wrapper For OpenVR's IVR settings class, allows us to do our error logging
@@ -40,9 +40,9 @@ OverlayError setOverlayAlpha( vr::VROverlayHandle_t overlayHandle,
 OverlayError setOverlayWidthInMeters( vr::VROverlayHandle_t overlayHandle,
                                       float widthInMeters,
                                       std::string customErrorMsg = "" );
-OverlayError setOverlayFromFile( vr::VROverlayHandle_t overlayHandle,
-                                 std::string fileName,
-                                 std::string customErrorMsg = "" );
+OverlayError setOverlayFromQImage( vr::VROverlayHandle_t overlayHandle,
+                                   QImage& image,
+                                   std::string customErrorMsg = "" );
 OverlayError showOverlay( vr::VROverlayHandle_t overlayHandle,
                           std::string customErrorMsg = "" );
 OverlayError hideOverlay( vr::VROverlayHandle_t overlayHandle,

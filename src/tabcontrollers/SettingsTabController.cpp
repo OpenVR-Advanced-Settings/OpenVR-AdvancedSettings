@@ -1,5 +1,7 @@
 #include "SettingsTabController.h"
 #include <QQuickWindow>
+#include <QtLogging>
+#include <QtDebug>
 #include "../overlaycontroller.h"
 #include "../utils/update_rate.h"
 
@@ -105,9 +107,9 @@ void SettingsTabController::setAutoStartEnabled( bool value, bool notify )
             application_strings::applicationKey, m_autoStartEnabled );
         if ( apperror != vr::VRApplicationError_None )
         {
-            LOG( ERROR ) << "Could not set auto start: "
-                         << vr::VRApplications()
-                                ->GetApplicationsErrorNameFromEnum( apperror );
+            qCritical() << "Could not set auto start: "
+                        << vr::VRApplications()
+                               ->GetApplicationsErrorNameFromEnum( apperror );
         }
         if ( notify )
         {

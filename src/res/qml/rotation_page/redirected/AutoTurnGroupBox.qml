@@ -4,55 +4,96 @@ import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../../common"
 
-GroupBox {
+SettingsGroupBox {
     id: autoTurnGroupBox
     Layout.fillWidth: true
 
-    label: MyText {
-        leftPadding: 10
-        text: "Auto-Turn (for discrete redirected walking)"
-        bottomPadding: -12
-    }
-    background: Rectangle {
-        color: "transparent"
-        border.color: "#d9dbe0"
-        radius: 8
-    }
+    title: qsTr("Discrete Redirected Walking")
 
     ColumnLayout {
+        spacing: 0
         anchors.fill: parent
 
-        Rectangle {
-            color: "#d9dbe0"
-            height: 1
-            Layout.fillWidth: true
-            Layout.bottomMargin: 3
-        }
-
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
             MyToggleButton {
                 id: autoTurn
-                text: "Toggle On/Off"
-                Layout.preferredWidth: 250
+                text: qsTr("On/Off")
                 onCheckedChanged: {
-                    RotationTabController.setAutoTurnEnabled(this.checked, true);                }
-            }
-            MyToggleButton {
-                id: autoTurnNotificationToggle
-                text: "HMD Icon"
-                Layout.preferredWidth: 175
-                onCheckedChanged: {
-                RotationTabController.setAutoTurnShowNotification(this.checked, true)
+                    RotationTabController.setAutoTurnEnabled(this.checked, true)
                 }
             }
 
+            Item {
+                Layout.fillWidth: true
+            }
+        }
+
+        LineSeparator {
+        }
+
+        RowLayout {
+            Layout.preferredHeight: rowHeight
+            Layout.fillWidth: true
+            spacing: 16
+
+            MyToggleButton {
+                id: autoTurnNotificationToggle
+                text: qsTr("HMD Icon")
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                Layout.rightMargin: 0
+                onCheckedChanged: {
+                    RotationTabController.setAutoTurnShowNotification(this.checked, true)
+                }
+            }
+
+            VerticalSeparator {
+            }
+
+            MyToggleButton {
+                id: cornerAngle
+                text: qsTr("Use Corner Angle")
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                Layout.rightMargin: 0
+                onCheckedChanged: {
+                    RotationTabController.setAutoTurnUseCornerAngle(this.checked, true)
+                }
+            }
+
+            VerticalSeparator {
+            }
+
+            MyToggleButton {
+                id: autoTurnModeToggle
+                text: qsTr("Use Smooth Turn")
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+                Layout.rightMargin: 0
+                onCheckedChanged: {
+                    RotationTabController.setAutoTurnMode(this.checked ? 1 : 0, true)
+                }
+            }
+        }
+
+        LineSeparator {
+        }
+
+        RowLayout {
+            Layout.preferredHeight: rowHeight
+            Layout.fillWidth: true
+
             MyText {
-                text: "Activation Dist:"
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
-                Layout.preferredWidth: 215
+                text: qsTr("Activation Distance")
+                Layout.preferredWidth: 275
+                Layout.rightMargin: 12
+                horizontalAlignment: Text.AlignLeft
+            }
+            Item {
+                Layout.preferredWidth: 25
             }
 
             MySlider {
@@ -67,7 +108,6 @@ GroupBox {
                     activationValueText.text = val.toFixed(2)
                 }
                 onValueChanged: {
-
                     RotationTabController.setAutoTurnActivationDistance(value, true)
                 }
             }
@@ -87,29 +127,28 @@ GroupBox {
                         } else if (val > 22) {
                             val = 22
                         }
-                            activationSlider.value = val.toFixed(2);
+                        activationSlider.value = val.toFixed(2)
                     }
-                    text =  RotationTabController.autoTurnActivationDistance.toFixed(2);
+                    text = RotationTabController.autoTurnActivationDistance.toFixed(2)
                 }
             }
         }
+
+        LineSeparator {
+        }
+
         RowLayout {
+            Layout.preferredHeight: rowHeight
             Layout.fillWidth: true
 
-            MyToggleButton {
-                id: cornerAngle
-                text: "Use Corner Angle"
-                Layout.preferredWidth: 300
-                onCheckedChanged: {
-                    RotationTabController.setAutoTurnUseCornerAngle(this.checked, true);
-                }
-            }
-
             MyText {
-                text: "Deactivation Dist:"
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
-                Layout.preferredWidth: 215
+                text: qsTr("Deactivation Distance")
+                Layout.preferredWidth: 275
+                Layout.rightMargin: 12
+                horizontalAlignment: Text.AlignLeft
+            }
+            Item {
+                Layout.preferredWidth: 25
             }
 
             MySlider {
@@ -124,7 +163,6 @@ GroupBox {
                     deactivationValueText.text = val.toFixed(2)
                 }
                 onValueChanged: {
-
                     RotationTabController.setAutoTurnDeactivationDistance(value, true)
                 }
             }
@@ -144,33 +182,29 @@ GroupBox {
                         } else if (val > 22) {
                             val = 22
                         }
-                            deactivationSlider.value = val.toFixed(2);
+                        deactivationSlider.value = val.toFixed(2)
                     }
-                    text =  RotationTabController.autoTurnDeactivationDistance.toFixed(2);
+                    text = RotationTabController.autoTurnDeactivationDistance.toFixed(2)
                 }
             }
         }
 
+        LineSeparator {
+        }
+
         RowLayout {
-            MyToggleButton {
-                id: autoTurnModeToggle
-                text: "Use Smooth Turn"
-                Layout.preferredWidth: 300
-                onCheckedChanged: {
-                    if(this.checked){
-
-                        RotationTabController.setAutoTurnMode(1, true);
-                    }else{
-                        RotationTabController.setAutoTurnMode(0, true);
-                    }
-
-                }
-            }
+            Layout.preferredHeight: rowHeight
+            Layout.fillWidth: true
 
             MyText {
-                text: "Turn Speed(deg/sec):"
-                horizontalAlignment: Text.AlignRight
-                Layout.rightMargin: 10
+                text: qsTr("Turn Speed (deg/sec)")
+                // Match the View Ratchetting toggle so all sliders start at the same x.
+                Layout.preferredWidth: 275
+                Layout.rightMargin: 12
+                horizontalAlignment: Text.AlignLeft
+            }
+            Item {
+                Layout.preferredWidth: 25
             }
 
             MySlider {
@@ -182,10 +216,9 @@ GroupBox {
                 Layout.fillWidth: true
                 onPositionChanged: {
                     var val = this.value
-                    speedValueText.text = val.toFixed()+ "°"
+                    speedValueText.text = val.toFixed() + "°"
                 }
                 onValueChanged: {
-
                     RotationTabController.setAutoTurnSpeed(parseInt(value*100), true)
                 }
             }
@@ -208,86 +241,87 @@ GroupBox {
                         } else if (val > 1000) {
                             val = 1000
                         }
-                            speedSlider.value = val;
+                        speedSlider.value = val
                     }
                     //converts the centidegrees to degrees
-                    text =  (((RotationTabController.autoTurnSpeed)/100).toFixed()) + "°";
+                    text = (((RotationTabController.autoTurnSpeed)/100).toFixed()) + "°"
+                }
+            }
+        }
+
+        LineSeparator {
+        }
+
+        RowLayout {
+            Layout.preferredHeight: rowHeight
+            Layout.fillWidth: true
+            spacing: 16
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+
+                MyText {
+                    text: qsTr("Detangle Min Rotations")
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignLeft
+                }
+
+                MyTextField {
+                    id: detangleAngleStartText
+                    text: "360°"
+                    keyBoardUID: 1005
+                    Layout.preferredWidth: 100
+                    horizontalAlignment: Text.AlignHCenter
+                    function onInputEvent(input) {
+                        var val = parseFloat(input)
+                        if (!isNaN(val)) {
+                            if (val < 0) {
+                                val = 0
+                            } else if (val > 3600) {
+                                val = 3600
+                            }
+                            RotationTabController.setMinCordTangle((val*(Math.PI/180)), true)
+                            text = (Math.round(val).toFixed()) + "°"
+                        }
+                    }
                 }
             }
 
+            VerticalSeparator {
+            }
 
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.preferredWidth: 1
+
+                MyText {
+                    text: qsTr("Max Wall Angle")
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignLeft
+                }
+
+                MyTextField {
+                    id: detangleAngleAssistText
+                    text: "10°"
+                    keyBoardUID: 1006
+                    Layout.preferredWidth: 100
+                    horizontalAlignment: Text.AlignHCenter
+                    function onInputEvent(input) {
+                        var val = parseFloat(input)
+                        if (!isNaN(val)) {
+                            if (val < 0) {
+                                val = 0
+                            } else if (val > 3600) {
+                                val = 3600
+                            }
+                            RotationTabController.setCordDetangleAngle((val*(Math.PI/180)), true)
+                            text = (Math.round(val).toFixed()) + "°"
+                        }
+                    }
+                }
+            }
         }
-      RowLayout{
-
-          MyText{
-              text: "Detangle Angle: "
-              horizontalAlignment: Text.AlignLeft
-              Layout.preferredWidth: 200
-              Layout.rightMargin: 5
-
-          }
-          MyText{
-              text:"Min Rotations:"
-              Layout.rightMargin: 5
-
-          }
-
-          MyTextField {
-              id: detangleAngleStartText
-              text: "360°"
-              keyBoardUID: 1005
-              Layout.preferredWidth: 100
-              Layout.leftMargin: 5
-              horizontalAlignment: Text.AlignHCenter
-              function onInputEvent(input) {
-                  var val = parseFloat(input)
-                  if (!isNaN(val)) {
-                      if (val < 0) {
-                          val = 0
-                      } else if (val > 3600) {
-                          val = 3600
-                      }
-                  RotationTabController.setMinCordTangle((val*(Math.PI/180)), true);
-                  text = (Math.round(val).toFixed())+ "°";
-                  }
-              }
-          }
-          Item {
-              Layout.preferredWidth: 15
-          }
-
-          MyText{
-              text: "Max Wall Angle: "
-              horizontalAlignment: Text.AlignRight
-              Layout.rightMargin: 10
-              Layout.fillWidth: true
-
-          }
-          MyTextField {
-              id: detangleAngleAssistText
-              text: "10°"
-              keyBoardUID: 1006
-              Layout.preferredWidth: 100
-              Layout.leftMargin: 10
-              horizontalAlignment: Text.AlignHCenter
-              function onInputEvent(input) {
-                  var val = parseFloat(input)
-                  if (!isNaN(val)) {
-                      if (val < 0) {
-                          val = 0
-                      } else if (val > 3600) {
-                          val = 3600
-                      }
-                  RotationTabController.setCordDetangleAngle((val*(Math.PI/180)), true);
-                  text = (Math.round(val).toFixed())+ "°";
-                  }
-              }
-          }
-      }
-
-
-
-
     }
 
     Component.onCompleted: {
@@ -297,14 +331,7 @@ GroupBox {
         cornerAngle.checked = RotationTabController.autoTurnUseCornerAngle
         speedSlider.value = (RotationTabController.autoTurnSpeed/100).toFixed()
         autoTurnNotificationToggle.checked = RotationTabController.autoTurnShowNotification
-        if(RotationTabController.autoTurnMode === 1){
-
-            autoTurnModeToggle.checked = true;
-
-        }else{
-
-             autoTurnModeToggle.checked = false;
-        }
+        autoTurnModeToggle.checked = RotationTabController.autoTurnMode === 1
         detangleAngleStartText.text = parseInt(RotationTabController.minCordTangle*(180/Math.PI))+ "°"
         detangleAngleAssistText.text = parseInt(RotationTabController.cordDetangleAngle*(180/Math.PI))+ "°"
     }
@@ -312,39 +339,32 @@ GroupBox {
     Connections {
         target: RotationTabController
 
-        onAutoTurnEnabledChanged: {
+        function onAutoTurnEnabledChanged() {
             autoTurn.checked = RotationTabController.autoTurnEnabled
         }
-        onAutoTurnActivationDistanceChanged: {
+        function onAutoTurnActivationDistanceChanged() {
             activationSlider.value = RotationTabController.autoTurnActivationDistance.toFixed(2)
         }
-        onAutoTurnDeactivationDistanceChanged:{
+        function onAutoTurnDeactivationDistanceChanged(){
             deactivationSlider.value = RotationTabController.autoTurnDeactivationDistance.toFixed(2)
         }
-        onAutoTurnUseCornerAngleChanged:{
+        function onAutoTurnUseCornerAngleChanged(){
             cornerAngle.checked = RotationTabController.autoTurnUseCornerAngle
         }
-        onAutoTurnSpeedChanged:{
+        function onAutoTurnSpeedChanged(){
             var val = RotationTabController.autoTurnSpeed
             speedSlider.value = ((val/100).toFixed())
         }
-        onAutoTurnModeChanged:{
-            if(RotationTabController.autoTurnMode === 1){
-
-                autoTurnModeToggle.checked = true;
-
-            }else{
-
-                 autoTurnModeToggle.checked = false;
-            }
+        function onAutoTurnModeChanged(){
+            autoTurnModeToggle.checked = RotationTabController.autoTurnMode === 1
         }
-        onMinCordTangleChanged:{
+        function onMinCordTangleChanged(){
             detangleAngleStartText.text = parseInt(RotationTabController.minCordTangle*(180/Math.PI))+ "°"
         }
-        onCordDetangleAngleChanged:{
+        function onCordDetangleAngleChanged(){
             detangleAngleAssistText.text = parseInt(RotationTabController.cordDetangleAngle*(180/Math.PI))+ "°"
         }
-        onAutoTurnShowNotificationChanged:{
+        function onAutoTurnShowNotificationChanged(){
             autoTurnNotificationToggle.checked = RotationTabController.autoTurnShowNotification
         }
     }

@@ -5,16 +5,40 @@ import ovras.advsettings 1.0
 import "../../common"
 
 ColumnLayout {
-    spacing: 18
+    spacing: 0
+
+    // Height of each row, set by the page. -1 leaves rows at their implicit height.
+    property real rowHeight: -1
     MicDeviceSelector {
         id: audioMicNameCombo
+        Layout.preferredHeight: rowHeight
+        Layout.fillWidth: true
+    }
+    LineSeparator {
     }
     RowLayout {
+        Layout.preferredHeight: rowHeight
         MyText {
-            text: "Microphone Volume:"
+            text: qsTr("Microphone Volume")
             Layout.preferredWidth: 260
         }
         
+        MyPushButton2 {
+            id: audioMicMuteToggle
+            Layout.preferredWidth: 44
+            Layout.preferredHeight: 40
+            checkable: true
+            contentItem: Image {
+                source: parent.checked ? "qrc:/qt/qml/AdvancedSettings/img/audio/microphone/mic_off.svg" : "qrc:/qt/qml/AdvancedSettings/img/audio/microphone/mic_on.svg"
+                sourceSize.width: 26
+                sourceSize.height: 26
+                fillMode: Image.PreserveAspectFit
+            }
+            onCheckedChanged: {
+                AudioTabController.setMicMuted(checked)
+            }
+        }
+
         MyPushButton2 {
             id: audioMicVolumeMinusButton
             text: "-"
@@ -55,21 +79,6 @@ ColumnLayout {
             Layout.preferredWidth: 85
             horizontalAlignment: Text.AlignRight
         }
-        
-        MyPushButton2 {
-            id: audioMicMuteToggle
-            Layout.leftMargin: 12
-            checkable: true
-            contentItem: Image {
-                source: parent.checked ? "qrc:/microphone/off" : "qrc:/microphone/on"
-                sourceSize.width: 32
-                sourceSize.height: 32
-                anchors.fill: parent
-            }
-            onCheckedChanged: {
-                AudioTabController.setMicMuted(checked)
-            }
-        }
     }
     Component.onCompleted: {
         if (AudioTabController.micDeviceIndex < 0) {
@@ -89,7 +98,7 @@ ColumnLayout {
     }
     Connections {
         target: AudioTabController
-        onMicDeviceIndexChanged: {
+        function onMicDeviceIndexChanged() {
             if (index < 0) {
                 audioMicVolumeMinusButton.enabled = false
                 audioMicVolumeSlider.enabled = false
@@ -102,16 +111,16 @@ ColumnLayout {
                 audioMicMuteToggle.enabled = true
             }
         }
-        onMicVolumeChanged: {
+        function onMicVolumeChanged() {
             audioMicVolumeSlider.value = AudioTabController.micVolume
         }
-        onMicMutedChanged: {
+        function onMicMutedChanged() {
             audioMicMuteToggle.checked = AudioTabController.micMuted
         }
-        onPlaybackDeviceListChanged: {
+        function onPlaybackDeviceListChanged() {
 
         }
-        onRecordingDeviceListChanged: {
+        function onRecordingDeviceListChanged() {
             if (AudioTabController.micDeviceIndex < 0) {
                 audioMicVolumeMinusButton.enabled = false
                 audioMicVolumeSlider.enabled = false

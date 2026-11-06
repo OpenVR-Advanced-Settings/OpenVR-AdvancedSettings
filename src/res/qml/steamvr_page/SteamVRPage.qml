@@ -6,20 +6,32 @@ import "../common"
 import "camera"
 import "steamvrmisc"
 import "steamvrbind"
+import "gamebindings"
 
 MyStackViewPage {
-    width: 1200
-    headerText: "SteamVR"
+    headerText: qsTr("SteamVR")
+
+    // Every group box row on this page uses this height.
+    readonly property int groupBoxRowHeight: 44
 
     content: ColumnLayout {
-        spacing: 16
+        spacing: 8
 
         SteamVRMiscGroupBox {
-        id: steamVRMiscGroupBox}
+            id: steamVRMiscGroupBox
+            rowHeight: groupBoxRowHeight
+        }
         CameraGroupBox {
-        id:  cameraGroupBox}
+            id: cameraGroupBox
+            rowHeight: groupBoxRowHeight
+        }
         SteamVRBindGroupBox{
             id: steamVRBindGroupBox
+            rowHeight: groupBoxRowHeight
+        }
+        GameBindingsGroupBox {
+            id: gameBindingsGroupBox
+            rowHeight: groupBoxRowHeight
         }
 
         Item { Layout.fillHeight: true; Layout.fillWidth: true}
@@ -28,11 +40,11 @@ MyStackViewPage {
             Layout.fillWidth: true
 
             MyPushButton {
-                text: "Device Pairing Information"
+                text: qsTr("Lighthouse Device Pairing")
                 Layout.preferredWidth: 350
 
                 onClicked: {
-                    MyResources.playFocusChangedSound()
+                    OverlayController.playFocusChangedSound()
                     mainView.push(steamVRTXRXPage)
                     SteamVRTabController.updateRXTXList()
                 }
@@ -42,12 +54,15 @@ MyStackViewPage {
 
             MyPushButton {
                 id: steamVRRestartButton
-                text: "Restart SteamVR"
+                text: qsTr("Restart SteamVR")
                 Layout.preferredWidth: 250
                 onClicked: {
                     SteamVRTabController.restartSteamVR()
                 }
             }
         }
+    }
+    Connections {
+    target: OverlayController 
     }
 }

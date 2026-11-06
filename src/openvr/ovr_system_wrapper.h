@@ -3,9 +3,9 @@
 #include <openvr.h>
 #include <iostream>
 #include <string>
-#include <easylogging++.h>
 #include <utility>
 #include <map>
+#include <vector>
 
 /* Wrapper For OpenVR's IVR settings class, allows us to do our error logging
  * while also minimizing code
