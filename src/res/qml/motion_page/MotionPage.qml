@@ -1,28 +1,34 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
 import ovras.advsettings 1.0
 import "../common"
 import "space_drag"
 import "height_toggle"
 import "gravity"
+import "tracking_jump"
 
 MyStackViewPage {
     headerText: "Motion Settings"
 
-    content: ColumnLayout {
-        spacing: 18
+    content: ScrollView {
+        id: motionScrollView
+        clip: true
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
-        SpaceDragGroupBox { id: spaceDragGroupBox }
+        ColumnLayout {
+            width: motionScrollView.availableWidth
 
-        HeightToggleGroupBox { id: heightToggleGroupBox }
+            spacing: 18
 
-        GravityGroupBox { id: gravityGroupBox }
+            SpaceDragGroupBox { id: spaceDragGroupBox }
 
+            HeightToggleGroupBox { id: heightToggleGroupBox }
 
-        Item {
-            Layout.fillHeight: true
+            GravityGroupBox { id: gravityGroupBox }
+
+            TrackingJumpGroupBox { id: trackingJumpGroupBox }
         }
-
     }
 }

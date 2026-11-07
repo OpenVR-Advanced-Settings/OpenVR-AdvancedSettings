@@ -61,6 +61,7 @@ HEADERS += src/overlaycontroller.h \
     src/utils/setup.h \
     src/utils/paths.h \
     src/utils/FrameRateUtils.h \
+    src/utils/TrackingDiscontinuity.h \
     src/keyboard_input/input_parser.h \
     src/keyboard_input/input_sender.h \
     src/settings/settings.h \

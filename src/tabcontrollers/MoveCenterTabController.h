@@ -7,6 +7,7 @@
 #include <qmath.h>
 #include "../utils/Matrix.h"
 #include "../utils/FrameRateUtils.h"
+#include "../utils/TrackingDiscontinuity.h"
 #include "../settings/settings_object.h"
 
 class QQuickWindow;
@@ -132,7 +133,32 @@ class MoveCenterTabController : public QObject
     Q_PROPERTY(
         float dragMult READ dragMult WRITE setDragMult NOTIFY dragMultChanged )
 
+    Q_PROPERTY(
+        bool trackingJumpCorrection READ trackingJumpCorrection WRITE
+            setTrackingJumpCorrection NOTIFY trackingJumpCorrectionChanged )
+    Q_PROPERTY( double trackingJumpDistance READ trackingJumpDistance WRITE
+                    setTrackingJumpDistance NOTIFY trackingJumpDistanceChanged )
+    Q_PROPERTY( double trackingJumpSpeed READ trackingJumpSpeed WRITE
+                    setTrackingJumpSpeed NOTIFY trackingJumpSpeedChanged )
+    Q_PROPERTY( double trackingJumpAngle READ trackingJumpAngle WRITE
+                    setTrackingJumpAngle NOTIFY trackingJumpAngleChanged )
+    Q_PROPERTY(
+        double trackingJumpAngularSpeed READ trackingJumpAngularSpeed WRITE
+            setTrackingJumpAngularSpeed NOTIFY trackingJumpAngularSpeedChanged )
+
+    Q_PROPERTY( bool preserveRecenterView READ preserveRecenterView WRITE
+                    setPreserveRecenterView NOTIFY preserveRecenterViewChanged )
+
 private:
+    utils::TrackingDiscontinuity m_trackingDiscontinuity;
+    vr::HmdMatrix34_t m_viewBeforeRecenter{};
+    std::chrono::steady_clock::time_point m_viewBeforeRecenterTime;
+    bool m_viewBeforeRecenterValid = false;
+    bool m_preserveRecenterPending = false;
+    void cacheRecenterView();
+    bool compensateRecenter( const vr::TrackedDevicePose_t& pose );
+    void applyTrackingCorrection(
+        const utils::TrackingJumpCorrection& correction );
     OverlayController* parent;
 
     int m_trackingUniverse = static_cast<int>( vr::TrackingUniverseStanding );
@@ -222,6 +248,7 @@ private:
                                    double angle );
     void updateHandDrag( vr::TrackedDevicePose_t* devicePoses, double angle );
     void updateHandTurn( vr::TrackedDevicePose_t* devicePoses, double angle );
+    void updateTrackingJumpCorrection();
     void updateGravity();
     void updateSpace( bool forceUpdate = false );
     void clampVelocity( double* velocity );
@@ -267,6 +294,13 @@ public:
     bool showLogMatricesButton() const;
     // bool allowExternalEdits() const;
     bool universeCenteredRotation() const;
+    bool trackingJumpCorrection() const;
+    bool preserveRecenterView() const;
+    double trackingJumpDistance() const;
+    double trackingJumpSpeed() const;
+    double trackingJumpAngle() const;
+    double trackingJumpAngularSpeed() const;
+
     bool isInitComplete() const;
     double getHmdYawTotal();
     void resetHmdYawTotal();
@@ -348,6 +382,13 @@ public slots:
     // void setAllowExternalEdits( bool value, bool notify = true );
     void setUniverseCenteredRotation( bool value, bool notify = true );
 
+    void setTrackingJumpCorrection( bool value, bool notify = true );
+    void setPreserveRecenterView( bool value, bool notify = true );
+    void setTrackingJumpDistance( double value, bool notify = true );
+    void setTrackingJumpSpeed( double value, bool notify = true );
+    void setTrackingJumpAngle( double value, bool notify = true );
+    void setTrackingJumpAngularSpeed( double value, bool notify = true );
+
     void shutdown();
     void reset();
     void outputLogPoses();
@@ -389,6 +430,13 @@ signals:
     void requireLockZChanged( bool value );
     void showLogMatricesButtonChanged( bool value );
     void universeCenteredRotationChanged( bool value );
+    void trackingJumpCorrectionChanged( bool value );
+    void preserveRecenterViewChanged( bool value );
+    void trackingJumpDistanceChanged( double value );
+    void trackingJumpSpeedChanged( double value );
+    void trackingJumpAngleChanged( double value );
+    void trackingJumpAngularSpeedChanged( double value );
+
     void offsetProfilesUpdated();
 };
 

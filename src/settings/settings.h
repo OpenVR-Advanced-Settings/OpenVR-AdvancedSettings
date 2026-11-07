@@ -17,6 +17,8 @@ enum class BoolSetting
     PLAYSPACE_dragBounds,
     PLAYSPACE_allowExternalEdits,
     PLAYSPACE_oldStyleMotion,
+    PLAYSPACE_trackingJumpCorrection,
+    PLAYSPACE_preserveRecenterView,
     PLAYSPACE_universeCenteredRotation,
     PLAYSPACE_enableSeatedMotion,
     PLAYSPACE_adjustChaperone,
@@ -77,6 +79,10 @@ enum class DoubleSetting
     PLAYSPACE_gravityStrength,
     PLAYSPACE_flingStrength,
     PLAYSPACE_dragMult,
+    PLAYSPACE_trackingJumpDistance,
+    PLAYSPACE_trackingJumpSpeed,
+    PLAYSPACE_trackingJumpAngle,
+    PLAYSPACE_trackingJumpAngularSpeed,
 
     APPLICATION_appVolume,
 
