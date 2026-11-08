@@ -52,7 +52,7 @@
             },
             {
                "inputs" : {
-                  "double" : {
+                  "click" : {
                      "output" : "/actions/motion/in/optionaloverridelefthandspacedrag"
                   }
                },
@@ -79,7 +79,7 @@
             },
             {
                "inputs" : {
-                  "double" : {
+                  "click" : {
                      "output" : "/actions/motion/in/optionaloverriderighthandspacedrag"
                   }
                },

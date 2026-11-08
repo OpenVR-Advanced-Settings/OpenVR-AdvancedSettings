@@ -604,6 +604,11 @@ private:
                          SettingCategory::Playspace,
                          QtInfo{ "frictionPercent" },
                          0 },
+        // 0 = auto (keep on Steam Frame), 1 = always reset, 2 = always keep
+        IntSettingValue{ IntSetting::PLAYSPACE_offsetsOnRecenter,
+                         SettingCategory::Playspace,
+                         QtInfo{ "offsetsOnRecenter" },
+                         0 },
 
         IntSettingValue{ IntSetting::APPLICATION_debugState,
                          SettingCategory::Application,
